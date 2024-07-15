@@ -29,5 +29,5 @@
       "@/*": ["./src/*"] // SHOULD BE SECOND
     }
   },
-  "include": ["src"]
+  "include": ["src", "react-toolkit"]
 }
