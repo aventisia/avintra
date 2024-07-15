@@ -1,4 +1,5 @@
 import { AppLogo } from "@/react-toolkit/components/layout";
+import { UnreadNotifications, UserAccountModal } from "@/react-toolkit/features";
 import { cn } from "@/react-toolkit/lib";
 
 interface StudioHeaderProps {
@@ -16,6 +17,10 @@ const StudioHeader = ({ className }: StudioHeaderProps) => {
       <div className={cn("flex h-[3rem] w-full items-center md:px-2.5")}>
         <div className="flex flex-grow items-center">
           <AppLogo className="h-7 text-lg" />
+        </div>
+        <div className="flex items-center gap-4">
+          <UnreadNotifications className="mt-0 mlg:mt-4" />
+          <UserAccountModal />
         </div>
       </div>
     </header>
