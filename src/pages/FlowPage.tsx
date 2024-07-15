@@ -4,7 +4,8 @@ import { ReactFlowProvider } from "@xyflow/react";
 export const FlowPage = () => {
   return (
     <ReactFlowProvider>
-      <ReactFlowExt></ReactFlowExt>
+      <ReactFlowExt>
+      </ReactFlowExt>
     </ReactFlowProvider>
   );
 };

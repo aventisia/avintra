@@ -19,6 +19,9 @@ type State = {
 
   /** Edges of currently opened flow */
   edges: Edge[];
+
+  /** Flag to track if Reactflow is locked */
+  isLocked: boolean;
 };
 
 type Actions = {
@@ -36,6 +39,9 @@ type Actions = {
 
   /** Set edges of currently opened flow */
   setEdges: (edges: Edge[]) => void;
+
+  /** To toggle ReactFlow lock/unlock state */
+  toggleIsLocked: (isLocked: boolean) => void;
 };
 
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
@@ -63,4 +69,9 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   setEdges: (edges: Edge[]) => {
     set({ edges });
   },
+
+  toggleIsLocked: (value) =>
+    set((state) => ({
+      isLocked: typeof value === "boolean" ? value : !state.isLocked,
+    })),
 }));

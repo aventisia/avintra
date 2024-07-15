@@ -4,6 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useReactFlowExtStore } from "../stores/react-flow-ext-store";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
+import { ViewControls } from "./view-controls/ViewControls";
 
 interface ReactFlowExtProps {
   children?: React.ReactNode;
@@ -14,11 +15,12 @@ interface ReactFlowExtProps {
  */
 export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
+  const { nodes, edges, isLocked, onNodesChange, onEdgesChange, onConnect } =
     useReactFlowExtStore(
       useShallow((state) => ({
         nodes: state.nodes,
         edges: state.edges,
+        isLocked: state.isLocked,
         onNodesChange: state.onNodesChange,
         onEdgesChange: state.onEdgesChange,
         onConnect: state.onConnect,
@@ -35,8 +37,13 @@ export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
       //onNodesDelete={onNodesDelete}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
+      // Toggles Reactflows interactivity
+      nodesDraggable={!isLocked}
+      nodesConnectable={!isLocked}
+      elementsSelectable={!isLocked}
     >
       {children}
+      <ViewControls />
       <BackgroundExt />
       <MiniMapExt />
     </ReactFlow>
