@@ -1,5 +1,10 @@
+import { ETLIAMenu } from "@/features/etlia-menu/components/ETLIAMenu";
 import { AppLogo } from "@/react-toolkit/components/layout";
-import { UnreadNotifications, UserAccountModal } from "@/react-toolkit/features";
+import { DotSeparator } from "@/react-toolkit/components/ui";
+import {
+  UnreadNotifications,
+  UserAccountModal,
+} from "@/react-toolkit/features";
 import { cn } from "@/react-toolkit/lib";
 
 interface StudioHeaderProps {
@@ -17,6 +22,8 @@ const StudioHeader = ({ className }: StudioHeaderProps) => {
       <div className={cn("flex h-[3rem] w-full items-center md:px-2.5")}>
         <div className="flex flex-grow items-center">
           <AppLogo className="h-7 text-lg" />
+          <DotSeparator className="ml-[0.9rem] mr-[0.9rem]" />
+          <ETLIAMenu />
         </div>
         <div className="flex items-center gap-4">
           <UnreadNotifications className="mt-0 mlg:mt-4" />
