@@ -21,7 +21,13 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/react-toolkit/*": ["./react-toolkit/*"], // SHOULD BE FIRST
+      "@/*": ["./src/*"] // SHOULD BE SECOND
+    }
   },
   "include": ["src"]
 }
