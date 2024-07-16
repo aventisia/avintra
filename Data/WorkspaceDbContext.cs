@@ -23,8 +23,10 @@ public class WorkspaceDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Gloabl TenantId filters
+        modelBuilder.Entity<WorkspaceUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         
         // Unique property
+        modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         
         // Enum to string conversion
         
@@ -65,4 +67,6 @@ public class WorkspaceDbContext : DbContext
         var result = await base.SaveChangesAsync(cancellationToken);
         return result;
     }
+
+    public DbSet<WorkspaceUser> Users { get; set; }
 }
