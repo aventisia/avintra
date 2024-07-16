@@ -15,6 +15,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IWorkspaceUserRepo WorkspaceUserRepo => new WorkspaceUserRepo(_workspaceDbContext, _mapper);
 
+    public IProjectRepo ProjectRepo => new ProjectRepo(_workspaceDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
