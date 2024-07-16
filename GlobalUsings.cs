@@ -36,5 +36,6 @@ global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Microsoft.IdentityModel.Tokens;
 
 global using AutoMapper;
+global using AutoMapper.QueryableExtensions;
 global using Ardalis.GuardClauses;
 global using Newtonsoft.Json;

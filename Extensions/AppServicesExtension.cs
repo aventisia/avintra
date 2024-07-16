@@ -30,6 +30,7 @@ public static class AppServicesExtension
         
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
+        services.AddScoped<IProjectsTableService, ProjectsTableService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
