@@ -22,6 +22,7 @@ public static class AppServicesExtension
             map.AddProfile<UnreadNotificationMappingProfile>();
             map.AddProfile<AutoNotificationMappingProfile>();
             map.AddProfile<FlowsTableMappingProfile>();
+            map.AddProfile<FlowCommentMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
@@ -31,7 +32,7 @@ public static class AppServicesExtension
 
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("EmailConfig").Get<EmailConfig>(), "EmailConfig cannot be null"));
-        
+
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<IProjectsTableService, ProjectsTableService>();
@@ -40,7 +41,7 @@ public static class AppServicesExtension
         services.AddScoped<IUnreadNotificationService, UnreadNotificationService>();
         services.AddScoped<IAutoNotificationService, AutoNotificationService>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
-        
+
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
