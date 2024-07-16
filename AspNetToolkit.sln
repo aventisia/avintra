@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetToolkit", "AspNetToolkit.csproj", "{D39D0445-1D25-4EC1-B51E-BB700CC5DB56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D39D0445-1D25-4EC1-B51E-BB700CC5DB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D39D0445-1D25-4EC1-B51E-BB700CC5DB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D39D0445-1D25-4EC1-B51E-BB700CC5DB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D39D0445-1D25-4EC1-B51E-BB700CC5DB56}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {301CEF21-5AE8-46D5-BB9B-3CD107382B5E}
+	EndGlobalSection
+EndGlobal
