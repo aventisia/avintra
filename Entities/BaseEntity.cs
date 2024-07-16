@@ -17,6 +17,12 @@ public abstract class BaseEntity
     public Guid CreatedByUserId { get; set; }
 
     /// <summary>
+    /// Gets or sets the WorkspaceUser who created the record.
+    /// </summary>
+    [ForeignKey("CreatedByUserId")]
+    public virtual WorkspaceUser? CreatedByUser { get; set; }
+
+    /// <summary>
     /// Gets or sets the date and time when the record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
@@ -25,6 +31,12 @@ public abstract class BaseEntity
     /// Gets or sets the ID of the user who modified the record last.
     /// </summary>
     public Guid LastModifiedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the WorkspaceUser who modified the record last.
+    /// </summary>
+    [ForeignKey("LastModifiedByUserId")]
+    public virtual WorkspaceUser? LastModifiedByUser { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the record was last modified.
