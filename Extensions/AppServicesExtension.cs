@@ -28,6 +28,7 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("EmailConfig").Get<EmailConfig>(), "EmailConfig cannot be null"));
         
         // Feature Services
+        services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
