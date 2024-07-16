@@ -19,6 +19,7 @@ public static class AppServicesExtension
             map.AddProfile<WorkspaceUserMappingProfile>();
             map.AddProfile<ProjectsTableMappingProfile>();
             map.AddProfile<GlobalNotificationMappingProfile>();
+            map.AddProfile<UnreadNotificationMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
