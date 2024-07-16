@@ -28,6 +28,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Notification>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<NotificationUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<FlowComment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -93,4 +94,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationUser> NotificationUsers { get; set; }
     public DbSet<Flow> Flows { get; set; }
+    public DbSet<FlowComment> FlowComments { get; set; }
 }
