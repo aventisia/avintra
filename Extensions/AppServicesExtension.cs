@@ -16,7 +16,7 @@ public static class AppServicesExtension
     {
         var mapperConfig = new MapperConfiguration(map =>
         {
-            
+            map.AddProfile<WorkspaceUserMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
