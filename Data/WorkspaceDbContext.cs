@@ -27,14 +27,17 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Project>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Notification>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<NotificationUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Project>().HasIndex(index => index.Name).IsUnique();
+        modelBuilder.Entity<Flow>().HasIndex(index => new { index.ProjectId, index.Name }).IsUnique();
 
         // Enum to string conversion
         modelBuilder.Entity<Project>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectTypesEnum>());
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
+        modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
 
         // Configure One-to-One relationship between Project and WorkspaceUser
         modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -43,6 +46,10 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Notification>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+        // Configure One-to-One relationship between Flow and WorkspaceUser
+        modelBuilder.Entity<Flow>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Flow>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
@@ -85,4 +92,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Project> Projects { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationUser> NotificationUsers { get; set; }
+    public DbSet<Flow> Flows { get; set; }
 }
