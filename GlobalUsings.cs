@@ -9,6 +9,7 @@ global using AspNetToolkit.Middleware;
 global using AspNetToolkit.Repos;
 global using AspNetToolkit.Services;
 global using AspNetToolkit.Utils;
+global using AspNetToolkit.Attributes;
 
 global using WorkspaceAPIs.Entities;
 global using WorkspaceAPIs.Data;

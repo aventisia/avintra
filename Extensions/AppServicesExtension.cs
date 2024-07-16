@@ -20,6 +20,7 @@ public static class AppServicesExtension
             map.AddProfile<ProjectsTableMappingProfile>();
             map.AddProfile<GlobalNotificationMappingProfile>();
             map.AddProfile<UnreadNotificationMappingProfile>();
+            map.AddProfile<AutoNotificationMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
@@ -36,6 +37,7 @@ public static class AppServicesExtension
         services.AddScoped<INotificationHelperService, NotificationHelperService>();
         services.AddScoped<IGlobalNotificationService, GlobalNotificationService>();
         services.AddScoped<IUnreadNotificationService, UnreadNotificationService>();
+        services.AddScoped<IAutoNotificationService, AutoNotificationService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
