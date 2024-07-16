@@ -19,6 +19,8 @@ public class UnitOfWork : IUnitOfWork
 
     public INotificationRepo NotificationRepo => new NotificationRepo(_workspaceDbContext, _mapper);
 
+    public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
