@@ -1,0 +1,42 @@
+namespace WorkspaceAPIs.Controllers;
+
+[Route("flow")]
+[ApiController]
+[Authorize]
+public class FlowsTableController : BaseApiController
+{
+    private readonly IFlowsTableService _flowsTableService;
+
+    public FlowsTableController(IFlowsTableService flowsTableService)
+    {
+        _flowsTableService = flowsTableService;
+    }
+
+    // Retrieves all flows associated with a project.
+    [HttpGet("list/{projectId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetFlows(Guid projectId)
+    {
+        return ResultHelper(await _flowsTableService.GetFlowsAsync(projectId));
+    }
+
+    // Inserts a new flow.
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<FlowsTableDto>>> InsertFlow([FromBody] FlowsTableDto flowsTableDto)
+    {
+        return ResultHelper(await _flowsTableService.InsertFlowAsync(flowsTableDto));
+    }
+
+    // Updates an existing flow.
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<FlowsTableDto>>> UpdateFlow([FromBody] FlowsTableDto flowsTableDto)
+    {
+        return ResultHelper(await _flowsTableService.UpdateFlowAsync(flowsTableDto));
+    }
+
+    // Deletes a flow by its ID.
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFlow(Guid id)
+    {
+        return ResultHelper(await _flowsTableService.DeleteFlowAsync(id));
+    }
+}
