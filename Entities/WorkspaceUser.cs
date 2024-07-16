@@ -50,6 +50,11 @@ public class WorkspaceUser : IMustHaveTenant
     public virtual ICollection<NotificationUser>? NotificationUsers { get; set; }
 
     /// <summary>
+    /// Gets or sets the list of FlowComments to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<FlowComment>? FlowComments { get; set; }
+
+    /// <summary>
     /// Gets or sets the version number used for row versioning. Row versioning helps detect conflicts between concurrent transactions.
     /// </summary>
     /// <remarks>

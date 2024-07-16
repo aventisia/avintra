@@ -55,4 +55,9 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("ProjectId")]
     public virtual Project? Project { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of FlowComments to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<FlowComment>? FlowComments { get; set; }
 }
