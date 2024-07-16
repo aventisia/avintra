@@ -22,6 +22,7 @@ global using System.Globalization;
 global using System.Reflection;
 global using System.Net.Http.Headers;
 global using System.Threading.RateLimiting;
+global using System.Text.Json.Serialization;
 
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.OpenApi.Models;
 
 global using Newtonsoft.Json;
 global using Ardalis.GuardClauses;
