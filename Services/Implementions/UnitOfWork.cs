@@ -23,6 +23,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext, _mapper);
 
+    public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
@@ -32,7 +34,7 @@ public class UnitOfWork : IUnitOfWork
                 ? await _workspaceDbContext.SaveChangesAsync() > 0
                 : true;
         }
-        
+
         // Save changes without checking change tracker
         return await _workspaceDbContext.SaveChangesAsync() > 0;
     }
