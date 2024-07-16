@@ -35,6 +35,7 @@ public static class AppServicesExtension
         services.AddScoped<IProjectsTableService, ProjectsTableService>();
         services.AddScoped<INotificationHelperService, NotificationHelperService>();
         services.AddScoped<IGlobalNotificationService, GlobalNotificationService>();
+        services.AddScoped<IUnreadNotificationService, UnreadNotificationService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

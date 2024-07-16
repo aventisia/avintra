@@ -1,0 +1,110 @@
+namespace WorkspaceAPIs.Services;
+
+public class UnreadNotificationService : IUnreadNotificationService
+{
+    private readonly ILogger<UnreadNotificationService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+    private readonly Guid _userId;
+
+    public UnreadNotificationService(
+        ILogger<UnreadNotificationService> logger,
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    }
+
+    // Retrieves a list of unread notifications asynchronously.
+    public async Task<ServiceResponse<IEnumerable<UnreadNotificationDto>>> GetUnreadNotificationsAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<UnreadNotificationDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Try to get notifications
+            var unreadNotifications = await _unitOfWork.NotificationUserRepo
+                                        .GetByConditionAsync(w => !w.IsRead && w.UserId == _userId)
+                                        //.OrderByDescending(o => o.) Pending: Order by CreatedAt
+                                        .ProjectTo<UnreadNotificationDto>(_mapper.ConfigurationProvider)
+                                        .ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = unreadNotifications;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Unread notifications retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Marks a notification as read asynchronously.
+    public async Task<ServiceResponse<bool>> MarkNotificationAsReadAsync(Guid id)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to mark notification as read. Please try again later.",
+        };
+
+        try
+        {
+            // Validate notification existence
+            var unreadNotification = await _unitOfWork.NotificationUserRepo
+                                        .GetByConditionAsync(w => 
+                                            w.NotificationId == id &&
+                                            w.UserId == _userId)
+                                        .SingleOrDefaultAsync();
+
+            // Notification does not exist
+            if (unreadNotification == null)
+            {
+                _logger.LogInformation($"Notification does not exist");
+                serviceResponse.Message = "Notification does not exist";
+                return serviceResponse;
+            }
+
+            // Mark as read
+            unreadNotification.IsRead = true;
+
+            // Update notification
+            _unitOfWork.NotificationUserRepo.Update(unreadNotification);
+
+            // Update-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating notification as read");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Notification marked as read successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+}
