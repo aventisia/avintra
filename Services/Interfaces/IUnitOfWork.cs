@@ -2,6 +2,8 @@ namespace WorkspaceAPIs.Services;
 
 public interface IUnitOfWork
 {
+    IWorkspaceUserRepo WorkspaceUserRepo { get; }
+    
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>
