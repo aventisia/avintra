@@ -18,6 +18,7 @@ public static class AppServicesExtension
         {
             map.AddProfile<WorkspaceUserMappingProfile>();
             map.AddProfile<ProjectsTableMappingProfile>();
+            map.AddProfile<GlobalNotificationMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
@@ -31,7 +32,7 @@ public static class AppServicesExtension
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<IProjectsTableService, ProjectsTableService>();
-        
+
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
