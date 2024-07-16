@@ -43,6 +43,7 @@ public static class AppServicesExtension
         services.AddScoped<IAutoNotificationService, AutoNotificationService>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFlowCommentService, FlowCommentService>();
+        services.AddScoped<IFlowBuilderService, FlowBuilderService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
