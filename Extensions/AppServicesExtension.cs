@@ -21,6 +21,7 @@ public static class AppServicesExtension
             map.AddProfile<GlobalNotificationMappingProfile>();
             map.AddProfile<UnreadNotificationMappingProfile>();
             map.AddProfile<AutoNotificationMappingProfile>();
+            map.AddProfile<FlowsTableMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
