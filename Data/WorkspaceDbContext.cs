@@ -24,13 +24,18 @@ public class WorkspaceDbContext : DbContext
 
         // Gloabl TenantId filters
         modelBuilder.Entity<WorkspaceUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Project>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
-        
+        modelBuilder.Entity<Project>().HasIndex(index => index.Name).IsUnique();
+
         // Enum to string conversion
-        
-        // Configure One-to-One relationship
+        modelBuilder.Entity<Project>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectTypesEnum>());
+
+        // Configure One-to-One relationship between Project and WorkspaceUser
+        modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Project>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         
         // Configure Many-to-Many relationship
         
@@ -69,4 +74,5 @@ public class WorkspaceDbContext : DbContext
     }
 
     public DbSet<WorkspaceUser> Users { get; set; }
+    public DbSet<Project> Projects { get; set; }
 }

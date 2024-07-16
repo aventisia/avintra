@@ -10,6 +10,7 @@ global using AspNetToolkit.Repos;
 global using AspNetToolkit.Services;
 global using AspNetToolkit.Utils;
 
+global using WorkspaceAPIs.Entities;
 global using WorkspaceAPIs.Data;
 global using WorkspaceAPIs.Services;
 global using WorkspaceAPIs.Extensions;
