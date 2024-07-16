@@ -5,6 +5,8 @@ public interface IUnitOfWork
     IWorkspaceUserRepo WorkspaceUserRepo { get; }
 
     IProjectRepo ProjectRepo { get; }
+
+    INotificationRepo NotificationRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
