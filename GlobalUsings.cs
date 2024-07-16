@@ -18,6 +18,7 @@ global using System.IdentityModel.Tokens.Jwt;
 global using System.Text.RegularExpressions;
 global using System.Globalization;
 global using System.Reflection;
+global using System.Net.Http.Headers;
 
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
@@ -27,3 +28,5 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Net.Http.Headers;
 global using Microsoft.IdentityModel.Tokens;
+
+global using Newtonsoft.Json;
