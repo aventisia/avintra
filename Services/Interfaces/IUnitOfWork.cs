@@ -9,6 +9,8 @@ public interface IUnitOfWork
     INotificationRepo NotificationRepo { get; }
 
     INotificationUserRepo NotificationUserRepo { get; }
+
+    IFlowRepo FlowRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
