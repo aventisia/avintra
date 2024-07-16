@@ -32,6 +32,8 @@ public static class AppServicesExtension
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<IProjectsTableService, ProjectsTableService>();
+        services.AddScoped<INotificationHelperService, NotificationHelperService>();
+        services.AddScoped<IGlobalNotificationService, GlobalNotificationService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
