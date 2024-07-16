@@ -1,3 +1,4 @@
+namespace WorkspaceAPIs.Entities;
 
 /// <summary>
 /// Represents a user entity that stores user preferences specific to a workspace.
@@ -42,6 +43,11 @@ public class WorkspaceUser : IMustHaveTenant
     /// </summary>
     [MaxLength(255)]
     public string? AvatarSrc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of NotificationUsers to manage the many-to-many relation.
+    /// </summary>
+    public virtual ICollection<NotificationUser>? NotificationUsers { get; set; }
 
     /// <summary>
     /// Gets or sets the version number used for row versioning. Row versioning helps detect conflicts between concurrent transactions.

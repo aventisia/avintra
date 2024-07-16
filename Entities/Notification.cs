@@ -38,4 +38,9 @@ public class Notification : BaseEntity, IMustHaveTenant
     /// Gets or sets a value indicating whether the notification was created manually by an admin or by the app.
     /// </summary>
     public bool IsSystemGenerated { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the list of NotificationUsers associated with the notification.
+    /// </summary>
+    public virtual ICollection<NotificationUser>? NotificationUsers { get; set; }
 }
