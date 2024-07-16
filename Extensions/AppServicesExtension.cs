@@ -23,6 +23,7 @@ public static class AppServicesExtension
             map.AddProfile<AutoNotificationMappingProfile>();
             map.AddProfile<FlowsTableMappingProfile>();
             map.AddProfile<FlowCommentMappingProfile>();
+            map.AddProfile<FlowBuilderMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
