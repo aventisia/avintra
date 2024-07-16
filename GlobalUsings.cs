@@ -12,6 +12,7 @@ global using AspNetToolkit.Utils;
 
 global using WorkspaceAPIs.Data;
 global using WorkspaceAPIs.Services;
+global using WorkspaceAPIs.Extensions;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
