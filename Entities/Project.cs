@@ -28,4 +28,9 @@ public class Project : BaseEntity, IMustHaveTenant
     /// </summary>
     [MaxLength(500)]
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of Flows to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<Flow>? Flows { get; set; }
 }
