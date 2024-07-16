@@ -63,8 +63,13 @@ public static class SharedServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("CookiePolicyConfig").Get<CookiePolicyConfig>(), "CookiePolicyConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("JwtConfig").Get<JwtConfig>(), "JwtConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), "TenantResolverConfig cannot be null"));
-
+        
         // Scoped
         services.AddScoped<IUserManagementGuardService, UserManagementGuardService>();
+    }
+
+    public static void AddEmailService(this IServiceCollection services)
+    {
+        services.AddSingleton<IEmailService, EmailService>();
     }
 }
