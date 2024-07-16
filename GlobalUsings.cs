@@ -2,6 +2,7 @@ global using AspNetToolkit.Attributes;
 global using AspNetToolkit.DTOs;
 global using AspNetToolkit.Enums;
 global using AspNetToolkit.Entities;
+global using AspNetToolkit.Data;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
