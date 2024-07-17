@@ -18,9 +18,7 @@ export default function App() {
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
           <Route element={<WorkspaceUILayout />}>
-            <Route path="/" element={<Navigate to="/Page1" />} />
-            <Route path="/page1" element={<Page1 />} />
-            <Route path="/page2" element={<Page2 />} />
+            <Route path="/" element={<Navigate to="/projects" />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/project/flows" element={<FlowsPage />} />
             <Route path="/page-not-found" element={<NotFoundPage />} />
@@ -32,11 +30,3 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-
-const Page1 = () => {
-  return <div>Page1</div>;
-};
-
-const Page2 = () => {
-  return <div>Page2</div>;
-};
