@@ -73,6 +73,7 @@ public static class AppServicesExtension
         services.AddScoped<IVerificationCodeService, VerificationCodeService>();
         services.AddScoped<IResetPwdService, ResetPwdService>();
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
+        services.AddScoped<ISingleSignOnService, SingleSignOnService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
