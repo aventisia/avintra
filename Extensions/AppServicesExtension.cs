@@ -70,6 +70,7 @@ public static class AppServicesExtension
 
         // Feature services
         services.AddScoped<ICreateAccountService, CreateAccountService>();
+        services.AddScoped<IVerificationCodeService, VerificationCodeService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
