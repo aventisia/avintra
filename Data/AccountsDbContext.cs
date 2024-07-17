@@ -85,4 +85,5 @@ public class AccountsDbContext : IdentityDbContext<
     public override DbSet<AccountUser> Users { get; set; }
     public override DbSet<AccountUserRole> UserRoles { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
+    public DbSet<ActiveSession> ActiveSessions { get; set; }
 }
