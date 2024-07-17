@@ -28,6 +28,7 @@ builder.Services.SharedRateLimiter(config);
 builder.Services.CorsPolicyConfig(config);
 builder.Services.CookiePolicyConfig(config);
 builder.Services.HSTSPolicyConfig(config);
+builder.Services.AddIdentityConfig(config); // Note: AddIdentity must come before AddAuthentication
 builder.Services.AddAuthenticationConfig(config);
 
 // Database
