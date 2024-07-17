@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ToasterExt } from "@/react-toolkit/components/ui";
+import "@/react-toolkit/styles/slide-animation.css";
 import "@/react-toolkit/styles/react-perfect-scrollbar.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
