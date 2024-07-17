@@ -74,6 +74,7 @@ public static class AppServicesExtension
         services.AddScoped<IResetPwdService, ResetPwdService>();
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
         services.AddScoped<ISingleSignOnService, SingleSignOnService>();
+        services.AddScoped<IMyAccountService, MyAccountService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
