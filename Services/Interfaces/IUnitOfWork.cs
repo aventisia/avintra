@@ -7,6 +7,8 @@ public interface IUnitOfWork
     ITenantRepo TenantRepo { get; }
 
     IActiveSessionRepo ActiveSessionRepo { get; }
+
+    ISessionLogRepo SessionLogRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
