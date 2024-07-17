@@ -9,6 +9,8 @@ public interface IUnitOfWork
     IActiveSessionRepo ActiveSessionRepo { get; }
 
     ISessionLogRepo SessionLogRepo { get; }
+
+    IObsoletePwdRepo ObsoletePwdRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

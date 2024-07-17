@@ -21,6 +21,8 @@ public class UnitOfWork : IUnitOfWork
 
     public ISessionLogRepo SessionLogRepo => new SessionLogRepo(_accountsDbContext, _mapper);
 
+    public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
