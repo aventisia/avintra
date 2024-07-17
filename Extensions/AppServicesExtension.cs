@@ -71,7 +71,8 @@ public static class AppServicesExtension
         // Feature services
 
         // Common Services
-        services.AddScoped<IAuthHelperService, AuthHelperService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IAuthHelperService, AuthHelperService>();
+        services.AddScoped<IAuthService, AuthService>();
     }
 }
