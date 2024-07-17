@@ -23,12 +23,15 @@ public class AccountsDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Gloabl TenantId filters
+        modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
 
         // Unique property
 
         // Enum to string conversion
 
-        // Configure One-to-One relationship
+        // Configure One-to-One relationship between AccountUser and AccountUser
+        modelBuilder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AccountUser>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure Many-to-Many relationship
     }
@@ -64,4 +67,6 @@ public class AccountsDbContext : DbContext
         var result = await base.SaveChangesAsync(cancellationToken);
         return result;
     }
+
+    public DbSet<AccountUser> Users { get; set; }
 }
