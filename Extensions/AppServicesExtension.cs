@@ -75,6 +75,7 @@ public static class AppServicesExtension
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
         services.AddScoped<ISingleSignOnService, SingleSignOnService>();
         services.AddScoped<IMyAccountService, MyAccountService>();
+        services.AddScoped<ITenantAccountService, TenantAccountService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
