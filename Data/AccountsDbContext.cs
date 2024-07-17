@@ -88,4 +88,5 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<ActiveSession> ActiveSessions { get; set; }
     public DbSet<SessionLog> SessionLogs { get; set; }
+    public DbSet<ObsoletePwd> ObsoletePwds { get; set; }
 }
