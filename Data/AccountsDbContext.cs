@@ -39,6 +39,7 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Enum to string conversion
         modelBuilder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
+        modelBuilder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         modelBuilder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -86,4 +87,5 @@ public class AccountsDbContext : IdentityDbContext<
     public override DbSet<AccountUserRole> UserRoles { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<ActiveSession> ActiveSessions { get; set; }
+    public DbSet<SessionLog> SessionLogs { get; set; }
 }
