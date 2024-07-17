@@ -34,6 +34,7 @@ public class AccountsDbContext : IdentityDbContext<
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
 
         // Unique property
+        modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
 
         // Enum to string conversion
 
