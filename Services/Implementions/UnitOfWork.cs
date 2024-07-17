@@ -13,6 +13,8 @@ public class UnitOfWork : IUnitOfWork
         _mapper = mapper;
     }
 
+    public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 

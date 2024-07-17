@@ -15,6 +15,7 @@ global using AccountsAPIs.Data;
 global using AccountsAPIs.Services;
 global using AccountsAPIs.Extensions;
 global using AccountsAPIs.Entities;
+global using AccountsAPIs.Repos;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
