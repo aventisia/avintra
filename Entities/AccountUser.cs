@@ -102,6 +102,12 @@ public class AccountUser : IdentityUser<Guid>
     public Guid? TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the tenant associated with the user.
+    /// </summary>
+    [ForeignKey("TenantId")]
+    public virtual Tenant? Tenant { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of user roles associated with the user.
     /// </summary>
     public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
