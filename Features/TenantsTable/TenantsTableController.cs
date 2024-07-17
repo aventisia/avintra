@@ -1,0 +1,44 @@
+namespace AccountsAPIs.Controllers;
+
+[Route("tenant")]
+[ApiController]
+[Authorize(Roles = "SA,GA")]
+public class TenantsTableController : BaseApiController
+{
+    private readonly ITenantsTableService _tenantsTableService;
+
+    public TenantsTableController(ITenantsTableService tenantsTableService)
+    {
+        _tenantsTableService = tenantsTableService;
+    }
+
+    // Retrieves all tenants.
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantsTableDto>>>> GetTenants()
+    {
+        return ResultHelper(await _tenantsTableService.GetTenantsAsync());
+    }
+
+    // Inserts a new tenant.
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<TenantsTableDto>>> InsertTenant([FromBody] TenantsTableDto tenantsTableDto)
+    {
+        return ResultHelper(await _tenantsTableService.InsertTenantAsync(tenantsTableDto));
+    }
+
+    // Updates an existing tenant.
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<TenantsTableDto>>> UpdateTenant([FromBody] TenantsTableDto tenantsTableDto)
+    {
+        return ResultHelper(await _tenantsTableService.UpdateTenantAsync(tenantsTableDto));
+    }
+
+    // Deletes a tenant by its ID.
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteTenant(Guid id)
+    {
+        return ResultHelper(await _tenantsTableService.DeleteTenantAsync(id));
+    }
+
+
+}
