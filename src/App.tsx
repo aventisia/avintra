@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NotFoundPage, RedirectPage } from "@/react-toolkit/pages";
+import { AuthUILayout } from "./components/layout";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,7 +16,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
-          <Route>
+          <Route element={<AuthUILayout />}>
             <Route path="/" element={<Navigate to="/Page1" />} />
             <Route path="/page1" element={<Page1 />} />
             <Route path="/page2" element={<Page2 />} />
