@@ -69,4 +69,5 @@ public class AccountsDbContext : DbContext
     }
 
     public DbSet<AccountUser> Users { get; set; }
+    public DbSet<AccountRole> Roles { get; set; }
 }
