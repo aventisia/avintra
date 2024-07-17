@@ -69,6 +69,7 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
 
         // Feature services
+        services.AddScoped<ICreateAccountService, CreateAccountService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
