@@ -18,4 +18,13 @@
     <PackageReference Include="Azure.Identity" Version="1.11.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="emailsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="serilogsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
