@@ -5,7 +5,15 @@
 
 namespace AccountsAPIs.Data;
 
-public class AccountsDbContext : DbContext
+public class AccountsDbContext : IdentityDbContext<
+        AccountUser,
+        AccountRole,
+        Guid,
+        IdentityUserClaim<Guid>,
+        AccountUserRole,
+        IdentityUserLogin<Guid>,
+        IdentityRoleClaim<Guid>,
+        IdentityUserToken<Guid>>
 {
     private readonly ICurrentTenantService _currentTenantService;
     private Guid CurrentTenantId { get; set; }
@@ -33,7 +41,9 @@ public class AccountsDbContext : DbContext
         modelBuilder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AccountUser>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
-        // Configure Many-to-Many relationship
+        // Configure Many-to-Many relationship between AccountUser and AccountRole
+        modelBuilder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
+        modelBuilder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
     }
 
     // On Save Changes - write tenant Id to table
@@ -68,6 +78,7 @@ public class AccountsDbContext : DbContext
         return result;
     }
 
-    public DbSet<AccountUser> Users { get; set; }
-    public DbSet<AccountRole> Roles { get; set; }
+    public override DbSet<AccountRole> Roles { get; set; }
+    public override DbSet<AccountUser> Users { get; set; }
+    public override DbSet<AccountUserRole> UserRoles { get; set; }
 }
