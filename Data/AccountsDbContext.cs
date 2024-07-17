@@ -31,8 +31,7 @@ public class AccountsDbContext : IdentityDbContext<
         base.OnModelCreating(modelBuilder);
 
         // Gloabl TenantId filters
-        modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
-
+        
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
