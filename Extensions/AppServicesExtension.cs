@@ -28,6 +28,34 @@ public static class AppServicesExtension
     }
 
     /// <summary>
+    /// Adds Identity configuration
+    /// </summary>
+    public static void AddIdentityConfig(
+        this IServiceCollection services,
+        IConfiguration config)
+    {
+        var identityConfig = Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null");
+
+        var builder = services.AddIdentity<AccountUser, AccountRole>(options =>
+        {
+            options.Password.RequireDigit = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Lockout.AllowedForNewUsers = true;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(identityConfig.DefaultLockoutTimeSpanInMinutes);
+            options.Lockout.MaxFailedAccessAttempts = identityConfig.LockoutMaxFailedAccessAttempts;
+            options.SignIn.RequireConfirmedAccount = identityConfig.SignInRequireConfirmedAccount;
+            options.SignIn.RequireConfirmedEmail = identityConfig.SignInRequireConfirmedEmail;
+            options.SignIn.RequireConfirmedPhoneNumber = identityConfig.SignInRequireConfirmedPhoneNo;
+            options.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<AccountsDbContext>()
+        .AddDefaultTokenProviders();
+    }
+
+    /// <summary>
     /// Adds app dependencies like appsettings.json config and Services
     /// </summary>
     public static void AddAppDependencies(this IServiceCollection services, IConfiguration config)
