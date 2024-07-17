@@ -22,4 +22,9 @@ public class AccountRole : IdentityRole<Guid>
     /// </summary>
     [MaxLength(1000)]
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the virtual property to attach a list of UserRole with Role.
+    /// </summary>
+    public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
 }

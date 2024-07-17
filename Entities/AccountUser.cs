@@ -100,4 +100,9 @@ public class AccountUser : IdentityUser<Guid>
     /// If the user is associated with a tenant, then this value should be set.
     /// </remarks>
     public Guid? TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of user roles associated with the user.
+    /// </summary>
+    public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
 }
