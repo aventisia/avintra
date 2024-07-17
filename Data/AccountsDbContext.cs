@@ -35,8 +35,10 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
+        modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
 
         // Enum to string conversion
+        modelBuilder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         modelBuilder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -82,4 +84,5 @@ public class AccountsDbContext : IdentityDbContext<
     public override DbSet<AccountRole> Roles { get; set; }
     public override DbSet<AccountUser> Users { get; set; }
     public override DbSet<AccountUserRole> UserRoles { get; set; }
+    public DbSet<Tenant> Tenants { get; set; }
 }
