@@ -43,6 +43,6 @@ public static class AppServicesExtension
         // Feature services
         
         // Common Services
-        
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

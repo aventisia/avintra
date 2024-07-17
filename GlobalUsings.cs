@@ -12,6 +12,7 @@ global using AspNetToolkit.Services;
 global using AspNetToolkit.Utils;
 
 global using AccountsAPIs.Data;
+global using AccountsAPIs.Services;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
