@@ -10,4 +10,11 @@ public class AccountUserRepo : RepositoryBase<AccountUser, AccountsDbContext>, I
         _accountsDbContext = accountsDbContext;
         _mapper = mapper;
     }
+
+    public override IQueryable<AccountUser> GetByConditionAsync(Expression<Func<AccountUser, bool>> expression)
+    {
+        return _accountsDbContext.Users
+            .Include(i => i.Tenant).Include(i => i.UserRoles).ThenInclude(i => i.Role).Where(expression).AsNoTracking();
+    }
+
 }
