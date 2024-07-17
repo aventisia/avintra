@@ -11,6 +11,8 @@ public interface IUnitOfWork
     ISessionLogRepo SessionLogRepo { get; }
 
     IObsoletePwdRepo ObsoletePwdRepo { get; }
+
+    IVerificationCodeRepo VerificationCodeRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

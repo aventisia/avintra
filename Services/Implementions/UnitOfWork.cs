@@ -23,6 +23,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext, _mapper);
 
+    public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
