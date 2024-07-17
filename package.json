@@ -4,8 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite --port 3002",
+    "dev-build": "tsc && vite build --base=/dev/workspace/",
+    "test-build": "tsc && vite build --base=/test/workspace/",
+    "uat-build": "tsc && vite build --base=/uat/workspace/",
+    "prod-build": "tsc && vite build --base=/workspace/",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
