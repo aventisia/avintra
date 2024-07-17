@@ -15,6 +15,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext, _mapper);
 
+    public ITenantRepo TenantRepo => new TenantRepo(_accountsDbContext, _mapper);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 

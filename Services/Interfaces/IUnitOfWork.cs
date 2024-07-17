@@ -3,6 +3,8 @@ namespace AccountsAPIs.Services;
 public interface IUnitOfWork
 {
     IAccountUserRepo AccountUserRepo { get; }
+
+    ITenantRepo TenantRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
