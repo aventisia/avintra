@@ -4,8 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite --port 3001",
+    "dev-build": "tsc && vite build --base=/dev/auth/",
+    "test-build": "tsc && vite build --base=/test/auth/",
+    "uat-build": "tsc && vite build --base=/uat/auth/",
+    "prod-build": "tsc && vite build --base=/auth/",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
