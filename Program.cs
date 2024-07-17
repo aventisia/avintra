@@ -81,4 +81,6 @@ app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
+await app.SeedInitialData();
+
 app.Run();
