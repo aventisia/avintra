@@ -24,6 +24,7 @@ public static class AppServicesExtension
         {
             map.AddProfile<SessionLogMappingProfile>();
             map.AddProfile<TenantsTableMappingProfile>();
+            map.AddProfile<AccountUsersTableMappingProfile>();
         });
         services.AddSingleton(mapperConfig.CreateMapper());
     }
@@ -78,6 +79,7 @@ public static class AppServicesExtension
         services.AddScoped<IMyAccountService, MyAccountService>();
         services.AddScoped<ITenantAccountService, TenantAccountService>();
         services.AddScoped<ITenantsTableService, TenantsTableService>();
+        services.AddScoped<IAccountUsersTableService, AccountUsersTableService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

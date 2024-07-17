@@ -1,0 +1,49 @@
+namespace AccountsAPIs.Controllers;
+
+[Route("user")]
+[ApiController]
+[Authorize(Roles = "SA,GA,GSA,TA,TSA")]
+public class AccountUsersTableController : BaseApiController
+{
+    private readonly IAccountUsersTableService _accountUsersTableService;
+
+    public AccountUsersTableController(IAccountUsersTableService accountUsersTableService)
+    {
+        _accountUsersTableService = accountUsersTableService;
+    }
+
+    // Retrieves a list of account users.
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AccountUsersTableDto>>>> GetAccountUsers()
+    {
+        return ResultHelper(await _accountUsersTableService.GetAccountUsersAsync());
+    }
+
+    // Inserts a new account user.
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<AccountUsersTableDto>>> InsertAccountUser([FromBody] AccountUsersTableDto accountUsersTableDto)
+    {
+        return ResultHelper(await _accountUsersTableService.InsertAccountUserAsync(accountUsersTableDto));
+    }
+
+    // Updates an account user.
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<AccountUsersTableDto>>> UpdateAccountUser([FromBody] AccountUsersTableDto accountUsersTableDto)
+    {
+        return ResultHelper(await _accountUsersTableService.UpdateAccountUserAsync(accountUsersTableDto));
+    }
+
+    // Deletes an account user.
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteAccountUser(Guid id)
+    {
+        return ResultHelper(await _accountUsersTableService.DeleteAccountUserAsync(id));
+    }
+
+    // Retrieves the account roles basis current user top role.
+    [HttpGet("roles-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetAccountRoles()
+    {
+        return ResultHelper(await _accountUsersTableService.GetAccountRolesAsync());
+    }
+}
