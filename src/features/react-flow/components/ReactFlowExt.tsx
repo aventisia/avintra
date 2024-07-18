@@ -5,6 +5,7 @@ import { useReactFlowExtStore } from "../stores/react-flow-ext-store";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls/ViewControls";
+import { useTrackSelection } from "@/hooks/useTrackSelection";
 
 interface ReactFlowExtProps {
   children?: React.ReactNode;
@@ -26,6 +27,9 @@ export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
         onConnect: state.onConnect,
       })),
     );
+
+  // Track ReactFlow selection change
+  useTrackSelection();
 
   // Render ReactFlow component
   return (
