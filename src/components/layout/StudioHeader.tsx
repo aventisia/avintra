@@ -1,4 +1,5 @@
 import { ETLIAMenu } from "@/features/etlia-menu/components/ETLIAMenu";
+import { FlowsPopover } from "@/features/flows-popover/components/flows-popover/FlowsPopover";
 import { AppLogo } from "@/react-toolkit/components/layout";
 import { DotSeparator } from "@/react-toolkit/components/ui";
 import {
@@ -26,6 +27,7 @@ const StudioHeader = ({ className }: StudioHeaderProps) => {
           <ETLIAMenu />
         </div>
         <div className="flex items-center gap-4">
+          <FlowsPopover className="mt-0 mlg:mt-4" />
           <UnreadNotifications className="mt-0 mlg:mt-4" />
           <UserAccountModal />
         </div>
