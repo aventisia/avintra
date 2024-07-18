@@ -11,6 +11,7 @@ import { ActivityToSelect } from "./activity-to-select/ActivityToSelect";
 import { ASNoContentMessage } from "./ASNoContentMessage";
 import { useActivitySelectorStore } from "../stores/activity-selector-store";
 import { activitiesList } from "../data/activities-to-select";
+import { useAddNode } from "@/hooks/useAddNode";
 
 /**
  * Renders the content of the activity selector component.
@@ -23,6 +24,8 @@ export const ActivitySelectorContent = () => {
       togglePopoverOpen: state.togglePopoverOpen,
     })),
   );
+
+  const addNode = useAddNode();
 
   // Return the component
   return (
@@ -43,6 +46,7 @@ export const ActivitySelectorContent = () => {
               key={index}
               value={item.label}
               onSelect={() => {
+                addNode(item);
                 togglePopoverOpen(false);
               }}
               className="rounded-lg p-1"
