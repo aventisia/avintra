@@ -2,6 +2,9 @@ import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/react-toolkit/lib";
 import { PopoverTrigger, buttonVariants } from "@/react-toolkit/components/ui";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
+import { FlowNameAndVersion } from "./FlowNameAndVersion";
+import { CustomChevronDownIcon } from "./CustomChevronDownIcon";
+import { LoadingFlow } from "./LoadingFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 /**
@@ -16,9 +19,9 @@ export const FlowsPopoverTrigger = () => {
   );
 
   // Get global store state and actions
-  const { currentFlow } = useCurrentFlowStore(
+  const { isFlowLoading } = useCurrentFlowStore(
     useShallow((state) => ({
-      currentFlow: state.currentFlow,
+      isFlowLoading: state.isFlowLoading,
     })),
   );
 
@@ -30,7 +33,8 @@ export const FlowsPopoverTrigger = () => {
         isPopoverOpen && "bg-slate-100",
       )}
     >
-      {currentFlow.name ? currentFlow.name : "Select a flow"}
+      {isFlowLoading ? <LoadingFlow /> : <FlowNameAndVersion />}
+      <CustomChevronDownIcon />
     </PopoverTrigger>
   );
 };
