@@ -7,6 +7,7 @@ import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls/ViewControls";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { CustomNodeTypes } from "@/types/CustomNodeTypes";
+import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 
 interface ReactFlowExtProps {
   children?: React.ReactNode;
@@ -31,6 +32,9 @@ export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
 
   // Track ReactFlow selection change
   useTrackSelection();
+
+  // Fetch flow details and set document title
+  useFetchFlowToLoad();
 
   // Render ReactFlow component
   return (
