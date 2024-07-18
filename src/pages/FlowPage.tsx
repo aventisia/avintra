@@ -1,3 +1,5 @@
+import { ActivitySelector } from "@/features/actvity-selector/components/ActivitySelector";
+import { FlowControlsTrigger } from "@/features/actvity-selector/components/triggers/FlowControlsTrigger";
 import { FlowControls } from "@/features/flow-controls/FlowControls";
 import { ReactFlowExt } from "@/features/react-flow/components/ReactFlowExt";
 import { ReactFlowProvider } from "@xyflow/react";
@@ -6,7 +8,14 @@ export const FlowPage = () => {
   return (
     <ReactFlowProvider>
       <ReactFlowExt>
-        <FlowControls />
+        <FlowControls>
+          {/* Activity selector to add new node */}
+          <ActivitySelector
+            alignOffset={-5}
+            sideOffset={16}
+            trigger={<FlowControlsTrigger />}
+          />
+        </FlowControls>
       </ReactFlowExt>
     </ReactFlowProvider>
   );
