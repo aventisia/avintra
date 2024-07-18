@@ -1,13 +1,13 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class WorkspaceUserMappingProfile : Profile
+public class WorkspaceUserMappingProfile : IRegister
 {
-    public WorkspaceUserMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Get record
-        CreateMap<WorkspaceUser, WorkspaceUserDto>();
+        config.NewConfig<WorkspaceUser, WorkspaceUserDto>();
 
         // Mapping for inserting or updating workspace user record
-        CreateMap<WorkspaceUserDto, WorkspaceUser>();
+        config.NewConfig<WorkspaceUserDto, WorkspaceUser>();
     }
 }

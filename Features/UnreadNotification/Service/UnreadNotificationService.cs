@@ -4,21 +4,18 @@ public class UnreadNotificationService : IUnreadNotificationService
 {
     private readonly ILogger<UnreadNotificationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly Guid _userId;
 
     public UnreadNotificationService(
         ILogger<UnreadNotificationService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     // Retrieves a list of unread notifications asynchronously.
@@ -37,7 +34,7 @@ public class UnreadNotificationService : IUnreadNotificationService
             var unreadNotifications = await _unitOfWork.NotificationUserRepo
                                         .GetByConditionAsync(w => !w.IsRead && w.UserId == _userId)
                                         //.OrderByDescending(o => o.) Pending: Order by CreatedAt
-                                        .ProjectTo<UnreadNotificationDto>(_mapper.ConfigurationProvider)
+                                        .ProjectToType<UnreadNotificationDto>()
                                         .ToListAsync();
 
             // Task successful
@@ -68,7 +65,7 @@ public class UnreadNotificationService : IUnreadNotificationService
         {
             // Validate notification existence
             var unreadNotification = await _unitOfWork.NotificationUserRepo
-                                        .GetByConditionAsync(w => 
+                                        .GetByConditionAsync(w =>
                                             w.NotificationId == id &&
                                             w.UserId == _userId)
                                         .SingleOrDefaultAsync();

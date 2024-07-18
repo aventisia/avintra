@@ -4,21 +4,18 @@ public class FlowBuilderService : IFlowBuilderService
 {
     private readonly ILogger<FlowBuilderService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly Guid _userId;
 
     public FlowBuilderService(
         ILogger<FlowBuilderService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     // Retrieves the flow record to load when the user opens it in the studio.
@@ -47,7 +44,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<LoadFlowDto>(flow);
+            serviceResponse.Data = flow.Adapt<LoadFlowDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow retrieved successfully";
         }
@@ -85,7 +82,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             // Update flow
-            _mapper.Map(flowSilentUpdateDto, flow);
+            flowSilentUpdateDto.Adapt(flow);
             flow.LastModifiedByUserId = _userId;
             flow.LastModifiedOn = DateTimeOffset.UtcNow;
             _unitOfWork.FlowRepo.Update(flow);

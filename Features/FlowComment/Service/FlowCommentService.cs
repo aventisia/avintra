@@ -4,21 +4,18 @@ public class FlowCommentService : IFlowCommentService
 {
     private readonly ILogger<FlowCommentService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly Guid _userId;
 
     public FlowCommentService(
         ILogger<FlowCommentService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     // Gets list of flow comments of single flow using flow Id.
@@ -37,11 +34,11 @@ public class FlowCommentService : IFlowCommentService
             var flowComments = await _unitOfWork.FlowCommentRepo
                 .GetByConditionAsync(w => w.Flow.Id == flowId && !w.IsDisabled)
                 .OrderBy(o => o.CreatedOn)
-                .ProjectTo<FlowCommentDto>(_mapper.ConfigurationProvider)
+                .ProjectToType<FlowCommentDto>()
                 .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<IEnumerable<FlowCommentDto>>(flowComments);
+            serviceResponse.Data = flowComments.Adapt<IEnumerable<FlowCommentDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Comments retrieved successfully";
         }
@@ -70,7 +67,7 @@ public class FlowCommentService : IFlowCommentService
             flowCommentDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowCommentDto);
 
             // Default mapping
-            var newFlowComment = _mapper.Map<FlowComment>(flowCommentDto);
+            var newFlowComment = flowCommentDto.Adapt<FlowComment>();
             newFlowComment.UserId = _userId;
 
             // Insert flow comment
@@ -84,7 +81,7 @@ public class FlowCommentService : IFlowCommentService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<FlowCommentDto>(newFlowComment);
+            serviceResponse.Data = newFlowComment.Adapt<FlowCommentDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Comment added successfully";
         }
@@ -141,7 +138,7 @@ public class FlowCommentService : IFlowCommentService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<FlowCommentDto>(flowComment);
+            serviceResponse.Data = flowComment.Adapt<FlowCommentDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Comment updated successfully";
         }

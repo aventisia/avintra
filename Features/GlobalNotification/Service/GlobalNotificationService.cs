@@ -4,24 +4,21 @@ public class GlobalNotificationService : IGlobalNotificationService
 {
     private readonly ILogger<GlobalNotificationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly INotificationHelperService _notificationHelperService;
     private readonly Guid _userId;
 
     public GlobalNotificationService(
         ILogger<GlobalNotificationService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         INotificationHelperService notificationHelperService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _notificationHelperService = notificationHelperService;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _notificationHelperService = notificationHelperService;
     }
 
     // Retrieves a global notification by its ID.
@@ -52,7 +49,7 @@ public class GlobalNotificationService : IGlobalNotificationService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<GlobalNotificationDto>(notification);
+            serviceResponse.Data = notification.Adapt<GlobalNotificationDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Notification retrieved successfully";
         }
@@ -83,7 +80,7 @@ public class GlobalNotificationService : IGlobalNotificationService
                                         .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<IEnumerable<GlobalNotificationDto>>(notifications);
+            serviceResponse.Data = notifications.Adapt<IEnumerable<GlobalNotificationDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Notifications retrieved successfully";
         }
@@ -115,7 +112,7 @@ public class GlobalNotificationService : IGlobalNotificationService
             globalNotificationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(globalNotificationDto);
 
             // Default mapping
-            var newNotification = _mapper.Map<Notification>(globalNotificationDto);
+            var newNotification = globalNotificationDto.Adapt<Notification>();
             newNotification.Id = Guid.NewGuid();
             newNotification.CreatedByUserId = _userId;
             newNotification.LastModifiedByUserId = _userId;
@@ -141,7 +138,7 @@ public class GlobalNotificationService : IGlobalNotificationService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<GlobalNotificationDto>(newNotification);
+            serviceResponse.Data = newNotification.Adapt<GlobalNotificationDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Notification created successfully";
         }
@@ -193,7 +190,7 @@ public class GlobalNotificationService : IGlobalNotificationService
             globalNotificationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(globalNotificationDto);
 
             // Default mapping
-            _mapper.Map(globalNotificationDto, notification);
+            globalNotificationDto.Adapt(notification);
             notification.LastModifiedByUserId = _userId;
             notification.LastModifiedOn = DateTimeOffset.UtcNow;
             notification.IsDisabled = globalNotificationDto.IsDisabled ?? notification.IsDisabled;
@@ -212,7 +209,7 @@ public class GlobalNotificationService : IGlobalNotificationService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<GlobalNotificationDto>(notification);
+            serviceResponse.Data = notification.Adapt<GlobalNotificationDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Notification updated successfully";
         }

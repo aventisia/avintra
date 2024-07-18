@@ -3,27 +3,23 @@ namespace WorkspaceAPIs.Services;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly WorkspaceDbContext _workspaceDbContext;
-    private readonly IMapper _mapper;
-
     public UnitOfWork(
-        WorkspaceDbContext workspaceDbContext,
-        IMapper mapper)
+        WorkspaceDbContext workspaceDbContext)
     {
         _workspaceDbContext = workspaceDbContext;
-        _mapper = mapper;
     }
 
-    public IWorkspaceUserRepo WorkspaceUserRepo => new WorkspaceUserRepo(_workspaceDbContext, _mapper);
+    public IWorkspaceUserRepo WorkspaceUserRepo => new WorkspaceUserRepo(_workspaceDbContext);
 
-    public IProjectRepo ProjectRepo => new ProjectRepo(_workspaceDbContext, _mapper);
+    public IProjectRepo ProjectRepo => new ProjectRepo(_workspaceDbContext);
 
-    public INotificationRepo NotificationRepo => new NotificationRepo(_workspaceDbContext, _mapper);
+    public INotificationRepo NotificationRepo => new NotificationRepo(_workspaceDbContext);
 
-    public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext, _mapper);
+    public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext);
 
-    public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext, _mapper);
+    public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext);
 
-    public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext, _mapper);
+    public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

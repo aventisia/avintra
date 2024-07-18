@@ -1,19 +1,18 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class GlobalNotificationMappingProfile : Profile
+public class GlobalNotificationMappingProfile : IRegister
 {
-    public GlobalNotificationMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Response mapping for global notification record or records
-        CreateMap<Notification, GlobalNotificationDto>();
+        config.NewConfig<Notification, GlobalNotificationDto>();
 
         // Request mapping for inserting or updating a global notification record
-        CreateMap<GlobalNotificationDto, Notification>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.IsDisabled, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedOn, opt => opt.Ignore())
-            .ForMember(dest => dest.LastModifiedOn, opt => opt.Ignore())
-            .ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
-
+        config.NewConfig<GlobalNotificationDto, Notification>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.IsDisabled)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
     }
 }

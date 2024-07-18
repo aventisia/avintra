@@ -28,6 +28,5 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-global using AutoMapper;
-global using AutoMapper.QueryableExtensions;
+global using Mapster;
 global using Ardalis.GuardClauses;

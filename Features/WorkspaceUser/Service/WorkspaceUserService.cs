@@ -4,7 +4,6 @@ public class WorkspaceUserService : IWorkspaceUserService
 {
     private readonly ILogger<WorkspaceUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
     private readonly string _userName;
@@ -12,18 +11,16 @@ public class WorkspaceUserService : IWorkspaceUserService
     public WorkspaceUserService(
         ILogger<WorkspaceUserService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IUserManagementGuardService userManagementGuardService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _userManagementGuardService = userManagementGuardService;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves a workspace user by its ID.
@@ -60,7 +57,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<WorkspaceUserDto>(workspaceUser);
+            serviceResponse.Data = workspaceUser.Adapt<WorkspaceUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User retrieved successfully";
         }
@@ -102,7 +99,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             if (userIdAlreadyExists != null)
             {
                 _logger.LogInformation($"Workspace user already exists with same UserId");
-                serviceResponse.Data = _mapper.Map<WorkspaceUserDto>(userIdAlreadyExists);
+                serviceResponse.Data = userIdAlreadyExists.Adapt<WorkspaceUserDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "User already exists with same UserId. No need to insert again";
                 return serviceResponse;
@@ -126,7 +123,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             workspaceUserDto = TrimDtoStringPropsUtil.TrimDtoStringProps(workspaceUserDto);
 
             // Default mapping
-            var newWorkspaceUser = _mapper.Map<WorkspaceUser>(workspaceUserDto);
+            var newWorkspaceUser = workspaceUserDto.Adapt<WorkspaceUser>();
 
             // Additional Mapping
             //#PENDING: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
@@ -142,7 +139,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<WorkspaceUserDto>(newWorkspaceUser);
+            serviceResponse.Data = newWorkspaceUser.Adapt<WorkspaceUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User created successfully";
         }
@@ -208,7 +205,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             workspaceUserDto = TrimDtoStringPropsUtil.TrimDtoStringProps(workspaceUserDto);
 
             // Default mapping
-            _mapper.Map(workspaceUserDto, workspaceUser);
+            workspaceUserDto.Adapt(workspaceUser);
 
             // Additional Mapping
             //#PENDING: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
@@ -224,7 +221,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<WorkspaceUserDto>(workspaceUser);
+            serviceResponse.Data = workspaceUser.Adapt<WorkspaceUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User updated successfully";
         }

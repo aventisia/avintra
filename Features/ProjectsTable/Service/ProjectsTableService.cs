@@ -4,21 +4,18 @@ public class ProjectsTableService : IProjectsTableService
 {
     private readonly ILogger<ProjectsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly Guid _userId;
 
     public ProjectsTableService(
         ILogger<ProjectsTableService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     // Retrieves list of projects.
@@ -37,11 +34,11 @@ public class ProjectsTableService : IProjectsTableService
             var projects = await _unitOfWork.ProjectRepo
                                         .GetByConditionAsync(w => true) //PEDNING: Update condition
                                         .OrderByDescending(o => o.CreatedOn)
-                                        .ProjectTo<ProjectsTableDto>(_mapper.ConfigurationProvider)
+                                        .ProjectToType<ProjectsTableDto>()
                                         .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<IEnumerable<ProjectsTableDto>>(projects);
+            serviceResponse.Data = projects.Adapt<IEnumerable<ProjectsTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Projects retrieved successfully";
         }
@@ -84,7 +81,7 @@ public class ProjectsTableService : IProjectsTableService
             projectsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(projectsTableDto);
 
             // Default mapping
-            var newProject = _mapper.Map<Project>(projectsTableDto);
+            var newProject = projectsTableDto.Adapt<Project>();
             newProject.CreatedByUserId = _userId;
             newProject.LastModifiedByUserId = _userId;
 
@@ -99,7 +96,7 @@ public class ProjectsTableService : IProjectsTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<ProjectsTableDto>(newProject);
+            serviceResponse.Data = newProject.Adapt<ProjectsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Project created successfully";
         }
@@ -157,7 +154,7 @@ public class ProjectsTableService : IProjectsTableService
             projectsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(projectsTableDto);
 
             // Default mapping 
-            _mapper.Map(projectsTableDto, project);
+            projectsTableDto.Adapt(project);
             project.LastModifiedByUserId = _userId;
             project.LastModifiedOn = DateTimeOffset.UtcNow;
             project.IsDisabled = projectsTableDto.IsDisabled ?? project.IsDisabled;
@@ -173,7 +170,7 @@ public class ProjectsTableService : IProjectsTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<ProjectsTableDto>(project);
+            serviceResponse.Data = project.Adapt<ProjectsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Project updated successfully";
         }

@@ -1,21 +1,30 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class ProjectsTableMappingProfile : Profile
+public class ProjectsTableMappingProfile : IRegister
 {
-    public ProjectsTableMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Mapping to get project list of project records
-        CreateMap<Project, ProjectsTableDto>()
-            .ForMember(dest => dest.FlowCount, opt => opt.MapFrom(src => src.Flows.Count))
-            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName))
-            .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName));
+        config.NewConfig<Project, ProjectsTableDto>()
+            .Map(dest => dest.FlowCount, 
+                src => src.Flows != null
+                    ? src.Flows.Count
+                    : 0)
+            .Map(dest => dest.CreatedBy, 
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy, 
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null);
 
         // Mapping for inserting or updating project record
-        CreateMap<ProjectsTableDto, Project>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedOn, opt => opt.Ignore())
-            .ForMember(dest => dest.LastModifiedOn, opt => opt.Ignore())
-            .ForMember(dest => dest.IsDisabled, opt => opt.Ignore())
-            .ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
+        config.NewConfig<ProjectsTableDto, Project>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.IsDisabled)
+            .IgnoreNullValues(true);
     }
 }

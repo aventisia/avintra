@@ -4,20 +4,17 @@ public class AutoNotificationService : IAutoNotificationService
 {
     private readonly ILogger<AutoNotificationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly INotificationHelperService _notificationHelperService;
     private readonly Guid _userId;
 
     public AutoNotificationService(
         ILogger<AutoNotificationService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         INotificationHelperService notificationHelperService,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _notificationHelperService = notificationHelperService;
 
         // Set _userId
@@ -40,7 +37,7 @@ public class AutoNotificationService : IAutoNotificationService
             autoNotificationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(autoNotificationDto);
 
             // Default mapping
-            var newNotification = _mapper.Map<Notification>(autoNotificationDto);
+            var newNotification = autoNotificationDto.Adapt<Notification>();
             newNotification.Id = Guid.NewGuid();
             newNotification.CreatedByUserId = _userId;
             newNotification.LastModifiedByUserId = _userId;
@@ -95,7 +92,7 @@ public class AutoNotificationService : IAutoNotificationService
             autoNotificationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(autoNotificationDto);
 
             // Default mapping
-            _mapper.Map(autoNotificationDto, notification);
+            autoNotificationDto.Adapt(notification);
             notification.LastModifiedByUserId = _userId;
             notification.LastModifiedOn = DateTimeOffset.UtcNow;
 

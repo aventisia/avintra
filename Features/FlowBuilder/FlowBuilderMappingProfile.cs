@@ -1,13 +1,13 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class FlowBuilderMappingProfile : Profile
+public class FlowBuilderMappingProfile : IRegister
 {
-    public FlowBuilderMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // To get flow details to load in Studio when user opens flow
-        CreateMap<Flow, LoadFlowDto>();
+        config.NewConfig<Flow, LoadFlowDto>();
 
         // To Update flow's node, edges etc silently in the background
-        CreateMap<FlowSilentUpdateDto, Flow>();
+        config.NewConfig<FlowSilentUpdateDto, Flow>();
     }
 }

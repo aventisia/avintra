@@ -1,15 +1,15 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class UnreadNotificationMappingProfile : Profile
+public class UnreadNotificationMappingProfile : IRegister
 {
-    public UnreadNotificationMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Get list of unread notifications for the user
-        CreateMap<NotificationUser, UnreadNotificationDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.NotificationId))
-            .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Notification.Message))
-            .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => src.Notification.CreatedOn))
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Notification.Type))
-            .ForMember(dest => dest.ActionUrl, opt => opt.MapFrom(src => src.Notification.ActionUrl));
+        config.NewConfig<NotificationUser, UnreadNotificationDto>()
+            .Map(dest => dest.Id, src => src.NotificationId)
+            .Map(dest => dest.Message, src => src.Notification.Message)
+            .Map(dest => dest.CreatedOn, src => src.Notification.CreatedOn)
+            .Map(dest => dest.Type, src => src.Notification.Type)
+            .Map(dest => dest.ActionUrl, src => src.Notification.ActionUrl);
     }
 }

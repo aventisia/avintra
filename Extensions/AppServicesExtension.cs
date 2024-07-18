@@ -14,18 +14,17 @@ public static class AppServicesExtension
 
     public static void AddMappingProfiles(this IServiceCollection services)
     {
-        var mapperConfig = new MapperConfiguration(map =>
-        {
-            map.AddProfile<WorkspaceUserMappingProfile>();
-            map.AddProfile<ProjectsTableMappingProfile>();
-            map.AddProfile<GlobalNotificationMappingProfile>();
-            map.AddProfile<UnreadNotificationMappingProfile>();
-            map.AddProfile<AutoNotificationMappingProfile>();
-            map.AddProfile<FlowsTableMappingProfile>();
-            map.AddProfile<FlowCommentMappingProfile>();
-            map.AddProfile<FlowBuilderMappingProfile>();
-        });
-        services.AddSingleton(mapperConfig.CreateMapper());
+        // Mapster mapping profiles
+        var config = TypeAdapterConfig.GlobalSettings;
+        config.Apply(new WorkspaceUserMappingProfile());
+        config.Apply(new ProjectsTableMappingProfile());
+        config.Apply(new GlobalNotificationMappingProfile());
+        config.Apply(new UnreadNotificationMappingProfile());
+        config.Apply(new AutoNotificationMappingProfile());
+        config.Apply(new FlowsTableMappingProfile());
+        config.Apply(new FlowCommentMappingProfile());
+        config.Apply(new FlowBuilderMappingProfile());
+        services.AddSingleton(config);
     }
 
     public static void AddAppDependencies(this IServiceCollection services, IConfiguration config)

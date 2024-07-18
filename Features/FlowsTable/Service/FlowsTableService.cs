@@ -4,21 +4,18 @@ public class FlowsTableService : IFlowsTableService
 {
     private readonly ILogger<FlowsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly Guid _userId;
 
     public FlowsTableService(
         ILogger<FlowsTableService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     // Retrieves all flows associated with a project.
@@ -37,11 +34,11 @@ public class FlowsTableService : IFlowsTableService
             var flows = await _unitOfWork.FlowRepo
                                         .GetByConditionAsync(w => w.ProjectId == projectId) //PEDNING: Update condition
                                         .OrderByDescending(w => w.CreatedOn)
-                                        .ProjectTo<FlowsTableDto>(_mapper.ConfigurationProvider)
+                                        .ProjectToType<FlowsTableDto>()
                                         .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<IEnumerable<FlowsTableDto>>(flows);
+            serviceResponse.Data = flows.Adapt<IEnumerable<FlowsTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flows retrieved successfully";
         }
@@ -86,7 +83,7 @@ public class FlowsTableService : IFlowsTableService
             flowsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowsTableDto);
 
             // Default mapping
-            var newFlow = _mapper.Map<Flow>(flowsTableDto);
+            var newFlow = flowsTableDto.Adapt<Flow>();
             newFlow.CreatedByUserId = _userId;
             newFlow.LastModifiedByUserId = _userId;
 
@@ -103,7 +100,7 @@ public class FlowsTableService : IFlowsTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<FlowsTableDto>(newFlow);
+            serviceResponse.Data = newFlow.Adapt<FlowsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow created successfully";
         }
@@ -162,7 +159,7 @@ public class FlowsTableService : IFlowsTableService
             flowsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowsTableDto);
 
             // Default mapping 
-            _mapper.Map(flowsTableDto, flow);
+            flowsTableDto.Adapt(flow);
             flow.LastModifiedByUserId = _userId;
             flow.LastModifiedOn = DateTimeOffset.UtcNow;
             flow.IsDisabled = flowsTableDto.IsDisabled ?? flow.IsDisabled;
@@ -178,7 +175,7 @@ public class FlowsTableService : IFlowsTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<FlowsTableDto>(flow);
+            serviceResponse.Data = flow.Adapt<FlowsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow updated successfully";
         }

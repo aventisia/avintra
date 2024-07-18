@@ -1,10 +1,10 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class AutoNotificationMappingProfile : Profile
+public class AutoNotificationMappingProfile : IRegister
 {
-    public AutoNotificationMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Mapping profile for Insert, Update (Same dto for both operations)
-        CreateMap<AutoNotificationDto, Notification>();
+        config.NewConfig<AutoNotificationDto, Notification>();
     }
 }

@@ -1,22 +1,34 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class FlowCommentMappingProfile : Profile
+public class FlowCommentMappingProfile : IRegister
 {
-    public FlowCommentMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Mapping of DTO to get list of comments to show on the UI.
-        CreateMap<FlowComment, FlowCommentDto>()
-            .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
-            .ForMember(dest => dest.AvatarSrc, opt => opt.MapFrom(src => src.User.AvatarSrc))
-            .ForMember(dest => dest.Initials, opt => opt.MapFrom(src => src.User.FirstName.Substring(0, 1) + src.User.LastName.Substring(0, 1)));
+        config.NewConfig<FlowComment, FlowCommentDto>()
+            .Map(dest => dest.UserFullName, 
+                src => src.User != null
+                    ? src.User.FirstName + " " + src.User.LastName
+                    : null)
+            .Map(dest => dest.UserName, 
+                src => src.User != null
+                ? src.User.UserName
+                : null)
+            .Map(dest => dest.AvatarSrc, 
+                src => src.User != null
+                ? src.User.AvatarSrc
+                : null)
+            .Map(dest => dest.Initials, 
+                src => src.User != null
+                ? src.User.FirstName.Substring(0, 1) + src.User.LastName.Substring(0, 1)
+                : null);
 
         // Mapping of DTO for inserting flow comment. Note: Update mapping is manual.
-        CreateMap<FlowCommentDto, FlowComment>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedOn, opt => opt.Ignore())
-            .ForMember(dest => dest.LastModifiedOn, opt => opt.Ignore())
-            .ForMember(dest => dest.IsEdited, opt => opt.Ignore())
-            .ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
+        config.NewConfig<FlowCommentDto, FlowComment>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.IsEdited)
+            .IgnoreNullValues(true);
     }
 }
