@@ -9,6 +9,8 @@ import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 import { useFlowsQueryKey } from "../../hooks/useFlowsQueryKey";
 import { FlowsPopoverContent } from "../flows-popover-content/FlowsPopoverContent";
 import { cn } from "@/react-toolkit/lib";
+import { FPCreateButton } from "./FPCreateButton";
+import { FPHeading } from "./FPHeading";
 
 interface FlowsPopoverProps {
   /** Additional class name to override popover content container style */
@@ -39,8 +41,8 @@ export const FlowsPopover = ({ className }: FlowsPopoverProps) => {
         className={cn(className)}
       >
         {/* Flows popover custom header */}
-        <PopoverDefaultHeader heading="Flows" className="border-none">
-          <button>Create</button>
+        <PopoverDefaultHeader heading={<FPHeading />} className="border-none">
+          <FPCreateButton />
         </PopoverDefaultHeader>
         {/* Flows list */}
         <FlowsPopoverContent />

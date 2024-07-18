@@ -1,0 +1,33 @@
+import { Button } from "@/react-toolkit/components/ui";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
+import { useShallow } from "zustand/react/shallow";
+
+/**
+ * Renders a create button that triggers a dialog for creating a new flow.
+ */
+export const FPCreateButton: React.FC = () => {
+  // Get store state and actions
+  const { setCrudDialogOptions } = useDTCrudDialogStore(
+    useShallow((state) => ({
+      setCrudDialogOptions: state.setCrudDialogOptions,
+    })),
+  );
+
+  // Return the component
+  return (
+    <Button
+      variant="ghost"
+      size="icon8"
+      onClick={() =>
+        setCrudDialogOptions({
+          showDialog: true,
+          rowId: window.crypto.randomUUID(),
+          crudAction: "create",
+        })
+      }
+    >
+      <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
+    </Button>
+  );
+};
