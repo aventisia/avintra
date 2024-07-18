@@ -157,7 +157,6 @@ public class ProjectsTableService : IProjectsTableService
             projectsTableDto.Adapt(project);
             project.LastModifiedByUserId = _userId;
             project.LastModifiedOn = DateTimeOffset.UtcNow;
-            project.IsDisabled = projectsTableDto.IsDisabled ?? project.IsDisabled;
 
             // Update project
             _unitOfWork.ProjectRepo.Update(project);

@@ -162,7 +162,6 @@ public class FlowsTableService : IFlowsTableService
             flowsTableDto.Adapt(flow);
             flow.LastModifiedByUserId = _userId;
             flow.LastModifiedOn = DateTimeOffset.UtcNow;
-            flow.IsDisabled = flowsTableDto.IsDisabled ?? flow.IsDisabled;
 
             // Update flow
             _unitOfWork.FlowRepo.Update(flow);

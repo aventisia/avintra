@@ -193,7 +193,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             globalNotificationDto.Adapt(notification);
             notification.LastModifiedByUserId = _userId;
             notification.LastModifiedOn = DateTimeOffset.UtcNow;
-            notification.IsDisabled = globalNotificationDto.IsDisabled ?? notification.IsDisabled;
 
             // Additional Mapping
             //#PENDING: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED

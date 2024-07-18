@@ -10,7 +10,6 @@ public class GlobalNotificationMappingProfile : IRegister
         // Request mapping for inserting or updating a global notification record
         config.NewConfig<GlobalNotificationDto, Notification>()
             .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.IsDisabled)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
