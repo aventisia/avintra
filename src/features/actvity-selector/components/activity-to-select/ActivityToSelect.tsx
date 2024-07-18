@@ -1,7 +1,7 @@
 import { ATSIcon } from "./ATSIcon";
 import { ATSDescription } from "./ATSDescription";
 import { ATSLabel } from "./ATSLabel";
-import { ActivityNodeDataType } from "../../types/ActivityNodeDataType";
+import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
 
 interface ActivityToSelectProps {
   /** The activity data */
