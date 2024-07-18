@@ -4,16 +4,13 @@ public class TenantAccountService : ITenantAccountService
 {
     private readonly ILogger<TenantAccountService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
+    
     public TenantAccountService(
         ILogger<TenantAccountService> logger,
-        IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
     // acccounts-api/tenant/user/

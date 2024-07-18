@@ -4,24 +4,21 @@ public class TenantsTableService : ITenantsTableService
 {
     private readonly ILogger<TenantsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly TenantDefaultConfig _tenantDefaultConfig;
     private readonly Guid _userId;
 
     public TenantsTableService(
         ILogger<TenantsTableService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         TenantDefaultConfig tenantDefaultConfig,
         IHttpContextAccessor httpContextAccessor)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _tenantDefaultConfig = tenantDefaultConfig;
-
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _tenantDefaultConfig = tenantDefaultConfig;
     }
 
     // Retrieves all tenants.
@@ -54,7 +51,7 @@ public class TenantsTableService : ITenantsTableService
             foreach (var tenant in tenants)
             {
                 // Default mapping
-                var tenantsTableDto = _mapper.Map<TenantsTableDto>(tenant);
+                var tenantsTableDto = tenant.Adapt<TenantsTableDto>();
 
                 // Get CreatedBy user full name
                 tenantsTableDto.CreatedBy = tenantManagers
@@ -116,7 +113,7 @@ public class TenantsTableService : ITenantsTableService
             tenantsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantsTableDto);
 
             // Default mapping
-            var newTenant = _mapper.Map<Tenant>(tenantsTableDto);
+            var newTenant = tenantsTableDto.Adapt<Tenant>();
             newTenant.CreatedByUserId = _userId;
             newTenant.LastModifiedByUserId = _userId;
             newTenant.IsDefault = false; // DO NOT CHANGE THIS
@@ -141,7 +138,7 @@ public class TenantsTableService : ITenantsTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<TenantsTableDto>(newTenant);
+            serviceResponse.Data = newTenant.Adapt<TenantsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant created successfully";
         }
@@ -199,11 +196,10 @@ public class TenantsTableService : ITenantsTableService
             tenantsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantsTableDto);
 
             // Default mapping 
-            _mapper.Map(tenantsTableDto, tenant);
+            tenantsTableDto.Adapt(tenant);
             tenant.LastModifiedByUserId = _userId;
             tenant.LastModifiedOn = DateTimeOffset.UtcNow;
-            tenant.IsDisabled = tenantsTableDto.IsDisabled ?? tenant.IsDisabled;
-
+            
             // Additional mapping
             tenant.DbCredentials = (tenantsTableDto.DbUserId != null || tenantsTableDto.DbPwd != null)
                 ? $"User ID={tenantsTableDto.DbUserId};Password={tenantsTableDto.DbPwd};"
@@ -223,7 +219,7 @@ public class TenantsTableService : ITenantsTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<TenantsTableDto>(tenant);
+            serviceResponse.Data = tenant.Adapt<TenantsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant updated successfully";
         }

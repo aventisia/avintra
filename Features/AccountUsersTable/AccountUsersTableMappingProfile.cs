@@ -1,30 +1,38 @@
 namespace AccountsAPIs.MappingProfiles;
 
-public class AccountUsersTableMappingProfile : Profile
+public class AccountUsersTableMappingProfile : IRegister
 {
-    public AccountUsersTableMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
         // Mapping to get user record or list of user records
-        CreateMap<AccountUser, AccountUsersTableDto>()
-            .ForMember(dest => dest.UserRoles, opt => opt.MapFrom(src => src.UserRoles.Select(s => s.Role.FullName).ToList()))
-            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName))
-            .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName));
-
-        // Mapping for inserting or updating user record
-        CreateMap<AccountUsersTableDto, AccountUser>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.UserRoles, opt => opt.Ignore())
-            .ForMember(dest => dest.IsDisabled, opt => opt.Ignore())
-            .ForMember(dest => dest.EmailConfirmed, opt => opt.Ignore())
-            .ForMember(dest => dest.PwdSetOn, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedOn, opt => opt.Ignore())
-            .ForMember(dest => dest.LastModifiedOn, opt => opt.Ignore())
-            .ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
+        config.NewConfig<AccountUser, AccountUsersTableDto>()
+            .Map(dest => dest.UserRoles,
+                src => src.UserRoles != null
+                    ? src.UserRoles.Select(s => s.Role.FullName).ToList()
+                    : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null);
 
         // Get roles in SelectOptionDto format
-        CreateMap<AccountRole, SelectOptionDto>()
-            .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.FullName))
-            .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.FullName))
-            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
+        config.NewConfig<AccountRole, SelectOptionDto>()
+            .Map(dest => dest.Label, src => src.FullName)
+            .Map(dest => dest.Value, src => src.FullName)
+            .Map(dest => dest.Description, src => src.Description);
+
+        // Mapping for inserting or updating user record
+        config.NewConfig<AccountUsersTableDto, AccountUser>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.UserRoles)
+            .Ignore(dest => dest.EmailConfirmed)
+            .Ignore(dest => dest.PwdSetOn)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
     }
 }

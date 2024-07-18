@@ -20,13 +20,12 @@ public static class AppServicesExtension
     /// </summary>
     public static void AddMappingProfiles(this IServiceCollection services)
     {
-        var mapperConfig = new MapperConfiguration(map =>
-        {
-            map.AddProfile<SessionLogMappingProfile>();
-            map.AddProfile<TenantsTableMappingProfile>();
-            map.AddProfile<AccountUsersTableMappingProfile>();
-        });
-        services.AddSingleton(mapperConfig.CreateMapper());
+        // Mapster mapping profiles
+        var config = TypeAdapterConfig.GlobalSettings;
+        config.Apply(new TenantsTableMappingProfile());
+        config.Apply(new AccountUsersTableMappingProfile());
+        config.Apply(new SessionLogMappingProfile());
+        services.AddSingleton(config);
     }
 
     /// <summary>

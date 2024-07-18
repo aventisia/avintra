@@ -3,27 +3,23 @@ namespace AccountsAPIs.Services;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AccountsDbContext _accountsDbContext;
-    private readonly IMapper _mapper;
-
     public UnitOfWork(
-        AccountsDbContext accountsDbContext,
-        IMapper mapper)
+        AccountsDbContext accountsDbContext)
     {
         _accountsDbContext = accountsDbContext;
-        _mapper = mapper;
     }
 
-    public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext, _mapper);
+    public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext);
 
-    public ITenantRepo TenantRepo => new TenantRepo(_accountsDbContext, _mapper);
+    public ITenantRepo TenantRepo => new TenantRepo(_accountsDbContext);
 
-    public IActiveSessionRepo ActiveSessionRepo => new ActiveSessionRepo(_accountsDbContext, _mapper);
+    public IActiveSessionRepo ActiveSessionRepo => new ActiveSessionRepo(_accountsDbContext);
 
-    public ISessionLogRepo SessionLogRepo => new SessionLogRepo(_accountsDbContext, _mapper);
+    public ISessionLogRepo SessionLogRepo => new SessionLogRepo(_accountsDbContext);
 
-    public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext, _mapper);
+    public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext);
 
-    public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext, _mapper);
+    public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

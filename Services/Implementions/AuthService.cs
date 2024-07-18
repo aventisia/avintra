@@ -10,7 +10,6 @@ public class AuthService : IAuthService
     private readonly JwtConfig _jwtConfig;
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IAuthHelperService _authHelperService;
 
     public AuthService(
@@ -19,7 +18,6 @@ public class AuthService : IAuthService
         IHttpContextAccessor httpContextAccessor,
         ILogger<AuthService> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper,
         IAuthHelperService authHelperService,
         IdentityConfig identityConfig,
         JwtConfig jwtConfig,
@@ -30,7 +28,6 @@ public class AuthService : IAuthService
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _authHelperService = authHelperService;
         _identityConfig = identityConfig;
         _jwtConfig = jwtConfig;
@@ -325,7 +322,7 @@ public class AuthService : IAuthService
             foreach (var session in sessionList)
             {
                 // Create SessionLog instance
-                var sessionLog = _mapper.Map<SessionLog>(session);
+                var sessionLog = session.Adapt<SessionLog>();
                 sessionLog.SessionTerminatedOn = DateTimeOffset.UtcNow;
                 sessionLog.HowSessionEnded = howSessionEnded;
 

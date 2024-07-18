@@ -1,11 +1,11 @@
 namespace AccountsAPIs.MappingProfiles;
 
-public class SessionLogMappingProfile : Profile
+public class SessionLogMappingProfile : IRegister
 {
-    public SessionLogMappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
-        // Used while createing terminating active session to create session log
+        // Used while creating terminating active session to create session log
         // Used in AuthService.TerminateUserSessionsAsync method
-        CreateMap<ActiveSession, SessionLog>();
+        config.NewConfig<ActiveSession, SessionLog>();
     }
 }

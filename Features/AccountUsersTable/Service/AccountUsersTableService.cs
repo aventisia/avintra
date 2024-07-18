@@ -1,5 +1,3 @@
-using AccountsAPIs.DTOs;
-
 namespace AccountsAPIs.Services;
 
 public class AccountUsersTableService : IAccountUsersTableService
@@ -7,7 +5,6 @@ public class AccountUsersTableService : IAccountUsersTableService
     private readonly UserManager<AccountUser> _userManager;
     private readonly RoleManager<AccountRole> _roleManager;
     private readonly ILogger<AccountUsersTableService> _logger;
-    private readonly IMapper _mapper;
     private readonly IAuthHelperService _authHelperService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
@@ -18,7 +15,6 @@ public class AccountUsersTableService : IAccountUsersTableService
         UserManager<AccountUser> userManager,
         RoleManager<AccountRole> roleManager,
         ILogger<AccountUsersTableService> logger,
-        IMapper mapper,
         IAuthHelperService authHelperService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService,
@@ -31,7 +27,6 @@ public class AccountUsersTableService : IAccountUsersTableService
         _userManager = userManager;
         _roleManager = roleManager;
         _logger = logger;
-        _mapper = mapper;
         _authHelperService = authHelperService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
@@ -61,12 +56,12 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.UserRoles.Where(w1 => allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
-                .ProjectTo<AccountUsersTableDto>(_mapper.ConfigurationProvider)
+                .ProjectToType<AccountUsersTableDto>()
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<IEnumerable<AccountUsersTableDto>>(users);
+            serviceResponse.Data = users.Adapt<IEnumerable<AccountUsersTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
         }
@@ -127,7 +122,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             accountUsersTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(accountUsersTableDto);
 
             // Default mapping - keep UserRoles prop name different in dto to avoid error at the time of mapping 
-            var newUser = _mapper.Map<AccountUser>(accountUsersTableDto);
+            var newUser = accountUsersTableDto.Adapt<AccountUser>();
             newUser.Id = Guid.NewGuid();
             newUser.UserName = accountUsersTableDto.Email.ToLower();
             newUser.TenantId = _currentTenantService.CurrentTenantId; // DO NOT CHANGE THIS
@@ -169,7 +164,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<AccountUsersTableDto>(newUser);
+            serviceResponse.Data = newUser.Adapt<AccountUsersTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User created successfully";
         }
@@ -260,13 +255,12 @@ public class AccountUsersTableService : IAccountUsersTableService
             var hasEmailChanged = user.Email.ToLower() == accountUsersTableDto.Email.ToLower();
 
             // Default mapping 
-            _mapper.Map(accountUsersTableDto, user);
+            accountUsersTableDto.Adapt(user);
             user.EmailConfirmed = hasEmailChanged;
             user.UserName = accountUsersTableDto.Email.ToLower();
             user.LastModifiedByUserId = _userId;
             user.LastModifiedOn = DateTimeOffset.UtcNow;
-            user.IsDisabled = accountUsersTableDto.IsDisabled ?? user.IsDisabled;
-
+            
             // Update Indentity User using UserManager
             var updateUserResult = await _userManager.UpdateAsync(user);
 
@@ -308,7 +302,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             }
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<AccountUsersTableDto>(user);
+            serviceResponse.Data = user.Adapt<AccountUsersTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User updated successfully";
         }
@@ -408,7 +402,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             var roles = await _roleManager.Roles.Where(w => allowedRoles.Contains(w.Name)).OrderBy(o => o.Seq).ToListAsync();
 
             // Task successful
-            serviceResponse.Data = _mapper.Map<IEnumerable<SelectOptionDto>>(roles);
+            serviceResponse.Data = roles.Adapt<IEnumerable<SelectOptionDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
         }
