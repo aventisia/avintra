@@ -1,7 +1,7 @@
 import "@xyflow/react/dist/style.css";
 import { ReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
-import { useReactFlowExtStore } from "../stores/react-flow-ext-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls/ViewControls";

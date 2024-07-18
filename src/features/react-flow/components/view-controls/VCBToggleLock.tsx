@@ -2,7 +2,7 @@ import { Button, Tooltip } from "@/react-toolkit/components/ui";
 import { cn } from "@/react-toolkit/lib";
 import { LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
-import { useReactFlowExtStore } from "../../stores/react-flow-ext-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 /**
  * Renders a lock/unlock button for the ReactFlowExt component. (VCB=View Control Button)
