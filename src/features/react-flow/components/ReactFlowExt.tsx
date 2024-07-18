@@ -6,6 +6,7 @@ import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls/ViewControls";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
+import { CustomNodeTypes } from "@/types/CustomNodeTypes";
 
 interface ReactFlowExtProps {
   children?: React.ReactNode;
@@ -35,6 +36,7 @@ export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
   return (
     <ReactFlow
       fitView
+      nodeTypes={CustomNodeTypes}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
