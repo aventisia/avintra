@@ -6,7 +6,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 /**
  * Renders a flow's name and version component.
  */
-export const FlowNameAndVersion = () => {
+export const FPTNameAndVersion = () => {
   // Get global store state and actions
   const { currentFlow, isFlowSaving } = useCurrentFlowStore(
     useShallow((state) => ({

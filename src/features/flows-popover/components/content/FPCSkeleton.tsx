@@ -3,7 +3,7 @@ import { Skeleton } from "@/react-toolkit/components/ui";
 /**
  * Renders a skeleton component till the time flows are being fetched.
  */
-export const FPSkeleton = () => {
+export const FPCSkeleton = () => {
   return (
     <div className="flex h-full w-full flex-col items-center">
       {new Array(3).fill(null).map((_, index) => (

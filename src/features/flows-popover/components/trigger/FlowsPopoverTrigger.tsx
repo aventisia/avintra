@@ -1,10 +1,12 @@
+import {
+  FPTChevronDownIcon,
+  FPTLoadingFlow,
+  FPTNameAndVersion,
+  useFlowsPopoverStore,
+} from "@/features/flows-popover";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/react-toolkit/lib";
 import { PopoverTrigger, buttonVariants } from "@/react-toolkit/components/ui";
-import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
-import { FlowNameAndVersion } from "./FlowNameAndVersion";
-import { CustomChevronDownIcon } from "./CustomChevronDownIcon";
-import { LoadingFlow } from "./LoadingFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 /**
@@ -33,8 +35,8 @@ export const FlowsPopoverTrigger = () => {
         isPopoverOpen && "bg-slate-100",
       )}
     >
-      {isFlowLoading ? <LoadingFlow /> : <FlowNameAndVersion />}
-      <CustomChevronDownIcon />
+      {isFlowLoading ? <FPTLoadingFlow /> : <FPTNameAndVersion />}
+      <FPTChevronDownIcon />
     </PopoverTrigger>
   );
 };

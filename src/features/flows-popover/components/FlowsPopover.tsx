@@ -1,16 +1,18 @@
 import {
+  FlowsPopoverContent,
+  FlowsPopoverTrigger,
+  FPCreateButton,
+  FPHeading,
+  useFlowsPopoverStore,
+  useFlowsQueryKey,
+} from "@/features/flows-popover";
+import {
   Popover,
   PopoverContent,
   PopoverDefaultHeader,
 } from "@/react-toolkit/components/ui";
 import { useShallow } from "zustand/react/shallow";
-import { FlowsPopoverTrigger } from "../flows-popover-trigger/FlowsPopoverTrigger";
-import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
-import { useFlowsQueryKey } from "../../hooks/useFlowsQueryKey";
-import { FlowsPopoverContent } from "../flows-popover-content/FlowsPopoverContent";
 import { cn } from "@/react-toolkit/lib";
-import { FPCreateButton } from "./FPCreateButton";
-import { FPHeading } from "./FPHeading";
 
 interface FlowsPopoverProps {
   /** Additional class name to override popover content container style */

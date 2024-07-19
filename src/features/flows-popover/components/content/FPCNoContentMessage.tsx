@@ -5,7 +5,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 /**
  * Renders a component that displays a message when there are no flows.
  */
-export const FPNoContentMessage = () => {
+export const FPCNoContentMessage = () => {
   return (
     <NoContentMessage
       className="mb-12"

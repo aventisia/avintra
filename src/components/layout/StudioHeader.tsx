@@ -1,5 +1,5 @@
 import { ETLIAMenu } from "@/features/etlia-menu/components/ETLIAMenu";
-import { FlowsPopover } from "@/features/flows-popover/components/flows-popover/FlowsPopover";
+import { FlowsPopover } from "@/features/flows-popover";
 import { AppLogo } from "@/react-toolkit/components/layout";
 import { DotSeparator } from "@/react-toolkit/components/ui";
 import {

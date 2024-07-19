@@ -1,5 +1,7 @@
+import {
+  useFlowsPopoverStore,
+} from "@/features/flows-popover";
 import { useShallow } from "zustand/react/shallow";
-import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 import { Badge } from "@/react-toolkit/components/ui";
 
 /**

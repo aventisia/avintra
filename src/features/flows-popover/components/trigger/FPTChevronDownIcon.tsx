@@ -1,13 +1,15 @@
+import {
+  useFlowsPopoverStore,
+} from "@/features/flows-popover";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/react-toolkit/lib";
-import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 import { ChevronDownIcon } from "lucide-react";
 
 /**
  * CustomChevronDownIcon component.
  * Renders a customized ChevronDownIcon with dynamic styling based on the popover state.
  */
-export const CustomChevronDownIcon = () => {
+export const FPTChevronDownIcon = () => {
   // Get store state and actions
   const { isPopoverOpen } = useFlowsPopoverStore(
     useShallow((state) => ({
