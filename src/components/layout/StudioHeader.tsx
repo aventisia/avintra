@@ -1,4 +1,4 @@
-import { ETLIAMenu } from "@/features/etlia-menu/components/ETLIAMenu";
+import { ETLIAMenu } from "@/features/etlia-menu";
 import { FlowsPopover } from "@/features/flows-popover";
 import { AppLogo } from "@/react-toolkit/components/layout";
 import { DotSeparator } from "@/react-toolkit/components/ui";
