@@ -1,14 +1,14 @@
 import { FLILastModifiedOn, FLIName, FLIThumbnail, FlowsTableDto } from "@/features/flows-popover";
 import { cn } from "@/react-toolkit/lib";
 
-interface FlowsTableCellProps {
+interface FlowListItemProps {
   flowData: FlowsTableDto;
 }
 
 /**
- * Renders a table cell for the flows table.
+ * Renders a flows list item for the flows list.
  */
-export const FlowListItem = ({ flowData }: FlowsTableCellProps) => {
+export const FlowListItem = ({ flowData }: FlowListItemProps) => {
   // Return the component
   return (
     <div

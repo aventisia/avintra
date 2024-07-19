@@ -1,7 +1,9 @@
+import {
+  useFlowsPopoverStore,
+} from "@/features/flows-popover";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
-import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
 /**
  * Custom hook to set the query key for flows.

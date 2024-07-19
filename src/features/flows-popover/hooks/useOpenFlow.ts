@@ -1,6 +1,6 @@
+import { useFlowsPopoverStore } from "@/features/flows-popover";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 /**

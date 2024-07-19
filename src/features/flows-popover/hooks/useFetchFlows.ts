@@ -1,6 +1,8 @@
+import {
+  getProjectFlows,
+  useFlowsPopoverStore,
+} from "@/features/flows-popover";
 import { useQuery } from "@tanstack/react-query";
-import { getProjectFlows } from "../apis/flows-table-apis";
-import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 
