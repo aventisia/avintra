@@ -1,8 +1,6 @@
+import { FCBContainer, FCBRedo, FCBUndo } from "@/features/flow-controls";
 import { Panel } from "@xyflow/react";
-import { FCBContainer } from "./FCBContainer";
 import { Separator } from "@/react-toolkit/components/ui";
-import { FCBUndo } from "./FCBUndo";
-import { FCBRedo } from "./FCBRedo";
 
 interface FlowControlsProps {
   children: React.ReactNode;
