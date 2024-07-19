@@ -35,3 +35,7 @@ export { FlowsPopoverContent } from "./components/content/FlowsPopoverContent";
 export { FPCNoContentMessage } from "./components/content/FPCNoContentMessage";
 export { FPCSearchBox } from "./components/content/FPCSearchBox";
 export { FPCSkeleton } from "./components/content/FPCSkeleton";
+export { FlowListItem } from "./components/content/flow-list-item/FlowListItem";
+export { FLIName } from "./components/content/flow-list-item/FLIName";
+export { FLILastModifiedOn } from "./components/content/flow-list-item/FLILastModifiedOn";
+export { FLIThumbnail } from "./components/content/flow-list-item/FLIThumbnail";
