@@ -1,5 +1,11 @@
-import { FLILastModifiedOn, FLIName, FLIThumbnail, FlowsTableDto } from "@/features/flows-popover";
+import {
+  FLILastModifiedOn,
+  FLIName,
+  FLIThumbnail,
+  FlowsTableDto,
+} from "@/features/flows-popover";
 import { cn } from "@/react-toolkit/lib";
+import { FLIActions } from "./actions/FLIActions";
 
 interface FlowListItemProps {
   flowData: FlowsTableDto;
@@ -11,11 +17,7 @@ interface FlowListItemProps {
 export const FlowListItem = ({ flowData }: FlowListItemProps) => {
   // Return the component
   return (
-    <div
-      className={cn(
-        "group flex w-auto items-center gap-3 px-0.5 py-0.5",
-      )}
-    >
+    <div className={cn("flex w-full items-center gap-3 px-0.5 py-0.5")}>
       {/* Flow thumbnail */}
       <FLIThumbnail />
 
@@ -27,6 +29,9 @@ export const FlowListItem = ({ flowData }: FlowListItemProps) => {
         {/* Time container */}
         <FLILastModifiedOn flowData={flowData} />
       </div>
+
+      {/* Actions container */}
+      <FLIActions flowId={flowData.id || "flowId"} />
     </div>
   );
 };
