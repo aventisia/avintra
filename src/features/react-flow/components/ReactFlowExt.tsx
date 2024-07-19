@@ -1,13 +1,15 @@
+import {
+  BackgroundExt,
+  MiniMapExt,
+  useFetchFlowToLoad,
+  ViewControls,
+} from "@/features/react-flow";
 import "@xyflow/react/dist/style.css";
 import { ReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { BackgroundExt } from "./BackgroundExt";
-import { MiniMapExt } from "./MiniMapExt";
-import { ViewControls } from "./view-controls/ViewControls";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { CustomNodeTypes } from "@/types/CustomNodeTypes";
-import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 
 interface ReactFlowExtProps {
   children?: React.ReactNode;

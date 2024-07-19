@@ -1,6 +1,6 @@
+import { LoadFlowDto } from "@/features/react-flow";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse } from "@/react-toolkit/dtos";
-import { LoadFlowDto } from "../dtos/load-flow-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 
