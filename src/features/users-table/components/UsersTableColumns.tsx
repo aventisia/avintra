@@ -1,0 +1,81 @@
+import { ColumnDef } from "@tanstack/react-table";
+import { UsersTableDto } from "../dtos/users-table-dto";
+import { formatDistanceToNow } from "date-fns";
+import { UsersTableRowActions } from "./UsersTableRowActions";
+import { DTColumnHeader } from "@/react-toolkit/components/data-table";
+
+/**
+ * Array of table columns for the users table.
+ * Each column object contains an accessorKey, header component, and cell component.
+ */
+export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
+  {
+    accessorKey: "firstName",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title="FirstName" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("firstName")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "lastName",
+    header: ({ column }) => <DTColumnHeader column={column} title="LastName" />,
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("lastName")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "email",
+    header: ({ column }) => <DTColumnHeader column={column} title="Email" />,
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("email")}</div>
+    ),
+  },
+  {
+    accessorKey: "userRoles",
+    header: ({ column }) => <DTColumnHeader column={column} title="Top Role" />,
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {(row.getValue("userRoles") as string[])?.slice(-1)}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title="Created By" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdBy")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader className="w-[7rem]" column={column} title="Created On" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.original.createdOn &&
+          formatDistanceToNow(row.getValue("createdOn"), {
+            addSuffix: true,
+          })}
+      </div>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      // Render the users row actions component
+      <UsersTableRowActions rowId={row.original.id || "rowId"} />
+    ),
+  },
+];
