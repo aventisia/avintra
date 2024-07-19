@@ -1,7 +1,9 @@
+import {
+  ActivitySelectorContent,
+  useActivitySelectorStore,
+} from "@/features/actvity-selector";
 import { Popover, PopoverContent } from "@/react-toolkit/components/ui";
 import { useShallow } from "zustand/react/shallow";
-import { ActivitySelectorContent } from "./ActivitySelectorContent";
-import { useActivitySelectorStore } from "../stores/activity-selector-store";
 
 interface ActivitySelectorProps {
   /** The trigger element to open ActivitySelector popover. */

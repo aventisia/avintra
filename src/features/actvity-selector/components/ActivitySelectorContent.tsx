@@ -1,4 +1,10 @@
 import {
+  activitiesList,
+  ActivityToSelect,
+  ASNoContentMessage,
+  useActivitySelectorStore,
+} from "@/features/actvity-selector";
+import {
   Command,
   CommandEmpty,
   CommandInput,
@@ -7,10 +13,6 @@ import {
   ScrollArea,
 } from "@/react-toolkit/components/ui";
 import { useShallow } from "zustand/react/shallow";
-import { ActivityToSelect } from "./activity-to-select/ActivityToSelect";
-import { ASNoContentMessage } from "./ASNoContentMessage";
-import { useActivitySelectorStore } from "../stores/activity-selector-store";
-import { activitiesList } from "../data/activities-to-select";
 import { useAddNode } from "@/hooks/useAddNode";
 
 /**

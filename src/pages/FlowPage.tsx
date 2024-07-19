@@ -1,5 +1,7 @@
-import { ActivitySelector } from "@/features/actvity-selector/components/ActivitySelector";
-import { FlowControlsTrigger } from "@/features/actvity-selector/components/triggers/FlowControlsTrigger";
+import {
+  ActivitySelector,
+  FlowControlsTrigger,
+} from "@/features/actvity-selector";
 import { FlowControls } from "@/features/flow-controls";
 import { ReactFlowExt } from "@/features/react-flow";
 import { ReactFlowProvider } from "@xyflow/react";
