@@ -46,20 +46,20 @@ import { format } from "date-fns";
  */
 export const TenantCrudDialogContent = () => {
   // 1. Define tenant form
-  const { form, rowId, crudAction, setShowDialog, refineFormData } =
+  const { form, watch, rowId, crudAction, setShowDialog, refineFormData } =
     useDefineTenantForm();
 
-  // const [
-  //   isPwdNeverExpiresEnabled,
-  //   isIdleSessionTimeoutEnabled,
-  //   isSSOEnabled,
-  //   dbOption,
-  // ] = watch([
-  //   "isPwdNeverExpiresEnabled",
-  //   "isIdleSessionTimeoutEnabled",
-  //   "isSSOEnabled",
-  //   "dbOption",
-  // ]);
+  const [
+    isPwdNeverExpiresEnabled,
+    isIdleSessionTimeoutEnabled,
+    isSSOEnabled,
+    dbOption,
+  ] = watch([
+    "isPwdNeverExpiresEnabled",
+    "isIdleSessionTimeoutEnabled",
+    "isSSOEnabled",
+    "dbOption",
+  ]);
 
   // 2. Define optimistic mutation to crete or update the tenant
   const { mutate: mutateTenant } = useListOptimisticMutation<
@@ -129,7 +129,7 @@ export const TenantCrudDialogContent = () => {
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "!mt-0 w-full justify-start text-left font-normal",
                       !field && "text-muted-foreground"
                     )}
                     disabled={crudAction === "read" || crudAction === "create"}
@@ -182,6 +182,7 @@ export const TenantCrudDialogContent = () => {
             />
 
             {/* Days Before Password Expires */}
+            {!isPwdNeverExpiresEnabled && (
             <FormField name="daysBeforePwdExpires" control={form.control} render={({ field }) => (
                 <InputField field={field} fieldData={{
                   label: "Days Before Password Expires",
@@ -189,6 +190,7 @@ export const TenantCrudDialogContent = () => {
                 }} />
               )}
             />
+            )}
 
             {/* Is Idle Session Timeout Enabled */}
             <FormField name="isIdleSessionTimeoutEnabled" control={form.control} render={({ field }) => (
@@ -201,6 +203,7 @@ export const TenantCrudDialogContent = () => {
             />
 
             {/* Idle Session Timeout Minutes */}
+            {isIdleSessionTimeoutEnabled && (
             <FormField name="idleSessionTimeoutMinutes" control={form.control} render={({ field }) => (
                 <InputField field={field} fieldData={{
                   label: "Idle Session Timeout (in Minutes)",
@@ -208,6 +211,7 @@ export const TenantCrudDialogContent = () => {
                 }} />
               )}
             />
+            )}
 
             {/* Is SSO Enabled */}
             <FormField name="isSSOEnabled" control={form.control} render={({ field }) => (
@@ -220,6 +224,7 @@ export const TenantCrudDialogContent = () => {
             />
 
             {/* SSO Config JSON */}
+            {isSSOEnabled && (
             <FormField name="ssoConfigJson" control={form.control} render={({ field }) => (
                 <TextareaField field={field} fieldData={{
                     label: "Single Sign-On (SSO) Configuration",
@@ -228,6 +233,7 @@ export const TenantCrudDialogContent = () => {
                 }} />
               )}
             />
+            )}
   
               {/* Database Option */}
                 <FormField name="dbOption" control={form.control} render={({ field }) => (
@@ -280,6 +286,7 @@ export const TenantCrudDialogContent = () => {
                 />
 
             {/* DB User Id &&  DB Pwd */}
+            {(dbOption === "Isolated" || dbOption === "DedicatedServer") && (
                       <div className="grid grid-cols-2 gap-4">
                           <FormField name="dbUserId" control={form.control} render={({ field }) => (
                             <InputField field={field} fieldData={{
@@ -297,12 +304,14 @@ export const TenantCrudDialogContent = () => {
                                 description: "Enter a password of the dedicated account to access the database.",
                                 disabled: crudAction === "read" || crudAction === "create",
                                 className: "w-full"
-                              }} />
+                              }} type="password"/>
                             )}
                           />
                       </div>
+            )}
             
             {/* DB Host &&  DB Port */}
+            {dbOption === "DedicatedServer" && (
                 <div className="grid grid-cols-2 gap-4">
                     <FormField name="dbHost" control={form.control} render={({ field }) => (
                         <InputField field={field} fieldData={{
@@ -323,8 +332,10 @@ export const TenantCrudDialogContent = () => {
                       )}
                     />
                 </div>
+            )}
 
             {/* DB Name Prefix */}
+            {(dbOption === "Isolated" || dbOption === "DedicatedServer") && (
                 <FormField name="dbNamePrefix" control={form.control} render={({ field }) => (
                     <InputField field={field} fieldData={{
                       label: "Database Name Prefix",
@@ -333,6 +344,7 @@ export const TenantCrudDialogContent = () => {
                     }} />
                   )}
                 />
+            )}
             
             {/* Is Disabled */}
             {crudAction !== "create" && (
