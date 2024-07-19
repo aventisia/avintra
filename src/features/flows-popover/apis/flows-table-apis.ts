@@ -1,6 +1,8 @@
+import {
+  FlowsTableDto
+} from "@/features/flows-popover";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 /* Note: File name is flows-table-apis.ts instead of flows-popover-apis.ts because 
   its a copy of flows-table feature of workspace app and both will be using the 
