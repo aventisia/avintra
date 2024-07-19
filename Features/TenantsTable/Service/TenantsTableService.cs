@@ -36,6 +36,7 @@ public class TenantsTableService : ITenantsTableService
             // Try to get tenants
             var tenants = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w => w.IsEditable == true) //PEDNING: Update condition
+                .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
             // Get tenant manager's full name list
