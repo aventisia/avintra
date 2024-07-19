@@ -9,6 +9,7 @@ import {
   UserCircleIcon,
   CreditCardIcon,
   UsersIcon,
+  IdentificationIcon,
 } from "@heroicons/react/24/outline";
 
 const workspaceAppConfig: IAppConfig = {
@@ -49,6 +50,11 @@ const workspaceAppConfig: IAppConfig = {
       {
         sectionName: "admin options",
         menuItems: [
+          {
+            Icon: IdentificationIcon,
+            name: "tenants",
+            route: "/tenant",
+          },
           {
             Icon: UsersIcon,
             name: "users",
