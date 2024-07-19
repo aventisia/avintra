@@ -35,7 +35,7 @@ export const FlowsPopoverContent = () => {
             <FPCNoContentMessage />
           </CommandEmpty>
 
-          {/* List of flows */}
+          {/* Flows list */}
           <ScrollArea>
             <CommandList className="mx-2.5 my-1 mb-2.5 border-none p-1">
               <FPCFlowsList flowsList={data?.data} />

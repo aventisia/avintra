@@ -46,7 +46,7 @@ export const FPCFlowsList = ({ flowsList }: FPCFlowListProps) => {
             // Close the popover
             togglePopoverOpen(false);
           }}
-          className="cursor-pointer rounded-lg p-1"
+          className="cursor-pointer group/CommandItem rounded-lg p-1"
         >
           {/* flow item */}
           <FlowListItem flowData={item} />
