@@ -32,6 +32,7 @@ export { FPTChevronDownIcon } from "./components/trigger/FPTChevronDownIcon";
 export { FPTLoadingFlow } from "./components/trigger/FPTLoadingFlow";
 export { FPTNameAndVersion } from "./components/trigger/FPTNameAndVersion";
 export { FlowsPopoverContent } from "./components/content/FlowsPopoverContent";
+export { FPCFlowsList } from "./components/content/FPCFlowsList";
 export { FPCNoContentMessage } from "./components/content/FPCNoContentMessage";
 export { FPCSearchBox } from "./components/content/FPCSearchBox";
 export { FPCSkeleton } from "./components/content/FPCSkeleton";

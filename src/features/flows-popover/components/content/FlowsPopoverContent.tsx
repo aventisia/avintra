@@ -2,29 +2,20 @@ import {
   FPCNoContentMessage,
   FPCSearchBox,
   FPCSkeleton,
+  FPCFlowsList,
   useFetchFlows,
-  useFlowsPopoverStore,
 } from "@/features/flows-popover";
 import {
   Command,
   CommandEmpty,
-  CommandItem,
   CommandList,
   ScrollArea,
 } from "@/react-toolkit/components/ui";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Renders the content of the Flows popover component.
  */
 export const FlowsPopoverContent = () => {
-  // Get store state and actions
-  const { togglePopoverOpen } = useFlowsPopoverStore(
-    useShallow((state) => ({
-      togglePopoverOpen: state.togglePopoverOpen,
-    })),
-  );
-
   // Fetch flows data
   const { data, isLoading } = useFetchFlows();
 
@@ -46,20 +37,8 @@ export const FlowsPopoverContent = () => {
 
           {/* List of flows */}
           <ScrollArea>
-            <CommandList className="border-none p-2">
-              {data?.data.map((item) => (
-                <CommandItem
-                  key={item.id}
-                  value={item.id}
-                  onSelect={() => {
-                    togglePopoverOpen(false);
-                  }}
-                  className="rounded-lg p-1"
-                >
-                  {/* flow item */}
-                  {item.name}
-                </CommandItem>
-              ))}
+            <CommandList className="mx-2.5 my-1 mb-2.5 border-none p-1">
+              <FPCFlowsList flowsList={data?.data} />
             </CommandList>
           </ScrollArea>
         </Command>
