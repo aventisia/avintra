@@ -2,8 +2,8 @@ import {
   useFlowCommentsQueryKey,
   useFlowCommentsStore,
   FC_POPOVER_HEADING,
-  FCSPopoverTrigger,
-  FCSPopoverContent,
+  FCPopoverTrigger,
+  FCPopoverContent,
 } from "@/features/flow-comments";
 import {
   Popover,
@@ -34,7 +34,7 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
   return (
     <Popover open={isPopoverOpen} onOpenChange={togglePopoverOpen}>
       {/* Custom flow comments popover trigger */}
-      <FCSPopoverTrigger />
+      <FCPopoverTrigger />
       {/* Popover content */}
       <PopoverContent
         align="end"
@@ -44,7 +44,7 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
         {/* Popover default header */}
         <PopoverDefaultHeader heading={FC_POPOVER_HEADING} />
         {/* Flow comments list */}
-        <FCSPopoverContent />
+        <FCPopoverContent />
         {/* Placholder for Message Composer */}
         <input />
       </PopoverContent>

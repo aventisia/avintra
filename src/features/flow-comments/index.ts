@@ -23,10 +23,10 @@ export { useFetchFlowComments } from "./hooks/useFetchFlowComments";
 
 // components
 export { FlowComments } from "./components/FlowComments";
-export { FCSPopoverTrigger } from "./components/FCSPopoverTrigger";
-export { FCSPopoverContent } from "./components/popover-content/FCSPopoverContent";
-export { FCSPSkeleton } from "./components/popover-content/FCSPSkeleton";
-export { FCSPNoContentMessage } from "./components/popover-content/FCSPNoContentMessage";
+export { FCPopoverTrigger } from "./components/FCPopoverTrigger";
+export { FCPopoverContent } from "./components/popover-content/FCPopoverContent";
+export { FCPSkeleton } from "./components/popover-content/FCPSkeleton";
+export { FCPNoContentMessage } from "./components/popover-content/FCPNoContentMessage";
 export { FlowCommentItem } from "./components/popover-content/flow-comment-item/FlowCommentItem";
 export { FCIAvatar } from "./components/popover-content/flow-comment-item/FCIAvatar";
 export { FCIHeader } from "./components/popover-content/flow-comment-item/FCIHeader";

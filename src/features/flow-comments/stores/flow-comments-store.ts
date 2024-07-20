@@ -4,8 +4,8 @@ type State = {
   /** flow id for flow comments */
   flowId: string;
 
-  /** Query key for flow comments (fcs = flowComments) */
-  fcsQueryKey: string[];
+  /** Query key for flow comments (fc = flowComments) */
+  fcQueryKey: string[];
 
   /** To manage flow-comments popover open/close state */
   isPopoverOpen: boolean;
@@ -16,7 +16,7 @@ type State = {
 
 type Actions = {
   /** Set flow-comments query key and flow Id */
-  setFCsQueryKey: (flowId: string) => void;
+  setFCQueryKey: (flowId: string) => void;
 
   /** To toggle flow-comments popover open/close state */
   togglePopoverOpen: (value?: boolean) => void;
@@ -27,13 +27,13 @@ type Actions = {
 
 export const useFlowCommentsStore = create<State & Actions>((set) => ({
   flowId: "",
-  fcsQueryKey: [],
+  fcQueryKey: [],
   isPopoverOpen: false,
   flowCommentId: window.crypto.randomUUID(),
 
-  setFCsQueryKey: (flowId) =>
+  setFCQueryKey: (flowId) =>
     set(() => ({
-      fcsQueryKey: ["flow-comments", flowId],
+      fcQueryKey: ["flow-comments", flowId],
       flowId: flowId,
     })),
 

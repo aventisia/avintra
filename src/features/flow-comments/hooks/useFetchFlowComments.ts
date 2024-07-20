@@ -12,17 +12,17 @@ import { useEffect } from "react";
  */
 export const useFetchFlowComments = () => {
   // Get store state and actions
-  const { flowId, fcsQueryKey, isPopoverOpen } = useFlowCommentsStore(
+  const { flowId, fcQueryKey, isPopoverOpen } = useFlowCommentsStore(
     useShallow((state) => ({
       flowId: state.flowId,
-      fcsQueryKey: state.fcsQueryKey,
+      fcQueryKey: state.fcQueryKey,
       isPopoverOpen: state.isPopoverOpen,
     })),
   );
 
   // Get flow comments using react query
   const { data, isFetching, isLoading, refetch } = useQuery({
-    queryKey: fcsQueryKey,
+    queryKey: fcQueryKey,
     queryFn: () => getFlowComments(flowId),
   });
 

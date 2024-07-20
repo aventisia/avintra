@@ -12,10 +12,10 @@ export const useFlowCommentsQueryKey = () => {
   const queryParams = new URLSearchParams(location.search);
   const flowId = queryParams.get("f");
 
-  // Get store setFCsQueryKey action
-  const { setFCsQueryKey } = useFlowCommentsStore(
+  // Get store setFCQueryKey action
+  const { setFCQueryKey } = useFlowCommentsStore(
     useShallow((state) => ({
-      setFCsQueryKey: state.setFCsQueryKey,
+      setFCQueryKey: state.setFCQueryKey,
     })),
   );
 
@@ -26,6 +26,6 @@ export const useFlowCommentsQueryKey = () => {
 
   // Set flow comments query key
   useEffect(() => {
-    setFCsQueryKey(flowId);
-  }, [flowId, setFCsQueryKey]);
+    setFCQueryKey(flowId);
+  }, [flowId, setFCQueryKey]);
 };

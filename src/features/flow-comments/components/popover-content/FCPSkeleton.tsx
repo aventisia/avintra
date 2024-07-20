@@ -3,7 +3,7 @@ import { Skeleton } from "@/react-toolkit/components/ui";
 /**
  * Renders a skeleton component till the time flow comments are being fetched.
  */
-export const FCSPSkeleton = () => {
+export const FCPSkeleton = () => {
   return (
     <div className="flex h-full w-full flex-col items-center">
       {new Array(3).fill(null).map((_, index) => (

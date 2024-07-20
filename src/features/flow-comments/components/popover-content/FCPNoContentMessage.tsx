@@ -4,7 +4,7 @@ import { NoContentMessage } from "@/react-toolkit/components/ui";
 /**
  * Renders a component that displays a message when there are no comments.
  */
-export const FCSPNoContentMessage = () => {
+export const FCPNoContentMessage = () => {
   return (
     <NoContentMessage
       Icon={MessageSquareOff}

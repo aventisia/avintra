@@ -14,7 +14,7 @@ import {
 /**
  * Renders a popover trigger component for flow comments.
  */
-export const FCSPopoverTrigger = () => {
+export const FCPopoverTrigger = () => {
   // Get store state and actions
   const { isPopoverOpen, togglePopoverOpen } = useFlowCommentsStore(
     useShallow((state) => ({

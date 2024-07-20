@@ -1,7 +1,7 @@
 import {
   useFetchFlowComments,
-  FCSPSkeleton,
-  FCSPNoContentMessage,
+  FCPSkeleton,
+  FCPNoContentMessage,
   FlowCommentItem,
 } from "@/features/flow-comments";
 import { ScrollArea } from "@/react-toolkit/components/ui";
@@ -9,7 +9,7 @@ import { ScrollArea } from "@/react-toolkit/components/ui";
 /**
  * Renders the content of the Flow Comments component.
  */
-export const FCSPopoverContent = () => {
+export const FCPopoverContent = () => {
   // Fetch flow comments
   const { data, isLoading } = useFetchFlowComments();
 
@@ -18,11 +18,11 @@ export const FCSPopoverContent = () => {
     <>
       {/* Load skeleton only when popover opens for the first time */}
       {isLoading ? (
-        <FCSPSkeleton />
+        <FCPSkeleton />
       ) : (
         <>
           {data?.data?.length === 0 ? (
-            <FCSPNoContentMessage />
+            <FCPNoContentMessage />
           ) : (
             <ScrollArea>
               {data?.data?.map((item, index) => (
