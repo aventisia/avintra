@@ -24,3 +24,6 @@ export { useFetchFlowComments } from "./hooks/useFetchFlowComments";
 // components
 export { FlowComments } from "./components/FlowComments";
 export { FCSPopoverTrigger } from "./components/FCSPopoverTrigger";
+export { FCSPopoverContent } from "./components/popover-content/FCSPopoverContent";
+export { FCSPSkeleton } from "./components/popover-content/FCSPSkeleton";
+export { FCSPNoContentMessage } from "./components/popover-content/FCSPNoContentMessage";

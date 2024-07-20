@@ -3,13 +3,12 @@ import {
   useFlowCommentsStore,
   FC_POPOVER_HEADING,
   FCSPopoverTrigger,
-  useFetchFlowComments,
+  FCSPopoverContent,
 } from "@/features/flow-comments";
 import {
   Popover,
   PopoverContent,
   PopoverDefaultHeader,
-  ScrollArea,
 } from "@/react-toolkit/components/ui";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/react-toolkit/lib";
@@ -31,9 +30,6 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
   // Set flow comments query key and flowId in store
   useFlowCommentsQueryKey();
 
-  // Fetch flow comments
-  const { data } = useFetchFlowComments();
-
   // Return Flow Comments Popover
   return (
     <Popover open={isPopoverOpen} onOpenChange={togglePopoverOpen}>
@@ -48,13 +44,7 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
         {/* Popover default header */}
         <PopoverDefaultHeader heading={FC_POPOVER_HEADING} />
         {/* Flow comments list */}
-        <ScrollArea className="grow">
-          {data?.data?.map((item) => (
-            <div key={item.id} className="px-4 py-2">
-              {item.comment}
-            </div>
-          ))}
-        </ScrollArea>
+        <FCSPopoverContent />
         {/* Placholder for Message Composer */}
         <input />
       </PopoverContent>
