@@ -1,9 +1,12 @@
+import {
+  projectsTableColumns,
+  useFetchProjects,
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  ProjectCrudDialogContent,
+} from "@/features/projects-table";
 import { Dialog as CrudDialogRoot } from "@/react-toolkit/components/ui";
-import { projectsTableColumns } from "./ProjectsTableColumns";
-import { useFetchProjects } from "../hooks/useFetchProjects";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { Separator } from "@/react-toolkit/components/ui";
-import { ProjectCrudDialogContent } from "./ProjectCrudDialogContent";
 import { useShallow } from "zustand/react/shallow";
 import {
   DTCreateButton,

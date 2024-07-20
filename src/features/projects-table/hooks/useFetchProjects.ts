@@ -1,6 +1,5 @@
+import { getProjects, DATA_QUERY_KEY } from "@/features/projects-table";
 import { useQuery } from "@tanstack/react-query";
-import { getProjects } from "../apis/projects-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
 
 /**
  * Custom hook to fetch projects using react query.

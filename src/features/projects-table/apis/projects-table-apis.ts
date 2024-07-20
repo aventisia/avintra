@@ -1,6 +1,6 @@
+import { ProjectsTableDto } from "@/features/projects-table";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
-import { ProjectsTableDto } from "../dtos/projects-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/project`;
 

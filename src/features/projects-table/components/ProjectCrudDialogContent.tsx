@@ -1,4 +1,12 @@
 import {
+  ProjectsTableDto,
+  projectZodSchema,
+  useDefineProjectForm,
+  DATA_QUERY_KEY,
+  getDialogHeadingDescription,
+  projectOptimisticMutationFn,
+} from "@/features/projects-table";
+import {
   DialogContent,
   DialogDefaultHeader,
   Form,
@@ -6,16 +14,8 @@ import {
   ScrollArea,
   Button,
 } from "@/react-toolkit/components/ui";
-import { useDefineProjectForm } from "../hooks/useDefineProjectForm";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import {
-  DATA_QUERY_KEY,
-  getDialogHeadingDescription,
-} from "../constants/constants";
-import { projectOptimisticMutationFn } from "../apis/projects-table-apis";
-import { ProjectsTableDto } from "../dtos/projects-table-dto";
 import { z } from "zod";
-import { projectZodSchema } from "../constants/project-zod-schema";
 import { ProjectTypesEnum } from "@/react-toolkit/enums";
 import { enumToArray } from "@/react-toolkit/utils";
 import {

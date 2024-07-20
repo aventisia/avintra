@@ -1,11 +1,14 @@
 import {
+  ProjectsTableDto,
+  projectOptimisticMutationFn,
+  DATA_QUERY_KEY,
+  ProjectOpenRowAction,
+} from "@/features/projects-table";
+import {
   AlertDialog as DeleteAlertDialogRoot,
   DropdownMenuSeparator,
 } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { ProjectsTableDto } from "../dtos/projects-table-dto";
-import { projectOptimisticMutationFn } from "../apis/projects-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
 import {
   DTDeleteRowAction,
   DTEditRowAction,
@@ -13,7 +16,6 @@ import {
   DTViewRowAction,
   DataTableRowActions,
 } from "@/react-toolkit/components/data-table";
-import { ProjectOpenRowAction } from "./ProjectOpenRowAction";
 
 interface ProjectsTableRowActionsProps {
   /** The ID of the row */

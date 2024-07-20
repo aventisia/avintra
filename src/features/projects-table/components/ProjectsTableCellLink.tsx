@@ -1,5 +1,5 @@
+import { useOpenProject } from "@/features/projects-table";
 import { Button } from "@/react-toolkit/components/ui";
-import { useOpenProject } from "../hooks/useOpenProject";
 import { cn } from "@/react-toolkit/lib";
 
 interface ProjectsTableCellLinkProps {

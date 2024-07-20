@@ -1,9 +1,11 @@
+import {
+  projectZodSchema,
+  ProjectsTableDto,
+  DATA_QUERY_KEY,
+} from "@/features/projects-table";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { projectZodSchema } from "../constants/project-zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProjectsTableDto } from "../dtos/projects-table-dto";
-import { DATA_QUERY_KEY } from "../constants/constants";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";

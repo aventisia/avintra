@@ -1,10 +1,10 @@
+import { useOpenProject } from "@/features/projects-table";
 import {
   DropdownMenuItem,
   buttonVariants,
 } from "@/react-toolkit/components/ui";
 import { cn } from "@/react-toolkit/lib";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useOpenProject } from "../hooks/useOpenProject";
 
 /**
  * Props for the OpenRowAction component.
