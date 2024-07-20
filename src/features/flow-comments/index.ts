@@ -15,6 +15,7 @@ export {
 export { FC_POPOVER_HEADING } from "./constants/constatns";
 
 // stores
+export { useFlowCommentsStore } from "./stores/flow-comments-store";
 
 // hooks
 
