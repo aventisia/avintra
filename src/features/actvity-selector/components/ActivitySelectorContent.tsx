@@ -13,7 +13,7 @@ import {
   ScrollArea,
 } from "@/react-toolkit/components/ui";
 import { useShallow } from "zustand/react/shallow";
-import { useAddNode } from "@/hooks/useAddNode";
+import { useAddNode } from "@/hooks";
 
 /**
  * Renders the content of the activity selector component.

@@ -8,7 +8,7 @@ import "@xyflow/react/dist/style.css";
 import { ReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useTrackSelection } from "@/hooks/useTrackSelection";
+import { useTrackSelection } from "@/hooks";
 import { CustomNodeTypes } from "@/types/CustomNodeTypes";
 
 interface ReactFlowExtProps {
