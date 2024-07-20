@@ -1,3 +1,9 @@
+import {
+  ICreateAccountData,
+  IVerifyEmailAddressData,
+  verifyEmailAddressZodSchema,
+  createAccount
+} from "@/features/create-account";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
 import { useMutation } from "@tanstack/react-query";
@@ -25,13 +31,6 @@ import { setUserSessionLocally } from "@/react-toolkit/utils";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-// local
-import { createnAccount } from "../apis/create-account-apis";
-import {
-  ICreateAccountData,
-  IVerifyEmailAddressData,
-} from "../create-account-types";
-import { verifyEmailAddressFS } from "../create-account-fs";
 
 interface Step2VerifyEmailAddressFormProps {
   createAccountData: ICreateAccountData;
@@ -55,8 +54,8 @@ const Step2VerifyEmailAddressForm = ({
   const { navDirection } = useAuthStore();
 
   // Define form
-  const form = useForm<z.infer<typeof verifyEmailAddressFS>>({
-    resolver: zodResolver(verifyEmailAddressFS),
+  const form = useForm<z.infer<typeof verifyEmailAddressZodSchema>>({
+    resolver: zodResolver(verifyEmailAddressZodSchema),
     defaultValues: { verificationCode: "" },
   });
   const {
@@ -65,7 +64,7 @@ const Step2VerifyEmailAddressForm = ({
 
   // Define mutations
   const createAccountAPI = useMutation({
-    mutationFn: createnAccount,
+    mutationFn: createAccount,
     onSuccess: (httpResponse) => {
       // OnSuccess Reset createAccountData, verifyEmailAddressData & set stepNo to ZERO
       changeStep(0, true, "forward");
@@ -136,7 +135,7 @@ const Step2VerifyEmailAddressForm = ({
   };
 
   // Define submit handler
-  const onSubmit = (filledForm: z.infer<typeof verifyEmailAddressFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof verifyEmailAddressZodSchema>) => {
     createAccountAPI.mutate({
       email: createAccountData.email,
       firstName: createAccountData.firstName,

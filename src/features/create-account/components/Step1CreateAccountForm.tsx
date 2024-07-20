@@ -1,3 +1,8 @@
+import {
+  ICreateAccountData,
+  IVerifyEmailAddressData,
+  createAccountZodSchema,
+} from "@/features/create-account";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -28,12 +33,6 @@ import { Loader2 } from "lucide-react";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { emailRegex } from "@/react-toolkit/components/form";
 import { cn } from "@/react-toolkit/lib";
-// local
-import {
-  ICreateAccountData,
-  IVerifyEmailAddressData,
-} from "../create-account-types";
-import { createAccountFS } from "../create-account-fs";
 
 interface Step1CreateAccountFormProps {
   createAccountData: ICreateAccountData;
@@ -57,8 +56,8 @@ const Step1CreateAccountForm = ({
   const [accountNotFound, setAccountNotFound] = useState(false);
 
   // Define form
-  const form = useForm<z.infer<typeof createAccountFS>>({
-    resolver: zodResolver(createAccountFS),
+  const form = useForm<z.infer<typeof createAccountZodSchema>>({
+    resolver: zodResolver(createAccountZodSchema),
     defaultValues: {
       firstName: createAccountData.firstName,
       lastName: createAccountData.lastName,
@@ -152,7 +151,7 @@ const Step1CreateAccountForm = ({
   };
 
   // Define submit handler
-  const onSubmit = async (filledForm: z.infer<typeof createAccountFS>) => {
+  const onSubmit = async (filledForm: z.infer<typeof createAccountZodSchema>) => {
     // Have ot set or clear error manually for boolean datatype since zod does not do it automatically
     if (!filledForm.termsAgreement) {
       form.setError("termsAgreement", {
@@ -343,7 +342,10 @@ const Step1CreateAccountForm = ({
           />
           <ContentFooter>
             <span className="text-sm text-foreground">Have an account?</span>
-            <a href={`${import.meta.env.BASE_URL}login`} className={buttonVariants({ variant: "link" })}>
+            <a
+              href={`${import.meta.env.BASE_URL}login`}
+              className={buttonVariants({ variant: "link" })}
+            >
               Log in
             </a>
           </ContentFooter>

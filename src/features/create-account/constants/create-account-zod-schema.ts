@@ -7,11 +7,9 @@ import {
   nameRegex,
   pwdRegex,
   pwdError,
-  numericRegex,
-  numericError,
 } from "@/react-toolkit/components/form";
 
-const createAccountFS = z
+export const createAccountZodSchema = z
   .object({
     firstName: z
       .string()
@@ -44,16 +42,3 @@ const createAccountFS = z
     path: ["confirmPwd"],
     message: "Passwords do not match",
   });
-
-const verifyEmailAddressFS = z.object({
-  verificationCode: z
-    .string()
-    .min(1, { message: reqError("Verification code") })
-    .min(6, { message: minLenError("Verification code", 6) })
-    .max(6, { message: maxLenError("Verification code", 6) })
-    .regex(numericRegex, {
-      message: numericError("Verification code"),
-    }),
-});
-
-export { createAccountFS, verifyEmailAddressFS };
