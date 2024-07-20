@@ -13,6 +13,7 @@ export {
 
 // constants
 export { FC_POPOVER_HEADING } from "./constants/constatns";
+export { flowCommentZodSchema } from "./constants/flow-comment-zod-schema";
 
 // stores
 export { useFlowCommentsStore } from "./stores/flow-comments-store";
