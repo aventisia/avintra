@@ -26,6 +26,7 @@ export { useDefineCreateCommentForm } from "./hooks/useDefineCreateCommentForm";
 // components
 export { FlowComments } from "./components/FlowComments";
 export { FCPopoverTrigger } from "./components/FCPopoverTrigger";
+export { FCMessageComposer } from "./components/FCMessageComposer";
 export { FCPopoverContent } from "./components/popover-content/FCPopoverContent";
 export { FCPSkeleton } from "./components/popover-content/FCPSkeleton";
 export { FCPNoContentMessage } from "./components/popover-content/FCPNoContentMessage";
