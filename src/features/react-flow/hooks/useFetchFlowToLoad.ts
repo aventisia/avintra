@@ -2,8 +2,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import { useLocation } from "react-router-dom";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useCurrentFlowStore, useReactFlowExtStore } from "@/stores";
 
 export const useFetchFlowToLoad = () => {
   // Get flowId (f)

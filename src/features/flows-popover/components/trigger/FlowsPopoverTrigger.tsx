@@ -7,7 +7,7 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/react-toolkit/lib";
 import { PopoverTrigger, buttonVariants } from "@/react-toolkit/components/ui";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useCurrentFlowStore } from "@/stores";
 
 /**
  * Renders a popover trigger component for flows list.

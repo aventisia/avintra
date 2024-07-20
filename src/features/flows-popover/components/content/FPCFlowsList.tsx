@@ -5,7 +5,7 @@ import {
   useOpenFlow,
 } from "@/features/flows-popover";
 import { CommandItem } from "@/react-toolkit/components/ui";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useCurrentFlowStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 
 interface FPCFlowListProps {

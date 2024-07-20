@@ -1,7 +1,7 @@
 import { FlowsTableDto } from "@/features/flows-popover";
 import { formatDistanceToNow } from "date-fns";
 import { useShallow } from "zustand/react/shallow";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useCurrentFlowStore } from "@/stores";
 
 interface FlowLastModifiedOnProps {
   flowData: FlowsTableDto;

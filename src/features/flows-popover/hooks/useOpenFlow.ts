@@ -1,7 +1,7 @@
 import { useFlowsPopoverStore } from "@/features/flows-popover";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useCurrentFlowStore } from "@/stores";
 
 /**
  * Custom hook to handle opening a flow.

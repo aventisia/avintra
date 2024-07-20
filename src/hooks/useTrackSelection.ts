@@ -1,4 +1,4 @@
-import { useTrackSelectionStore } from "@/stores/track-selection-store";
+import { useTrackSelectionStore } from "@/stores";
 import { Edge, Node, useOnSelectionChange } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
