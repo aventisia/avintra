@@ -23,9 +23,9 @@ export const FCIHeader = memo(({ data }: FCIHeaderProps) => {
   return (
     <>
       {/* User full name and Time container */}
-      <div className="flex items-center">
+      <div className="flex w-[15rem] items-center">
         {/* User full name */}
-        <span className="text-xs font-medium text-foreground">
+        <span className="text-xs truncate font-medium text-foreground">
           {data.userFullName}
         </span>
 
@@ -33,7 +33,7 @@ export const FCIHeader = memo(({ data }: FCIHeaderProps) => {
         <DotSeparator />
 
         {/* Date and time */}
-        <span className="text-2xs text-muted-foreground">
+        <span title={`${formattedTime} ${data.isEdited && "(edited)"}`} className="text-2xs truncate text-muted-foreground">
           {formattedTime} {data.isEdited && `(edited)`}
         </span>
       </div>
