@@ -3,9 +3,12 @@ import {
   FCIAvatar,
   FCIHeader,
   FCIMessage,
+  FCIActions
 } from "@/features/flow-comments";
 import { cn } from "@/react-toolkit/lib";
 import { memo } from "react";
+import { useUserSessionStore } from "@/react-toolkit/stores";
+import { useShallow } from "zustand/react/shallow";
 
 interface FlowCommentItemProps {
   /** Index of the flow comment item in the list */
@@ -23,14 +26,26 @@ interface FlowCommentItemProps {
  * @returns {JSX.Element} The rendered FlowCommentItem component.
  */
 export const FlowCommentItem = memo(({ index, data }: FlowCommentItemProps) => {
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
   // Return the flow comment item
   return (
     <div
       className={cn(
-        "flex w-full gap-3.5 px-3.5 py-2.5 leading-[1.1rem]",
+        "group relative flex w-full gap-3.5 px-3.5 py-2.5 leading-[1.1rem]",
         index > 0 && "border-t",
       )}
     >
+      {/* Show flow comment action buttons if comment belong to user */}
+      {userSession?.email === data.userName && (
+        <FCIActions flowCommentId={data.id} />
+      )}
+
       {/* PENDING: User avatar who created the flow comment */}
       <FCIAvatar />
 

@@ -34,3 +34,7 @@ export { FlowCommentItem } from "./components/popover-content/flow-comment-item/
 export { FCIAvatar } from "./components/popover-content/flow-comment-item/FCIAvatar";
 export { FCIHeader } from "./components/popover-content/flow-comment-item/FCIHeader";
 export { FCIMessage } from "./components/popover-content/flow-comment-item/FCIMessage";
+export { FCIActions } from "./components/popover-content/flow-comment-item/actions/FCIActions";
+export { FCIActionsTrigger } from "./components/popover-content/flow-comment-item/actions/FCIActionsTrigger";
+export { FCIEditAction } from "./components/popover-content/flow-comment-item/actions/FCIEditAction";
+export { FCIDeleteAction } from "./components/popover-content/flow-comment-item/actions/FCIDeleteAction";
