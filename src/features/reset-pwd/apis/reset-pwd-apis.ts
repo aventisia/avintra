@@ -1,6 +1,6 @@
+import { PwdResetDto } from "@/features/reset-pwd";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse } from "@/react-toolkit/dtos";
-import { PwdResetDto } from "../dtos/pwd-reset-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
 

@@ -1,3 +1,4 @@
+import { IVerifyCodeData, verifyCodeZodSchema } from "@/features/reset-pwd";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
 import { useMutation } from "@tanstack/react-query";
@@ -27,8 +28,6 @@ import {
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-import { IVerifyCodeData } from "../reset-pwd-types";
-import { verifyCodeFS } from "../reset-pwd-fs";
 
 interface Step2VerifyCodeFormProps {
   verifyCodeData: IVerifyCodeData;
@@ -46,8 +45,8 @@ const Step2VerifyCodeForm = ({
   const { navDirection } = useAuthStore();
 
   // Define form
-  const form = useForm<z.infer<typeof verifyCodeFS>>({
-    resolver: zodResolver(verifyCodeFS),
+  const form = useForm<z.infer<typeof verifyCodeZodSchema>>({
+    resolver: zodResolver(verifyCodeZodSchema),
     defaultValues: {
       verificationCode: "",
     },
@@ -103,7 +102,7 @@ const Step2VerifyCodeForm = ({
   };
 
   // Define submit handler
-  const onSubmit = (filledForm: z.infer<typeof verifyCodeFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof verifyCodeZodSchema>) => {
     verifyCodeAPI.mutate({
       email: verifyCodeData.email,
       requestType: verifyCodeData.requestType,

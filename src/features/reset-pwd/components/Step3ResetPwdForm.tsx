@@ -1,3 +1,4 @@
+import { resetPwd, resetPwdZodSchema } from "@/features/reset-pwd";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
 import { useMutation } from "@tanstack/react-query";
@@ -24,8 +25,6 @@ import {
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-import { resetPwd } from "../apis/reset-pwd-apis";
-import { resetPwdFS } from "../reset-pwd-fs";
 
 interface Step3ResetPwdFormProps {
   fnChangeStep: (stepNo: number, navDirection?: string) => void;
@@ -37,8 +36,8 @@ const Step3ResetPwdForm = ({ fnChangeStep }: Step3ResetPwdFormProps) => {
   const { navDirection } = useAuthStore();
 
   // Define form.
-  const form = useForm<z.infer<typeof resetPwdFS>>({
-    resolver: zodResolver(resetPwdFS),
+  const form = useForm<z.infer<typeof resetPwdZodSchema>>({
+    resolver: zodResolver(resetPwdZodSchema),
     defaultValues: {
       newPwd: "",
       confirmNewPwd: "",
@@ -66,7 +65,7 @@ const Step3ResetPwdForm = ({ fnChangeStep }: Step3ResetPwdFormProps) => {
   });
 
   // Define a submit handler.
-  const onSubmit = (filledForm: z.infer<typeof resetPwdFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof resetPwdZodSchema>) => {
     mutate({
       newPwd: filledForm.newPwd,
       logoffFromAllSessions: filledForm.logoffFromAllSessions,

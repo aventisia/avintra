@@ -1,3 +1,4 @@
+import { IVerifyCodeData, provideEmailZodSchema } from "@/features/reset-pwd";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -22,8 +23,6 @@ import {
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useAuthStore } from "@/stores";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-import { IVerifyCodeData } from "../reset-pwd-types";
-import { provideEmailToResetPwdFS } from "../reset-pwd-fs";
 
 interface Step1ProvideEmailToResetPwdFormProps {
   fnChangeStep: (stepNo: number, navDirection?: string) => void;
@@ -40,8 +39,8 @@ const Step1ProvideEmailToResetPwdForm = ({
   const userName = localStorage.getItem("userName");
 
   // Define form
-  const form = useForm<z.infer<typeof provideEmailToResetPwdFS>>({
-    resolver: zodResolver(provideEmailToResetPwdFS),
+  const form = useForm<z.infer<typeof provideEmailZodSchema>>({
+    resolver: zodResolver(provideEmailZodSchema),
     defaultValues: {
       email: userName ? userName : "",
     },
@@ -89,7 +88,7 @@ const Step1ProvideEmailToResetPwdForm = ({
   };
 
   // Define submit handler.
-  const onSubmit = (filledForm: z.infer<typeof provideEmailToResetPwdFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof provideEmailZodSchema>) => {
     mutate({
       email: filledForm.email,
       requestType: "ResetPwd",
