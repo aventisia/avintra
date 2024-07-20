@@ -1,5 +1,5 @@
+import { useFlowsTableStore } from "@/features/flows-table";
 import { useShallow } from "zustand/react/shallow";
-import { useFlowsStore } from "../stores/flows-table-store";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,7 +13,7 @@ import { useDocumentTitle } from "@/react-toolkit/hooks";
 
 export const FlowsTableHeading: React.FC = () => {
   // Get flows store state and actions
-  const { projectName } = useFlowsStore(
+  const { projectName } = useFlowsTableStore(
     useShallow((state) => ({
       projectName: state.projectName,
     })),

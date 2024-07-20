@@ -1,4 +1,11 @@
 import {
+  flowOptimisticMutationFn,
+  FlowsTableDto,
+  flowZodSchema,
+  getDialogHeadingDescription,
+  useDefineFlowForm,
+} from "@/features/flows-table";
+import {
   DialogContent,
   DialogDefaultHeader,
   Form,
@@ -6,13 +13,8 @@ import {
   ScrollArea,
   Button,
 } from "@/react-toolkit/components/ui";
-import { useDefineFlowForm } from "../hooks/useDefineFlowForm";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { getDialogHeadingDescription } from "../constants/constants";
-import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { z } from "zod";
-import { flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowTypesEnum } from "@/react-toolkit/enums";
 import { enumToArray } from "@/react-toolkit/utils";
 import {

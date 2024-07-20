@@ -1,14 +1,16 @@
+import {
+  FlowsTableDto,
+  flowZodSchema,
+  useFlowsTableStore,
+} from "@/features/flows-table";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { flowZodSchema } from "../constants/flow-zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUserSessionStore } from "@/react-toolkit/stores";
 import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
-import { useFlowsStore } from "../stores/flows-table-store";
 
 /**
  * Custom hook for defining a flow form.
@@ -17,7 +19,7 @@ import { useFlowsStore } from "../stores/flows-table-store";
  */
 export const useDefineFlowForm = () => {
   // 1. Get flows store state and actions
-  const { projectId, flowsQueryKey } = useFlowsStore(
+  const { projectId, flowsQueryKey } = useFlowsTableStore(
     useShallow((state) => ({
       projectId: state.projectId,
       flowsQueryKey: state.flowsQueryKey,

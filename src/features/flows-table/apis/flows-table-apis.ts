@@ -1,6 +1,6 @@
+import { FlowsTableDto } from "@/features/flows-table";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 

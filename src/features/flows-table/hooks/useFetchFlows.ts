@@ -1,6 +1,5 @@
+import { getProjectFlows, useFlowsTableStore } from "@/features/flows-table";
 import { useQuery } from "@tanstack/react-query";
-import { getProjectFlows } from "../apis/flows-table-apis";
-import { useFlowsStore } from "../stores/flows-table-store";
 import { useShallow } from "zustand/react/shallow";
 
 /**
@@ -9,7 +8,7 @@ import { useShallow } from "zustand/react/shallow";
  */
 export const useFetchFlows = () => {
   // Get flows store state and actions
-  const { projectId, flowsQueryKey } = useFlowsStore(
+  const { projectId, flowsQueryKey } = useFlowsTableStore(
     useShallow((state) => ({
       projectId: state.projectId,
       flowsQueryKey: state.flowsQueryKey,

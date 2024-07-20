@@ -16,7 +16,7 @@ type Actions = {
   setFlowsState: (projectId: string, projectName: string) => void;
 };
 
-export const useFlowsStore = create<State & Actions>((set) => ({
+export const useFlowsTableStore = create<State & Actions>((set) => ({
   projectId: "",
   projectName: "",
   flowsQueryKey: [],

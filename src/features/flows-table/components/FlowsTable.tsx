@@ -1,9 +1,13 @@
+import {
+  flowsTableColumns,
+  useFetchFlows,
+  SEARCH_COLUMN,
+  FlowCrudDialogContent,
+  useFlowsQueryKey,
+  FlowsTableHeading,
+} from "@/features/flows-table";
 import { Dialog as CrudDialogRoot } from "@/react-toolkit/components/ui";
-import { flowsTableColumns } from "./FlowsTableColumns";
-import { useFetchFlows } from "../hooks/useFetchFlows";
-import { SEARCH_COLUMN } from "../constants/constants";
 import { Separator } from "@/react-toolkit/components/ui";
-import { FlowCrudDialogContent } from "./FlowCrudDialogContent";
 import { useShallow } from "zustand/react/shallow";
 import {
   DTCreateButton,
@@ -15,8 +19,6 @@ import {
   useDTCrudDialogStore,
   useDataTable,
 } from "@/react-toolkit/components/data-table";
-import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
-import { FlowsTableHeading } from "./FlowsTableHeading";
 
 /**
  * Renders a table of flows.

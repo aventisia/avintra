@@ -1,5 +1,5 @@
+import { useFlowsTableStore } from "@/features/flows-table";
 import { useLocation } from "react-router-dom";
-import { useFlowsStore } from "../stores/flows-table-store";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 
@@ -15,7 +15,7 @@ export const useFlowsQueryKey = () => {
   const projectName = queryParams.get("pn");
 
   // Get store setFlowsState action
-  const { setFlowsState } = useFlowsStore(
+  const { setFlowsState } = useFlowsTableStore(
     useShallow((state) => ({
       setFlowsState: state.setFlowsState,
     })),

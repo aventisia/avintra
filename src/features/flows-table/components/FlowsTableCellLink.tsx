@@ -1,5 +1,5 @@
+import { useOpenFlow } from "@/features/flows-table";
 import { Button } from "@/react-toolkit/components/ui";
-import { useOpenFlow } from "../hooks/useOpenFlow";
 import { cn } from "@/react-toolkit/lib";
 
 interface FlowsTableCellLinkProps {

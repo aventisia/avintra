@@ -1,10 +1,14 @@
 import {
+  FlowsTableDto,
+  flowOptimisticMutationFn,
+  FlowOpenRowAction,
+  useFlowsTableStore,
+} from "@/features/flows-table";
+import {
   AlertDialog as DeleteAlertDialogRoot,
   DropdownMenuSeparator,
 } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
 import {
   DTDeleteRowAction,
   DTEditRowAction,
@@ -12,9 +16,7 @@ import {
   DTViewRowAction,
   DataTableRowActions,
 } from "@/react-toolkit/components/data-table";
-import { FlowOpenRowAction } from "./FlowOpenRowAction";
 import { useShallow } from "zustand/react/shallow";
-import { useFlowsStore } from "../stores/flows-table-store";
 
 interface FlowsTableRowActionsProps {
   /** The ID of the row */
@@ -29,7 +31,7 @@ interface FlowsTableRowActionsProps {
  */
 export const FlowsTableRowActions = ({ rowId }: FlowsTableRowActionsProps) => {
   // Get flows store state and actions
-  const { flowsQueryKey } = useFlowsStore(
+  const { flowsQueryKey } = useFlowsTableStore(
     useShallow((state) => ({
       flowsQueryKey: state.flowsQueryKey,
     })),

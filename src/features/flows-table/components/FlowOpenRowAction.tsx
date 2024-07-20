@@ -1,10 +1,10 @@
+import { useOpenFlow } from "@/features/flows-table";
 import {
   DropdownMenuItem,
   buttonVariants,
 } from "@/react-toolkit/components/ui";
 import { cn } from "@/react-toolkit/lib";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useOpenFlow } from "../hooks/useOpenFlow";
 
 /**
  * Props for the OpenRowAction component.

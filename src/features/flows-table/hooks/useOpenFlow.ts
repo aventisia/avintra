@@ -1,4 +1,4 @@
-import { useFlowsStore } from "../stores/flows-table-store";
+import { useFlowsTableStore } from "@/features/flows-table";
 import { useShallow } from "zustand/react/shallow";
 
 /**
@@ -8,7 +8,7 @@ import { useShallow } from "zustand/react/shallow";
  */
 export const useOpenFlow = () => {
   // Get flows store state and actions
-  const { projectId } = useFlowsStore(
+  const { projectId } = useFlowsTableStore(
     useShallow((state) => ({
       projectId: state.projectId,
     })),
