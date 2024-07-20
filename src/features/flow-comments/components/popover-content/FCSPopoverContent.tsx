@@ -2,6 +2,7 @@ import {
   useFetchFlowComments,
   FCSPSkeleton,
   FCSPNoContentMessage,
+  FlowCommentItem,
 } from "@/features/flow-comments";
 import { ScrollArea } from "@/react-toolkit/components/ui";
 
@@ -24,10 +25,8 @@ export const FCSPopoverContent = () => {
             <FCSPNoContentMessage />
           ) : (
             <ScrollArea>
-              {data?.data?.map((item) => (
-                <div key={item.id} className="px-4 py-2">
-                  {item.comment}
-                </div>
+              {data?.data?.map((item, index) => (
+                <FlowCommentItem key={item.id} index={index} data={item} />
               ))}
             </ScrollArea>
           )}
