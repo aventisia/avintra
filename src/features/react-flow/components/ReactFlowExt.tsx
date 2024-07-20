@@ -9,7 +9,7 @@ import { ReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import { useReactFlowExtStore } from "@/stores";
 import { useTrackSelection } from "@/hooks";
-import { CustomNodeTypes } from "@/types/CustomNodeTypes";
+import { CustomNodeTypes } from "@/constants";
 
 interface ReactFlowExtProps {
   children?: React.ReactNode;
