@@ -24,7 +24,7 @@ export const FCPopoverContent = () => {
           {data?.data?.length === 0 ? (
             <FCPNoContentMessage />
           ) : (
-            <ScrollArea>
+            <ScrollArea className="grow">
               {data?.data?.map((item, index) => (
                 <FlowCommentItem key={item.id} index={index} data={item} />
               ))}
