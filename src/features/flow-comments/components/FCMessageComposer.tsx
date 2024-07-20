@@ -12,7 +12,7 @@ import {
   FormField,
   FormItem,
 } from "@/react-toolkit/components/ui";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/react-toolkit/lib";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
 import { z } from "zod";
@@ -78,7 +78,7 @@ export const FCMessageComposer = ({
         <FormField control={form.control} name="comment" render={({ field }) => (
             <FormItem>
               <FormControl>
-                <AutosizeTextarea maxHeight={200} minHeight={36} {...field}
+                <AutosizeTextarea maxHeight={crudAction === "create" ? 200 : 2000} minHeight={36} {...field}
                   className="resize-none text-xs py-2.5 h-10 border-none bg-slate-100 pr-12"
                   placeholder="Type a comment..."
                 />
@@ -89,7 +89,11 @@ export const FCMessageComposer = ({
 
         {/* Submit button */}
         <Button type="submit" variant={"ghost"} size={"icon8"} className="group/submit absolute bottom-1 h-[2.04rem] w-[2.04rem] right-1">
-          <PaperAirplaneIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
+          {crudAction === "create" ? (
+            <PaperAirplaneIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
+          ) : (
+            <CheckIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
+          )}
         </Button>
       </form>
     </Form>
