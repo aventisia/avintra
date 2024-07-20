@@ -7,22 +7,7 @@ import {
   numericError,
 } from "@/react-toolkit/components/form";
 
-const tenantInfoFS = z.object({
-  email: z
-    .string()
-    .min(1, { message: reqError("Email") })
-    .email(),
-});
-
-const pwdLoginFS = z.object({
-  email: z
-    .string()
-    .min(1, { message: reqError("Email") })
-    .email(),
-  pwd: z.string().min(1, { message: reqError("Password") }),
-});
-
-const twoFactorAuthFS = z.object({
+export const twoFactorAuthZodSchema = z.object({
   verificationCode: z
     .string()
     .min(1, { message: reqError("2FA code") })
@@ -32,5 +17,3 @@ const twoFactorAuthFS = z.object({
       message: numericError("2FA code"),
     }),
 });
-
-export { tenantInfoFS, pwdLoginFS, twoFactorAuthFS };

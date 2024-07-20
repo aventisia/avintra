@@ -1,3 +1,4 @@
+import { ILoginData, tenantInfoZodSchema } from "@/features/login";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -21,9 +22,7 @@ import {
   ContentFooter,
   ContentContainer,
 } from "@/components/ui";
-import { ILoginData } from "../login-types";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-import { tenantInfoFS } from "../login-fs";
 
 interface Step1GetTenantInfoFormProps {
   fnChangeStep: (stepNo: number, navDirection?: string) => void;
@@ -39,8 +38,8 @@ const Step1GetTenantInfoForm = ({
   const userName = localStorage.getItem("userName");
 
   // Define form
-  const form = useForm<z.infer<typeof tenantInfoFS>>({
-    resolver: zodResolver(tenantInfoFS),
+  const form = useForm<z.infer<typeof tenantInfoZodSchema>>({
+    resolver: zodResolver(tenantInfoZodSchema),
     defaultValues: {
       email: userName ? userName : "",
     },
@@ -74,7 +73,7 @@ const Step1GetTenantInfoForm = ({
   });
 
   // Define submit handler
-  const onSubmit = (filledForm: z.infer<typeof tenantInfoFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof tenantInfoZodSchema>) => {
     mutate(filledForm);
   };
 

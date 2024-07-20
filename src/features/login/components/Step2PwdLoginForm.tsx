@@ -1,3 +1,9 @@
+import {
+  pwdLoginZodSchema,
+  authenticateUser,
+  ILoginData,
+  ITwoFACodeData,
+} from "@/features/login";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
 import { useMutation } from "@tanstack/react-query";
@@ -20,9 +26,6 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import { setUserSessionLocally } from "@/react-toolkit/utils";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-import { pwdLoginFS } from "../login-fs";
-import { authenticateUser } from "../apis/login-apis";
-import { ILoginData, ITwoFACodeData } from "../login-types";
 
 interface Step2PwdLoginFormProps {
   loginData: ILoginData;
@@ -43,8 +46,8 @@ const Step2PwdLoginForm = ({
   const userName = localStorage.getItem("userName");
 
   // Define form
-  const form = useForm<z.infer<typeof pwdLoginFS>>({
-    resolver: zodResolver(pwdLoginFS),
+  const form = useForm<z.infer<typeof pwdLoginZodSchema>>({
+    resolver: zodResolver(pwdLoginZodSchema),
     defaultValues: {
       email: loginData.email,
       pwd: "",
@@ -116,7 +119,7 @@ const Step2PwdLoginForm = ({
   };
 
   // Define submit handler
-  const onSubmit = (filledForm: z.infer<typeof pwdLoginFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof pwdLoginZodSchema>) => {
     // Set pwd to use in StepNo-3 to resend the code (if user asks)
     fnSetLoginData({
       tenantId: loginData.tenantId,

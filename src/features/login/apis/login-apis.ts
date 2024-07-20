@@ -1,10 +1,10 @@
+import { PwdLoginDto } from "@/features/login";
 import { axiosInstance } from "@/react-toolkit/apis";
 import {
   CheckVerificationCodeDto,
   UserSessionDto,
   IHttpResponse,
 } from "@/react-toolkit/dtos";
-import { PwdLoginDto } from "../dtos/pwd-login-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
 

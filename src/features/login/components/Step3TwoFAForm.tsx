@@ -1,3 +1,10 @@
+import {
+  ILoginData,
+  ITwoFACodeData,
+  twoFactorAuthZodSchema,
+  authenticateUser,
+  checkTwoFAVerificationCode,
+} from "@/features/login";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
 import { useMutation } from "@tanstack/react-query";
@@ -24,12 +31,6 @@ import { setUserSessionLocally } from "@/react-toolkit/utils";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import { useDocumentTitle } from "@/react-toolkit/hooks";
-import { ILoginData, ITwoFACodeData } from "../login-types";
-import { twoFactorAuthFS } from "../login-fs";
-import {
-  authenticateUser,
-  checkTwoFAVerificationCode,
-} from "../apis/login-apis";
 
 interface Step3TwoFAFormProps {
   loginData: ILoginData;
@@ -51,8 +52,8 @@ const Step3TwoFAForm = ({
   const { navDirection } = useAuthStore();
 
   // Define form
-  const form = useForm<z.infer<typeof twoFactorAuthFS>>({
-    resolver: zodResolver(twoFactorAuthFS),
+  const form = useForm<z.infer<typeof twoFactorAuthZodSchema>>({
+    resolver: zodResolver(twoFactorAuthZodSchema),
     defaultValues: {
       verificationCode: "",
     },
@@ -142,7 +143,7 @@ const Step3TwoFAForm = ({
   };
 
   // Define submit handler
-  const onSubmit = (filledForm: z.infer<typeof twoFactorAuthFS>) => {
+  const onSubmit = (filledForm: z.infer<typeof twoFactorAuthZodSchema>) => {
     verifyTwoFACodeAPI.mutate({
       email: twoFACodeData.email,
       requestType: twoFACodeData.requestType,
