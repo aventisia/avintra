@@ -21,6 +21,7 @@ export { useFlowCommentsStore } from "./stores/flow-comments-store";
 // hooks
 export { useFlowCommentsQueryKey } from "./hooks/useFlowCommentsQueryKey";
 export { useFetchFlowComments } from "./hooks/useFetchFlowComments";
+export { useDefineCreateCommentForm } from "./hooks/useDefineCreateCommentForm";
 
 // components
 export { FlowComments } from "./components/FlowComments";
