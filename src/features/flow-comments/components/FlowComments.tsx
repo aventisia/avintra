@@ -4,6 +4,8 @@ import {
   FC_POPOVER_HEADING,
   FCPopoverTrigger,
   FCPopoverContent,
+  FCMessageComposer,
+  useDefineCreateCommentForm,
 } from "@/features/flow-comments";
 import {
   Popover,
@@ -30,6 +32,9 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
   // Set flow comments query key and flowId in store
   useFlowCommentsQueryKey();
 
+  // Define create comment form
+  const { form } = useDefineCreateCommentForm();
+
   // Return Flow Comments Popover
   return (
     <Popover open={isPopoverOpen} onOpenChange={togglePopoverOpen}>
@@ -45,8 +50,12 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
         <PopoverDefaultHeader heading={FC_POPOVER_HEADING} />
         {/* Flow comments list */}
         <FCPopoverContent />
-        {/* Placholder for Message Composer */}
-        <input />
+        {/* Message Composer */}
+        <FCMessageComposer
+          form={form}
+          crudAction="create"
+          className="mx-3.5 my-3.5"
+        />
       </PopoverContent>
     </Popover>
   );
