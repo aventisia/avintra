@@ -1,6 +1,4 @@
-import { FlowComments } from "@/features/flow-comments";
-import { ETLIAMenu } from "@/features/etlia-menu";
-import { FlowsPopover } from "@/features/flows-popover";
+import { FlowComments, ETLIAMenu, FlowsPopover } from "@/features";
 import { AppLogo } from "@/react-toolkit/components/layout";
 import { DotSeparator } from "@/react-toolkit/components/ui";
 import {

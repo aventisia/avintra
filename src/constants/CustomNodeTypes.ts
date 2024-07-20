@@ -1,4 +1,4 @@
-import { ActivityNode } from "@/features/activity-node";
+import { ActivityNode } from "@/features";
 
 export const CustomNodeTypes = {
   activity: ActivityNode,

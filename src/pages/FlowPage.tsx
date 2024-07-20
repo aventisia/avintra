@@ -1,9 +1,9 @@
 import {
   ActivitySelector,
   FlowControlsTrigger,
-} from "@/features/actvity-selector";
-import { FlowControls } from "@/features/flow-controls";
-import { ReactFlowExt } from "@/features/react-flow";
+  FlowControls,
+  ReactFlowExt,
+} from "@/features";
 import { ReactFlowProvider } from "@xyflow/react";
 
 export const FlowPage = () => {
