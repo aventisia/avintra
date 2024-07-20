@@ -3,7 +3,7 @@ import {
   ATSIcon,
   ATSLabel,
 } from "@/features/actvity-selector";
-import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
+import { ActivityNodeDataType } from "@/types";
 
 interface ActivityToSelectProps {
   /** The activity data */

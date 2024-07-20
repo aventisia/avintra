@@ -1,4 +1,4 @@
-import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
+import { ActivityNodeDataType } from "@/types";
 
 export const activitiesList: ActivityNodeDataType[] = [
   {

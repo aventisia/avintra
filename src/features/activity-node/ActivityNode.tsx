@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Node, NodeProps } from "@xyflow/react";
 import { Separator } from "@/react-toolkit/components/ui";
-import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
+import { ActivityNodeDataType } from "@/types";
 import {
   NodeHeader,
   InputHandle,
