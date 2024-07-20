@@ -12,6 +12,7 @@ export {
 } from "./apis/flow-comments-apis";
 
 // constants
+export { FC_POPOVER_HEADING } from "./constants/constatns";
 
 // stores
 
