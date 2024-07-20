@@ -1,3 +1,4 @@
+import { FlowComments } from "@/features/flow-comments";
 import { ETLIAMenu } from "@/features/etlia-menu";
 import { FlowsPopover } from "@/features/flows-popover";
 import { AppLogo } from "@/react-toolkit/components/layout";
@@ -28,7 +29,10 @@ const StudioHeader = ({ className }: StudioHeaderProps) => {
         </div>
         <div className="flex items-center gap-4">
           <FlowsPopover className="mt-0 mlg:mt-4" />
-          <UnreadNotifications className="mt-0 mlg:mt-4" />
+          <div className="flex gap-1">
+            <FlowComments className="mt-0 mlg:mt-4" />
+            <UnreadNotifications className="mt-0 mlg:mt-4" />
+          </div>
           <UserAccountModal />
         </div>
       </div>

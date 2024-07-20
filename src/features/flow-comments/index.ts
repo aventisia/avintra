@@ -22,3 +22,5 @@ export { useFlowCommentsQueryKey } from "./hooks/useFlowCommentsQueryKey";
 export { useFetchFlowComments } from "./hooks/useFetchFlowComments";
 
 // components
+export { FlowComments } from "./components/FlowComments";
+export { FCSPopoverTrigger } from "./components/FCSPopoverTrigger";
