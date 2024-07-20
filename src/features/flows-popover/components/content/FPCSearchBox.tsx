@@ -11,6 +11,7 @@ export const FPCSearchBox = () => {
       <CommandPrimitive.Input
         className="flex h-9 w-full rounded-md bg-transparent py-3 text-xs outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-80"
         placeholder="Search flows..."
+        autoFocus
       />
     </div>
   );
