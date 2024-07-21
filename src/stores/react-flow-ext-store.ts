@@ -48,7 +48,6 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   nodes: [],
   edges: [],
   isLocked: false,
-  isSavePending: false,
 
   onNodesChange: (changes: NodeChange[]) => {
     set({ nodes: applyNodeChanges(changes, get().nodes) });
