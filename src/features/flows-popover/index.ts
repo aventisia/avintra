@@ -41,4 +41,5 @@ export { FlowListItem } from "./components/content/flow-list-item/FlowListItem";
 export { FLIName } from "./components/content/flow-list-item/FLIName";
 export { FLILastModifiedOn } from "./components/content/flow-list-item/FLILastModifiedOn";
 export { FLIThumbnail } from "./components/content/flow-list-item/FLIThumbnail";
+export { FLIActions } from "./components/content/flow-list-item/actions/FLIActions";
 export { FLIOpenAction } from "./components/content/flow-list-item/actions/FLIOpenAction";

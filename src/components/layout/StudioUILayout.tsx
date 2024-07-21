@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { cn } from "@/react-toolkit/lib";
-import { StudioHeader } from "./StudioHeader";
+import { StudioHeader } from "@/components/layout";
 import { RedirectPage } from "@/react-toolkit/pages";
 import { useValidateUserSession } from "@/react-toolkit/hooks";
 

@@ -3,9 +3,9 @@ import {
   FLIName,
   FLIThumbnail,
   FlowsTableDto,
+  FLIActions,
 } from "@/features/flows-popover";
 import { cn } from "@/react-toolkit/lib";
-import { FLIActions } from "./actions/FLIActions";
 
 interface FlowListItemProps {
   flowData: FlowsTableDto;

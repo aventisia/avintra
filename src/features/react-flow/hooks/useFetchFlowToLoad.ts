@@ -1,6 +1,6 @@
+import { getFlowToLoad } from "@/features/react-flow";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
-import { getFlowToLoad } from "../apis/react-flow-apis";
 import { useLocation } from "react-router-dom";
 import { useCurrentFlowStore, useReactFlowExtStore } from "@/stores";
 
