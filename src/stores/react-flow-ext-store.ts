@@ -22,6 +22,9 @@ type State = {
 
   /** Flag to track if Reactflow is locked */
   isLocked: boolean;
+
+  /** Flag to track pending flow save */
+  isSavePending: boolean;
 };
 
 type Actions = {
@@ -42,6 +45,9 @@ type Actions = {
 
   /** To toggle ReactFlow lock/unlock state */
   toggleIsLocked: (isLocked: boolean) => void;
+
+  /** Set flag to track pending flow save */
+  setIsSavePending: (isSavePending: boolean) => void;
 };
 
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
@@ -51,15 +57,15 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   isSavePending: false,
 
   onNodesChange: (changes: NodeChange[]) => {
-    set({ nodes: applyNodeChanges(changes, get().nodes) });
+    set({ isSavePending: true, nodes: applyNodeChanges(changes, get().nodes) });
   },
 
   onEdgesChange: (changes: EdgeChange[]) => {
-    set({ edges: applyEdgeChanges(changes, get().edges) });
+    set({ isSavePending: true, edges: applyEdgeChanges(changes, get().edges) });
   },
 
   onConnect: (connection: Connection) => {
-    set({ edges: addEdge(connection, get().edges) });
+    set({ isSavePending: true, edges: addEdge(connection, get().edges) });
   },
 
   setNodes: (nodes: Node[]) => {
@@ -70,8 +76,13 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
     set({ edges });
   },
 
-  toggleIsLocked: (value) =>
+  toggleIsLocked: (value) => {
     set((state) => ({
       isLocked: typeof value === "boolean" ? value : !state.isLocked,
-    })),
+    }));
+  },
+
+  setIsSavePending: (isSavePending: boolean) => {
+    set({ isSavePending });
+  },
 }));

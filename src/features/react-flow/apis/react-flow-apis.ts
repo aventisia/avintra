@@ -1,4 +1,4 @@
-import { LoadFlowDto } from "@/features/react-flow";
+import { LoadFlowDto, FlowSilentUpdateDto } from "@/features/react-flow";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse } from "@/react-toolkit/dtos";
 
@@ -15,4 +15,15 @@ const getFlowToLoad = (id: string) => {
     .then((res) => res.data);
 };
 
-export { getFlowToLoad };
+/**
+ * Updates flow's nodes, edges etc silently in the background
+ * @param putObj Dto containing nodes, edges etc
+ * @returns True if update job is successful, else false
+ */
+const updateFlowSilently = (putObj: FlowSilentUpdateDto) => {
+  return axiosInstance
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/silent-update`, putObj)
+    .then((res) => res.data);
+};
+
+export { getFlowToLoad, updateFlowSilently };
