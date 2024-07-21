@@ -7,6 +7,7 @@ export { getFlowToLoad, updateFlowSilently } from "./apis/react-flow-apis";
 
 // hooks
 export { useFetchFlowToLoad } from "./hooks/useFetchFlowToLoad";
+export { useUpdateFlowSilently } from "./hooks/useUpdateFlowSilently";
 
 // components
 export { ReactFlowExt } from "./components/ReactFlowExt";
