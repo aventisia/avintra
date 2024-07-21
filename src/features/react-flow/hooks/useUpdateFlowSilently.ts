@@ -1,0 +1,68 @@
+import { FlowSilentUpdateDto, updateFlowSilently } from "@/features/react-flow";
+import { useMutation } from "@tanstack/react-query";
+import { useCurrentFlowStore, useReactFlowExtStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
+import { useCallback, useEffect } from "react";
+
+export const useUpdateFlowSilently = () => {
+  // Get global store state & actions
+  const { currentFlow, setIsFlowSaving } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+      setIsFlowSaving: state.setIsFlowSaving,
+    })),
+  );
+
+  // Get ReactFlowExt store state & actions
+  const { nodes, edges, isSavePending, setIsSavePending } =
+    useReactFlowExtStore(
+      useShallow((state) => ({
+        nodes: state.nodes,
+        edges: state.edges,
+        isSavePending: state.isSavePending,
+        setIsSavePending: state.setIsSavePending,
+      })),
+    );
+
+  // Create a mutation to update flow silently
+  const { mutate: updateFlow } = useMutation({
+    mutationFn: updateFlowSilently,
+    onSettled: () => {
+      // Set isSavePending to false
+      setIsSavePending(false);
+
+      // Set isFlowSaving to false
+      setIsFlowSaving(false);
+    },
+  });
+
+  // Function to perform save logic
+  const saveData = useCallback(
+    (flowData: FlowSilentUpdateDto) => {
+      // Set isFlowSaving to true
+      setIsFlowSaving(true);
+
+      // Save flow silently
+      updateFlow(flowData);
+    },
+    [setIsFlowSaving, updateFlow],
+  );
+
+  //
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      // Check if save is pending
+      if (!isSavePending) return;
+
+      // Save flow data
+      saveData({
+        id: currentFlow.id,
+        nodes: JSON.stringify(nodes),
+        edges: JSON.stringify(edges),
+      });
+    }, 3000); // Debounce save operation
+
+    // Cleanup function to clear timeout on unmount or state change
+    return () => clearTimeout(handler);
+  }, [isSavePending, saveData, currentFlow.id, nodes, edges]);
+};

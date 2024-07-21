@@ -2,6 +2,7 @@ import {
   BackgroundExt,
   MiniMapExt,
   useFetchFlowToLoad,
+  useUpdateFlowSilently,
   ViewControls,
 } from "@/features/react-flow";
 import "@xyflow/react/dist/style.css";
@@ -37,6 +38,9 @@ export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
 
   // Fetch flow details and set document title
   useFetchFlowToLoad();
+
+  // Save flow silently
+  useUpdateFlowSilently();
 
   // Render ReactFlow component
   return (
