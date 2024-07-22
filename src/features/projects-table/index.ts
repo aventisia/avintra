@@ -17,6 +17,13 @@ export {
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 } from "./constants/constants";
+export {
+  idProps,
+  typeProps,
+  nameProps,
+  descriptionProps,
+  isDisabledProps,
+} from "./constants/project-form-field-props";
 export { projectZodSchema } from "./constants/project-zod-schema";
 
 // hooks

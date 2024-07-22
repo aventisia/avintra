@@ -5,19 +5,21 @@ import {
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
   projectOptimisticMutationFn,
+  idProps,
+  typeProps,
+  nameProps,
+  descriptionProps,
+  isDisabledProps,
 } from "@/features/projects-table";
 import {
   DialogContent,
   DialogDefaultHeader,
   Form,
-  FormField,
   ScrollArea,
   Button,
 } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
 import { z } from "zod";
-import { ProjectTypesEnum } from "@/react-toolkit/enums";
-import { enumToArray } from "@/react-toolkit/utils";
 import {
   InputField,
   TextareaField,
@@ -59,9 +61,11 @@ export const ProjectCrudDialogContent = () => {
     setShowDialog(false);
   };
 
-  // 5. Return the component
+  // Is form in read mode?
+  const isReadMode = crudAction === "read";
+
+  // Return the form
   return (
-    // prettier-ignore
     <DialogContent side={"right"} className="!max-w-[32rem]">
       <DialogDefaultHeader
         className="px-3.5 py-3 text-lg tracking-wide"
@@ -70,67 +74,35 @@ export const ProjectCrudDialogContent = () => {
       />
       <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
         <Form {...form}>
-          <form className="w-full space-y-3.5 px-2.5 pb-5" onSubmit={form.handleSubmit(onSubmit)}>
-            
+          <form
+            className="w-full space-y-3.5 px-2.5 pb-5"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             {/* Project Id */}
-            {crudAction === "read" && (
-              <FormField name="id" control={form.control} render={({ field }) => (
-                  <InputField field={field} fieldData={{
-                    label: "Project Id",
-                    disabled: true,
-                  }} />
-                )}
-              />
-            )}
-            
+            {isReadMode && <InputField {...idProps} />}
+
             {/* Type */}
-            <FormField name="type" control={form.control} render={({ field }) => (
-                <SelectField field={field} fieldData={{
-                  label: "Type",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                  selectOptions: enumToArray(ProjectTypesEnum),
-                }} />
-              )}
-            />
+            <SelectField {...typeProps} disabled={isReadMode} />
 
             {/* Name */}
-            <FormField name="name" control={form.control} render={({ field }) => (
-                <InputField field={field} fieldData={{
-                  label: "Name",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                }} />
-              )}
-            />
+            <InputField {...nameProps} disabled={isReadMode} />
 
             {/* Description */}
-            <FormField name="description" control={form.control} render={({ field }) => (
-                <TextareaField field={field} fieldData={{
-                  label: "Description",
-                  disabled: crudAction === "read",
-                  className: "min-h-[6rem]"
-                }} />
-              )}
-            />
-            
+            <TextareaField {...descriptionProps} disabled={isReadMode} />
+
             {/* Is Disabled */}
             {crudAction !== "create" && (
-              <FormField name="isDisabled" control={form.control} render={({ field }) => (
-                  <SwitchField field={field} fieldData={{
-                    label: "Disable Record",
-                    description: "Disable this record if it's been outdated, or not required anymore",
-                    disabled: crudAction === "read",
-                  }} />
-                )}
-              />
+              <SwitchField {...isDisabledProps} disabled={isReadMode} />
             )}
 
             {/* AutherCard */}
-            {crudAction === "read" && (
+            {isReadMode && (
               <AutherCard
-                createdBy={form.getValues("createdBy")} createdOn={form.getValues("createdOn")}
-                lastModifiedBy={form.getValues("lastModifiedBy")} lastModifiedOn={form.getValues("lastModifiedOn")}/>
+                createdBy={form.getValues("createdBy")}
+                createdOn={form.getValues("createdOn")}
+                lastModifiedBy={form.getValues("lastModifiedBy")}
+                lastModifiedOn={form.getValues("lastModifiedOn")}
+              />
             )}
 
             {/* Submit button */}
