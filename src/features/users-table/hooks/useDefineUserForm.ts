@@ -23,7 +23,7 @@ export const useDefineUserForm = () => {
     })),
   );
 
-  // 2. Get store state and actions
+  // 2. Get crud dialog store state and actions
   const {
     crudDialogOptions: { rowId, crudAction },
     setShowDialog,
@@ -63,10 +63,18 @@ export const useDefineUserForm = () => {
       firstName: userData?.firstName ?? "",
       lastName: userData?.lastName ?? "",
       email: userData?.email ?? "",
-      twoFactorEnabled: userData?.twoFactorEnabled ?? false,
       userRoles: userData?.userRoles ?? [],
+      twoFactorEnabled: userData?.twoFactorEnabled ?? false,
       isDisabled: userData?.isDisabled ?? false,
+      unlockAccount: false, // Field Should be visible only if unlock account is required
       // Read (view) only fields
+      lockoutEnd: userData?.lockoutEnd
+        ? new Date(userData?.lockoutEnd)
+        : undefined,
+      emailConfirmed: userData?.emailConfirmed ?? false,
+      pwdSetOn: userData?.pwdSetOn
+        ? new Date(userData?.pwdSetOn)
+        : undefined,
       createdBy:
         userData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
