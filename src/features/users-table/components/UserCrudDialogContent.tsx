@@ -7,12 +7,21 @@ import {
   userZodSchema,
   useFetchUserRoles,
   UnlockAccountField,
+  idProps,
+  firstNameProps,
+  lastNameProps,
+  emailProps,
+  userRolesProps,
+  twoFactorEnabledProps,
+  emailConfirmedProps,
+  lockoutEndProps,
+  isDisabledProps,
+  pwdSetOnProps,
 } from "@/features/users-table";
 import {
   DialogContent,
   DialogDefaultHeader,
   Form,
-  FormField,
   ScrollArea,
   Button,
 } from "@/react-toolkit/components/ui";
@@ -22,7 +31,7 @@ import {
   InputField,
   AutherCard,
   SwitchField,
-  MultiSelectorField,
+  MultiSelectField,
 } from "@/react-toolkit/components/form";
 
 /**
@@ -61,9 +70,11 @@ export const UserCrudDialogContent = () => {
     setShowDialog(false);
   };
 
-  // 5. Return the component
+  // Is form in read mode?
+  const isReadMode = crudAction === "read";
+
+  // Return the form
   return (
-    // prettier-ignore
     <DialogContent side={"right"} className="!max-w-[32rem]">
       <DialogDefaultHeader
         className="px-3.5 py-3 text-lg tracking-wide"
@@ -72,127 +83,64 @@ export const UserCrudDialogContent = () => {
       />
       <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
         <Form {...form}>
-          <form className="w-full space-y-3.5 px-2.5 pb-5" onSubmit={form.handleSubmit(onSubmit)}>
-            
+          <form
+            className="w-full space-y-3.5 px-2.5 pb-5"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             {/* User Id (Read-only) */}
-            {crudAction === "read" && (
-              <FormField name="id" control={form.control} render={({ field }) => (
-                  <InputField field={field} fieldData={{
-                    label: "User Id",
-                    disabled: true,
-                  }} />
-                )}
-              />
-            )}
-              
-            {/* First Name */}
-            <FormField name="firstName" control={form.control} render={({ field }) => (
-                <InputField field={field} fieldData={{
-                  label: "First Name",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                }} />
-              )}
-            />
-              
-            {/* Last Name */}
-            <FormField name="lastName" control={form.control} render={({ field }) => (
-                <InputField field={field} fieldData={{
-                  label: "Last Name",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                }} />
-              )}
-            />
-            
+            {isReadMode && <InputField {...idProps} />}
 
-            {/* Email */} 
-            <FormField name="email" control={form.control} render={({ field }) => (
-                <InputField field={field} fieldData={{
-                  label: "Email",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                }} type="email" />
-              )}
-            />
+            {/* First Name */}
+            <InputField {...firstNameProps} disabled={isReadMode} />
+
+            {/* Last Name */}
+            <InputField {...lastNameProps} disabled={isReadMode} />
+
+            {/* Email */}
+            <InputField {...emailProps} disabled={isReadMode} />
 
             {/* User Roles */}
-            <MultiSelectorField
-              name="userRoles"
-              fieldData={{
-                label: "Roles",
-                disabled: crudAction === "read",
-                isRequired: true,
-                placeholder: "Select roles",
-                selectOptions: data?.data,
-              }}
-            />
-            
-            {/* Two Factor Enabled */}
-            <FormField name="twoFactorEnabled" control={form.control} render={({ field }) => (
-                <SwitchField field={field} fieldData={{
-                  label: "Enable Two-Factor Authentication (2FA)",
-                  description: "If enabled, user will need an additional verification step (e.g., one time password via email or code from an authenticator app) to log in, enhancing security",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                }} />
-              )}
+            <MultiSelectField
+              {...userRolesProps}
+              selectOptions={data?.data || []}
+              disabled={isReadMode}
             />
 
-            {/* Unlock account */}
-            <UnlockAccountField crudAction={crudAction} form={form} />
+            {/* Two Factor Enabled */}
+            <SwitchField {...twoFactorEnabledProps} disabled={isReadMode} />
             
+            {/* Unlock account (Custom users-table component) */}
+            <UnlockAccountField crudAction={crudAction} form={form} />
+
             {/* Is Disabled */}
             {crudAction !== "create" && (
-              <FormField name="isDisabled" control={form.control} render={({ field }) => (
-                  <SwitchField field={field} fieldData={{
-                    label: "Disable Record",
-                    description: "Disable this record if it's been outdated, or not required anymore",
-                    disabled: crudAction === "read",
-                  }} />
-                )}
-              />
+              <SwitchField {...isDisabledProps} disabled={isReadMode} />
             )}
 
             {/* Read-only Fields */}
-            {crudAction === "read" && (
+            {isReadMode && (
               <div className="flex flex-col gap-3.5">
                 <div className="grid grid-cols-2 gap-4">
                   {/* Lockout End */}
-                  <FormField name="lockoutEnd" control={form.control} render={({ field }) => (
-                      <InputField field={field} fieldData={{
-                        label: "Lockout Ends At",
-                        disabled: true,
-                      }} />
-                    )}
-                  />
-
+                  <InputField {...lockoutEndProps} />
+                  
                   {/* Email Confirmed */}
-                  <FormField name="emailConfirmed" control={form.control} render={({ field }) => (
-                      <InputField field={field} fieldData={{
-                        label: "Email Confirmed",
-                        disabled: true,
-                      }} />
-                    )}
-                  />
+                  <InputField {...emailConfirmedProps} />
                 </div>
 
                 {/* Pwd Set On */}
-                <FormField name="pwdSetOn" control={form.control} render={({ field }) => (
-                    <InputField field={field} fieldData={{
-                      label: "Password Last Set On",
-                      disabled: true,
-                    }} />
-                  )}
-                />
+                <InputField {...pwdSetOnProps} />
               </div>
             )}
 
             {/* AutherCard */}
-            {crudAction === "read" && (
+            {isReadMode && (
               <AutherCard
-                createdBy={form.getValues("createdBy")} createdOn={form.getValues("createdOn")}
-                lastModifiedBy={form.getValues("lastModifiedBy")} lastModifiedOn={form.getValues("lastModifiedOn")}/>
+                createdBy={form.getValues("createdBy")}
+                createdOn={form.getValues("createdOn")}
+                lastModifiedBy={form.getValues("lastModifiedBy")}
+                lastModifiedOn={form.getValues("lastModifiedOn")}
+              />
             )}
 
             {/* Submit button */}

@@ -18,6 +18,19 @@ export {
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 } from "./constants/constants";
+export {
+  idProps,
+  firstNameProps,
+  lastNameProps,
+  emailProps,
+  userRolesProps,
+  twoFactorEnabledProps,
+  unlockAccountProps,
+  isDisabledProps,
+  lockoutEndProps,
+  emailConfirmedProps,
+  pwdSetOnProps,
+} from "./constants/user-form-field-props";
 export { userZodSchema } from "./constants/user-zod-schema";
 
 // hooks
