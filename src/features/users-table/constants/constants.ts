@@ -6,17 +6,12 @@ import { CrudActionType } from "@/react-toolkit/types";
 const DATA_QUERY_KEY = ["users"];
 
 /**
- * The unique key for the user roles query to be used in the query client. ["userRoles"]
- */
-const USER_ROLES_QUERY_KEY = ["userRoles"];
-
-/**
  * The heading for the users table.
  */
 const TABLE_HEADING = "Users";
 
 /**
- * The column used for searching in the users.
+ * The column used for searching in the users table.
  */
 const SEARCH_COLUMN = "firstName";
 
@@ -35,7 +30,6 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 
 export {
   DATA_QUERY_KEY,
-  USER_ROLES_QUERY_KEY,
   TABLE_HEADING,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
