@@ -2,8 +2,9 @@ import { z } from "zod";
 import {
   maxLenError,
   reqError,
-  alphaNumericRegex,
-  alphaNumericError,
+  nameRegex,
+  emailError,
+  nameError,
 } from "@/react-toolkit/components/form";
 
 /**
@@ -13,23 +14,31 @@ export const userZodSchema = z.object({
   id: z.string(),
   firstName: z
     .string()
-    .min(1, { message: reqError("User firstName") })
-    .max(100, { message: maxLenError("User firstName", 100) })
-    .regex(alphaNumericRegex, {
-      message: alphaNumericError("User firstName"),
+    .min(1, { message: reqError("First Name") })
+    .max(50, { message: maxLenError("First Name", 50) })
+    .regex(nameRegex, {
+      message: nameError("First Name"),
     }),
   lastName: z
     .string()
-    .min(1, { message: reqError("User lastName") })
-    .max(100, { message: maxLenError("User lastName", 100) })
-    .regex(alphaNumericRegex, {
-      message: alphaNumericError("User lastName"),
+    .min(1, { message: reqError("Last Name") })
+    .max(50, { message: maxLenError("Last Name", 50) })
+    .regex(nameRegex, {
+      message: nameError("Last Name"),
     }),
-  email: z.string().email(),
+  email: z
+    .string()
+    .min(1, { message: reqError("Email") })
+    .max(254, { message: maxLenError("Email", 254) })
+    .email({ message: emailError() }),
+  userRoles: z.array(z.string()).min(1, { message: reqError("Role (s)") }),
   twoFactorEnabled: z.boolean().default(false),
-  userRoles: z.array(z.string()),
-  isDisabled: z.boolean().default(false),
+  unlockAccount: z.boolean(),
+  isDisabled: z.boolean(),
   // Read (view) only fields
+  lockoutEnd: z.date().optional(),
+  emailConfirmed: z.boolean().optional(),
+  pwdSetOn: z.date().optional(),
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),
