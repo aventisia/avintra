@@ -4,15 +4,11 @@ import {
   FlowOpenRowAction,
   useFlowsTableStore,
 } from "@/features/flows-table";
-import {
-  AlertDialog as DeleteAlertDialogRoot,
-  DropdownMenuSeparator,
-} from "@/react-toolkit/components/ui";
+import { DropdownMenuSeparator } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
 import {
   DTDeleteRowAction,
   DTEditRowAction,
-  DTRowDeleteAlert,
   DTViewRowAction,
   DataTableRowActions,
 } from "@/react-toolkit/components/data-table";
@@ -46,30 +42,22 @@ export const FlowsTableRowActions = ({ rowId }: FlowsTableRowActionsProps) => {
 
   // Return the component
   return (
-    // Root component for delete alert dialog
-    <DeleteAlertDialogRoot>
-      {/* Dropdown menu for flow table row action */}
-      <DataTableRowActions>
-        {/* To open flow in studio */}
-        <FlowOpenRowAction rowId={rowId} />
+    // Dropdown menu for flow table row action */}
+    <DataTableRowActions>
+      {/* To open flow in studio */}
+      <FlowOpenRowAction rowId={rowId} />
 
-        {/* Opens crud dialog to view the flow details */}
-        <DTViewRowAction rowId={rowId} />
+      {/* Opens crud dialog to view the flow details */}
+      <DTViewRowAction rowId={rowId} />
 
-        {/* Opens crud dialog to update flow details */}
-        <DTEditRowAction rowId={rowId} />
+      {/* Opens crud dialog to update flow details */}
+      <DTEditRowAction rowId={rowId} />
 
-        {/* DropdownMenuSeparator component */}
-        <DropdownMenuSeparator />
+      {/* DropdownMenuSeparator component */}
+      <DropdownMenuSeparator />
 
-        {/* Triggers Flow delete alert dialog  */}
-        <DTDeleteRowAction />
-      </DataTableRowActions>
-
-      {/* Content of delete alert dialog  */}
-      <DTRowDeleteAlert
-        description="This action cannot be undone. Are you sure you want to delete this flow?"
-        confirmText="Yes, delete flow"
+      {/* Triggers Flow delete alert dialog  */}
+      <DTDeleteRowAction
         rowDeleteMutateFn={() =>
           deleteFlow({
             id: rowId,
@@ -77,7 +65,9 @@ export const FlowsTableRowActions = ({ rowId }: FlowsTableRowActionsProps) => {
             crudAction: "delete",
           })
         }
+        description="This action cannot be undone. Are you sure you want to delete this flow?"
+        confirmBtnText="Yes, delete flow"
       />
-    </DeleteAlertDialogRoot>
+    </DataTableRowActions>
   );
 };
