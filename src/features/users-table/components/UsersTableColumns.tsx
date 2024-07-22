@@ -12,7 +12,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "firstName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title="FirstName" />
+      <DTColumnHeader column={column} title="First Name" />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -22,7 +22,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   },
   {
     accessorKey: "lastName",
-    header: ({ column }) => <DTColumnHeader column={column} title="LastName" />,
+    header: ({ column }) => <DTColumnHeader column={column} title="Last Name" />,
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("lastName")}
