@@ -1,5 +1,4 @@
 import {
-  AlertDialog as DeleteAlertDialogRoot,
   DropdownMenuSeparator,
 } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
@@ -9,7 +8,6 @@ import { DATA_QUERY_KEY } from "../constants/constants";
 import {
   DTDeleteRowAction,
   DTEditRowAction,
-  DTRowDeleteAlert,
   DTViewRowAction,
   DataTableRowActions,
 } from "@/react-toolkit/components/data-table";
@@ -35,27 +33,18 @@ export const UsersTableRowActions = ({ rowId }: UsersTableRowActionsProps) => {
 
   // Return the component
   return (
-    // Root component for delete alert dialog
-    <DeleteAlertDialogRoot>
-      {/* Dropdown menu for user table row action */}
-      <DataTableRowActions>
-        {/* Opens crud dialog to view the user details */}
-        <DTViewRowAction rowId={rowId} />
+    <DataTableRowActions>
+      {/* Opens crud dialog to view the user details */}
+      <DTViewRowAction rowId={rowId} />
 
-        {/* Opens crud dialog to update user details */}
-        <DTEditRowAction rowId={rowId} />
+      {/* Opens crud dialog to update user details */}
+      <DTEditRowAction rowId={rowId} />
 
-        {/* DropdownMenuSeparator component */}
-        <DropdownMenuSeparator />
+      {/* DropdownMenuSeparator component */}
+      <DropdownMenuSeparator />
 
-        {/* Triggers User delete alert dialog  */}
-        <DTDeleteRowAction />
-      </DataTableRowActions>
-
-      {/* Content of delete alert dialog  */}
-      <DTRowDeleteAlert
-        description="This action cannot be undone. Are you sure you want to delete this user?"
-        confirmText="Yes, delete user"
+      {/* Triggers User delete alert dialog  */}
+      <DTDeleteRowAction
         rowDeleteMutateFn={() =>
           deleteUser({
             id: rowId,
@@ -63,7 +52,9 @@ export const UsersTableRowActions = ({ rowId }: UsersTableRowActionsProps) => {
             crudAction: "delete",
           })
         }
+        description="This action cannot be undone. Are you sure you want to delete this user?"
+        confirmBtnText="Yes, delete user"
       />
-    </DeleteAlertDialogRoot>
+    </DataTableRowActions>
   );
 };
