@@ -47,17 +47,6 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
     ),
   },
   {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title="Created By" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("createdBy")}
-      </div>
-    ),
-  },
-  {
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader className="w-[7rem]" column={column} title="Created On" />
