@@ -4,15 +4,7 @@ import {
   Form,
   FormField,
   ScrollArea,
-  Button,
-  MultiSelector,
-  FormControl,
-  MultiSelectorTrigger,
-  MultiSelectorInput,
-  MultiSelectorContent,
-  MultiSelectorList,
-  MultiSelectorItem,
-  Tooltip,
+  Button
 } from "@/react-toolkit/components/ui";
 import { useDefineUserForm } from "../hooks/useDefineUserForm";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
@@ -28,9 +20,8 @@ import {
   InputField,
   AutherCard,
   SwitchField,
-  FormLabelExt,
+  MultiSelectorField,
 } from "@/react-toolkit/components/form";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useFetchUserRoles } from "../hooks/useFetchUserRoles";
 import { UnlockAccountField } from "./UnlockAccountField";
 
@@ -126,39 +117,16 @@ export const UserCrudDialogContent = () => {
             />
 
             {/* User Roles */}
-            <FormField name="userRoles" control={form.control} render={({ field }) => (
-                  <MultiSelector onValuesChange={field.onChange} values={field.value}>
-                    <FormLabelExt fieldData={{ label: "Roles", isRequired: true }} />
-                    <FormControl>
-                      <MultiSelectorTrigger disabled={crudAction === "read"}>
-                        <MultiSelectorInput
-                          disabled={crudAction === "read"}
-                          placeholder="Select roles"
-                        />
-                      </MultiSelectorTrigger>
-                    </FormControl>
-                    {data?.data?.length !== field.value.length && (
-                      <MultiSelectorContent>
-                        <MultiSelectorList>
-                          {data?.data
-                            ?.filter((option) => !field.value.includes(option.value))
-                            .map((item, index) => (
-                              <MultiSelectorItem key={index} value={item.value}>
-                                <div className="flex items-center gap-2">
-                                  {item.label}
-                                  {item.description && (
-                                    <Tooltip content={item.description}>
-                                      <InformationCircleIcon className="h-4 w-4" />
-                                    </Tooltip>
-                                  )}
-                                </div>
-                              </MultiSelectorItem>
-                            ))}
-                        </MultiSelectorList>
-                      </MultiSelectorContent>
-                    )}
-                  </MultiSelector>
-              )} />
+            <MultiSelectorField
+              name="userRoles"
+              fieldData={{
+                label: "Roles",
+                disabled: crudAction === "read",
+                isRequired: true,
+                placeholder: "Select roles",
+                selectOptions: data?.data,
+              }}
+            />
             
             {/* Two Factor Enabled */}
             <FormField name="twoFactorEnabled" control={form.control} render={({ field }) => (
