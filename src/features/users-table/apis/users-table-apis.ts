@@ -1,7 +1,7 @@
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
 import { UsersTableDto } from "../dtos/users-table-dto";
-import { UsersTableRolesDto } from "../dtos/users-table-roles-dto";
+import { ISelectOption } from "@/react-toolkit/types";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/user`;
 
@@ -55,7 +55,7 @@ const deleteUser = (id: string) => {
  */
 const getUserRoles = () => {
   return axiosInstance
-    .get<IHttpResponse<UsersTableRolesDto[]>>(`${baseAPIURL}/roles-to-select`)
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/roles-to-select`)
     .then((res) => res.data);
 };
 
