@@ -27,8 +27,8 @@ import { useDocumentTitle } from "@/react-toolkit/hooks";
  * @returns The rendered ProjectsTable component.
  */
 export const ProjectsTable = () => {
-  // Set the document title to "Projects".
-  useDocumentTitle("Projects");
+  // Set the document title
+  useDocumentTitle(TABLE_HEADING);
 
   // Get crud dialog store to show dialog state
   const {
