@@ -1,7 +1,6 @@
+import { UsersTableDto, UsersTableRowActions } from "@/features/users-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { UsersTableDto } from "../dtos/users-table-dto";
 import { formatDistanceToNow } from "date-fns";
-import { UsersTableRowActions } from "./UsersTableRowActions";
 import { DTColumnHeader } from "@/react-toolkit/components/data-table";
 
 /**

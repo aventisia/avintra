@@ -1,6 +1,6 @@
+import { UsersTableDto } from "@/features/users-table";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
-import { UsersTableDto } from "../dtos/users-table-dto";
 import { ISelectOption } from "@/react-toolkit/types";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/user`;

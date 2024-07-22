@@ -1,4 +1,4 @@
-import { UsersTable } from "@/features/users-table/components/UsersTable";
+import { UsersTable } from "@/features";
 
 /**
  * Renders the UsersPage component.

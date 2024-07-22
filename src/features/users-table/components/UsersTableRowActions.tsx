@@ -1,10 +1,10 @@
 import {
-  DropdownMenuSeparator,
-} from "@/react-toolkit/components/ui";
+  UsersTableDto,
+  userOptimisticMutationFn,
+  DATA_QUERY_KEY,
+} from "@/features/users-table";
+import { DropdownMenuSeparator } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { UsersTableDto } from "../dtos/users-table-dto";
-import { userOptimisticMutationFn } from "../apis/users-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
 import {
   DTDeleteRowAction,
   DTEditRowAction,

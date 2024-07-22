@@ -1,29 +1,29 @@
 import {
+  UsersTableDto,
+  useDefineUserForm,
+  DATA_QUERY_KEY,
+  getDialogHeadingDescription,
+  userOptimisticMutationFn,
+  userZodSchema,
+  useFetchUserRoles,
+  UnlockAccountField,
+} from "@/features/users-table";
+import {
   DialogContent,
   DialogDefaultHeader,
   Form,
   FormField,
   ScrollArea,
-  Button
+  Button,
 } from "@/react-toolkit/components/ui";
-import { useDefineUserForm } from "../hooks/useDefineUserForm";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import {
-  DATA_QUERY_KEY,
-  getDialogHeadingDescription,
-} from "../constants/constants";
-import { userOptimisticMutationFn } from "../apis/users-table-apis";
-import { UsersTableDto } from "../dtos/users-table-dto";
 import { z } from "zod";
-import { userZodSchema } from "../constants/user-zod-schema";
 import {
   InputField,
   AutherCard,
   SwitchField,
   MultiSelectorField,
 } from "@/react-toolkit/components/form";
-import { useFetchUserRoles } from "../hooks/useFetchUserRoles";
-import { UnlockAccountField } from "./UnlockAccountField";
 
 /**
  * Renders the dialog content for creating or updating a user.

@@ -1,8 +1,8 @@
+import { userZodSchema } from "@/features/users-table";
 import { SwitchField } from "@/react-toolkit/components/form";
 import { FormField } from "@/react-toolkit/components/ui";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { userZodSchema } from "../sample-index";
 import { CrudActionType } from "@/react-toolkit/types";
 
 interface UnlockAccountFieldProps {

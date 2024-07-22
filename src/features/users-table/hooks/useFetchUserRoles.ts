@@ -1,5 +1,5 @@
+import { getUserRoles } from "@/features/users-table";
 import { useQuery } from "@tanstack/react-query";
-import { getUserRoles } from "../apis/users-table-apis";
 
 /**
  * Custom hook to fetch user roles using react query.

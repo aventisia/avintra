@@ -1,9 +1,12 @@
+import {
+  usersTableColumns,
+  useFetchUsers,
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  UserCrudDialogContent,
+} from "@/features/users-table";
 import { Dialog as CrudDialogRoot } from "@/react-toolkit/components/ui";
-import { usersTableColumns } from "./UsersTableColumns";
-import { useFetchUsers } from "../hooks/useFetchUsers";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { Separator } from "@/react-toolkit/components/ui";
-import { UserCrudDialogContent } from "./UserCrudDialogContent";
 import { useShallow } from "zustand/react/shallow";
 import {
   DTCreateButton,
