@@ -16,6 +16,7 @@ import {
   useDTCrudDialogStore,
   useDataTable,
 } from "@/react-toolkit/components/data-table";
+import { useDocumentTitle } from "@/react-toolkit/hooks";
 
 /**
  * Renders a table of users.
@@ -23,6 +24,9 @@ import {
  * @returns The rendered UsersTable component.
  */
 export const UsersTable = () => {
+  // Set the document title
+  useDocumentTitle(TABLE_HEADING);
+
   // Get crud dialog store to show dialog state
   const {
     crudDialogOptions: { showDialog },
