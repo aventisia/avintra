@@ -71,7 +71,7 @@ export const useDefineTenantForm = () => {
       // Group
       isPwdEnabled: tenantData?.isPwdEnabled ?? true,
       isSSOEnabled: tenantData?.isSSOEnabled ?? false,
-      ssoConfigJson: tenantData?.ssoConfigJson,
+      ssoConfigJson: tenantData?.ssoConfigJson ?? undefined,
       // Group
       isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled ?? true,
       daysBeforePwdExpires:
@@ -83,15 +83,15 @@ export const useDefineTenantForm = () => {
         tenantData?.idleSessionTimeoutMinutes?.toString() ?? "10",
       // Group
       dbOption: tenantData?.dbOption ?? DatabaseOptionsEnum.Shared,
-      dbNamePrefix: tenantData?.dbNamePrefix,
+      dbNamePrefix: tenantData?.dbNamePrefix ?? undefined,
       // Sub-group
-      dbUserId: tenantData?.dbUserId,
-      dbPwd: tenantData?.dbPwd,
+      dbUserId: tenantData?.dbUserId ?? undefined,
+      dbPwd: tenantData?.dbPwd ?? undefined,
       // Sub-group
-      dbHost: tenantData?.dbHost,
-      dbPort: tenantData?.dbPort?.toString(),
+      dbHost: tenantData?.dbHost ?? undefined,
+      dbPort: tenantData?.dbPort?.toString() ?? undefined,
       // Single field
-      isDisabled: tenantData?.isDisabled,
+      isDisabled: tenantData?.isDisabled ?? false,
       // Group (read-only)
       createdBy:
         tenantData?.createdBy ??
