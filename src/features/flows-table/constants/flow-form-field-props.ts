@@ -5,7 +5,7 @@ import {
   TextareaFieldProps,
 } from "@/react-toolkit/components/form";
 import { FlowTypesEnum } from "@/react-toolkit/enums";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { enumToArray } from "@/react-toolkit/utils";
 
 // Project Id
 const projectIdProps: InputFieldProps = {

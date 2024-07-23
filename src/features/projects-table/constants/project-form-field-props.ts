@@ -4,8 +4,8 @@ import {
   SwitchFieldProps,
   TextareaFieldProps,
 } from "@/react-toolkit/components/form";
-import { ProjectTypesEnum } from "@/react-toolkit/enums/project-types-enum";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { ProjectTypesEnum } from "@/react-toolkit/enums";
+import { enumToArray } from "@/react-toolkit/utils";
 
 // Project Id
 const idProps: InputFieldProps = {
