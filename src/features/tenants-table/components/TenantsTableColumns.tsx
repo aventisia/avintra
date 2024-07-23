@@ -19,7 +19,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "expiresOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title="Expires On" />
+      <DTColumnHeader column={column} title="Expires" />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -43,7 +43,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader className="w-[7rem]" column={column} title="Created On" />
+      <DTColumnHeader className="w-[7rem]" column={column} title="Created" />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
