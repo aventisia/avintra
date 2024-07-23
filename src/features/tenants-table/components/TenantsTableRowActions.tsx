@@ -1,7 +1,4 @@
-import {
-  AlertDialog as DeleteAlertDialogRoot,
-  DropdownMenuSeparator,
-} from "@/react-toolkit/components/ui";
+import { DropdownMenuSeparator } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { tenantOptimisticMutationFn } from "../apis/tenants-table-apis";
@@ -9,7 +6,6 @@ import { DATA_QUERY_KEY } from "../constants/constants";
 import {
   DTDeleteRowAction,
   DTEditRowAction,
-  DTRowDeleteAlert,
   DTViewRowAction,
   DataTableRowActions,
 } from "@/react-toolkit/components/data-table";
@@ -37,27 +33,19 @@ export const TenantsTableRowActions = ({
 
   // Return the component
   return (
-    // Root component for delete alert dialog
-    <DeleteAlertDialogRoot>
-      {/* Dropdown menu for tenant table row action */}
-      <DataTableRowActions>
-        {/* Opens crud dialog to view the tenant details */}
-        <DTViewRowAction rowId={rowId} />
+    // Dropdown menu for tenant table row action */}
+    <DataTableRowActions>
+      {/* Opens crud dialog to view the tenant details */}
+      <DTViewRowAction rowId={rowId} />
 
-        {/* Opens crud dialog to update tenant details */}
-        <DTEditRowAction rowId={rowId} />
+      {/* Opens crud dialog to update tenant details */}
+      <DTEditRowAction rowId={rowId} />
 
-        {/* DropdownMenuSeparator component */}
-        <DropdownMenuSeparator />
+      {/* DropdownMenuSeparator component */}
+      <DropdownMenuSeparator />
 
-        {/* Triggers Tenant delete alert dialog  */}
-        <DTDeleteRowAction />
-      </DataTableRowActions>
-
-      {/* Content of delete alert dialog  */}
-      <DTRowDeleteAlert
-        description="This action cannot be undone. Are you sure you want to delete this tenant?"
-        confirmText="Yes, delete tenant"
+      {/* Triggers Tenant delete alert dialog  */}
+      <DTDeleteRowAction
         rowDeleteMutateFn={() =>
           deleteTenant({
             id: rowId,
@@ -65,7 +53,9 @@ export const TenantsTableRowActions = ({
             crudAction: "delete",
           })
         }
+        description="This action cannot be undone. Are you sure you want to delete this tenant?"
+        confirmBtnText="Yes, delete tenant"
       />
-    </DeleteAlertDialogRoot>
+    </DataTableRowActions>
   );
 };
