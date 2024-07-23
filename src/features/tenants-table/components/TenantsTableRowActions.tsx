@@ -1,8 +1,10 @@
+import {
+  TenantsTableDto,
+  tenantOptimisticMutationFn,
+  DATA_QUERY_KEY,
+} from "@/features/tenants-table";
 import { DropdownMenuSeparator } from "@/react-toolkit/components/ui";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
-import { tenantOptimisticMutationFn } from "../apis/tenants-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
 import {
   DTDeleteRowAction,
   DTEditRowAction,

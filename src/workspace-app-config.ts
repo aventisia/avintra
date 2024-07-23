@@ -53,7 +53,7 @@ const workspaceAppConfig: IAppConfig = {
           {
             Icon: IdentificationIcon,
             name: "tenants",
-            route: "/tenant",
+            route: "/tenants",
           },
           {
             Icon: UsersIcon,

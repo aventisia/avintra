@@ -22,7 +22,7 @@ export default function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/project/flows" element={<FlowsPage />} />
             <Route path="/users" element={<UsersPage />} />
-            <Route path="/tenant" element={<TenantsPage />} />
+            <Route path="/tenants" element={<TenantsPage />} />
             <Route path="/page-not-found" element={<NotFoundPage />} />
             <Route path="/*" element={<NotFoundPage />} />
           </Route>

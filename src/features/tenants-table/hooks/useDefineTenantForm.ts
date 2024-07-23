@@ -1,9 +1,11 @@
+import {
+  TenantsTableDto,
+  tenantZodSchema,
+  DATA_QUERY_KEY,
+} from "@/features/tenants-table";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { tenantZodSchema } from "../constants/tenant-zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
-import { DATA_QUERY_KEY } from "../constants/constants";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";

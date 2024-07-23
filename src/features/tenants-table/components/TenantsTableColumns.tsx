@@ -1,7 +1,9 @@
+import {
+  TenantsTableDto,
+  TenantsTableRowActions,
+} from "@/features/tenants-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { formatDistanceToNow } from "date-fns";
-import { TenantsTableRowActions } from "./TenantsTableRowActions";
 import { DTColumnHeader } from "@/react-toolkit/components/data-table";
 
 /**
@@ -18,9 +20,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   },
   {
     accessorKey: "expiresOn",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title="Expires" />
-    ),
+    header: ({ column }) => <DTColumnHeader column={column} title="Expires" />,
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {formatDistanceToNow(row.getValue("expiresOn"), {

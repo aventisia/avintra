@@ -1,6 +1,6 @@
+import { TenantsTableDto } from "@/features/tenants-table";
 import { axiosInstance } from "@/react-toolkit/apis";
 import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 

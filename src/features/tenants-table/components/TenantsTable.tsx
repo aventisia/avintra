@@ -1,10 +1,14 @@
+import {
+  TenantCrudDialogContent,
+  tenantsTableColumns,
+  useFetchTenants,
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+} from "@/features/tenants-table";
 import { Dialog as CrudDialogRoot } from "@/react-toolkit/components/ui";
-import { tenantsTableColumns } from "./TenantsTableColumns";
-import { useFetchTenants } from "../hooks/useFetchTenants";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { Separator } from "@/react-toolkit/components/ui";
-import { TenantCrudDialogContent } from "./TenantCrudDialogContent";
 import { useShallow } from "zustand/react/shallow";
+import { useDocumentTitle } from "@/react-toolkit/hooks";
 import {
   DTCreateButton,
   DTHeading,
@@ -16,7 +20,6 @@ import {
   useDTCrudDialogStore,
   useDataTable,
 } from "@/react-toolkit/components/data-table";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
 
 /**
  * Renders a table of tenants.

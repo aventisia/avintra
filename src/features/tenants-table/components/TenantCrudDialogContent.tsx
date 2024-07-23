@@ -1,20 +1,39 @@
 import {
+  useDefineTenantForm,
+  TenantsTableDto,
+  DATA_QUERY_KEY,
+  getDialogHeadingDescription,
+  tenantOptimisticMutationFn,
+  tenantZodSchema,
+  idProps,
+  nameProps,
+  expiresOnProps,
+  isTwoFAEnabledProps,
+  isPwdEnabledProps,
+  isSSOEnabledProps,
+  ssoConfigJsonProps,
+  isPwdNeverExpiresEnabledProps,
+  daysBeforePwdExpiresProps,
+  isIdleSessionTimeoutEnabledProps,
+  idleSessionTimeoutMinutesProps,
+  dbOptionProps,
+  dbNamePrefixProps,
+  dbUserIdProps,
+  dbPwdProps,
+  dbHostProps,
+  dbPortProps,
+  isDisabledProps,
+} from "@/features/tenants-table";
+import { z } from "zod";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks";
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
+import {
   DialogContent,
   DialogDefaultHeader,
   Form,
   ScrollArea,
   Button,
 } from "@/react-toolkit/components/ui";
-import { useDefineTenantForm } from "../hooks/useDefineTenantForm";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import {
-  DATA_QUERY_KEY,
-  getDialogHeadingDescription,
-} from "../constants/constants";
-import { tenantOptimisticMutationFn } from "../apis/tenants-table-apis";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
-import { z } from "zod";
-import { tenantZodSchema } from "../constants/tenant-zod-schema";
 import {
   InputField,
   AutherCard,
@@ -23,8 +42,6 @@ import {
   RadioGroupField,
   DatePickerField,
 } from "@/react-toolkit/components/form";
-import * as fieldProps from "@/features/tenants-table";
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
 
 /**
  * Renders the dialog content for creating or updating a tenant.
@@ -90,39 +107,39 @@ export const TenantCrudDialogContent = () => {
             onSubmit={form.handleSubmit(onSubmit)}
           >
             {/* Tenant Id */}
-            {isReadMode && <InputField {...fieldProps.idProps} />}
+            {isReadMode && <InputField {...idProps} />}
 
             {/* Name */}
-            <InputField {...fieldProps.nameProps} disabled={isReadMode} />
+            <InputField {...nameProps} disabled={isReadMode} />
 
             {/* Expires On */}
             <DatePickerField
-              {...fieldProps.expiresOnProps}
+              {...expiresOnProps}
               disabled={isReadMode}
             />
 
             {/* Is TwoFA Enabled*/}
             <SwitchField
-              {...fieldProps.isTwoFAEnabledProps}
+              {...isTwoFAEnabledProps}
               disabled={isReadMode}
             />
 
             {/* Is Password Enabled */}
             <SwitchField
-              {...fieldProps.isPwdEnabledProps}
+              {...isPwdEnabledProps}
               disabled={isReadMode}
             />
 
             {/* Is SSO Enabled */}
             <SwitchField
-              {...fieldProps.isSSOEnabledProps}
+              {...isSSOEnabledProps}
               disabled={isReadMode}
             />
 
             {/* SSO Config JSON */}
             {isSSOEnabled && (
               <TextareaField
-                {...fieldProps.ssoConfigJsonProps}
+                {...ssoConfigJsonProps}
                 disabled={isReadMode}
                 isRequired={isSSOEnabled}
               />
@@ -130,14 +147,14 @@ export const TenantCrudDialogContent = () => {
 
             {/* Is Password Never Expires Enabled */}
             <SwitchField
-              {...fieldProps.isPwdNeverExpiresEnabledProps}
+              {...isPwdNeverExpiresEnabledProps}
               disabled={isReadMode}
             />
 
             {/* Days Before Password Expires */}
             {!isPwdNeverExpiresEnabled && (
               <InputField
-                {...fieldProps.daysBeforePwdExpiresProps}
+                {...daysBeforePwdExpiresProps}
                 disabled={isReadMode}
                 isRequired={!isPwdNeverExpiresEnabled}
               />
@@ -145,14 +162,14 @@ export const TenantCrudDialogContent = () => {
 
             {/* Is Idle Session Timeout Enabled */}
             <SwitchField
-              {...fieldProps.isIdleSessionTimeoutEnabledProps}
+              {...isIdleSessionTimeoutEnabledProps}
               disabled={isReadMode}
             />
 
             {/* Idle Session Timeout Minutes */}
             {isIdleSessionTimeoutEnabled && (
               <InputField
-                {...fieldProps.idleSessionTimeoutMinutesProps}
+                {...idleSessionTimeoutMinutesProps}
                 disabled={isReadMode}
                 isRequired={isIdleSessionTimeoutEnabled}
               />
@@ -160,7 +177,7 @@ export const TenantCrudDialogContent = () => {
 
             {/* Database Option */}
             <RadioGroupField
-              {...fieldProps.dbOptionProps}
+              {...dbOptionProps}
               disabled={isReadMode}
             />
 
@@ -168,20 +185,20 @@ export const TenantCrudDialogContent = () => {
             {dbOption !== DatabaseOptionsEnum.Shared && (
               <>
                 <InputField
-                  {...fieldProps.dbNamePrefixProps}
+                  {...dbNamePrefixProps}
                   disabled={isReadMode}
                 />
                 <div className="flex flex-col gap-3.5">
                   <div className="grid grid-cols-2 gap-4">
                     {/* Database User Id */}
                     <InputField
-                      {...fieldProps.dbUserIdProps}
+                      {...dbUserIdProps}
                       disabled={isReadMode}
                     />
 
                     {/* Database Password */}
                     <InputField
-                      {...fieldProps.dbPwdProps}
+                      {...dbPwdProps}
                       disabled={isReadMode}
                     />
                   </div>
@@ -194,14 +211,14 @@ export const TenantCrudDialogContent = () => {
                 <div className="grid grid-cols-[1fr_auto] gap-4">
                   {/* Database Host */}
                   <InputField
-                    {...fieldProps.dbHostProps}
+                    {...dbHostProps}
                     disabled={isReadMode}
                   />
 
                   {/* Database Port */}
                   <InputField
                     className="w-24"
-                    {...fieldProps.dbPortProps}
+                    {...dbPortProps}
                     disabled={isReadMode}
                   />
                 </div>
@@ -211,7 +228,7 @@ export const TenantCrudDialogContent = () => {
             {/* Is Disabled */}
             {crudAction !== "create" && (
               <SwitchField
-                {...fieldProps.isDisabledProps}
+                {...isDisabledProps}
                 disabled={isReadMode}
               />
             )}
