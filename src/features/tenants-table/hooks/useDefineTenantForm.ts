@@ -61,30 +61,38 @@ export const useDefineTenantForm = () => {
 
     // Set tenant data to form
     form.reset({
+      // Single fields
       id: rowId,
       name: tenantData?.name ?? "",
       expiresOn: tenantData?.expiresOn
         ? new Date(tenantData?.expiresOn)
-        : new Date(),
-      isSSOEnabled: tenantData?.isSSOEnabled,
-      isPwdEnabled: tenantData?.isPwdEnabled,
-      isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled,
-      daysBeforePwdExpires: tenantData?.daysBeforePwdExpires?.toString(),
-      isIdleSessionTimeoutEnabled: tenantData?.isIdleSessionTimeoutEnabled,
+        : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      isTwoFAEnabled: tenantData?.isTwoFAEnabled ?? false,
+      // Group
+      isPwdEnabled: tenantData?.isPwdEnabled ?? true,
+      isSSOEnabled: tenantData?.isSSOEnabled ?? false,
+      ssoConfigJson: tenantData?.ssoConfigJson,
+      // Group
+      isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled ?? true,
+      daysBeforePwdExpires:
+        tenantData?.daysBeforePwdExpires?.toString() ?? "730",
+      // Group
+      isIdleSessionTimeoutEnabled:
+        tenantData?.isIdleSessionTimeoutEnabled ?? true,
       idleSessionTimeoutMinutes:
-        tenantData?.idleSessionTimeoutMinutes?.toString(),
-      isTwoFAEnabled: tenantData?.isTwoFAEnabled,
-      ssoConfigJson: tenantData?.ssoConfigJson ?? "",
-      dbOption:
-        tenantData?.dbOption?.toString() ??
-        DatabaseOptionsEnum.Shared.toString(),
-      dbUserId: tenantData?.dbUserId ?? "",
-      dbPwd: tenantData?.dbPwd ?? "",
+        tenantData?.idleSessionTimeoutMinutes?.toString() ?? "10",
+      // Group
+      dbOption: tenantData?.dbOption ?? DatabaseOptionsEnum.Shared,
+      dbNamePrefix: tenantData?.dbNamePrefix,
+      // Sub-group
+      dbUserId: tenantData?.dbUserId,
+      dbPwd: tenantData?.dbPwd,
+      // Sub-group
       dbHost: tenantData?.dbHost,
       dbPort: tenantData?.dbPort?.toString(),
-      dbNamePrefix: tenantData?.dbNamePrefix ?? "_",
+      // Single field
       isDisabled: tenantData?.isDisabled,
-      // Read (view) only fields
+      // Group (read-only)
       createdBy:
         tenantData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,

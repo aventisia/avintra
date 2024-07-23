@@ -9,12 +9,13 @@ import {
   variableRegex,
   variableError,
 } from "@/react-toolkit/components/form";
-//import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
 
 /**
  * Represents the Zod schema for a tenant.
  */
 export const tenantZodSchema = z.object({
+  // Single fields
   id: z.string().optional(),
   name: z
     .string()
@@ -24,16 +25,28 @@ export const tenantZodSchema = z.object({
       message: alphaNumericError("Tenant name"),
     })
     .default(""),
-  expiresOn: z.date().optional(),
-  isPwdEnabled: z.boolean().optional(),
-  isTwoFAEnabled: z.boolean().optional(),
-  isPwdNeverExpiresEnabled: z.boolean().optional(),
-  daysBeforePwdExpires: z.string().optional(),
-  isIdleSessionTimeoutEnabled: z.boolean().optional(),
-  idleSessionTimeoutMinutes: z.string().optional(),
-  isSSOEnabled: z.boolean().optional(),
+  expiresOn: z.date().optional().default(() => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
+  isTwoFAEnabled: z.boolean().optional().default(false),
+  // Group
+  isPwdEnabled: z.boolean().optional().default(true),
+  isSSOEnabled: z.boolean().optional().default(false),
   ssoConfigJson: z.string().max(1000).optional(),
-  dbOption: z.string(),
+  // Group
+  isPwdNeverExpiresEnabled: z.boolean().optional().default(true),
+  daysBeforePwdExpires: z.string().optional().default("730"),
+  // Group
+  isIdleSessionTimeoutEnabled: z.boolean().optional().default(true),
+  idleSessionTimeoutMinutes: z.string().optional().default("10"),
+  // Group
+  dbOption: z.nativeEnum(DatabaseOptionsEnum).default(DatabaseOptionsEnum.Shared),
+  dbNamePrefix: z
+    .string()
+    .max(10)
+    .regex(variableRegex, {
+      message: variableError("Database Name' Prefix"),
+    })
+    .optional(),
+  // Sub-group
   dbUserId: z
     .string()
     .max(50)
@@ -42,6 +55,7 @@ export const tenantZodSchema = z.object({
     })
     .optional(),
   dbPwd: z.string().max(50).optional(),
+  // Sub-group
   dbHost: z
     .string()
     .max(500)
@@ -50,15 +64,9 @@ export const tenantZodSchema = z.object({
     })
     .optional(),
   dbPort: z.string().optional(),
-  dbNamePrefix: z
-    .string()
-    .max(50)
-    .regex(variableRegex, {
-      message: variableError("Database Name' Prefix"),
-    })
-    .optional(),
+  // Single field
   isDisabled: z.boolean().optional(),
-  // Read (view) only fields
+  // Group (read-only)
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),
