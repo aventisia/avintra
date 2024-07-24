@@ -7,9 +7,10 @@ import {
   projectOptimisticMutationFn,
   idProps,
   typeProps,
-  nameProps,
   descriptionProps,
   isDisabledProps,
+  nameProps,
+  useIsProjectNameAvailable
 } from "@/features/projects-table";
 import {
   DialogContent,
@@ -34,21 +35,36 @@ import {
  * @returns The JSX element representing the dialog content.
  */
 export const ProjectCrudDialogContent = () => {
-  // 1. Define project form
-  const { form, rowId, crudAction, setShowDialog, refineFormData } =
-    useDefineProjectForm();
+  // Define project form
+  const {
+    form,
+    rowId,
+    crudAction,
+    projectName,
+    setShowDialog,
+    refineFormData,
+  } = useDefineProjectForm();
 
-  // 2. Define optimistic mutation to crete or update the project
+  // Get state and methods for availability check
+  const {
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
+  } = useIsProjectNameAvailable(form, projectName);
+
+  // Define optimistic mutation to crete or update the project
   const { mutate: mutateProject } = useListOptimisticMutation<
     ProjectsTableDto,
     ProjectsTableDto | boolean,
     ProjectsTableDto
   >(projectOptimisticMutationFn, DATA_QUERY_KEY);
 
-  // 3. Get dialog heading and description
+  // Get dialog heading and description
   const dialogHeaderOptions = getDialogHeadingDescription(crudAction);
 
-  // 4. Define submit handler
+  // Define submit handler
   const onSubmit = (formData: z.infer<typeof projectZodSchema>) => {
     // Create or update the project
     mutateProject({
@@ -56,6 +72,9 @@ export const ProjectCrudDialogContent = () => {
       payload: refineFormData(formData) as unknown as ProjectsTableDto,
       crudAction: crudAction,
     });
+
+    // Reset the availability message
+    setAvailabilityMessage(null);
 
     // Close the dialog
     setShowDialog(false);
@@ -85,7 +104,12 @@ export const ProjectCrudDialogContent = () => {
             <SelectField {...typeProps} disabled={isReadMode} />
 
             {/* Name */}
-            <InputField {...nameProps} disabled={isReadMode} />
+            <InputField
+              {...nameProps}
+              disabled={isReadMode}
+              onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+              nonErrorMessage={availabilityMessage}
+            />
 
             {/* Description */}
             <TextareaField {...descriptionProps} disabled={isReadMode} />
@@ -108,7 +132,11 @@ export const ProjectCrudDialogContent = () => {
             {/* Submit button */}
             {crudAction !== "read" && (
               <div className="!mt-5 flex w-full justify-end">
-                <Button type="submit" className="min-w-[5rem]">
+                <Button
+                  type="submit"
+                  disabled={!isAvailable || isCheckPending}
+                  className="min-w-[5rem]"
+                >
                   {crudAction === "create" ? "Create project" : "Save changes"}
                 </Button>
               </div>
