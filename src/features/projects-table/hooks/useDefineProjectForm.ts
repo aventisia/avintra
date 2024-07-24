@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUserSessionStore } from "@/react-toolkit/stores";
 import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
@@ -18,14 +18,17 @@ import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
  * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineProjectForm = () => {
-  // 1. Get user session
+  // Set project name state (required for avaialbility check)
+  const [projectName, setProjectName] = useState("");
+  
+  // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
 
-  // 2. Get crud dialog store state and actions
+  // Get crud dialog store state and actions
   const {
     crudDialogOptions: { rowId, crudAction },
     setShowDialog,
@@ -36,20 +39,20 @@ export const useDefineProjectForm = () => {
     })),
   );
 
-  // 3. Get query client
+  // Get query client
   const queryClient = useQueryClient();
 
-  // 4. Define form with zod schema
+  // Define form with zod schema
   const form = useForm<z.infer<typeof projectZodSchema>>({
     resolver: zodResolver(projectZodSchema),
   });
 
-  // 5. Destructor form values and methods
+  // Destructor form values and methods
   const {
-    formState: { isSubmitting, isDirty },
+    formState: { isDirty },
   } = form;
 
-  // 6. Fetch project data when rowId changes
+  // Fetch project data when rowId changes
   useEffect(() => {
     // Get projects data from query client
     const projectsData = queryClient.getQueryData<{
@@ -58,6 +61,9 @@ export const useDefineProjectForm = () => {
 
     // Get project data by id
     const projectData = projectsData?.data.find((item) => item.id === rowId);
+
+    // Set project name
+    setProjectName(projectData?.name ?? "");
 
     // Set project data to form
     form.reset({
@@ -83,7 +89,7 @@ export const useDefineProjectForm = () => {
     });
   }, [rowId, form, queryClient, userSession]);
 
-  // 7. Refine form data based on crud action
+  // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof projectZodSchema>) => {
     return {
       ...formData,
@@ -92,14 +98,14 @@ export const useDefineProjectForm = () => {
     };
   };
 
-  // 8. Return form and methods
+  // Return form and methods
   return {
     form,
-    isSubmitting,
     isDirty,
     rowId,
     crudAction,
     setShowDialog,
     refineFormData,
+    projectName,
   };
 };
