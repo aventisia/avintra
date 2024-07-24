@@ -4,6 +4,7 @@ export type { ProjectsTableDto } from "./dtos/projects-table-dto";
 // apis
 export {
   getProjects,
+  isProjectNameAvailable,
   insertProject,
   updateProject,
   deleteProject,

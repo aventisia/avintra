@@ -1,6 +1,11 @@
 import { ProjectsTableDto } from "@/features/projects-table";
 import { axiosInstance } from "@/react-toolkit/apis";
-import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@/react-toolkit/dtos";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/project`;
 
@@ -10,6 +15,17 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/project`;
 const getProjects = () => {
   return axiosInstance
     .get<IHttpResponse<ProjectsTableDto[]>>(`${baseAPIURL}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Checks the availability of a project name.
+ */
+const isProjectNameAvailable = (postObj: CheckAvailabilityDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<TrueFalseResultDto>
+    >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
@@ -66,6 +82,7 @@ const projectOptimisticMutationFn = ({
 
 export {
   getProjects,
+  isProjectNameAvailable,
   insertProject,
   updateProject,
   deleteProject,
