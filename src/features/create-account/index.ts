@@ -5,6 +5,13 @@ export type { CreateAccountDto } from "./dtos/create-account-dto";
 export { createAccount } from "./apis/create-account-apis";
 
 // constants
+export {
+  firstNameProps,
+  lastNameProps,
+  emailProps,
+  pwdProps,
+  confirmPwdProps,
+} from "./constants/create-account-field-props";
 export { verifyEmailAddressZodSchema } from "./constants/verify-email-address-zod-schema";
 export { createAccountZodSchema } from "./constants/create-account-zod-schema";
 
