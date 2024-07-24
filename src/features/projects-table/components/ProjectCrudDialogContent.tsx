@@ -38,6 +38,7 @@ export const ProjectCrudDialogContent = () => {
   // Define project form
   const {
     form,
+    isDirty,
     rowId,
     crudAction,
     projectName,
@@ -72,6 +73,9 @@ export const ProjectCrudDialogContent = () => {
       payload: refineFormData(formData) as unknown as ProjectsTableDto,
       crudAction: crudAction,
     });
+
+    // Reset form
+    form.reset(formData);
 
     // Reset the availability message
     setAvailabilityMessage(null);
@@ -134,7 +138,7 @@ export const ProjectCrudDialogContent = () => {
               <div className="!mt-5 flex w-full justify-end">
                 <Button
                   type="submit"
-                  disabled={!isAvailable || isCheckPending}
+                  disabled={!isDirty || !isAvailable || isCheckPending}
                   className="min-w-[5rem]"
                 >
                   {crudAction === "create" ? "Create project" : "Save changes"}
