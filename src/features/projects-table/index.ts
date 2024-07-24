@@ -31,6 +31,7 @@ export { projectZodSchema } from "./constants/project-zod-schema";
 export { useOpenProject } from "./hooks/useOpenProject";
 export { useFetchProjects } from "./hooks/useFetchProjects";
 export { useDefineProjectForm } from "./hooks/useDefineProjectForm";
+export { useIsProjectNameAvailable } from "./hooks/useIsProjectNameAvailable";
 
 // components
 export { ProjectCrudDialogContent } from "./components/ProjectCrudDialogContent";
