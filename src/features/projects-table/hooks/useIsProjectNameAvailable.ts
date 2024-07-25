@@ -54,7 +54,7 @@ export const useIsProjectNameAvailable = (
   // Project name availability status message handler
   const availabilityMessageHandler = (
     errorType: CustomMessageType,
-    inputText: string,
+    userInput: string,
   ) => {
     switch (errorType) {
       case "Gray":
@@ -66,13 +66,13 @@ export const useIsProjectNameAvailable = (
       case "Red":
         form.setError("name", {
           type: errorType,
-          message: `${inputText} is already taken`,
+          message: `${userInput} is already taken`,
         });
         break;
       case "Green":
         setAvailabilityMessage({
           type: errorType,
-          message: `${inputText} is available`,
+          message: `${userInput} is available`,
         });
         break;
       default:
