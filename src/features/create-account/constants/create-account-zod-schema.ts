@@ -9,6 +9,11 @@ import {
   pwdError,
 } from "@/react-toolkit/components/form";
 
+export const emailSchema = z
+  .string()
+  .min(1, { message: reqError("Email") })
+  .email();
+
 export const createAccountZodSchema = z
   .object({
     firstName: z
@@ -25,10 +30,7 @@ export const createAccountZodSchema = z
       .regex(nameRegex, {
         message: nameError("Last name"),
       }),
-    email: z
-      .string()
-      .min(1, { message: reqError("Email") })
-      .email(),
+    email: emailSchema,
     pwd: z
       .string()
       .min(1, { message: reqError("Password") })
@@ -41,4 +43,8 @@ export const createAccountZodSchema = z
   .refine((data) => data.pwd === data.confirmPwd, {
     path: ["confirmPwd"],
     message: "Passwords do not match",
+  })
+  .refine((data) => data.termsAgreement, {
+    path: ["termsAgreement"],
+    message: "You must accept Terms and Conditions",
   });
