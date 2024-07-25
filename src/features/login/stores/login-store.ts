@@ -1,0 +1,39 @@
+import { create } from "zustand";
+import { ILoginData, ITwoFACodeData } from "@/features/login";
+
+type State = {
+  /** The current step number of the form */
+  stepNo: number;
+
+  /** To store login details */
+  loginData: ILoginData | null;
+
+  /** To store 2-fa details */
+  twoFACodeData: ITwoFACodeData | null;
+};
+
+type Actions = {
+  /** Set the step number of the form */
+  setStepNo: (stepNo: number) => void;
+
+  /** Set the login data */
+  setLoginData: (loginData: ILoginData | null) => void;
+
+  /** Set the 2-fa code data */
+  setTwoFACodeData: (twoFACodeData: ITwoFACodeData | null) => void;
+
+  /** Reset the login process once authenticated or onError */
+  resetLoginProcess: () => void;
+};
+
+export const useLoginStore = create<State & Actions>((set) => ({
+  stepNo: 1,
+  loginData: null,
+  twoFACodeData: null,
+
+  setStepNo: (stepNo) => set({ stepNo }),
+  setLoginData: (loginData) => set({ loginData }),
+  setTwoFACodeData: (twoFACodeData) => set({ twoFACodeData }),
+  resetLoginProcess: () =>
+    set({ loginData: null, twoFACodeData: null, stepNo: 0 }),
+}));
