@@ -9,6 +9,13 @@ public interface IProjectsTableService
     Task<ServiceResponse<IEnumerable<ProjectsTableDto>>> GetProjectsAsync();
 
     /// <summary>
+    /// Checks the availability of a project name.
+    /// </summary>
+    /// <param name="checkAvailabilityDto">The DTO containing the project name to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the project name is available or not.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsProjectNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
     /// Inserts a new project.
     /// </summary>
     /// <param name="projectsTableDto">The data for the project to insert.</param>

@@ -51,6 +51,46 @@ public class ProjectsTableService : IProjectsTableService
         return serviceResponse;
     }
 
+    // Checks the availability of a project name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsProjectNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check project name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate project uniqueness
+            var projectAlreadyExists = await _unitOfWork.ProjectRepo
+                                        .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                        .FirstOrDefaultAsync();
+
+            // Project already exists
+            if (projectAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A project with same name already exists. Please enter a unique Name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Project name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Inserts a new project.
     public async Task<ServiceResponse<ProjectsTableDto>> InsertProjectAsync(ProjectsTableDto projectsTableDto)
     {
@@ -73,7 +113,7 @@ public class ProjectsTableService : IProjectsTableService
             {
                 _logger.LogInformation($"Project already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A project with same Name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A project with same name already exists. Please enter a unique Name";
                 return serviceResponse;
             }
 

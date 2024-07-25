@@ -19,6 +19,13 @@ public class ProjectsTableController : BaseApiController
         return ResultHelper(await _projectsTableService.GetProjectsAsync());
     }
 
+    // Checks the availability of a project name.
+    [HttpPost("is-available")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsProjectNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    {
+        return ResultHelper(await _projectsTableService.IsProjectNameAvailableAsync(checkAvailabilityDto));
+    }
+
     // Inserts a new project.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<ProjectsTableDto>>> InsertProject([FromBody] ProjectsTableDto projectsTableDto)
