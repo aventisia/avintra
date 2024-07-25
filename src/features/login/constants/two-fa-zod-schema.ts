@@ -7,7 +7,7 @@ import {
   numericError,
 } from "@/react-toolkit/components/form";
 
-export const twoFactorAuthZodSchema = z.object({
+export const twoFAZodSchema = z.object({
   verificationCode: z
     .string()
     .min(1, { message: reqError("2FA code") })
