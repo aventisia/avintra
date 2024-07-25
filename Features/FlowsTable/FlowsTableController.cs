@@ -19,6 +19,13 @@ public class FlowsTableController : BaseApiController
         return ResultHelper(await _flowsTableService.GetFlowsAsync(projectId));
     }
 
+    // Checks the availability of a flow name.
+    [HttpPost("is-available/{projectId}")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsFlowNameAvailable(Guid projectId, [FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    {
+        return ResultHelper(await _flowsTableService.IsFlowNameAvailableAsync(projectId, checkAvailabilityDto));
+    }
+
     // Inserts a new flow.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<FlowsTableDto>>> InsertFlow([FromBody] FlowsTableDto flowsTableDto)

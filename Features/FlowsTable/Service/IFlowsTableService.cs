@@ -13,6 +13,14 @@ public interface IFlowsTableService
     Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(Guid projectId);
 
     /// <summary>
+    /// Checks the availability of a flow name.
+    /// </summary>
+    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="checkAvailabilityDto">The DTO containing the flow name to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the flow name is available or not.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsFlowNameAvailableAsync(Guid projectId, CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
     /// Inserts a new flow.
     /// </summary>
     /// <param name="flowsTableDto">The data required to insert the flow.</param>

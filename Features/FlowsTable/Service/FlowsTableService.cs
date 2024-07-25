@@ -51,6 +51,48 @@ public class FlowsTableService : IFlowsTableService
         return serviceResponse;
     }
 
+    // Checks the availability of a flow name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsFlowNameAvailableAsync(Guid projectId, CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check flow name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate flow uniqueness
+            var flowAlreadyExists = await _unitOfWork.FlowRepo
+                                        .GetByConditionAsync(w => 
+                                            w.ProjectId == projectId && 
+                                            w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                        .FirstOrDefaultAsync();
+
+            // Flow already exists
+            if (flowAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A flow with same name already exists. Please enter a unique Name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Inserts a new flow.
     public async Task<ServiceResponse<FlowsTableDto>> InsertFlowAsync(FlowsTableDto flowsTableDto)
     {
