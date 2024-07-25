@@ -11,11 +11,11 @@ public class AuthController : BaseApiController
         _authService = authService;
     }
 
-    // Checks if an email already exists in the database while creating account or updating username.
-    [HttpPost("does-email-exist")]
-    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> DoesEmailExist([FromBody] EmailDto emailDto)
+    // Checks the availability of a email.
+    [HttpPost("is-email-available")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsEmailAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
-        return Ok(await _authService.DoesEmailExistAsync(emailDto));
+        return ResultHelper(await _authService.IsEmailAvailableAsync(checkAvailabilityDto));
     }
 
     // Validates username and Gets tenant and its SSO config (if SSO is enabled)

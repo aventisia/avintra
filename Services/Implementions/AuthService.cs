@@ -34,37 +34,34 @@ public class AuthService : IAuthService
         _verificationCodeConfig = verificationCodeConfig;
     }
 
-    // Checks if an email already exists in the database while creating account or updating username.
-    public async Task<ServiceResponse<TrueFalseResultDto>> DoesEmailExistAsync(EmailDto emailDto)
+    // Checks the availability of a email.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsEmailAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
-        // Initialize ServiceResponse with Failed response
-        var serviceResponse = new ServiceResponse<TrueFalseResultDto>()
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
         {
             Data = null,
-            Message = "Failed to check email existence. Please try again later"
+            Message = "Failed to check email availability. Please try again"
         };
 
         try
         {
-            // Get user by username
-            var user = await _userManager.FindByNameAsync(emailDto.Email);
+            // Get user by email (Note: email and username are same)
+            var user = await _userManager.FindByNameAsync(checkAvailabilityDto.UserInput.Trim().ToLower());
 
-            // Email exists
+            // Email already exists
             if (user != null)
             {
-                _logger.LogInformation($"Email {emailDto.Email} already exists");
-                serviceResponse.Data = new TrueFalseResultDto() { Result = true };
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "Email already exists";
+                serviceResponse.Message = "An account with same email already exists. Please try different email address";
                 return serviceResponse;
             }
 
-            // Email does not exist
-            _logger.LogInformation($"Username {emailDto.Email} has not been " +
-                        "registered yet and available for use");
-            serviceResponse.Data = new TrueFalseResultDto() { Result = false };
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Email does not exist";
+            serviceResponse.Message = "Email is available";
         }
         catch (Exception ex)
         {

@@ -6,11 +6,11 @@ namespace AccountsAPIs.Services;
 public interface IAuthService
 {
     /// <summary>
-    /// Checks if an email already exists in the database while creating account or updating username.
+    /// Checks the availability of a email.
     /// </summary>
-    /// <param name="emailDto">The data transfer object containing the email property.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a service response with a boolean value indicating whether the email exists or not.</returns>
-    Task<ServiceResponse<TrueFalseResultDto>> DoesEmailExistAsync(EmailDto emailDto);
+    /// <param name="checkAvailabilityDto">The DTO containing the email to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the email is available or not.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsEmailAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
 
     /// <summary>
     /// Validates the username and gets the tenant and its SSO config (if SSO is enabled).
