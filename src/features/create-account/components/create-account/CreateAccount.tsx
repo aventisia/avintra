@@ -19,7 +19,7 @@ export const CreateAccount = () => {
       <ContentHeader
         biggerHeading="Create account"
         smallerHeading="Select method to sign up:"
-      ></ContentHeader>
+      />
 
       {/* Social sign up options */}
       <SocialButtons />

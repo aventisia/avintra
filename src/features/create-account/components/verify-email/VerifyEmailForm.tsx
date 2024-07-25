@@ -14,7 +14,7 @@ export const VerifyEmailForm = () => {
   const { form, isSubmitting, createAccountData, verifyEmailData, setStepNo } =
     useDefineVerifyEmailForm();
 
-  // Get mutation to create verification code
+  // Get mutation to create account
   const { createAccountMutation, isCreationPending } =
     useCreateAccountMutation();
 

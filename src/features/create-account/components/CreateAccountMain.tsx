@@ -10,7 +10,7 @@ import {
 } from "@/features/create-account";
 import { useShallow } from "zustand/react/shallow";
 
-const CreateAccountMain = () => {
+export const CreateAccountMain = () => {
   // Get store state
   const { stepNo } = useCreateAccountStore(
     useShallow((state) => ({
@@ -45,5 +45,3 @@ const CreateAccountMain = () => {
     </>
   );
 };
-
-export { CreateAccountMain };
