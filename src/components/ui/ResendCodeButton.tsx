@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 interface ResendCodeButtonProps {
   isPending: boolean;
   disabled: boolean;
-  fnResendCode: () => void;
+  resendCodeFn: () => void;
 }
 
 const ResendCodeButton = ({
   isPending,
   disabled,
-  fnResendCode,
+  resendCodeFn,
 }: ResendCodeButtonProps) => {
   const maxTime: number = 120; // Set initial timer
   const [timer, setTimer] = useState(maxTime);
@@ -43,7 +43,7 @@ const ResendCodeButton = ({
       className="h-0 gap-1 p-0 font-normal"
       variant={"link"}
       disabled={disabled || timer > 0}
-      onClick={fnResendCode}
+      onClick={resendCodeFn}
     >
       {isPending ? (
         <>
