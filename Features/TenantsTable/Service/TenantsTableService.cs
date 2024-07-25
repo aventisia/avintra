@@ -106,7 +106,7 @@ public class TenantsTableService : ITenantsTableService
             {
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "A tenant with same name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A tenant with same name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -146,7 +146,7 @@ public class TenantsTableService : ITenantsTableService
             {
                 _logger.LogInformation($"Tenant already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A tenant with same Name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A tenant with same Name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -229,7 +229,7 @@ public class TenantsTableService : ITenantsTableService
             {
                 _logger.LogInformation($"Tenant already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A tenant with same Name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A tenant with same Name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -240,7 +240,7 @@ public class TenantsTableService : ITenantsTableService
             tenantsTableDto.Adapt(tenant);
             tenant.LastModifiedByUserId = _userId;
             tenant.LastModifiedOn = DateTimeOffset.UtcNow;
-            
+
             // Additional mapping
             tenant.DbCredentials = (tenantsTableDto.DbUserId != null || tenantsTableDto.DbPwd != null)
                 ? $"User ID={tenantsTableDto.DbUserId};Password={tenantsTableDto.DbPwd};"
