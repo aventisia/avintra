@@ -9,6 +9,13 @@ public interface ITenantsTableService
     Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync();
 
     /// <summary>
+    /// Checks the availability of a tenant name.
+    /// </summary>
+    /// <param name="checkAvailabilityDto">The DTO containing the tenant name to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the tenant name is available or not.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsTenantNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
     /// Inserts a new tenant.
     /// </summary>
     /// <param name="tenantsTableDto">The data for the tenant to insert.</param>

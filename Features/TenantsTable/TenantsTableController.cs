@@ -19,6 +19,13 @@ public class TenantsTableController : BaseApiController
         return ResultHelper(await _tenantsTableService.GetTenantsAsync());
     }
 
+    // Checks the availability of a tenant name.
+    [HttpPost("is-available")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsTenantNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    {
+        return ResultHelper(await _tenantsTableService.IsTenantNameAvailableAsync(checkAvailabilityDto));
+    }
+
     // Inserts a new tenant.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<TenantsTableDto>>> InsertTenant([FromBody] TenantsTableDto tenantsTableDto)

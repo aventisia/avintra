@@ -84,6 +84,46 @@ public class TenantsTableService : ITenantsTableService
         return serviceResponse;
     }
 
+    // Checks the availability of a tenant name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsTenantNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check tenant name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate tenant uniqueness
+            var tenantAlreadyExists = await _unitOfWork.TenantRepo
+                                        .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                        .FirstOrDefaultAsync();
+
+            // Tenant already exists
+            if (tenantAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A tenant with same name already exists. Please enter a unique Name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Inserts a new tenant.
     public async Task<ServiceResponse<TenantsTableDto>> InsertTenantAsync(TenantsTableDto tenantsTableDto)
     {
