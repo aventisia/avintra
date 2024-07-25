@@ -1,4 +1,4 @@
-export interface IVerifyEmailAddressData {
+export interface IVerifyEmailData {
   email: string;
   requestType: string;
   codeId: string;
