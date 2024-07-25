@@ -1,3 +1,3 @@
-export { CreateAccountPage } from "./CreateAccountPage";
-export { LogInPage } from "./LogInPage";
-export { ResetPwdPage } from "./ResetPwdPage";
+export { default as CreateAccountPage } from "./CreateAccountPage";
+export { default as LogInPage } from "./LogInPage";
+export { default as ResetPwdPage } from "./ResetPwdPage";
