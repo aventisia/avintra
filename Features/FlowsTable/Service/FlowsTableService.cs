@@ -65,8 +65,8 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow uniqueness
             var flowAlreadyExists = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => 
-                                            w.ProjectId == projectId && 
+                                        .GetByConditionAsync(w =>
+                                            w.ProjectId == projectId &&
                                             w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                                         .FirstOrDefaultAsync();
 
@@ -75,7 +75,7 @@ public class FlowsTableService : IFlowsTableService
             {
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "A flow with same name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A flow with same name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -117,7 +117,7 @@ public class FlowsTableService : IFlowsTableService
             {
                 _logger.LogInformation($"Flow already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A flow with same Name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A flow with same Name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -193,7 +193,7 @@ public class FlowsTableService : IFlowsTableService
             {
                 _logger.LogInformation($"Flow name already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A flow with same Name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A flow with same Name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 

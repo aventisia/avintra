@@ -73,7 +73,7 @@ public class ProjectsTableService : IProjectsTableService
             {
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "A project with same name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A project with same name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -113,7 +113,7 @@ public class ProjectsTableService : IProjectsTableService
             {
                 _logger.LogInformation($"Project already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A project with same name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A project with same name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
@@ -186,7 +186,7 @@ public class ProjectsTableService : IProjectsTableService
             {
                 _logger.LogInformation($"Project already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A project with same Name already exists. Please enter a unique Name";
+                serviceResponse.Message = "A project with same Name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
