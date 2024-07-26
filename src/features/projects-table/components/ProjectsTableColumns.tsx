@@ -1,11 +1,9 @@
-import {
-  ProjectsTableDto,
-  ProjectsTableRowActions,
-  ProjectsTableCellLink,
-} from "@/features/projects-table";
+import { DTColumnHeader } from "@/react-toolkit/data-table/components/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { DTColumnHeader } from "@/react-toolkit/components/data-table";
+import { ProjectsTableDto } from "../dtos/projects-table-dto";
+import { ProjectsTableCellLink } from "./ProjectsTableCellLink";
+import { ProjectsTableRowActions } from "./ProjectsTableRowActions";
 
 /**
  * Array of table columns for the projects table.

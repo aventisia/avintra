@@ -1,5 +1,5 @@
-import { useFlowsTableStore } from "@/features/flows-table";
 import { useShallow } from "zustand/react/shallow";
+import { useFlowsTableStore } from "../stores/flows-table-store";
 
 /**
  * Custom hook to handle opening a flow.

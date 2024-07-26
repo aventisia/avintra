@@ -1,15 +1,8 @@
-import { useFlowsTableStore } from "@/features/flows-table";
-import { useShallow } from "zustand/react/shallow";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/react-toolkit/components/ui";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/react-toolkit/ui/breadcrumb";
 import { NavLink } from "react-router-dom";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
+import { useShallow } from "zustand/react/shallow";
+import { useFlowsTableStore } from "../stores/flows-table-store";
 
 export const FlowsTableHeading: React.FC = () => {
   // Get flows store state and actions

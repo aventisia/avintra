@@ -1,24 +1,20 @@
-import {
-  flowsTableColumns,
-  useFetchFlows,
-  SEARCH_COLUMN,
-  FlowCrudDialogContent,
-  useFlowsQueryKey,
-  FlowsTableHeading,
-} from "@/features/flows-table";
-import { Dialog as CrudDialogRoot } from "@/react-toolkit/components/ui";
-import { Separator } from "@/react-toolkit/components/ui";
+import { DataTable } from "@/react-toolkit/data-table/components/DataTable";
+import { DataTableSkeleton } from "@/react-toolkit/data-table/components/DataTableSkeleton";
+import { DTPagination } from "@/react-toolkit/data-table/components/DTPagination";
+import { DTCreateButton } from "@/react-toolkit/data-table/components/toolbar/DTCreateButton";
+import { DTSearchBox } from "@/react-toolkit/data-table/components/toolbar/DTSearchBox";
+import { DTViewOptions } from "@/react-toolkit/data-table/components/toolbar/DTViewOptions";
+import { useDataTable } from "@/react-toolkit/data-table/hooks/useDataTable";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { Dialog as CrudDialogRoot } from "@/react-toolkit/ui/dialog/Dialog";
+import { Separator } from "@/react-toolkit/ui/separator";
 import { useShallow } from "zustand/react/shallow";
-import {
-  DTCreateButton,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  useDTCrudDialogStore,
-  useDataTable,
-} from "@/react-toolkit/components/data-table";
+import { SEARCH_COLUMN } from "../constants/constants";
+import { useFetchFlows } from "../hooks/useFetchFlows";
+import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
+import { FlowCrudDialogContent } from "./FlowCrudDialogContent";
+import { flowsTableColumns } from "./FlowsTableColumns";
+import { FlowsTableHeading } from "./FlowsTableHeading";
 
 /**
  * Renders a table of flows.

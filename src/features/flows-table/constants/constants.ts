@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types";
+import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
 /**
  * The column used for searching in the flows.

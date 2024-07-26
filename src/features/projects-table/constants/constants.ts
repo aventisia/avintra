@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types";
+import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
 /**
  * The unique key for the projects query to be used in the query client. ["projects"]
@@ -30,7 +30,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 
 export {
   DATA_QUERY_KEY,
-  TABLE_HEADING,
-  SEARCH_COLUMN,
   getDialogHeadingDescription,
+  SEARCH_COLUMN,
+  TABLE_HEADING,
 };

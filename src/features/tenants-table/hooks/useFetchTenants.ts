@@ -1,5 +1,6 @@
-import { getTenants, DATA_QUERY_KEY } from "@/features/tenants-table";
 import { useQuery } from "@tanstack/react-query";
+import { getTenants } from "../apis/tenants-table-apis";
+import { DATA_QUERY_KEY } from "../constants/constants";
 
 /**
  * Custom hook to fetch tenants using react query.

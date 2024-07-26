@@ -1,4 +1,4 @@
-import { FlowsTable } from "@/features";
+import { FlowsTable } from "@/features/flows-table/components/FlowsTable";
 
 /**
  * Renders the FlowsPage component.

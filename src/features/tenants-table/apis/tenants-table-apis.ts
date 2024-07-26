@@ -1,6 +1,7 @@
-import { TenantsTableDto } from "@/features/tenants-table";
-import { axiosInstance } from "@/react-toolkit/apis";
-import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 
@@ -65,9 +66,7 @@ const tenantOptimisticMutationFn = ({
 };
 
 export {
-  getTenants,
-  insertTenant,
-  updateTenant,
-  deleteTenant,
-  tenantOptimisticMutationFn,
+  deleteTenant, getTenants,
+  insertTenant, tenantOptimisticMutationFn, updateTenant
 };
+

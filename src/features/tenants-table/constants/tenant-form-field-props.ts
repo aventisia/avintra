@@ -1,11 +1,9 @@
-import {
-  DatePickerFieldProps,
-  InputFieldProps,
-  RadioGroupFieldProps,
-  SwitchFieldProps,
-  TextareaFieldProps,
-} from "@/react-toolkit/components/form";
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { DatePickerFieldProps } from "@/react-toolkit/form/components/fields/DatePickerField";
+import { InputFieldProps } from "@/react-toolkit/form/components/fields/InputField";
+import { RadioGroupFieldProps } from "@/react-toolkit/form/components/fields/RadioGroupField";
+import { SwitchFieldProps } from "@/react-toolkit/form/components/fields/SwitchField";
+import { TextareaFieldProps } from "@/react-toolkit/form/components/fields/TextareaField";
 
 // Tenant Id
 const idProps: InputFieldProps = {
@@ -164,22 +162,22 @@ const isDisabledProps: SwitchFieldProps = {
 };
 
 export {
-  idProps,
-  nameProps,
-  expiresOnProps,
-  isTwoFAEnabledProps,
-  isPwdEnabledProps,
-  isSSOEnabledProps,
-  ssoConfigJsonProps,
-  isPwdNeverExpiresEnabledProps,
   daysBeforePwdExpiresProps,
-  isIdleSessionTimeoutEnabledProps,
-  idleSessionTimeoutMinutesProps,
-  dbOptionProps,
-  dbNamePrefixProps,
-  dbUserIdProps,
-  dbPwdProps,
   dbHostProps,
+  dbNamePrefixProps,
+  dbOptionProps,
   dbPortProps,
+  dbPwdProps,
+  dbUserIdProps,
+  expiresOnProps,
+  idleSessionTimeoutMinutesProps,
+  idProps,
   isDisabledProps,
+  isIdleSessionTimeoutEnabledProps,
+  isPwdEnabledProps,
+  isPwdNeverExpiresEnabledProps,
+  isSSOEnabledProps,
+  isTwoFAEnabledProps,
+  nameProps,
+  ssoConfigJsonProps,
 };

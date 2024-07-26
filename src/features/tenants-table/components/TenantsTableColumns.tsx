@@ -1,10 +1,8 @@
-import {
-  TenantsTableDto,
-  TenantsTableRowActions,
-} from "@/features/tenants-table";
+import { DTColumnHeader } from "@/react-toolkit/data-table/components/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { DTColumnHeader } from "@/react-toolkit/components/data-table";
+import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { TenantsTableRowActions } from "./TenantsTableRowActions";
 
 /**
  * Array of table columns for the tenants table.

@@ -1,7 +1,8 @@
-import { UsersTableDto, UsersTableRowActions } from "@/features/users-table";
+import { DTColumnHeader } from "@/react-toolkit/data-table/components/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { DTColumnHeader } from "@/react-toolkit/components/data-table";
+import { UsersTableDto } from "../dtos/users-table-dto";
+import { UsersTableRowActions } from "./UsersTableRowActions";
 
 /**
  * Array of table columns for the users table.
@@ -21,7 +22,9 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   },
   {
     accessorKey: "lastName",
-    header: ({ column }) => <DTColumnHeader column={column} title="Last Name" />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title="Last Name" />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("lastName")}

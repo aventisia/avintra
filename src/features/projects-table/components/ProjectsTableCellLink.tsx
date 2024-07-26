@@ -1,6 +1,6 @@
-import { useOpenProject } from "@/features/projects-table";
-import { Button } from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { useOpenProject } from "../hooks/useOpenProject";
 
 interface ProjectsTableCellLinkProps {
   /** The ID of the project to open. */

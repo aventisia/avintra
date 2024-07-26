@@ -1,16 +1,14 @@
-import {
-  projectZodSchema,
-  ProjectsTableDto,
-  DATA_QUERY_KEY,
-} from "@/features/projects-table";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUserSessionStore } from "@/react-toolkit/stores";
-import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
+import { DATA_QUERY_KEY } from "../constants/constants";
+import { projectZodSchema } from "../constants/project-zod-schema";
+import { ProjectsTableDto } from "../dtos/projects-table-dto";
 
 /**
  * Custom hook for defining a project form.

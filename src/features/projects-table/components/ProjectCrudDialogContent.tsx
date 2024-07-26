@@ -1,33 +1,33 @@
-import {
-  ProjectsTableDto,
-  projectZodSchema,
-  useDefineProjectForm,
-  DATA_QUERY_KEY,
-  getDialogHeadingDescription,
-  projectOptimisticMutationFn,
-  idProps,
-  typeProps,
-  descriptionProps,
-  isDisabledProps,
-  nameProps,
-  useIsProjectNameAvailable,
-} from "@/features/projects-table";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { SelectField } from "@/react-toolkit/form/components/fields/SelectField";
+import { SwitchField } from "@/react-toolkit/form/components/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/form/components/fields/TextareaField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { AutherCard } from "@/react-toolkit/form/components/non-field/AutherCard";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   DialogContent,
   DialogDefaultHeader,
-  ScrollArea,
-  Button,
-} from "@/react-toolkit/components/ui";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
+} from "@/react-toolkit/ui/dialog/Dialog";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { z } from "zod";
+import { projectOptimisticMutationFn } from "../apis/projects-table-apis";
 import {
-  Form,
-  InputField,
-  TextareaField,
-  SelectField,
-  AutherCard,
-  SwitchField,
-} from "@/react-toolkit/components/form";
+  DATA_QUERY_KEY,
+  getDialogHeadingDescription,
+} from "../constants/constants";
+import {
+  descriptionProps,
+  idProps,
+  isDisabledProps,
+  nameProps,
+  typeProps,
+} from "../constants/project-form-field-props";
+import { projectZodSchema } from "../constants/project-zod-schema";
+import { ProjectsTableDto } from "../dtos/projects-table-dto";
+import { useDefineProjectForm } from "../hooks/useDefineProjectForm";
+import { useIsProjectNameAvailable } from "../hooks/useIsProjectNameAvailable";
 
 /**
  * Renders the dialog content for creating or updating a project.

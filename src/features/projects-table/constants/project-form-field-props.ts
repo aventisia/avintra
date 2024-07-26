@@ -1,11 +1,9 @@
-import {
-  InputFieldProps,
-  SelectFieldProps,
-  SwitchFieldProps,
-  TextareaFieldProps,
-} from "@/react-toolkit/components/form";
-import { ProjectTypesEnum } from "@/react-toolkit/enums";
-import { enumToArray } from "@/react-toolkit/utils";
+import { ProjectTypesEnum } from "@/react-toolkit/enums/project-types-enum";
+import { InputFieldProps } from "@/react-toolkit/form/components/fields/InputField";
+import { SelectFieldProps } from "@/react-toolkit/form/components/fields/SelectField";
+import { SwitchFieldProps } from "@/react-toolkit/form/components/fields/SwitchField";
+import { TextareaFieldProps } from "@/react-toolkit/form/components/fields/TextareaField";
+import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
 // Project Id
 const idProps: InputFieldProps = {
@@ -44,4 +42,5 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
-export { idProps, typeProps, nameProps, descriptionProps, isDisabledProps };
+export { descriptionProps, idProps, isDisabledProps, nameProps, typeProps };
+

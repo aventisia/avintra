@@ -1,17 +1,15 @@
-import {
-  TenantsTableDto,
-  tenantZodSchema,
-  DATA_QUERY_KEY,
-} from "@/features/tenants-table";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUserSessionStore } from "@/react-toolkit/stores";
-import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
+import { DATA_QUERY_KEY } from "../constants/constants";
+import { tenantZodSchema } from "../constants/tenant-zod-schema";
+import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 /**
  * Custom hook for defining a tenant form.

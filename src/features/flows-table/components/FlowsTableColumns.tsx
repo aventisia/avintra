@@ -1,11 +1,9 @@
-import {
-  FlowsTableDto,
-  FlowsTableRowActions,
-  FlowsTableCellLink,
-} from "@/features/flows-table";
+import { DTColumnHeader } from "@/react-toolkit/data-table/components/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { DTColumnHeader } from "@/react-toolkit/components/data-table";
+import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { FlowsTableCellLink } from "./FlowsTableCellLink";
+import { FlowsTableRowActions } from "./FlowsTableRowActions";
 
 /**
  * Array of table columns for the flows table.

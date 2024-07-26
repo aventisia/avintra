@@ -1,15 +1,17 @@
-import { z } from "zod";
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import {
-  maxLenError,
-  reqError,
-  alphaNumericRegex,
   alphaNumericError,
-  noWhitespaceRegex,
+  maxLenError,
   noWhitespaceError,
-  variableRegex,
+  reqError,
   variableError,
-} from "@/react-toolkit/components/form";
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
+} from "@/react-toolkit/form/utils/error-message-list";
+import {
+  alphaNumericRegex,
+  noWhitespaceRegex,
+  variableRegex,
+} from "@/react-toolkit/form/utils/regex-list";
+import { z } from "zod";
 
 /**
  * Represents the Zod schema for a tenant.

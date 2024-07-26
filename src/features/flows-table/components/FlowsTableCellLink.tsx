@@ -1,6 +1,6 @@
-import { useOpenFlow } from "@/features/flows-table";
-import { Button } from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { useOpenFlow } from "../hooks/useOpenFlow";
 
 interface FlowsTableCellLinkProps {
   /** The ID of the flow to open. */

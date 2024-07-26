@@ -1,11 +1,6 @@
+import { emailError, maxLenError, nameError, reqError } from "@/react-toolkit/form/utils/error-message-list";
+import { nameRegex } from "@/react-toolkit/form/utils/regex-list";
 import { z } from "zod";
-import {
-  maxLenError,
-  reqError,
-  nameRegex,
-  emailError,
-  nameError,
-} from "@/react-toolkit/components/form";
 
 /**
  * Represents the Zod schema for a user.

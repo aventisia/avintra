@@ -1,25 +1,20 @@
-import {
-  usersTableColumns,
-  useFetchUsers,
-  SEARCH_COLUMN,
-  TABLE_HEADING,
-  UserCrudDialogContent,
-} from "@/features/users-table";
-import { Dialog as CrudDialogRoot } from "@/react-toolkit/components/ui";
-import { Separator } from "@/react-toolkit/components/ui";
+import { DataTable } from "@/react-toolkit/data-table/components/DataTable";
+import { DataTableSkeleton } from "@/react-toolkit/data-table/components/DataTableSkeleton";
+import { DTPagination } from "@/react-toolkit/data-table/components/DTPagination";
+import { DTCreateButton } from "@/react-toolkit/data-table/components/toolbar/DTCreateButton";
+import { DTHeading } from "@/react-toolkit/data-table/components/toolbar/DTHeading";
+import { DTSearchBox } from "@/react-toolkit/data-table/components/toolbar/DTSearchBox";
+import { DTViewOptions } from "@/react-toolkit/data-table/components/toolbar/DTViewOptions";
+import { useDataTable } from "@/react-toolkit/data-table/hooks/useDataTable";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { Dialog as CrudDialogRoot } from "@/react-toolkit/ui/dialog/Dialog";
 import { useShallow } from "zustand/react/shallow";
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  useDTCrudDialogStore,
-  useDataTable,
-} from "@/react-toolkit/components/data-table";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
+import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
+import { useFetchUsers } from "../hooks/useFetchUsers";
+import { UserCrudDialogContent } from "./UserCrudDialogContent";
+import { usersTableColumns } from "./UsersTableColumns";
+import { Separator } from "@/react-toolkit/ui/separator";
 
 /**
  * Renders a table of users.

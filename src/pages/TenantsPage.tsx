@@ -1,4 +1,4 @@
-import { TenantsTable } from "@/features";
+import { TenantsTable } from "@/features/tenants-table/components/TenantsTable";
 
 /**
  * Renders the TenantsPage component.

@@ -1,4 +1,4 @@
-import { ProjectTypesEnum } from "@/react-toolkit/enums";
+import { ProjectTypesEnum } from "@/react-toolkit/enums/project-types-enum";
 
 /**
  * Represents a data transfer object (DTO) for a project.

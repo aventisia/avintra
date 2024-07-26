@@ -1,4 +1,4 @@
-import { FlowTypesEnum } from "@/react-toolkit/enums";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 /**
  * Represents a data transfer object (DTO) for a flow.

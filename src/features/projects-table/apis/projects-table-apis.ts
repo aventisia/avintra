@@ -1,11 +1,10 @@
-import { ProjectsTableDto } from "@/features/projects-table";
-import { axiosInstance } from "@/react-toolkit/apis";
-import {
-  CheckAvailabilityDto,
-  IHttpResponse,
-  IOptimisticMutation,
-  TrueFalseResultDto,
-} from "@/react-toolkit/dtos";
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { ProjectsTableDto } from "../dtos/projects-table-dto";
+
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/project`;
 
@@ -81,10 +80,6 @@ const projectOptimisticMutationFn = ({
 };
 
 export {
-  getProjects,
-  isProjectNameAvailable,
-  insertProject,
-  updateProject,
-  deleteProject,
-  projectOptimisticMutationFn,
+  deleteProject, getProjects, insertProject, isProjectNameAvailable, projectOptimisticMutationFn, updateProject
 };
+

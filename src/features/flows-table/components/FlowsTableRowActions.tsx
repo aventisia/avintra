@@ -1,18 +1,14 @@
-import {
-  FlowsTableDto,
-  flowOptimisticMutationFn,
-  FlowOpenRowAction,
-  useFlowsTableStore,
-} from "@/features/flows-table";
-import { DropdownMenuSeparator } from "@/react-toolkit/components/ui";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import {
-  DTDeleteRowAction,
-  DTEditRowAction,
-  DTViewRowAction,
-  DataTableRowActions,
-} from "@/react-toolkit/components/data-table";
+import { DataTableRowActions } from "@/react-toolkit/data-table/components/row-actions/DataTableRowActions";
+import { DTDeleteRowAction } from "@/react-toolkit/data-table/components/row-actions/DTDeleteRowAction";
+import { DTEditRowAction } from "@/react-toolkit/data-table/components/row-actions/DTEditRowAction";
+import { DTViewRowAction } from "@/react-toolkit/data-table/components/row-actions/DTViewRowAction";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 import { useShallow } from "zustand/react/shallow";
+import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
+import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { useFlowsTableStore } from "../stores/flows-table-store";
+import { FlowOpenRowAction } from "./FlowOpenRowAction";
 
 interface FlowsTableRowActionsProps {
   /** The ID of the row */

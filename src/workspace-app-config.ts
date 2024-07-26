@@ -1,15 +1,16 @@
-import { NavLocation, IAppConfig } from "@/react-toolkit/types";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
+import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
-  HomeIcon,
-  FolderIcon,
   ArchiveBoxIcon,
-  UserGroupIcon,
   Cog6ToothIcon,
+  CreditCardIcon,
+  FolderIcon,
+  HomeIcon,
+  IdentificationIcon,
   QuestionMarkCircleIcon,
   UserCircleIcon,
-  CreditCardIcon,
+  UserGroupIcon,
   UsersIcon,
-  IdentificationIcon,
 } from "@heroicons/react/24/outline";
 
 const workspaceAppConfig: IAppConfig = {

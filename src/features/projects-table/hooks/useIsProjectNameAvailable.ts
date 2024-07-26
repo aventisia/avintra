@@ -1,13 +1,12 @@
-import {
-  projectZodSchema,
-  isProjectNameAvailable,
-} from "@/features/projects-table";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { useCheckAvailability } from "@/react-toolkit/form/hooks/useCheckAvailability";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { useCheckAvailability } from "@/react-toolkit/components/form";
-import { useEffect } from "react";
-import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
 import { useShallow } from "zustand/react/shallow";
+import { isProjectNameAvailable } from "../apis/projects-table-apis";
+import { projectNameSchema, projectZodSchema } from "../constants/project-zod-schema";
+
 
 /**
  * Custom hook that checks the availability of a project name and handles validation and error messages.
@@ -30,7 +29,9 @@ export const useIsProjectNameAvailable = (
   // Project name valid/invalid handler
   const isFieldValidHandler = (inputValue: string) => {
     // Create new schema that includes only the project 'name' field
-    const projectNameZodSchema = projectZodSchema.pick({ name: true });
+    const projectNameZodSchema = z.object({
+      name: projectNameSchema,
+    });
 
     // Validate the project name
     const result = projectNameZodSchema.safeParse({ name: inputValue });

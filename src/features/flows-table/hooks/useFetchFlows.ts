@@ -1,6 +1,7 @@
-import { getProjectFlows, useFlowsTableStore } from "@/features/flows-table";
 import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+import { getProjectFlows } from "../apis/flows-table-apis";
+import { useFlowsTableStore } from "../stores/flows-table-store";
 
 /**
  * Custom hook to fetch associated flows with project using react query.

@@ -1,6 +1,7 @@
-import { DATA_QUERY_KEY, ProjectsTableDto } from "@/features/projects-table";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { DATA_QUERY_KEY } from "../constants/constants";
+import { ProjectsTableDto } from "../dtos/projects-table-dto";
 
 /**
  * Custom hook to handle opening a project.

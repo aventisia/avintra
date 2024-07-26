@@ -1,16 +1,14 @@
-import {
-  DATA_QUERY_KEY,
-  userZodSchema,
-  UsersTableDto,
-} from "@/features/users-table";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUserSessionStore } from "@/react-toolkit/stores";
-import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
+import { DATA_QUERY_KEY } from "../constants/constants";
+import { userZodSchema } from "../constants/user-zod-schema";
+import { UsersTableDto } from "../dtos/users-table-dto";
 
 /**
  * Custom hook for defining a user form.

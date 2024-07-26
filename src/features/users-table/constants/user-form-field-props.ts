@@ -1,8 +1,6 @@
-import {
-  InputFieldProps,
-  MultiSelectFieldProps,
-  SwitchFieldProps,
-} from "@/react-toolkit/components/form";
+import { InputFieldProps } from "@/react-toolkit/form/components/fields/InputField";
+import { MultiSelectFieldProps } from "@/react-toolkit/form/components/fields/MultiSelectField";
+import { SwitchFieldProps } from "@/react-toolkit/form/components/fields/SwitchField";
 
 // User Id
 const idProps: InputFieldProps = {
@@ -88,15 +86,15 @@ const pwdSetOnProps: InputFieldProps = {
 };
 
 export {
-  idProps,
-  firstNameProps,
-  lastNameProps,
+  emailConfirmedProps,
   emailProps,
-  userRolesProps,
+  firstNameProps,
+  idProps,
+  isDisabledProps,
+  lastNameProps,
+  lockoutEndProps,
+  pwdSetOnProps,
   twoFactorEnabledProps,
   unlockAccountProps,
-  isDisabledProps,
-  lockoutEndProps,
-  emailConfirmedProps,
-  pwdSetOnProps,
+  userRolesProps,
 };

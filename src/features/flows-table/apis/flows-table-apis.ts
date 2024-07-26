@@ -1,6 +1,7 @@
-import { FlowsTableDto } from "@/features/flows-table";
-import { axiosInstance } from "@/react-toolkit/apis";
-import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 
@@ -69,9 +70,9 @@ const flowOptimisticMutationFn = ({
 };
 
 export {
-  getProjectFlows,
-  insertFlow,
-  updateFlow,
   deleteFlow,
-  flowOptimisticMutationFn,
+  flowOptimisticMutationFn, getProjectFlows,
+  insertFlow,
+  updateFlow
 };
+

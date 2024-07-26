@@ -1,8 +1,12 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
+import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NotFoundPage, RedirectPage } from "@/react-toolkit/pages";
-import { WorkspaceUILayout } from "@/components/layout";
-import { FlowsPage, ProjectsPage, TenantsPage, UsersPage } from "@/pages";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
+import { FlowsPage } from "./pages/FlowsPage";
+import { ProjectsPage } from "./pages/ProjectsPage";
+import { TenantsPage } from "./pages/TenantsPage";
+import { UsersPage } from "./pages/UsersPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {

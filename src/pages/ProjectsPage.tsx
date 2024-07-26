@@ -1,4 +1,4 @@
-import { ProjectsTable } from "@/features";
+import { ProjectsTable } from "@/features/projects-table/components/ProjectsTable";
 
 /**
  * Renders the ProjectsPage component.

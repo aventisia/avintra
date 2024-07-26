@@ -1,38 +1,38 @@
-import {
-  UsersTableDto,
-  useDefineUserForm,
-  DATA_QUERY_KEY,
-  getDialogHeadingDescription,
-  userOptimisticMutationFn,
-  userZodSchema,
-  useFetchUserRoles,
-  UnlockAccountField,
-  idProps,
-  firstNameProps,
-  lastNameProps,
-  emailProps,
-  userRolesProps,
-  twoFactorEnabledProps,
-  emailConfirmedProps,
-  lockoutEndProps,
-  isDisabledProps,
-  pwdSetOnProps,
-} from "@/features/users-table";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { MultiSelectField } from "@/react-toolkit/form/components/fields/MultiSelectField";
+import { SwitchField } from "@/react-toolkit/form/components/fields/SwitchField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { AutherCard } from "@/react-toolkit/form/components/non-field/AutherCard";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   DialogContent,
   DialogDefaultHeader,
-  ScrollArea,
-  Button,
-} from "@/react-toolkit/components/ui";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
+} from "@/react-toolkit/ui/dialog/Dialog";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { z } from "zod";
+import { userOptimisticMutationFn } from "../apis/users-table-apis";
 import {
-  Form,
-  InputField,
-  AutherCard,
-  SwitchField,
-  MultiSelectField,
-} from "@/react-toolkit/components/form";
+  DATA_QUERY_KEY,
+  getDialogHeadingDescription,
+} from "../constants/constants";
+import {
+  emailConfirmedProps,
+  emailProps,
+  firstNameProps,
+  idProps,
+  isDisabledProps,
+  lastNameProps,
+  lockoutEndProps,
+  pwdSetOnProps,
+  twoFactorEnabledProps,
+  userRolesProps,
+} from "../constants/user-form-field-props";
+import { userZodSchema } from "../constants/user-zod-schema";
+import { UsersTableDto } from "../dtos/users-table-dto";
+import { useDefineUserForm } from "../hooks/useDefineUserForm";
+import { useFetchUserRoles } from "../hooks/useFetchUserRoles";
+import { UnlockAccountField } from "./UnlockAccountField";
 
 /**
  * Renders the dialog content for creating or updating a user.
@@ -108,7 +108,7 @@ export const UserCrudDialogContent = () => {
 
             {/* Two Factor Enabled */}
             <SwitchField {...twoFactorEnabledProps} disabled={isReadMode} />
-            
+
             {/* Unlock account (Custom users-table component) */}
             <UnlockAccountField crudAction={crudAction} form={form} />
 
@@ -123,7 +123,7 @@ export const UserCrudDialogContent = () => {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Lockout End */}
                   <InputField {...lockoutEndProps} />
-                  
+
                   {/* Email Confirmed */}
                   <InputField {...emailConfirmedProps} />
                 </div>

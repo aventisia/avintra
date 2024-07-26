@@ -1,5 +1,5 @@
-import { cn } from "@/react-toolkit/lib";
-import { Skeleton } from "@/react-toolkit/components/ui";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
 
 interface PageHeaderProps {
   isLoading?: boolean;
@@ -34,3 +34,4 @@ const PageHeader = ({
 };
 
 export { PageHeader };
+

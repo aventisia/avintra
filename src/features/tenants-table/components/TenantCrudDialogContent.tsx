@@ -1,47 +1,45 @@
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { DatePickerField } from "@/react-toolkit/form/components/fields/DatePickerField";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { RadioGroupField } from "@/react-toolkit/form/components/fields/RadioGroupField";
+import { SwitchField } from "@/react-toolkit/form/components/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/form/components/fields/TextareaField";
+import { AutherCard } from "@/react-toolkit/form/components/non-field/AutherCard";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { DialogDefaultHeader } from "@/react-toolkit/ui/dialog/Dialog";
+import { DialogContent } from "@/react-toolkit/ui/dialog/Dialog";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { z } from "zod";
+import { tenantOptimisticMutationFn } from "../apis/tenants-table-apis";
 import {
-  useDefineTenantForm,
-  TenantsTableDto,
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
-  tenantOptimisticMutationFn,
-  tenantZodSchema,
-  idProps,
-  nameProps,
-  expiresOnProps,
-  isTwoFAEnabledProps,
-  isPwdEnabledProps,
-  isSSOEnabledProps,
-  ssoConfigJsonProps,
-  isPwdNeverExpiresEnabledProps,
+} from "../constants/constants";
+import {
   daysBeforePwdExpiresProps,
-  isIdleSessionTimeoutEnabledProps,
-  idleSessionTimeoutMinutesProps,
-  dbOptionProps,
-  dbNamePrefixProps,
-  dbUserIdProps,
-  dbPwdProps,
   dbHostProps,
+  dbNamePrefixProps,
+  dbOptionProps,
   dbPortProps,
+  dbPwdProps,
+  dbUserIdProps,
+  expiresOnProps,
+  idleSessionTimeoutMinutesProps,
+  idProps,
   isDisabledProps,
-} from "@/features/tenants-table";
-import { z } from "zod";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums";
-import {
-  DialogContent,
-  DialogDefaultHeader,
-  ScrollArea,
-  Button,
-} from "@/react-toolkit/components/ui";
-import {
-  Form,
-  InputField,
-  AutherCard,
-  SwitchField,
-  TextareaField,
-  RadioGroupField,
-  DatePickerField,
-} from "@/react-toolkit/components/form";
+  isIdleSessionTimeoutEnabledProps,
+  isPwdEnabledProps,
+  isPwdNeverExpiresEnabledProps,
+  isSSOEnabledProps,
+  isTwoFAEnabledProps,
+  nameProps,
+  ssoConfigJsonProps,
+} from "../constants/tenant-form-field-props";
+import { tenantZodSchema } from "../constants/tenant-zod-schema";
+import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { useDefineTenantForm } from "../hooks/useDefineTenantForm";
 
 /**
  * Renders the dialog content for creating or updating a tenant.
@@ -113,28 +111,16 @@ export const TenantCrudDialogContent = () => {
             <InputField {...nameProps} disabled={isReadMode} />
 
             {/* Expires On */}
-            <DatePickerField
-              {...expiresOnProps}
-              disabled={isReadMode}
-            />
+            <DatePickerField {...expiresOnProps} disabled={isReadMode} />
 
             {/* Is TwoFA Enabled*/}
-            <SwitchField
-              {...isTwoFAEnabledProps}
-              disabled={isReadMode}
-            />
+            <SwitchField {...isTwoFAEnabledProps} disabled={isReadMode} />
 
             {/* Is Password Enabled */}
-            <SwitchField
-              {...isPwdEnabledProps}
-              disabled={isReadMode}
-            />
+            <SwitchField {...isPwdEnabledProps} disabled={isReadMode} />
 
             {/* Is SSO Enabled */}
-            <SwitchField
-              {...isSSOEnabledProps}
-              disabled={isReadMode}
-            />
+            <SwitchField {...isSSOEnabledProps} disabled={isReadMode} />
 
             {/* SSO Config JSON */}
             {isSSOEnabled && (
@@ -176,31 +162,19 @@ export const TenantCrudDialogContent = () => {
             )}
 
             {/* Database Option */}
-            <RadioGroupField
-              {...dbOptionProps}
-              disabled={isReadMode}
-            />
+            <RadioGroupField {...dbOptionProps} disabled={isReadMode} />
 
             {/* Database Name Prefix */}
             {dbOption !== DatabaseOptionsEnum.Shared && (
               <>
-                <InputField
-                  {...dbNamePrefixProps}
-                  disabled={isReadMode}
-                />
+                <InputField {...dbNamePrefixProps} disabled={isReadMode} />
                 <div className="flex flex-col gap-3.5">
                   <div className="grid grid-cols-2 gap-4">
                     {/* Database User Id */}
-                    <InputField
-                      {...dbUserIdProps}
-                      disabled={isReadMode}
-                    />
+                    <InputField {...dbUserIdProps} disabled={isReadMode} />
 
                     {/* Database Password */}
-                    <InputField
-                      {...dbPwdProps}
-                      disabled={isReadMode}
-                    />
+                    <InputField {...dbPwdProps} disabled={isReadMode} />
                   </div>
                 </div>
               </>
@@ -210,10 +184,7 @@ export const TenantCrudDialogContent = () => {
               <div className="flex flex-col gap-3.5">
                 <div className="grid grid-cols-[1fr_auto] gap-4">
                   {/* Database Host */}
-                  <InputField
-                    {...dbHostProps}
-                    disabled={isReadMode}
-                  />
+                  <InputField {...dbHostProps} disabled={isReadMode} />
 
                   {/* Database Port */}
                   <InputField
@@ -227,10 +198,7 @@ export const TenantCrudDialogContent = () => {
 
             {/* Is Disabled */}
             {crudAction !== "create" && (
-              <SwitchField
-                {...isDisabledProps}
-                disabled={isReadMode}
-              />
+              <SwitchField {...isDisabledProps} disabled={isReadMode} />
             )}
 
             {/* AutherCard */}
