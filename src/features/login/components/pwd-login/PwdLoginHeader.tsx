@@ -3,10 +3,11 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { useLoginStore } from "../../stores/login-store";
 
-export const BackToGetTenantInfo = () => {
+export const PwdLoginHeader = () => {
   // Get store state and actions
-  const { setStepNo } = useLoginStore(
+  const { loginData, setStepNo } = useLoginStore(
     useShallow((state) => ({
+      loginData: state.loginData,
       setStepNo: state.setStepNo,
     })),
   );
@@ -22,7 +23,7 @@ export const BackToGetTenantInfo = () => {
         >
           <ArrowLeftIcon className="h-4 w-4" />
         </Button>
-        <h2 className="ml-3 w-full truncate">PENDING</h2>
+        <h2 className="ml-3 w-full truncate">{loginData?.email}</h2>
       </div>
       <h1 className="text-3xl font-medium">Enter password</h1>
     </div>

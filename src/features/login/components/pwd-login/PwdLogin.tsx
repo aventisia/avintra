@@ -1,6 +1,6 @@
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { BackToGetTenantInfo } from "./BackToGetTenantInfo";
+import { PwdLoginHeader } from "./PwdLoginHeader";
 import { GoToResetPwd } from "./GoToResetPwd";
 import { PwdLoginForm } from "./PwdLoginForm";
 
@@ -11,8 +11,8 @@ export const PwdLogin = () => {
   // Return component
   return (
     <ContentContainer className="fadeInRTL">
-      {/* Back to Get Tenant Info + Email */}
-      <BackToGetTenantInfo />
+      {/* Back to Get Tenant Info + Email + Heading */}
+      <PwdLoginHeader />
 
       {/* Pwd login */}
       <PwdLoginForm />
