@@ -1,7 +1,7 @@
-import { resetPwdZodSchema } from "@/features/reset-pwd";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { resetPwdZodSchema } from "../constants/reset-pwd-zod-schema";
 
 export const useDefineResetPwdForm = () => {
   // Define form with zod schema

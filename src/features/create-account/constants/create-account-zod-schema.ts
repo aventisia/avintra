@@ -1,13 +1,12 @@
-import * as z from "zod";
 import {
   maxLenError,
   minLenError,
   nameError,
-  reqError,
-  nameRegex,
-  pwdRegex,
   pwdError,
-} from "@/react-toolkit/components/form";
+  reqError,
+} from "@/react-toolkit/form/utils/error-message-list";
+import { nameRegex, pwdRegex } from "@/react-toolkit/form/utils/regex-list";
+import * as z from "zod";
 
 export const emailSchema = z
   .string()

@@ -1,11 +1,10 @@
-import {
-  useCreateAccountStore,
-  createAccount,
-} from "@/features/create-account";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
-import { setUserSessionLocally } from "@/react-toolkit/utils";
 import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { createAccount } from "../apis/create-account-apis";
+import { useCreateAccountStore } from "../stores/create-account-store";
+
 
 export const useCreateAccountMutation = () => {
   // Get navigate function

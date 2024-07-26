@@ -1,7 +1,7 @@
-import { useLoginStore } from "@/features/login";
 import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
-import { getTenantInfo } from "@/react-toolkit/apis";
+import { getTenantInfo } from "@/react-toolkit/apis/accounts-auth-apis";
+import { useLoginStore } from "../stores/login-store";
 
 export const useGetTenantInfoMutation = () => {
   // Get store state and actions

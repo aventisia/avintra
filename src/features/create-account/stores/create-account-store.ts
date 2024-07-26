@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import {
-  ICreateAccountData,
-  IVerifyEmailData,
-} from "@/features/create-account";
+import { ICreateAccountData } from "../types/create-account-data";
+import { IVerifyEmailData } from "../types/verify-email-data";
 
 type State = {
   /** The current step number of the form */
@@ -33,6 +31,5 @@ export const useCreateAccountStore = create<State & Actions>((set) => ({
 
   setStepNo: (stepNo) => set({ stepNo }),
   setCreateAccountData: (createAccountData) => set({ createAccountData }),
-  setVerifyEmailData: (verifyEmailData) =>
-    set({ verifyEmailData }),
+  setVerifyEmailData: (verifyEmailData) => set({ verifyEmailData }),
 }));

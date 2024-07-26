@@ -1,13 +1,12 @@
-import {
-  verifyEmailZodSchema,
-  useDefineVerifyEmailForm,
-  useCreateAccountMutation,
-  verificationCodeProps,
-} from "@/features/create-account";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import { Form, InputField } from "@/react-toolkit/components/form";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { toast } from "sonner";
+import * as z from "zod";
+import { verificationCodeProps } from "../../constants/form-field-props";
+import { verifyEmailZodSchema } from "../../constants/verify-email-zod-schema";
+import { useCreateAccountMutation } from "../../hooks/useCreateAccountMutation";
+import { useDefineVerifyEmailForm } from "../../hooks/useDefineVerifyEmailForm";
 
 export const VerifyEmailForm = () => {
   // Define form

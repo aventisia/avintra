@@ -1,12 +1,11 @@
-import {
-  emailProps,
-  tenantInfoZodSchema,
-  useDefineGetTenantInfoForm,
-  useGetTenantInfoMutation,
-} from "@/features/login";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import { Form, InputField } from "@/react-toolkit/components/form";
+import { emailProps } from "../../constants/form-field-props";
+import { tenantInfoZodSchema } from "../../constants/tenant-info-zod-schema";
+import { useDefineGetTenantInfoForm } from "../../hooks/useDefineGetTenantInfoForm";
+import { useGetTenantInfoMutation } from "../../hooks/useGetTenantInfoMutation";
 
 export const GetTenantInfoForm = () => {
   // Define form

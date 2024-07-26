@@ -1,5 +1,5 @@
-import { ContentFooter } from "@/components/ui";
-import { Button } from "@/react-toolkit/components/ui";
+import { ContentFooter } from "@/components/ui/ContentFooter";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 

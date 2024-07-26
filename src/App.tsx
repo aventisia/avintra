@@ -1,8 +1,11 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthUILayout } from "@/components/layout/AuthUILayout";
+import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
+import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NotFoundPage, RedirectPage } from "@/react-toolkit/pages";
-import { AuthUILayout } from "@/components/layout";
-import { CreateAccountPage, LogInPage, ResetPwdPage } from "@/pages";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import CreateAccountPage from "./pages/CreateAccountPage";
+import LogInPage from "./pages/LogInPage";
+import ResetPwdPage from "./pages/ResetPwdPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {

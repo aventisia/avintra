@@ -1,13 +1,12 @@
-import {
-  emailProps,
-  provideEmailZodSchema,
-  useDefineProvideEmailForm,
-  useCreateCodeMutation,
-} from "@/features/reset-pwd";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import { Form, InputField } from "@/react-toolkit/components/form";
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums";
+import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { z } from "zod";
+import { emailProps } from "../../constants/form-field-props";
+import { provideEmailZodSchema } from "../../constants/provide-email-zod-schema";
+import { useCreateCodeMutation } from "../../hooks/useCreateCodeMutation";
+import { useDefineProvideEmailForm } from "../../hooks/useDefineProvideEmailForm";
 
 export const ProvideEmailForm = () => {
   // Define form

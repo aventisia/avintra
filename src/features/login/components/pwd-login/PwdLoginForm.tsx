@@ -1,13 +1,12 @@
-import {
-  pwdProps,
-  useDefinePwdLoginForm,
-  useAuthenticateUserMutation,
-  pwdLoginZodSchema,
-} from "@/features/login";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import { Form, InputField } from "@/react-toolkit/components/form";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { toast } from "sonner";
+import * as z from "zod";
+import { pwdProps } from "../../constants/form-field-props";
+import { pwdLoginZodSchema } from "../../constants/pwd-login-zod-schema";
+import { useAuthenticateUserMutation } from "../../hooks/useAuthenticateUserMutation";
+import { useDefinePwdLoginForm } from "../../hooks/useDefinePwdLoginForm";
 
 export const PwdLoginForm = () => {
   // Define form

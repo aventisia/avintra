@@ -1,11 +1,9 @@
-import {
-  verifyEmailZodSchema,
-  useCreateAccountStore,
-} from "@/features/create-account";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
+import { verifyEmailZodSchema } from "../constants/verify-email-zod-schema";
+import { useCreateAccountStore } from "../stores/create-account-store";
 
 export const useDefineVerifyEmailForm = () => {
   // Get create account store state

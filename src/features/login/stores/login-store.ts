@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { ILoginData, ITwoFACodeData } from "@/features/login";
+import { ILoginData } from "../types/login-data";
+import { ITwoFACodeData } from "../types/two-fa-code-data";
 
 type State = {
   /** The current step number of the form */

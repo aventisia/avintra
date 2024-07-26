@@ -1,10 +1,15 @@
-import { ProvideEmail, ResetPwd, useResetPwdStore, VerifyCode } from "@/features/reset-pwd";
-import { AppLogo, MinimalFooter } from "@/react-toolkit/components/layout";
-import { LeftContainer, RightContainer } from "@/components/ui";
+import { HeaderContainer } from "@/components/layout/HeaderContainer";
+import { LeftContainer } from "@/components/ui/LeftContainer";
+import { RightContainer } from "@/components/ui/RightContainer";
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
+import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useShallow } from "zustand/react/shallow";
-import { HeaderContainer } from "@/components/layout";
-import { cn } from "@/react-toolkit/lib";
-import { buttonVariants } from "@/react-toolkit/components/ui";
+import { useResetPwdStore } from "../stores/reset-pwd-store";
+import { ProvideEmail } from "./provide-email/ProvideEmail";
+import { ResetPwd } from "./reset-pwd/ResetPwd";
+import { VerifyCode } from "./verify-code/VerifyCode";
 
 export const ResetPwdMain = () => {
   // Get store state

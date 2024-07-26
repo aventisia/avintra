@@ -1,14 +1,14 @@
-import { AppLogo, MinimalFooter } from "@/react-toolkit/components/layout";
-import { HeaderContainer } from "@/components/layout";
-import { LeftContainer, RightContainer } from "@/components/ui";
-import { buttonVariants } from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
-import {
-  CreateAccount,
-  useCreateAccountStore,
-  VerifyEmail,
-} from "@/features/create-account";
+import { HeaderContainer } from "@/components/layout/HeaderContainer";
+import { LeftContainer } from "@/components/ui/LeftContainer";
+import { RightContainer } from "@/components/ui/RightContainer";
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
+import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useShallow } from "zustand/react/shallow";
+import { useCreateAccountStore } from "../stores/create-account-store";
+import { CreateAccount } from "./create-account/CreateAccount";
+import { VerifyEmail } from "./verify-email/VerifyEmail";
 
 export const CreateAccountMain = () => {
   // Get store state

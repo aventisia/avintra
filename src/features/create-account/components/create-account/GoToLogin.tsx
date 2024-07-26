@@ -1,5 +1,5 @@
-import { ContentFooter } from "@/components/ui";
-import { buttonVariants } from "@/react-toolkit/components/ui";
+import { ContentFooter } from "@/components/ui/ContentFooter";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
 export const GoToLogin = () => {
   return (

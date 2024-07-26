@@ -1,8 +1,9 @@
-import { verifyCodeZodSchema, useResetPwdStore } from "@/features/reset-pwd";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
+import { verifyCodeZodSchema } from "../constants/verify-code-zod-schema";
+import { useResetPwdStore } from "../stores/reset-pwd-store";
 
 export const useDefineVerifyCodeForm = () => {
   // Get store state

@@ -1,13 +1,12 @@
-import {
-  verifyCodeZodSchema,
-  useDefineVerifyCodeForm,
-  useVerifyCodeMutation,
-  verificationCodeProps,
-} from "@/features/reset-pwd";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import { Form, InputField } from "@/react-toolkit/components/form";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { toast } from "sonner";
+import { z } from "zod";
+import { verificationCodeProps } from "../../constants/form-field-props";
+import { verifyCodeZodSchema } from "../../constants/verify-code-zod-schema";
+import { useDefineVerifyCodeForm } from "../../hooks/useDefineVerifyCodeForm";
+import { useVerifyCodeMutation } from "../../hooks/useVerifyCodeMutation";
 
 export const VerifyCodeForm = () => {
   // Define form

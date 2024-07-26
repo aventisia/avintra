@@ -1,10 +1,8 @@
-import {
-  BackToGetTenantInfo,
-  GoToResetPwd,
-  PwdLoginForm,
-} from "@/features/login";
-import { ContentContainer } from "@/components/ui";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
+import { ContentContainer } from "@/components/ui/ContentContainer";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { BackToGetTenantInfo } from "./BackToGetTenantInfo";
+import { GoToResetPwd } from "./GoToResetPwd";
+import { PwdLoginForm } from "./PwdLoginForm";
 
 export const PwdLogin = () => {
   // Set dcoument title

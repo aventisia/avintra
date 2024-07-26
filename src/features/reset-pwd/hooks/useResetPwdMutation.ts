@@ -1,8 +1,9 @@
-import { useResetPwdStore, resetPwd } from "@/features/reset-pwd";
 import { useMutation } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
+import { resetPwd } from "../apis/reset-pwd-apis";
+import { useResetPwdStore } from "../stores/reset-pwd-store";
 
 export const useResetPwdMutation = () => {
   // Get navigate function

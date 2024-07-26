@@ -1,6 +1,9 @@
-import { BackToLogin, Resend2FACode, TwoFAForm } from "@/features/login";
-import { ContentHeader, ContentContainer } from "@/components/ui";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
+import { ContentContainer } from "@/components/ui/ContentContainer";
+import { ContentHeader } from "@/components/ui/ContentHeader";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { BackToLogin } from "./BackToLogin";
+import { Resend2FACode } from "./Resend2FACode";
+import { TwoFAForm } from "./TwoFAForm";
 
 export const TwoFA = () => {
   // Set dcoument title

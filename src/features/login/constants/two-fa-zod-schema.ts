@@ -1,11 +1,11 @@
-import * as z from "zod";
 import {
   maxLenError,
   minLenError,
-  reqError,
-  numericRegex,
   numericError,
-} from "@/react-toolkit/components/form";
+  reqError,
+} from "@/react-toolkit/form/utils/error-message-list";
+import { numericRegex } from "@/react-toolkit/form/utils/regex-list";
+import * as z from "zod";
 
 export const twoFAZodSchema = z.object({
   verificationCode: z

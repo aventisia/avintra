@@ -1,7 +1,7 @@
-import { tenantInfoZodSchema } from "@/features/login";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { tenantInfoZodSchema } from "../constants/tenant-info-zod-schema";
 
 export const useDefineGetTenantInfoForm = () => {
   // Define form with zod schema
@@ -21,6 +21,6 @@ export const useDefineGetTenantInfoForm = () => {
   return {
     form,
     isSubmitting,
-    isDirty
+    isDirty,
   };
 };

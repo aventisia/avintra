@@ -1,5 +1,5 @@
-import { buttonVariants } from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
 export const TermsAndConditionsLabel = () => {
   return (

@@ -1,8 +1,9 @@
-import { checkTwoFAVerificationCode, useLoginStore } from "@/features/login";
-import { setUserSessionLocally } from "@/react-toolkit/utils";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+import { checkTwoFAVerificationCode } from "../apis/login-apis";
+import { useLoginStore } from "../stores/login-store";
 
 export const useCheck2FACodeMutation = () => {
   // Get navigate function

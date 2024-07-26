@@ -1,18 +1,13 @@
-import {
-  confirmNewPwdProps,
-  newPwdProps,
-  resetPwdZodSchema,
-  useDefineResetPwdForm,
-  useResetPwdMutation,
-} from "@/features/reset-pwd";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import {
-  CheckboxField,
-  Form,
-  FormLabel,
-  InputField,
-} from "@/react-toolkit/components/form";
+import { CheckboxField } from "@/react-toolkit/form/components/fields/CheckboxField";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { FormLabel } from "@/react-toolkit/form/components/form/FormLabel";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { z } from "zod";
+import { confirmNewPwdProps, newPwdProps } from "../../constants/form-field-props";
+import { resetPwdZodSchema } from "../../constants/reset-pwd-zod-schema";
+import { useDefineResetPwdForm } from "../../hooks/useDefineResetPwdForm";
+import { useResetPwdMutation } from "../../hooks/useResetPwdMutation";
 
 export const ResetPwdForm = () => {
   // Define form

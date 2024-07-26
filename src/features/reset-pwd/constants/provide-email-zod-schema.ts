@@ -1,7 +1,5 @@
+import { reqError } from "@/react-toolkit/form/utils/error-message-list";
 import * as z from "zod";
-import {
-  reqError,
-} from "@/react-toolkit/components/form";
 
 export const provideEmailZodSchema = z.object({
   email: z

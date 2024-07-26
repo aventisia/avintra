@@ -1,9 +1,9 @@
-import { useCreateAccountStore } from "@/features/create-account";
+import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
+import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 import { useMutation } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
-import { createVerificationCode } from "@/react-toolkit/apis";
 import { toast } from "sonner";
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums";
+import { useShallow } from "zustand/react/shallow";
+import { useCreateAccountStore } from "../stores/create-account-store";
 
 export const useResendCodeMutation = () => {
   // Get store state and actions

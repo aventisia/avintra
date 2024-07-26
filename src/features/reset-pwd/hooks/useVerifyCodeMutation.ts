@@ -1,7 +1,7 @@
-import { useResetPwdStore } from "@/features/reset-pwd";
-import { checkVerificationCode } from "@/react-toolkit/apis";
+import { checkVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
 import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+import { useResetPwdStore } from "../stores/reset-pwd-store";
 
 export const useVerifyCodeMutation = () => {
   // Get store state and actions

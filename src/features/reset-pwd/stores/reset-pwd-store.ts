@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { IVerifyCodeData } from "@/features/reset-pwd";
+import { IVerifyCodeData } from "../types/verify-code-data";
 
 type State = {
   /** The current step number of the form */

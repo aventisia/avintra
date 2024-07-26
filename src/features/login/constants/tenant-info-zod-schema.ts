@@ -1,7 +1,5 @@
+import { reqError } from "@/react-toolkit/form/utils/error-message-list";
 import * as z from "zod";
-import {
-  reqError,
-} from "@/react-toolkit/components/form";
 
 export const tenantInfoZodSchema = z.object({
   email: z
@@ -9,5 +7,3 @@ export const tenantInfoZodSchema = z.object({
     .min(1, { message: reqError("Email") })
     .email(),
 });
-
-

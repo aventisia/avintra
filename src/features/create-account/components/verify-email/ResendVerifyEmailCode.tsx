@@ -1,5 +1,6 @@
-import { useResendCodeMutation } from "@/features/create-account";
-import { ContentFooter, ResendCodeButton } from "@/components/ui";
+import { ContentFooter } from "@/components/ui/ContentFooter";
+import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
+import { useResendCodeMutation } from "../../hooks/useResendCodeMutation";
 
 export const ResendVerifyEmailCode = () => {
   // Get mutation to resend verification code

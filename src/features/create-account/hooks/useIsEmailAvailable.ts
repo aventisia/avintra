@@ -1,9 +1,12 @@
-import { emailSchema, createAccountZodSchema } from "@/features/create-account";
+import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
+import { useCheckAvailability } from "@/react-toolkit/form/hooks/useCheckAvailability";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { useCheckAvailability } from "@/react-toolkit/components/form";
-import { useEffect } from "react";
-import { isEmailAvailable } from "@/react-toolkit/apis";
+import {
+  createAccountZodSchema,
+  emailSchema,
+} from "../constants/create-account-zod-schema";
 
 /**
  * Custom hook that checks the availability of a email and handles validation and error messages.

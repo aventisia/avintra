@@ -1,13 +1,12 @@
-import {
-  verificationCodeProps,
-  useDefineTwoFAForm,
-  useCheck2FACodeMutation,
-  twoFAZodSchema,
-} from "@/features/login";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import { Form, InputField } from "@/react-toolkit/components/form";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { toast } from "sonner";
+import * as z from "zod";
+import { verificationCodeProps } from "../../constants/form-field-props";
+import { twoFAZodSchema } from "../../constants/two-fa-zod-schema";
+import { useCheck2FACodeMutation } from "../../hooks/useCheck2FACodeMutation";
+import { useDefineTwoFAForm } from "../../hooks/useDefineTwoFAForm";
 
 export const TwoFAForm = () => {
   // Define form

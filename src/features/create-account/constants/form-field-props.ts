@@ -1,4 +1,4 @@
-import { InputFieldProps } from "@/react-toolkit/components/form";
+import { InputFieldProps } from "@/react-toolkit/form/components/fields/InputField";
 
 // First Name
 const firstNameProps: InputFieldProps = {
@@ -43,10 +43,6 @@ const verificationCodeProps: InputFieldProps = {
 };
 
 export {
-  firstNameProps,
-  lastNameProps,
-  emailProps,
-  pwdProps,
-  confirmPwdProps,
-  verificationCodeProps,
+  confirmPwdProps, emailProps, firstNameProps,
+  lastNameProps, pwdProps, verificationCodeProps
 };

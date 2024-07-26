@@ -1,11 +1,11 @@
-import * as z from "zod";
 import {
   maxLenError,
   minLenError,
-  reqError,
-  pwdRegex,
   pwdError,
-} from "@/react-toolkit/components/form";
+  reqError,
+} from "@/react-toolkit/form/utils/error-message-list";
+import { pwdRegex } from "@/react-toolkit/form/utils/regex-list";
+import * as z from "zod";
 
 export const resetPwdZodSchema = z
   .object({

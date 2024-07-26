@@ -1,4 +1,4 @@
-import { Button } from "@/react-toolkit/components/ui";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 const SocialButtons = () => {
   return (

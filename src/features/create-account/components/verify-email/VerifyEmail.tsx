@@ -1,10 +1,9 @@
-import {
-  BackToCreateAccount,
-  ResendVerifyEmailCode,
-  VerifyEmailForm,
-} from "@/features/create-account";
-import { ContentHeader, ContentContainer } from "@/components/ui";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
+import { ContentContainer } from "@/components/ui/ContentContainer";
+import { ContentHeader } from "@/components/ui/ContentHeader";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { BackToCreateAccount } from "./BackToCreateAccount";
+import { ResendVerifyEmailCode } from "./ResendVerifyEmailCode";
+import { VerifyEmailForm } from "./VerifyEmailForm";
 
 export const VerifyEmail = () => {
   // Set dcoument title

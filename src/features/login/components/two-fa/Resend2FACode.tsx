@@ -1,7 +1,7 @@
-import {
-  useAuthenticateUserMutation,
-} from "@/features/login";
-import { ContentFooter, ResendCodeButton } from "@/components/ui";
+import { ContentFooter } from "@/components/ui/ContentFooter";
+import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
+import { useAuthenticateUserMutation } from "../../hooks/useAuthenticateUserMutation";
+
 
 export const Resend2FACode = () => {
   // Get mutation

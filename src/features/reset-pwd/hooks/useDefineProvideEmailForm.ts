@@ -1,8 +1,8 @@
 
-import { provideEmailZodSchema } from "@/features/reset-pwd";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { provideEmailZodSchema } from "../constants/provide-email-zod-schema";
 
 export const useDefineProvideEmailForm = () => {
   // Define form with zod schema

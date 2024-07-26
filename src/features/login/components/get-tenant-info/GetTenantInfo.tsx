@@ -1,11 +1,10 @@
-import { GetTenantInfoForm, GoToCreateAccount } from "@/features/login";
-import { SeparatorWithText } from "@/react-toolkit/components/ui";
-import {
-  SocialButtons,
-  ContentHeader,
-  ContentContainer,
-} from "@/components/ui";
-import { useDocumentTitle } from "@/react-toolkit/hooks";
+import { ContentContainer } from "@/components/ui/ContentContainer";
+import { ContentHeader } from "@/components/ui/ContentHeader";
+import { SocialButtons } from "@/components/ui/SocialButtons";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { SeparatorWithText } from "@/react-toolkit/ui/custom/SeparatorWithText";
+import { GetTenantInfoForm } from "./GetTenantInfoForm";
+import { GoToCreateAccount } from "./GoToCreateAccount";
 
 export const GetTenantInfo = () => {
   // Set dcoument title

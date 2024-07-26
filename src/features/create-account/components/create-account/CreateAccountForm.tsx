@@ -1,23 +1,21 @@
+import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
+import { CheckboxField } from "@/react-toolkit/form/components/fields/CheckboxField";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import * as z from "zod";
+import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
 import {
   confirmPwdProps,
-  createAccountZodSchema,
   emailProps,
   firstNameProps,
   lastNameProps,
   pwdProps,
-  useDefineCreateAccountForm,
-  useCreateCodeMutation,
-  TermsAndConditionsLabel,
-  useIsEmailAvailable,
-} from "@/features/create-account";
-import * as z from "zod";
-import { SubmitButton } from "@/react-toolkit/components/ui";
-import {
-  CheckboxField,
-  Form,
-  InputField,
-} from "@/react-toolkit/components/form";
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums";
+} from "../../constants/form-field-props";
+import { useCreateCodeMutation } from "../../hooks/useCreateCodeMutation";
+import { useDefineCreateAccountForm } from "../../hooks/useDefineCreateAccountForm";
+import { useIsEmailAvailable } from "../../hooks/useIsEmailAvailable";
+import { TermsAndConditionsLabel } from "./TermsAndConditionsLabel";
 
 /**
  * Component for the create account form.

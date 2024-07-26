@@ -1,7 +1,7 @@
-import { useLoginStore } from "@/features/login";
-import { Button } from "@/react-toolkit/components/ui";
-import { useShallow } from "zustand/react/shallow";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
+import { useLoginStore } from "../../stores/login-store";
 
 export const BackToGetTenantInfo = () => {
   // Get store state and actions

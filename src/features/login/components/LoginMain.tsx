@@ -1,15 +1,14 @@
-import {
-  GetTenantInfo,
-  LoginHeader,
-  PwdLogin,
-  TwoFA,
-  useLoginStore,
-  useValidateUserSessionForLoginPage,
-} from "@/features/login";
-import { MinimalFooter } from "@/react-toolkit/components/layout";
-import { LeftContainer, RightContainer } from "@/components/ui";
+import { LeftContainer } from "@/components/ui/LeftContainer";
+import { RightContainer } from "@/components/ui/RightContainer";
+import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
+import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { useShallow } from "zustand/react/shallow";
-import { RedirectPage } from "@/react-toolkit/pages";
+import { useValidateUserSessionForLoginPage } from "../hooks/useValidateUserSessionForLoginPage";
+import { useLoginStore } from "../stores/login-store";
+import { GetTenantInfo } from "./get-tenant-info/GetTenantInfo";
+import { LoginHeader } from "./LoginHeader";
+import { PwdLogin } from "./pwd-login/PwdLogin";
+import { TwoFA } from "./two-fa/TwoFA";
 
 export const LoginMain = () => {
   // Get store state
