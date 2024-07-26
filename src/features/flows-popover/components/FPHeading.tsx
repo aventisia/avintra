@@ -1,8 +1,6 @@
-import {
-  useFlowsPopoverStore,
-} from "@/features/flows-popover";
+import { Badge } from "@/react-toolkit/ui/badge/badge";
 import { useShallow } from "zustand/react/shallow";
-import { Badge } from "@/react-toolkit/components/ui";
+import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
 /**
  * Renders a popover heading component for flows list.

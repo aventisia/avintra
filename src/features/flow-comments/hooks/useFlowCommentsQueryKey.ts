@@ -1,7 +1,7 @@
-import { useFlowCommentsStore } from "@/features/flow-comments";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
 
 /**
  * Custom hook to set the query key for flow comments.

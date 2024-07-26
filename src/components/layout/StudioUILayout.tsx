@@ -1,8 +1,8 @@
+import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+import { cn } from "@/react-toolkit/lib/utils";
+import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { Outlet } from "react-router-dom";
-import { cn } from "@/react-toolkit/lib";
-import { StudioHeader } from "@/components/layout";
-import { RedirectPage } from "@/react-toolkit/pages";
-import { useValidateUserSession } from "@/react-toolkit/hooks";
+import { StudioHeader } from "./StudioHeader";
 
 export const StudioUILayout = () => {
   // Validate user session

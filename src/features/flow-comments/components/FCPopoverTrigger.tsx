@@ -1,15 +1,11 @@
-import {
-  useFlowCommentsStore,
-  FC_POPOVER_HEADING,
-} from "@/features/flow-comments";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
-import { cn } from "@/react-toolkit/lib";
-import {
-  PopoverTrigger,
-  Tooltip,
-  buttonVariants,
-} from "@/react-toolkit/components/ui";
+import { FC_POPOVER_HEADING } from "../constants/constatns";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
 
 /**
  * Renders a popover trigger component for flow comments.

@@ -1,8 +1,10 @@
-import { FlowSilentUpdateDto, updateFlowSilently } from "@/features/react-flow";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useMutation } from "@tanstack/react-query";
-import { useCurrentFlowStore, useReactFlowExtStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
 import { useCallback, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { updateFlowSilently } from "../apis/react-flow-apis";
+import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
 
 export const useUpdateFlowSilently = () => {
   // Get global store state & actions

@@ -1,10 +1,10 @@
-import { z } from "zod";
 import {
-  maxLenError,
   reqError,
-  alphaNumericRegex,
+  maxLenError,
   alphaNumericError,
-} from "@/react-toolkit/components/form";
+} from "@/react-toolkit/form/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/form/utils/regex-list";
+import { z } from "zod";
 
 /**
  * Represents the Zod schema for a flow.

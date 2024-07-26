@@ -1,19 +1,17 @@
-import {
-  ActionRibbon,
-  ExtractRibbon,
-  InferRibbon,
-  LoadRibbon,
-  StudioTabType,
-  TransformRibbon,
-  useETLIAMenuStore,
-} from "@/features/etlia-menu";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Button,
-} from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+} from "@/react-toolkit/ui/popover/Popover";
+import { useETLIAMenuStore } from "../stores/etlia-menu-store";
+import { StudioTabType } from "../types/etlia-menu-type";
+import { ActionRibbon } from "./action-ribbon/ActionRibbon";
+import { ExtractRibbon } from "./extract-ribbon/ExtractRibbon";
+import { InferRibbon } from "./infer-ribbon/InferRibbon";
+import { LoadRibbon } from "./load-ribbon/LoadRibbon";
+import { TransformRibbon } from "./transform-ribbon/TransformRibbon";
 
 interface ETLIAMenuProps {
   className?: string;

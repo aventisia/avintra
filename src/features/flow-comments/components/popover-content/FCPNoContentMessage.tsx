@@ -1,5 +1,5 @@
+import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
 import { MessageSquareOff } from "lucide-react";
-import { NoContentMessage } from "@/react-toolkit/components/ui";
 
 /**
  * Renders a component that displays a message when there are no comments.

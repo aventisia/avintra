@@ -1,13 +1,11 @@
-import {
-  useFlowCommentsStore,
-  flowCommentZodSchema,
-} from "@/features/flow-comments";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { useUserSessionStore } from "@/react-toolkit/stores";
+import { flowCommentZodSchema } from "../constants/flow-comment-zod-schema";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
 
 /**
  * Custom hook for defining a form to create flow comment.

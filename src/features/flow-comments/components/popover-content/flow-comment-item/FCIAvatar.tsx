@@ -1,4 +1,4 @@
-import { AvatarExt } from "@/react-toolkit/components/ui";
+import { AvatarExt } from "@/react-toolkit/ui/AvatarExt";
 
 /**
  * PENDING: Renders the avatar of the who commented on the flow.

@@ -1,4 +1,4 @@
-import { FlowTypesEnum } from "@/react-toolkit/enums";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 /* Note: File name is flows-table-dto.ts instead of flows-popover-dto.ts because 
   its a copy of flows-table feature of workspace app and both will be using the 

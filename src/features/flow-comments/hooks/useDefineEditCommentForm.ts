@@ -1,15 +1,13 @@
-import {
-  useFlowCommentsStore,
-  flowCommentZodSchema,
-  FlowCommentDto,
-} from "@/features/flow-comments";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUserSessionStore } from "@/react-toolkit/stores";
+import { flowCommentZodSchema } from "../constants/flow-comment-zod-schema";
+import { FlowCommentDto } from "../dtos/flow-comment-dto";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
 
 /**
  * Custom hook for defining a form to edit flow comment.

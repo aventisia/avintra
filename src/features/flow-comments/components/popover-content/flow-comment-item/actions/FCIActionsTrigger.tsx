@@ -1,8 +1,6 @@
-import {
-  buttonVariants,
-  DropdownMenuTrigger,
-} from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { DropdownMenuTrigger } from "@/react-toolkit/ui/dropdown-menu";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 /**

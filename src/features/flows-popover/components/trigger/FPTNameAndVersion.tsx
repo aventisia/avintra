@@ -1,7 +1,7 @@
-import { useShallow } from "zustand/react/shallow";
-import { Badge } from "@/react-toolkit/components/ui";
+import { Badge } from "@/react-toolkit/ui/badge/badge";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { Loader2 } from "lucide-react";
-import { useCurrentFlowStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
 
 /**
  * Renders a flow's name and version component.

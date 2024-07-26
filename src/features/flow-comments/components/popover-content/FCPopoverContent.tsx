@@ -1,10 +1,8 @@
-import {
-  useFetchFlowComments,
-  FCPSkeleton,
-  FCPNoContentMessage,
-  FlowCommentItem,
-} from "@/features/flow-comments";
-import { ScrollArea } from "@/react-toolkit/components/ui";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { useFetchFlowComments } from "../../hooks/useFetchFlowComments";
+import { FCPNoContentMessage } from "./FCPNoContentMessage";
+import { FCPSkeleton } from "./FCPSkeleton";
+import { FlowCommentItem } from "./flow-comment-item/FlowCommentItem";
 
 /**
  * Renders the content of the Flow Comments component.

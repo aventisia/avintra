@@ -1,9 +1,7 @@
-import {
-  buttonVariants,
-  PopoverTrigger,
-  Tooltip,
-} from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 /**

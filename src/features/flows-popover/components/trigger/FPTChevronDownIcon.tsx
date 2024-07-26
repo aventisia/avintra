@@ -1,9 +1,7 @@
-import {
-  useFlowsPopoverStore,
-} from "@/features/flows-popover";
-import { useShallow } from "zustand/react/shallow";
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 
 /**
  * CustomChevronDownIcon component.

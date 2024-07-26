@@ -1,9 +1,7 @@
-import { useOpenFlow } from "@/features/flows-popover";
-import {
-  DropdownMenuItem,
-  buttonVariants,
-} from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 /**

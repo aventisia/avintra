@@ -1,21 +1,19 @@
-import {
-  FlowsPopoverContent,
-  FlowsPopoverTrigger,
-  FPCreateButton,
-  FPHeading,
-  useFlowsPopoverStore,
-  useFlowsQueryKey,
-  FlowCrudDialogContent,
-} from "@/features/flows-popover";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Dialog as CrudDialogRoot } from "@/react-toolkit/ui/dialog/Dialog";
 import {
   Popover,
   PopoverContent,
   PopoverDefaultHeader,
-  Dialog as CrudDialogRoot,
-} from "@/react-toolkit/components/ui";
+} from "@/react-toolkit/ui/popover/Popover";
 import { useShallow } from "zustand/react/shallow";
-import { cn } from "@/react-toolkit/lib";
-import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
+import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
+import { useFlowsPopoverStore } from "../stores/flows-popover-store";
+import { FlowsPopoverContent } from "./content/FlowsPopoverContent";
+import { FlowCrudDialogContent } from "./FlowCrudDialogContent";
+import { FPCreateButton } from "./FPCreateButton";
+import { FPHeading } from "./FPHeading";
+import { FlowsPopoverTrigger } from "./trigger/FlowsPopoverTrigger";
 
 interface FlowsPopoverProps {
   /** Additional class name to override popover content container style */

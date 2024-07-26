@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types";
+import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
 /**
  * Returns the heading and description based on the provided CRUD action type.

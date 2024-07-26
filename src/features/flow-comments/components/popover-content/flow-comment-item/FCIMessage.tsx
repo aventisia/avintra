@@ -1,11 +1,9 @@
-import {
-  FlowCommentDto,
-  useFlowCommentsStore,
-  useDefineEditCommentForm,
-  FCMessageComposer,
-} from "@/features/flow-comments";
+import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
+import { useDefineEditCommentForm } from "@/features/flow-comments/hooks/useDefineEditCommentForm";
+import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { FCMessageComposer } from "../../FCMessageComposer";
 
 interface FCIMessageProps {
   /** flow comment record data */

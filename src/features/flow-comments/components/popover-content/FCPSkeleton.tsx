@@ -1,4 +1,4 @@
-import { Skeleton } from "@/react-toolkit/components/ui";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
 
 /**
  * Renders a skeleton component till the time flow comments are being fetched.

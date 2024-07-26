@@ -1,29 +1,30 @@
-import {
-  flowOptimisticMutationFn,
-  FlowsTableDto,
-  flowZodSchema,
-  getDialogHeadingDescription,
-  useDefineFlowForm,
-} from "@/features/flows-popover";
+import { InputField } from "@/react-toolkit/form/components/fields/InputField";
+import { SelectField } from "@/react-toolkit/form/components/fields/SelectField";
+import { SwitchField } from "@/react-toolkit/form/components/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/form/components/fields/TextareaField";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { AutherCard } from "@/react-toolkit/form/components/non-field/AutherCard";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   DialogContent,
   DialogDefaultHeader,
-  Form,
-  FormField,
-  ScrollArea,
-  Button,
-} from "@/react-toolkit/components/ui";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
+} from "@/react-toolkit/ui/dialog/Dialog";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { z } from "zod";
-import { FlowTypesEnum } from "@/react-toolkit/enums";
-import { enumToArray } from "@/react-toolkit/utils";
+import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
+import { getDialogHeadingDescription } from "../constants/constants";
 import {
-  InputField,
-  TextareaField,
-  SelectField,
-  AutherCard,
-  SwitchField,
-} from "@/react-toolkit/components/form";
+  descriptionProps,
+  idProps,
+  isDisabledProps,
+  nameProps,
+  projectIdProps,
+  typeProps,
+} from "../constants/flow-form-field-props";
+import { flowZodSchema } from "../constants/flow-zod-schema";
+import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { useDefineFlowForm } from "../hooks/useDefineFlowForm";
 
 /**
  * Renders the dialog content for creating or updating a flow.
@@ -64,89 +65,51 @@ export const FlowCrudDialogContent = () => {
     setShowDialog(false);
   };
 
-  // 5. Return the component
+  // Is form in read mode?
+  const isReadMode = crudAction === "read";
+
+  // Return the form
   return (
-    // prettier-ignore
     <DialogContent side={"right"} className="!max-w-[32rem]">
       <DialogDefaultHeader
         className="px-3.5 py-3 text-lg tracking-wide"
         heading={dialogHeaderOptions.heading}
         description={dialogHeaderOptions.description}
       />
-      <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-2">
+      <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
         <Form {...form}>
-          <form className="w-full space-y-3.5 px-2.5 pb-5" onSubmit={form.handleSubmit(onSubmit)}>
-
+          <form
+            className="w-full space-y-3.5 px-2.5 pb-5"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             {/* Project Id */}
-            {crudAction === "read" && (
-              <FormField name="projectId" control={form.control} render={({ field }) => (
-                  <InputField field={field} fieldData={{
-                    label: "Project Id",
-                    disabled: true,
-                  }} />
-                )}
-              />
-            )}
-            
+            {isReadMode && <InputField {...projectIdProps} />}
+
             {/* Flow Id */}
-            {crudAction === "read" && (
-              <FormField name="id" control={form.control} render={({ field }) => (
-                  <InputField field={field} fieldData={{
-                    label: "Flow Id",
-                    disabled: true,
-                  }} />
-                )}
-              />
-            )}
-            
+            {isReadMode && <InputField {...idProps} />}
+
             {/* Type */}
-            <FormField name="type" control={form.control} render={({ field }) => (
-                <SelectField field={field} fieldData={{
-                  label: "Type",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                  selectOptions: enumToArray(FlowTypesEnum),
-                }} />
-              )}
-            />
+            <SelectField {...typeProps} disabled={isReadMode} />
 
             {/* Name */}
-            <FormField name="name" control={form.control} render={({ field }) => (
-                <InputField field={field} fieldData={{
-                  label: "Name",
-                  disabled: crudAction === "read",
-                  isRequired: true,
-                }} />
-              )}
-            />
+            <InputField {...nameProps} disabled={isReadMode} />
 
             {/* Description */}
-            <FormField name="description" control={form.control} render={({ field }) => (
-                <TextareaField field={field} fieldData={{
-                  label: "Description",
-                  disabled: crudAction === "read",
-                  className: "min-h-[6rem]"
-                }} />
-              )}
-            />
-            
+            <TextareaField {...descriptionProps} disabled={isReadMode} />
+
             {/* Is Disabled */}
             {crudAction !== "create" && (
-              <FormField name="isDisabled" control={form.control} render={({ field }) => (
-                  <SwitchField field={field} fieldData={{
-                    label: "Disable Record",
-                    description: "Disable this record if it's been outdated, or not required anymore",
-                    disabled: crudAction === "read",
-                  }} />
-                )}
-              />
+              <SwitchField {...isDisabledProps} disabled={isReadMode} />
             )}
 
             {/* AutherCard */}
             {crudAction === "read" && (
               <AutherCard
-                createdBy={form.getValues("createdBy")} createdOn={form.getValues("createdOn")}
-                lastModifiedBy={form.getValues("lastModifiedBy")} lastModifiedOn={form.getValues("lastModifiedOn")}/>
+                createdBy={form.getValues("createdBy")}
+                createdOn={form.getValues("createdOn")}
+                lastModifiedBy={form.getValues("lastModifiedBy")}
+                lastModifiedOn={form.getValues("lastModifiedOn")}
+              />
             )}
 
             {/* Submit button */}

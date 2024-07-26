@@ -1,8 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StudioUILayout } from "@/components/layout";
-import { NotFoundPage, RedirectPage } from "@/react-toolkit/pages";
-import { FlowPage } from "@/pages";
+import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
+import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { StudioUILayout } from "./components/layout/StudioUILayout";
+import { FlowPage } from "./pages/FlowPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {

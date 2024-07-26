@@ -1,10 +1,8 @@
-import {
-  getProjectFlows,
-  useFlowsPopoverStore,
-} from "@/features/flows-popover";
 import { useQuery } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { getProjectFlows } from "../apis/flows-table-apis";
+import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
 /**
  * Custom hook to fetch associated flows with project using react query.

@@ -1,11 +1,7 @@
-import {
-  useFlowCommentsStore,
-} from "@/features/flow-comments";
-import {
-  buttonVariants,
-  DropdownMenuItem,
-} from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
+import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 

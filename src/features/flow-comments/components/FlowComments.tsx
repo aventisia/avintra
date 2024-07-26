@@ -1,19 +1,17 @@
-import {
-  useFlowCommentsQueryKey,
-  useFlowCommentsStore,
-  FC_POPOVER_HEADING,
-  FCPopoverTrigger,
-  FCPopoverContent,
-  FCMessageComposer,
-  useDefineCreateCommentForm,
-} from "@/features/flow-comments";
+import { cn } from "@/react-toolkit/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/components/ui";
+} from "@/react-toolkit/ui/popover/Popover";
 import { useShallow } from "zustand/react/shallow";
-import { cn } from "@/react-toolkit/lib";
+import { FC_POPOVER_HEADING } from "../constants/constatns";
+import { useDefineCreateCommentForm } from "../hooks/useDefineCreateCommentForm";
+import { useFlowCommentsQueryKey } from "../hooks/useFlowCommentsQueryKey";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
+import { FCMessageComposer } from "./FCMessageComposer";
+import { FCPopoverTrigger } from "./FCPopoverTrigger";
+import { FCPopoverContent } from "./popover-content/FCPopoverContent";
 
 interface FlowCommentsProps {
   /** Additional class name to override popover content container style */

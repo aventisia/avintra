@@ -1,7 +1,5 @@
-import {
-  FlowCommentDto,
-} from "@/features/flow-comments";
-import { DotSeparator } from "@/react-toolkit/components/ui";
+import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
+import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
 import { formatDistanceToNow } from "date-fns";
 import { memo } from "react";
 
@@ -25,7 +23,7 @@ export const FCIHeader = memo(({ data }: FCIHeaderProps) => {
       {/* User full name and Time container */}
       <div className="flex w-[15rem] items-center">
         {/* User full name */}
-        <span className="text-xs truncate font-medium text-foreground">
+        <span className="truncate text-xs font-medium text-foreground">
           {data.userFullName}
         </span>
 
@@ -33,7 +31,10 @@ export const FCIHeader = memo(({ data }: FCIHeaderProps) => {
         <DotSeparator />
 
         {/* Date and time */}
-        <span title={`${formattedTime} ${data.isEdited && "(edited)"}`} className="text-2xs truncate text-muted-foreground">
+        <span
+          title={`${formattedTime} ${data.isEdited && "(edited)"}`}
+          className="truncate text-2xs text-muted-foreground"
+        >
           {formattedTime} {data.isEdited && `(edited)`}
         </span>
       </div>

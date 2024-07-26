@@ -1,19 +1,17 @@
-import {
-  FCIActionsTrigger,
-  FCIDeleteAction,
-  FCIEditAction,
-  FlowCommentDto,
-  flowCommentOptimisticMutationFn,
-  useFlowCommentsStore,
-} from "@/features/flow-comments";
+import { flowCommentOptimisticMutationFn } from "@/features/flow-comments/apis/flow-comments-apis";
+import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
+import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { AlertDialog as DeleteAlertDialogRoot } from "@/react-toolkit/ui/alert-dialog";
+import { ConfirmActionAlert } from "@/react-toolkit/ui/custom/ConfirmActionAlert";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  ConfirmActionAlertContent,
-  AlertDialog as DeleteAlertDialogRoot,
-} from "@/react-toolkit/components/ui";
+} from "@/react-toolkit/ui/dropdown-menu";
 import { useShallow } from "zustand/react/shallow";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
+import { FCIActionsTrigger } from "./FCIActionsTrigger";
+import { FCIDeleteAction } from "./FCIDeleteAction";
+import { FCIEditAction } from "./FCIEditAction";
 
 interface FCIActionsProps {
   /** flow comment's record id */
@@ -59,7 +57,7 @@ export const FCIActions: React.FC<FCIActionsProps> = ({ flowCommentId }) => {
       </DropdownMenu>
 
       {/* Comment delete alert dialog */}
-      <ConfirmActionAlertContent
+      <ConfirmActionAlert
         description="This action cannot be undone. Are you sure you want to delete this comment?"
         confirmText="Yes, delete comment"
         confirmActionFn={() => {

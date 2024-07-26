@@ -1,16 +1,10 @@
-import {
-  FPCNoContentMessage,
-  FPCSearchBox,
-  FPCSkeleton,
-  FPCFlowsList,
-  useFetchFlows,
-} from "@/features/flows-popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandList,
-  ScrollArea,
-} from "@/react-toolkit/components/ui";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { Command, CommandEmpty, CommandList } from "cmdk";
+import { useFetchFlows } from "../../hooks/useFetchFlows";
+import { FPCFlowsList } from "./FPCFlowsList";
+import { FPCNoContentMessage } from "./FPCNoContentMessage";
+import { FPCSearchBox } from "./FPCSearchBox";
+import { FPCSkeleton } from "./FPCSkeleton";
 
 /**
  * Renders the content of the Flows popover component.

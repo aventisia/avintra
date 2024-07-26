@@ -1,14 +1,12 @@
-import {
-  FlowCommentDto,
-  FCIAvatar,
-  FCIHeader,
-  FCIMessage,
-  FCIActions
-} from "@/features/flow-comments";
-import { cn } from "@/react-toolkit/lib";
+import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
+import { cn } from "@/react-toolkit/lib/utils";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { memo } from "react";
-import { useUserSessionStore } from "@/react-toolkit/stores";
 import { useShallow } from "zustand/react/shallow";
+import { FCIActions } from "./actions/FCIActions";
+import { FCIAvatar } from "./FCIAvatar";
+import { FCIHeader } from "./FCIHeader";
+import { FCIMessage } from "./FCIMessage";
 
 interface FlowCommentItemProps {
   /** Index of the flow comment item in the list */

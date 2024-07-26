@@ -1,6 +1,7 @@
-import { LoadFlowDto, FlowSilentUpdateDto } from "@/features/react-flow";
-import { axiosInstance } from "@/react-toolkit/apis";
-import { IHttpResponse } from "@/react-toolkit/dtos";
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
+import { LoadFlowDto } from "../dtos/load-flow-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 

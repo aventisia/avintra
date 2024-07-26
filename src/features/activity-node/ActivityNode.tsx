@@ -1,14 +1,12 @@
-import { memo } from "react";
+import { InputHandle } from "@/components/ui/InputHandle";
+import { NodeContainer } from "@/components/ui/NodeContainer";
+import { NodeDescription } from "@/components/ui/NodeDescription";
+import { NodeHeader } from "@/components/ui/NodeHeader";
+import { OutputHandle } from "@/components/ui/OutputHandle";
+import { Separator } from "@/react-toolkit/ui/separator";
+import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
 import { Node, NodeProps } from "@xyflow/react";
-import { Separator } from "@/react-toolkit/components/ui";
-import { ActivityNodeDataType } from "@/types";
-import {
-  NodeHeader,
-  InputHandle,
-  OutputHandle,
-  NodeContainer,
-  NodeDescription,
-} from "@/components/ui";
+import { memo } from "react";
 
 type ActivityNode = Node<ActivityNodeDataType, "activity">;
 

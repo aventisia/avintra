@@ -1,6 +1,7 @@
-import { Button, Tooltip } from "@/react-toolkit/components/ui";
-import { cn } from "@/react-toolkit/lib";
-import { IconProps } from "@/react-toolkit/types";
+import { cn } from "@/react-toolkit/lib/utils";
+import { IconProps } from "@/react-toolkit/types/icon-props";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useReactFlow } from "@xyflow/react";
 
 interface VCActionButtonProps {

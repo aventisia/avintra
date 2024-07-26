@@ -1,23 +1,19 @@
-import {
-  useFlowCommentsStore,
-  flowCommentZodSchema,
-  FlowCommentDto,
-  flowCommentOptimisticMutationFn,
-} from "@/features/flow-comments";
-import {
-  AutosizeTextarea,
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/react-toolkit/components/ui";
+import { Form } from "@/react-toolkit/form/components/form/Form";
+import { FormControl } from "@/react-toolkit/form/components/form/FormControl";
+import { FormField } from "@/react-toolkit/form/components/form/FormField";
+import { FormItem } from "@/react-toolkit/form/components/form/FormItem";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { cn } from "@/react-toolkit/lib/utils";
+import { AutosizeTextarea } from "@/react-toolkit/ui/autosize-textarea/AutosizeTextarea";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { CheckIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/react-toolkit/lib";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+import { flowCommentOptimisticMutationFn } from "../apis/flow-comments-apis";
+import { flowCommentZodSchema } from "../constants/flow-comment-zod-schema";
+import { FlowCommentDto } from "../dtos/flow-comment-dto";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
 
 interface FCMessageComposerProps {
   crudAction: "create" | "update";

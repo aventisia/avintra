@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@/react-toolkit/components/ui";
+import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
 import { TextSearch } from "lucide-react";
 
 /**

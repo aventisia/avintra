@@ -1,4 +1,5 @@
-import { Button, Tooltip } from "@/react-toolkit/components/ui";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { ArrowUturnRightIcon } from "@heroicons/react/24/outline";
 
 export const FCBRedo = () => {

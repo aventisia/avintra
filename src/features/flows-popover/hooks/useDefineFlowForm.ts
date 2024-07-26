@@ -1,16 +1,14 @@
-import {
-  FlowsTableDto,
-  flowZodSchema,
-  useFlowsPopoverStore,
-} from "@/features/flows-popover";
+import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUserSessionStore } from "@/react-toolkit/stores";
-import { useDTCrudDialogStore } from "@/react-toolkit/components/data-table";
+import { flowZodSchema } from "../constants/flow-zod-schema";
+import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
 /**
  * Custom hook for defining a flow form.

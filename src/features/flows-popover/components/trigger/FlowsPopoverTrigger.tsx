@@ -1,13 +1,12 @@
-import {
-  FPTChevronDownIcon,
-  FPTLoadingFlow,
-  FPTNameAndVersion,
-  useFlowsPopoverStore,
-} from "@/features/flows-popover";
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
 import { useShallow } from "zustand/react/shallow";
-import { cn } from "@/react-toolkit/lib";
-import { PopoverTrigger, buttonVariants } from "@/react-toolkit/components/ui";
-import { useCurrentFlowStore } from "@/stores";
+import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
+import { FPTChevronDownIcon } from "./FPTChevronDownIcon";
+import { FPTLoadingFlow } from "./FPTLoadingFlow";
+import { FPTNameAndVersion } from "./FPTNameAndVersion";
 
 /**
  * Renders a popover trigger component for flows list.

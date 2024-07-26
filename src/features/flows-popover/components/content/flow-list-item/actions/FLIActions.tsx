@@ -1,28 +1,23 @@
+import { flowOptimisticMutationFn } from "@/features/flows-popover/apis/flows-table-apis";
+import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
+import { useFlowsPopoverStore } from "@/features/flows-popover/stores/flows-popover-store";
+import { DTDeleteRowAction } from "@/react-toolkit/data-table/components/row-actions/DTDeleteRowAction";
+import { DTEditRowAction } from "@/react-toolkit/data-table/components/row-actions/DTEditRowAction";
+import { DTViewRowAction } from "@/react-toolkit/data-table/components/row-actions/DTViewRowAction";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { cn } from "@/react-toolkit/lib/utils";
+import { AlertDialog as DeleteAlertDialogRoot } from "@/react-toolkit/ui/alert-dialog";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import {
-  FLIOpenAction,
-  flowOptimisticMutationFn,
-  FlowsTableDto,
-  useFlowsPopoverStore,
-} from "@/features/flows-popover";
-import {
-  buttonVariants,
-  AlertDialog as DeleteAlertDialogRoot,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  StopPropagationWrapper
-} from "@/react-toolkit/components/ui";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks";
-import {
-  DTRowDeleteAlert,
-  DTViewRowAction,
-  DTDeleteRowAction,
-  DTEditRowAction,
-} from "@/react-toolkit/components/data-table";
-import { useShallow } from "zustand/react/shallow";
+} from "@/react-toolkit/ui/dropdown-menu";
+import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/react-toolkit/lib";
+import { useShallow } from "zustand/react/shallow";
+import { FLIOpenAction } from "./FLIOpenAction";
 
 interface FLIActionsProps {
   /** The ID of the row */
@@ -52,7 +47,7 @@ export const FLIActions = ({ flowId }: FLIActionsProps) => {
 
   // Return the component
   return (
-    // NOTE: Stop event propagation is required because this component (FLIActions) is going 
+    // NOTE: Stop event propagation is required because this component (FLIActions) is going
     // to be used inside a CommandItem (FlowListItem) which is a clickable element.
     <StopPropagationWrapper>
       {/* Root component for delete alert dialog */}

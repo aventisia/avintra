@@ -1,19 +1,17 @@
-import {
-  activitiesList,
-  ActivityToSelect,
-  ASNoContentMessage,
-  useActivitySelectorStore,
-} from "@/features/actvity-selector";
+import { useAddNode } from "@/hooks/useAddNode";
 import {
   Command,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
-  ScrollArea,
-} from "@/react-toolkit/components/ui";
+} from "@/react-toolkit/ui/command";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { useShallow } from "zustand/react/shallow";
-import { useAddNode } from "@/hooks";
+import { activitiesList } from "../data/activities-to-select";
+import { useActivitySelectorStore } from "../stores/activity-selector-store";
+import { ActivityToSelect } from "./activity-to-select/ActivityToSelect";
+import { ASNoContentMessage } from "./ASNoContentMessage";
 
 /**
  * Renders the content of the activity selector component.

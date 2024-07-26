@@ -1,6 +1,7 @@
-import { FlowCommentDto } from "@/features/flow-comments";
-import { axiosInstance } from "@/react-toolkit/apis";
-import { IHttpResponse, IOptimisticMutation } from "@/react-toolkit/dtos";
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { FlowCommentDto } from "../dtos/flow-comment-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow-comment`;
 
@@ -74,10 +75,10 @@ const flowCommentOptimisticMutationFn = ({
 };
 
 export {
+  deleteFlowComment,
+  flowCommentOptimisticMutationFn,
   getFlowComment,
   getFlowComments,
   insertFlowComment,
   updateFlowComment,
-  deleteFlowComment,
-  flowCommentOptimisticMutationFn,
 };

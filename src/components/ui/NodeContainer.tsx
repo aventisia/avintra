@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib";
+import { cn } from "@/react-toolkit/lib/utils";
 
 interface NodeContainerProps {
   /** Flag to indicate if the node is selected. */

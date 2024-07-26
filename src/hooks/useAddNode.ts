@@ -1,7 +1,7 @@
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
 import { Node } from "@xyflow/react";
 import { useCallback } from "react";
-import { ActivityNodeDataType } from "@/types";
-import { useReactFlowExtStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 
 export const useAddNode = () => {

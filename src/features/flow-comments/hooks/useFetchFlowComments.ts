@@ -1,10 +1,8 @@
-import {
-  getFlowComments,
-  useFlowCommentsStore,
-} from "@/features/flow-comments";
 import { useQuery } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { getFlowComments } from "../apis/flow-comments-apis";
+import { useFlowCommentsStore } from "../stores/flow-comments-store";
 
 /**
  * Custom hook to fetch flow comments.

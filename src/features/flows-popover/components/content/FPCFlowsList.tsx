@@ -1,12 +1,10 @@
-import {
-  FlowListItem,
-  FlowsTableDto,
-  useFlowsPopoverStore,
-  useOpenFlow,
-} from "@/features/flows-popover";
-import { CommandItem } from "@/react-toolkit/components/ui";
-import { useCurrentFlowStore } from "@/stores";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { CommandItem } from "cmdk";
 import { useShallow } from "zustand/react/shallow";
+import { FlowsTableDto } from "../../dtos/flows-table-dto";
+import { useOpenFlow } from "../../hooks/useOpenFlow";
+import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
+import { FlowListItem } from "./flow-list-item/FlowListItem";
 
 interface FPCFlowListProps {
   flowsList: FlowsTableDto[] | undefined;
@@ -46,7 +44,7 @@ export const FPCFlowsList = ({ flowsList }: FPCFlowListProps) => {
             // Close the popover
             togglePopoverOpen(false);
           }}
-          className="cursor-pointer group/CommandItem rounded-lg p-1"
+          className="group/CommandItem cursor-pointer rounded-lg p-1"
         >
           {/* flow item */}
           <FlowListItem flowData={item} />

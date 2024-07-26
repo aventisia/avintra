@@ -1,5 +1,8 @@
+import {
+  maxLenError,
+  reqError,
+} from "@/react-toolkit/form/utils/error-message-list";
 import { z } from "zod";
-import { maxLenError, reqError } from "@/react-toolkit/components/form";
 
 /**
  * Represents the Zod schema for a flow comment.

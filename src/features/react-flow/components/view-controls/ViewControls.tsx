@@ -1,13 +1,11 @@
-import {
-  VCActionButton,
-  VCBContainer,
-  VCBToggleLock,
-  VCBZoomTo,
-} from "@/features/react-flow";
-import { Panel } from "@xyflow/react";
-import { Separator } from "@/react-toolkit/components/ui";
+import { Separator } from "@/react-toolkit/ui/separator";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
+import { VCActionButton } from "./VCActionButton";
+import { VCBContainer } from "./VCBContainer";
+import { VCBToggleLock } from "./VCBToggleLock";
+import { VCBZoomTo } from "./VCBZoomTo";
 
 export const ViewControls = () => {
   return (
