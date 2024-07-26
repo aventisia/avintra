@@ -2,11 +2,15 @@ import { AuthUILayout } from "@/components/layout/AuthUILayout";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import CreateAccountPage from "./pages/CreateAccountPage";
-import LogInPage from "./pages/LogInPage";
-import ResetPwdPage from "./pages/ResetPwdPage";
 
+// Lazy load pages
+const CreateAccountPage = lazy(() => import("@/pages/CreateAccountPage"));
+const LogInPage = lazy(() => import("@/pages/LogInPage"));
+const ResetPwdPage = lazy(() => import("@/pages/ResetPwdPage"));
+
+// Create a new query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -15,6 +19,7 @@ const queryClient = new QueryClient({
   },
 });
 
+// App component
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
