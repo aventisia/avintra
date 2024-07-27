@@ -10,14 +10,10 @@ import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls/ViewControls";
 
-interface ReactFlowExtProps {
-  children?: React.ReactNode;
-}
-
 /**
  * A custom extension of the ReactFlow component.
  */
-export const ReactFlowExt = ({ children }: ReactFlowExtProps) => {
+export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
   // Get ReactFlowExt store state & actions
   const { nodes, edges, isLocked, onNodesChange, onEdgesChange, onConnect } =
     useReactFlowExtStore(

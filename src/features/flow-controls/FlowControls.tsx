@@ -4,11 +4,7 @@ import { FCBContainer } from "./FCBContainer";
 import { FCBRedo } from "./FCBRedo";
 import { FCBUndo } from "./FCBUndo";
 
-interface FlowControlsProps {
-  children: React.ReactNode;
-}
-
-export const FlowControls = ({ children }: FlowControlsProps) => {
+export const FlowControls = ({ children }: React.PropsWithChildren) => {
   return (
     <Panel position="bottom-center">
       <FCBContainer>
