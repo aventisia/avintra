@@ -2,6 +2,7 @@ import { CustomNodeTypes } from "@/constants/CustomNodeTypes";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
