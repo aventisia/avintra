@@ -1,4 +1,5 @@
 import "@/react-toolkit/styles/react-perfect-scrollbar.css";
+import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper.tsx";
 import { ToasterExt } from "@/react-toolkit/ui/custom/ToasterExt.tsx";
 import { TooltipProvider } from "@/react-toolkit/ui/custom/Tooltip.tsx";
 import React from "react";
@@ -9,7 +10,12 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <TooltipProvider>
-      <App />
+      {/* Alert dialog wrapper */}
+      <AlertDialogWrapper>
+        <App />
+      </AlertDialogWrapper>
+
+      {/* To show toaster notifications */}
       <ToasterExt />
     </TooltipProvider>
   </React.StrictMode>,
