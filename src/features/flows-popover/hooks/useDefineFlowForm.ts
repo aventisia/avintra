@@ -34,13 +34,13 @@ export const useDefineFlowForm = () => {
   // 3. Get store state and actions
   const {
     crudDialogOptions: { rowId, crudAction },
-    setIsFormDirty,
+    toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
     useShallow((state) => ({
       crudDialogOptions: state.crudDialogOptions,
       setShowDialog: state.setShowDialog,
-      setIsFormDirty: state.setIsFormDirty,
+      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
@@ -100,8 +100,8 @@ export const useDefineFlowForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    setIsFormDirty(isDirty);
-  }, [isDirty, setIsFormDirty]);
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
 
   // Return form and methods
   return {
