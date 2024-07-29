@@ -3,7 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
-import { FlowsTableRowActions } from "./FlowsTableRowActions";
+import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 
 /**
  * Array of table columns for the flows table.
@@ -64,7 +64,7 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the flows row actions component
-      <FlowsTableRowActions rowId={row.original.id || "rowId"} />
+      <FlowRowActions rowId={row.original.id || "rowId"} />
     ),
   },
 ];
