@@ -3,7 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { ProjectsTableDto } from "../dtos/projects-table-dto";
 import { ProjectsTableCellLink } from "./ProjectsTableCellLink";
-import { ProjectsTableRowActions } from "./ProjectsTableRowActions";
+import { ProjectRowActions } from "./project-row-actions/ProjectRowActions";
 
 /**
  * Array of table columns for the projects table.
@@ -64,7 +64,7 @@ export const projectsTableColumns: ColumnDef<ProjectsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the projects row actions component
-      <ProjectsTableRowActions rowId={row.original.id || "rowId"} />
+      <ProjectRowActions rowId={row.original.id || "rowId"} />
     ),
   },
 ];
