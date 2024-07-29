@@ -1,5 +1,5 @@
 import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
-import { useCheckAvailability } from "@/react-toolkit/ui/form/hooks/useCheckAvailability";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
