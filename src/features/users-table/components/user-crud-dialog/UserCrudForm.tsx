@@ -28,10 +28,10 @@ import { UnlockAccountField } from "./UnlockAccountField";
 
 export const UserCrudForm = () => {
   // Fetch user roles to populate the user roles multi-selector
-  const { data:userRoles } = useFetchUserRoles();
+  const { data: userRoles } = useFetchUserRoles();
 
   // Define user form
-  const { form, rowId, crudAction, setShowDialog, refineFormData } =
+  const { form, isDirty, rowId, crudAction, setShowDialog, refineFormData } =
     useDefineUserForm();
 
   // Define optimistic mutation to crete or update the user
@@ -123,7 +123,7 @@ export const UserCrudForm = () => {
         {/* Submit button */}
         {crudAction !== "read" && (
           <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" className="min-w-[5rem]">
+            <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
               {crudAction === "create" ? "Create user" : "Save changes"}
             </Button>
           </div>
