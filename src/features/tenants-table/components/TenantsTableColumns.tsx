@@ -2,7 +2,7 @@ import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
-import { TenantsTableRowActions } from "./TenantsTableRowActions";
+import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
 /**
  * Array of table columns for the tenants table.
@@ -55,7 +55,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the tenants row actions component
-      <TenantsTableRowActions rowId={row.original.id || "rowId"} />
+      <TenantRowActions rowId={row.original.id || "rowId"} />
     ),
   },
 ];
