@@ -37,8 +37,15 @@ import { useDefineTenantForm } from "../../hooks/useDefineTenantForm";
 
 export const TenantCrudForm = () => {
   // Define tenant form
-  const { form, watch, rowId, crudAction, setShowDialog, refineFormData } =
-    useDefineTenantForm();
+  const {
+    form,
+    watch,
+    isDirty,
+    rowId,
+    crudAction,
+    setShowDialog,
+    refineFormData,
+  } = useDefineTenantForm();
 
   // Define optimistic mutation to crete or update the tenant
   const { mutate: mutateTenant } = useListOptimisticMutation<
@@ -55,6 +62,9 @@ export const TenantCrudForm = () => {
       payload: refineFormData(formData) as unknown as TenantsTableDto,
       crudAction: crudAction,
     });
+
+    // Reset form
+    form.reset(formData);
 
     // Close the dialog
     setShowDialog(false);
@@ -190,7 +200,7 @@ export const TenantCrudForm = () => {
         {/* Submit button */}
         {crudAction !== "read" && (
           <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" className="min-w-[5rem]">
+            <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
               {crudAction === "create" ? "Create tenant" : "Save changes"}
             </Button>
           </div>

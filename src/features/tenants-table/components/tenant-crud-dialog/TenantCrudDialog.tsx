@@ -26,7 +26,7 @@ export const TenantCrudDialog = ({ children }: React.PropsWithChildren) => {
   return (
     <DTCrudDialogWrapper>
       {children}
-      <DialogContent side={"right"} className="!max-w-[32rem]">
+      <DialogContent side={"right"} className="!max-w-[40rem]">
         <DialogDefaultHeader
           className="px-3.5 py-3 text-lg tracking-wide"
           heading={dialogHeaderOptions.heading}

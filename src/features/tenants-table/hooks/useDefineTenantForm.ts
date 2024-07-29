@@ -17,39 +17,41 @@ import { TenantsTableDto } from "../dtos/tenants-table-dto";
  * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineTenantForm = () => {
-  // 1. Get user session
+  // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
 
-  // 2. Get crud dialog store state and actions
+  // Get data-table crud dialog store state and actions
   const {
     crudDialogOptions: { rowId, crudAction },
+    toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
     useShallow((state) => ({
       crudDialogOptions: state.crudDialogOptions,
       setShowDialog: state.setShowDialog,
+      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
-  // 3. Get query client
+  // Get query client
   const queryClient = useQueryClient();
 
-  // 4. Define form with zod schema
+  // Define form with zod schema
   const form = useForm<z.infer<typeof tenantZodSchema>>({
     resolver: zodResolver(tenantZodSchema),
   });
 
-  // 5. Destructor form values and methods
+  // Destructor form values and methods
   const {
     watch,
     formState: { isSubmitting, isDirty },
   } = form;
 
-  // 6. Fetch tenant data when rowId changes
+  // Fetch tenant data when rowId changes
   useEffect(() => {
     // Get tenants data from query client
     const tenantsData = queryClient.getQueryData<{
@@ -108,7 +110,7 @@ export const useDefineTenantForm = () => {
     });
   }, [rowId, form, queryClient, userSession]);
 
-  // 7. Refine form data based on crud action
+  // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof tenantZodSchema>) => {
     return {
       ...formData,
@@ -117,7 +119,12 @@ export const useDefineTenantForm = () => {
     };
   };
 
-  // 8. Return form and methods
+  // Save the form dirty state
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  // Return form and methods
   return {
     form,
     watch,
