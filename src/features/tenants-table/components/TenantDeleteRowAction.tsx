@@ -1,6 +1,6 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { cn } from "@/react-toolkit/lib/utils";
-import { useShowAlertHandler } from "@/react-toolkit/ui/alert-dialog/hooks/useShowAlertHandler";
+import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -30,7 +30,10 @@ export const TenantDeleteRowAction = ({ tenantId }: DeleteActionProps) => {
   // Return Delete alert dialog trigger
   return (
     <DropdownMenuItem
-      className={cn(buttonVariants({ variant: "dropdownCautionItem" }), "group h-8")}
+      className={cn(
+        buttonVariants({ variant: "dropdownCautionItem" }),
+        "group h-8",
+      )}
       onClick={() => {
         showAlertDialog({
           confirmActionFn: () => {

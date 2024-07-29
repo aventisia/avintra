@@ -5,12 +5,12 @@ import {
   noWhitespaceError,
   reqError,
   variableError,
-} from "@/react-toolkit/ui/form/utils/error-message-list";
+} from "@/react-toolkit/utils/error-message-list";
 import {
   alphaNumericRegex,
   noWhitespaceRegex,
   variableRegex,
-} from "@/react-toolkit/ui/form/utils/regex-list";
+} from "@/react-toolkit/utils/regex-list";
 import { z } from "zod";
 
 /**

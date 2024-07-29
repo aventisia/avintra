@@ -1,5 +1,5 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
-import { useCheckAvailability } from "@/react-toolkit/ui/form/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";

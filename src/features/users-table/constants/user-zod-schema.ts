@@ -3,8 +3,8 @@ import {
   maxLenError,
   nameError,
   reqError,
-} from "@/react-toolkit/ui/form/utils/error-message-list";
-import { nameRegex } from "@/react-toolkit/ui/form/utils/regex-list";
+} from "@/react-toolkit/utils/error-message-list";
+import { nameRegex } from "@/react-toolkit/utils/regex-list";
 import { z } from "zod";
 
 /**

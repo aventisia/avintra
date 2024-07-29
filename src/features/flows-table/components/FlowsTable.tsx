@@ -1,8 +1,8 @@
 import { DataTable } from "@/react-toolkit/ui/data-table/DataTable";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { useDataTable } from "@/react-toolkit/ui/data-table/hooks/useDataTable";
-import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
