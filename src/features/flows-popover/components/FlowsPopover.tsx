@@ -43,12 +43,12 @@ export const FlowsPopover = ({
         className={cn(className)}
         {...props}
       >
-        {/* Flows popover custom header */}
-        <PopoverDefaultHeader heading={<FPHeading />} className="border-none">
-          <FPCreateButton />
-        </PopoverDefaultHeader>
         {/* Crud Dialog for flow crud operation */}
         <FlowCrudDialog>
+          {/* Flows popover custom header */}
+          <PopoverDefaultHeader heading={<FPHeading />} className="border-none">
+            <FPCreateButton />
+          </PopoverDefaultHeader>
           <FlowsPopoverContent />
         </FlowCrudDialog>
       </PopoverContent>
