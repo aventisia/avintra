@@ -3,7 +3,7 @@ import { useDefineEditCommentForm } from "@/features/flow-comments/hooks/useDefi
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { FCMessageComposer } from "../../FCMessageComposer";
+import { FCMessageComposer } from "../FCMessageComposer";
 
 interface FCIMessageProps {
   /** flow comment record data */

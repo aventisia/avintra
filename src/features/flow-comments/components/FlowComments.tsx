@@ -3,7 +3,7 @@ import {
   PopoverContent,
   PopoverDefaultHeader,
 } from "@/react-toolkit/ui/popover/Popover";
-import { PopoverWraper } from "@/react-toolkit/ui/popover/PopoverWraper";
+import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
 import { useShallow } from "zustand/react/shallow";
 import { FC_POPOVER_HEADING } from "../constants/constatns";
 import { useDefineCreateCommentForm } from "../hooks/useDefineCreateCommentForm";
@@ -11,7 +11,7 @@ import { useFlowCommentsQueryKey } from "../hooks/useFlowCommentsQueryKey";
 import { useFlowCommentsStore } from "../stores/flow-comments-store";
 import { FCMessageComposer } from "./FCMessageComposer";
 import { FCPopoverTrigger } from "./FCPopoverTrigger";
-import { FCPopoverContent } from "./popover-content/FCPopoverContent";
+import { FlowCommentsPopoverContent } from "./flow-comments-popover-content/FlowCommentsPopoverContent";
 
 interface FlowCommentsProps {
   /** Additional class name to override popover content container style */
@@ -42,7 +42,7 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
 
   // Return Flow Comments Popover
   return (
-    <PopoverWraper
+    <PopoverWrapper
       open={isPopoverOpen}
       onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}
       isFormDirty={isCreateFormDirty || isEditFormDirty}
@@ -58,7 +58,7 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
         {/* Popover default header */}
         <PopoverDefaultHeader heading={FC_POPOVER_HEADING} />
         {/* Flow comments list */}
-        <FCPopoverContent />
+        <FlowCommentsPopoverContent />
         {/* Message Composer */}
         <FCMessageComposer
           form={form}
@@ -66,6 +66,6 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
           className="mx-3.5 my-3.5"
         />
       </PopoverContent>
-    </PopoverWraper>
+    </PopoverWrapper>
   );
 };

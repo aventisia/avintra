@@ -3,7 +3,7 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { FCIActions } from "./actions/FCIActions";
+import { FlowCommentItemActions } from "../flow-comment-item-actions/FlowCommentItemActions";
 import { FCIAvatar } from "./FCIAvatar";
 import { FCIHeader } from "./FCIHeader";
 import { FCIMessage } from "./FCIMessage";
@@ -41,7 +41,7 @@ export const FlowCommentItem = memo(({ index, data }: FlowCommentItemProps) => {
     >
       {/* Show flow comment action buttons if comment belong to user */}
       {userSession?.email === data.userName && (
-        <FCIActions flowCommentId={data.id} />
+        <FlowCommentItemActions flowCommentId={data.id} />
       )}
 
       {/* PENDING: User avatar who created the flow comment */}

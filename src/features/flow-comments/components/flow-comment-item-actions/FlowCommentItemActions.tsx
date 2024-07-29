@@ -1,12 +1,10 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-} from "@/react-toolkit/ui/dropdown-menu";
+import { DropdownMenu } from "@/react-toolkit/ui/drop-down/DropdownMenu";
+import { DropdownMenuContent } from "@/react-toolkit/ui/drop-down/dropdown-menu";
 import { FCIActionsTrigger } from "./FCIActionsTrigger";
 import { FCIDeleteAction } from "./FCIDeleteAction";
 import { FCIEditAction } from "./FCIEditAction";
 
-interface FCIActionsProps {
+interface FlowCommentItemActionsProps {
   /** flow comment's record id */
   flowCommentId: string;
 }
@@ -15,7 +13,9 @@ interface FCIActionsProps {
  * Represents the actions component for a flow comment item.
  * This component provides options to edit or delete the flow comment.
  */
-export const FCIActions: React.FC<FCIActionsProps> = ({ flowCommentId }) => {
+export const FlowCommentItemActions: React.FC<FlowCommentItemActionsProps> = ({
+  flowCommentId,
+}) => {
   // Return the component
   return (
     // Comment actions menu

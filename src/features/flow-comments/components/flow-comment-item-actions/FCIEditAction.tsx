@@ -1,7 +1,5 @@
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/drop-down/SimpleDDMenuItem";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
@@ -24,17 +22,13 @@ export const FCIEditAction: React.FC<FCIEditActionProps> = ({
   );
 
   return (
-    <DropdownMenuItem
-      className={cn(
-        buttonVariants({ variant: "dropdownItem" }),
-        "h-7 !px-[0.3rem] text-xs",
-      )}
+    <SimpleDDMenuItem
+      size="sm"
+      Icon={PencilSquareIcon}
+      content="Edit"
       onClick={() => {
         setFlowCommentId(flowCommentId);
       }}
-    >
-      <PencilSquareIcon className="h-3.5 w-3.5 text-[--icon-color]" />
-      Edit
-    </DropdownMenuItem>
+    />
   );
 };

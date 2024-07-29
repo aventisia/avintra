@@ -3,10 +3,7 @@ import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { DeleteDDMenuItem } from "@/react-toolkit/ui/drop-down/DeleteDDMenuItem";
 import { useShallow } from "zustand/react/shallow";
 
 interface FCIDeleteActionProps {
@@ -19,7 +16,7 @@ interface FCIDeleteActionProps {
  */
 export const FCIDeleteAction = ({ flowCommentId }: FCIDeleteActionProps) => {
   // Get showAlert handler
-  const { showAlertDialog } = useShowAlertHandler();
+  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
 
   // Get flow comments store state and actions
   const { fcQueryKey } = useFlowCommentsStore(
@@ -37,30 +34,23 @@ export const FCIDeleteAction = ({ flowCommentId }: FCIDeleteActionProps) => {
 
   // Return Delete alert dialog trigger
   return (
-    <DropdownMenuItem
-      className={cn(
-        buttonVariants({ variant: "dropdownCautionItem" }),
-        "group h-7 !px-[0.3rem] text-xs",
-      )}
+    <DeleteDDMenuItem
+      size="sm"
       onClick={() => {
-        showAlertDialog({
-          confirmActionFn: () => {
-            // Delete the flow comment
-            deleteFlowComment({
-              id: flowCommentId,
-              payload: flowCommentId,
-              crudAction: "delete",
-            });
+        showDefaultDeleteAlertDialog(
+          {
+            confirmActionFn: () => {
+              // Delete the flow comment
+              deleteFlowComment({
+                id: flowCommentId,
+                payload: flowCommentId,
+                crudAction: "delete",
+              });
+            },
           },
-          title: "Delete comment",
-          description:
-            "This action cannot be undone. Are you sure you want to delete this comment?",
-          confirmBtnText: "Yes, delete comment",
-        });
+          "comment",
+        );
       }}
-    >
-      <TrashIcon className="mb-[2px] h-3.5 w-3.5 text-destructive group-focus:text-white" />
-      Delete
-    </DropdownMenuItem>
+    />
   );
 };
