@@ -1,12 +1,8 @@
-import { DataTableRowActions } from "@/react-toolkit/data-table/components/row-actions/DataTableRowActions";
-import { DTDeleteRowAction } from "@/react-toolkit/data-table/components/row-actions/DTDeleteRowAction";
-import { DTEditRowAction } from "@/react-toolkit/data-table/components/row-actions/DTEditRowAction";
-import { DTViewRowAction } from "@/react-toolkit/data-table/components/row-actions/DTViewRowAction";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+import { DTEditRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTEditRowAction";
+import { DTViewRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTViewRowAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
-import { tenantOptimisticMutationFn } from "../apis/tenants-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { TenantDeleteRowAction } from "./TenantDeleteRowAction";
 
 interface TenantsTableRowActionsProps {
   /** The ID of the row */
@@ -22,14 +18,6 @@ interface TenantsTableRowActionsProps {
 export const TenantsTableRowActions = ({
   rowId,
 }: TenantsTableRowActionsProps) => {
-  // Get mutation function to delete the tenant
-  const { mutate: deleteTenant } = useListOptimisticMutation<
-    string,
-    TenantsTableDto | boolean,
-    TenantsTableDto
-  >(tenantOptimisticMutationFn, DATA_QUERY_KEY);
-
-  // Return the component
   return (
     // Dropdown menu for tenant table row action */}
     <DataTableRowActions>
@@ -43,17 +31,7 @@ export const TenantsTableRowActions = ({
       <DropdownMenuSeparator />
 
       {/* Triggers Tenant delete alert dialog  */}
-      <DTDeleteRowAction
-        rowDeleteMutateFn={() =>
-          deleteTenant({
-            id: rowId,
-            payload: rowId,
-            crudAction: "delete",
-          })
-        }
-        description="This action cannot be undone. Are you sure you want to delete this tenant?"
-        confirmBtnText="Yes, delete tenant"
-      />
+      <TenantDeleteRowAction tenantId={rowId} />
     </DataTableRowActions>
   );
 };
