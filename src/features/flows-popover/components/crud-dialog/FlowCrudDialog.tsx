@@ -1,5 +1,5 @@
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { DTCrudDialogWraper } from "@/react-toolkit/ui/data-table/DTCrudDialogWraper";
-import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
 import {
   DialogContent,
   DialogDefaultHeader,

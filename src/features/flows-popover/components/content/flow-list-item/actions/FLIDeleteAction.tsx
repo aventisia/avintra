@@ -2,8 +2,8 @@ import { flowOptimisticMutationFn } from "@/features/flows-popover/apis/flows-ta
 import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
 import { useFlowsPopoverStore } from "@/features/flows-popover/stores/flows-popover-store";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { cn } from "@/react-toolkit/lib/utils";
-import { useShowAlertHandler } from "@/react-toolkit/ui/alert-dialog/hooks/useShowAlertHandler";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
 import { TrashIcon } from "@heroicons/react/24/outline";
