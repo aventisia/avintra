@@ -69,7 +69,9 @@ export const FlowCrudForm = () => {
         {isReadMode && <InputField {...idProps} />}
 
         {/* Type */}
-        <SelectField {...typeProps} disabled={isReadMode} />
+        {form.getValues("type") !== undefined && (
+          <SelectField {...typeProps} disabled={isReadMode} />
+        )}
 
         {/* Name */}
         <InputField {...nameProps} disabled={isReadMode} />
