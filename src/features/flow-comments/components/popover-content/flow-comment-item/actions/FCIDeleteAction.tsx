@@ -3,7 +3,7 @@ import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { cn } from "@/react-toolkit/lib/utils";
-import { useShowAlertHandler } from "@/react-toolkit/ui/alert-dialog/useShowAlertHandler";
+import { useShowAlertHandler } from "@/react-toolkit/ui/alert-dialog/hooks/useShowAlertHandler";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
 import { TrashIcon } from "@heroicons/react/24/outline";

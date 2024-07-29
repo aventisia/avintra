@@ -1,8 +1,8 @@
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { InputFieldProps } from "@/react-toolkit/form/components/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/form/components/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/form/components/fields/SwitchField";
-import { TextareaFieldProps } from "@/react-toolkit/form/components/fields/TextareaField";
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
+import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
 // Project Id
@@ -49,5 +49,11 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
-export { descriptionProps, idProps, isDisabledProps, nameProps, projectIdProps, typeProps };
-
+export {
+  descriptionProps,
+  idProps,
+  isDisabledProps,
+  nameProps,
+  projectIdProps,
+  typeProps,
+};

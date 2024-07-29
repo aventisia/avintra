@@ -1,7 +1,7 @@
 import {
   maxLenError,
   reqError,
-} from "@/react-toolkit/form/utils/error-message-list";
+} from "@/react-toolkit/ui/form/utils/error-message-list";
 import { z } from "zod";
 
 /**

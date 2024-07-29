@@ -1,7 +1,7 @@
-import { DTEditRowAction } from "@/react-toolkit/data-table/components/row-actions/DTEditRowAction";
-import { DTViewRowAction } from "@/react-toolkit/data-table/components/row-actions/DTViewRowAction";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { DTEditRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTEditRowAction";
+import { DTViewRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTViewRowAction";
 import {
   DropdownMenu,
   DropdownMenuContent,
