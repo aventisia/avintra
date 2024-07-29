@@ -3,10 +3,7 @@ import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
 import { useFlowsPopoverStore } from "@/features/flows-popover/stores/flows-popover-store";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { DeleteDDMenuItem } from "@/react-toolkit/ui/drop-down/DeleteDDMenuItem";
 import { useShallow } from "zustand/react/shallow";
 
 interface FLIDeleteActionProps {
@@ -19,7 +16,7 @@ interface FLIDeleteActionProps {
  */
 export const FLIDeleteAction = ({ flowId }: FLIDeleteActionProps) => {
   // Get showAlert handler
-  const { showAlertDialog } = useShowAlertHandler();
+  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
 
   // Get flows store state and actions
   const { flowsQueryKey } = useFlowsPopoverStore(
@@ -37,30 +34,23 @@ export const FLIDeleteAction = ({ flowId }: FLIDeleteActionProps) => {
 
   // Return Delete alert dialog trigger
   return (
-    <DropdownMenuItem
-      className={cn(
-        buttonVariants({ variant: "dropdownCautionItem" }),
-        "group h-7 !px-[0.3rem] text-xs",
-      )}
+    <DeleteDDMenuItem
+      size="sm"
       onClick={() => {
-        showAlertDialog({
-          confirmActionFn: () => {
-            // Delete the flow
-            deleteFlow({
-              id: flowId,
-              payload: flowId,
-              crudAction: "delete",
-            });
+        showDefaultDeleteAlertDialog(
+          {
+            confirmActionFn: () => {
+              // Delete the flow
+              deleteFlow({
+                id: flowId,
+                payload: flowId,
+                crudAction: "delete",
+              });
+            },
           },
-          title: "Delete flow",
-          description:
-            "This action cannot be undone. Are you sure you want to delete this flow?",
-          confirmBtnText: "Yes, delete flow",
-        });
+          "flow",
+        );
       }}
-    >
-      <TrashIcon className="mb-[2px] h-3.5 w-3.5 text-destructive group-focus:text-white" />
-      Delete
-    </DropdownMenuItem>
+    />
   );
 };

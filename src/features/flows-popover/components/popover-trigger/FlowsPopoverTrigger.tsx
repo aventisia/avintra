@@ -1,7 +1,7 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 import { FPTChevronDownIcon } from "./FPTChevronDownIcon";

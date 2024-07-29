@@ -1,7 +1,5 @@
 import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/drop-down/SimpleDDMenuItem";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 /**
@@ -25,15 +23,11 @@ export const FLIOpenAction = ({ flowId }: FLIOpenActionProps) => {
 
   // Return the component
   return (
-    <DropdownMenuItem
-      className={cn(
-        buttonVariants({ variant: "dropdownItem" }),
-        "h-7 !px-[0.3rem] text-xs",
-      )}
+    <SimpleDDMenuItem
+      size="sm"
+      content="Open"
+      Icon={ArrowTopRightOnSquareIcon}
       onClick={() => handleOpenFlowAction(flowId)}
-    >
-      <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5 text-[--icon-color]" />
-      Open
-    </DropdownMenuItem>
+    />
   );
 };

@@ -3,15 +3,15 @@ import {
   PopoverContent,
   PopoverDefaultHeader,
 } from "@/react-toolkit/ui/popover/Popover";
-import { PopoverWraper } from "@/react-toolkit/ui/popover/PopoverWraper";
+import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
-import { FlowsPopoverContent } from "./content/FlowsPopoverContent";
-import { FlowCrudDialog } from "./crud-dialog/FlowCrudDialog";
+import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
+import { FlowsPopoverContent } from "./popover-content/FlowsPopoverContent";
 import { FPCreateButton } from "./FPCreateButton";
 import { FPHeading } from "./FPHeading";
-import { FlowsPopoverTrigger } from "./trigger/FlowsPopoverTrigger";
+import { FlowsPopoverTrigger } from "./popover-trigger/FlowsPopoverTrigger";
 
 export const FlowsPopover = ({
   className,
@@ -30,7 +30,7 @@ export const FlowsPopover = ({
 
   // Return Popover
   return (
-    <PopoverWraper
+    <PopoverWrapper
       open={isPopoverOpen}
       onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}
     >
@@ -52,6 +52,6 @@ export const FlowsPopover = ({
           <FlowsPopoverContent />
         </FlowCrudDialog>
       </PopoverContent>
-    </PopoverWraper>
+    </PopoverWrapper>
   );
 };

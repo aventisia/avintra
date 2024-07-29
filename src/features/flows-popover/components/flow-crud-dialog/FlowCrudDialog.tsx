@@ -1,5 +1,5 @@
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { DTCrudDialogWraper } from "@/react-toolkit/ui/data-table/DTCrudDialogWraper";
+import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper";
 import {
   DialogContent,
   DialogDefaultHeader,
@@ -29,7 +29,7 @@ export const FlowCrudDialog = ({ children }: React.PropsWithChildren) => {
 
   // Return dialog
   return (
-    <DTCrudDialogWraper>
+    <DTCrudDialogWrapper>
       {children}
       <DialogContent side={"right"} className="!max-w-[32rem]">
         <DialogDefaultHeader
@@ -41,6 +41,6 @@ export const FlowCrudDialog = ({ children }: React.PropsWithChildren) => {
           <FlowCrudForm />
         </ScrollArea>
       </DialogContent>
-    </DTCrudDialogWraper>
+    </DTCrudDialogWrapper>
   );
 };
