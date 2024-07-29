@@ -1,6 +1,6 @@
-import { InputField } from "@/react-toolkit/form/components/fields/InputField";
-import { Form } from "@/react-toolkit/form/components/form/Form";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { Form } from "@/react-toolkit/ui/form/Form";
 import * as z from "zod";
 import { emailProps } from "../../constants/form-field-props";
 import { tenantInfoZodSchema } from "../../constants/tenant-info-zod-schema";
@@ -21,7 +21,7 @@ export const GetTenantInfoForm = () => {
 
   // Return form
   return (
-    <Form {...form}>
+    <Form methods={form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <fieldset
           disabled={isSubmitting || isInfoPending}

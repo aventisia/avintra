@@ -1,10 +1,13 @@
-import { CheckboxField } from "@/react-toolkit/form/components/fields/CheckboxField";
-import { InputField } from "@/react-toolkit/form/components/fields/InputField";
-import { Form } from "@/react-toolkit/form/components/form/Form";
-import { FormLabel } from "@/react-toolkit/form/components/form/FormLabel";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
 import { z } from "zod";
-import { confirmNewPwdProps, newPwdProps } from "../../constants/form-field-props";
+import {
+  confirmNewPwdProps,
+  newPwdProps,
+} from "../../constants/form-field-props";
 import { resetPwdZodSchema } from "../../constants/reset-pwd-zod-schema";
 import { useDefineResetPwdForm } from "../../hooks/useDefineResetPwdForm";
 import { useResetPwdMutation } from "../../hooks/useResetPwdMutation";
@@ -26,7 +29,7 @@ export const ResetPwdForm = () => {
 
   // Return form
   return (
-    <Form {...form}>
+    <Form methods={form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <fieldset
           disabled={isSubmitting || isResetPending}

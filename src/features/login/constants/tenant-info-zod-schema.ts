@@ -1,4 +1,4 @@
-import { reqError } from "@/react-toolkit/form/utils/error-message-list";
+import { reqError } from "@/react-toolkit/ui/form/utils/error-message-list";
 import * as z from "zod";
 
 export const tenantInfoZodSchema = z.object({

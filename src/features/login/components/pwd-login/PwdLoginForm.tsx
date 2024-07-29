@@ -1,6 +1,6 @@
-import { InputField } from "@/react-toolkit/form/components/fields/InputField";
-import { Form } from "@/react-toolkit/form/components/form/Form";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { Form } from "@/react-toolkit/ui/form/Form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { pwdProps } from "../../constants/form-field-props";
@@ -42,7 +42,7 @@ export const PwdLoginForm = () => {
 
   // Return form
   return (
-    <Form {...form}>
+    <Form methods={form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <fieldset
           disabled={isSubmitting || isAuthPending}

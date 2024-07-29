@@ -1,8 +1,8 @@
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-import { CheckboxField } from "@/react-toolkit/form/components/fields/CheckboxField";
-import { InputField } from "@/react-toolkit/form/components/fields/InputField";
-import { Form } from "@/react-toolkit/form/components/form/Form";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { Form } from "@/react-toolkit/ui/form/Form";
 import * as z from "zod";
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
 import {
@@ -59,7 +59,7 @@ export const CreateAccountForm = () => {
 
   // Return form
   return (
-    <Form {...form}>
+    <Form methods={form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <fieldset
           disabled={isSubmitting || isCodePending}
