@@ -26,14 +26,16 @@ export const useDefineProjectForm = () => {
     })),
   );
 
-  // Get crud dialog store state and actions
+  // Get data-table crud dialog store state and actions
   const {
     crudDialogOptions: { rowId, crudAction },
+    toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
     useShallow((state) => ({
       crudDialogOptions: state.crudDialogOptions,
       setShowDialog: state.setShowDialog,
+      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
@@ -95,6 +97,11 @@ export const useDefineProjectForm = () => {
       lastModifiedOn: new Date().toISOString(),
     };
   };
+
+    // Save the form dirty state
+    useEffect(() => {
+      toggleFormDirty(isDirty);
+    }, [isDirty, toggleFormDirty]);
 
   // Return form and methods
   return {
