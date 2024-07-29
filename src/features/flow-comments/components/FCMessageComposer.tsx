@@ -66,16 +66,23 @@ export const FCMessageComposer = ({
 
   // 4. Return the component
   return (
-    // prettier-ignore
-    <Form {...form}>
-      <form className={cn("relative w-auto transition-all duration-500", className)} onSubmit={form.handleSubmit(onSubmit)}>
-
+    <Form methods={form}>
+      <form
+        className={cn("relative w-auto transition-all duration-500", className)}
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         {/* Comment to edit. Note: We don't need FieldMessage thats why using the AutosizeTextarea directly instead of form field AutosizeTextareaField */}
-        <FormField control={form.control} name="comment" render={({ field }) => (
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
             <FormItem>
               <FormControl>
-                <AutosizeTextarea maxHeight={crudAction === "create" ? 200 : 2000} minHeight={36} {...field}
-                  className="resize-none text-xs py-2.5 h-10 border-none bg-slate-100 pr-12"
+                <AutosizeTextarea
+                  maxHeight={crudAction === "create" ? 200 : 2000}
+                  minHeight={36}
+                  {...field}
+                  className="h-10 resize-none border-none bg-slate-100 py-2.5 pr-12 text-xs"
                   placeholder="Type a comment..."
                 />
               </FormControl>
@@ -84,7 +91,12 @@ export const FCMessageComposer = ({
         />
 
         {/* Submit button */}
-        <Button type="submit" variant={"ghost"} size={"icon8"} className="group/submit absolute bottom-1 h-[2.04rem] w-[2.04rem] right-1">
+        <Button
+          type="submit"
+          variant={"ghost"}
+          size={"icon8"}
+          className="group/submit absolute bottom-1 right-1 h-[2.04rem] w-[2.04rem]"
+        >
           {crudAction === "create" ? (
             <PaperAirplaneIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
           ) : (

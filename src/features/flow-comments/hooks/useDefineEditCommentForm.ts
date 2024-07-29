@@ -14,13 +14,15 @@ import { useFlowCommentsStore } from "../stores/flow-comments-store";
  */
 export const useDefineEditCommentForm = () => {
   // Get store state and actions
-  const { flowId, fcQueryKey, flowCommentId } = useFlowCommentsStore(
-    useShallow((state) => ({
-      flowId: state.flowId,
-      fcQueryKey: state.fcQueryKey,
-      flowCommentId: state.flowCommentId,
-    })),
-  );
+  const { flowId, fcQueryKey, flowCommentId, toggleEditFormDirty } =
+    useFlowCommentsStore(
+      useShallow((state) => ({
+        flowId: state.flowId,
+        fcQueryKey: state.fcQueryKey,
+        flowCommentId: state.flowCommentId,
+        toggleEditFormDirty: state.toggleEditFormDirty,
+      })),
+    );
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -36,6 +38,11 @@ export const useDefineEditCommentForm = () => {
   const form = useForm<z.infer<typeof flowCommentZodSchema>>({
     resolver: zodResolver(flowCommentZodSchema),
   });
+
+  // Desctructure form's methods
+  const {
+    formState: { isDirty },
+  } = form;
 
   // Fetch data when flowCommentId changes
   useEffect(() => {
@@ -67,6 +74,11 @@ export const useDefineEditCommentForm = () => {
       isEdited: flowCommentData?.isEdited ?? false,
     });
   }, [flowCommentId, flowId, form, queryClient, fcQueryKey, userSession]);
+
+  // Save the form dirty state
+  useEffect(() => {
+    toggleEditFormDirty(isDirty);
+  }, [isDirty, toggleEditFormDirty]);
 
   // Return form
   return { form };

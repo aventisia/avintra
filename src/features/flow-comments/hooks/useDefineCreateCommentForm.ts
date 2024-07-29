@@ -12,9 +12,10 @@ import { useFlowCommentsStore } from "../stores/flow-comments-store";
  */
 export const useDefineCreateCommentForm = () => {
   // Get store state and actions
-  const { flowId } = useFlowCommentsStore(
+  const { flowId, toggleCreateFormDirty } = useFlowCommentsStore(
     useShallow((state) => ({
       flowId: state.flowId,
+      toggleCreateFormDirty: state.toggleCreateFormDirty,
     })),
   );
 
@@ -29,6 +30,11 @@ export const useDefineCreateCommentForm = () => {
   const form = useForm<z.infer<typeof flowCommentZodSchema>>({
     resolver: zodResolver(flowCommentZodSchema),
   });
+
+  // Desctructure form's methods
+  const {
+    formState: { isDirty },
+  } = form;
 
   // Set or reset form data
   useEffect(() => {
@@ -45,6 +51,11 @@ export const useDefineCreateCommentForm = () => {
       isEdited: false,
     });
   }, [flowId, form, userSession]);
+
+  // Save the form dirty state
+  useEffect(() => {
+    toggleCreateFormDirty(isDirty);
+  }, [isDirty, toggleCreateFormDirty]);
 
   // Return form and methods
   return { form };

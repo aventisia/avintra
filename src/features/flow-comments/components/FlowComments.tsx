@@ -1,9 +1,9 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import {
-  Popover,
   PopoverContent,
   PopoverDefaultHeader,
 } from "@/react-toolkit/ui/popover/Popover";
+import { PopoverWraper } from "@/react-toolkit/ui/popover/PopoverWraper";
 import { useShallow } from "zustand/react/shallow";
 import { FC_POPOVER_HEADING } from "../constants/constatns";
 import { useDefineCreateCommentForm } from "../hooks/useDefineCreateCommentForm";
@@ -20,8 +20,15 @@ interface FlowCommentsProps {
 
 export const FlowComments = ({ className }: FlowCommentsProps) => {
   // Get store state and actions
-  const { isPopoverOpen, togglePopoverOpen } = useFlowCommentsStore(
+  const {
+    isCreateFormDirty,
+    isEditFormDirty,
+    isPopoverOpen,
+    togglePopoverOpen,
+  } = useFlowCommentsStore(
     useShallow((state) => ({
+      isCreateFormDirty: state.isCreateFormDirty,
+      isEditFormDirty: state.isEditFormDirty,
       isPopoverOpen: state.isPopoverOpen,
       togglePopoverOpen: state.togglePopoverOpen,
     })),
@@ -35,7 +42,11 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
 
   // Return Flow Comments Popover
   return (
-    <Popover open={isPopoverOpen} onOpenChange={togglePopoverOpen}>
+    <PopoverWraper
+      open={isPopoverOpen}
+      onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}
+      isFormDirty={isCreateFormDirty || isEditFormDirty}
+    >
       {/* Custom flow comments popover trigger */}
       <FCPopoverTrigger />
       {/* Popover content */}
@@ -55,6 +66,6 @@ export const FlowComments = ({ className }: FlowCommentsProps) => {
           className="mx-3.5 my-3.5"
         />
       </PopoverContent>
-    </Popover>
+    </PopoverWraper>
   );
 };
