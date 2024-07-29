@@ -1,6 +1,5 @@
 import "@/react-toolkit/styles/react-perfect-scrollbar.css";
-import { AlertDialog } from "@/react-toolkit/ui/alert-dialog.tsx";
-import { ConfirmActionAlert } from "@/react-toolkit/ui/custom/ConfirmActionAlert.tsx";
+import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper.tsx";
 import { ToasterExt } from "@/react-toolkit/ui/custom/ToasterExt.tsx";
 import { TooltipProvider } from "@/react-toolkit/ui/custom/Tooltip.tsx";
 import React from "react";
@@ -11,14 +10,10 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <TooltipProvider>
-      {/* Alert dialog provider */}
-      <AlertDialog>
-        {/* Main app */}
+      {/* Alert dialog wrapper */}
+      <AlertDialogWrapper>
         <App />
-
-        {/* Custom alert dialog for confirm action */}
-        <ConfirmActionAlert />
-      </AlertDialog>
+      </AlertDialogWrapper>
 
       {/* To show toaster notifications */}
       <ToasterExt />
