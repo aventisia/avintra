@@ -16,7 +16,7 @@ import { useFlowsTableStore } from "../stores/flows-table-store";
  * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineFlowForm = () => {
-  // 1. Get flows store state and actions
+  // Get flows store state and actions
   const { projectId, flowsQueryKey } = useFlowsTableStore(
     useShallow((state) => ({
       projectId: state.projectId,
@@ -24,38 +24,40 @@ export const useDefineFlowForm = () => {
     })),
   );
 
-  // 2. Get user session
+  // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
 
-  // 3. Get crud dialog store state and actions
+  // Get data-table crud dialog store state and actions
   const {
     crudDialogOptions: { rowId, crudAction },
+    toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
     useShallow((state) => ({
       crudDialogOptions: state.crudDialogOptions,
       setShowDialog: state.setShowDialog,
+      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
-  // 4. Get query client
+  // Get query client
   const queryClient = useQueryClient();
 
-  // 5. Define form with zod schema
+  // Define form with zod schema
   const form = useForm<z.infer<typeof flowZodSchema>>({
     resolver: zodResolver(flowZodSchema),
   });
 
-  // 6. Destructor form values and methods
+  // Destructor form values and methods
   const {
     formState: { isSubmitting, isDirty },
   } = form;
 
-  // 7. Fetch flow data when rowId changes
+  // Fetch flow data when rowId changes
   useEffect(() => {
     // Get flows data from query client
     const flowsData = queryClient.getQueryData<{
@@ -91,7 +93,7 @@ export const useDefineFlowForm = () => {
     });
   }, [rowId, projectId, form, queryClient, flowsQueryKey, userSession]);
 
-  // 8. Refine form data based on crud action
+  // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof flowZodSchema>) => {
     return {
       ...formData,
@@ -100,7 +102,12 @@ export const useDefineFlowForm = () => {
     };
   };
 
-  // 9. Return form and methods
+  // Save the form dirty state
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  // Return form and methods
   return {
     form,
     isSubmitting,
