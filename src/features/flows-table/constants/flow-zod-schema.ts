@@ -2,8 +2,8 @@ import {
   alphaNumericError,
   maxLenError,
   reqError,
-} from "@/react-toolkit/form/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/form/utils/regex-list";
+} from "@/react-toolkit/ui/form/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/ui/form/utils/regex-list";
 import { z } from "zod";
 
 /**

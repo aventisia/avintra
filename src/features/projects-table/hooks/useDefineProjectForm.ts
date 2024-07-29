@@ -1,5 +1,5 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ import { ProjectsTableDto } from "../dtos/projects-table-dto";
 export const useDefineProjectForm = () => {
   // Set project name state (required for avaialbility check)
   const [projectName, setProjectName] = useState("");
-  
+
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({

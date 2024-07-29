@@ -1,20 +1,20 @@
-import { DataTable } from "@/react-toolkit/data-table/components/DataTable";
-import { DataTableSkeleton } from "@/react-toolkit/data-table/components/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/data-table/components/DTPagination";
-import { DTCreateButton } from "@/react-toolkit/data-table/components/toolbar/DTCreateButton";
-import { DTHeading } from "@/react-toolkit/data-table/components/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/data-table/components/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/data-table/components/toolbar/DTViewOptions";
-import { useDataTable } from "@/react-toolkit/data-table/hooks/useDataTable";
-import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { DataTable } from "@/react-toolkit/ui/data-table/DataTable";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { useDataTable } from "@/react-toolkit/ui/data-table/hooks/useDataTable";
+import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
+import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
+import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
+import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Dialog as CrudDialogRoot } from "@/react-toolkit/ui/dialog/Dialog";
+import { Separator } from "@/react-toolkit/ui/separator";
 import { useShallow } from "zustand/react/shallow";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { UserCrudDialogContent } from "./UserCrudDialogContent";
 import { usersTableColumns } from "./UsersTableColumns";
-import { Separator } from "@/react-toolkit/ui/separator";
 
 /**
  * Renders a table of users.

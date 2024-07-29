@@ -1,15 +1,15 @@
-import { InputField } from "@/react-toolkit/form/components/fields/InputField";
-import { SelectField } from "@/react-toolkit/form/components/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/form/components/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/form/components/fields/TextareaField";
-import { Form } from "@/react-toolkit/form/components/form/Form";
-import { AutherCard } from "@/react-toolkit/form/components/non-field/AutherCard";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   DialogContent,
   DialogDefaultHeader,
 } from "@/react-toolkit/ui/dialog/Dialog";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { z } from "zod";
 import { projectOptimisticMutationFn } from "../apis/projects-table-apis";
@@ -96,7 +96,7 @@ export const ProjectCrudDialogContent = () => {
         description={dialogHeaderOptions.description}
       />
       <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
-        <Form {...form}>
+        <Form methods={form}>
           <form
             className="w-full space-y-3.5 px-2.5 pb-5"
             onSubmit={form.handleSubmit(onSubmit)}

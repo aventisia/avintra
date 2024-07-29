@@ -1,6 +1,6 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";

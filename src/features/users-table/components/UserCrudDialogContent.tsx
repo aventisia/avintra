@@ -1,14 +1,14 @@
-import { InputField } from "@/react-toolkit/form/components/fields/InputField";
-import { MultiSelectField } from "@/react-toolkit/form/components/fields/MultiSelectField";
-import { SwitchField } from "@/react-toolkit/form/components/fields/SwitchField";
-import { Form } from "@/react-toolkit/form/components/form/Form";
-import { AutherCard } from "@/react-toolkit/form/components/non-field/AutherCard";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   DialogContent,
   DialogDefaultHeader,
 } from "@/react-toolkit/ui/dialog/Dialog";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { MultiSelectField } from "@/react-toolkit/ui/form/fields/MultiSelectField";
+import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { z } from "zod";
 import { userOptimisticMutationFn } from "../apis/users-table-apis";
@@ -82,7 +82,7 @@ export const UserCrudDialogContent = () => {
         description={dialogHeaderOptions.description}
       />
       <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
-        <Form {...form}>
+        <Form methods={form}>
           <form
             className="w-full space-y-3.5 px-2.5 pb-5"
             onSubmit={form.handleSubmit(onSubmit)}

@@ -1,4 +1,4 @@
-import { DTColumnHeader } from "@/react-toolkit/data-table/components/DTColumnHeader";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { FlowsTableDto } from "../dtos/flows-table-dto";

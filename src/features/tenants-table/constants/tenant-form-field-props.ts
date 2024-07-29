@@ -1,9 +1,9 @@
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { DatePickerFieldProps } from "@/react-toolkit/form/components/fields/DatePickerField";
-import { InputFieldProps } from "@/react-toolkit/form/components/fields/InputField";
-import { RadioGroupFieldProps } from "@/react-toolkit/form/components/fields/RadioGroupField";
-import { SwitchFieldProps } from "@/react-toolkit/form/components/fields/SwitchField";
-import { TextareaFieldProps } from "@/react-toolkit/form/components/fields/TextareaField";
+import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { RadioGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioGroupField";
+import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
 
 // Tenant Id
 const idProps: InputFieldProps = {

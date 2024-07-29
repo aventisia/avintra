@@ -1,5 +1,10 @@
-import { emailError, maxLenError, nameError, reqError } from "@/react-toolkit/form/utils/error-message-list";
-import { nameRegex } from "@/react-toolkit/form/utils/regex-list";
+import {
+  emailError,
+  maxLenError,
+  nameError,
+  reqError,
+} from "@/react-toolkit/ui/form/utils/error-message-list";
+import { nameRegex } from "@/react-toolkit/ui/form/utils/regex-list";
 import { z } from "zod";
 
 /**

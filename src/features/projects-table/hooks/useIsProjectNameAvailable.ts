@@ -1,12 +1,14 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/data-table/stores/dt-crud-dialog-store";
-import { useCheckAvailability } from "@/react-toolkit/form/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/ui/data-table/stores/dt-crud-dialog-store";
+import { useCheckAvailability } from "@/react-toolkit/ui/form/hooks/useCheckAvailability";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { isProjectNameAvailable } from "../apis/projects-table-apis";
-import { projectNameSchema, projectZodSchema } from "../constants/project-zod-schema";
-
+import {
+  projectNameSchema,
+  projectZodSchema,
+} from "../constants/project-zod-schema";
 
 /**
  * Custom hook that checks the availability of a project name and handles validation and error messages.
