@@ -14,6 +14,17 @@ import {
 import { z } from "zod";
 
 /**
+ * Represents the Zod object's item schema for a tenant name.
+ */
+export const tenantNameSchema = z
+  .string()
+  .min(1, { message: reqError("Tenant name") })
+  .max(100, { message: maxLenError("Tenant name", 100) })
+  .regex(alphaNumericRegex, {
+    message: alphaNumericError("Tenant name"),
+  });
+
+/**
  * Represents the Zod schema for a tenant.
  */
 export const tenantZodSchema = z

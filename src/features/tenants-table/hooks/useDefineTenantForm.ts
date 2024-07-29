@@ -1,14 +1,19 @@
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+import { isTenantNameAvailable } from "../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../constants/constants";
-import { tenantZodSchema } from "../constants/tenant-zod-schema";
+import {
+  tenantNameSchema,
+  tenantZodSchema,
+} from "../constants/tenant-zod-schema";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 /**
@@ -17,6 +22,9 @@ import { TenantsTableDto } from "../dtos/tenants-table-dto";
  * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineTenantForm = () => {
+  // Set tenant name state (required for avaialbility check)
+  const [tenantName, setTenantName] = useState("");
+
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -26,7 +34,7 @@ export const useDefineTenantForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { rowId, crudAction },
+    crudDialogOptions: { showDialog, rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -60,6 +68,9 @@ export const useDefineTenantForm = () => {
 
     // Get tenant data by id
     const tenantData = tenantsData?.data.find((item) => item.id === rowId);
+
+    // Set tenant name
+    setTenantName(tenantData?.name ?? "");
 
     // Set tenant data to form
     form.reset({
@@ -110,6 +121,21 @@ export const useDefineTenantForm = () => {
     });
   }, [rowId, form, queryClient, userSession]);
 
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof tenantZodSchema>, z.ZodString>({
+    defaultInputValue: tenantName,
+    fieldName: "name",
+    form,
+    fieldSchema: tenantNameSchema,
+    checkAvailabilityAPIFn: isTenantNameAvailable,
+  });
+
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof tenantZodSchema>) => {
     return {
@@ -124,6 +150,11 @@ export const useDefineTenantForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
+  // Reset availability message when dialog closes
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
+
   // Return form and methods
   return {
     form,
@@ -134,5 +165,10 @@ export const useDefineTenantForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
   };
 };

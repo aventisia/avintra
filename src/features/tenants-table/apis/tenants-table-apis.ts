@@ -2,6 +2,8 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 
@@ -11,6 +13,17 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 const getTenants = () => {
   return axiosInstance
     .get<IHttpResponse<TenantsTableDto[]>>(`${baseAPIURL}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Checks the availability of a tenant name.
+ */
+const isTenantNameAvailable = (postObj: CheckAvailabilityDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<TrueFalseResultDto>
+    >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
@@ -66,7 +79,10 @@ const tenantOptimisticMutationFn = ({
 };
 
 export {
-  deleteTenant, getTenants,
-  insertTenant, tenantOptimisticMutationFn, updateTenant
+  getTenants,
+  isTenantNameAvailable,
+  insertTenant,
+  updateTenant,
+  deleteTenant,
+  tenantOptimisticMutationFn,
 };
-

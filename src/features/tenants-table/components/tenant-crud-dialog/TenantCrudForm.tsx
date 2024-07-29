@@ -45,6 +45,11 @@ export const TenantCrudForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
   } = useDefineTenantForm();
 
   // Define optimistic mutation to crete or update the tenant
@@ -65,6 +70,9 @@ export const TenantCrudForm = () => {
 
     // Reset form
     form.reset(formData);
+
+    // Reset the availability message
+    setAvailabilityMessage(null);
 
     // Close the dialog
     setShowDialog(false);
@@ -97,7 +105,12 @@ export const TenantCrudForm = () => {
         {isReadMode && <InputField {...idProps} />}
 
         {/* Name */}
-        <InputField {...nameProps} disabled={isReadMode} />
+        <InputField
+          {...nameProps}
+          disabled={isReadMode}
+          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+          nonErrorMessage={availabilityMessage}
+        />
 
         {/* Expires On */}
         <DatePickerField {...expiresOnProps} disabled={isReadMode} />
@@ -200,7 +213,11 @@ export const TenantCrudForm = () => {
         {/* Submit button */}
         {crudAction !== "read" && (
           <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+            <Button
+              type="submit"
+              disabled={!isDirty || !isAvailable || isCheckPending}
+              className="min-w-[5rem]"
+            >
               {crudAction === "create" ? "Create tenant" : "Save changes"}
             </Button>
           </div>
