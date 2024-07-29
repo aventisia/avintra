@@ -2,7 +2,7 @@ import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { UsersTableDto } from "../dtos/users-table-dto";
-import { UsersTableRowActions } from "./UsersTableRowActions";
+import { UserRowActions } from "./user-row-actions/UserRowActions";
 
 /**
  * Array of table columns for the users table.
@@ -66,7 +66,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the users row actions component
-      <UsersTableRowActions rowId={row.original.id || "rowId"} />
+      <UserRowActions rowId={row.original.id || "rowId"} />
     ),
   },
 ];
