@@ -1,6 +1,6 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { DropdownMenuTrigger } from "@/react-toolkit/ui/drop-down/dropdown-menu";
+import { DropdownMenuTrigger } from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 export const FLIActionsTrigger = () => {

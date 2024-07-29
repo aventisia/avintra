@@ -2,8 +2,8 @@ import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowActi
 import {
   DropdownMenuContent,
   DropdownMenuSeparator,
-} from "@/react-toolkit/ui/drop-down/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/drop-down/DropdownMenu";
+} from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
+import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import { FLIActionsTrigger } from "./FLIActionsTrigger";
 import { FLIDeleteAction } from "./FLIDeleteAction";
 import { FLIOpenAction } from "./FLIOpenAction";

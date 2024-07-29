@@ -1,5 +1,5 @@
-import { DropdownMenu } from "@/react-toolkit/ui/drop-down/DropdownMenu";
-import { DropdownMenuContent } from "@/react-toolkit/ui/drop-down/dropdown-menu";
+import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+import { DropdownMenuContent } from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
 import { FCIActionsTrigger } from "./FCIActionsTrigger";
 import { FCIDeleteAction } from "./FCIDeleteAction";
 import { FCIEditAction } from "./FCIEditAction";

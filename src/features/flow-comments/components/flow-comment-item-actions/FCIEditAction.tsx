@@ -1,5 +1,5 @@
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/drop-down/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 

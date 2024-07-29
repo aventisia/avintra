@@ -3,7 +3,7 @@ import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
 import { useFlowsPopoverStore } from "@/features/flows-popover/stores/flows-popover-store";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DeleteDDMenuItem } from "@/react-toolkit/ui/drop-down/DeleteDDMenuItem";
+import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
 import { useShallow } from "zustand/react/shallow";
 
 interface FLIDeleteActionProps {
