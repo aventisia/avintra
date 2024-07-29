@@ -1,14 +1,9 @@
-import { DataTableRowActions } from "@/react-toolkit/data-table/components/row-actions/DataTableRowActions";
-import { DTDeleteRowAction } from "@/react-toolkit/data-table/components/row-actions/DTDeleteRowAction";
-import { DTEditRowAction } from "@/react-toolkit/data-table/components/row-actions/DTEditRowAction";
-import { DTViewRowAction } from "@/react-toolkit/data-table/components/row-actions/DTViewRowAction";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+import { DTEditRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTEditRowAction";
+import { DTViewRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTViewRowAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
-import { projectOptimisticMutationFn } from "../apis/projects-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
-import { ProjectsTableDto } from "../dtos/projects-table-dto";
+import { ProjectDeleteRowAction } from "./ProjectDeleteRowAction";
 import { ProjectOpenRowAction } from "./ProjectOpenRowAction";
-
 
 interface ProjectsTableRowActionsProps {
   /** The ID of the row */
@@ -24,14 +19,6 @@ interface ProjectsTableRowActionsProps {
 export const ProjectsTableRowActions = ({
   rowId,
 }: ProjectsTableRowActionsProps) => {
-  // Get mutation function to delete the project
-  const { mutate: deleteProject } = useListOptimisticMutation<
-    string,
-    ProjectsTableDto | boolean,
-    ProjectsTableDto
-  >(projectOptimisticMutationFn, DATA_QUERY_KEY);
-
-  // Return the component
   return (
     // Dropdown menu for project table row action
     <DataTableRowActions>
@@ -48,17 +35,7 @@ export const ProjectsTableRowActions = ({
       <DropdownMenuSeparator />
 
       {/* Triggers Project delete alert dialog  */}
-      <DTDeleteRowAction
-        rowDeleteMutateFn={() =>
-          deleteProject({
-            id: rowId,
-            payload: rowId,
-            crudAction: "delete",
-          })
-        }
-        description="This action cannot be undone. Are you sure you want to delete this project?"
-        confirmBtnText="Yes, delete project"
-      />
+      <ProjectDeleteRowAction projectId={rowId} />
     </DataTableRowActions>
   );
 };
