@@ -19,7 +19,6 @@ import {
 import { projectZodSchema } from "../../constants/project-zod-schema";
 import { ProjectsTableDto } from "../../dtos/projects-table-dto";
 import { useDefineProjectForm } from "../../hooks/useDefineProjectForm";
-import { useIsProjectNameAvailable } from "../../hooks/useIsProjectNameAvailable";
 
 export const ProjectCrudForm = () => {
   // Define project form
@@ -28,19 +27,14 @@ export const ProjectCrudForm = () => {
     isDirty,
     rowId,
     crudAction,
-    projectName,
-    setShowDialog,
-    refineFormData,
-  } = useDefineProjectForm();
-
-  // Get state and methods for availability check
-  const {
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-  } = useIsProjectNameAvailable(form, projectName);
+    setShowDialog,
+    refineFormData,
+  } = useDefineProjectForm();
 
   // Define optimistic mutation to crete or update the project
   const { mutate: mutateProject } = useListOptimisticMutation<

@@ -1,3 +1,4 @@
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,14 +7,16 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+import { isProjectNameAvailable } from "../apis/projects-table-apis";
 import { DATA_QUERY_KEY } from "../constants/constants";
-import { projectZodSchema } from "../constants/project-zod-schema";
+import {
+  projectNameSchema,
+  projectZodSchema,
+} from "../constants/project-zod-schema";
 import { ProjectsTableDto } from "../dtos/projects-table-dto";
 
 /**
  * Custom hook for defining a project form.
- *
- * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineProjectForm = () => {
   // Set project name state (required for avaialbility check)
@@ -28,7 +31,7 @@ export const useDefineProjectForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { rowId, crudAction },
+    crudDialogOptions: { showDialog, rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -89,6 +92,21 @@ export const useDefineProjectForm = () => {
     });
   }, [rowId, form, queryClient, userSession]);
 
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof projectZodSchema>, z.ZodString>({
+    defaultInputValue: projectName,
+    fieldName: "name",
+    form,
+    fieldSchema: projectNameSchema,
+    checkAvailabilityAPIFn: isProjectNameAvailable,
+  });
+
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof projectZodSchema>) => {
     return {
@@ -98,10 +116,15 @@ export const useDefineProjectForm = () => {
     };
   };
 
-    // Save the form dirty state
-    useEffect(() => {
-      toggleFormDirty(isDirty);
-    }, [isDirty, toggleFormDirty]);
+  // Save the form dirty state
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  // Reset availability message when dialog closes
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
 
   // Return form and methods
   return {
@@ -111,6 +134,10 @@ export const useDefineProjectForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    projectName,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
   };
 };
