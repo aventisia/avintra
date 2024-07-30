@@ -49,8 +49,33 @@ export const useDefineTenantForm = () => {
   const queryClient = useQueryClient();
 
   // Define form with zod schema
+  /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof tenantZodSchema>>({
     resolver: zodResolver(tenantZodSchema),
+    defaultValues: {
+      id: "",
+      name: "",
+      expiresOn: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      isTwoFAEnabled: false,
+      isPwdEnabled: true,
+      isSSOEnabled: false,
+      ssoConfigJson: undefined,
+      isPwdNeverExpiresEnabled: true,
+      daysBeforePwdExpires: "730",
+      isIdleSessionTimeoutEnabled: true,
+      idleSessionTimeoutMinutes: "10",
+      dbOption: DatabaseOptionsEnum.Shared,
+      dbNamePrefix: undefined,
+      dbUserId: undefined,
+      dbPwd: undefined,
+      dbHost: undefined,
+      dbPort: undefined,
+      isDisabled: false,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: new Date(),
+    },
   });
 
   // Destructor form values and methods

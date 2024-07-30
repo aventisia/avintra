@@ -93,133 +93,117 @@ export const TenantCrudForm = () => {
 
   // Return the form
   return (
-    <Form methods={form}>
-      <form
-        className="w-full space-y-3.5 px-2.5 pb-5"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        {/* Tenant Id */}
-        {isReadMode && <InputField {...idProps} />}
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="px-2.5 pb-5"
+      disabled={isReadMode}
+    >
+      {/* Tenant Id */}
+      {isReadMode && <InputField {...idProps} />}
 
-        {/* Name */}
+      {/* Name */}
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
+
+      {/* Expires On */}
+      <DatePickerField {...expiresOnProps} />
+
+      {/* Is TwoFA Enabled*/}
+      <SwitchField {...isTwoFAEnabledProps} />
+
+      {/* Is Password Enabled */}
+      <SwitchField {...isPwdEnabledProps} />
+
+      {/* Is SSO Enabled */}
+      <SwitchField {...isSSOEnabledProps} />
+
+      {/* SSO Config JSON */}
+      {isSSOEnabled && (
+        <TextareaField {...ssoConfigJsonProps} isRequired={isSSOEnabled} />
+      )}
+
+      {/* Is Password Never Expires Enabled */}
+      <SwitchField {...isPwdNeverExpiresEnabledProps} />
+
+      {/* Days Before Password Expires */}
+      {!isPwdNeverExpiresEnabled && (
         <InputField
-          {...nameProps}
-          disabled={isReadMode}
-          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-          nonErrorMessage={availabilityMessage}
+          {...daysBeforePwdExpiresProps}
+          isRequired={!isPwdNeverExpiresEnabled}
         />
+      )}
 
-        {/* Expires On */}
-        <DatePickerField {...expiresOnProps} disabled={isReadMode} />
+      {/* Is Idle Session Timeout Enabled */}
+      <SwitchField {...isIdleSessionTimeoutEnabledProps} />
 
-        {/* Is TwoFA Enabled*/}
-        <SwitchField {...isTwoFAEnabledProps} disabled={isReadMode} />
-
-        {/* Is Password Enabled */}
-        <SwitchField {...isPwdEnabledProps} disabled={isReadMode} />
-
-        {/* Is SSO Enabled */}
-        <SwitchField {...isSSOEnabledProps} disabled={isReadMode} />
-
-        {/* SSO Config JSON */}
-        {isSSOEnabled && (
-          <TextareaField
-            {...ssoConfigJsonProps}
-            disabled={isReadMode}
-            isRequired={isSSOEnabled}
-          />
-        )}
-
-        {/* Is Password Never Expires Enabled */}
-        <SwitchField {...isPwdNeverExpiresEnabledProps} disabled={isReadMode} />
-
-        {/* Days Before Password Expires */}
-        {!isPwdNeverExpiresEnabled && (
-          <InputField
-            {...daysBeforePwdExpiresProps}
-            disabled={isReadMode}
-            isRequired={!isPwdNeverExpiresEnabled}
-          />
-        )}
-
-        {/* Is Idle Session Timeout Enabled */}
-        <SwitchField
-          {...isIdleSessionTimeoutEnabledProps}
-          disabled={isReadMode}
+      {/* Idle Session Timeout Minutes */}
+      {isIdleSessionTimeoutEnabled && (
+        <InputField
+          {...idleSessionTimeoutMinutesProps}
+          isRequired={isIdleSessionTimeoutEnabled}
         />
+      )}
 
-        {/* Idle Session Timeout Minutes */}
-        {isIdleSessionTimeoutEnabled && (
-          <InputField
-            {...idleSessionTimeoutMinutesProps}
-            disabled={isReadMode}
-            isRequired={isIdleSessionTimeoutEnabled}
-          />
-        )}
+      {/* Database Option */}
+      <RadioGroupField {...dbOptionProps} />
 
-        {/* Database Option */}
-        <RadioGroupField {...dbOptionProps} disabled={isReadMode} />
-
-        {/* Database Name Prefix */}
-        {dbOption !== DatabaseOptionsEnum.Shared && (
-          <>
-            <InputField {...dbNamePrefixProps} disabled={isReadMode} />
-            <div className="flex flex-col gap-3.5">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Database User Id */}
-                <InputField {...dbUserIdProps} disabled={isReadMode} />
-
-                {/* Database Password */}
-                <InputField {...dbPwdProps} disabled={isReadMode} />
-              </div>
-            </div>
-          </>
-        )}
-
-        {dbOption === DatabaseOptionsEnum.DedicatedServer && (
+      {/* Database Name Prefix */}
+      {dbOption !== DatabaseOptionsEnum.Shared && (
+        <>
+          <InputField {...dbNamePrefixProps} />
           <div className="flex flex-col gap-3.5">
-            <div className="grid grid-cols-[1fr_auto] gap-4">
-              {/* Database Host */}
-              <InputField {...dbHostProps} disabled={isReadMode} />
+            <div className="grid grid-cols-2 gap-4">
+              {/* Database User Id */}
+              <InputField {...dbUserIdProps} />
 
-              {/* Database Port */}
-              <InputField
-                className="w-24"
-                {...dbPortProps}
-                disabled={isReadMode}
-              />
+              {/* Database Password */}
+              <InputField {...dbPwdProps} />
             </div>
           </div>
-        )}
+        </>
+      )}
 
-        {/* Is Disabled */}
-        {crudAction !== "create" && (
-          <SwitchField {...isDisabledProps} disabled={isReadMode} />
-        )}
+      {dbOption === DatabaseOptionsEnum.DedicatedServer && (
+        <div className="flex flex-col gap-3.5">
+          <div className="grid grid-cols-[1fr_auto] gap-4">
+            {/* Database Host */}
+            <InputField {...dbHostProps} />
 
-        {/* AutherCard */}
-        {isReadMode && (
-          <AutherCard
-            createdBy={form.getValues("createdBy")}
-            createdOn={form.getValues("createdOn")}
-            lastModifiedBy={form.getValues("lastModifiedBy")}
-            lastModifiedOn={form.getValues("lastModifiedOn")}
-          />
-        )}
-
-        {/* Submit button */}
-        {crudAction !== "read" && (
-          <div className="!mt-5 flex w-full justify-end">
-            <Button
-              type="submit"
-              disabled={!isDirty || !isAvailable || isCheckPending}
-              className="min-w-[5rem]"
-            >
-              {crudAction === "create" ? "Create tenant" : "Save changes"}
-            </Button>
+            {/* Database Port */}
+            <InputField className="w-24" {...dbPortProps} />
           </div>
-        )}
-      </form>
+        </div>
+      )}
+
+      {/* Is Disabled */}
+      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+
+      {/* AutherCard */}
+      {isReadMode && (
+        <AutherCard
+          createdBy={form.getValues("createdBy")}
+          createdOn={form.getValues("createdOn")}
+          lastModifiedBy={form.getValues("lastModifiedBy")}
+          lastModifiedOn={form.getValues("lastModifiedOn")}
+        />
+      )}
+
+      {/* Submit button */}
+      {!isReadMode && (
+        <div className="!mt-5 flex w-full justify-end">
+          <Button
+            type="submit"
+            disabled={!isDirty || !isAvailable || isCheckPending}
+            className="min-w-[5rem]"
+          >
+            {crudAction === "create" ? "Create tenant" : "Save changes"}
+          </Button>
+        </div>
+      )}
     </Form>
   );
 };
