@@ -73,8 +73,12 @@ export const ProjectCrudForm = () => {
       {/* Project Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Type */}
-      {form.getValues("type") !== "" && <SelectField {...typeProps} />}
+      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
 
       {/* Name */}
       <InputField
