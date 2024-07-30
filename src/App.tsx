@@ -3,7 +3,11 @@ import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 
 // Lazy load pages
 const CreateAccountPage = lazy(() => import("@/pages/CreateAccountPage"));
@@ -19,23 +23,50 @@ const queryClient = new QueryClient({
   },
 });
 
-// App component
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AuthUILayout />,
+      children: [
+        {
+          path: "/",
+          element: <Navigate to="/login" />,
+        },
+        {
+          path: "/login",
+          element: <LogInPage />,
+        },
+        {
+          path: "/create-account",
+          element: <CreateAccountPage />,
+        },
+        {
+          path: "/reset-pwd",
+          element: <ResetPwdPage />,
+        },
+        {
+          path: "/page-not-found",
+          element: <NotFoundPage />,
+        },
+        {
+          path: "/*",
+          element: <NotFoundPage />,
+        },
+      ],
+    },
+    {
+      path: "/redirect",
+      element: <RedirectPage />,
+    },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <Routes>
-          <Route element={<AuthUILayout />}>
-            <Route path="/" element={<Navigate to="/login" />} />
-            <Route path="/login" element={<LogInPage />} />
-            <Route path="/create-account" element={<CreateAccountPage />} />
-            <Route path="/reset-pwd" element={<ResetPwdPage />} />
-            <Route path="/page-not-found" element={<NotFoundPage />} />
-            <Route path="/*" element={<NotFoundPage />} />
-          </Route>
-          <Route path="/redirect" element={<RedirectPage />} />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }
