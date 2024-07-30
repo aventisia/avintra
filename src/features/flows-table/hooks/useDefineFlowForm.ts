@@ -48,8 +48,23 @@ export const useDefineFlowForm = () => {
   const queryClient = useQueryClient();
 
   // Define form with zod schema
+  /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof flowZodSchema>>({
     resolver: zodResolver(flowZodSchema),
+    defaultValues: {
+      id: "",
+      type: "",
+      name: "",
+      description: "",
+      thumbnail: "",
+      isDisabled: false,
+      flowCommentCount: 0,
+      projectId: projectId,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: new Date(),
+    },
   });
 
   // Destructor form values and methods
