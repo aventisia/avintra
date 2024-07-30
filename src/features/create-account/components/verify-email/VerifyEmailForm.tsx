@@ -44,6 +44,7 @@ export const VerifyEmailForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isCreationPending}
+      checkDirtyForm={false}
     >
       {/* Verificaiton code */}
       <InputField {...verificationCodeProps} />

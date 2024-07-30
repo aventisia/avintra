@@ -25,6 +25,7 @@ export const GetTenantInfoForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isInfoPending}
+      checkDirtyForm={false}
     >
       {/* Email */}
       <InputField {...emailProps} />

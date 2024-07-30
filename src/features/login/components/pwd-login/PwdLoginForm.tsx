@@ -46,6 +46,7 @@ export const PwdLoginForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isAuthPending}
+      checkDirtyForm={false}
     >
       {/* Password */}
       <InputField {...pwdProps} />

@@ -40,6 +40,7 @@ export const VerifyCodeForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isCheckPending}
+      checkDirtyForm={false}
     >
       {/* Verificaiton code */}
       <InputField {...verificationCodeProps} />

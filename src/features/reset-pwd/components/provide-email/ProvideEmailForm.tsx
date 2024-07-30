@@ -29,6 +29,7 @@ export const ProvideEmailForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isCodePending}
+      checkDirtyForm={false}
     >
           {/* Email */}
           <InputField {...emailProps} />
