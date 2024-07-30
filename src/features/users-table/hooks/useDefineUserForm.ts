@@ -40,8 +40,26 @@ export const useDefineUserForm = () => {
   const queryClient = useQueryClient();
 
   // Define form with zod schema
+  /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof userZodSchema>>({
     resolver: zodResolver(userZodSchema),
+    defaultValues: {
+      id: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      userRoles: [],
+      twoFactorEnabled: false,
+      isDisabled: false,
+      unlockAccount: false,
+      lockoutEnd: undefined,
+      emailConfirmed: false,
+      pwdSetOn: undefined,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: new Date(),
+    },
   });
 
   // Desctructure form's methods

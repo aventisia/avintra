@@ -59,40 +59,38 @@ export const UserCrudForm = () => {
 
   // Return the form
   return (
-    <Form methods={form}>
-      <form
-        className="w-full space-y-3.5 px-2.5 pb-5"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="px-2.5 pb-5"
+      disabled={isReadMode}
+    >
         {/* User Id (Read-only) */}
         {isReadMode && <InputField {...idProps} />}
 
         {/* First Name */}
-        <InputField {...firstNameProps} disabled={isReadMode} />
+        <InputField {...firstNameProps} />
 
         {/* Last Name */}
-        <InputField {...lastNameProps} disabled={isReadMode} />
+        <InputField {...lastNameProps} />
 
         {/* Email */}
-        <InputField {...emailProps} disabled={isReadMode} />
+        <InputField {...emailProps} />
 
         {/* User Roles */}
         <MultiSelectField
           {...userRolesProps}
           selectOptions={userRoles?.data || []}
-          disabled={isReadMode}
         />
 
         {/* Two Factor Enabled */}
-        <SwitchField {...twoFactorEnabledProps} disabled={isReadMode} />
+        <SwitchField {...twoFactorEnabledProps} />
 
         {/* Unlock account (Custom users-table component) */}
         <UnlockAccountField crudAction={crudAction} form={form} />
 
         {/* Is Disabled */}
-        {crudAction !== "create" && (
-          <SwitchField {...isDisabledProps} disabled={isReadMode} />
-        )}
+        {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
 
         {/* Read-only Fields */}
         {isReadMode && (
@@ -121,14 +119,13 @@ export const UserCrudForm = () => {
         )}
 
         {/* Submit button */}
-        {crudAction !== "read" && (
+        {!isReadMode && (
           <div className="!mt-5 flex w-full justify-end">
             <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
               {crudAction === "create" ? "Create user" : "Save changes"}
             </Button>
           </div>
         )}
-      </form>
     </Form>
   );
 };
