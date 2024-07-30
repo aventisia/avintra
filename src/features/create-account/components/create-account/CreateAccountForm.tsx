@@ -59,50 +59,47 @@ export const CreateAccountForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isCodePending}
-          className="w-full space-y-3.5"
-        >
-          <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
-            {/* First Name */}
-            <InputField {...firstNameProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isCodePending}
+    >
+      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+        {/* First Name */}
+        <InputField {...firstNameProps} />
 
-            {/* Last Name */}
-            <InputField {...lastNameProps} />
-          </div>
+        {/* Last Name */}
+        <InputField {...lastNameProps} />
+      </div>
 
-          {/* Email */}
-          <InputField
-            {...emailProps}
-            onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-            nonErrorMessage={availabilityMessage}
-          />
+      {/* Email */}
+      <InputField
+        {...emailProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
 
-          <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
-            {/* Password */}
-            <InputField {...pwdProps} />
+      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+        {/* Password */}
+        <InputField {...pwdProps} />
 
-            {/* Confirm Password */}
-            <InputField {...confirmPwdProps} />
-          </div>
+        {/* Confirm Password */}
+        <InputField {...confirmPwdProps} />
+      </div>
 
-          {/* Terms and Conditions */}
-          <CheckboxField
-            name="termsAgreement"
-            label={<TermsAndConditionsLabel />}
-          />
+      {/* Terms and Conditions */}
+      <CheckboxField
+        name="termsAgreement"
+        label={<TermsAndConditionsLabel />}
+      />
 
-          {/* Submit form */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Create"
-            isPending={isSubmitting || isCodePending}
-            disabled={!isAvailable || isCheckPending}
-          />
-        </fieldset>
-      </form>
+      {/* Submit form */}
+      <SubmitButton
+        className="!mt-5 w-full"
+        primaryText="Create"
+        isPending={isSubmitting || isCodePending}
+        disabled={!isAvailable || isCheckPending}
+      />
     </Form>
   );
 };

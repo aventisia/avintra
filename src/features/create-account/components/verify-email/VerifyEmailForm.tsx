@@ -40,23 +40,20 @@ export const VerifyEmailForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isCreationPending}
-          className="w-full space-y-3.5"
-        >
-          {/* Verificaiton code */}
-          <InputField {...verificationCodeProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isCreationPending}
+    >
+      {/* Verificaiton code */}
+      <InputField {...verificationCodeProps} />
 
-          {/* Submit button */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Verify code"
-            isPending={isSubmitting || isCreationPending}
-          />
-        </fieldset>
-      </form>
+      {/* Submit button */}
+      <SubmitButton
+        className="!mt-5 w-full"
+        primaryText="Verify code"
+        isPending={isSubmitting || isCreationPending}
+      />
     </Form>
   );
 };
