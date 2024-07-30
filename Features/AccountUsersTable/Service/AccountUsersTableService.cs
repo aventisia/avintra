@@ -125,6 +125,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             var newUser = accountUsersTableDto.Adapt<AccountUser>();
             newUser.Id = Guid.NewGuid();
             newUser.UserName = accountUsersTableDto.Email.ToLower();
+            newUser.Email = accountUsersTableDto.Email.ToLower();
             newUser.TenantId = _currentTenantService.CurrentTenantId; // DO NOT CHANGE THIS
             newUser.EmailConfirmed = false; // DO NOT CHANGE THIS
             newUser.CreatedByUserId = _userId;
@@ -258,6 +259,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             accountUsersTableDto.Adapt(user);
             user.EmailConfirmed = hasEmailChanged;
             user.UserName = accountUsersTableDto.Email.ToLower();
+            user.Email = accountUsersTableDto.Email.ToLower();
             user.LastModifiedByUserId = _userId;
             user.LastModifiedOn = DateTimeOffset.UtcNow;
             
