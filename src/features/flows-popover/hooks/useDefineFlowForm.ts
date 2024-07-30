@@ -50,6 +50,21 @@ export const useDefineFlowForm = () => {
   // 5. Define form with zod schema
   const form = useForm<z.infer<typeof flowZodSchema>>({
     resolver: zodResolver(flowZodSchema),
+    defaultValues: {
+      id: "",
+      type: "",
+      name: "",
+      description: "",
+      thumbnail: "",
+      isDisabled: false,
+      // Read (view) only fields
+      flowCommentCount: 0,
+      projectId: projectId,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: new Date(),
+    },
   });
 
   // 6. Desctructure form's methods
@@ -78,11 +93,15 @@ export const useDefineFlowForm = () => {
       // Read (view) only fields
       flowCommentCount: flowData?.flowCommentCount ?? 0,
       projectId: projectId,
-      createdBy: flowData?.createdBy ?? userSession?.email,
+      createdBy:
+        flowData?.createdBy ??
+        userSession?.firstName + " " + userSession?.lastName,
       createdOn: flowData?.createdOn
         ? new Date(flowData?.createdOn)
         : new Date(),
-      lastModifiedBy: flowData?.lastModifiedBy ?? userSession?.email,
+      lastModifiedBy:
+        flowData?.lastModifiedBy ??
+        userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: flowData?.lastModifiedOn
         ? new Date(flowData?.lastModifiedOn)
         : new Date(),

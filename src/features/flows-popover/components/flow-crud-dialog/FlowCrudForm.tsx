@@ -57,52 +57,48 @@ export const FlowCrudForm = () => {
 
   // Return the form
   return (
-    <Form methods={form}>
-      <form
-        className="w-full space-y-3.5 px-2.5 pb-5"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        {/* Project Id */}
-        {isReadMode && <InputField {...projectIdProps} />}
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="px-2.5 pb-5"
+      disabled={isReadMode}
+    >
+      {/* Project Id */}
+      {isReadMode && <InputField {...projectIdProps} />}
 
-        {/* Flow Id */}
-        {isReadMode && <InputField {...idProps} />}
+      {/* Flow Id */}
+      {isReadMode && <InputField {...idProps} />}
 
-        {/* Type */}
-        {form.getValues("type") !== undefined && (
-          <SelectField {...typeProps} disabled={isReadMode} />
-        )}
+      {/* Type */}
+      {form.getValues("type") !== "" && <SelectField {...typeProps} />}
 
-        {/* Name */}
-        <InputField {...nameProps} disabled={isReadMode} />
+      {/* Name */}
+      <InputField {...nameProps} />
 
-        {/* Description */}
-        <TextareaField {...descriptionProps} disabled={isReadMode} />
+      {/* Description */}
+      <TextareaField {...descriptionProps} />
 
-        {/* Is Disabled */}
-        {crudAction !== "create" && (
-          <SwitchField {...isDisabledProps} disabled={isReadMode} />
-        )}
+      {/* Is Disabled */}
+      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
 
-        {/* AutherCard */}
-        {crudAction === "read" && (
-          <AutherCard
-            createdBy={form.getValues("createdBy")}
-            createdOn={form.getValues("createdOn")}
-            lastModifiedBy={form.getValues("lastModifiedBy")}
-            lastModifiedOn={form.getValues("lastModifiedOn")}
-          />
-        )}
+      {/* AutherCard */}
+      {crudAction === "read" && (
+        <AutherCard
+          createdBy={form.getValues("createdBy")}
+          createdOn={form.getValues("createdOn")}
+          lastModifiedBy={form.getValues("lastModifiedBy")}
+          lastModifiedOn={form.getValues("lastModifiedOn")}
+        />
+      )}
 
-        {/* Submit button */}
-        {crudAction !== "read" && (
-          <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
-              {crudAction === "create" ? "Create flow" : "Save changes"}
-            </Button>
-          </div>
-        )}
-      </form>
+      {/* Submit button */}
+      {!isReadMode && (
+        <div className="!mt-5 flex w-full justify-end">
+          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+            {crudAction === "create" ? "Create flow" : "Save changes"}
+          </Button>
+        </div>
+      )}
     </Form>
   );
 };
