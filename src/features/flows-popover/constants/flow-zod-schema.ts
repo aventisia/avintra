@@ -6,19 +6,29 @@ import {
 import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 import { z } from "zod";
 
+/* Note: Its a copy of flows-table feature of workspace app. 
+  Any change to the this file is going to affect both the files/features. 
+  So, we just need to replace the file's content in future.
+*/
+
+/**
+ * Represents the Zod object's item schema for a flow name.
+ */
+export const flowNameSchema = z
+  .string()
+  .min(1, { message: reqError("Flow name") })
+  .max(255, { message: maxLenError("Flow name", 255) })
+  .regex(alphaNumericRegex, {
+    message: alphaNumericError("Flow name"),
+  });
+
 /**
  * Represents the Zod schema for a flow.
  */
 export const flowZodSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("Flow type") }),
-  name: z
-    .string()
-    .min(1, { message: reqError("Flow name") })
-    .max(255, { message: maxLenError("Flow name", 255) })
-    .regex(alphaNumericRegex, {
-      message: alphaNumericError("Flow name"),
-    }),
+  name: flowNameSchema,
   description: z
     .string()
     .max(500, { message: maxLenError("Flow description", 500) }),

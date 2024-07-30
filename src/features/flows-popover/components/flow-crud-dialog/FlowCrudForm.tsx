@@ -20,6 +20,11 @@ import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useDefineFlowForm } from "../../hooks/useDefineFlowForm";
 
+/* Note: Its a copy of flows-table feature of workspace app. 
+  Any change to the this file is going to affect both the files/features. 
+  So, we just need to replace the file's content in future.
+*/
+
 export const FlowCrudForm = () => {
   // Define flow form
   const {
@@ -28,6 +33,11 @@ export const FlowCrudForm = () => {
     isDirty,
     crudAction,
     flowsQueryKey,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
     setShowDialog,
     refineFormData,
   } = useDefineFlowForm();
@@ -47,6 +57,9 @@ export const FlowCrudForm = () => {
       payload: refineFormData(formData) as unknown as FlowsTableDto,
       crudAction: crudAction,
     });
+
+    // Reset the availability message
+    setAvailabilityMessage(null);
 
     // Close the dialog
     setShowDialog(false);
@@ -69,11 +82,19 @@ export const FlowCrudForm = () => {
       {/* Flow Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Type */}
-      {form.getValues("type") !== "" && <SelectField {...typeProps} />}
+      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
 
       {/* Name */}
-      <InputField {...nameProps} />
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
 
       {/* Description */}
       <TextareaField {...descriptionProps} />
@@ -94,7 +115,11 @@ export const FlowCrudForm = () => {
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+          <Button
+            type="submit"
+            disabled={!isDirty || !isAvailable || isCheckPending}
+            className="min-w-[5rem]"
+          >
             {crudAction === "create" ? "Create flow" : "Save changes"}
           </Button>
         </div>
