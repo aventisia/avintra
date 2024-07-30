@@ -1,21 +1,25 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { flowZodSchema } from "../constants/flow-zod-schema";
+import { isFlowNameAvailable } from "../apis/flows-table-apis";
+import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { useFlowsTableStore } from "../stores/flows-table-store";
 
 /**
  * Custom hook for defining a flow form.
- *
- * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineFlowForm = () => {
+  // Set flow name state (required for avaialbility check)
+  const [flowName, setFlowName] = useState("");
+
   // Get flows store state and actions
   const { projectId, flowsQueryKey } = useFlowsTableStore(
     useShallow((state) => ({
@@ -33,7 +37,7 @@ export const useDefineFlowForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { rowId, crudAction },
+    crudDialogOptions: { showDialog, rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -69,7 +73,7 @@ export const useDefineFlowForm = () => {
 
   // Destructor form values and methods
   const {
-    formState: { isSubmitting, isDirty },
+    formState: { isDirty },
   } = form;
 
   // Fetch flow data when rowId changes
@@ -81,6 +85,9 @@ export const useDefineFlowForm = () => {
 
     // Get flow data by id
     const flowData = flowsData?.data.find((item) => item.id === rowId);
+
+    // Set flow name
+    setFlowName(flowData?.name ?? "");
 
     // Set flow data to form
     form.reset({
@@ -108,6 +115,26 @@ export const useDefineFlowForm = () => {
     });
   }, [rowId, projectId, form, queryClient, flowsQueryKey, userSession]);
 
+  // Flow name availability check API extension
+  const isFlowNameAvailableExt = (postObj: CheckAvailabilityDto) => {
+    return isFlowNameAvailable(projectId, postObj);
+  };
+
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof flowZodSchema>, z.ZodString>({
+    defaultInputValue: flowName,
+    fieldName: "name",
+    form,
+    fieldSchema: flowNameSchema,
+    checkAvailabilityAPIFn: isFlowNameAvailableExt,
+  });
+
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof flowZodSchema>) => {
     return {
@@ -122,15 +149,24 @@ export const useDefineFlowForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
+  // Reset availability message when dialog closes
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
+
   // Return form and methods
   return {
     form,
-    isSubmitting,
     isDirty,
     flowsQueryKey,
     rowId,
     crudAction,
     setShowDialog,
     refineFormData,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
   };
 };
