@@ -25,12 +25,11 @@ export const ProvideEmailForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isCodePending}
-          className="w-full space-y-3.5"
-        >
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isCodePending}
+    >
           {/* Email */}
           <InputField {...emailProps} />
 
@@ -40,8 +39,6 @@ export const ProvideEmailForm = () => {
             primaryText="Continue"
             isPending={isSubmitting || isCodePending}
           />
-        </fieldset>
-      </form>
     </Form>
   );
 };

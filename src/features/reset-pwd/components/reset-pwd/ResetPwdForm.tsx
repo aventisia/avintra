@@ -29,36 +29,33 @@ export const ResetPwdForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isResetPending}
-          className="w-full space-y-3.5"
-        >
-          {/* New password */}
-          <InputField {...newPwdProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isResetPending}
+    >
+      {/* New password */}
+      <InputField {...newPwdProps} />
 
-          {/* Confirm new password */}
-          <InputField {...confirmNewPwdProps} />
+      {/* Confirm new password */}
+      <InputField {...confirmNewPwdProps} />
 
-          {/* Log off from all sessions */}
-          <CheckboxField
-            name="logoffFromAllSessions"
-            label={
-              <FormLabel className="text-sm font-normal">
-                Logout from all active sessions
-              </FormLabel>
-            }
-          />
+      {/* Log off from all sessions */}
+      <CheckboxField
+        name="logoffFromAllSessions"
+        label={
+          <FormLabel className="text-sm font-normal">
+            Logout from all active sessions
+          </FormLabel>
+        }
+      />
 
-          {/* Submit form */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Continue"
-            isPending={isSubmitting || isResetPending}
-          />
-        </fieldset>
-      </form>
+      {/* Submit form */}
+      <SubmitButton
+        className="!mt-5 w-full"
+        primaryText="Continue"
+        isPending={isSubmitting || isResetPending}
+      />
     </Form>
   );
 };
