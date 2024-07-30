@@ -68,9 +68,6 @@ export const TenantCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Reset form
-    form.reset(formData);
-
     // Reset the availability message
     setAvailabilityMessage(null);
 
