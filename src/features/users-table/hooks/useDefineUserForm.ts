@@ -1,21 +1,24 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { DATA_QUERY_KEY } from "../constants/constants";
-import { userZodSchema } from "../constants/user-zod-schema";
+import { userEmailSchema, userZodSchema } from "../constants/user-zod-schema";
 import { UsersTableDto } from "../dtos/users-table-dto";
 
 /**
  * Custom hook for defining a user form.
- *
- * @returns An object containing the form, form methods, and other related values.
  */
 export const useDefineUserForm = () => {
+  // Set user email state (required for avaialbility check)
+  const [userEmail, setUserEmail] = useState("");
+
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -25,7 +28,7 @@ export const useDefineUserForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { rowId, crudAction },
+    crudDialogOptions: { showDialog, rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -64,7 +67,7 @@ export const useDefineUserForm = () => {
 
   // Desctructure form's methods
   const {
-    formState: { isSubmitting, isDirty },
+    formState: { isDirty },
   } = form;
 
   // Fetch user data when rowId changes
@@ -76,6 +79,9 @@ export const useDefineUserForm = () => {
 
     // Get user data by id
     const userData = usersData?.data.find((item) => item.id === rowId);
+
+    // Set user email
+    setUserEmail(userData?.email ?? "");
 
     // Set user data to form
     form.reset({
@@ -108,6 +114,21 @@ export const useDefineUserForm = () => {
     });
   }, [rowId, form, queryClient, userSession]);
 
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof userZodSchema>, z.ZodString>({
+    defaultInputValue: userEmail,
+    fieldName: "email",
+    form,
+    fieldSchema: userEmailSchema,
+    checkAvailabilityAPIFn: isEmailAvailable,
+  });
+
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof userZodSchema>) => {
     return {
@@ -122,14 +143,23 @@ export const useDefineUserForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
+  // Reset availability message when dialog closes
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
+
   // Return form and methods
   return {
     form,
-    isSubmitting,
     isDirty,
     rowId,
     crudAction,
     setShowDialog,
     refineFormData,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
   };
 };

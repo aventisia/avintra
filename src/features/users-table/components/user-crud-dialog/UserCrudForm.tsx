@@ -31,8 +31,19 @@ export const UserCrudForm = () => {
   const { data: userRoles } = useFetchUserRoles();
 
   // Define user form
-  const { form, isDirty, rowId, crudAction, setShowDialog, refineFormData } =
-    useDefineUserForm();
+  const {
+    form,
+    isDirty,
+    rowId,
+    crudAction,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
+    setShowDialog,
+    refineFormData,
+  } = useDefineUserForm();
 
   // Define optimistic mutation to crete or update the user
   const { mutate: mutateUser } = useListOptimisticMutation<
@@ -50,6 +61,9 @@ export const UserCrudForm = () => {
       crudAction: crudAction,
     });
 
+    // Reset the availability message
+    setAvailabilityMessage(null);
+
     // Close the dialog
     setShowDialog(false);
   };
@@ -65,67 +79,75 @@ export const UserCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-        {/* User Id (Read-only) */}
-        {isReadMode && <InputField {...idProps} />}
+      {/* User Id (Read-only) */}
+      {isReadMode && <InputField {...idProps} />}
 
-        {/* First Name */}
-        <InputField {...firstNameProps} />
+      {/* First Name */}
+      <InputField {...firstNameProps} />
 
-        {/* Last Name */}
-        <InputField {...lastNameProps} />
+      {/* Last Name */}
+      <InputField {...lastNameProps} />
 
-        {/* Email */}
-        <InputField {...emailProps} />
+      {/* Email */}
+      <InputField
+        {...emailProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
 
-        {/* User Roles */}
-        <MultiSelectField
-          {...userRolesProps}
-          selectOptions={userRoles?.data || []}
+      {/* User Roles */}
+      <MultiSelectField
+        {...userRolesProps}
+        selectOptions={userRoles?.data || []}
+      />
+
+      {/* Two Factor Enabled */}
+      <SwitchField {...twoFactorEnabledProps} />
+
+      {/* Unlock account (Custom users-table component) */}
+      <UnlockAccountField crudAction={crudAction} form={form} />
+
+      {/* Is Disabled */}
+      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+
+      {/* Read-only Fields */}
+      {isReadMode && (
+        <div className="flex flex-col gap-3.5">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Lockout End */}
+            <InputField {...lockoutEndProps} />
+
+            {/* Email Confirmed */}
+            <InputField {...emailConfirmedProps} />
+          </div>
+
+          {/* Pwd Set On */}
+          <InputField {...pwdSetOnProps} />
+        </div>
+      )}
+
+      {/* AutherCard */}
+      {isReadMode && (
+        <AutherCard
+          createdBy={form.getValues("createdBy")}
+          createdOn={form.getValues("createdOn")}
+          lastModifiedBy={form.getValues("lastModifiedBy")}
+          lastModifiedOn={form.getValues("lastModifiedOn")}
         />
+      )}
 
-        {/* Two Factor Enabled */}
-        <SwitchField {...twoFactorEnabledProps} />
-
-        {/* Unlock account (Custom users-table component) */}
-        <UnlockAccountField crudAction={crudAction} form={form} />
-
-        {/* Is Disabled */}
-        {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-        {/* Read-only Fields */}
-        {isReadMode && (
-          <div className="flex flex-col gap-3.5">
-            <div className="grid grid-cols-2 gap-4">
-              {/* Lockout End */}
-              <InputField {...lockoutEndProps} />
-
-              {/* Email Confirmed */}
-              <InputField {...emailConfirmedProps} />
-            </div>
-
-            {/* Pwd Set On */}
-            <InputField {...pwdSetOnProps} />
-          </div>
-        )}
-
-        {/* AutherCard */}
-        {isReadMode && (
-          <AutherCard
-            createdBy={form.getValues("createdBy")}
-            createdOn={form.getValues("createdOn")}
-            lastModifiedBy={form.getValues("lastModifiedBy")}
-            lastModifiedOn={form.getValues("lastModifiedOn")}
-          />
-        )}
-
-        {/* Submit button */}
-        {!isReadMode && (
-          <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
-              {crudAction === "create" ? "Create user" : "Save changes"}
-            </Button>
-          </div>
-        )}
+      {/* Submit button */}
+      {!isReadMode && (
+        <div className="!mt-5 flex w-full justify-end">
+          <Button
+            type="submit"
+            disabled={!isDirty || !isAvailable || isCheckPending}
+            className="min-w-[5rem]"
+          >
+            {crudAction === "create" ? "Create user" : "Save changes"}
+          </Button>
+        </div>
+      )}
     </Form>
   );
 };

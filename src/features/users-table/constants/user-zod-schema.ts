@@ -8,6 +8,15 @@ import { nameRegex } from "@/react-toolkit/utils/regex-list";
 import { z } from "zod";
 
 /**
+ * Represents the Zod object's item schema for a email.
+ */
+export const userEmailSchema = z
+  .string()
+  .min(1, { message: reqError("Email") })
+  .max(254, { message: maxLenError("Email", 254) })
+  .email({ message: emailError() });
+
+/**
  * Represents the Zod schema for a user.
  */
 export const userZodSchema = z.object({
@@ -26,11 +35,7 @@ export const userZodSchema = z.object({
     .regex(nameRegex, {
       message: nameError("Last Name"),
     }),
-  email: z
-    .string()
-    .min(1, { message: reqError("Email") })
-    .max(254, { message: maxLenError("Email", 254) })
-    .email({ message: emailError() }),
+  email: userEmailSchema,
   userRoles: z.array(z.string()).min(1, { message: reqError("Role (s)") }),
   twoFactorEnabled: z.boolean().default(false),
   unlockAccount: z.boolean(),
