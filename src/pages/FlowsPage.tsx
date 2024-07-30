@@ -1,9 +1,21 @@
-import { FlowsTable } from "@/features/flows-table/components/FlowsTable";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { lazy, Suspense } from "react";
+
+// Lazy load the FlowsTable component.
+const FlowsTable = lazy(() =>
+  import("@/features/flows-table/components/FlowsTable").then((module) => ({
+    default: module.FlowsTable,
+  })),
+);
 
 /**
  * Renders the FlowsPage component.
  * @returns JSX element representing the FlowsPage component.
  */
 export const FlowsPage = () => {
-  return <FlowsTable />;
+  return (
+    <Suspense fallback={<DataTableSkeleton />}>
+      <FlowsTable />
+    </Suspense>
+  );
 };
