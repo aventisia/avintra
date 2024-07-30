@@ -21,23 +21,20 @@ export const GetTenantInfoForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isInfoPending}
-          className="w-full space-y-3.5"
-        >
-          {/* Email */}
-          <InputField {...emailProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isInfoPending}
+    >
+      {/* Email */}
+      <InputField {...emailProps} />
 
-          {/* Submit form */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Continue"
-            isPending={isSubmitting || isInfoPending}
-          />
-        </fieldset>
-      </form>
+      {/* Submit form */}
+      <SubmitButton
+        className="!mt-5 w-full"
+        primaryText="Continue"
+        isPending={isSubmitting || isInfoPending}
+      />
     </Form>
   );
 };

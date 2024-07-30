@@ -42,23 +42,20 @@ export const PwdLoginForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isAuthPending}
-          className="w-full space-y-3.5"
-        >
-          {/* Password */}
-          <InputField {...pwdProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isAuthPending}
+    >
+      {/* Password */}
+      <InputField {...pwdProps} />
 
-          {/* Submit form */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Login"
-            isPending={isSubmitting || isAuthPending}
-          />
-        </fieldset>
-      </form>
+      {/* Submit form */}
+      <SubmitButton
+        className="!mt-5 w-full"
+        primaryText="Login"
+        isPending={isSubmitting || isAuthPending}
+      />
     </Form>
   );
 };

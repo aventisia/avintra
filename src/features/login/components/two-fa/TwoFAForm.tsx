@@ -36,23 +36,20 @@ export const TwoFAForm = () => {
 
   // Return form
   return (
-    <Form methods={form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <fieldset
-          disabled={isSubmitting || isCheckPending}
-          className="w-full space-y-3.5"
-        >
-          {/* Verificaiton code */}
-          <InputField {...verificationCodeProps} />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isCheckPending}
+    >
+      {/* Verificaiton code */}
+      <InputField {...verificationCodeProps} />
 
-          {/* Submit button */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Verify code"
-            isPending={isSubmitting || isCheckPending}
-          />
-        </fieldset>
-      </form>
+      {/* Submit button */}
+      <SubmitButton
+        className="!mt-5 w-full"
+        primaryText="Verify code"
+        isPending={isSubmitting || isCheckPending}
+      />
     </Form>
   );
 };
