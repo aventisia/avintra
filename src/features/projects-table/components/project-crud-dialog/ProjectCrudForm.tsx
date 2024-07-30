@@ -64,58 +64,53 @@ export const ProjectCrudForm = () => {
 
   // Return the form
   return (
-    <Form methods={form}>
-      <form
-        className="w-full space-y-3.5 px-2.5 pb-5"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        {/* Project Id */}
-        {isReadMode && <InputField {...idProps} />}
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="px-2.5 pb-5"
+      disabled={isReadMode}
+    >
+      {/* Project Id */}
+      {isReadMode && <InputField {...idProps} />}
 
-        {/* Type */}
-        {form.getValues("type") !== undefined && (
-          <SelectField {...typeProps} disabled={isReadMode} />
-        )}
+      {/* Type */}
+      {form.getValues("type") !== "" && <SelectField {...typeProps} />}
 
-        {/* Name */}
-        <InputField
-          {...nameProps}
-          disabled={isReadMode}
-          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-          nonErrorMessage={availabilityMessage}
+      {/* Name */}
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
+
+      {/* Description */}
+      <TextareaField {...descriptionProps} />
+
+      {/* Is Disabled */}
+      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+
+      {/* AutherCard */}
+      {isReadMode && (
+        <AutherCard
+          createdBy={form.getValues("createdBy")}
+          createdOn={form.getValues("createdOn")}
+          lastModifiedBy={form.getValues("lastModifiedBy")}
+          lastModifiedOn={form.getValues("lastModifiedOn")}
         />
+      )}
 
-        {/* Description */}
-        <TextareaField {...descriptionProps} disabled={isReadMode} />
-
-        {/* Is Disabled */}
-        {crudAction !== "create" && (
-          <SwitchField {...isDisabledProps} disabled={isReadMode} />
-        )}
-
-        {/* AutherCard */}
-        {isReadMode && (
-          <AutherCard
-            createdBy={form.getValues("createdBy")}
-            createdOn={form.getValues("createdOn")}
-            lastModifiedBy={form.getValues("lastModifiedBy")}
-            lastModifiedOn={form.getValues("lastModifiedOn")}
-          />
-        )}
-
-        {/* Submit button */}
-        {crudAction !== "read" && (
-          <div className="!mt-5 flex w-full justify-end">
-            <Button
-              type="submit"
-              disabled={!isDirty || !isAvailable || isCheckPending}
-              className="min-w-[5rem]"
-            >
-              {crudAction === "create" ? "Create project" : "Save changes"}
-            </Button>
-          </div>
-        )}
-      </form>
+      {/* Submit button */}
+      {!isReadMode && (
+        <div className="!mt-5 flex w-full justify-end">
+          <Button
+            type="submit"
+            disabled={!isDirty || !isAvailable || isCheckPending}
+            className="min-w-[5rem]"
+          >
+            {crudAction === "create" ? "Create project" : "Save changes"}
+          </Button>
+        </div>
+      )}
     </Form>
   );
 };
