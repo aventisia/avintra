@@ -48,9 +48,6 @@ export const FlowCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Reset form
-    form.reset(formData);
-
     // Close the dialog
     setShowDialog(false);
   };

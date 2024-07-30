@@ -57,9 +57,6 @@ export const FCMessageComposer = ({
       crudAction: crudAction,
     });
 
-    // Reset the form
-    form.reset();
-
     // Reset flow comment id
     setFlowCommentId("");
   };
