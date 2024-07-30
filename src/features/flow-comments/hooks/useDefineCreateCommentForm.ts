@@ -29,6 +29,17 @@ export const useDefineCreateCommentForm = () => {
   // Define form with zod schema
   const form = useForm<z.infer<typeof flowCommentZodSchema>>({
     resolver: zodResolver(flowCommentZodSchema),
+    defaultValues: {
+      id: "",
+      comment: "",
+      flowId: "",
+      userFullName: "",
+      userName: "",
+      avatarSrc: "",
+      initials: "",
+      createdOn: new Date(),
+      isEdited: false,
+    },
   });
 
   // Desctructure form's methods

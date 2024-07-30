@@ -63,44 +63,43 @@ export const FCMessageComposer = ({
 
   // 4. Return the component
   return (
-    <Form methods={form}>
-      <form
-        className={cn("relative w-auto transition-all duration-500", className)}
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        {/* Comment to edit. Note: We don't need FieldMessage thats why using the AutosizeTextarea directly instead of form field AutosizeTextareaField */}
-        <FormField
-          control={form.control}
-          name="comment"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <AutosizeTextarea
-                  maxHeight={crudAction === "create" ? 200 : 2000}
-                  minHeight={36}
-                  {...field}
-                  className="h-10 resize-none border-none bg-slate-100 py-2.5 pr-12 text-xs"
-                  placeholder="Type a comment..."
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      className={cn("relative w-auto transition-all duration-500", className)}
+    >
+      {/* Comment to edit. Note: We don't need FieldMessage thats why using the AutosizeTextarea directly instead of form field AutosizeTextareaField */}
+      <FormField
+        control={form.control}
+        name="comment"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <AutosizeTextarea
+                maxHeight={crudAction === "create" ? 200 : 2000}
+                minHeight={36}
+                {...field}
+                className="h-10 resize-none border-none bg-slate-100 py-2.5 pr-12 text-xs"
+                placeholder="Type a comment..."
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
 
-        {/* Submit button */}
-        <Button
-          type="submit"
-          variant={"ghost"}
-          size={"icon8"}
-          className="group/submit absolute bottom-1 right-1 h-[2.04rem] w-[2.04rem]"
-        >
-          {crudAction === "create" ? (
-            <PaperAirplaneIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
-          ) : (
-            <CheckIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
-          )}
-        </Button>
-      </form>
+      {/* Submit button */}
+      <Button
+        type="submit"
+        variant={"ghost"}
+        size={"icon8"}
+        className="group/submit absolute bottom-1 right-1 h-[2.04rem] w-[2.04rem]"
+      >
+        {crudAction === "create" ? (
+          <PaperAirplaneIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
+        ) : (
+          <CheckIcon className="h-5 w-5 text-[--icon-color] group-hover/submit:text-primary" />
+        )}
+      </Button>
     </Form>
   );
 };
