@@ -1,13 +1,17 @@
 import { Popover, PopoverContent } from "@/react-toolkit/ui/popover/Popover";
+import React from "react";
 import { useShallow } from "zustand/react/shallow";
-import { useActivitySelectorStore } from "../stores/activity-selector-store";
+import {
+  ActivitySelectorOriginType,
+  useActivitySelectorStore,
+} from "../stores/activity-selector-store";
 import { ActivitySelectorContent } from "./ActivitySelectorContent";
+import { FlowControlsTrigger } from "./triggers/FlowControlsTrigger";
 
-interface ActivitySelectorProps {
-  /** The trigger element to open ActivitySelector popover. */
-  trigger: React.ReactNode;
-  alignOffset: number;
-  sideOffset: number;
+interface ActivitySelectorProps
+  extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
+  /** Origin from where activity selector popover is placed and triggered */
+  origin: ActivitySelectorOriginType;
 }
 
 /**
@@ -16,30 +20,29 @@ interface ActivitySelectorProps {
  * @param {ReactNode} props.trigger - The trigger element to open ActivitySelector popover.
  */
 export const ActivitySelector = ({
-  trigger,
-  alignOffset,
-  sideOffset,
+  origin,
+  ...props
 }: ActivitySelectorProps) => {
   // Get store state and actions
-  const { isPopoverOpen, togglePopoverOpen } = useActivitySelectorStore(
+  const { popoverOrigin, togglePopoverOrigin } = useActivitySelectorStore(
     useShallow((state) => ({
-      isPopoverOpen: state.isPopoverOpen,
-      togglePopoverOpen: state.togglePopoverOpen,
+      popoverOrigin: state.popoverOrigin,
+      togglePopoverOrigin: state.togglePopoverOrigin,
     })),
   );
 
   // Return Popover
   return (
-    <Popover open={isPopoverOpen} onOpenChange={togglePopoverOpen}>
+    <Popover
+      open={popoverOrigin === origin}
+      onOpenChange={(open) => {
+        togglePopoverOrigin(open ? origin : "Closed");
+      }}
+    >
       {/* Custom trigger basis trigger location */}
-      {trigger}
+      {origin === "FlowControls" && <FlowControlsTrigger />}
       {/* Popover content */}
-      <PopoverContent
-        align="start"
-        variant={"responsive"}
-        alignOffset={alignOffset}
-        sideOffset={sideOffset}
-      >
+      <PopoverContent align="start" variant={"responsive"} {...props}>
         {/* Activity selector content */}
         <ActivitySelectorContent />
       </PopoverContent>

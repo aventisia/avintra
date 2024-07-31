@@ -19,9 +19,9 @@ import { ASNoContentMessage } from "./ASNoContentMessage";
  */
 export const ActivitySelectorContent = () => {
   // Get store state and actions
-  const { togglePopoverOpen } = useActivitySelectorStore(
+  const { togglePopoverOrigin } = useActivitySelectorStore(
     useShallow((state) => ({
-      togglePopoverOpen: state.togglePopoverOpen,
+      togglePopoverOrigin: state.togglePopoverOrigin,
     })),
   );
 
@@ -47,7 +47,7 @@ export const ActivitySelectorContent = () => {
               value={item.label}
               onSelect={() => {
                 addNode(item);
-                togglePopoverOpen(false);
+                togglePopoverOrigin("Closed");
               }}
               className="rounded-lg p-1"
             >

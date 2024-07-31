@@ -1,20 +1,21 @@
 import { create } from "zustand";
 
+type ActivitySelectorOriginType = "Closed" | "FlowControls";
+
 type State = {
-  /** To manage popover open/close state */
-  isPopoverOpen: boolean;
+  /** Origin where activity selector popover is placed and triggered. To manage popover open/close state */
+  popoverOrigin: ActivitySelectorOriginType;
 };
 
 type Actions = {
   /** To toggle popover open/close state */
-  togglePopoverOpen: (value?: boolean) => void;
+  togglePopoverOrigin: (value: ActivitySelectorOriginType) => void;
 };
 
-export const useActivitySelectorStore = create<State & Actions>((set) => ({
-  isPopoverOpen: false,
+const useActivitySelectorStore = create<State & Actions>((set) => ({
+  popoverOrigin: "Closed",
 
-  togglePopoverOpen: (value) =>
-    set((state) => ({
-      isPopoverOpen: typeof value === "boolean" ? value : !state.isPopoverOpen,
-    })),
+  togglePopoverOrigin: (value) => set({ popoverOrigin: value }),
 }));
+
+export { type ActivitySelectorOriginType, useActivitySelectorStore };

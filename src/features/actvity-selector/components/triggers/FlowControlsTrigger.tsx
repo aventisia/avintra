@@ -16,7 +16,7 @@ export const FlowControlsTrigger = () => {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
-          "data-[state=open]:bg-muted",
+          "aria-[expanded=true]:bg-muted",
         )}
       >
         <PlusIcon className="h-4 w-4 text-[--icon-color]" />
