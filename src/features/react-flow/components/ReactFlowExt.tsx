@@ -3,6 +3,7 @@ import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import React, { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
@@ -27,6 +28,9 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
       })),
     );
 
+  // Memoize the custom node types
+  const CustomNodeTypesMemo = useMemo(() => CustomNodeTypes, []);
+
   // Track ReactFlow selection change
   useTrackSelection();
 
@@ -40,7 +44,7 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
   return (
     <ReactFlow
       fitView
-      nodeTypes={CustomNodeTypes}
+      nodeTypes={CustomNodeTypesMemo}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
