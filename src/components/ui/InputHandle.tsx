@@ -5,7 +5,7 @@ export const InputHandle = () => {
     <Handle
       type={"target"}
       position={Position.Top}
-      className="z-[5] h-2.5 w-2.5 rounded-full border-slate-400 bg-slate-500"
+      className="z-[5] h-[0.6rem] w-[0.6rem] rounded-full border-slate-400 bg-white"
     />
   );
 };
