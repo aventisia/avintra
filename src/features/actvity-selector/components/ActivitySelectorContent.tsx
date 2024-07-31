@@ -1,4 +1,4 @@
-import { useAddNode } from "@/hooks/useAddNode";
+import { useAddNode } from "@/hooks/add-node/useAddNode";
 import {
   Command,
   CommandEmpty,
@@ -25,7 +25,8 @@ export const ActivitySelectorContent = () => {
     })),
   );
 
-  const addNode = useAddNode();
+  // Get addNode handler
+  const addNodeHandler = useAddNode();
 
   // Return the component
   return (
@@ -46,7 +47,7 @@ export const ActivitySelectorContent = () => {
               key={index}
               value={item.label}
               onSelect={() => {
-                addNode(item);
+                addNodeHandler(item);
                 togglePopoverOrigin("Closed");
               }}
               className="rounded-lg p-1"
