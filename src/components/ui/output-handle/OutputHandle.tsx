@@ -14,12 +14,11 @@ export const OutputHandle = ({
   handlePosition = Position.Bottom,
 }: OutputHandleProps) => {
   return (
-    <OutputHandleContainer handlePosition={handlePosition}>
+    <>
       <HandleExt handlePosition={handlePosition} />
-
+      {/* Activity selector to add new node */}
       {selected ? (
-        <>
-          {/* Activity selector to add new node */}
+        <OutputHandleContainer handlePosition={handlePosition}>
           <ActivitySelector
             origin="OutputHandle"
             side="right"
@@ -27,8 +26,8 @@ export const OutputHandle = ({
             sideOffset={16}
           />
           <DashedLine handlePosition={handlePosition} />
-        </>
+        </OutputHandleContainer>
       ) : null}
-    </OutputHandleContainer>
+    </>
   );
 };
