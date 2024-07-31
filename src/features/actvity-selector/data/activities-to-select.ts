@@ -1,4 +1,5 @@
 import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
+import { Position } from "@xyflow/react";
 
 export const activitiesList: ActivityNodeDataType[] = [
   {
@@ -7,6 +8,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Flow trigger",
     description: "To trigger the flow, a starting point",
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    sourcePosition: Position.Bottom,
   },
   {
     type: "activity",
@@ -14,6 +16,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Send email",
     description: "To send bluk email at any time",
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    sourcePosition: Position.Bottom,
   },
   {
     type: "activity",
@@ -21,6 +24,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Create new flow",
     description: "New flow can be created by just providing a name",
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    sourcePosition: Position.Bottom,
   },
   {
     type: "if",
@@ -28,6 +32,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "If",
     description: "If logic",
     icon: `${import.meta.env.BASE_URL}sample-code_bracket.svg`,
+    sourcePosition: Position.Bottom,
   },
   {
     type: "activity",
@@ -35,6 +40,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Activity 1",
     description: "Activity 1 description",
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    sourcePosition: Position.Bottom,
   },
   {
     type: "activity",
@@ -42,6 +48,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Activity 2",
     description: "Activity 2 description",
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    sourcePosition: Position.Bottom,
   },
   {
     type: "activity",
@@ -49,5 +56,6 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Activity 3",
     description: "Activity 3 description",
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    sourcePosition: Position.Bottom,
   },
 ];

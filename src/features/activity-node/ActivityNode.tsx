@@ -26,7 +26,7 @@ export const ActivityNode = ({ data, selected }: NodeProps<ActivityNode>) => {
       <InputHandle />
 
       {/* Output (Source) Handle */}
-      <OutputHandle selected={selected} />
+      <OutputHandle selected={selected} handlePosition={data.sourcePosition} />
     </NodeContainer>
   );
 };

@@ -1,3 +1,5 @@
+import { Position } from "@xyflow/react";
+
 /**
  * Represents the data type for an activity node.
  */
@@ -7,4 +9,5 @@ export type ActivityNodeDataType = {
   label: string;
   description: string;
   icon: string;
+  sourcePosition: Position;
 };
