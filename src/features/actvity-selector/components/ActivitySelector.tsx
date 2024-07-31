@@ -7,6 +7,7 @@ import {
 } from "../stores/activity-selector-store";
 import { ActivitySelectorContent } from "./ActivitySelectorContent";
 import { FlowControlsTrigger } from "./triggers/FlowControlsTrigger";
+import { OutputHandleTrigger } from "./triggers/OutputHandleTrigger";
 
 interface ActivitySelectorProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
@@ -41,6 +42,7 @@ export const ActivitySelector = ({
     >
       {/* Custom trigger basis trigger location */}
       {origin === "FlowControls" && <FlowControlsTrigger />}
+      {origin === "OutputHandle" && <OutputHandleTrigger />}
       {/* Popover content */}
       <PopoverContent align="start" variant={"responsive"} {...props}>
         {/* Activity selector content */}

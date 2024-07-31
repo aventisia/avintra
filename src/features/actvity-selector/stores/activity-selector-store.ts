@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type ActivitySelectorOriginType = "Closed" | "FlowControls";
+type ActivitySelectorOriginType = "Closed" | "FlowControls" | "OutputHandle";
 
 type State = {
   /** Origin where activity selector popover is placed and triggered. To manage popover open/close state */
