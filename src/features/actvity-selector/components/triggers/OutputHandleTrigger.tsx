@@ -2,13 +2,14 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { memo } from "react";
 
 /**
  * Renders a plus button trigger component.
  *
  * Note: Activity selector trigger to open from the output handle only
  */
-export const OutputHandleTrigger = () => {
+export const OutputHandleTrigger = memo(() => {
   return (
     <PopoverTrigger
       className={cn(
@@ -21,4 +22,4 @@ export const OutputHandleTrigger = () => {
       <span className="sr-only">Open menu</span>
     </PopoverTrigger>
   );
-};
+});
