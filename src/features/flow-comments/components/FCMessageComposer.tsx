@@ -33,7 +33,7 @@ export const FCMessageComposer = ({
   form,
   className,
 }: FCMessageComposerProps) => {
-  // 1. Get store state and actions
+  // Get store state and actions
   const { fcQueryKey, setFlowCommentId } = useFlowCommentsStore(
     useShallow((state) => ({
       fcQueryKey: state.fcQueryKey,
@@ -41,14 +41,14 @@ export const FCMessageComposer = ({
     })),
   );
 
-  // 2. Define optimistic mutation (create or update)
+  // Define optimistic mutation (create or update)
   const { mutate: mutateFlowComment } = useListOptimisticMutation<
     FlowCommentDto,
     FlowCommentDto | boolean,
     FlowCommentDto
   >(flowCommentOptimisticMutationFn, fcQueryKey, "asc", false);
 
-  // 3. Define submit handler
+  // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowCommentZodSchema>) => {
     // Call mutation
     mutateFlowComment({
@@ -57,11 +57,14 @@ export const FCMessageComposer = ({
       crudAction: crudAction,
     });
 
+    // Reset form
+    form.reset();
+
     // Reset flow comment id
     setFlowCommentId("");
   };
 
-  // 4. Return the component
+  // Return the component
   return (
     <Form
       methods={form}
