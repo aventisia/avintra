@@ -13,8 +13,8 @@ export const ChevronMarkerEnd = () => {
           <path
             d="m9 18 6-6-6-6"
             fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             stroke="#94a3b8"
             strokeWidth="1"
           />
