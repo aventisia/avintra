@@ -2,7 +2,7 @@ import { InputHandle } from "@/components/ui/InputHandle";
 import { NodeContainer } from "@/components/ui/NodeContainer";
 import { NodeDescription } from "@/components/ui/NodeDescription";
 import { NodeHeader } from "@/components/ui/NodeHeader";
-import { OutputHandle } from "@/components/ui/output-handle/OutputHandle";
+import { OutputHandle } from "@/components/ui/output-handle";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
 import { Node, NodeProps } from "@xyflow/react";
