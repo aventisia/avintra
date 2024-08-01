@@ -1,4 +1,4 @@
-import { ActivityNode } from "@/features/activity-node/ActivityNode";
+import { ActivityNode } from "@/components/ui/activity-node";
 
 export const CustomNodeTypes = {
   activity: ActivityNode,
