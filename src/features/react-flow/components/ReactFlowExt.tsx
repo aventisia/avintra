@@ -1,3 +1,4 @@
+import { CustomEdgeTypes } from "@/constants/CustomEdgeTypes";
 import { CustomNodeTypes } from "@/constants/CustomNodeTypes";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -28,8 +29,9 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
       })),
     );
 
-  // Memoize the custom node types
+  // Memoize the custom node, edges types
   const customNodeTypesMemo = useMemo(() => CustomNodeTypes, []);
+  const customEdgesTypesMemo = useMemo(() => CustomEdgeTypes, []);
 
   // Track ReactFlow selection change
   useTrackSelection();
@@ -45,18 +47,18 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
     <ReactFlow
       fitView
       nodeTypes={customNodeTypesMemo}
+      edgeTypes={customEdgesTypesMemo}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
       //onNodesDelete={onNodesDelete}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
+      deleteKeyCode={["Delete", "Backspace"]}
       // Toggles Reactflows interactivity
       nodesDraggable={!isLocked}
       nodesConnectable={!isLocked}
       elementsSelectable={!isLocked}
-      // Delete nodes key press
-      deleteKeyCode={["Delete", "Backspace"]}
     >
       {children}
       <ViewControls />
