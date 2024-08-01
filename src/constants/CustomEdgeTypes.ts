@@ -1,4 +1,4 @@
-import StepEdge from "@/components/ui/step-edge";
+import StepEdge from "@/components/step-edge";
 
 export const CustomEdgeTypes = {
   stepEdge: StepEdge,

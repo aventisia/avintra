@@ -1,15 +1,19 @@
-import { InputHandle } from "@/components/ui/InputHandle";
-import { NodeContainer } from "@/components/ui/NodeContainer";
-import { NodeDescription } from "@/components/ui/NodeDescription";
-import { NodeHeader } from "@/components/ui/NodeHeader";
-import { OutputHandle } from "@/components/ui/output-handle";
+import { InputHandle } from "@/components/InputHandle";
+import { NodeContainer } from "@/components/NodeContainer";
+import { NodeDescription } from "@/components/NodeDescription";
+import { NodeHeader } from "@/components/NodeHeader";
+import { OutputHandle } from "@/components/output-handle";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
 import { Node, NodeProps } from "@xyflow/react";
 
 type ActivityNode = Node<ActivityNodeDataType, "activity">;
 
-export const ActivityNode = ({ data, selected, dragging }: NodeProps<ActivityNode>) => {
+export const ActivityNode = ({
+  data,
+  selected,
+  dragging,
+}: NodeProps<ActivityNode>) => {
   return (
     // Node Container
     <NodeContainer selected={selected}>
@@ -26,7 +30,11 @@ export const ActivityNode = ({ data, selected, dragging }: NodeProps<ActivityNod
       <InputHandle />
 
       {/* Output (Source) Handle */}
-      <OutputHandle selected={selected} dragging={dragging} handlePosition={data.sourcePosition} />
+      <OutputHandle
+        selected={selected}
+        dragging={dragging}
+        handlePosition={data.sourcePosition}
+      />
     </NodeContainer>
   );
 };
