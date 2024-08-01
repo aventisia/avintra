@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { useFetchFlowComments } from "../../hooks/useFetchFlowComments";
-import { FlowCommentItem } from "../flow-comment-item/FlowCommentItem";
+import { FlowCommentItem } from "../flow-comment-item";
 import { FCPNoContentMessage } from "./FCPNoContentMessage";
 import { FCPSkeleton } from "./FCPSkeleton";
 

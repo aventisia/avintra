@@ -7,11 +7,11 @@ import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
-import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
-import { FlowsPopoverContent } from "./popover-content/FlowsPopoverContent";
+import { FlowCrudDialog } from "./flow-crud-dialog";
+import { FlowsPopoverContent } from "./flows-popover-content";
 import { FPCreateButton } from "./FPCreateButton";
 import { FPHeading } from "./FPHeading";
-import { FlowsPopoverTrigger } from "./popover-trigger/FlowsPopoverTrigger";
+import { FlowsPopoverTrigger } from "./flows-popover-trigger";
 
 export const FlowsPopover = ({
   className,

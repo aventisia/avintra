@@ -11,7 +11,7 @@ import { useFlowCommentsQueryKey } from "../hooks/useFlowCommentsQueryKey";
 import { useFlowCommentsStore } from "../stores/flow-comments-store";
 import { FCMessageComposer } from "./FCMessageComposer";
 import { FCPopoverTrigger } from "./FCPopoverTrigger";
-import { FlowCommentsPopoverContent } from "./flow-comments-popover-content/FlowCommentsPopoverContent";
+import { FlowCommentsPopoverContent } from "./flow-comments-popover-content";
 
 interface FlowCommentsProps {
   /** Additional class name to override popover content container style */

@@ -9,7 +9,7 @@ import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
-import { ViewControls } from "./view-controls/ViewControls";
+import { ViewControls } from "./view-controls";
 
 /**
  * A custom extension of the ReactFlow component.

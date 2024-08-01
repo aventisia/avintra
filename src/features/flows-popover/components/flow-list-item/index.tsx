@@ -1,6 +1,6 @@
 import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
 import { cn } from "@/react-toolkit/lib/utils";
-import { FlowListItemActions } from "../flow-list-item-actions/FlowListItemActions";
+import { FlowListItemActions } from "../flow-list-item-actions";
 import { FLILastModifiedOn } from "./FLILastModifiedOn";
 import { FLIName } from "./FLIName";
 import { FLIThumbnail } from "./FLIThumbnail";

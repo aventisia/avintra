@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useOpenFlow } from "../../hooks/useOpenFlow";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
-import { FlowListItem } from "../flow-list-item/FlowListItem";
+import { FlowListItem } from "../flow-list-item";
 
 interface FPCFlowListProps {
   flowsList: FlowsTableDto[] | undefined;

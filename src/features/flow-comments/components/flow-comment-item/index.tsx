@@ -3,7 +3,7 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { FlowCommentItemActions } from "../flow-comment-item-actions/FlowCommentItemActions";
+import { FlowCommentItemActions } from "../flow-comment-item-actions";
 import { FCIAvatar } from "./FCIAvatar";
 import { FCIHeader } from "./FCIHeader";
 import { FCIMessage } from "./FCIMessage";
