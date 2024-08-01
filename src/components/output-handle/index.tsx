@@ -1,4 +1,4 @@
-import { ActivitySelector } from "@/features/actvity-selector/components/ActivitySelector";
+import { ActivitySelector } from "@/components/activity-selector";
 import { Position } from "@xyflow/react";
 import { DashedLine } from "./DashedLine";
 import { HandleExt } from "./HandleExt";

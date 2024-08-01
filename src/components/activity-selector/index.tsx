@@ -1,10 +1,10 @@
 import { Popover, PopoverContent } from "@/react-toolkit/ui/popover/Popover";
-import React from "react";
-import { useShallow } from "zustand/react/shallow";
 import {
   ActivitySelectorOriginType,
   useActivitySelectorStore,
-} from "../stores/activity-selector-store";
+} from "@/stores/activity-selector-store";
+import React from "react";
+import { useShallow } from "zustand/react/shallow";
 import { ActivitySelectorContent } from "./ActivitySelectorContent";
 import { FlowControlsTrigger } from "./triggers/FlowControlsTrigger";
 import { OutputHandleTrigger } from "./triggers/OutputHandleTrigger";
