@@ -29,7 +29,7 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
     );
 
   // Memoize the custom node types
-  const CustomNodeTypesMemo = useMemo(() => CustomNodeTypes, []);
+  const customNodeTypesMemo = useMemo(() => CustomNodeTypes, []);
 
   // Track ReactFlow selection change
   useTrackSelection();
@@ -44,7 +44,7 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
   return (
     <ReactFlow
       fitView
-      nodeTypes={CustomNodeTypesMemo}
+      nodeTypes={customNodeTypesMemo}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
@@ -55,6 +55,8 @@ export const ReactFlowExt = ({ children }: React.PropsWithChildren) => {
       nodesDraggable={!isLocked}
       nodesConnectable={!isLocked}
       elementsSelectable={!isLocked}
+      // Delete nodes key press
+      deleteKeyCode={["Delete", "Backspace"]}
     >
       {children}
       <ViewControls />
