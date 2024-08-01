@@ -1,6 +1,6 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
-import { addEdge, Edge, Node } from "@xyflow/react";
+import { addEdge, Edge, Node, useStoreApi } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { getNewNodeXY } from "./get-new-node-xy";
@@ -15,6 +15,10 @@ export const useAddNode = () => {
       setEdges: state.setEdges,
     })),
   );
+
+  // Get addSelectedNodes action from RF store
+  const store = useStoreApi();
+  const { addSelectedNodes } = store.getState();
 
   // Handler to add new node
   const addNodeHandler = useCallback(
@@ -45,6 +49,7 @@ export const useAddNode = () => {
       setNodes(nodes.concat(newNode));
 
       // Select the newly created node
+      setTimeout(() => addSelectedNodes([newNodeId]), 0); // Delay to ensure the node is added before selecting it
 
       // Return if no node selected
       if (!selectedNode) return;
@@ -60,7 +65,7 @@ export const useAddNode = () => {
       // Update edges state
       setEdges(addEdge(newEdge, edges));
     },
-    [nodes, setNodes, setEdges, edges],
+    [nodes, setNodes, setEdges, edges, addSelectedNodes],
   );
 
   return addNodeHandler;
