@@ -9,7 +9,7 @@ import { Node, NodeProps } from "@xyflow/react";
 
 type ActivityNode = Node<ActivityNodeDataType, "activity">;
 
-export const ActivityNode = ({ data, selected }: NodeProps<ActivityNode>) => {
+export const ActivityNode = ({ data, selected, dragging }: NodeProps<ActivityNode>) => {
   return (
     // Node Container
     <NodeContainer selected={selected}>
@@ -26,7 +26,7 @@ export const ActivityNode = ({ data, selected }: NodeProps<ActivityNode>) => {
       <InputHandle />
 
       {/* Output (Source) Handle */}
-      <OutputHandle selected={selected} handlePosition={data.sourcePosition} />
+      <OutputHandle selected={selected} dragging={dragging} handlePosition={data.sourcePosition} />
     </NodeContainer>
   );
 };
