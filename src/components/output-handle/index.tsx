@@ -1,5 +1,7 @@
 import { ActivitySelector } from "@/components/activity-selector";
+import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { Position } from "@xyflow/react";
+import { useShallow } from "zustand/react/shallow";
 import { DashedLine } from "./DashedLine";
 import { HandleExt } from "./HandleExt";
 import { OutputHandleContainer } from "./OutputHandleContainer";
@@ -15,11 +17,19 @@ export const OutputHandle = ({
   dragging = false,
   handlePosition = Position.Bottom,
 }: OutputHandleProps) => {
+  // Get track selection store state
+  const { multipleNodesSelected } = useTrackSelectionStore(
+    useShallow((state) => ({
+      multipleNodesSelected: state.multipleNodesSelected,
+    })),
+  );
+
+  // Render output handle
   return (
     <>
       <HandleExt handlePosition={handlePosition} />
       {/* Activity selector to add new node */}
-      {selected && !dragging ? (
+      {!multipleNodesSelected && selected && !dragging ? (
         <OutputHandleContainer handlePosition={handlePosition}>
           <ActivitySelector
             origin="OutputHandle"
