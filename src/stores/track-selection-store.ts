@@ -7,6 +7,9 @@ type State = {
 
   /** To keep track of selected edges */
   selectedEdges: Edge[];
+
+  /** A flag to indicate if multiple nodes are selected */
+  multipleNodesSelected: boolean;
 };
 
 type Actions = {
@@ -15,11 +18,15 @@ type Actions = {
 
   /** To update selected edges */
   setSelectedEdges: (edges: Edge[]) => void;
+
+  /** To update multiple nodes selected flag */
+  setMultipleNodesSelected: (value: boolean) => void;
 };
 
 export const useTrackSelectionStore = create<State & Actions>((set) => ({
   selectedNodes: [],
   selectedEdges: [],
+  multipleNodesSelected: false,
 
   setSelectedNodes: (nodes) =>
     set(() => ({
@@ -29,5 +36,10 @@ export const useTrackSelectionStore = create<State & Actions>((set) => ({
   setSelectedEdges: (edges) =>
     set(() => ({
       selectedEdges: edges,
+    })),
+
+  setMultipleNodesSelected: (value) =>
+    set(() => ({
+      multipleNodesSelected: value,
     })),
 }));
