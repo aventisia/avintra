@@ -1,5 +1,5 @@
-import { CustomEdgeTypes } from "@/constants/CustomEdgeTypes";
-import { CustomNodeTypes } from "@/constants/CustomNodeTypes";
+import { CustomEdgeTypes } from "@/constants/custom-edge-types";
+import { CustomNodeTypes } from "@/constants/custom-node-types";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";

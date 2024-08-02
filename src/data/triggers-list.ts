@@ -1,4 +1,4 @@
-import { TriggerNodeDataType } from "@/types/TriggerNodeDataType";
+import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
 import { Position } from "@xyflow/react";
 
 export const triggersList: TriggerNodeDataType[] = [

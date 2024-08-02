@@ -1,4 +1,4 @@
-import { NodeDataType } from "@/types/NodeDataType";
+import { NodeDataType } from "@/types/node-data-type";
 import { NTSDescription } from "./NTSDescription";
 import { NTSIcon } from "./NTSIcon";
 import { NTSLabel } from "./NTSLabel";

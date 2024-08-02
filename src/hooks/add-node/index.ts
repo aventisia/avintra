@@ -1,5 +1,5 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/NodeDataType";
+import { NodeDataType } from "@/types/node-data-type";
 import { addEdge, Edge, Node, useStoreApi } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";

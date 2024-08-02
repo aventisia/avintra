@@ -1,4 +1,4 @@
-import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
+import { ActivityNodeDataType } from "@/types/activity-node-data-type";
 import { Position } from "@xyflow/react";
 
 export const activitiesList: ActivityNodeDataType[] = [

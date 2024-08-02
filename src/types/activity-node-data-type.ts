@@ -1,5 +1,5 @@
 import { Position } from "@xyflow/react";
-import { NodeDataType } from "./NodeDataType";
+import { NodeDataType } from "./node-data-type";
 
 /**
  * Represents the data type for an activity node.
