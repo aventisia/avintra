@@ -23,7 +23,7 @@ export const TriggerNode = ({
       <Separator className="h-[0.5px] w-full bg-border" />
 
       {/* Node description */}
-      <NodeDescription description={data.description} />
+      <NodeDescription>{data.description}</NodeDescription>
 
       {/* Output (Source) Handle */}
       <OutputHandle

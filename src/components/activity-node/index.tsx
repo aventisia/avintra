@@ -24,7 +24,7 @@ export const ActivityNode = ({
       <Separator className="h-[0.5px] w-full bg-border" />
 
       {/* Node description */}
-      <NodeDescription description={data.description} />
+      <NodeDescription>{data.description}</NodeDescription>
 
       {/* Input (Target) Handle */}
       <InputHandle />
