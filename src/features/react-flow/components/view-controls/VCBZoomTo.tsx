@@ -29,14 +29,14 @@ export const VCBZoomTo = () => {
 
   // Render zoom in button
   return (
-    <Tooltip content="Reset">
+    <Tooltip content="Reset zoom" side="right">
       <Button
         variant={"ghost"}
         size="icon6"
-        className={cn("min-w-[2.8rem] rounded-md text-xs font-medium")}
+        className={cn("max-w-[2.8rem] rounded-md text-3xs font-medium")}
         onClick={() => zoomTo(1)}
       >
-        {Math.round(zoomLevel * 100)}%
+        {Math.round(zoomLevel * 100)}
       </Button>
     </Tooltip>
   );

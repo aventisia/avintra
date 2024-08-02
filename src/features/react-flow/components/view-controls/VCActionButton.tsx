@@ -39,7 +39,7 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
 
   // Render action button
   return (
-    <Tooltip content={tooltips[action]}>
+    <Tooltip content={tooltips[action]} side="right">
       <Button
         size="icon6"
         className={cn("rounded-md")}

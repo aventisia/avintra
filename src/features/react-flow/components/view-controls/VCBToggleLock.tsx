@@ -19,7 +19,7 @@ export const VCBToggleLock = () => {
 
   // Render Lock/Unlock button
   return (
-    <Tooltip content={isLocked ? "Unlock" : "Lock"}>
+    <Tooltip content={isLocked ? "Unlock" : "Lock"} side="right">
       <Button
         size="icon6"
         className={cn("rounded-md")}

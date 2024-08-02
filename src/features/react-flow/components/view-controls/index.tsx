@@ -10,20 +10,14 @@ import { VCBZoomTo } from "./VCBZoomTo";
 export const ViewControls = () => {
   return (
     <Panel position="bottom-left">
-      <div className="flex items-end space-x-4">
+      <div className="flex flex-col items-end space-y-4">
         {/* Container-1 */}
-        <VCBContainer>
-          {/* Lock or unlock ReactFlow */}
-          <VCBToggleLock />
-        </VCBContainer>
-
-        {/* Container-2 */}
         <VCBContainer>
           {/* Fit view button */}
           <VCActionButton action="fitView" Icon={Scan} />
 
           {/* Separate from zoom in-out */}
-          <Separator orientation="vertical" className="mx-1 h-6" />
+          <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
 
           {/* Zoom out */}
           <VCActionButton action="zoomOut" Icon={MinusIcon} />
@@ -33,6 +27,12 @@ export const ViewControls = () => {
 
           {/* Zoom in */}
           <VCActionButton action="zoomIn" Icon={PlusIcon} />
+        </VCBContainer>
+
+        {/* Container-2 */}
+        <VCBContainer>
+          {/* Lock or unlock ReactFlow */}
+          <VCBToggleLock />
         </VCBContainer>
       </div>
     </Panel>
