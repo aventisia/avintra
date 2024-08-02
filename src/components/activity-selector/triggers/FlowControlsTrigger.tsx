@@ -15,7 +15,8 @@ export const FlowControlsTrigger = () => {
     <Tooltip content="Add activity">
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "ghost", size: "icon8" }),
+          buttonVariants({ variant: "ghost", size: "icon6" }),
+          "rounded-md",
           "aria-[expanded=true]:bg-muted",
         )}
       >

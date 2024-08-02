@@ -7,12 +7,12 @@ import { FCBUndo } from "./FCBUndo";
 
 export const FlowControls = () => {
   return (
-    <Panel position="bottom-center">
+    <Panel position="top-left">
       <FCBContainer>
         {/* Activity selector to add new node */}
         <ActivitySelector
           origin="FlowControls"
-          alignOffset={-5}
+          alignOffset={-4}
           sideOffset={16}
         />
 
