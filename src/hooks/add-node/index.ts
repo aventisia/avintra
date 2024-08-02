@@ -51,8 +51,8 @@ export const useAddNode = () => {
       // Select the newly created node
       setTimeout(() => addSelectedNodes([newNodeId]), 0); // Delay to ensure the node is added before selecting it
 
-      // Return if no node selected
-      if (!selectedNode) return;
+      // Return if no node selected or node type is trigger
+      if (!selectedNode || nodeData.type === "trigger") return;
 
       // Create new edge
       const newEdge: Edge = {
