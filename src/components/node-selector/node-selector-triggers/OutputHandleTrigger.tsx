@@ -7,7 +7,7 @@ import { memo } from "react";
 /**
  * Renders a plus button trigger component.
  *
- * Note: Activity selector trigger to open from the output handle only
+ * Note: Node selector trigger to open from the output handle only
  */
 export const OutputHandleTrigger = memo(() => {
   return (

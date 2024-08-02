@@ -1,4 +1,4 @@
-import { ActivitySelector } from "@/components/activity-selector";
+import { NodeSelector } from "@/components/node-selector";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { Position } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
@@ -28,10 +28,10 @@ export const OutputHandle = ({
   return (
     <>
       <HandleExt handlePosition={handlePosition} />
-      {/* Activity selector to add new node */}
+      {/* Node selector to add new node */}
       {!multipleNodesSelected && selected && !dragging ? (
         <OutputHandleContainer handlePosition={handlePosition}>
-          <ActivitySelector
+          <NodeSelector
             origin="OutputHandle"
             side="right"
             alignOffset={-14}

@@ -1,4 +1,4 @@
-import { ActivitySelector } from "@/components/activity-selector";
+import { NodeSelector } from "@/components/node-selector";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Panel } from "@xyflow/react";
 import { FCBContainer } from "./FCBContainer";
@@ -9,8 +9,8 @@ export const FlowControls = () => {
   return (
     <Panel position="top-left">
       <FCBContainer>
-        {/* Activity selector to add new node */}
-        <ActivitySelector
+        {/* Node selector to add new node */}
+        <NodeSelector
           origin="FlowControls"
           alignOffset={-4}
           sideOffset={16}

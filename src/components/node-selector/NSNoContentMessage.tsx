@@ -2,9 +2,9 @@ import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
 import { TextSearch } from "lucide-react";
 
 /**
- * Renders a message to display when no activities are found.
+ * Renders a message to display when no nodes are found.
  */
-export const ASNoContentMessage = () => {
+export const NSNoContentMessage = () => {
   return (
     <NoContentMessage
       className="-mt-5"

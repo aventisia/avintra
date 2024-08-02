@@ -8,7 +8,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
  * Renders a flow controls trigger component.
  * This component displays a button with a plus icon that opens a menu when clicked.
  *
- * Note: Activity selector trigger for flow controls panel only
+ * Note: Node selector trigger for flow controls panel only
  */
 export const FlowControlsTrigger = () => {
   return (

@@ -1,5 +1,5 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { ActivityNodeDataType } from "@/types/ActivityNodeDataType";
+import { NodeDataType } from "@/types/NodeDataType";
 import { addEdge, Edge, Node, useStoreApi } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -22,7 +22,7 @@ export const useAddNode = () => {
 
   // Handler to add new node
   const addNodeHandler = useCallback(
-    (nodeData: ActivityNodeDataType) => {
+    (nodeData: NodeDataType) => {
       // Get selected node (if any selected)
       const selectedNode = nodes.find((node) => node.selected);
 

@@ -1,9 +1,9 @@
 /**
- * Renders an icon for the ATS (Activity To Select) component.
+ * Renders an icon for the NTS (Node To Select) component.
  *
  * @param {string} props.iconSrc - The source URL of the icon image.
  */
-export const ATSIcon = ({ iconSrc }: { iconSrc: string }) => {
+export const NTSIcon = ({ iconSrc }: { iconSrc: string }) => {
   return (
     <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-md">
       <img

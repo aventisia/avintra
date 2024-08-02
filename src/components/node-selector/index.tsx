@@ -1,31 +1,26 @@
 import { Popover, PopoverContent } from "@/react-toolkit/ui/popover/Popover";
 import {
-  ActivitySelectorOriginType,
-  useActivitySelectorStore,
-} from "@/stores/activity-selector-store";
+  NodeSelectorOriginType,
+  useNodeSelectorStore,
+} from "@/stores/node-selector-store";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
-import { ActivitySelectorContent } from "./ActivitySelectorContent";
-import { FlowControlsTrigger } from "./triggers/FlowControlsTrigger";
-import { OutputHandleTrigger } from "./triggers/OutputHandleTrigger";
+import { NodeSelectorContent } from "./NodeSelectorContent";
+import { FlowControlsTrigger } from "./node-selector-triggers/FlowControlsTrigger";
+import { OutputHandleTrigger } from "./node-selector-triggers/OutputHandleTrigger";
 
-interface ActivitySelectorProps
+interface NodeSelectorProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
-  /** Origin from where activity selector popover is placed and triggered */
-  origin: ActivitySelectorOriginType;
+  /** Origin from where node selector popover is placed and triggered */
+  origin: NodeSelectorOriginType;
 }
 
 /**
- * Renders the Activity Selector (to add nodes to flow).
- *
- * @param {ReactNode} props.trigger - The trigger element to open ActivitySelector popover.
+ * Renders the Node Selector (to add nodes to flow).
  */
-export const ActivitySelector = ({
-  origin,
-  ...props
-}: ActivitySelectorProps) => {
+export const NodeSelector = ({ origin, ...props }: NodeSelectorProps) => {
   // Get store state and actions
-  const { popoverOrigin, togglePopoverOrigin } = useActivitySelectorStore(
+  const { popoverOrigin, togglePopoverOrigin } = useNodeSelectorStore(
     useShallow((state) => ({
       popoverOrigin: state.popoverOrigin,
       togglePopoverOrigin: state.togglePopoverOrigin,
@@ -45,8 +40,8 @@ export const ActivitySelector = ({
       {origin === "OutputHandle" && <OutputHandleTrigger />}
       {/* Popover content */}
       <PopoverContent align="start" variant={"responsive"} {...props}>
-        {/* Activity selector content */}
-        <ActivitySelectorContent />
+        {/* Node selector content */}
+        <NodeSelectorContent />
       </PopoverContent>
     </Popover>
   );
