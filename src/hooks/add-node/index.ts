@@ -57,7 +57,6 @@ export const useAddNode = () => {
       // Create new edge
       const newEdge: Edge = {
         id: window.crypto.randomUUID(),
-        type: "stepEdge",
         source: selectedNode.id,
         target: newNodeId,
       };

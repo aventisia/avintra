@@ -1,5 +1,6 @@
 import { CustomEdgeTypes } from "@/constants/custom-edge-types";
 import { CustomNodeTypes } from "@/constants/custom-node-types";
+import { DefaultEdgeOptions } from "@/constants/default-edge-options";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";
@@ -9,9 +10,9 @@ import { useShallow } from "zustand/react/shallow";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
+import { FlowControls } from "./flow-controls";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
-import { FlowControls } from "./flow-controls";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -49,6 +50,7 @@ export const ReactFlowExt = () => {
       fitView
       nodeTypes={customNodeTypesMemo}
       edgeTypes={customEdgesTypesMemo}
+      defaultEdgeOptions={DefaultEdgeOptions}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
