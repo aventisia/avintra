@@ -17,6 +17,7 @@ export const FlowControls = () => {
         />
 
         {/* Separate from undo and redo */}
+        <div className="hidden">
         <Separator orientation="vertical" className="mx-1 h-6" />
 
         {/* Undo */}
@@ -24,6 +25,7 @@ export const FlowControls = () => {
 
         {/* Redo */}
         <FCBRedo />
+        </div>
       </FCBContainer>
     </Panel>
   );
