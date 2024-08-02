@@ -15,7 +15,7 @@ export default function StepEdge({
     sourceY,
     targetX,
     targetY,
-    borderRadius: 10,
+    borderRadius: 15,
   });
 
   return (
