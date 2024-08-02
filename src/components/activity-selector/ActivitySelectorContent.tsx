@@ -1,4 +1,4 @@
-import { activitiesList } from "@/data/activities-to-select";
+import { activitiesList } from "@/data/activities-list";
 import { useAddNode } from "@/hooks/add-node";
 import {
   Command,
