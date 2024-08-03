@@ -7,6 +7,7 @@ import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
@@ -44,6 +45,9 @@ export const ReactFlowExt = () => {
   // Save flow silently
   useUpdateFlowSilently();
 
+  // Confirm delete handler
+  const { onBeforeDelete } = useConfirmDelete();
+
   // Render ReactFlow component
   return (
     <ReactFlow
@@ -56,6 +60,7 @@ export const ReactFlowExt = () => {
       onNodesChange={onNodesChange}
       //onNodesDelete={onNodesDelete}
       onEdgesChange={onEdgesChange}
+      onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
       onConnect={onConnect}
       deleteKeyCode={["Delete", "Backspace"]}
       // Toggles Reactflows interactivity
