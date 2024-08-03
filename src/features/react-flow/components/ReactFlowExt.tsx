@@ -8,6 +8,7 @@ import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
+import { useDagreAutoLayout } from "../hooks/useDagreAutoLayout";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
@@ -44,6 +45,9 @@ export const ReactFlowExt = () => {
 
   // Save flow silently
   useUpdateFlowSilently();
+
+  // Use hook's useEffect to apply auto layout
+  useDagreAutoLayout();
 
   // Confirm delete handler
   const { onBeforeDelete } = useConfirmDelete();
