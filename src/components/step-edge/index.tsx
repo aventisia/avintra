@@ -9,6 +9,8 @@ export default function StepEdge({
   targetX,
   targetY,
   label,
+  sourcePosition,
+  targetPosition,
 }: EdgeProps) {
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
@@ -16,6 +18,8 @@ export default function StepEdge({
     targetX,
     targetY,
     borderRadius: 15,
+    sourcePosition,
+    targetPosition,
   });
 
   return (
