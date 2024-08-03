@@ -143,7 +143,6 @@ public class FlowsTableService : IFlowsTableService
                     Label = "Manual Trigger",
                     Description = "To trigger the flow, a starting point",
                     Icon = "/sample-slack-new-logo.svg",
-                    SourcePosition = "bottom"
                 },
                 Position = new { X = 0, Y = 0 },
                 Measured = new { Width = 320, Height = 87 },
