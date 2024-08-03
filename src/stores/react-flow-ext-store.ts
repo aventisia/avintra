@@ -69,11 +69,11 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   },
 
   setNodes: (nodes: Node[]) => {
-    set({ nodes });
+    set({ isSavePending: true, nodes });
   },
 
   setEdges: (edges: Edge[]) => {
-    set({ edges });
+    set({ isSavePending: true, edges });
   },
 
   toggleIsLocked: (value) => {
