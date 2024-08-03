@@ -1,12 +1,12 @@
 import { triggersList } from "@/data/triggers-list";
-import { useAddNode } from "@/hooks/add-node";
+import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { CommandItem } from "@/react-toolkit/ui/command";
 import { TriggerToSelect } from "./trigger-to-select";
 import { PopoverClose } from "@radix-ui/react-popover";
 
 export const TriggerNodeList = () => {
-  // Get addNode handler
-  const addNodeHandler = useAddNode();
+  // Get replace node handler
+  const replaceNodeHandler = useReplaceNode();
 
   // Return the component
   return (
@@ -16,7 +16,7 @@ export const TriggerNodeList = () => {
           <CommandItem
             value={item.label}
             onSelect={() => {
-              addNodeHandler(item);
+              replaceNodeHandler(item);
             }}
             className="rounded-lg p-1"
           >
