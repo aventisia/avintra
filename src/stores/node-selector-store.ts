@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type NodeSelectorOriginType = "Closed" | "FlowControls" | "OutputHandle" | "ReplaceFlowTrigger";
+type NodeSelectorOriginType = "Closed" | "FlowControls" | "OutputHandle";
 
 type State = {
   /** Origin where node selector popover is placed and triggered. To manage popover open/close state */
