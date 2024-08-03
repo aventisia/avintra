@@ -12,10 +12,7 @@ import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
 
 type TriggerNode = Node<TriggerNodeDataType, "trigger">;
 
-export const TriggerNode = ({
-  data,
-  selected,
-}: NodeProps<TriggerNode>) => {
+export const TriggerNode = ({ data, selected }: NodeProps<TriggerNode>) => {
   return (
     // Node Container
     <NodeContainer selected={selected}>
