@@ -6,23 +6,25 @@ import { OutputHandle } from "@/components/output-handle";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { ActivityNodeDataType } from "@/types/activity-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
+import { NodeCategory } from "../NodeCategory";
+import { NodeHeading } from "../NodeHeading";
+import { NodeIcon } from "../NodeIcon";
 
 type ActivityNode = Node<ActivityNodeDataType, "activity">;
 
 export const ActivityNode = ({
   data,
   selected,
-  dragging,
 }: NodeProps<ActivityNode>) => {
   return (
     // Node Container
     <NodeContainer selected={selected}>
-      {/* Node label */}
-      <NodeHeader
-        iconSrc={data.icon}
-        label={data.label}
-        category={data.category}
-      />
+      {/* Node Header */}
+      <NodeHeader>
+        <NodeIcon src={data.icon} />
+        <NodeHeading>{data.label}</NodeHeading>
+        <NodeCategory>{data.category}</NodeCategory>
+      </NodeHeader>
 
       {/* Separator */}
       <Separator className="h-[0.5px] w-full bg-border" />
@@ -34,11 +36,7 @@ export const ActivityNode = ({
       <InputHandle />
 
       {/* Output (Source) Handle */}
-      <OutputHandle
-        selected={selected}
-        dragging={dragging}
-        handlePosition={data.sourcePosition}
-      />
+      <OutputHandle handlePosition={data.sourcePosition} />
     </NodeContainer>
   );
 };

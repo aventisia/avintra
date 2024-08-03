@@ -8,6 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 import { NodeSelectorContent } from "./NodeSelectorContent";
 import { FlowControlsTrigger } from "./node-selector-triggers/FlowControlsTrigger";
 import { OutputHandleTrigger } from "./node-selector-triggers/OutputHandleTrigger";
+import { ReplaceFlowTriggerTrigger } from "./node-selector-triggers/ReplaceFlowTriggerTrigger";
 
 interface NodeSelectorProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
@@ -38,6 +39,7 @@ export const NodeSelector = ({ origin, ...props }: NodeSelectorProps) => {
       {/* Custom trigger basis trigger location */}
       {origin === "FlowControls" && <FlowControlsTrigger />}
       {origin === "OutputHandle" && <OutputHandleTrigger />}
+      {origin === "ReplaceFlowTrigger" && <ReplaceFlowTriggerTrigger />}
       {/* Popover content */}
       <PopoverContent align="start" variant={"responsive"} {...props}>
         {/* Node selector content */}
