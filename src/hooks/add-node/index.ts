@@ -7,14 +7,16 @@ import { getNewNodeXY } from "./get-new-node-xy";
 
 export const useAddNode = () => {
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
-      setNodes: state.setNodes,
-      setEdges: state.setEdges,
-    })),
-  );
+  const { nodes, edges, setIsAutoLayoutPending, setNodes, setEdges } =
+    useReactFlowExtStore(
+      useShallow((state) => ({
+        nodes: state.nodes,
+        edges: state.edges,
+        setIsAutoLayoutPending: state.setIsAutoLayoutPending,
+        setNodes: state.setNodes,
+        setEdges: state.setEdges,
+      })),
+    );
 
   // Get addSelectedNodes action from RF store
   const store = useStoreApi();
@@ -48,6 +50,9 @@ export const useAddNode = () => {
       // Update nodes state
       setNodes(nodes.concat(newNode));
 
+      // Set auto layout pending
+      setIsAutoLayoutPending(true);
+
       // Select the newly created node
       setTimeout(() => addSelectedNodes([newNodeId]), 0); // Delay to ensure the node is added before selecting it
 
@@ -64,7 +69,14 @@ export const useAddNode = () => {
       // Update edges state
       setEdges(addEdge(newEdge, edges));
     },
-    [nodes, setNodes, setEdges, edges, addSelectedNodes],
+    [
+      nodes,
+      setNodes,
+      setIsAutoLayoutPending,
+      setEdges,
+      edges,
+      addSelectedNodes,
+    ],
   );
 
   return addNodeHandler;
