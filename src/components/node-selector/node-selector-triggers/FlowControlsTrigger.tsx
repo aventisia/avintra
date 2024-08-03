@@ -12,7 +12,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
  */
 export const FlowControlsTrigger = () => {
   return (
-    <Tooltip content="Add activity">
+    <Tooltip content="Add activity" side="right">
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon6" }),
