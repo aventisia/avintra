@@ -15,7 +15,7 @@ type TriggerNode = Node<TriggerNodeDataType, "trigger">;
 export const TriggerNode = ({ data, selected }: NodeProps<TriggerNode>) => {
   return (
     // Node Container
-    <NodeContainer selected={selected}>
+    <NodeContainer className="border-green-600" selected={selected}>
       {/* Node Header */}
       <NodeHeader>
         <NodeIcon src={data.icon} />
