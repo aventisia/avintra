@@ -13,7 +13,7 @@ export const getNewNodeXY = (
   selectedNodeXY: XYPosition,
   selctedNodeWidth: number,
   selectedNodeHeight: number,
-  sourcePosition: Position,
+  sourcePosition: Position | undefined,
 ) => {
   // Extra X, Y to add/subtract to the selected node position
   const extraX = selctedNodeWidth + 80;

@@ -34,7 +34,7 @@ export const useAddNode = () => {
         selectedNode?.position || { x: 0, y: 0 },
         selectedNode?.measured?.width || 0,
         selectedNode?.measured?.height || 0,
-        nodeData.sourcePosition,
+        selectedNode?.sourcePosition,
       );
 
       // Create new node

@@ -1,5 +1,4 @@
 import { ActivityNodeDataType } from "@/types/activity-node-data-type";
-import { Position } from "@xyflow/react";
 
 export const activitiesList: ActivityNodeDataType[] = [
   {
@@ -9,7 +8,6 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Send email",
     description: "To send bluk email at any time",
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
-    sourcePosition: Position.Bottom,
   },
   {
     type: "activity",
@@ -18,6 +16,45 @@ export const activitiesList: ActivityNodeDataType[] = [
     label: "Create new flow",
     description: "New flow can be created by just providing a name",
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
-    sourcePosition: Position.Bottom,
+  },
+  {
+    type: "activity",
+    category: "Flow",
+    name: "activity1",
+    label: "Activity 1",
+    description: "Activity 1 description",
+    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+  },
+  {
+    type: "activity",
+    category: "Flow",
+    name: "activity2",
+    label: "Activity 2",  
+    description: "Activity 2 description",
+    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+  },
+  {
+    type: "activity",
+    category: "Flow",
+    name: "activity3",
+    label: "Activity 3",
+    description: "Activity 3 description",
+    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+  },
+  {
+    type: "activity",
+    category: "Flow",
+    name: "activity4",
+    label: "Activity 4",
+    description: "Activity 4 description",
+    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+  },
+  {
+    type: "activity",
+    category: "Flow",
+    name: "activity5",
+    label: "Activity 5",
+    description: "Activity 5 description",
+    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
 ];

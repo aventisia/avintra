@@ -15,6 +15,8 @@ type ActivityNode = Node<ActivityNodeDataType, "activity">;
 export const ActivityNode = ({
   data,
   selected,
+  sourcePosition,
+  targetPosition
 }: NodeProps<ActivityNode>) => {
   return (
     // Node Container
@@ -33,10 +35,10 @@ export const ActivityNode = ({
       <NodeDescription>{data.description}</NodeDescription>
 
       {/* Input (Target) Handle */}
-      <InputHandle />
+      <InputHandle handlePosition={targetPosition} />
 
       {/* Output (Source) Handle */}
-      <OutputHandle handlePosition={data.sourcePosition} />
+      <OutputHandle handlePosition={sourcePosition} />
     </NodeContainer>
   );
 };

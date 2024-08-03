@@ -1,5 +1,4 @@
 import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
-import { Position } from "@xyflow/react";
 
 export const triggersList: TriggerNodeDataType[] = [
   {
@@ -9,7 +8,6 @@ export const triggersList: TriggerNodeDataType[] = [
     label: "Flow trigger 1",
     description: "To trigger the flow, a starting point",
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
-    sourcePosition: Position.Bottom,
   },
   {
     type: "trigger",
@@ -18,7 +16,6 @@ export const triggersList: TriggerNodeDataType[] = [
     label: "Flow trigger 2",
     description: "To trigger the flow, a starting point",
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
-    sourcePosition: Position.Bottom,
   },
   {
     type: "trigger",
@@ -27,7 +24,6 @@ export const triggersList: TriggerNodeDataType[] = [
     label: "Flow trigger 3",
     description: "To trigger the flow, a starting point",
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
-    sourcePosition: Position.Bottom,
   }
 
 ];
