@@ -25,6 +25,9 @@ type State = {
 
   /** Flag to track pending flow save */
   isSavePending: boolean;
+
+  /** Flag to track auto layout of flow */
+  isAutoLayoutPending: boolean;
 };
 
 type Actions = {
@@ -48,6 +51,9 @@ type Actions = {
 
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
+
+  /** Set flag to track pending auto layout */
+  setIsAutoLayoutPending: (isAutoLayoutPending: boolean) => void;
 };
 
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
@@ -55,6 +61,7 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   edges: [],
   isLocked: false,
   isSavePending: false,
+  isAutoLayoutPending: false,
 
   onNodesChange: (changes: NodeChange[]) => {
     set({ isSavePending: true, nodes: applyNodeChanges(changes, get().nodes) });
@@ -84,5 +91,9 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setIsSavePending: (isSavePending: boolean) => {
     set({ isSavePending });
+  },
+
+  setIsAutoLayoutPending: (isAutoLayoutPending: boolean) => {
+    set({ isAutoLayoutPending });
   },
 }));
