@@ -50,11 +50,14 @@ export const useAddNode = () => {
       // Update nodes state
       setNodes(nodes.concat(newNode));
 
-      // Set auto layout pending
-      setIsAutoLayoutPending(true);
+      // Perform action after render
+      setTimeout(() => {
+        // Select the newly created node
+        addSelectedNodes([newNodeId]);
 
-      // Select the newly created node
-      setTimeout(() => addSelectedNodes([newNodeId]), 0); // Delay to ensure the node is added before selecting it
+        // Set auto layout pending
+        setIsAutoLayoutPending(true);
+      }, 0);
 
       // Return if no node selected or node type is trigger
       if (!selectedNode || nodeData.type === "trigger") return;
