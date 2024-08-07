@@ -24,6 +24,7 @@ public static class AppServicesExtension
         config.Apply(new FlowsTableMappingProfile());
         config.Apply(new FlowCommentMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
+        config.Apply(new SupportTicketsTableMappingProfile());
         services.AddSingleton(config);
     }
 
@@ -43,6 +44,7 @@ public static class AppServicesExtension
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFlowCommentService, FlowCommentService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
+        services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
