@@ -20,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext);
 
     public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext);
+    public ISupportTicketRepo SupportTicketRepo => new SupportTicketRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
