@@ -13,31 +13,33 @@ public class SupportTicket : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the ticket number of the support ticket.
     /// </summary>
-    [Required]
     public required string TicketNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the subject of the support ticket. Max-255 characters.
     /// </summary>
-    [Required]
     [MaxLength(255)]
     public required string Subject { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the support ticket. Max-500 characters.
+    /// Gets or sets the description of the support ticket. Min-100, Max-500 characters.
     /// </summary>
+    [MinLength(100)]
     [MaxLength(500)]
-    public string? Description { get; set; }
+    public required string Description { get; set; }
 
     /// <summary>
     /// Gets or sets the priority of the support ticket.
     /// </summary>
-    [Required]
-    public required string Priority { get; set; } = "Low";
+    public string? Priority { get; set; } = "Low";
 
     /// <summary>
     /// Gets or sets the status of the support ticket.
     /// </summary>
-    [Required]
-    public required string Status { get; set; } = "Open";
+    public string? Status { get; set; } = "Open";
+
+    /// <summary>
+    /// Gets or sets support ticket remarks to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<SupportTicketRemark>? SupportTicketRemarks { get; set; }
 }
