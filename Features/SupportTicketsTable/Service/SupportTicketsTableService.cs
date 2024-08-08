@@ -159,77 +159,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         return serviceResponse;
     }
 
-    // Updates an existing support ticket.
-    public async Task<ServiceResponse<SupportTicketsTableDto>> UpdateSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto)
-    {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<SupportTicketsTableDto>
-        {
-            Data = null,
-            Message = "Failed to update support ticket. Please try again"
-        };
-
-        try
-        {
-            // Validate support ticket existence
-            var supportTicket = await _unitOfWork.SupportTicketRepo
-                                        .GetByConditionAsync(w => w.Id == supportTicketsTableDto.Id)
-                                        .SingleOrDefaultAsync();
-
-            // support ticket does not exist
-            if (supportTicket == null)
-            {
-                _logger.LogInformation($"support ticket does not exist");
-                serviceResponse.Message = "support ticket does not exist";
-                return serviceResponse;
-            }
-
-            // Validate support ticket uniqueness
-            var supportTicketAlreadyExists = await _unitOfWork.SupportTicketRepo
-                .GetByConditionAsync(w => w.TicketNumber != null && supportTicketsTableDto.TicketNumber != null && w.TicketNumber.ToLower() == supportTicketsTableDto.TicketNumber.ToLower())
-                .FirstOrDefaultAsync();
-
-            // support ticket already exists
-            if (supportTicketAlreadyExists != null)
-            {
-                _logger.LogInformation($"support ticket already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A support ticket with the same TicketNumber already exists. Please enter a unique TicketNumber";
-                return serviceResponse;
-            }
-
-            // Trim dto' string props
-            supportTicketsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(supportTicketsTableDto);
-
-            // Default mapping 
-            supportTicketsTableDto.Adapt(supportTicket);
-            supportTicket.LastModifiedByUserId = _userId;
-            supportTicket.LastModifiedOn = DateTimeOffset.UtcNow;
-
-            // Update support ticket
-            _unitOfWork.SupportTicketRepo.Update(supportTicket);
-
-            // Update-Job failed
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Context SaveChanges failed while updating support ticket");
-                return serviceResponse;
-            }
-
-            // Task successful
-            serviceResponse.Data = supportTicket.Adapt<SupportTicketsTableDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "support ticket updated successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
     // Deletes a support ticket by its ID.
     public async Task<ServiceResponse<bool>> DeleteSupportTicketAsync(Guid id)
     {
@@ -257,14 +186,22 @@ public class SupportTicketsTableService : ISupportTicketsTableService
 
             //#PENDING: UPDATE THIS CHECK ONCE ENTITY IS FORMED
             // IMPORTANT: Check if any relationship exists and abort required
-            var relationshipExists = await _unitOfWork.SupportTicketRepo
-                                            .DoesDependentEntitiesExistAsync(w => w.Id == id);
+            // var relationshipExists = await _unitOfWork.SupportTicketRepo
+            //                                 .DoesDependentEntitiesExistAsync(w => w.Id == id);
 
             // Relationship exists
-            if (relationshipExists)
+            // if (relationshipExists)
+            // {
+            //     _logger.LogInformation($"Cannot delete support ticket because it is linked with other support tickets");
+            //     serviceResponse.Message = "Cannot delete requested support ticket because it is linked with other support tickets";
+            //     return serviceResponse;
+            // }
+
+            // Support ticket status is not 'Open'
+            if (supportTicket.Status?.CompareTo("Open") != 0)
             {
-                _logger.LogInformation($"Cannot delete support ticket because it is linked with other support tickets");
-                serviceResponse.Message = "Cannot delete requested support ticket because it is linked with other support tickets";
+                _logger.LogInformation($"Cannot delete support ticket because it is not in 'Open' status");
+                serviceResponse.Message = "Cannot delete requested support ticket because it is not in 'Open' status";
                 return serviceResponse;
             }
 

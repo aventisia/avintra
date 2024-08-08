@@ -23,13 +23,6 @@ public interface ISupportTicketsTableService
     Task<ServiceResponse<SupportTicketsTableDto>> InsertSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto);
 
     /// <summary>
-    /// Updates the applicable properties of a support ticket.
-    /// </summary>
-    /// <param name="supportTicketsTableDto">The submitted form data for updating a support ticket.</param>
-    /// <returns> The task result contains the service response with a boolean indicating whether the update was successful or not.</returns>
-    Task<ServiceResponse<SupportTicketsTableDto>> UpdateSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto);
-
-    /// <summary>
     /// Deletes a support ticket from the database permanently, if allowed and if deleting relationship records is possible or allowed.
     /// </summary>
     /// <param name="id">The ID of the support ticket to delete.</param>

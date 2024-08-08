@@ -33,13 +33,6 @@ public class SupportTicketsTableController : BaseApiController
         return ResultHelper(await _supportTicketsTableService.InsertSupportTicketAsync(supportTicketDto));
     }
 
-    // Updates an existing support ticket.
-    [HttpPut]
-    public async Task<ActionResult<ServiceResponse<SupportTicketsTableDto>>> UpdateSupportTicket([FromBody] SupportTicketsTableDto supportTicketDto)
-    {
-        return ResultHelper(await _supportTicketsTableService.UpdateSupportTicketAsync(supportTicketDto));
-    }
-
     // Deletes a support ticket from the database permanently, if allowed and if deleting relationship records is possible or allowed.
     [HttpDelete("{id}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteSupportTicket(Guid id)
