@@ -25,8 +25,9 @@ public class SupportTicketsTableDto
     /// <summary>
     /// Gets or sets the description of the support ticket. Max-500
     /// </summary>
-    [StringLength(500)]
-    public string? Description { get; set; }
+    [Required]
+    [StringLength(500, MinimumLength = 100)]
+    public required string Description { get; set; }
 
     /// <summary>
     /// Gets or sets the priority level of the ticket (e.g., low, medium, high, critical).
@@ -37,6 +38,11 @@ public class SupportTicketsTableDto
     /// Gets or sets the current status of the ticket (e.g., open, inProgress, resolved, closed).
     /// </summary>
     public string? Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of remarks associated with the support ticket.
+    /// </summary>
+    public int? RemarkCount { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the supportTicket record is disabled.
