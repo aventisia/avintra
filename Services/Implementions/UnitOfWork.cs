@@ -22,6 +22,8 @@ public class UnitOfWork : IUnitOfWork
     public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext);
     public ISupportTicketRepo SupportTicketRepo => new SupportTicketRepo(_workspaceDbContext);
 
+    public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
