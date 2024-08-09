@@ -18,39 +18,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
         _unitOfWork = unitOfWork;
     }
 
-    // Gets list of remarks of single support ticket using ticket Id.
-    public async Task<ServiceResponse<IEnumerable<SupportTicketRemarksDto>>> GetSupportTicketRemarksAsync(Guid ticketId)
-    {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketRemarksDto>>
-        {
-            Data = null,
-            StatusCode = 400
-        };
-
-        try
-        {
-            // Try to get support ticket remarks
-            var supportTicketRemarks = await _unitOfWork.SupportTicketRemarkRepo
-                .GetByConditionAsync(w => w.SupportTicket.Id == ticketId && !w.IsDisabled)
-                .OrderBy(o => o.CreatedOn)
-                .ProjectToType<SupportTicketRemarksDto>()
-                .ToListAsync();
-
-            // Task successful
-            serviceResponse.Data = supportTicketRemarks.Adapt<IEnumerable<SupportTicketRemarksDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "support ticket remarks retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
     // Create a new support ticket remark.
     public async Task<ServiceResponse<SupportTicketRemarksDto>> InsertSupportTicketRemarkAsync(SupportTicketRemarksDto supportTicketRemarksDto)
     {

@@ -3,12 +3,6 @@ namespace WorkspaceAPIs.Services;
 public interface ISupportTicketRemarksService
 {
     /// <summary>
-    /// Gets list of remarks of single support ticket using ticket Id.
-    /// </summary>
-    /// <returns> The task result contains the service response with the collection of support ticket remarks DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SupportTicketRemarksDto>>> GetSupportTicketRemarksAsync(Guid ticketId);
-
-    /// <summary>
     /// Create a new support ticket remark.
     /// </summary>
     /// <param name="supportTicketRemarksDto">The DTO containing the data for the new support ticket remark.</param>
