@@ -129,32 +129,12 @@ public class FlowsTableService : IFlowsTableService
             newFlow.CreatedByUserId = _userId;
             newFlow.LastModifiedByUserId = _userId;
 
-            // Create default Manual trigger node
-            /* TODO: We are currently keeping the triggers list on the client side for now. We will move it to the server side later. */
-            var manualTriggerNodeJson = System.Text.Json.JsonSerializer.Serialize(new
-            {
-                Id = Guid.NewGuid(),
-                Type = "trigger",
-                Data = new
-                {
-                    Type = "trigger",
-                    Category = "Triggers",
-                    Name = "manualTrigger",
-                    Label = "Manual Trigger",
-                    Description = "To trigger the flow, a starting point",
-                    Icon = "/sample-slack-new-logo.svg",
-                },
-                Position = new { X = 0, Y = 0 },
-                Measured = new { Width = 320, Height = 87 },
-                Selected = true,
-                Dragging = false
-            }, new System.Text.Json.JsonSerializerOptions
-            {
-                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
-            });
+            // Get intial nodes and edges
+            var (initialNodes, initialEdges) = Features.FlowsTable.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
 
             // Add Manual trigger node to flow
-            newFlow.Nodes = "[" + manualTriggerNodeJson + "]";
+            newFlow.Nodes = initialNodes;
+            newFlow.Edges = initialEdges;
 
             // Insert flow
             await _unitOfWork.FlowRepo.InsertAsync(newFlow);
