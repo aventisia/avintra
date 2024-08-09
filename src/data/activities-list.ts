@@ -2,7 +2,7 @@ import { ActivityNodeDataType } from "@/types/activity-node-data-type";
 
 export const activitiesList: ActivityNodeDataType[] = [
   {
-    type: "activity",
+    type: "activityNode",
     category: "Email",
     name: "sendEmail",
     label: "Send email",
@@ -10,7 +10,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
   },
   {
-    type: "activity",
+    type: "activityNode",
     category: "Flow",
     name: "createNewFlow",
     label: "Create new flow",
@@ -18,7 +18,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
-    type: "activity",
+    type: "activityNode",
     category: "Flow",
     name: "activity1",
     label: "Activity 1",
@@ -26,7 +26,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
-    type: "activity",
+    type: "activityNode",
     category: "Flow",
     name: "activity2",
     label: "Activity 2",  
@@ -34,7 +34,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
-    type: "activity",
+    type: "activityNode",
     category: "Flow",
     name: "activity3",
     label: "Activity 3",
@@ -42,7 +42,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
-    type: "activity",
+    type: "activityNode",
     category: "Flow",
     name: "activity4",
     label: "Activity 4",
@@ -50,7 +50,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
-    type: "activity",
+    type: "activityNode",
     category: "Flow",
     name: "activity5",
     label: "Activity 5",

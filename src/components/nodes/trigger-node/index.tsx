@@ -1,13 +1,14 @@
-import { NodeContainer } from "@/components/NodeContainer";
-import { NodeDescription } from "@/components/NodeDescription";
-import { NodeHeader } from "@/components/NodeHeader";
-import { OutputHandle } from "@/components/output-handle";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
-import { NodeCategory } from "../NodeCategory";
-import { NodeHeading } from "../NodeHeading";
-import { NodeIcon } from "../NodeIcon";
+import { OutputHandle } from "../../handles/OutputHandle";
+import { NodeContainer } from "../../node-container";
+import { NodeCategory } from "../../node-container/node-header/NodeCategory";
+import { NodeHeader } from "../../node-container/node-header/NodeHeader";
+import { NodeHeading } from "../../node-container/node-header/NodeHeading";
+import { NodeIcon } from "../../node-container/node-header/NodeIcon";
+import { NodeDescription } from "../../node-container/NodeDescription";
+import { NodeSelector } from "../../node-selector";
 import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
 
 type TriggerNode = Node<TriggerNodeDataType, "trigger">;
@@ -34,10 +35,12 @@ export const TriggerNode = ({
       <NodeDescription>{data.description}</NodeDescription>
 
       {/* Node selector to replace flow trigger */}
-      <ReplaceFlowTrigger />
+      <NodeSelector origin="ReplaceTrigger" sideOffset={10} alignOffset={-12}>
+        <ReplaceFlowTrigger />
+      </NodeSelector>
 
       {/* Output (Source) Handle */}
-      <OutputHandle handlePosition={sourcePosition} />
+      <OutputHandle position={sourcePosition} />
     </NodeContainer>
   );
 };

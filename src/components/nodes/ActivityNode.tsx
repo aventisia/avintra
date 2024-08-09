@@ -1,14 +1,14 @@
-import { InputHandle } from "@/components/InputHandle";
-import { NodeContainer } from "@/components/NodeContainer";
-import { NodeDescription } from "@/components/NodeDescription";
-import { NodeHeader } from "@/components/NodeHeader";
-import { OutputHandle } from "@/components/output-handle";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { ActivityNodeDataType } from "@/types/activity-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
-import { NodeCategory } from "../NodeCategory";
-import { NodeHeading } from "../NodeHeading";
-import { NodeIcon } from "../NodeIcon";
+import { InputHandle } from "../handles/InputHandle";
+import { OutputHandle } from "../handles/OutputHandle";
+import { NodeContainer } from "../node-container";
+import { NodeCategory } from "../node-container/node-header/NodeCategory";
+import { NodeHeader } from "../node-container/node-header/NodeHeader";
+import { NodeHeading } from "../node-container/node-header/NodeHeading";
+import { NodeIcon } from "../node-container/node-header/NodeIcon";
+import { NodeDescription } from "../node-container/NodeDescription";
 
 type ActivityNode = Node<ActivityNodeDataType, "activity">;
 
@@ -16,7 +16,7 @@ export const ActivityNode = ({
   data,
   selected,
   sourcePosition,
-  targetPosition
+  targetPosition,
 }: NodeProps<ActivityNode>) => {
   return (
     // Node Container
@@ -35,10 +35,10 @@ export const ActivityNode = ({
       <NodeDescription>{data.description}</NodeDescription>
 
       {/* Input (Target) Handle */}
-      <InputHandle handlePosition={targetPosition} />
+      <InputHandle position={targetPosition} />
 
       {/* Output (Source) Handle */}
-      <OutputHandle handlePosition={sourcePosition} />
+      <OutputHandle position={sourcePosition} />
     </NodeContainer>
   );
 };

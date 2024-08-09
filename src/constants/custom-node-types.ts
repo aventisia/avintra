@@ -1,7 +1,9 @@
-import { ActivityNode } from "@/components/activity-node";
-import { TriggerNode } from "@/components/trigger-node";
+import { ActivityNode } from "@/components/nodes/ActivityNode";
+import { PlaceholderNode } from "@/components/nodes/placeholder-node";
+import { TriggerNode } from "@/components/nodes/trigger-node";
 
 export const CustomNodeTypes = {
-  trigger: TriggerNode,
-  activity: ActivityNode,
+  triggerNode: TriggerNode,
+  placeholderNode: PlaceholderNode,
+  activityNode: ActivityNode,
 };
