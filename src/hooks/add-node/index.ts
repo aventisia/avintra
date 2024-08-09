@@ -1,6 +1,6 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
-import { addEdge, Edge, Node, useStoreApi } from "@xyflow/react";
+import { addEdge, Edge, Node } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { getNewNodeXY } from "./get-new-node-xy";
@@ -16,25 +16,34 @@ export const useAddNode = () => {
     })),
   );
 
-  // Get addSelectedNodes action from RF store
-  const store = useStoreApi();
-  const { addSelectedNodes } = store.getState();
+  // Handler to add new node from placeholder node origin
+  const addNodeFromPlaceholderNode = useCallback(
+    (nodeData: NodeDataType, placeholderNodeId: string) => {
+      // Get placeholder node
+      const placeholderNode = nodes.find(
+        (node) => node.id === placeholderNodeId,
+      ) as Node;
 
-  // Handler to add new node
-  const addNodeHandler = useCallback(
-    (nodeData: NodeDataType) => {
-      // Get selected node (if any selected)
-      const selectedNode = nodes.find((node) => node.selected);
+      // Get placeholder edge
+      const placeholderEdge = edges.find(
+        (edge) => edge.target === placeholderNodeId,
+      ) as Edge;
+
+      // Set source node Id
+      const sourceNodeId = placeholderEdge.source;
+
+      // Get source node
+      const sourceNode = nodes.find((node) => node.id === sourceNodeId);
 
       // Create new node Id
       const newNodeId = window.crypto.randomUUID();
 
       // Create new node X,Y
       const newNodeXY = getNewNodeXY(
-        selectedNode?.position || { x: 0, y: 0 },
-        selectedNode?.measured?.width || 0,
-        selectedNode?.measured?.height || 0,
-        selectedNode?.sourcePosition,
+        sourceNode?.position || { x: 0, y: 0 },
+        sourceNode?.measured?.width || 0,
+        sourceNode?.measured?.height || 0,
+        sourceNode?.sourcePosition,
       );
 
       // Create new node
@@ -43,33 +52,63 @@ export const useAddNode = () => {
         type: nodeData.type,
         data: nodeData,
         position: newNodeXY,
+        deletable: true,
+        draggable: true,
+        selectable: true,
+        sourcePosition: sourceNode?.sourcePosition,
       };
 
+      // Add new nodes to the nodes array
+      const newNodes = nodes.concat(newNode);
+
+      // Get placeholder node new X,Y
+      const placeholderNodeNewXY = getNewNodeXY(
+        newNode?.position || { x: 0, y: 0 },
+        sourceNode?.measured?.width || 0,
+        sourceNode?.measured?.height || 0,
+        newNode?.sourcePosition,
+      );
+
+      // Update placeholder node's position
+      const updatedPlaceholderNode = {
+        ...placeholderNode,
+        position: placeholderNodeNewXY,
+      };
+
+      // Replace the old placeholder node with the new node in the nodes array
+      const updatedNodes = newNodes.map((node) =>
+        node.id === placeholderNode.id ? updatedPlaceholderNode : node,
+      );
+
       // Update nodes state
-      setNodes(nodes.concat(newNode));
+      setNodes(updatedNodes);
 
-      // Perform action after render
-      setTimeout(() => {
-        // Select the newly created node
-        addSelectedNodes([newNodeId]);
-      }, 0);
+      // Update placeholder edge source to new node
+      const updatedPlaceholderEdge = {
+        ...placeholderEdge,
+        source: newNodeId,
+      };
 
-      // Return if no node selected or node type is trigger
-      if (!selectedNode) return;
+      // Replace the old placeholder edge with the updated edge in the edges array
+      const updatedEdges = edges.map((edge) =>
+        edge.id === placeholderEdge.id ? updatedPlaceholderEdge : edge,
+      );
 
-      // Create new edge
+      // Create new edge between source node and new node
       const newEdge: Edge = {
         id: window.crypto.randomUUID(),
         type: "customStepEdge",
-        source: selectedNode.id,
+        source: sourceNodeId,
         target: newNodeId,
+        deletable: false,
+        selectable: false,
       };
 
       // Update edges state
-      setEdges(addEdge(newEdge, edges));
+      setEdges(addEdge(newEdge, updatedEdges));
     },
-    [nodes, setNodes, setEdges, edges, addSelectedNodes],
+    [nodes, setNodes, setEdges, edges],
   );
 
-  return addNodeHandler;
+  return addNodeFromPlaceholderNode;
 };

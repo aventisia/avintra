@@ -3,10 +3,16 @@ import { useAddNode } from "@/hooks/add-node";
 import { CommandItem } from "@/react-toolkit/ui/command";
 import { PopoverClose } from "@/react-toolkit/ui/popover/Popover";
 import { NodeToSelect } from "./node-to-select";
+import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
 
-export const NodeList = () => {
+interface NodeListProps {
+  origin: NodeSelectorOriginType;
+  originId: string;
+}
+
+export const NodeList = ({ origin, originId }: NodeListProps) => {
   // Get addNode handler
-  const addNodeHandler = useAddNode();
+  const addNodeFromPlaceholderNode = useAddNode();
 
   // Return the component
   return (
@@ -16,7 +22,9 @@ export const NodeList = () => {
           <CommandItem
             value={item.label}
             onSelect={() => {
-              addNodeHandler(item);
+              if (origin === "PlaceholderNode") {
+                addNodeFromPlaceholderNode(item, originId);
+              }
             }}
             className="rounded-lg p-1"
           >

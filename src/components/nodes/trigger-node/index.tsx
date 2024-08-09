@@ -35,7 +35,12 @@ export const TriggerNode = ({
       <NodeDescription>{data.description}</NodeDescription>
 
       {/* Node selector to replace flow trigger */}
-      <NodeSelector origin="ReplaceTrigger" sideOffset={10} alignOffset={-12}>
+      <NodeSelector
+        origin="ReplaceTrigger"
+        originId="NA"
+        sideOffset={10}
+        alignOffset={-12}
+      >
         <ReplaceFlowTrigger />
       </NodeSelector>
 
