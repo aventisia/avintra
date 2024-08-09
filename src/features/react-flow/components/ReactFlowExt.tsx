@@ -1,6 +1,5 @@
 import { CustomEdgeTypes } from "@/constants/custom-edge-types";
 import { CustomNodeTypes } from "@/constants/custom-node-types";
-import { DefaultEdgeOptions } from "@/constants/default-edge-options";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";
@@ -58,7 +57,6 @@ export const ReactFlowExt = () => {
       fitView
       nodeTypes={customNodeTypesMemo}
       edgeTypes={customEdgesTypesMemo}
-      defaultEdgeOptions={DefaultEdgeOptions}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
