@@ -6,7 +6,10 @@
  */
 export const VCBContainer = ({ children }: React.PropsWithChildren) => {
   return (
-    <div className="flex flex-col items-center rounded-lg border bg-white p-1 shadow">
+    <div
+      className="flex flex-col items-center rounded-lg border bg-white p-1 shadow"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       {children}
     </div>
   );

@@ -6,7 +6,7 @@ import { FCBUndo } from "./FCBUndo";
 
 export const FlowControls = () => {
   return (
-    <Panel position="top-left">
+    <Panel position="top-left" onContextMenu={(e) => e.preventDefault()}>
       <FCBContainer>
         {/* Undo */}
         <FCBUndo />
