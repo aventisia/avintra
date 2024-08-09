@@ -10,11 +10,15 @@ export const useConfirmDelete = () => {
   const onBeforeDelete: OnBeforeDelete = useCallback(
     async ({ nodes, edges }) => {
       // Get selected & deletable nodes and edges
-      const selectedNodes = nodes.filter((node) => node.selected && node.deletable);
-      const selectedEdges = edges.filter((edge) => edge.selected && edge.deletable);
+      const selectedNodes = nodes.filter(
+        (node) => node.selected && node.deletable,
+      );
+      const selectedEdges = edges.filter(
+        (edge) => edge.selected && edge.deletable,
+      );
 
       // Return if no nodes or edges found
-      if (!selectedNodes.length && !selectedEdges.length) return false;
+      if (selectedNodes.length + selectedEdges.length === 0) return false;
 
       // Get item or items based on item count
       const itemOrItems =
