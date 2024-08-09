@@ -25,7 +25,7 @@ export default function CustomStepEdge({
     <>
       <ChevronMarkerEnd />
       <BaseEdge
-        className="stroke-slate-400 stroke-[1.5]"
+        className="stroke-slate-400 stroke-[1.3]"
         id={id}
         path={edgePath}
         markerEnd="url(#chevronMarkerEnd)"
