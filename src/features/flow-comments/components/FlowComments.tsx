@@ -2,7 +2,7 @@ import { cn } from "@/react-toolkit/lib/utils";
 import {
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/ui/popover/Popover";
+} from "@/react-toolkit/ui/popover";
 import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
 import { useShallow } from "zustand/react/shallow";
 import { FC_POPOVER_HEADING } from "../constants/constatns";

@@ -1,7 +1,7 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
+import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { FC_POPOVER_HEADING } from "../constants/constatns";

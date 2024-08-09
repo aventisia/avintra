@@ -1,6 +1,6 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover/Popover";
+import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";

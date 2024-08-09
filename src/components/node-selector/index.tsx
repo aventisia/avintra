@@ -1,4 +1,4 @@
-import { Popover, PopoverContent } from "@/react-toolkit/ui/popover/Popover";
+import { Popover, PopoverContent } from "@/react-toolkit/ui/popover";
 import React from "react";
 import { NodeSelectorContent } from "./NodeSelectorContent";
 import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";

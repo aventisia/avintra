@@ -1,7 +1,7 @@
 import { activitiesList } from "@/data/activities-list";
 import { useAddNode } from "@/hooks/add-node";
 import { CommandItem } from "@/react-toolkit/ui/command";
-import { PopoverClose } from "@/react-toolkit/ui/popover/Popover";
+import { PopoverClose } from "@/react-toolkit/ui/popover";
 import { NodeToSelect } from "./node-to-select";
 import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
 

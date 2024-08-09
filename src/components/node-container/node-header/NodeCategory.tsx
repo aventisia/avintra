@@ -1,5 +1,5 @@
 import { cn } from "@/react-toolkit/lib/utils";
-import { Badge } from "@/react-toolkit/ui/badge/badge";
+import { Badge } from "@/react-toolkit/ui/badge";
 
 export const NodeCategory = ({
   className,

@@ -1,7 +1,7 @@
 import { triggersList } from "@/data/triggers-list";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { CommandItem } from "@/react-toolkit/ui/command";
-import { PopoverClose } from "@/react-toolkit/ui/popover/Popover";
+import { PopoverClose } from "@/react-toolkit/ui/popover";
 import { NodeToSelect } from "./node-to-select";
 
 export const TriggerList = () => {

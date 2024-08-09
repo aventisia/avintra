@@ -1,4 +1,4 @@
-import { Badge } from "@/react-toolkit/ui/badge/badge";
+import { Badge } from "@/react-toolkit/ui/badge";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";

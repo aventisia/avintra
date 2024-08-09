@@ -3,7 +3,7 @@ import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogW
 import {
   DialogContent,
   DialogDefaultHeader,
-} from "@/react-toolkit/ui/dialog/Dialog";
+} from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { useShallow } from "zustand/react/shallow";
 import { getDialogHeadingDescription } from "../../constants/constants";

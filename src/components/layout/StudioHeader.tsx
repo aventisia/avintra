@@ -1,7 +1,7 @@
 import { ETLIAMenu } from "@/features/etlia-menu/components/ETLIAMenu";
 import { FlowComments } from "@/features/flow-comments/components/FlowComments";
 import { FlowsPopover } from "@/features/flows-popover/components/FlowsPopover";
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UnreadNotifications";
+import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { cn } from "@/react-toolkit/lib/utils";

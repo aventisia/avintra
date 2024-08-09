@@ -4,7 +4,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover/Popover";
+} from "@/react-toolkit/ui/popover";
 import { useETLIAMenuStore } from "../stores/etlia-menu-store";
 import { StudioTabType } from "../types/etlia-menu-type";
 import { ActionRibbon } from "./action-ribbon/ActionRibbon";

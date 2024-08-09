@@ -1,4 +1,4 @@
-import { Badge } from "@/react-toolkit/ui/badge/badge";
+import { Badge } from "@/react-toolkit/ui/badge";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
