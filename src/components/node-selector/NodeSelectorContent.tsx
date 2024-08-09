@@ -5,18 +5,19 @@ import {
   CommandList,
 } from "@/react-toolkit/ui/command";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { ActivityNodeList } from "./ActivityNodeList";
+import { NodeList } from "./NodeList";
 import { NSNoContentMessage } from "./NSNoContentMessage";
+import { NodeSelectorOriginType } from "./node-selector-origin-type";
 
-/**
- * Renders the content of the node selector component.
- * This component displays a search input, a list of nodes, and a message when there are no nodes.
- */
-export const NodeSelectorContent = () => {
+interface NodeSelectorContentProps {
+  origin: NodeSelectorOriginType;
+}
+
+export const NodeSelectorContent = ({ origin }: NodeSelectorContentProps) => {
   return (
     <Command>
       {/* Searchbox */}
-      <CommandInput className="text-xs" placeholder="Search activity..." />
+      <CommandInput className="text-xs" placeholder="Search..." />
 
       {/* No content message */}
       <CommandEmpty className="h-full">
@@ -26,7 +27,7 @@ export const NodeSelectorContent = () => {
       {/* List of Nodes */}
       <ScrollArea>
         <CommandList className="p-2">
-          <ActivityNodeList />
+          <NodeList origin={origin} />
         </CommandList>
       </ScrollArea>
     </Command>

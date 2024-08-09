@@ -1,28 +1,32 @@
 import { Popover, PopoverContent } from "@/react-toolkit/ui/popover/Popover";
 import React from "react";
 import { NodeSelectorContent } from "./NodeSelectorContent";
-import { FlowControlsTrigger } from "./node-selector-triggers/FlowControlsTrigger";
-import { OutputHandleTrigger } from "./node-selector-triggers/OutputHandleTrigger";
+import { NodeSelectorOriginType } from "./node-selector-origin-type";
 
 interface NodeSelectorProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
   /** Origin from where node selector popover is placed and triggered */
-  origin: "Closed" | "FlowControls" | "OutputHandle";
+  origin: NodeSelectorOriginType;
+  children: React.ReactNode;
 }
 
 /**
  * Renders the Node Selector (to add nodes to flow).
  */
-export const NodeSelector = ({ origin, ...props }: NodeSelectorProps) => {
+export const NodeSelector = ({ origin, children, ...props }: NodeSelectorProps) => {
   return (
     <Popover>
       {/* Custom trigger basis trigger location */}
-      {origin === "FlowControls" && <FlowControlsTrigger />}
-      {origin === "OutputHandle" && <OutputHandleTrigger />}
+      {children}
       {/* Popover content */}
-      <PopoverContent align="start" variant={"responsive"} {...props}>
+      <PopoverContent
+        align="start"
+        side="right"
+        variant={"responsive"}
+        {...props}
+      >
         {/* Node selector content */}
-        <NodeSelectorContent />
+        <NodeSelectorContent origin={origin} />
       </PopoverContent>
     </Popover>
   );

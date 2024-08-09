@@ -12,7 +12,7 @@ interface NodeToSelectProps {
  */
 export const NodeToSelect = ({ data }: NodeToSelectProps) => {
   return (
-    <div className="group flex w-full items-center gap-3 px-2 py-1">
+    <div className="flex w-full items-center gap-3 px-2 py-1">
       {/* Node icon or image */}
       <NTSIcon iconSrc={data.icon} />
 

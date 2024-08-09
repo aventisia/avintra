@@ -9,7 +9,7 @@ export const NSNoContentMessage = () => {
     <NoContentMessage
       className="-mt-5"
       Icon={TextSearch}
-      primaryMessage="No activities found"
+      primaryMessage="No record found"
       secondaryMessage="Try adjusting your search or filter criteria"
     />
   );
