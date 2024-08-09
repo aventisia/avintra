@@ -6,6 +6,14 @@ public class SupportTicketsTableMappingProfile : IRegister
     {
         // Mapping for support ticket record or records
         config.NewConfig<SupportTicket, SupportTicketsTableDto>()
+            .Map(dest => dest.RemarkCount,
+                src => src.SupportTicketRemarks != null
+                    ? src.SupportTicketRemarks.Count
+                    : 0)
+            .Map(dest => dest.SupportTicketRemarks,
+                src => src.SupportTicketRemarks != null
+                    ? src.SupportTicketRemarks.Adapt<List<SupportTicketRemarksDto>>()
+                    : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
