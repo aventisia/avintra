@@ -7,16 +7,14 @@ import { getNewNodeXY } from "./get-new-node-xy";
 
 export const useAddNode = () => {
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, setIsAutoLayoutPending, setNodes, setEdges } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        edges: state.edges,
-        setIsAutoLayoutPending: state.setIsAutoLayoutPending,
-        setNodes: state.setNodes,
-        setEdges: state.setEdges,
-      })),
-    );
+  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+    })),
+  );
 
   // Get addSelectedNodes action from RF store
   const store = useStoreApi();
@@ -54,17 +52,15 @@ export const useAddNode = () => {
       setTimeout(() => {
         // Select the newly created node
         addSelectedNodes([newNodeId]);
-
-        // Set auto layout pending
-        setIsAutoLayoutPending(true);
       }, 0);
 
       // Return if no node selected or node type is trigger
-      if (!selectedNode || nodeData.type === "trigger") return;
+      if (!selectedNode) return;
 
       // Create new edge
       const newEdge: Edge = {
         id: window.crypto.randomUUID(),
+        type: "customStepEdge",
         source: selectedNode.id,
         target: newNodeId,
       };
@@ -72,14 +68,7 @@ export const useAddNode = () => {
       // Update edges state
       setEdges(addEdge(newEdge, edges));
     },
-    [
-      nodes,
-      setNodes,
-      setIsAutoLayoutPending,
-      setEdges,
-      edges,
-      addSelectedNodes,
-    ],
+    [nodes, setNodes, setEdges, edges, addSelectedNodes],
   );
 
   return addNodeHandler;
