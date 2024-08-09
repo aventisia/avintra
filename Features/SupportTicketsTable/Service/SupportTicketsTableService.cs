@@ -133,7 +133,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             newSupportTicket.LastModifiedByUserId = _userId;
 
             // Additional mapping
-            newSupportTicket.TicketNumber = "TICKET-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            newSupportTicket.TicketNumber = "SR#" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
 
             // Insert support ticket
             await _unitOfWork.SupportTicketRepo.InsertAsync(newSupportTicket);
