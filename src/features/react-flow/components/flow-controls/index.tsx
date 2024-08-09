@@ -1,4 +1,3 @@
-import { NodeSelector } from "@/components/node-selector";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Panel } from "@xyflow/react";
 import { FCBContainer } from "./FCBContainer";
@@ -9,23 +8,13 @@ export const FlowControls = () => {
   return (
     <Panel position="top-left">
       <FCBContainer>
-        {/* Node selector to add new node */}
-        <NodeSelector
-          origin="FlowControls"
-          alignOffset={-4}
-          sideOffset={16}
-        />
-
-        {/* Separate from undo and redo */}
-        <div className="hidden">
-        <Separator orientation="vertical" className="mx-1 h-6" />
-
         {/* Undo */}
         <FCBUndo />
 
+        <Separator orientation="vertical" className="h-6" />
+
         {/* Redo */}
         <FCBRedo />
-        </div>
       </FCBContainer>
     </Panel>
   );
