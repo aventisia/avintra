@@ -16,6 +16,7 @@ public class SupportTicketRemark : IMustHaveTenant
     /// <summary>
     /// Gets or sets the ID of the tenant associated with the support ticket remark.
     /// </summary>
+    [RequiredGuid]
     public Guid TenantId { get; set; }
 
     /// <summary>
@@ -42,6 +43,7 @@ public class SupportTicketRemark : IMustHaveTenant
     /// <summary>
     /// Gets or sets the ID of the user who posted the comment.
     /// </summary>
+    [RequiredGuid]
     public Guid UserId { get; set; }
 
     /// <summary>
@@ -62,6 +64,7 @@ public class SupportTicketRemark : IMustHaveTenant
     /// <summary>
     /// Gets or sets the ID of the support ticket.
     /// </summary>
+    [RequiredGuid]
     public required Guid SupportTicketId { get; set; }
 
     /// <summary>
