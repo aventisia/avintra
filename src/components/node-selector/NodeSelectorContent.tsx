@@ -8,6 +8,7 @@ import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { NodeList } from "./NodeList";
 import { NSNoContentMessage } from "./NSNoContentMessage";
 import { NodeSelectorOriginType } from "./node-selector-origin-type";
+import { TriggerList } from "./TriggerList";
 
 interface NodeSelectorContentProps {
   origin: NodeSelectorOriginType;
@@ -27,7 +28,7 @@ export const NodeSelectorContent = ({ origin }: NodeSelectorContentProps) => {
       {/* List of Nodes */}
       <ScrollArea>
         <CommandList className="p-2">
-          <NodeList origin={origin} />
+          {origin === "ReplaceTrigger" ? <TriggerList /> : <NodeList />}
         </CommandList>
       </ScrollArea>
     </Command>
