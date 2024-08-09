@@ -1,7 +1,6 @@
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { OnBeforeDelete } from "@xyflow/react";
 import { useCallback } from "react";
-import { toast } from "sonner";
 
 export const useConfirmDelete = () => {
   // Get showAlert handler
@@ -10,22 +9,14 @@ export const useConfirmDelete = () => {
   // Confirm delete handler
   const onBeforeDelete: OnBeforeDelete = useCallback(
     async ({ nodes, edges }) => {
-      // Get selected nodes and edges
-      const selectedNodes = nodes.filter((node) => node.selected);
-      const selectedEdges = edges.filter((edge) => edge.selected);
+      // Get selected & deletable nodes and edges
+      const selectedNodes = nodes.filter((node) => node.selected && node.deletable);
+      const selectedEdges = edges.filter((edge) => edge.selected && edge.deletable);
 
-      // Return if no nodes or edges selected
+      // Return if no nodes or edges found
       if (!selectedNodes.length && !selectedEdges.length) return false;
 
-      // If selected node is a trigger node, return false
-      if (selectedNodes.some((node) => node.data?.type === "trigger")) {
-        toast.info("Flow trigger cannot be deleted", {
-          className: "sonner-toaster-sm",
-        });
-        return false;
-      }
-
-      // Get item or items based on selection
+      // Get item or items based on item count
       const itemOrItems =
         selectedNodes.length + selectedEdges.length > 1 ? "items" : "item";
 
@@ -39,7 +30,7 @@ export const useConfirmDelete = () => {
         });
       });
 
-      // Delete selected nodes and edges if confirmed
+      // Delete nodes and edges if confirmed
       if (isConfirmed) return true;
 
       // Return false if not confirmed
