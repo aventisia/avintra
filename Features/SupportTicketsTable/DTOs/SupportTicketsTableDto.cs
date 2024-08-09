@@ -18,14 +18,12 @@ public class SupportTicketsTableDto
     /// <summary>
     /// Gets or sets the Brief summary of the issue related to the ticket. Max-255
     /// </summary>
-    [Required]
     [StringLength(255)]
     public required string Subject { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the support ticket. Max-500
     /// </summary>
-    [Required]
     [StringLength(500, MinimumLength = 100)]
     public required string Description { get; set; }
 
@@ -75,4 +73,9 @@ public class SupportTicketsTableDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the support ticket remarks associated with the support ticket.
+    /// </summary>
+    public List<SupportTicketRemarksDto>? SupportTicketRemarks { get; set; }
 }
