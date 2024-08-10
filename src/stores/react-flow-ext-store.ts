@@ -28,6 +28,9 @@ type State = {
 
   /** Flag to track auto layout of flow */
   isAutoLayoutPending: boolean;
+
+  /** Origin of context menu. null means menu is closed */
+  contextMenuOrigin: "Node" | "Edge" | "Pane" | "Selection" | null;
 };
 
 type Actions = {
@@ -54,6 +57,11 @@ type Actions = {
 
   /** Set flag to track pending auto layout */
   setIsAutoLayoutPending: (isAutoLayoutPending: boolean) => void;
+
+  /** Set context menu origin */
+  setContextMenuOrigin: (
+    origin: "Node" | "Edge" | "Pane" | "Selection" | null,
+  ) => void;
 };
 
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
@@ -62,17 +70,27 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   isLocked: false,
   isSavePending: false,
   isAutoLayoutPending: false,
+  contextMenuOrigin: null,
 
   onNodesChange: (changes: NodeChange[]) => {
-    set({ isSavePending: true, nodes: applyNodeChanges(changes, get().nodes) });
+    set({
+      isSavePending: true,
+      nodes: applyNodeChanges(changes, get().nodes),
+    });
   },
 
   onEdgesChange: (changes: EdgeChange[]) => {
-    set({ isSavePending: true, edges: applyEdgeChanges(changes, get().edges) });
+    set({
+      isSavePending: true,
+      edges: applyEdgeChanges(changes, get().edges),
+    });
   },
 
   onConnect: (connection: Connection) => {
-    set({ isSavePending: true, edges: addEdge(connection, get().edges) });
+    set({
+      isSavePending: true,
+      edges: addEdge(connection, get().edges),
+    });
   },
 
   setNodes: (nodes: Node[]) => {
@@ -95,5 +113,9 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setIsAutoLayoutPending: (isAutoLayoutPending: boolean) => {
     set({ isAutoLayoutPending });
+  },
+
+  setContextMenuOrigin: (contextMenuOrigin) => {
+    set({ contextMenuOrigin });
   },
 }));
