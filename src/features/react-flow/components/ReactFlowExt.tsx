@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useDagreAutoLayout } from "../hooks/useDagreAutoLayout";
+import { useDeleteMiddleNode } from "../hooks/useDeleteMiddleNode";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
@@ -52,6 +53,9 @@ export const ReactFlowExt = () => {
   // Confirm delete handler
   const { onBeforeDelete } = useConfirmDelete();
 
+  // Reconnect nodes if a middle node is deleted
+  const { onNodesDelete } = useDeleteMiddleNode();
+
   // Render ReactFlow component
   return (
     <ReactFlowContextMenu>
@@ -63,7 +67,7 @@ export const ReactFlowExt = () => {
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
-        //onNodesDelete={onNodesDelete}
+        onNodesDelete={onNodesDelete}
         onEdgesChange={onEdgesChange}
         onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
         onConnect={onConnect}
