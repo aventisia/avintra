@@ -11,6 +11,7 @@ import { useDagreAutoLayout } from "../hooks/useDagreAutoLayout";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
+import { ReactFlowContextMenu } from "./context-menu";
 import { FlowControls } from "./flow-controls";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
@@ -53,27 +54,30 @@ export const ReactFlowExt = () => {
 
   // Render ReactFlow component
   return (
-    <ReactFlow
-      fitView
-      nodeTypes={customNodeTypesMemo}
-      edgeTypes={customEdgesTypesMemo}
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      //onNodesDelete={onNodesDelete}
-      onEdgesChange={onEdgesChange}
-      onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
-      onConnect={onConnect}
-      deleteKeyCode={["Delete", "Backspace"]}
-      // Toggles Reactflows interactivity
-      nodesDraggable={!isLocked}
-      nodesConnectable={!isLocked}
-      elementsSelectable={!isLocked}
-    >
-      <FlowControls />
-      <ViewControls />
-      <BackgroundExt />
-      <MiniMapExt />
-    </ReactFlow>
+    <ReactFlowContextMenu>
+      <ReactFlow
+        fitView
+        minZoom={0.4}
+        nodeTypes={customNodeTypesMemo}
+        edgeTypes={customEdgesTypesMemo}
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        //onNodesDelete={onNodesDelete}
+        onEdgesChange={onEdgesChange}
+        onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
+        onConnect={onConnect}
+        deleteKeyCode={["Delete", "Backspace"]}
+        // Toggles Reactflows interactivity
+        nodesDraggable={!isLocked}
+        nodesConnectable={!isLocked}
+        elementsSelectable={!isLocked}
+      >
+        <FlowControls />
+        <ViewControls />
+        <BackgroundExt />
+        <MiniMapExt />
+      </ReactFlow>
+    </ReactFlowContextMenu>
   );
 };
