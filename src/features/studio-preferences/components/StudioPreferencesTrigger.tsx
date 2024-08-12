@@ -1,0 +1,22 @@
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { POPOVER_HEADING } from "../constants";
+
+export const StudioPreferencesTrigger = () => {
+  return (
+    <Tooltip content={POPOVER_HEADING}>
+      <PopoverTrigger
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon8" }),
+          "hidden mlg:flex",
+          "aria-[expanded=true]:bg-slate-100",
+        )}
+      >
+        <AdjustmentsHorizontalIcon className="h-[1.1rem] w-[1.1rem] text-[--icon-color]" />
+      </PopoverTrigger>
+    </Tooltip>
+  );
+};
