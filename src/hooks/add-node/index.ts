@@ -50,6 +50,7 @@ export const useAddNode = () => {
       const newNode: Node = {
         id: newNodeId,
         type: nodeData.type,
+        dragHandle: ".custom-drag-handle",
         data: nodeData,
         position: newNodeXY,
         deletable: true,
