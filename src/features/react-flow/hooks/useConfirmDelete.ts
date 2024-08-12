@@ -1,14 +1,26 @@
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { OnBeforeDelete } from "@xyflow/react";
 import { useCallback } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 export const useConfirmDelete = () => {
+  // Get Studio Preferences store state
+  const { enableDeleteAlert } = useStudioPreferencesStore(
+    useShallow((state) => ({
+      enableDeleteAlert: state.studioPreferences.enableDeleteAlert,
+    })),
+  );
+
   // Get showAlert handler
   const { showAlertDialog } = useShowAlertHandler();
 
   // Confirm delete handler
   const onBeforeDelete: OnBeforeDelete = useCallback(
     async ({ nodes, edges }) => {
+      // Return true if delete alert is disabled
+      if (!enableDeleteAlert) return true;
+
       // Get selected & deletable nodes and edges
       const selectedNodes = nodes.filter(
         (node) => node.selected && node.deletable,
@@ -40,7 +52,7 @@ export const useConfirmDelete = () => {
       // Return false if not confirmed
       return false;
     },
-    [showAlertDialog],
+    [enableDeleteAlert, showAlertDialog],
   );
 
   return { onBeforeDelete };
