@@ -5,13 +5,13 @@ import { Separator } from "@/react-toolkit/ui/separator";
 import { useCallback, useEffect } from "react";
 import { z } from "zod";
 import {
-    enableAutoArrangeProps,
-    enableDeleteAlertProps,
-    layoutDirectionProps,
-    showIntractivityToggleProps,
-    showMiniMapProps,
-    showUndoRedoProps,
-    showZoomControlsProps,
+  enableAutoArrangeProps,
+  enableDeleteAlertProps,
+  layoutDirectionProps,
+  showIntractivityToggleProps,
+  showMiniMapProps,
+  showUndoRedoProps,
+  showZoomControlsProps,
 } from "../constants/studio-preferences-form-field-props";
 import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
 import { useDefineStudioPreferencesForm } from "../hooks/useDefineStudioPreferencesForm";
@@ -47,6 +47,7 @@ export const StudioPreferencesForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       className="space-y-2 px-2.5"
+      checkDirtyForm={false}
     >
       <SelectField {...layoutDirectionProps} />
       <SwitchField {...enableAutoArrangeProps} />
