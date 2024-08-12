@@ -6,34 +6,47 @@ import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBToggleLock } from "./VCBToggleLock";
 import { VCBZoomTo } from "./VCBZoomTo";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+import { useShallow } from "zustand/react/shallow";
 
 export const ViewControls = () => {
+  // Get Studio Preferences store state
+  const { showIntractivityToggle, showZoomControls } =
+    useStudioPreferencesStore(
+      useShallow((state) => ({
+        showIntractivityToggle: state.studioPreferences.showIntractivityToggle,
+        showZoomControls: state.studioPreferences.showZoomControls,
+      })),
+    );
+
   return (
     <Panel position="bottom-left">
       <div className="flex flex-col items-end space-y-4">
-        {/* Container-1 */}
-        <VCBContainer>
-          {/* Fit view button */}
-          <VCActionButton action="fitView" Icon={Scan} />
+        {showZoomControls && (
+          <VCBContainer>
+            {/* Fit view button */}
+            <VCActionButton action="fitView" Icon={Scan} />
 
-          {/* Separate from zoom in-out */}
-          <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
+            {/* Separate from zoom in-out */}
+            <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
 
-          {/* Zoom out */}
-          <VCActionButton action="zoomOut" Icon={MinusIcon} />
+            {/* Zoom out */}
+            <VCActionButton action="zoomOut" Icon={MinusIcon} />
 
-          {/* Zoom to 100% (reset) */}
-          <VCBZoomTo />
+            {/* Zoom to 100% (reset) */}
+            <VCBZoomTo />
 
-          {/* Zoom in */}
-          <VCActionButton action="zoomIn" Icon={PlusIcon} />
-        </VCBContainer>
+            {/* Zoom in */}
+            <VCActionButton action="zoomIn" Icon={PlusIcon} />
+          </VCBContainer>
+        )}
 
-        {/* Container-2 */}
-        <VCBContainer>
-          {/* Lock or unlock ReactFlow */}
-          <VCBToggleLock />
-        </VCBContainer>
+        {showIntractivityToggle && (
+          <VCBContainer>
+            {/* Lock or unlock ReactFlow */}
+            <VCBToggleLock />
+          </VCBContainer>
+        )}
       </div>
     </Panel>
   );
