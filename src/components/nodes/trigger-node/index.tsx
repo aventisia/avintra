@@ -12,7 +12,7 @@ import { NodeDescription } from "../../node-container/NodeDescription";
 import { NodeSelector } from "../../node-selector";
 import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
 
-type TriggerNode = Node<TriggerNodeDataType, "trigger">;
+type TriggerNode = Node<TriggerNodeDataType, "triggerNode">;
 
 export const TriggerNode = ({
   data,

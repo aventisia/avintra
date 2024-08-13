@@ -10,7 +10,7 @@ import { NodeHeading } from "../node-container/node-header/NodeHeading";
 import { NodeIcon } from "../node-container/node-header/NodeIcon";
 import { NodeDescription } from "../node-container/NodeDescription";
 
-type ActivityNode = Node<ActivityNodeDataType, "activity">;
+type ActivityNode = Node<ActivityNodeDataType, "activityNode">;
 
 export const ActivityNode = ({
   data,
