@@ -1,3 +1,4 @@
+import { LayoutDirectionType } from "@/react-toolkit/types/user-preferences-type";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import dagre from "@dagrejs/dagre";
 import { Edge, Node, Position } from "@xyflow/react";
@@ -17,7 +18,7 @@ const nodeHeight = 36;
 const getLayoutedElements = (
   nodes: Node[],
   edges: Edge[],
-  direction: "TB" | "LR",
+  direction: LayoutDirectionType,
 ) => {
   // Set configurations for the dagre graph
   dagreGraph.setGraph({
@@ -90,7 +91,7 @@ export const useDagreAutoLayout = () => {
   );
 
   const autoLayout = useCallback(
-    (direction: "TB" | "LR") => {
+    (direction: LayoutDirectionType) => {
       // Get layouted nodes and edges
       const { nodes: layoutedNodes, edges: layoutedEdges } =
         getLayoutedElements(nodes, edges, direction);
