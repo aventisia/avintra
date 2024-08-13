@@ -6,12 +6,12 @@ import { useCallback, useEffect } from "react";
 import { z } from "zod";
 import {
   enableAutoArrangeProps,
-  enableDeleteAlertProps,
+  disableDeleteAlertProps,
   layoutDirectionProps,
-  showIntractivityToggleProps,
-  showMiniMapProps,
-  showUndoRedoProps,
-  showZoomControlsProps,
+  hideIntractivityToggleProps,
+  hideMiniMapProps,
+  hideUndoRedoProps,
+  hideZoomControlsProps,
 } from "../constants/studio-preferences-form-field-props";
 import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
 import { useDefineStudioPreferencesForm } from "../hooks/useDefineStudioPreferencesForm";
@@ -52,15 +52,15 @@ export const StudioPreferencesForm = () => {
       <SelectField {...layoutDirectionProps} />
       <SwitchField {...enableAutoArrangeProps} />
       <Separator className="h-[0.5px]" />
-      <SwitchField {...showMiniMapProps} />
+      <SwitchField {...hideMiniMapProps} />
       <Separator className="h-[0.5px]" />
-      <SwitchField {...showUndoRedoProps} />
+      <SwitchField {...hideUndoRedoProps} />
       <Separator className="h-[0.5px]" />
-      <SwitchField {...showIntractivityToggleProps} />
+      <SwitchField {...hideIntractivityToggleProps} />
       <Separator className="h-[0.5px]" />
-      <SwitchField {...showZoomControlsProps} />
+      <SwitchField {...hideZoomControlsProps} />
       <Separator className="h-[0.5px]" />
-      <SwitchField {...enableDeleteAlertProps} />
+      <SwitchField {...disableDeleteAlertProps} />
     </Form>
   );
 };

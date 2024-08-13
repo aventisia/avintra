@@ -13,11 +13,11 @@ export const useStudioPreferencesStore = create<State & Actions>((set) => ({
   studioPreferences: {
     layoutDirection: "Top to Bottom",
     enableAutoArrange: false,
-    showMiniMap: true,
-    showUndoRedo: true,
-    showIntractivityToggle: true,
-    showZoomControls: true,
-    enableDeleteAlert: true,
+    hideMiniMap: false,
+    hideUndoRedo: false,
+    hideIntractivityToggle: false,
+    hideZoomControls: false,
+    disableDeleteAlert: false,
   },
 
   setStudioPreferences: (studioPreferences) =>

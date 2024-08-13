@@ -25,11 +25,11 @@ export const useDefineStudioPreferencesForm = () => {
     defaultValues: {
       layoutDirection: studio.layoutDirection,
       enableAutoArrange: studio.enableAutoArrange,
-      showMiniMap: studio.showMiniMap,
-      showUndoRedo: studio.showUndoRedo,
-      showIntractivityToggle: studio.showIntractivityToggle,
-      showZoomControls: studio.showZoomControls,
-      enableDeleteAlert: studio.enableDeleteAlert,
+      hideMiniMap: studio.hideMiniMap,
+      hideUndoRedo: studio.hideUndoRedo,
+      hideIntractivityToggle: studio.hideIntractivityToggle,
+      hideZoomControls: studio.hideZoomControls,
+      disableDeleteAlert: studio.disableDeleteAlert,
     },
   });
 

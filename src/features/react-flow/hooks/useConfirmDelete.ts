@@ -6,9 +6,9 @@ import { useShallow } from "zustand/react/shallow";
 
 export const useConfirmDelete = () => {
   // Get Studio Preferences store state
-  const { enableDeleteAlert } = useStudioPreferencesStore(
+  const { disableDeleteAlert } = useStudioPreferencesStore(
     useShallow((state) => ({
-      enableDeleteAlert: state.studioPreferences.enableDeleteAlert,
+      disableDeleteAlert: state.studioPreferences.disableDeleteAlert,
     })),
   );
 
@@ -19,7 +19,7 @@ export const useConfirmDelete = () => {
   const onBeforeDelete: OnBeforeDelete = useCallback(
     async ({ nodes, edges }) => {
       // Return true if delete alert is disabled
-      if (!enableDeleteAlert) return true;
+      if (disableDeleteAlert) return true;
 
       // Get selected & deletable nodes and edges
       const selectedNodes = nodes.filter(
@@ -52,7 +52,7 @@ export const useConfirmDelete = () => {
       // Return false if not confirmed
       return false;
     },
-    [enableDeleteAlert, showAlertDialog],
+    [disableDeleteAlert, showAlertDialog],
   );
 
   return { onBeforeDelete };
