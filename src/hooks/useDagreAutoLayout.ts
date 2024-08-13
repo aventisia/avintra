@@ -6,11 +6,8 @@ import { Edge, Node, Position } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-// Create a new dagre graph instance
-const dagreGraph = new dagre.graphlib.Graph();
-
-// TODO: Set an object for the default edge label
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+const nodeWidth = 340; // Width of the node in pixels.
+const nodeHeight = 85; // Height of the node in pixels.
 
 // Function to layout the elements using dagre
 const getLayoutedElements = (
@@ -18,6 +15,12 @@ const getLayoutedElements = (
   edges: Edge[],
   direction: LayoutDirectionType,
 ) => {
+  // Create a new dagre graph instance
+  const dagreGraph = new dagre.graphlib.Graph();
+
+  // TODO: Set an object for the default edge label
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+
   // Set configurations for the dagre graph
   dagreGraph.setGraph({
     rankdir: direction, // Direction for rank nodes. Can be TB, BT, LR, or RL, where T = top, B = bottom, L = left, and R = right.
@@ -28,8 +31,8 @@ const getLayoutedElements = (
   // Set nodes to the dagre graph
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, {
-      width: node.measured?.width, // Width of the node in pixels.
-      height: node.measured?.height, // Height of the node in pixels.
+      width: nodeWidth, 
+      height: nodeHeight,
     });
   });
 
@@ -52,8 +55,8 @@ const getLayoutedElements = (
       sourcePosition: direction === "LR" ? Position.Right : Position.Bottom,
 
       position: {
-        x: nodeWithPosition.x,
-        y: nodeWithPosition.y,
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
       },
     };
 
@@ -100,10 +103,10 @@ export const useDagreAutoLayout = () => {
   }, [nodes, edges, layoutDirection, setNodes, setEdges]);
 
   const autoLayoutOnAdd = useCallback(
-    (nodes: Node[], edges: Edge[]) => {
+    (newNodes: Node[], newEdges: Edge[]) => {
       // Get layouted nodes and edges
       const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, layoutDirection);
+        getLayoutedElements(newNodes, newEdges, layoutDirection);
 
       // Set the layouted nodes and edges
       setNodes([...layoutedNodes]);
