@@ -30,7 +30,7 @@ export const AddNodeFromEdge = ({ labelX, labelY }: AddNodeFromEdgeProps) => {
           className={cn(
             "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
             "group-hover:text-white group-hover:opacity-100",
-            "group-aria-[expanded=true]:text-white",
+            "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
           )}
         />
       </PopoverTrigger>
