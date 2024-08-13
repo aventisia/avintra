@@ -13,9 +13,9 @@ public static class InitialNodesAndEdgesUtil
 
         try
         {
-            // Create ids of trigger and placeholder node
+            // Create ids of trigger and plus node
             var triggerNodeId = Guid.NewGuid();
-            var placeholderNodeId = Guid.NewGuid();
+            var plusNodeId = Guid.NewGuid();
 
             // Create initial node list object
             var initialNodesList = new List<object>
@@ -35,16 +35,18 @@ public static class InitialNodesAndEdgesUtil
                         Icon = "/sample-slack-new-logo.svg",
                     },
                     Position = new { X = 0, Y = 0 },
+                    SourcePosition = "bottom",
                     Deletable = false,
                 },
-                // Placeholder node
+                
+                // Plus node
                 new
                 {
-                    Id = placeholderNodeId,
-                    Type = "placeholderNode",
+                    Id = plusNodeId,
+                    Type = "plusNode",
                     Position = new { X = 0, Y = 150 },
                     Deletable = false,
-                    Draggable = false,
+                    Draggable = true,
                 },
             };
 
@@ -54,9 +56,9 @@ public static class InitialNodesAndEdgesUtil
                 new
                 {
                     Id = Guid.NewGuid(),
-                    Type = "placeholderEdge",
+                    Type = "plusNodeEdge",
                     Source = triggerNodeId,
-                    Target = placeholderNodeId,
+                    Target = plusNodeId,
                     Deletable = false,
                     Selectable = false,
                 },
