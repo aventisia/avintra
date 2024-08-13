@@ -3,7 +3,7 @@ import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { PopoverAnchor } from "@radix-ui/react-popover";
 
-export const PlaceholderPlusTrigger = () => {
+export const PlusNodeTrigger = () => {
   return (
     <PopoverTrigger className="group">
       <div

@@ -1,7 +1,7 @@
 import CustomStepEdge from "@/components/edges/CustomStepEdge";
-import PlaceholderEdge from "@/components/edges/PlaceholderEdge";
+import PlusNodeEdge from "@/components/edges/PlusNodeEdge";
 
 export const CustomEdgeTypes = {
-  placeholderEdge: PlaceholderEdge,
+  plusNodeEdge: PlusNodeEdge,
   customStepEdge: CustomStepEdge,
 };

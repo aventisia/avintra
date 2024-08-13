@@ -1,5 +1,5 @@
 export type NodeDataType = {
-  type: "triggerNode" | "placeholderNode" | "activityNode";
+  type: "triggerNode" | "plusNode" | "activityNode" | "ifElseNode";
   category: string;
   name: string;
   label: string;

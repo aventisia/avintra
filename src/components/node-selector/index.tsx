@@ -9,7 +9,7 @@ interface NodeSelectorProps
   origin: NodeSelectorOriginType;
   /**
    * Node or edge id from where popover is triggered.
-   * Node Id if triggered from PlaceholderNode
+   * Node Id if triggered from PlusNode
    * Edge Id if triggered from CustomStepEdge
    */
   originId: string;

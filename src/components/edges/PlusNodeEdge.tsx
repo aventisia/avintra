@@ -2,7 +2,7 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 import "./override-edge-style.css";
 
-export default function PlaceholderEdge({
+export default function PlusNodeEdge({
   id,
   sourceX,
   sourceY,

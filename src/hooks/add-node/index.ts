@@ -18,25 +18,25 @@ export const useAddNode = () => {
   // Auto layout the flow
   const { autoLayoutOnAdd } = useDagreAutoLayout();
 
-  // Handler to add new node from placeholder node origin
-  const addNodeFromPlaceholderNode = useCallback(
-    (nodeData: NodeDataType, placeholderNodeId: string) => {
-      // Get placeholder edge
-      const placeholderEdge = edges.find(
-        (edge) => edge.target === placeholderNodeId,
+  // Handler to add new node from plus node origin
+  const addNodeFromPlusNode = useCallback(
+    (nodeData: NodeDataType, plusNodeId: string) => {
+      // Get plus node edge
+      const plusNodeEdge = edges.find(
+        (edge) => edge.target === plusNodeId,
       ) as Edge;
 
       // Get source node
       const sourceNode = nodes.find(
-        (node) => node.id === placeholderEdge.source,
+        (node) => node.id === plusNodeEdge.source,
       );
 
       // Create new node
       const newNode = createNewNodeObj(nodeData, sourceNode);
 
-      // Update placeholder edge source to new node
+      // Update plus node edge source to new node
       const updatedEdges = edges.map((edge) =>
-        edge.id === placeholderEdge.id
+        edge.id === plusNodeEdge.id
           ? {
               ...edge,
               source: newNode.id,
@@ -45,7 +45,7 @@ export const useAddNode = () => {
       );
 
       // Create new edge between source node and new node
-      const newEdge = createNewEdgeObj(placeholderEdge.source, newNode.id);
+      const newEdge = createNewEdgeObj(plusNodeEdge.source, newNode.id);
 
       // Auto organize node & edge
       autoLayoutOnAdd(nodes.concat(newNode), addEdge(newEdge, updatedEdges));
@@ -84,5 +84,5 @@ export const useAddNode = () => {
     [edges, nodes, autoLayoutOnAdd],
   );
 
-  return { addNodeFromPlaceholderNode, addNodeFromCustomStepEdge };
+  return { addNodeFromPlusNode, addNodeFromCustomStepEdge };
 };

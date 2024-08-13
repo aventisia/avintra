@@ -12,7 +12,7 @@ interface NodeListProps {
 
 export const NodeList = ({ origin, originId }: NodeListProps) => {
   // Get addNode handler
-  const { addNodeFromPlaceholderNode, addNodeFromCustomStepEdge } =
+  const { addNodeFromPlusNode, addNodeFromCustomStepEdge } =
     useAddNode();
 
   // Return the component
@@ -23,8 +23,8 @@ export const NodeList = ({ origin, originId }: NodeListProps) => {
           <CommandItem
             value={item.label}
             onSelect={() => {
-              if (origin === "PlaceholderNode") {
-                addNodeFromPlaceholderNode(item, originId);
+              if (origin === "PlusNode") {
+                addNodeFromPlusNode(item, originId);
               } else if (origin === "CustomStepEdge") {
                 addNodeFromCustomStepEdge(item, originId);
               }

@@ -1,18 +1,18 @@
 import { NodeSelector } from "@/components/node-selector";
 import { NodeProps } from "@xyflow/react";
 import { InputHandle } from "../../handles/InputHandle";
-import { PlaceholderPlusTrigger } from "./PlaceholderPlusTrigger";
+import { PlusNodeTrigger } from "./PlusNodeTrigger";
 
-export const PlaceholderNode = ({ id, targetPosition }: NodeProps) => {
+export const PlusNode = ({ id, targetPosition }: NodeProps) => {
   return (
     <>
       <NodeSelector
         originId={id}
-        origin="PlaceholderNode"
+        origin="PlusNode"
         sideOffset={10}
         alignOffset={-10}
       >
-        <PlaceholderPlusTrigger />
+        <PlusNodeTrigger />
       </NodeSelector>
       {/* Input (Target) Handle */}
       <InputHandle position={targetPosition} />
