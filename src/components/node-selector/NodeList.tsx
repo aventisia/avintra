@@ -12,7 +12,7 @@ interface NodeListProps {
 
 export const NodeList = ({ origin, originId }: NodeListProps) => {
   // Get addNode handler
-  const addNodeFromPlaceholderNode = useAddNode();
+  const { addNodeFromPlaceholderNode } = useAddNode();
 
   // Return the component
   return (
