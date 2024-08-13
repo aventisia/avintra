@@ -7,7 +7,7 @@ import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
-import { useDeleteMiddleNode } from "../hooks/useDeleteMiddleNode";
+import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import { BackgroundExt } from "./BackgroundExt";
@@ -50,7 +50,7 @@ export const ReactFlowExt = () => {
   const { onBeforeDelete } = useConfirmDelete();
 
   // Reconnect nodes if a middle node is deleted
-  const { onNodesDelete } = useDeleteMiddleNode();
+  const { onNodesDelete } = useOnNodeDelete();
 
   // Render ReactFlow component
   return (
