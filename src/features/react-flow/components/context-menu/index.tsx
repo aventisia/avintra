@@ -1,3 +1,4 @@
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -6,10 +7,18 @@ import {
 } from "@/react-toolkit/ui/context-menu";
 import { DeleteCMItem } from "@/react-toolkit/ui/context-menu/DeleteCMItem";
 import { SimpleCMItem } from "@/react-toolkit/ui/context-menu/SimpleCMItem";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { Clipboard, Copy, Library, Scissors } from "lucide-react";
-import { useDagreAutoLayout } from "../../hooks/useDagreAutoLayout";
+import { useShallow } from "zustand/react/shallow";
 
 export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
+  // Get Studio Preferences store state
+  const { layoutDirection } = useStudioPreferencesStore(
+    useShallow((state) => ({
+      layoutDirection: state.studioPreferences.layoutDirection,
+    })),
+  );
+  
   // Auto layout the flow
   const { autoLayout } = useDagreAutoLayout();
 
@@ -41,17 +50,9 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
         {/* Organize items. Apply auto layout */}
         <SimpleCMItem
           size="sm"
-          content="Organize (T2B)"
+          content="Organize"
           Icon={Library}
-          onClick={() => autoLayout("TB")}
-        />
-
-        {/* Organize items . Apply auto layout */}
-        <SimpleCMItem
-          size="sm"
-          content="Organize (L2R)"
-          Icon={Library}
-          onClick={() => autoLayout("LR")}
+          onClick={() => autoLayout(layoutDirection)}
         />
 
         <ContextMenuSeparator className="h-[0.5px]" />
