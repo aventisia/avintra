@@ -20,7 +20,6 @@ export const useSetStudioPreferences = () => {
   useEffect(() => {
     setStudioPreferences({
       layoutDirection: studio.layoutDirection,
-      enableAutoArrange: studio.enableAutoArrange,
       hideMiniMap: studio.hideMiniMap,
       hideUndoRedo: studio.hideUndoRedo,
       hideIntractivityToggle: studio.hideIntractivityToggle,

@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 export const studioPreferencesZodSchema = z.object({
-  layoutDirection: z.string().default("TB"),
-  enableAutoArrange: z.boolean().default(false),
+  layoutDirection: z.enum(["TB", "LR"]).default("TB"),
   hideMiniMap: z.boolean().default(false),
   hideUndoRedo: z.boolean().default(false),
   hideIntractivityToggle: z.boolean().default(false),

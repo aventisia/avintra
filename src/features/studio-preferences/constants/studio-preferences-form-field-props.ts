@@ -1,8 +1,8 @@
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
+import { RadioGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioGroupField";
 import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
 
 // Layout Direction
-const layoutDirectionProps: SelectFieldProps = {
+const layoutDirectionProps: RadioGroupFieldProps = {
   size: "sm",
   name: "layoutDirection",
   label: "Layout Direction",
@@ -16,16 +16,6 @@ const layoutDirectionProps: SelectFieldProps = {
       value: "LR",
     },
   ],
-};
-
-// Enable Auto Arrange
-const enableAutoArrangeProps: SwitchFieldProps = {
-  size: "sm",
-  showBorder: false,
-  name: "enableAutoArrange",
-  label: "Enable Auto Arrange",
-  description:
-    "Enables auto arrange to automatically arrange the flow",
 };
 
 // Hide Mini Map
@@ -75,7 +65,6 @@ const disableDeleteAlertProps: SwitchFieldProps = {
 
 export {
   layoutDirectionProps,
-  enableAutoArrangeProps,
   hideMiniMapProps,
   hideUndoRedoProps,
   hideIntractivityToggleProps,

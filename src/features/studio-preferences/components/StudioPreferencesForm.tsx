@@ -1,17 +1,16 @@
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { RadioGroupField } from "@/react-toolkit/ui/form/fields/RadioGroupField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { useCallback, useEffect } from "react";
 import { z } from "zod";
 import {
-  enableAutoArrangeProps,
   disableDeleteAlertProps,
-  layoutDirectionProps,
   hideIntractivityToggleProps,
   hideMiniMapProps,
   hideUndoRedoProps,
   hideZoomControlsProps,
+  layoutDirectionProps,
 } from "../constants/studio-preferences-form-field-props";
 import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
 import { useDefineStudioPreferencesForm } from "../hooks/useDefineStudioPreferencesForm";
@@ -46,21 +45,22 @@ export const StudioPreferencesForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-2 px-2.5"
+      className="space-y-[1rem] px-2.5"
       checkDirtyForm={false}
     >
-      <SelectField {...layoutDirectionProps} />
-      <SwitchField {...enableAutoArrangeProps} />
-      <Separator className="h-[0.5px]" />
-      <SwitchField {...hideMiniMapProps} />
-      <Separator className="h-[0.5px]" />
-      <SwitchField {...hideUndoRedoProps} />
-      <Separator className="h-[0.5px]" />
-      <SwitchField {...hideIntractivityToggleProps} />
-      <Separator className="h-[0.5px]" />
-      <SwitchField {...hideZoomControlsProps} />
-      <Separator className="h-[0.5px]" />
-      <SwitchField {...disableDeleteAlertProps} />
+      <RadioGroupField {...layoutDirectionProps} />
+      <div className="space-y-1">
+        <Separator className="h-[0.5px]" />
+        <SwitchField {...hideMiniMapProps} />
+        <Separator className="h-[0.5px]" />
+        <SwitchField {...hideUndoRedoProps} />
+        <Separator className="h-[0.5px]" />
+        <SwitchField {...hideIntractivityToggleProps} />
+        <Separator className="h-[0.5px]" />
+        <SwitchField {...hideZoomControlsProps} />
+        <Separator className="h-[0.5px]" />
+        <SwitchField {...disableDeleteAlertProps} />
+      </div>
     </Form>
   );
 };
