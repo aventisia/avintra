@@ -1,3 +1,4 @@
+import { cn } from "@/react-toolkit/lib/utils";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
@@ -20,7 +21,10 @@ export const TriggerNode = ({
 }: NodeProps<TriggerNode>) => {
   return (
     // Node Container
-    <NodeContainer className="border-green-600" selected={selected}>
+    <NodeContainer
+      className={cn("border-green-600", selected && "border-slate-300")}
+      selected={selected}
+    >
       {/* Node Header */}
       <NodeHeader>
         <NodeIcon src={data.icon} />
