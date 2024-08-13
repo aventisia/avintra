@@ -11,7 +11,7 @@ type Actions = {
 
 export const useStudioPreferencesStore = create<State & Actions>((set) => ({
   studioPreferences: {
-    layoutDirection: "Top to Bottom",
+    layoutDirection: "TB",
     enableAutoArrange: false,
     hideMiniMap: false,
     hideUndoRedo: false,
