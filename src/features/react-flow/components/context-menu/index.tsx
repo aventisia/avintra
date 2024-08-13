@@ -7,18 +7,9 @@ import {
 } from "@/react-toolkit/ui/context-menu";
 import { DeleteCMItem } from "@/react-toolkit/ui/context-menu/DeleteCMItem";
 import { SimpleCMItem } from "@/react-toolkit/ui/context-menu/SimpleCMItem";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { Clipboard, Copy, Library, Scissors } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
 
 export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
-  // Get Studio Preferences store state
-  const { layoutDirection } = useStudioPreferencesStore(
-    useShallow((state) => ({
-      layoutDirection: state.studioPreferences.layoutDirection,
-    })),
-  );
-  
   // Auto layout the flow
   const { autoLayout } = useDagreAutoLayout();
 
@@ -52,7 +43,7 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           size="sm"
           content="Organize"
           Icon={Library}
-          onClick={() => autoLayout(layoutDirection)}
+          onClick={() => autoLayout()}
         />
 
         <ContextMenuSeparator className="h-[0.5px]" />
