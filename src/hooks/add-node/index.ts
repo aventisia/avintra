@@ -26,7 +26,7 @@ export const useAddNode = () => {
         (edge) => edge.target === placeholderNodeId,
       ) as Edge;
 
-      // Set source node Id and get source node
+      // Get source node
       const sourceNode = nodes.find(
         (node) => node.id === placeholderEdge.source,
       );
@@ -38,7 +38,7 @@ export const useAddNode = () => {
       const updatedEdges = edges.map((edge) =>
         edge.id === placeholderEdge.id
           ? {
-              ...placeholderEdge,
+              ...edge,
               source: newNode.id,
             }
           : edge,
@@ -53,5 +53,36 @@ export const useAddNode = () => {
     [edges, nodes, autoLayoutOnAdd],
   );
 
-  return { addNodeFromPlaceholderNode };
+  // Handler to add new node from custom step edge
+  const addNodeFromCustomStepEdge = useCallback(
+    (nodeData: NodeDataType, stepEdgeId: string) => {
+      // Get step edge
+      const stepEdge = edges.find((edge) => edge.id === stepEdgeId) as Edge;
+
+      // Get source node
+      const sourceNode = nodes.find((node) => node.id === stepEdge.source);
+
+      // Create new node
+      const newNode = createNewNodeObj(nodeData, sourceNode);
+
+      // Update step edge source to new node
+      const updatedEdges = edges.map((edge) =>
+        edge.id === stepEdgeId
+          ? {
+              ...edge,
+              source: newNode.id,
+            }
+          : edge,
+      );
+
+      // Create new edge between source node and new node
+      const newEdge = createNewEdgeObj(stepEdge.source, newNode.id);
+
+      // Auto organize node & edge
+      autoLayoutOnAdd(nodes.concat(newNode), addEdge(newEdge, updatedEdges));
+    },
+    [edges, nodes, autoLayoutOnAdd],
+  );
+
+  return { addNodeFromPlaceholderNode, addNodeFromCustomStepEdge };
 };

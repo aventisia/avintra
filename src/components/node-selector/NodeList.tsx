@@ -12,7 +12,8 @@ interface NodeListProps {
 
 export const NodeList = ({ origin, originId }: NodeListProps) => {
   // Get addNode handler
-  const { addNodeFromPlaceholderNode } = useAddNode();
+  const { addNodeFromPlaceholderNode, addNodeFromCustomStepEdge } =
+    useAddNode();
 
   // Return the component
   return (
@@ -24,6 +25,8 @@ export const NodeList = ({ origin, originId }: NodeListProps) => {
             onSelect={() => {
               if (origin === "PlaceholderNode") {
                 addNodeFromPlaceholderNode(item, originId);
+              } else if (origin === "CustomStepEdge") {
+                addNodeFromCustomStepEdge(item, originId);
               }
             }}
             className="rounded-lg p-1"
