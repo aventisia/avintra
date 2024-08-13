@@ -1,8 +1,9 @@
 import { LayoutDirectionType } from "@/react-toolkit/types/user-preferences-type";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import dagre from "@dagrejs/dagre";
 import { Edge, Node, Position } from "@xyflow/react";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 // Create a new dagre graph instance
@@ -10,9 +11,6 @@ const dagreGraph = new dagre.graphlib.Graph();
 
 // TODO: Set an object for the default edge label
 dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-const nodeWidth = 172;
-const nodeHeight = 36;
 
 // Function to layout the elements using dagre
 const getLayoutedElements = (
@@ -54,8 +52,8 @@ const getLayoutedElements = (
       sourcePosition: direction === "LR" ? Position.Right : Position.Bottom,
 
       position: {
-        x: nodeWithPosition.x - (node?.measured?.width ?? nodeWidth) / 2,
-        y: nodeWithPosition.y - (node?.measured?.height ?? nodeHeight) / 2,
+        x: nodeWithPosition.x,
+        y: nodeWithPosition.y,
       },
     };
 
@@ -72,44 +70,47 @@ const getLayoutedElements = (
  */
 export const useDagreAutoLayout = () => {
   // Get ReactFlowExt store state & actions
-  const {
-    nodes,
-    edges,
-    isAutoLayoutPending,
-    setIsAutoLayoutPending,
-    setNodes,
-    setEdges,
-  } = useReactFlowExtStore(
+  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
     useShallow((state) => ({
-      isAutoLayoutPending: state.isAutoLayoutPending,
       nodes: state.nodes,
       edges: state.edges,
-      setIsAutoLayoutPending: state.setIsAutoLayoutPending,
       setNodes: state.setNodes,
       setEdges: state.setEdges,
     })),
   );
 
-  const autoLayout = useCallback(
-    (direction: LayoutDirectionType) => {
+  // Get Studio Preferences store state
+  const { layoutDirection } = useStudioPreferencesStore(
+    useShallow((state) => ({
+      layoutDirection: state.studioPreferences.layoutDirection,
+    })),
+  );
+
+  const autoLayout = useCallback(() => {
+    // Get layouted nodes and edges
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges,
+      layoutDirection,
+    );
+
+    // Set the layouted nodes and edges
+    setNodes([...layoutedNodes]);
+    setEdges([...layoutedEdges]);
+  }, [nodes, edges, layoutDirection, setNodes, setEdges]);
+
+  const autoLayoutOnAdd = useCallback(
+    (nodes: Node[], edges: Edge[]) => {
       // Get layouted nodes and edges
       const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
+        getLayoutedElements(nodes, edges, layoutDirection);
 
       // Set the layouted nodes and edges
       setNodes([...layoutedNodes]);
       setEdges([...layoutedEdges]);
     },
-    [nodes, edges, setNodes, setEdges],
+    [layoutDirection, setNodes, setEdges],
   );
 
-  // Applyauto layout if isAutoLayoutPending is true (Node or edge added/removed)
-  useEffect(() => {
-    if (isAutoLayoutPending) {
-      autoLayout("TB");
-      setIsAutoLayoutPending(false);
-    }
-  }, [autoLayout, isAutoLayoutPending, setIsAutoLayoutPending]);
-
-  return { autoLayout };
+  return { autoLayout, autoLayoutOnAdd };
 };
