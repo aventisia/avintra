@@ -26,9 +26,6 @@ type State = {
   /** Flag to track pending flow save */
   isSavePending: boolean;
 
-  /** Flag to track auto layout of flow */
-  isAutoLayoutPending: boolean;
-
   /** Origin of context menu. null means menu is closed */
   contextMenuOrigin: "Node" | "Edge" | "Pane" | "Selection" | null;
 };
@@ -55,9 +52,6 @@ type Actions = {
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
 
-  /** Set flag to track pending auto layout */
-  setIsAutoLayoutPending: (isAutoLayoutPending: boolean) => void;
-
   /** Set context menu origin */
   setContextMenuOrigin: (
     origin: "Node" | "Edge" | "Pane" | "Selection" | null,
@@ -69,7 +63,6 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   edges: [],
   isLocked: false,
   isSavePending: false,
-  isAutoLayoutPending: false,
   contextMenuOrigin: null,
 
   onNodesChange: (changes: NodeChange[]) => {
@@ -109,10 +102,6 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setIsSavePending: (isSavePending: boolean) => {
     set({ isSavePending });
-  },
-
-  setIsAutoLayoutPending: (isAutoLayoutPending: boolean) => {
-    set({ isAutoLayoutPending });
   },
 
   setContextMenuOrigin: (contextMenuOrigin) => {
