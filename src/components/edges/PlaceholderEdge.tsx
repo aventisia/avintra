@@ -17,7 +17,7 @@ export default function PlaceholderEdge({
     sourceY,
     targetX,
     targetY,
-    borderRadius: 15,
+    borderRadius: 20,
     sourcePosition,
     targetPosition,
   });
