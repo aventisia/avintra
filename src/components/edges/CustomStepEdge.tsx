@@ -1,6 +1,8 @@
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import "./override-edge-style.css";
+import { AddNodeFromEdge } from "./AddNodeFromEdge";
+import { NodeSelector } from "../node-selector";
 
 export default function CustomStepEdge({
   id,
@@ -11,12 +13,12 @@ export default function CustomStepEdge({
   sourcePosition,
   targetPosition,
 }: EdgeProps) {
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
     targetY,
-    borderRadius: 15,
+    borderRadius: 20,
     sourcePosition,
     targetPosition,
   });
@@ -30,6 +32,14 @@ export default function CustomStepEdge({
         path={edgePath}
         markerEnd="url(#chevronMarkerEnd)"
       />
+      <NodeSelector
+        origin="CustomStepEdge"
+        originId={id}
+        sideOffset={10}
+        alignOffset={-12}
+      >
+        <AddNodeFromEdge labelX={labelX} labelY={labelY} />
+      </NodeSelector>
     </>
   );
 }
