@@ -31,8 +31,21 @@ export const NodeSelectorContent = ({
     if (inputRef.current) inputRef.current.focus();
   });
 
+  // Focus on search input on tab change
+  const onTabChange = () => {
+    if (inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  };
+
   return (
-    <Tabs defaultValue="all" className="h-full pb-9">
+    <Tabs
+      defaultValue="all"
+      onValueChange={onTabChange}
+      className="h-full pb-9"
+    >
       <Command>
         {/* Searchbox */}
         <CommandInput
