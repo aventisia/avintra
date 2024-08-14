@@ -33,7 +33,7 @@ export const FPCFlowsList = ({ flowsList }: FPCFlowListProps) => {
       {flowsList?.map((item) => (
         <CommandItem
           key={item.id}
-          value={item.id}
+          value={item.name}
           onSelect={() => {
             // If the flow is already opened, do nothing
             if (currentFlow.id === item.id) return;
