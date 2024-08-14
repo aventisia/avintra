@@ -4,7 +4,7 @@ import { TextSearch } from "lucide-react";
 /**
  * Renders a message to display when no nodes are found.
  */
-export const NSNoContentMessage = () => {
+export const NSCNoContentMessage = () => {
   return (
     <NoContentMessage
       className="-mt-5"

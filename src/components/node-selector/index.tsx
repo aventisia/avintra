@@ -1,6 +1,6 @@
 import { Popover, PopoverContent } from "@/react-toolkit/ui/popover";
 import React from "react";
-import { NodeSelectorContent } from "./NodeSelectorContent";
+import { NodeSelectorContent } from "./node-selector-content";
 import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
 
 interface NodeSelectorProps
