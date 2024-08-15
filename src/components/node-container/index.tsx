@@ -16,7 +16,7 @@ export const NodeContainer = ({
       className={cn(
         "relative flex h-[5.3rem] rounded-lg border border-slate-300",
         className,
-        selected && "ring-2 ring-ring ring-offset-1 ring-offset-slate-200",
+        selected && "ring-1 ring-ring border-primary",
       )}
       {...props}
     >
