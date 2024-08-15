@@ -4,7 +4,7 @@ import { NodeContainer } from "@/components/node-container";
 import { NodeCategory } from "@/components/node-container/node-header/NodeCategory";
 import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
-import { NodeIcon } from "@/components/node-container/node-header/NodeIcon";
+import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { IfElseNodeDataType } from "@/types/if-else-node-data-type";
@@ -23,7 +23,7 @@ export const IfElseNode = ({
     <NodeContainer selected={selected}>
       {/* Node Header */}
       <NodeHeader>
-        <NodeIcon src={data.icon} />
+        {data.Icon || <NodeImage src={data.img} />}
         <NodeHeading>{data.label}</NodeHeading>
         <NodeCategory>{data.category}</NodeCategory>
       </NodeHeader>

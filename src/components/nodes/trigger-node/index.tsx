@@ -1,15 +1,15 @@
+import { OutputHandle } from "@/components/handles/OutputHandle";
+import { NodeContainer } from "@/components/node-container";
+import { NodeCategory } from "@/components/node-container/node-header/NodeCategory";
+import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
+import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
+import { NodeImage } from "@/components/node-container/node-header/NodeImage";
+import { NodeDescription } from "@/components/node-container/NodeDescription";
+import { NodeSelector } from "@/components/node-selector";
 import { cn } from "@/react-toolkit/lib/utils";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
-import { OutputHandle } from "../../handles/OutputHandle";
-import { NodeContainer } from "../../node-container";
-import { NodeCategory } from "../../node-container/node-header/NodeCategory";
-import { NodeHeader } from "../../node-container/node-header/NodeHeader";
-import { NodeHeading } from "../../node-container/node-header/NodeHeading";
-import { NodeIcon } from "../../node-container/node-header/NodeIcon";
-import { NodeDescription } from "../../node-container/NodeDescription";
-import { NodeSelector } from "../../node-selector";
 import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
 
 type TriggerNode = Node<TriggerNodeDataType, "triggerNode">;
@@ -27,7 +27,7 @@ export const TriggerNode = ({
     >
       {/* Node Header */}
       <NodeHeader>
-        <NodeIcon src={data.icon} />
+        {data.Icon || <NodeImage src={data.img} />}
         <NodeHeading>{data.label}</NodeHeading>
         <NodeCategory>{data.category}</NodeCategory>
       </NodeHeader>
