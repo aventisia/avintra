@@ -23,7 +23,7 @@ export const NodeContainer = ({
       <div className="custom-drag-handle flex items-center justify-center h-full w-5 rounded-l-lg bg-slate-100">
         <GripVertical className="h-5 w-5 text-slate-300" />
       </div>
-      <div className="flex w-[20rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 py-3.5">
+      <div className="flex w-[20rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pt-3 pb-3.5">
         {children}
       </div>
     </div>
