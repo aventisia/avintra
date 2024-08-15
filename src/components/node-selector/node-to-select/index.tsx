@@ -1,6 +1,6 @@
 import { NodeDataType } from "@/types/node-data-type";
 import { NTSDescription } from "./NTSDescription";
-import { NTSIcon } from "./NTSIcon";
+import { NTSImage } from "./NTSImage";
 import { NTSLabel } from "./NTSLabel";
 
 interface NodeToSelectProps {
@@ -14,8 +14,8 @@ export const NodeToSelect = ({ data }: NodeToSelectProps) => {
   return (
     <div className="flex w-full items-center gap-3 px-2 py-1">
       {/* Node icon or image */}
-      <NTSIcon iconSrc={data.icon} />
-
+      {data.Icon || <NTSImage src={data.img} />}
+      
       <div className="grow">
         {/* Node heading */}
         <NTSLabel>{data.label}</NTSLabel>
