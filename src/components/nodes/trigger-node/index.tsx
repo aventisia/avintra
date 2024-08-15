@@ -22,7 +22,7 @@ export const TriggerNode = ({
   return (
     // Node Container
     <NodeContainer
-      className={cn("border-green-600", selected && "border-slate-300")}
+      className={cn("border-green-600 ring-1 ring-green-600")}
       selected={selected}
     >
       {/* Node Header */}
