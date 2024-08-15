@@ -7,7 +7,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "sendEmail",
     label: "Send email",
     description: "To send bluk email at any time",
-    icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
   },
   {
     type: "activityNode",
@@ -15,7 +15,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "createNewFlow",
     label: "Create new flow",
     description: "New flow can be created by just providing a name",
-    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
     type: "activityNode",
@@ -23,7 +23,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "activity1",
     label: "Activity 1",
     description: "Activity 1 description",
-    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
     type: "activityNode",
@@ -31,7 +31,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "activity2",
     label: "Activity 2",  
     description: "Activity 2 description",
-    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
     type: "activityNode",
@@ -39,7 +39,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "activity3",
     label: "Activity 3",
     description: "Activity 3 description",
-    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
     type: "activityNode",
@@ -47,7 +47,7 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "activity4",
     label: "Activity 4",
     description: "Activity 4 description",
-    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
   {
     type: "activityNode",
@@ -55,6 +55,6 @@ export const activitiesList: ActivityNodeDataType[] = [
     name: "activity5",
     label: "Activity 5",
     description: "Activity 5 description",
-    icon: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-google_g_logo.svg`,
   },
 ];

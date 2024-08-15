@@ -7,7 +7,7 @@ export const triggersList: TriggerNodeDataType[] = [
     name: "startFlow",
     label: "Flow trigger 1",
     description: "To trigger the flow, a starting point",
-    icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
   },
   {
     type: "triggerNode",
@@ -15,7 +15,7 @@ export const triggersList: TriggerNodeDataType[] = [
     name: "startFlow",
     label: "Flow trigger 2",
     description: "To trigger the flow, a starting point",
-    icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
   },
   {
     type: "triggerNode",
@@ -23,7 +23,7 @@ export const triggersList: TriggerNodeDataType[] = [
     name: "startFlow",
     label: "Flow trigger 3",
     description: "To trigger the flow, a starting point",
-    icon: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    img: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
   }
 
 ];
