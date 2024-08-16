@@ -1,3 +1,4 @@
+import { nodesIconMapper } from "@/components/node-icons/NodesIconMapper";
 import { NodeDataType } from "@/types/node-data-type";
 import { NTSDescription } from "./NTSDescription";
 import { NTSImage } from "./NTSImage";
@@ -14,8 +15,8 @@ export const NodeToSelect = ({ data }: NodeToSelectProps) => {
   return (
     <div className="flex w-full items-center gap-3 px-2 py-1">
       {/* Node icon or image */}
-      {data.Icon || <NTSImage src={data.img} />}
-      
+      {data.icon ? nodesIconMapper[data.icon] : <NTSImage src={data.img} />}
+
       <div className="grow">
         {/* Node heading */}
         <NTSLabel>{data.label}</NTSLabel>

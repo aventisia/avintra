@@ -13,6 +13,6 @@ export type NodeDataType = {
   name: string;
   label: string;
   description: string;
-  Icon?: React.ReactNode;
+  icon?: string;
   img?: string;
 };

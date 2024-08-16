@@ -4,10 +4,10 @@ export const triggersList: TriggerNodeDataType[] = [
   {
     type: "triggerNode",
     category: "Triggers",
-    name: "startFlow",
-    label: "Flow trigger 1",
+    name: "manualTrigger",
+    label: "Manual Trigger",
     description: "To trigger the flow, a starting point",
-    img: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
+    icon: "ManualTriggerIcon",
   },
   {
     type: "triggerNode",
@@ -24,6 +24,5 @@ export const triggersList: TriggerNodeDataType[] = [
     label: "Flow trigger 3",
     description: "To trigger the flow, a starting point",
     img: `${import.meta.env.BASE_URL}sample-slack-new-logo.svg`,
-  }
-
+  },
 ];

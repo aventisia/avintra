@@ -5,6 +5,7 @@ import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
+import { nodesIconMapper } from "@/components/node-icons/NodesIconMapper";
 import { NodeSelector } from "@/components/node-selector";
 import { cn } from "@/react-toolkit/lib/utils";
 import { Separator } from "@/react-toolkit/ui/separator";
@@ -27,7 +28,7 @@ export const TriggerNode = ({
     >
       {/* Node Header */}
       <NodeHeader>
-        {data.Icon || <NodeImage src={data.img} />}
+        {data.icon ? nodesIconMapper[data.icon] : <NodeImage src={data.img} />}
         <NodeHeading>{data.label}</NodeHeading>
         <NodeCategory>{data.category}</NodeCategory>
       </NodeHeader>

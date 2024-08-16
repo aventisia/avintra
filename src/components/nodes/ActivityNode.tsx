@@ -6,6 +6,7 @@ import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
+import { nodesIconMapper } from "@/components/node-icons/NodesIconMapper";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { ActivityNodeDataType } from "@/types/activity-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
@@ -23,7 +24,7 @@ export const ActivityNode = ({
     <NodeContainer selected={selected}>
       {/* Node Header */}
       <NodeHeader>
-        {data.Icon || <NodeImage src={data.img} />}
+        {data.icon ? nodesIconMapper[data.icon] : <NodeImage src={data.img} />}
         <NodeHeading>{data.label}</NodeHeading>
         <NodeCategory>{data.category}</NodeCategory>
       </NodeHeader>

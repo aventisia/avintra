@@ -1,7 +1,3 @@
-import {
-  ConditionalNodeIcon,
-  LoopNodeIcon,
-} from "@/components/node-icons/LogicalNodeIcons";
 import { NodeDataType } from "@/types/node-data-type";
 
 export const logicNodesList: NodeDataType[] = [
@@ -11,7 +7,7 @@ export const logicNodesList: NodeDataType[] = [
     name: "ifElseNode",
     label: "If else",
     description: "This node represents an if-else statement.",
-    Icon: <ConditionalNodeIcon />,
+    icon: "ConditionalNodeIcon",
   },
   {
     type: "switchCaseNode",
@@ -19,7 +15,7 @@ export const logicNodesList: NodeDataType[] = [
     name: "switchCaseNode",
     label: "Switch case",
     description: "This node represents a switch case statement.",
-    Icon: <ConditionalNodeIcon />,
+    icon: "ConditionalNodeIcon",
   },
   {
     type: "whileLoopNode",
@@ -27,7 +23,7 @@ export const logicNodesList: NodeDataType[] = [
     name: "whileLoopNode",
     label: "While loop",
     description: "This node represents a while loop.",
-    Icon: <LoopNodeIcon />,
+    icon: "LoopNodeIcon",
   },
   {
     type: "forLoopNode",
@@ -35,7 +31,7 @@ export const logicNodesList: NodeDataType[] = [
     name: "forLoopNode",
     label: "For loop",
     description: "This node represents a for loop.",
-    Icon: <LoopNodeIcon />,
+    icon: "LoopNodeIcon",
   },
   {
     type: "forEachLoopNode",
@@ -43,6 +39,6 @@ export const logicNodesList: NodeDataType[] = [
     name: "forEachLoopNode",
     label: "For each loop",
     description: "This node represents a for each loop.",
-    Icon: <LoopNodeIcon />,
+    icon: "LoopNodeIcon",
   },
 ];
