@@ -16,7 +16,7 @@ const verificationCodeProps: InputFieldProps = {
 
 // New password
 const newPwdProps: InputFieldProps = {
-  name: "pwd",
+  name: "newPwd",
   placeholder: "New password",
   type: "password",
   isRequired: true,
