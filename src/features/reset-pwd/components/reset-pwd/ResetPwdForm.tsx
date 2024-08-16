@@ -33,6 +33,7 @@ export const ResetPwdForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isResetPending}
+      checkDirtyForm={false}
     >
       {/* New password */}
       <InputField {...newPwdProps} />
