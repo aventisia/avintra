@@ -129,10 +129,8 @@ public class FlowsTableService : IFlowsTableService
             newFlow.CreatedByUserId = _userId;
             newFlow.LastModifiedByUserId = _userId;
 
-            // Get intial nodes and edges
+            // Add intial nodes and edges
             var (initialNodes, initialEdges) = Features.FlowsTable.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
-
-            // Add Manual trigger node to flow
             newFlow.Nodes = initialNodes;
             newFlow.Edges = initialEdges;
 

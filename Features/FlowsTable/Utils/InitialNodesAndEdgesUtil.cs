@@ -32,7 +32,7 @@ public static class InitialNodesAndEdgesUtil
                         Name = "manualTrigger",
                         Label = "Manual Trigger",
                         Description = "To trigger the flow, a starting point",
-                        Icon = "/sample-slack-new-logo.svg",
+                        Icon = "ManualTriggerIcon",
                     },
                     Position = new { X = 0, Y = 0 },
                     SourcePosition = "bottom",
