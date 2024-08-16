@@ -11,7 +11,7 @@ const SocialButtons = () => {
         />
         Google
       </Button>
-      <Button className="flex-grow basis-0" variant="outline">
+      <Button className="flex-grow hidden basis-0" variant="outline">
         <img
           className="mr-2.5 h-[1.1rem] w-[1.1rem]"
           src={import.meta.env.BASE_URL + "microsoft_logo.svg"}
