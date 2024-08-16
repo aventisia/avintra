@@ -1,4 +1,4 @@
-export type NodeDataType = {
+type NodeTypeAndCategory = {
   type:
     | "triggerNode"
     | "plusNode"
@@ -10,9 +10,14 @@ export type NodeDataType = {
     | "forEachLoopNode"
     | "flowEndNode";
   category: string;
+};
+
+type NodeDataType = NodeTypeAndCategory & {
   name: string;
   label: string;
   description: string;
   icon?: string;
   img?: string;
 };
+
+export type { NodeTypeAndCategory, NodeDataType };
