@@ -13,11 +13,15 @@ interface NodeToSelectProps {
  */
 export const NodeToSelect = ({ data }: NodeToSelectProps) => {
   return (
-    <div className="flex w-full items-center gap-3 px-2 py-1">
+    <div className="flex w-full items-start gap-3 px-2 py-1">
       {/* Node icon or image */}
-      {data.icon ? nodesIconMapper[data.icon] : <NTSImage src={data.img} />}
+      {data.icon ? (
+        <div className="mt-1.5">{nodesIconMapper[data.icon]}</div>
+      ) : (
+        <NTSImage src={data.img} />
+      )}
 
-      <div className="grow">
+      <div className="grow space-y-0.5">
         {/* Node heading */}
         <NTSLabel>{data.label}</NTSLabel>
 
