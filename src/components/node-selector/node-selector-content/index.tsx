@@ -1,3 +1,4 @@
+import { cn } from "@/react-toolkit/lib/utils";
 import {
   Command,
   CommandEmpty,
@@ -40,11 +41,14 @@ export const NodeSelectorContent = ({
     }
   };
 
+  // Is used to render the list of triggers
+  const isReplaceTrigger = origin === "ReplaceTrigger";
+
   return (
     <Tabs
       defaultValue="all"
       onValueChange={onTabChange}
-      className="h-full pb-9"
+      className={cn("h-full", !isReplaceTrigger && "pb-9")}
     >
       <Command>
         {/* Searchbox */}
@@ -61,7 +65,7 @@ export const NodeSelectorContent = ({
 
         {/* List of Nodes */}
         <ScrollArea className="p-2">
-          {origin === "ReplaceTrigger" ? (
+          {isReplaceTrigger ? (
             // Contains the list of all triggers
             <NSCTriggersList />
           ) : (
@@ -72,7 +76,7 @@ export const NodeSelectorContent = ({
       </Command>
 
       {/* Contains list of all Tabs */}
-      <NSCTabsList />
+      {!isReplaceTrigger && <NSCTabsList />}
     </Tabs>
   );
 };
