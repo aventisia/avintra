@@ -32,10 +32,11 @@ public class ProjectsTableService : IProjectsTableService
         {
             // Try to get projects
             var projects = await _unitOfWork.ProjectRepo
-                                        .GetByConditionAsync(w => true) //PEDNING: Update condition
-                                        .OrderByDescending(o => o.CreatedOn)
-                                        .ProjectToType<ProjectsTableDto>()
-                                        .ToListAsync();
+                                            .GetByConditionAsync(w =>
+                                                w.CreatedByUserId == _userId) // TODO: Update condition
+                                            .OrderByDescending(o => o.CreatedOn)
+                                            .ProjectToType<ProjectsTableDto>()
+                                            .ToListAsync();
 
             // Task successful
             serviceResponse.Data = projects.Adapt<IEnumerable<ProjectsTableDto>>();
@@ -65,8 +66,10 @@ public class ProjectsTableService : IProjectsTableService
         {
             // Validate project uniqueness
             var projectAlreadyExists = await _unitOfWork.ProjectRepo
-                                        .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
-                                        .FirstOrDefaultAsync();
+                                                        .GetByConditionAsync(w =>
+                                                            w.CreatedByUserId == _userId &&
+                                                            w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                        .FirstOrDefaultAsync();
 
             // Project already exists
             if (projectAlreadyExists != null)
@@ -105,8 +108,10 @@ public class ProjectsTableService : IProjectsTableService
         {
             // Validate project uniqueness
             var projectAlreadyExists = await _unitOfWork.ProjectRepo
-                                        .GetByConditionAsync(w => w.Name.ToLower() == projectsTableDto.Name.ToLower())
-                                        .FirstOrDefaultAsync();
+                                                        .GetByConditionAsync(w =>
+                                                            w.CreatedByUserId == _userId &&
+                                                            w.Name.ToLower() == projectsTableDto.Name.ToLower())
+                                                        .FirstOrDefaultAsync();
 
             // Project already exists
             if (projectAlreadyExists != null)
@@ -163,8 +168,10 @@ public class ProjectsTableService : IProjectsTableService
         {
             // Validate project existence
             var project = await _unitOfWork.ProjectRepo
-                                        .GetByConditionAsync(w => w.Id == projectsTableDto.Id)
-                                        .SingleOrDefaultAsync();
+                                           .GetByConditionAsync(w =>
+                                                w.CreatedByUserId == _userId &&
+                                                w.Id == projectsTableDto.Id)
+                                           .SingleOrDefaultAsync();
 
             // Project does not exist
             if (project == null)
@@ -176,10 +183,11 @@ public class ProjectsTableService : IProjectsTableService
 
             // Validate project uniqueness
             var projectAlreadyExists = await _unitOfWork.ProjectRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Name.ToLower() == projectsTableDto.Name.ToLower() &&
-                                            w.Id != projectsTableDto.Id)
-                                        .FirstOrDefaultAsync();
+                                                        .GetByConditionAsync(w =>
+                                                            w.CreatedByUserId == _userId &&
+                                                            w.Name.ToLower() == projectsTableDto.Name.ToLower() &&
+                                                            w.Id != projectsTableDto.Id)
+                                                        .FirstOrDefaultAsync();
 
             // Project already exists
             if (projectAlreadyExists != null)
@@ -236,8 +244,10 @@ public class ProjectsTableService : IProjectsTableService
         {
             // Validate project existence
             var project = await _unitOfWork.ProjectRepo
-                                        .GetByConditionAsync(w => w.Id == id)
-                                        .SingleOrDefaultAsync();
+                                           .GetByConditionAsync(w =>
+                                                w.CreatedByUserId == _userId &&
+                                                w.Id == id)
+                                           .SingleOrDefaultAsync();
 
             // Project does not exist
             if (project == null)
