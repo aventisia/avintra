@@ -32,10 +32,12 @@ public class FlowsTableService : IFlowsTableService
         {
             // Get flows
             var flows = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.ProjectId == projectId) //PEDNING: Update condition
-                                        .OrderByDescending(w => w.CreatedOn)
-                                        .ProjectToType<FlowsTableDto>()
-                                        .ToListAsync();
+                                         .GetByConditionAsync(w =>
+                                            w.ProjectId == projectId &&
+                                            w.CreatedByUserId == _userId) // TODO: Update condition
+                                         .OrderByDescending(w => w.CreatedOn)
+                                         .ProjectToType<FlowsTableDto>()
+                                         .ToListAsync();
 
             // Task successful
             serviceResponse.Data = flows.Adapt<IEnumerable<FlowsTableDto>>();
@@ -65,10 +67,11 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow uniqueness
             var flowAlreadyExists = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w =>
-                                            w.ProjectId == projectId &&
-                                            w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
-                                        .FirstOrDefaultAsync();
+                                                     .GetByConditionAsync(w =>
+                                                        w.ProjectId == projectId &&
+                                                        w.CreatedByUserId == _userId &&
+                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                     .FirstOrDefaultAsync();
 
             // Flow already exists
             if (flowAlreadyExists != null)
@@ -107,10 +110,11 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow name uniqueness
             var flowAlreadyExists = await _unitOfWork.FlowRepo
-                .GetByConditionAsync(w =>
-                    w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
-                    w.ProjectId == flowsTableDto.ProjectId)
-                .FirstOrDefaultAsync();
+                                                     .GetByConditionAsync(w =>
+                                                        w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
+                                                        w.ProjectId == flowsTableDto.ProjectId &&
+                                                        w.CreatedByUserId == _userId)
+                                                     .FirstOrDefaultAsync();
 
             // Flow already exists
             if (flowAlreadyExists != null)
@@ -172,7 +176,10 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow existence
             var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.Id == flowsTableDto.Id)
+                                        .GetByConditionAsync(w =>
+                                            w.Id == flowsTableDto.Id &&
+                                            w.ProjectId == flowsTableDto.ProjectId &&
+                                            w.CreatedByUserId == _userId)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
@@ -185,11 +192,12 @@ public class FlowsTableService : IFlowsTableService
 
             // Validate flow name uniqueness
             var flowAlreadyExists = await _unitOfWork.FlowRepo
-                .GetByConditionAsync(w =>
-                    w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
-                    w.ProjectId == flowsTableDto.ProjectId &&
-                    w.Id != flowsTableDto.Id)
-                .FirstOrDefaultAsync();
+                                                     .GetByConditionAsync(w =>
+                                                        w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
+                                                        w.ProjectId == flowsTableDto.ProjectId &&
+                                                        w.CreatedByUserId == _userId &&
+                                                        w.Id != flowsTableDto.Id)
+                                                     .FirstOrDefaultAsync();
 
             // Flow already exists
             if (flowAlreadyExists != null)
@@ -246,7 +254,9 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow existence
             var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.Id == id)
+                                        .GetByConditionAsync(w =>
+                                            w.Id == id &&
+                                            w.CreatedByUserId == _userId)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
