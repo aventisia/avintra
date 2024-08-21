@@ -8,8 +8,7 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
+import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { UserCrudDialog } from "./user-crud-dialog/UserCrudDialog";
 import { usersTableColumns } from "./UsersTableColumns";
@@ -28,7 +27,12 @@ export const UsersTable = () => {
   const { data } = useFetchUsers();
 
   // Create a React table for users data
-  const table = useDataTable(usersTableColumns, data?.data || []);
+  const table = useDataTable(
+    usersTableColumns,
+    data?.data || [],
+    columnVisibilityState,
+    true,
+  );
 
   // Return the rendered DataTable component.
   return (
