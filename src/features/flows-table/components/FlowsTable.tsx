@@ -6,7 +6,7 @@ import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateBu
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { SEARCH_COLUMN } from "../constants/constants";
+import { SEARCH_COLUMN } from "../constants";
 import { useFetchFlows } from "../hooks/useFetchFlows";
 import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
 import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
