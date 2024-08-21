@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { isProjectNameAvailable } from "../apis/projects-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
+import { DATA_QUERY_KEY } from "../constants";
 import {
   projectNameSchema,
   projectZodSchema,

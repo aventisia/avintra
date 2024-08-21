@@ -2,14 +2,16 @@ import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimist
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
 import { projectOptimisticMutationFn } from "../../apis/projects-table-apis";
-import { DATA_QUERY_KEY } from "../../constants/constants";
+import { DATA_QUERY_KEY } from "../../constants";
 import { ProjectsTableDto } from "../../dtos/projects-table-dto";
 
 interface ProjectRowDeleteActionProps {
   rowId: string;
 }
 
-export const ProjectRowDeleteAction = ({ rowId }: ProjectRowDeleteActionProps) => {
+export const ProjectRowDeleteAction = ({
+  rowId,
+}: ProjectRowDeleteActionProps) => {
   // Get showAlert handler
   const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
 

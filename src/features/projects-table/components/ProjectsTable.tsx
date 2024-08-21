@@ -8,7 +8,7 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
+import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { useFetchProjects } from "../hooks/useFetchProjects";
 import { ProjectCrudDialog } from "./project-crud-dialog/ProjectCrudDialog";
 import { projectsTableColumns } from "./ProjectsTableColumns";
