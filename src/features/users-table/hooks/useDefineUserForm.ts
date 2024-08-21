@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { DATA_QUERY_KEY } from "../constants/constants";
+import { DATA_QUERY_KEY } from "../constants";
 import { userEmailSchema, userZodSchema } from "../constants/user-zod-schema";
 import { UsersTableDto } from "../dtos/users-table-dto";
 

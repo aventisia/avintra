@@ -7,7 +7,7 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
 import { userOptimisticMutationFn } from "../../apis/users-table-apis";
-import { DATA_QUERY_KEY } from "../../constants/constants";
+import { DATA_QUERY_KEY } from "../../constants";
 import {
   emailConfirmedProps,
   emailProps,

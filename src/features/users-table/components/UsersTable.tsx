@@ -7,6 +7,7 @@ import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateBu
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { useFetchUsers } from "../hooks/useFetchUsers";
