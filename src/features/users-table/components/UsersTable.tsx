@@ -13,6 +13,7 @@ import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { UserCrudDialog } from "./user-crud-dialog/UserCrudDialog";
 import { usersTableColumns } from "./UsersTableColumns";
+import { columnDisplayNames } from "../constants/column-display-names";
 
 /**
  * Renders a table of users.
@@ -49,7 +50,7 @@ export const UsersTable = () => {
                   placeholder="Search users..."
                 />
                 {/* Column view filter */}
-                <DTViewOptions table={table} />
+                <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
                 {/* Create user button */}
                 <DTCreateButton />
