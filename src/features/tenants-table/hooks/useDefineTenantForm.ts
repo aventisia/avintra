@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { isTenantNameAvailable } from "../apis/tenants-table-apis";
-import { DATA_QUERY_KEY } from "../constants/constants";
+import { DATA_QUERY_KEY } from "../constants";
 import {
   tenantNameSchema,
   tenantZodSchema,

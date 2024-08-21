@@ -2,7 +2,7 @@ import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimist
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
-import { DATA_QUERY_KEY } from "../../constants/constants";
+import { DATA_QUERY_KEY } from "../../constants";
 import { TenantsTableDto } from "../../dtos/tenants-table-dto";
 
 interface TenantRowDeleteActionProps {
