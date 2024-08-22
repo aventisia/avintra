@@ -13,7 +13,7 @@ export const useConfirmDelete = () => {
   );
 
   // Get showAlert handler
-  const { showAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Confirm delete handler
   const onBeforeDelete: OnBeforeDelete = useCallback(
@@ -32,18 +32,20 @@ export const useConfirmDelete = () => {
       // Return if no nodes or edges found
       if (selectedNodes.length + selectedEdges.length === 0) return false;
 
-      // Get item or items based on item count
-      const itemOrItems =
-        selectedNodes.length + selectedEdges.length > 1 ? "items" : "item";
-
       // Get confirmation from user
       const isConfirmed = await new Promise<boolean>((resolve) => {
-        showAlertDialog({
-          confirmActionFn: () => resolve(true),
-          title: `Delete selected ${itemOrItems}?`,
-          description: `This action cannot be undone. Are you sure you want to delete the selected ${itemOrItems}?`,
-          confirmBtnText: "Yes, delete",
-        });
+        if (selectedNodes.length + selectedEdges.length === 1) {
+          showDefaultAlertDialog({
+            confirmActionFn: () => resolve(true),
+            alertType: "delete",
+          });
+        } else {
+          showDefaultAlertDialog({
+            confirmActionFn: () => resolve(true),
+            alertType: "delete-multiple",
+            additionalText: `${selectedNodes.length + selectedEdges.length} items`,
+          });
+        }
       });
 
       // Delete nodes and edges if confirmed
@@ -52,7 +54,7 @@ export const useConfirmDelete = () => {
       // Return false if not confirmed
       return false;
     },
-    [disableDeleteAlert, showAlertDialog],
+    [disableDeleteAlert, showDefaultAlertDialog],
   );
 
   return { onBeforeDelete };
