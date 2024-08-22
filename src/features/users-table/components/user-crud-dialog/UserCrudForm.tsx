@@ -50,13 +50,12 @@ export const UserCrudForm = () => {
     UsersTableDto,
     UsersTableDto | boolean,
     UsersTableDto
-  >(userOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], userOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof userZodSchema>) => {
     // Create or update the user
     mutateUser({
-      id: rowId,
       payload: refineFormData(formData) as unknown as UsersTableDto,
       crudAction: crudAction,
     });
