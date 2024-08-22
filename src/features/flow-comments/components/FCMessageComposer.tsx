@@ -46,13 +46,18 @@ export const FCMessageComposer = ({
     FlowCommentDto,
     FlowCommentDto | boolean,
     FlowCommentDto
-  >(flowCommentOptimisticMutationFn, fcQueryKey, "asc", false);
+  >(
+    [form.getValues("id")],
+    flowCommentOptimisticMutationFn,
+    fcQueryKey,
+    "asc",
+    false,
+  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowCommentZodSchema>) => {
     // Call mutation
     mutateFlowComment({
-      id: formData.id,
       payload: formData as unknown as FlowCommentDto,
       crudAction: crudAction,
     });
