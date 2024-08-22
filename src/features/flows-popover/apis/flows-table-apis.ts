@@ -68,24 +68,34 @@ const deleteFlow = (id: string) => {
 };
 
 /**
+ * Deletes multiple Flows by their IDs.
+ */
+const deleteFlows = (ids: string[]) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .then((res) => res.data);
+};
+
+/**
  * Performs an optimistic mutation on a flow based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<FlowsTableDto | string>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<FlowsTableDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
 const flowOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
-}: IOptimisticMutation<FlowsTableDto | string>) => {
+}: IOptimisticMutation<FlowsTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
       return insertFlow(payload as FlowsTableDto);
     case "update":
       return updateFlow(payload as FlowsTableDto);
     case "delete":
-      return deleteFlow(id);
+      return deleteFlow(payload as string);
+    case "delete-multiple":
+      return deleteFlows(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
@@ -97,5 +107,6 @@ export {
   insertFlow,
   updateFlow,
   deleteFlow,
+  deleteFlows,
   flowOptimisticMutationFn,
 };
