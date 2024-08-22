@@ -1,8 +1,10 @@
+import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { createAccountZodSchema } from "../constants/create-account-zod-schema";
+import { createAccountZodSchema, emailSchema } from "../constants/create-account-zod-schema";
 import { useCreateAccountStore } from "../stores/create-account-store";
 
 export const useDefineCreateAccountForm = () => {
@@ -32,11 +34,30 @@ export const useDefineCreateAccountForm = () => {
     formState: { isSubmitting, isDirty },
   } = form;
 
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof createAccountZodSchema>, z.ZodString>({
+    fieldName: "email",
+    form,
+    fieldSchema: emailSchema,
+    checkAvailabilityAPIFn: isEmailAvailable,
+  });
+
   // Return form and methods
   return {
     form,
     isSubmitting,
     isDirty,
     setCreateAccountData,
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
   };
 };

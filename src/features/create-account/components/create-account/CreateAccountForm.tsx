@@ -14,7 +14,6 @@ import {
 } from "../../constants/form-field-props";
 import { useCreateCodeMutation } from "../../hooks/useCreateCodeMutation";
 import { useDefineCreateAccountForm } from "../../hooks/useDefineCreateAccountForm";
-import { useIsEmailAvailable } from "../../hooks/useIsEmailAvailable";
 import { TermsAndConditionsLabel } from "./TermsAndConditionsLabel";
 
 /**
@@ -22,17 +21,16 @@ import { TermsAndConditionsLabel } from "./TermsAndConditionsLabel";
  */
 export const CreateAccountForm = () => {
   // Define form
-  const { form, isSubmitting, setCreateAccountData } =
-    useDefineCreateAccountForm();
-
-  // Get state and methods for availability check
   const {
+    form,
+    isSubmitting,
+    setCreateAccountData,
     isAvailable,
-    availabilityMessage,
-    setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-  } = useIsEmailAvailable(form);
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useDefineCreateAccountForm();
 
   // Get mutation to create verification code
   const { createCodeMutation, isCodePending } = useCreateCodeMutation();
