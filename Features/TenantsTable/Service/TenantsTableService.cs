@@ -5,13 +5,15 @@ public class TenantsTableService : ITenantsTableService
     private readonly ILogger<TenantsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TenantDefaultConfig _tenantDefaultConfig;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public TenantsTableService(
         ILogger<TenantsTableService> logger,
         IUnitOfWork unitOfWork,
         TenantDefaultConfig tenantDefaultConfig,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class TenantsTableService : ITenantsTableService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _tenantDefaultConfig = tenantDefaultConfig;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieves all tenants.
@@ -35,7 +38,10 @@ public class TenantsTableService : ITenantsTableService
         {
             // Try to get tenants
             var tenants = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(w => w.IsEditable == true) //PEDNING: Update condition
+                .GetByConditionAsync(w =>
+                    w.IsEditable == true &&
+                    w.IsDefault == false &&
+                    w.Id != _currentTenantService.CurrentTenantId) //  TODO: Update condition
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
@@ -206,7 +212,11 @@ public class TenantsTableService : ITenantsTableService
         {
             // Validate tenant existence
             var tenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.Id == tenantsTableDto.Id)
+                                          .GetByConditionAsync(w =>
+                                            w.IsEditable == true &&
+                                            w.IsDefault == false &&
+                                            w.Id != _currentTenantService.CurrentTenantId &&
+                                            w.Id == tenantsTableDto.Id)
                                         .SingleOrDefaultAsync();
 
             // Tenant does not exist
@@ -287,7 +297,10 @@ public class TenantsTableService : ITenantsTableService
         {
             // Validate tenant existence
             var tenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.Id == id)
+                                          .GetByConditionAsync(w =>
+                                            w.IsEditable == true &&
+                                            w.Id != _currentTenantService.CurrentTenantId &&
+                                            w.Id == id)
                                         .SingleOrDefaultAsync();
 
             // Tenant does not exist
