@@ -11,32 +11,28 @@ interface UserRowDeleteActionProps {
 
 export const UserRowDeleteAction = ({ rowId }: UserRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the User
   const { mutate: deleteUser } = useListOptimisticMutation<
     string,
     UsersTableDto | boolean,
     UsersTableDto
-  >(userOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], userOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the User
-              deleteUser({
-                id: rowId,
-                payload: rowId,
-                crudAction: "delete",
-              });
-            },
-          },
-          "user",
-        );
+        showDefaultAlertDialog({
+          confirmActionFn: () =>
+            deleteUser({
+              payload: rowId,
+              crudAction: "delete",
+            }),
+          alertType: "delete-record",
+          additionalText: "user",
+        });
       }}
     />
   );
