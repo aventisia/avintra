@@ -217,7 +217,7 @@ public class TenantsTableService : ITenantsTableService
                                             w.IsDefault == false &&
                                             w.Id != _currentTenantService.CurrentTenantId &&
                                             w.Id == tenantsTableDto.Id)
-                                        .SingleOrDefaultAsync();
+                                          .SingleOrDefaultAsync();
 
             // Tenant does not exist
             if (tenant == null)
@@ -301,7 +301,7 @@ public class TenantsTableService : ITenantsTableService
                                             w.IsEditable == true &&
                                             w.Id != _currentTenantService.CurrentTenantId &&
                                             w.Id == id)
-                                        .SingleOrDefaultAsync();
+                                          .SingleOrDefaultAsync();
 
             // Tenant does not exist
             if (tenant == null)
@@ -356,4 +356,62 @@ public class TenantsTableService : ITenantsTableService
         return serviceResponse;
     }
 
+    // Disable multiple tenants by their IDs.
+    public async Task<ServiceResponse<bool>> DisableTenantsAsync(List<Guid> ids)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to disable tenants. Please try again"
+        };
+
+        try
+        {
+            // Validate tenants existence
+            var tenants = await _unitOfWork.TenantRepo
+                                            .GetByConditionAsync(w =>
+                                                w.IsDefault == false &&
+                                                ids.Contains(w.Id))
+                                            .ToListAsync();
+
+            // Tenants do not exist
+            if (tenants.Count == 0)
+            {
+                _logger.LogInformation($"Tenants do not exist");
+                serviceResponse.Message = "Tenants do not exist";
+                return serviceResponse;
+            }
+
+            // Disable tenants
+            foreach (var tenant in tenants)
+            {
+                tenant.IsDisabled = true;
+                tenant.LastModifiedByUserId = _userId;
+                tenant.LastModifiedOn = DateTimeOffset.UtcNow;
+            }
+
+            // Update tenants
+            _unitOfWork.TenantRepo.Update(tenants);
+
+            // Update-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while disabling tenants");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenants disabled successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
 }
