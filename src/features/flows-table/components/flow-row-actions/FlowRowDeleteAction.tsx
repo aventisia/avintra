@@ -12,7 +12,7 @@ interface FlowRowDeleteActionProps {
 
 export const FlowRowDeleteAction = ({ rowId }: FlowRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get flows store state and actions
   const { flowsQueryKey } = useFlowsTableStore(
@@ -26,25 +26,21 @@ export const FlowRowDeleteAction = ({ rowId }: FlowRowDeleteActionProps) => {
     string,
     FlowsTableDto | boolean,
     FlowsTableDto
-  >(flowOptimisticMutationFn, flowsQueryKey);
+  >([rowId], flowOptimisticMutationFn, flowsQueryKey);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the flow
-              deleteFlow({
-                id: rowId,
-                payload: rowId,
-                crudAction: "delete",
-              });
-            },
-          },
-          "flow",
-        );
+        showDefaultAlertDialog({
+          confirmActionFn: () =>
+            deleteFlow({
+              payload: rowId,
+              crudAction: "delete",
+            }),
+          alertType: "delete-record",
+          additionalText: "flow",
+        });
       }}
     />
   );
