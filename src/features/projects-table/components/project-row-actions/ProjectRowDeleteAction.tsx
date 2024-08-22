@@ -13,32 +13,28 @@ export const ProjectRowDeleteAction = ({
   rowId,
 }: ProjectRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the project
   const { mutate: deleteProject } = useListOptimisticMutation<
     string,
     ProjectsTableDto | boolean,
     ProjectsTableDto
-  >(projectOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], projectOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the project
-              deleteProject({
-                id: rowId,
-                payload: rowId,
-                crudAction: "delete",
-              });
-            },
-          },
-          "project",
-        );
+        showDefaultAlertDialog({
+          confirmActionFn: () =>
+            deleteProject({
+              payload: rowId,
+              crudAction: "delete",
+            }),
+          alertType: "delete-record",
+          additionalText: "project",
+        });
       }}
     />
   );
