@@ -41,13 +41,12 @@ export const ProjectCrudForm = () => {
     ProjectsTableDto,
     ProjectsTableDto | boolean,
     ProjectsTableDto
-  >(projectOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId],projectOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof projectZodSchema>) => {
     // Create or update the project
     mutateProject({
-      id: rowId,
       payload: refineFormData(formData) as unknown as ProjectsTableDto,
       crudAction: crudAction,
     });
