@@ -267,18 +267,7 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            //#PENDING: UPDATE THIS CHECK ONCE ENTITY IS FORMED
-            // IMPORTANT: Check if any relationship exists and abort required
-            //var relationshipExists = await _unitOfWork.FlowRepo
-            //                                .DoesDependentEntitiesExistAsync(w => w.Id == id);
-
-            //// Relationship exists
-            //if (relationshipExists)
-            //{
-            //    _logger.LogInformation($"Cannot delete flow because it is linked with other records");
-            //    serviceResponse.Message = "Cannot delete this flow because it is linked with other records";
-            //    return serviceResponse;
-            //}
+            // TODO: Check flow relationship with other entities
 
             // Delete flow
             _unitOfWork.FlowRepo.Delete(flow);
@@ -294,6 +283,59 @@ public class FlowsTableService : IFlowsTableService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow deleted successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Deletes multiple flows by their IDs.
+    public async Task<ServiceResponse<bool>> DeleteFlowsAsync(List<Guid> ids)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete flows. Please try again"
+        };
+
+        try
+        {
+            // Validate flows existence
+            var flows = await _unitOfWork.FlowRepo
+                                            .GetByConditionAsync(w =>
+                                                w.CreatedByUserId == _userId &&
+                                                ids.Contains(w.Id))
+                                            .ToListAsync();
+
+            // Flows do not exist
+            if (flows.Count == 0)
+            {
+                _logger.LogInformation($"Flows do not exist");
+                serviceResponse.Message = "Flows do not exist";
+                return serviceResponse;
+            }
+
+            // TODO: Check flow relationship with other entities
+
+            // Delete flows
+            _unitOfWork.FlowRepo.Delete(flows);
+
+            // Delete-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting flows");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flows deleted successfully";
         }
         catch (Exception ex)
         {
