@@ -16,6 +16,15 @@ const getUsers = () => {
 };
 
 /**
+ * Retrieves the account roles basis current user (user-manager) top role.
+ */
+const getUserRoles = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/roles-to-select`)
+    .then((res) => res.data);
+};
+
+/**
  * Inserts a new user.
  */
 const insertUser = (newUser: UsersTableDto) => {
@@ -43,11 +52,11 @@ const deleteUser = (id: string) => {
 };
 
 /**
- * Retrieves the account roles basis current user (user-manager) top role.
+ * Disable multiple users by their IDs.
  */
-const getUserRoles = () => {
+const disableUsers = (ids: string[]) => {
   return axiosInstance
-    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/roles-to-select`)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
     .then((res) => res.data);
 };
 
@@ -59,7 +68,6 @@ const getUserRoles = () => {
  * @throws {Error} - If an invalid action type is provided.
  */
 const userOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
 }: IOptimisticMutation<UsersTableDto | string>) => {
@@ -69,17 +77,18 @@ const userOptimisticMutationFn = ({
     case "update":
       return updateUser(payload as UsersTableDto);
     case "delete":
-      return deleteUser(id);
+      return deleteUser(payload as string);
     default:
       throw new Error("Invalid action type");
   }
 };
 
 export {
-  deleteUser,
-  getUserRoles,
   getUsers,
+  getUserRoles,
   insertUser,
   updateUser,
+  deleteUser,
+  disableUsers,
   userOptimisticMutationFn,
 };
