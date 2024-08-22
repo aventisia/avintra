@@ -46,4 +46,16 @@ public class FlowsTableController : BaseApiController
     {
         return ResultHelper(await _flowsTableService.DeleteFlowAsync(id));
     }
+
+    // Delete multiple flows by their IDs.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFlows([FromBody] List<Guid> ids)
+    {
+        // If only one ID is passed, call the single delete method.
+        if (ids.Count == 1)
+            return ResultHelper(await _flowsTableService.DeleteFlowAsync(ids[0]));
+        
+        // Otherwise, call the multiple delete method.
+        return ResultHelper(await _flowsTableService.DeleteFlowsAsync(ids));
+    }
 }
