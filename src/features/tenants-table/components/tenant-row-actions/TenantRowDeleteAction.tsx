@@ -13,32 +13,28 @@ export const TenantRowDeleteAction = ({
   rowId,
 }: TenantRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the tenant
   const { mutate: deleteTenant } = useListOptimisticMutation<
     string,
     TenantsTableDto | boolean,
     TenantsTableDto
-  >(tenantOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], tenantOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the tenant
-              deleteTenant({
-                id: rowId,
-                payload: rowId,
-                crudAction: "delete",
-              });
-            },
-          },
-          "tenant",
-        );
+        showDefaultAlertDialog({
+          confirmActionFn: () =>
+            deleteTenant({
+              payload: rowId,
+              crudAction: "delete",
+            }),
+          alertType: "delete-record",
+          additionalText: "tenant",
+        });
       }}
     />
   );
