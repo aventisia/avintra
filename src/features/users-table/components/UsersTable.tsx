@@ -7,12 +7,14 @@ import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateBu
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import { Separator } from "@/react-toolkit/ui/separator";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { UserCrudDialog } from "./user-crud-dialog/UserCrudDialog";
+import { UsersBulkActions } from "./UsersBulkActions";
 import { usersTableColumns } from "./UsersTableColumns";
-import { columnDisplayNames } from "../constants/column-display-names";
 
 /**
  * Renders a table of users.
@@ -39,39 +41,38 @@ export const UsersTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Dialog for user crud operation */}
+          {/* Crud ops dialog */}
           <UserCrudDialog>
+            {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              {/* Heading of the user table */}
               <DTHeading heading={TABLE_HEADING} />
 
-              {/* Search, view and create user container */}
               <div className="flex items-center gap-2">
-                {/* Search box */}
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search users..."
                 />
-                {/* Column view filter */}
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
-                {/* Create user button */}
                 <DTCreateButton />
               </div>
             </div>
-            {/* Data table container */}
+
+            {/* Data table to render data */}
             <div className="rounded-md border">
-              {/* Main data table component to render the users data. */}
               <DataTable
                 table={table}
                 columnsLength={usersTableColumns.length}
               />
             </div>
-            {/* Content of user curd dialog for create, read, update actions */}
           </UserCrudDialog>
+
           {/* Data table Pagination component */}
           <DTPagination table={table} />
+
+          {/* Bulk actions for data table */}
+          <UsersBulkActions table={table} />
         </div>
       ) : (
         // Show data table skeleton while fetching the users data
