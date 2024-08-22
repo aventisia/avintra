@@ -40,4 +40,14 @@ public interface IFlowsTableService
     /// <param name="id">The ID of the flow to delete.</param>
     /// <returns>The task result contains the service response indicating whether the flow was successfully deleted.</returns>
     Task<ServiceResponse<bool>> DeleteFlowAsync(Guid id);
+
+    /// <summary>
+    /// Deletes multiple flows by their IDs.
+    /// </summary>
+    /// <param name="ids">The IDs of the flows to delete.</param>
+    /// <returns>The task result contains the service response indicating whether the flows were successfully deleted.</returns>
+    /// <remarks>
+    /// It is recommended to use this method to delete multiple flows at once to reduce the number of requests to the server.
+    /// </remarks>
+    Task<ServiceResponse<bool>> DeleteFlowsAsync(List<Guid> ids);
 }
