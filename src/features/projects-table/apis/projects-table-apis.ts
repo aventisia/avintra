@@ -5,7 +5,6 @@ import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-res
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { ProjectsTableDto } from "../dtos/projects-table-dto";
 
-
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/project`;
 
 /**
@@ -56,30 +55,45 @@ const deleteProject = (id: string) => {
 };
 
 /**
+ * Deletes multiple projects by their IDs.
+ */
+const deleteProjects = (ids: string[]) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .then((res) => res.data);
+};
+
+/**
  * Performs an optimistic mutation on a project based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<ProjectsTableDto | string>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<ProjectsTableDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
 const projectOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
-}: IOptimisticMutation<ProjectsTableDto | string>) => {
+}: IOptimisticMutation<ProjectsTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
       return insertProject(payload as ProjectsTableDto);
     case "update":
       return updateProject(payload as ProjectsTableDto);
     case "delete":
-      return deleteProject(id);
+      return deleteProject(payload as string);
+    case "delete-multiple":
+      return deleteProjects(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
 };
 
 export {
-  deleteProject, getProjects, insertProject, isProjectNameAvailable, projectOptimisticMutationFn, updateProject
+  getProjects,
+  isProjectNameAvailable,
+  insertProject,
+  updateProject,
+  deleteProject,
+  deleteProjects,
+  projectOptimisticMutationFn,
 };
-
