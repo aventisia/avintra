@@ -47,5 +47,10 @@ public class TenantsTableController : BaseApiController
         return ResultHelper(await _tenantsTableService.DeleteTenantAsync(id));
     }
 
-
+    // Disable multiple tenants by their IDs.
+    [HttpPost("disable-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DisableTenants([FromBody] List<Guid> ids)
+    {
+        return ResultHelper(await _tenantsTableService.DisableTenantsAsync(ids));
+    }
 }
