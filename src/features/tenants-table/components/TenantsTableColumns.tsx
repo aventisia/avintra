@@ -1,6 +1,8 @@
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
+import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
@@ -10,15 +12,42 @@ import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
  */
 export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
+    accessorKey: "id",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
     accessorKey: "name",
-    header: ({ column }) => <DTColumnHeader column={column} title="Name" />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("name")} />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
     ),
   },
   {
     accessorKey: "expiresOn",
-    header: ({ column }) => <DTColumnHeader column={column} title="Expires" />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("expiresOn")} />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {formatDistanceToNow(row.getValue("expiresOn"), {
@@ -30,7 +59,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title="Created By" />
+      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -41,7 +70,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader className="w-[7rem]" column={column} title="Created" />
+      <DTColumnHeader
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("createdOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
