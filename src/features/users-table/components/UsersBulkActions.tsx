@@ -44,19 +44,11 @@ export function UsersBulkActions({ table }: UsersBulkActionsProps) {
     UsersTableDto
   >(disableUsers, DATA_QUERY_KEY, disableUsersInQueryData(selectedRowIds));
 
-  // TODO: Rollback selection if there is an error
-
   // Disable selected users handler
   const disableSelectedUsersHandler = () => {
     // Show alert dialog to confirm multiple disable
     showDefaultAlertDialog({
-      confirmActionFn: () => {
-        // Disable selected users
-        disableMultipleUsers(selectedRowIds);
-
-        // Remove selection
-        table.toggleAllRowsSelected(false);
-      },
+      confirmActionFn: () => disableMultipleUsers(selectedRowIds),
       alertType: "disable-multiple",
       additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "users" : "user"}`,
     });
