@@ -51,4 +51,14 @@ public interface IAccountUsersTableService
     /// <param name="rolesToUpdate">The list of roles to update.</param>
     /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the update was successful.</returns>
     Task<bool> UpdateAccountUserRoles(AccountUser accountUser, List<string> rolesToUpdate);
+
+    /// <summary>
+    /// Disable multiple users by their IDs.
+    /// </summary>
+    /// <param name="ids">The IDs of the users to disable.</param>
+    /// <returns>The task result contains the service response indicating whether the users were successfully disabled.</returns>
+    /// <remarks>
+    /// It is recommended to use this method to disable multiple users at once to reduce the number of requests to the server.
+    /// </remarks>
+    Task<ServiceResponse<bool>> DisableUsersAsync(List<Guid> ids);
 }
