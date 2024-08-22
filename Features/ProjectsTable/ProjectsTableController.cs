@@ -46,4 +46,16 @@ public class ProjectsTableController : BaseApiController
     {
         return ResultHelper(await _projectsTableService.DeleteProjectAsync(id));
     }
+
+    // Delete multiple projects by their IDs.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteProjects([FromBody] List<Guid> ids)
+    {
+        // If only one ID is passed, call the single delete method.
+        if (ids.Count == 1)
+            return ResultHelper(await _projectsTableService.DeleteProjectAsync(ids[0]));
+        
+        // Otherwise, call the multiple delete method.
+        return ResultHelper(await _projectsTableService.DeleteProjectsAsync(ids));
+    }
 }
