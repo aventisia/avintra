@@ -46,4 +46,11 @@ public class AccountUsersTableController : BaseApiController
     {
         return ResultHelper(await _accountUsersTableService.GetAccountRolesAsync());
     }
+
+    // Disable multiple users by their IDs.
+    [HttpPost("disable-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DisableUsers([FromBody] List<Guid> ids)
+    {
+        return ResultHelper(await _accountUsersTableService.DisableUsersAsync(ids));
+    }
 }
