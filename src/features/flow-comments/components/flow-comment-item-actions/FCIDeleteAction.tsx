@@ -16,7 +16,7 @@ interface FCIDeleteActionProps {
  */
 export const FCIDeleteAction = ({ flowCommentId }: FCIDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get flow comments store state and actions
   const { fcQueryKey } = useFlowCommentsStore(
@@ -30,26 +30,22 @@ export const FCIDeleteAction = ({ flowCommentId }: FCIDeleteActionProps) => {
     string,
     FlowCommentDto | boolean,
     FlowCommentDto
-  >(flowCommentOptimisticMutationFn, fcQueryKey);
+  >([flowCommentId], flowCommentOptimisticMutationFn, fcQueryKey);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       size="sm"
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the flow comment
-              deleteFlowComment({
-                id: flowCommentId,
-                payload: flowCommentId,
-                crudAction: "delete",
-              });
-            },
-          },
-          "comment",
-        );
+        showDefaultAlertDialog({
+          confirmActionFn: () =>
+            deleteFlowComment({
+              payload: flowCommentId,
+              crudAction: "delete",
+            }),
+          alertType: "delete-record",
+          additionalText: "comment",
+        });
       }}
     />
   );
