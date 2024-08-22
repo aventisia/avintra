@@ -35,4 +35,14 @@ public interface IProjectsTableService
     /// <param name="id">The ID of the project to delete.</param>
     /// <returns>The task result contains the service response indicating whether the project was successfully deleted.</returns>
     Task<ServiceResponse<bool>> DeleteProjectAsync(Guid id);
+
+    /// <summary>
+    /// Deletes multiple projects by their IDs.
+    /// </summary>
+    /// <param name="ids">The IDs of the projects to delete.</param>
+    /// <returns>The task result contains the service response indicating whether the projects were successfully deleted.</returns>
+    /// <remarks>
+    /// It is recommended to use this method to delete multiple projects at once to reduce the number of requests to the server.
+    /// </remarks>
+    Task<ServiceResponse<bool>> DeleteProjectsAsync(List<Guid> ids);
 }
