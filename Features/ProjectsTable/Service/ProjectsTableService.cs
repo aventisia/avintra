@@ -257,15 +257,7 @@ public class ProjectsTableService : IProjectsTableService
                 return serviceResponse;
             }
 
-            //#PENDING: UPDATE THIS CHECK ONCE ENTITY IS FORMED
-
-            // Flows are linked with project
-            // if (await _unitOfWork.FlowRepo.GetByConditionAsync(w => w.ProjectId == id).CountAsync() > 0)
-            // {
-            //     _logger.LogInformation($"Cannot delete project because it is linked with flow records");
-            //     serviceResponse.Message = "Cannot delete requested project because it is linked with flow records";
-            //     return serviceResponse;
-            // }
+            // TODO: Check relationship link with other entities
 
             // Delete project
             _unitOfWork.ProjectRepo.Delete(project);
@@ -291,4 +283,56 @@ public class ProjectsTableService : IProjectsTableService
         return serviceResponse;
     }
 
+    // Deletes multiple projects by their IDs.
+    public async Task<ServiceResponse<bool>> DeleteProjectsAsync(List<Guid> ids)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete projects. Please try again"
+        };
+
+        try
+        {
+            // Validate projects existence
+            var projects = await _unitOfWork.ProjectRepo
+                                            .GetByConditionAsync(w =>
+                                                w.CreatedByUserId == _userId &&
+                                                ids.Contains(w.Id))
+                                            .ToListAsync();
+
+            // Projects do not exist
+            if (projects.Count == 0)
+            {
+                _logger.LogInformation($"Projects do not exist");
+                serviceResponse.Message = "Projects do not exist";
+                return serviceResponse;
+            }
+
+            // TODO: Check relationship link with other entities
+
+            // Delete projects
+            _unitOfWork.ProjectRepo.Delete(projects);
+
+            // Delete-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting projects");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Projects deleted successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
 }
