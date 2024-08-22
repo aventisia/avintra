@@ -2,6 +2,7 @@ import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
+import { getColumnName } from "../constants/column-display-names";
 import { UsersTableDto } from "../dtos/users-table-dto";
 import { UserRowActions } from "./user-row-actions/UserRowActions";
 
@@ -36,7 +37,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "firstName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title="First Name" />
+      <DTColumnHeader column={column} title={getColumnName("firstName")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -47,7 +48,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "lastName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title="Last Name" />
+      <DTColumnHeader column={column} title={getColumnName("lastName")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -58,14 +59,18 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
 
   {
     accessorKey: "email",
-    header: ({ column }) => <DTColumnHeader column={column} title="Email" />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("email")} />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("email")}</div>
     ),
   },
   {
     accessorKey: "userRoles",
-    header: ({ column }) => <DTColumnHeader column={column} title="Top Role" />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("userRoles")} />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {(row.getValue("userRoles") as string[])?.slice(-1)}
@@ -75,7 +80,11 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader className="w-[7rem]" column={column} title="Created On" />
+      <DTColumnHeader
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("createdOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
