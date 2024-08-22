@@ -57,13 +57,12 @@ export const TenantCrudForm = () => {
     TenantsTableDto,
     TenantsTableDto | boolean,
     TenantsTableDto
-  >(tenantOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId],tenantOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof tenantZodSchema>) => {
     // Create or update the tenant
     mutateTenant({
-      id: rowId,
       payload: refineFormData(formData) as unknown as TenantsTableDto,
       crudAction: crudAction,
     });
