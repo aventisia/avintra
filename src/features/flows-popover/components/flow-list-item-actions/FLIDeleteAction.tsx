@@ -16,7 +16,7 @@ interface FLIDeleteActionProps {
  */
 export const FLIDeleteAction = ({ flowId }: FLIDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get flows store state and actions
   const { flowsQueryKey } = useFlowsPopoverStore(
@@ -30,26 +30,22 @@ export const FLIDeleteAction = ({ flowId }: FLIDeleteActionProps) => {
     string,
     FlowsTableDto | boolean,
     FlowsTableDto
-  >(flowOptimisticMutationFn, flowsQueryKey);
+  >([flowId], flowOptimisticMutationFn, flowsQueryKey);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       size="sm"
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the flow
-              deleteFlow({
-                id: flowId,
-                payload: flowId,
-                crudAction: "delete",
-              });
-            },
-          },
-          "flow",
-        );
+        showDefaultAlertDialog({
+          confirmActionFn: () =>
+            deleteFlow({
+              payload: flowId,
+              crudAction: "delete",
+            }),
+          alertType: "delete-record",
+          additionalText: "flow",
+        });
       }}
     />
   );
