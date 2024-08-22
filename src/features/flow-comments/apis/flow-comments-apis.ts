@@ -58,7 +58,6 @@ const deleteFlowComment = (id: string) => {
  * @throws {Error} - If an invalid action type is provided.
  */
 const flowCommentOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
 }: IOptimisticMutation<FlowCommentDto | string>) => {
@@ -68,17 +67,17 @@ const flowCommentOptimisticMutationFn = ({
     case "update":
       return updateFlowComment(payload as FlowCommentDto);
     case "delete":
-      return deleteFlowComment(id);
+      return deleteFlowComment(payload as string);
     default:
       throw new Error("Invalid action type");
   }
 };
 
 export {
-  deleteFlowComment,
-  flowCommentOptimisticMutationFn,
   getFlowComment,
   getFlowComments,
   insertFlowComment,
   updateFlowComment,
+  deleteFlowComment,
+  flowCommentOptimisticMutationFn,
 };
