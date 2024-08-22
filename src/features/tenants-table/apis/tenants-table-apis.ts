@@ -1,9 +1,9 @@
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 
@@ -55,6 +55,15 @@ const deleteTenant = (id: string) => {
 };
 
 /**
+ * Disable multiple tenants by their IDs.
+ */
+const disableTenants = (ids: string[]) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
+    .then((res) => res.data);
+};
+
+/**
  * Performs an optimistic mutation on a tenant based on the provided CRUD action.
  *
  * @param {IOptimisticMutation<TenantsTableDto | string>} options - The options for the optimistic mutation.
@@ -62,7 +71,6 @@ const deleteTenant = (id: string) => {
  * @throws {Error} - If an invalid action type is provided.
  */
 const tenantOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
 }: IOptimisticMutation<TenantsTableDto | string>) => {
@@ -72,7 +80,7 @@ const tenantOptimisticMutationFn = ({
     case "update":
       return updateTenant(payload as TenantsTableDto);
     case "delete":
-      return deleteTenant(id);
+      return deleteTenant(payload as string);
     default:
       throw new Error("Invalid action type");
   }
@@ -84,5 +92,6 @@ export {
   insertTenant,
   updateTenant,
   deleteTenant,
+  disableTenants,
   tenantOptimisticMutationFn,
 };
