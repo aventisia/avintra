@@ -262,7 +262,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             user.Email = accountUsersTableDto.Email.ToLower();
             user.LastModifiedByUserId = _userId;
             user.LastModifiedOn = DateTimeOffset.UtcNow;
-            
+
             // Update Indentity User using UserManager
             var updateUserResult = await _userManager.UpdateAsync(user);
 
@@ -459,6 +459,78 @@ public class AccountUsersTableService : IAccountUsersTableService
             _logger.LogError(ex.ToString());
             return false;
         }
+    }
+
+    // Disable multiple users by their IDs.
+    public async Task<ServiceResponse<bool>> DisableUsersAsync(List<Guid> ids)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to disable users. Please try again"
+        };
+
+        try
+        {
+            // Get allowed user roles to manage
+            var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
+
+            // Try to get users to validate its existence
+            var users = await _userManager.Users
+                .Include(i => i.UserRoles)
+                .ThenInclude(i => i.Role)
+                .Where(w =>
+                    ids.Contains(w.Id) &&
+                    w.IsDefault == false &&
+                    w.Id != _userId &&
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.UserRoles.Where(w1 => allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
+                .ToListAsync();
+
+            // Users do not exist
+            if (users.Count == 0)
+            {
+                _logger.LogInformation($"Users do not exist");
+                serviceResponse.Message = "Users do not exist";
+                return serviceResponse;
+            }
+
+            // Disable users
+            var isUpdateSuccessful = true;
+            foreach (var user in users)
+            {
+                user.IsDisabled = true;
+                user.LastModifiedByUserId = _userId;
+                user.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                // Update Indentity User using UserManager
+                var updateUserResult = await _userManager.UpdateAsync(user);
+
+                // User Update-Job failed
+                if (!updateUserResult.Succeeded)
+                {
+                    _logger.LogInformation($"Failed while disabling user {user.UserName}");
+                    isUpdateSuccessful = false;
+                }
+            }
+
+            // Update-Job failed
+            if (!isUpdateSuccessful)
+                return serviceResponse;
+            
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Users disabled successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
     }
 
     // HelperFn: Transform roles "FullName" to "Name". Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
