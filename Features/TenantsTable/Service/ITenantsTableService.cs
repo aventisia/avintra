@@ -35,4 +35,14 @@ public interface ITenantsTableService
     /// <param name="id">The ID of the tenant to delete.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> indicating whether the deletion was successful.</returns>
     Task<ServiceResponse<bool>> DeleteTenantAsync(Guid id);
+
+    /// <summary>
+    /// Disable multiple tenants by their IDs.
+    /// </summary>
+    /// <param name="ids">The IDs of the tenants to disable.</param>
+    /// <returns>The task result contains the service response indicating whether the tenants were successfully disabled.</returns>
+    /// <remarks>
+    /// It is recommended to use this method to disable multiple tenants at once to reduce the number of requests to the server.
+    /// </remarks>
+    Task<ServiceResponse<bool>> DisableTenantsAsync(List<Guid> ids);
 }
