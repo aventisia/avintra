@@ -47,13 +47,12 @@ export const FlowCrudForm = () => {
     FlowsTableDto,
     FlowsTableDto | boolean,
     FlowsTableDto
-  >(flowOptimisticMutationFn, flowsQueryKey);
+  >([rowId], flowOptimisticMutationFn, flowsQueryKey);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowZodSchema>) => {
     // Create or update the flow
     mutateFlow({
-      id: rowId,
       payload: refineFormData(formData) as unknown as FlowsTableDto,
       crudAction: crudAction,
     });
