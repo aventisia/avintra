@@ -1,10 +1,10 @@
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { createAccount } from "../apis/create-account-apis";
 import { useCreateAccountStore } from "../stores/create-account-store";
-
 
 export const useCreateAccountMutation = () => {
   // Get navigate function
@@ -28,9 +28,6 @@ export const useCreateAccountMutation = () => {
         // Reset createAccountData
         setCreateAccountData(null);
 
-        // Set stepNo to 0
-        setStepNo(0);
-
         // Set authenticated user locally
         const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
 
@@ -42,13 +39,16 @@ export const useCreateAccountMutation = () => {
               : import.meta.env.VITE_WORKSPACE_URL),
         );
       },
-      onError: () => {
-        // Go to previous step
-        setStepNo(1);
+      onError: (error) => {
+        toast.error(error.toString());
+        setStepNo(1); // Go to previous step
       },
       onSettled: () => {
         // Reset verifyEmailData
         setVerifyEmailData(null);
+
+        // Set stepNo to 1
+        setStepNo(1);
       },
     });
 
