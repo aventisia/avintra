@@ -36,12 +36,10 @@ export const useResendCodeMutation = () => {
           className: "sonner-toaster-sm",
         });
       },
-      onError: () => {
-        // Clear codeData state
-        setVerifyCodeData(null);
-
-        // Go to Step 1 - Provide email
-        setStepNo(1);
+      onError: (error) => {
+        toast.error(error.toString());
+        setVerifyCodeData(null); // Clear verify code data
+        setStepNo(1); // Move previous step
       },
     });
 
