@@ -7,6 +7,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 /**
  * Custom hook to validate the user session for the login page.
@@ -22,6 +23,9 @@ export const useValidateUserSessionForLoginPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: refreshSession,
     onSuccess: (httpResponse) => {
+      // Return, If response is null
+      if (!httpResponse) return;
+
       // Set authenticated user locally
       const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
 
@@ -33,7 +37,8 @@ export const useValidateUserSessionForLoginPage = () => {
             : import.meta.env.VITE_WORKSPACE_URL),
       );
     },
-    onError: () => {
+    onError: (error) => {
+      toast.error(error.toString());
       removeUserSessionLocally();
       navigate("/login");
     },
