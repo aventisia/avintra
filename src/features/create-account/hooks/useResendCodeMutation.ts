@@ -38,15 +38,11 @@ export const useResendCodeMutation = () => {
           className: "sonner-toaster-sm",
         });
       },
-      onError: () => {
-        // Clear create account data
-        setCreateAccountData(null);
-
-        // Clear verify email  data
-        setVerifyEmailData(null);
-
-        // Move previous step
-        setStepNo(1);
+      onError: (error) => {
+        toast.error(error.toString());
+        setCreateAccountData(null); // Clear create account data
+        setVerifyEmailData(null); // Clear verify email  data
+        setStepNo(1); // Move previous step
       },
     });
 
