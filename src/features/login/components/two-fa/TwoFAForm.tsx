@@ -1,5 +1,5 @@
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -43,7 +43,9 @@ export const TwoFAForm = () => {
       checkDirtyForm={false}
     >
       {/* Verificaiton code */}
-      <InputField {...verificationCodeProps} />
+      <div className="px-2">
+        <InputOtpField {...verificationCodeProps} />
+      </div>
 
       {/* Submit button */}
       <SubmitButton

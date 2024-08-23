@@ -1,4 +1,5 @@
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
 
 // Email
 const emailProps: InputFieldProps = {
@@ -17,9 +18,10 @@ const pwdProps: InputFieldProps = {
 };
 
 // Verification code
-const verificationCodeProps: InputFieldProps = {
+const verificationCodeProps: InputOtpFieldProps = {
   name: "verificationCode",
-  placeholder: "Enter 2FA code",
+  maxLength: 6,
+  children: "", // Add an empty children property
 };
 
 export { emailProps, pwdProps, verificationCodeProps };
