@@ -12,9 +12,9 @@ export interface ProjectsTableDto {
   id?: string;
 
   /**
-   * Gets or sets the type of the project. PENDING
+   * Gets or sets the type of the project.
    */
-  type: ProjectTypesEnum;
+  type: ProjectTypesEnum; // TODO: Update enum values
 
   /**
    * Gets or sets the name of the project. Max-255

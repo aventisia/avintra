@@ -17,9 +17,9 @@ export interface FlowsTableDto {
   projectId: string;
 
   /**
-   * Gets or sets the type of the flow. PENDING
+   * Gets or sets the type of the flow.
    */
-  type: FlowTypesEnum;
+  type: FlowTypesEnum; // TODO: Update enum values
 
   /**
    * Gets or sets the name of the flow. Max-255
