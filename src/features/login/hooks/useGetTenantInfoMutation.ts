@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 import { getTenantInfo } from "@/react-toolkit/apis/accounts-auth-apis";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
 import { useLoginStore } from "../stores/login-store";
 
 export const useGetTenantInfoMutation = () => {
@@ -33,6 +34,9 @@ export const useGetTenantInfoMutation = () => {
           // Go to next step - Login using Pwd
           setStepNo(2);
         }
+      },
+      onError: (error) => {
+        toast.error(error.toString());
       },
     });
 
