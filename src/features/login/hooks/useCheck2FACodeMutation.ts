@@ -1,6 +1,7 @@
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { checkTwoFAVerificationCode } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";
@@ -35,8 +36,8 @@ export const useCheck2FACodeMutation = () => {
               : import.meta.env.VITE_WORKSPACE_URL),
         );
       },
-      onError: () => {
-        // Reset login process
+      onError: (error) => {
+        toast.error(error.toString());
         resetLoginProcess();
       },
     });
