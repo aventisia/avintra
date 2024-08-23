@@ -36,5 +36,5 @@ export const useLoginStore = create<State & Actions>((set) => ({
   setLoginData: (loginData) => set({ loginData }),
   setTwoFACodeData: (twoFACodeData) => set({ twoFACodeData }),
   resetLoginProcess: () =>
-    set({ loginData: null, twoFACodeData: null, stepNo: 0 }),
+    set({ loginData: null, twoFACodeData: null, stepNo: 1 }),
 }));
