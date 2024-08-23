@@ -2,6 +2,7 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
+import { toast } from "sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 
@@ -13,7 +14,18 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 const getFlowToLoad = (id: string) => {
   return axiosInstance
     .get<IHttpResponse<LoadFlowDto>>(`${baseAPIURL}/load/${id}`)
-    .then((res) => res.data);
+    .then((res) => res.data)
+    .catch((error) => {
+      // Show error toast
+      toast.error(error);
+
+      // Redirect to workspace projects page after 2 seconds
+      setTimeout(() => {
+        window.location.assign(`${import.meta.env.VITE_WORKSPACE_URL}projects`);
+      }, 2000);
+
+      return null;
+    });
 };
 
 /**
