@@ -18,7 +18,7 @@ export const useGetTenantInfoMutation = () => {
       mutationFn: getTenantInfo,
       onSuccess: ({ data }) => {
         if (data.ssoConfigJson) {
-          // PENDING: if SSO enabled then route
+          // TODO: if SSO enabled then route
         } else {
           // Set userName in localstorage
           localStorage.setItem("userName", data.userName);
