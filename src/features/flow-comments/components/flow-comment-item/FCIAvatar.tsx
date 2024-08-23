@@ -1,7 +1,7 @@
 import { AvatarExt } from "@/react-toolkit/ui/AvatarExt";
 
 /**
- * PENDING: Renders the avatar of the who commented on the flow.
+ * TODO: Renders the avatar of the who commented on the flow.
  */
 export const FCIAvatar = () => {
   return (

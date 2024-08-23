@@ -3,7 +3,7 @@ import { create } from "zustand";
 interface ICurrentFlowDetails {
   id: string;
   name: string;
-  //PENDING: version
+  // TODO: version
 }
 
 type State = {

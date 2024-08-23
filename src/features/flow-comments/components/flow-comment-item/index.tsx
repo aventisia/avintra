@@ -44,7 +44,7 @@ export const FlowCommentItem = memo(({ index, data }: FlowCommentItemProps) => {
         <FlowCommentItemActions flowCommentId={data.id} />
       )}
 
-      {/* PENDING: User avatar who created the flow comment */}
+      {/* TODO: User avatar who created the flow comment */}
       <FCIAvatar />
 
       {/* Flow comment container for comment, time etc */}
