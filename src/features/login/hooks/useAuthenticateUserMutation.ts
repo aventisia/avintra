@@ -67,8 +67,8 @@ export const useAuthenticateUserMutation = () => {
               : import.meta.env.VITE_WORKSPACE_URL),
         );
       },
-      onError: () => {
-        // Reset login process
+      onError: (error) => {
+        toast.error(error.toString());
         resetLoginProcess();
       },
     });
