@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { getFlowComments } from "../apis/flow-comments-apis";
 import { useFlowCommentsStore } from "../stores/flow-comments-store";
@@ -19,10 +20,15 @@ export const useFetchFlowComments = () => {
   );
 
   // Get flow comments using react query
-  const { data, isFetching, isLoading, refetch } = useQuery({
+  const { data, isFetching, isLoading, refetch, isError, error } = useQuery({
     queryKey: fcQueryKey,
     queryFn: () => getFlowComments(flowId),
   });
+
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error.toString());
+  }, [error, isError]);
 
   // Refetch flow comments on popover open
   useEffect(() => {
