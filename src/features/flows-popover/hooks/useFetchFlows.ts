@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { getProjectFlows } from "../apis/flows-table-apis";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
@@ -21,10 +22,15 @@ export const useFetchFlows = () => {
     );
 
   // Get flows using react query
-  const { data, refetch, isFetching, isLoading } = useQuery({
+  const { data, refetch, isFetching, isLoading, isError, error } = useQuery({
     queryKey: flowsQueryKey,
     queryFn: () => getProjectFlows(projectId),
   });
+
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error.toString());
+  }, [error, isError]);
 
   // Refetch flow comments on popover open
   useEffect(() => {
