@@ -139,7 +139,7 @@ public class AutoNotificationService : IAutoNotificationService
                 return false;
             }
 
-            //#PENDING: UPDATE THIS CHECK ONCE ENTITY IS FORMED
+            // TODO: Check relationship with other entities
 
             // Get M2M NotificationUser relationship records to delete
             var notificationUsers = await _unitOfWork.NotificationUserRepo

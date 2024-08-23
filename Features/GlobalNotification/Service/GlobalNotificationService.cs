@@ -195,7 +195,7 @@ public class GlobalNotificationService : IGlobalNotificationService
             notification.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Additional Mapping
-            //#PENDING: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
+            // TODO: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
 
             // Update notification
             _unitOfWork.NotificationRepo.Update(notification);
@@ -256,7 +256,7 @@ public class GlobalNotificationService : IGlobalNotificationService
                 return serviceResponse;
             }
 
-            //#PENDING: UPDATE THIS CHECK ONCE ENTITY IS FORMED
+            // TODO: Check relationship with other entities
 
             // Get M2M NotificationUser relationship records to delete
             var notificationUsers = await _unitOfWork.NotificationUserRepo

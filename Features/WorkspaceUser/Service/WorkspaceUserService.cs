@@ -126,7 +126,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             var newWorkspaceUser = workspaceUserDto.Adapt<WorkspaceUser>();
 
             // Additional Mapping
-            //#PENDING: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
+            // TODO: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
 
             // Insert user
             await _unitOfWork.WorkspaceUserRepo.InsertAsync(newWorkspaceUser);
@@ -208,7 +208,7 @@ public class WorkspaceUserService : IWorkspaceUserService
             workspaceUserDto.Adapt(workspaceUser);
 
             // Additional Mapping
-            //#PENDING: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
+            // TODO: UPDATE ADDITIONAL MAPPING ONCE ENTITY IS FORMED
 
             // Update user
             _unitOfWork.WorkspaceUserRepo.Update(workspaceUser);
@@ -267,7 +267,7 @@ public class WorkspaceUserService : IWorkspaceUserService
                 return serviceResponse;
             }
 
-            //#PENDING: UPDATE RELATIONSHIP CHECK ONCE ENTITY IS FORMED
+            // TODO: Check relationship with other entities
 
             // Delete user
             _unitOfWork.WorkspaceUserRepo.Delete(workspaceUser);

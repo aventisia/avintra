@@ -33,7 +33,7 @@ public class UnreadNotificationService : IUnreadNotificationService
             // Try to get notifications
             var unreadNotifications = await _unitOfWork.NotificationUserRepo
                                         .GetByConditionAsync(w => !w.IsRead && w.UserId == _userId)
-                                        //.OrderByDescending(o => o.) Pending: Order by CreatedAt
+                                        //.OrderByDescending(o => o.) // TODO: Order by CreatedAt
                                         .ProjectToType<UnreadNotificationDto>()
                                         .ToListAsync();
 

@@ -14,9 +14,9 @@ public class ProjectsTableDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the project. PENDING
+    /// Gets or sets the type of the project.
     /// </summary>
-    public required ProjectTypesEnum Type { get; set; }
+    public required ProjectTypesEnum Type { get; set; } // TODO: Update enum values
 
     /// <summary>
     /// Gets or sets the name of the project. Max-255
