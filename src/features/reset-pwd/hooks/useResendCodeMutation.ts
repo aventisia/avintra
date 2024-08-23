@@ -32,7 +32,9 @@ export const useResendCodeMutation = () => {
         });
 
         // Notify user on success of code creation
-        toast.success("Code has been resent to your email");
+        toast.success("Code has been resent to your email", {
+          className: "sonner-toaster-sm",
+        });
       },
       onError: () => {
         // Clear codeData state

@@ -22,7 +22,9 @@ export const useResetPwdMutation = () => {
     mutationFn: resetPwd,
     onSuccess: ({ message }) => {
       // Inform user
-      toast.success("Success", { description: message });
+      toast.success(message, {
+        className: "sonner-toaster-sm",
+      });
 
       //Navigate to login page
       navigate("/login");
