@@ -1,5 +1,6 @@
 import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { useCreateAccountStore } from "../stores/create-account-store";
 
@@ -27,9 +28,9 @@ export const useCreateCodeMutation = () => {
       // Go to next step - verify email
       setStepNo(2);
     },
-    onError: () => {
-      // Move previous step
-      setStepNo(1);
+    onError: (error) => {
+      toast.error(error.toString());
+      setStepNo(1); // Move previous step
     },
   });
 
