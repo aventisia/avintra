@@ -29,16 +29,13 @@ export const useResetPwdMutation = () => {
       //Navigate to login page
       navigate("/login");
     },
-    onError: () => {
-      // Go to Step 1 - Provide email
-      setStepNo(1);
+    onError: (error) => {
+      toast.error(error.toString());
+      setStepNo(1); // Move previous step
     },
     onSettled: () => {
-      // Reset createAccountData
-      setVerifyCodeData(null);
-
-      // Set stepNo to 0
-      setStepNo(0);
+      setVerifyCodeData(null); // Clear verify code data
+      setStepNo(1); // Move previous step
     },
   });
 
