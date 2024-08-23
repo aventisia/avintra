@@ -2,6 +2,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { updateFlowSilently } from "../apis/react-flow-apis";
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
@@ -29,10 +30,15 @@ export const useUpdateFlowSilently = () => {
   // Create a mutation to update flow silently
   const { mutate: updateFlow } = useMutation({
     mutationFn: updateFlowSilently,
-    onSettled: () => {
+    onSuccess: () => {
       // Set isSavePending to false
       setIsSavePending(false);
-
+    },
+    onError: (error) => {
+      // Show error toast
+      toast.error(error.toString());
+    },
+    onSettled: () => {
       // Set isFlowSaving to false
       setIsFlowSaving(false);
     },
