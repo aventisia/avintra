@@ -187,10 +187,10 @@ public class AuthService : IAuthService
             {
                 Id = sessionId,
                 DeviceId = userAgent,
-                IPAddress = "PENDING",
-                BrowserType = "PENDING",
-                OperatingSystem = "PENDING",
-                Location = "PENDING",
+                IPAddress = "TODO", // TODO: Get IP address
+                BrowserType = "TODO", // TODO: Get browser type
+                OperatingSystem = "TODO", // TODO: Get OS
+                Location = "TODO", // TODO: Get location
                 RefreshToken = refreshToken,
                 SessionExpiresOn = refreshTokenExpiresOn,
                 LoggedInOn = DateTimeOffset.UtcNow,

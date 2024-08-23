@@ -15,7 +15,7 @@ public class SessionLog
     /// <summary>
     /// Gets or sets the ID of the device/client using which the session was created.
     /// </summary>
-    // [MaxLength(100)] - PENDING FOR NOW. Not sure how to extract DeviceId yet
+    // [MaxLength(100)] - TODO: FOR NOW. Not sure how to extract DeviceId yet
     public required string DeviceId { get; set; }
 
     /// <summary>
