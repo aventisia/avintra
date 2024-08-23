@@ -1,5 +1,6 @@
 import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { useResetPwdStore } from "../stores/reset-pwd-store";
 
@@ -26,12 +27,10 @@ export const useCreateCodeMutation = () => {
       // Go to next step - verify email
       setStepNo(2);
     },
-    onError: () => {
-      // Reset verifyCodeData
-      setVerifyCodeData(null);
-
-      // Go to Step 1 - Provide email
-      setStepNo(1);
+    onError: (error) => {
+      toast.error(error.toString());
+      setVerifyCodeData(null); // Clear verify code data
+      setStepNo(1); // Move previous step provide email
     },
   });
 
