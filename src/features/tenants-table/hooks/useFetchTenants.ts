@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { getTenants } from "../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
@@ -8,10 +10,15 @@ import { DATA_QUERY_KEY } from "../constants";
  */
 export const useFetchTenants = () => {
   // Get tenants using react query
-  const { data, isFetching, isLoading } = useQuery({
+  const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
     queryFn: () => getTenants(),
   });
+
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error.toString());
+  }, [error, isError]);
 
   // Return isFetching and isLoading flag
   return { data, isFetching, isLoading };
