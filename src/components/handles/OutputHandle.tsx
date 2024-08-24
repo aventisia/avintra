@@ -16,7 +16,7 @@ export const OutputHandle = ({
       position={position}
       isConnectable={false}
       className={cn(
-        "z-[5] h-[0.6rem] w-[0.6rem] rounded-full border-indigo-500 bg-indigo-500",
+        "z-[5] h-[0.6rem] w-[0.6rem] rounded-full border-indigo-500 bg-indigo-400",
         className,
       )}
     />

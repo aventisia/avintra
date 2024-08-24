@@ -16,7 +16,7 @@ export const InputHandle = ({
       position={position}
       isConnectable={false}
       className={cn(
-        "z-[5] h-[0.6rem] w-[0.6rem] rounded-full border-slate-400 bg-white",
+        "z-[5] h-[0.6rem] w-[0.6rem] rounded-full border-slate-300 bg-white",
         className,
       )}
     />
