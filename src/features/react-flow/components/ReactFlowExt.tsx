@@ -1,5 +1,5 @@
-import { CustomEdgeTypes } from "@/constants/custom-edge-types";
-import { CustomNodeTypes } from "@/constants/custom-node-types";
+import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
+import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";
@@ -34,8 +34,8 @@ export const ReactFlowExt = () => {
     );
 
   // Memoize the custom node, edges types
-  const customNodeTypesMemo = useMemo(() => CustomNodeTypes, []);
-  const customEdgesTypesMemo = useMemo(() => CustomEdgeTypes, []);
+  const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
+  const customEdgesTypeObjMemo = useMemo(() => CustomEdgeTypeObj, []);
 
   // Track ReactFlow selection change
   useTrackSelection();
@@ -58,8 +58,8 @@ export const ReactFlowExt = () => {
       <ReactFlow
         fitView
         minZoom={0.4}
-        nodeTypes={customNodeTypesMemo}
-        edgeTypes={customEdgesTypesMemo}
+        nodeTypes={customNodeTypeObjMemo}
+        edgeTypes={customEdgesTypeObjMemo}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
