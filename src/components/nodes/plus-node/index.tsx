@@ -1,9 +1,10 @@
+import { InputHandle } from "@/components/handles/InputHandle";
 import { NodeSelector } from "@/components/node-selector";
 import { NodeProps } from "@xyflow/react";
-import { InputHandle } from "../../handles/InputHandle";
 import { PlusNodeTrigger } from "./PlusNodeTrigger";
+import { OutputHandle } from "@/components/handles/OutputHandle";
 
-export const PlusNode = ({ id, targetPosition }: NodeProps) => {
+export const PlusNode = ({ id, targetPosition, sourcePosition }: NodeProps) => {
   return (
     <>
       <NodeSelector
@@ -14,8 +15,10 @@ export const PlusNode = ({ id, targetPosition }: NodeProps) => {
       >
         <PlusNodeTrigger />
       </NodeSelector>
-      {/* Input (Target) Handle */}
+
       <InputHandle position={targetPosition} />
+
+      {sourcePosition && <OutputHandle position={sourcePosition} />}
     </>
   );
 };
