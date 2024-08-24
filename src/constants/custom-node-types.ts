@@ -1,4 +1,5 @@
 import { ActivityNode } from "@/components/nodes/ActivityNode";
+import { FlowEndNode } from "@/components/nodes/FlowEndNode";
 import { IfElseNode } from "@/components/nodes/IfElseNode";
 import { PlusNode } from "@/components/nodes/plus-node";
 import { TriggerNode } from "@/components/nodes/trigger-node";
@@ -8,4 +9,5 @@ export const CustomNodeTypes = {
   plusNode: PlusNode,
   activityNode: ActivityNode,
   ifElseNode: IfElseNode,
+  flowEndNode: FlowEndNode,
 };
