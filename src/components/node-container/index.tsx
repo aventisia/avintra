@@ -14,7 +14,7 @@ export const NodeContainer = ({
   return (
     <div
       className={cn(
-        "relative flex h-[5.3rem] rounded-lg border border-slate-300",
+        "flex h-[5.3rem] rounded-lg border border-slate-300",
         className,
         selected && "ring-1 ring-ring border-primary",
       )}
