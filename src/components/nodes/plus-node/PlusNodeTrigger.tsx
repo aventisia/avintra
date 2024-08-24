@@ -8,7 +8,7 @@ export const PlusNodeTrigger = () => {
     <PopoverTrigger className="group">
       <div
         className={cn(
-          "flex h-[5.3rem] w-[21.25rem] items-center justify-center rounded-lg bg-slate-100 px-4 py-3.5",
+          "flex h-[5.375rem] w-[21.375rem] items-center justify-center rounded-lg bg-slate-100 px-4 py-3.5",
           "border-2 border-dashed border-slate-400/60",
           "group-hover:border-slate-400",
           "group-aria-[expanded=true]:border-slate-400",
