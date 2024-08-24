@@ -1,14 +1,7 @@
+import { CustomNodeType } from "./custom-node-type";
+
 type NodeTypeAndCategory = {
-  type:
-    | "triggerNode"
-    | "plusNode"
-    | "activityNode"
-    | "ifElseNode"
-    | "switchCaseNode"
-    | "whileLoopNode"
-    | "forLoopNode"
-    | "forEachLoopNode"
-    | "flowEndNode";
+  type: CustomNodeType;
   category: string;
 };
 
