@@ -6,8 +6,20 @@ import { Edge, Node, Position } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-const nodeWidth = 340; // Width of the node in pixels.
-const nodeHeight = 85; // Height of the node in pixels.
+// Type for node width and height lookup
+type NodeDimension = {
+  nodeType: string;
+  width: number;
+  height: number;
+};
+
+// Create lookup array for node's custom width and height
+const nodeCustomDimensions: NodeDimension[] = [
+  { nodeType: "flowEndNode", width: 142.5, height: 44 },
+];
+
+const nodeDefaultWidth = 340; // Default Width of the node in pixels.
+const nodeDefaultHeight = 85; // Default Height of the node in pixels.
 
 // Function to layout the elements using dagre
 const getLayoutedElements = (
@@ -30,9 +42,15 @@ const getLayoutedElements = (
 
   // Set nodes to the dagre graph
   nodes.forEach((node) => {
+    // Get the width and height of the node
+    const nodeDimension = nodeCustomDimensions.find(
+      (d) => d.nodeType === node.type,
+    ) as NodeDimension;
+
+    // Set the node to the dagre graph
     dagreGraph.setNode(node.id, {
-      width: nodeWidth, 
-      height: nodeHeight,
+      width: nodeDimension ? nodeDimension.width : nodeDefaultWidth,
+      height: nodeDimension ? nodeDimension.height : nodeDefaultHeight,
     });
   });
 
@@ -48,6 +66,11 @@ const getLayoutedElements = (
   const newNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
 
+    // Get the width and height of the node
+    const nodeDimension = nodeCustomDimensions.find(
+      (d) => d.nodeType === node.type,
+    ) as NodeDimension;
+
     // Set target and source positions based on the direction
     const newNode: Node = {
       ...node,
@@ -55,8 +78,12 @@ const getLayoutedElements = (
       sourcePosition: direction === "LR" ? Position.Right : Position.Bottom,
 
       position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        x:
+          nodeWithPosition.x -
+          (nodeDimension ? nodeDimension.width : nodeDefaultWidth) / 2,
+        y:
+          nodeWithPosition.y -
+          (nodeDimension ? nodeDimension.height : nodeDefaultHeight) / 2,
       },
     };
 
