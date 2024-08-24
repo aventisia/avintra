@@ -19,7 +19,7 @@ export const AddNodeFromEdge = ({ labelX, labelY }: AddNodeFromEdgeProps) => {
           pointerEvents: "all",
         }}
         className={cn(
-          buttonVariants({ variant: "outline", size: "icon6" }),
+          buttonVariants({ variant: "outline", size: "icon5" }),
           "group z-10 rounded-full opacity-50",
           "hover:bg-primary hover:opacity-100",
           "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
