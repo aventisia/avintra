@@ -33,10 +33,13 @@ export const VCBZoomTo = () => {
       <Button
         variant={"ghost"}
         size="icon6"
-        className={cn("max-w-[2.8rem] rounded-md text-3xs font-medium")}
+        className={cn(
+          "max-w-[2.8rem] rounded-md font-mono text-3xs font-medium",
+        )}
         onClick={() => zoomTo(1)}
       >
-        {Math.round(zoomLevel * 100)}
+        <span>{Math.round(zoomLevel * 100)}</span>
+        <span className="ml-[0.5px] font-mono text-2xs">%</span>
       </Button>
     </Tooltip>
   );
