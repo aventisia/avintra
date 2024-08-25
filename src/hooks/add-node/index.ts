@@ -3,8 +3,11 @@ import { NodeDataType } from "@/types/node-data-type";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { createFlowEndNodeEdgeObj, createNodesEdgesObj } from "./add-node-utils";
 import { useDagreAutoLayout } from "../useDagreAutoLayout";
+import {
+  createFlowEndNodeEdgeObj,
+  createNodesEdgesObj,
+} from "./add-node-utils";
 import { createEdgeObj } from "./create-edge";
 
 export const useAddNode = () => {
@@ -38,18 +41,32 @@ export const useAddNode = () => {
       const { flowEndNode, flowEndEdge } =
         createFlowEndNodeEdgeObj(firstNodeId);
 
-      // Add new nodes to the existing nodes & remove plus node
-      const newNodes = nodes
-        .filter((node) => node.id !== plusNodeId)
-        .concat(firstNode, flowEndNode);
+      // Get plus node index
+      const plusNodeIndex = nodes.findIndex((node) => node.id === plusNodeId);
 
-      // Add new edges to the existing edges
-      const newEdges = edges
-        .filter((edge) => edge.id !== plusNodeEdge.id)
-        .concat(firstEdge, flowEndEdge);
+      // Add new nodes & remove plus node
+      const updatedNodes = [
+        ...nodes.slice(0, plusNodeIndex),
+        ...firstNode,
+        ...[flowEndNode],
+        ...nodes.slice(plusNodeIndex + 1),
+      ];
+
+      // Get plus node edge index
+      const plusNodeEdgeIndex = edges.findIndex(
+        (edge) => edge.id === plusNodeEdge.id,
+      );
+
+      // Add new edges & remove plus node edge
+      const updatedEdges = [
+        ...edges.slice(0, plusNodeEdgeIndex),
+        ...firstEdge,
+        flowEndEdge,
+        ...edges.slice(plusNodeEdgeIndex + 1),
+      ];
 
       // Auto organize node & edge
-      autoLayoutOnAdd(newNodes, newEdges);
+      autoLayoutOnAdd(updatedNodes, updatedEdges);
     },
     [edges, nodes, autoLayoutOnAdd],
   );
@@ -66,8 +83,20 @@ export const useAddNode = () => {
         stepEdge.source,
       );
 
+      // Get source node index
+      const sourceNodeIndex = nodes.findIndex(
+        (node) => node.id === stepEdge.source,
+      );
+
+      // Add new nodes after source node
+      const updatedNodes = [
+        ...nodes.slice(0, sourceNodeIndex + 1),
+        ...newNodes,
+        ...nodes.slice(sourceNodeIndex + 1),
+      ];
+
       // Update step edge source to new node
-      const updatedEdges = edges.map((edge) =>
+      const updatedEdges1 = edges.map((edge) =>
         edge.id === stepEdgeId
           ? {
               ...edge,
@@ -76,8 +105,18 @@ export const useAddNode = () => {
           : edge,
       );
 
+      // Get step edge index
+      const stepEdgeIndex = edges.findIndex((edge) => edge.id === stepEdgeId);
+
+      // Add new edges before step edge
+      const updatedEdges2 = [
+        ...updatedEdges1.slice(0, stepEdgeIndex),
+        ...newEdges,
+        ...updatedEdges1.slice(stepEdgeIndex),
+      ];
+
       // Auto organize node & edge
-      autoLayoutOnAdd(nodes.concat(newNodes), updatedEdges.concat(newEdges));
+      autoLayoutOnAdd(updatedNodes, updatedEdges2);
     },
     [edges, nodes, autoLayoutOnAdd],
   );
@@ -107,19 +146,41 @@ export const useAddNode = () => {
         branchEndNodeEdge.target,
       );
 
-      // Add new nodes to the existing nodes & remove placeholder node
-      const updatedNodes = nodes
-        .filter((node) => node.id !== placeholderNodeId)
-        .concat(newNodes);
+      // Get placeholder node index
+      const placeholderNodeIndex = nodes.findIndex(
+        (node) => node.id === placeholderNodeId,
+      );
 
-      // Add new edges to the existing edges & remove branch node edges
-      const updatedEdges = edges
-        .filter(
-          (edge) =>
-            edge.id !== branchStartNodeEdge.id ||
-            edge.id !== branchEndNodeEdge.id,
-        )
-        .concat(newEdges, lastToBranchEndEdge);
+      // Add new nodes & remove placeholder node
+      const updatedNodes = [
+        ...nodes.slice(0, placeholderNodeIndex),
+        ...newNodes,
+        ...nodes.slice(placeholderNodeIndex + 1),
+      ];
+
+      // Get branch start node edge index
+      const branchStartNodeEdgeIndex = edges.findIndex(
+        (edge) => edge.id === branchStartNodeEdge.id,
+      );
+
+      // Add branch start new edge & remove old one
+      const updatedEdges1 = [
+        ...edges.slice(0, branchStartNodeEdgeIndex),
+        ...newEdges,
+        ...edges.slice(branchStartNodeEdgeIndex + 1),
+      ];
+
+      // Get branch end node edge index
+      const branchEndNodeEdgeIndex = edges.findIndex(
+        (edge) => edge.id === branchEndNodeEdge.id,
+      );
+
+      // Add branch start new edge & remove old one
+      const updatedEdges = [
+        ...updatedEdges1.slice(0, branchEndNodeEdgeIndex),
+        lastToBranchEndEdge,
+        ...updatedEdges1.slice(branchEndNodeEdgeIndex + 1),
+      ];
 
       // Auto organize node & edge
       autoLayoutOnAdd(updatedNodes, updatedEdges);
