@@ -30,11 +30,12 @@ const nodeDimensionLookup: Record<CustomNodeType, NodeDimension> = {
   forEachLoopNode: { width: 340, height: 85 },
 };
 
-// Create lookup array for edges minlen
-const edgeMinlenLookup: { [key: string]: number } = {
-  branchStartNode: 4,
-  placeholderNode: 4,
-  mergeBranchesNode: 6,
+// Get the minlen for the edge based on the node type
+const getEdgeMinlen = (sourceNodeType?: string, targetNodeType?: string) => {
+  if (sourceNodeType === "branchStartNode") return 4;
+  if (targetNodeType === "branchEndNode") return 4;
+  if (sourceNodeType === "mergeBranchesNode") return 6;
+  return 8;
 };
 
 // Function to layout the elements using dagre
@@ -53,7 +54,7 @@ const getLayoutedElements = (
   dagreGraph.setGraph({
     rankdir: direction, // Direction for rank nodes. Can be TB, BT, LR, or RL, where T = top, B = bottom, L = left, and R = right.
     nodesep: 120, // Number of pixels that separate nodes horizontally in the layout.
-    ranksep: 10, // Number of pixels between each rank in the layout.
+    ranksep: 15, // Number of pixels between each rank in the layout.
   });
 
   // Set nodes to the dagre graph
@@ -65,12 +66,12 @@ const getLayoutedElements = (
 
   // Set edges to the dagre graph
   edges.forEach((edge) => {
-    // Get the source node
-    const node = nodes.find((n) => n.id === edge.source) as Node;
-    const minlen = edgeMinlenLookup[node?.type as CustomNodeType];
+    // Get the source and target nodes
+    const sourceNode = nodes.find((n) => n.id === edge.source) as Node;
+    const targetNode = nodes.find((n) => n.id === edge.target) as Node;
 
     dagreGraph.setEdge(edge.source, edge.target, {
-      minlen: minlen ? minlen : 8, // Set the minlen for the edg. It multiplies the ranksep value.
+      minlen: getEdgeMinlen(sourceNode.type, targetNode?.type), // Set the minlen for the edg. It multiplies the ranksep value.
     });
   });
 
@@ -80,9 +81,6 @@ const getLayoutedElements = (
   // Update the nodes and edges with the layouted positions
   const newNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
-
-    console.log(node?.type, nodeWithPosition.x, nodeWithPosition.y);
-    
 
     // Get the width and height of the node
     const nodeDimension = nodeDimensionLookup[node.type as CustomNodeType];
