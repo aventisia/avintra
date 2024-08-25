@@ -4,7 +4,11 @@ import { NodeProps } from "@xyflow/react";
 import { PlaceholderNodeTrigger } from "./PlaceholderNodeTrigger";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 
-export const PlaceholderNode = ({ id, targetPosition, sourcePosition }: NodeProps) => {
+export const PlaceholderNode = ({
+  id,
+  targetPosition,
+  sourcePosition,
+}: NodeProps) => {
   return (
     <>
       <NodeSelector
@@ -16,9 +20,9 @@ export const PlaceholderNode = ({ id, targetPosition, sourcePosition }: NodeProp
         <PlaceholderNodeTrigger />
       </NodeSelector>
 
-      <InputHandle position={targetPosition} />
+      <InputHandle position={targetPosition} className="opacity-0" />
 
-      <OutputHandle position={sourcePosition} />
+      <OutputHandle position={sourcePosition} className="opacity-0" />
     </>
   );
 };
