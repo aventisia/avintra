@@ -15,7 +15,11 @@ export const NSCActivitiesList = ({
   originId,
 }: NSCActivitiesListProps) => {
   // Get addNode handlers
-  const { addNodeFromPlusNode, addNodeFromCustomStepEdge } = useAddNode();
+  const {
+    addFirstNode,
+    addNodeFromCustomStepEdge,
+    addNodeFromPlaceholderNode,
+  } = useAddNode();
 
   // Return the component
   return (
@@ -26,9 +30,11 @@ export const NSCActivitiesList = ({
           value={item.label}
           onSelect={() => {
             if (origin === "PlusNode") {
-              addNodeFromPlusNode(item, originId);
+              addFirstNode(item, originId);
             } else if (origin === "CustomStepEdge") {
               addNodeFromCustomStepEdge(item, originId);
+            } else if (origin === "PlaceholderNode") {
+              addNodeFromPlaceholderNode(item, originId);
             }
           }}
           className="rounded-lg p-1"
