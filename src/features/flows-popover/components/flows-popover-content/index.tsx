@@ -15,15 +15,15 @@ export const FlowsPopoverContent = () => {
 
   // Return the component
   return (
-    <>
-      {/* Load skeleton only when popover opens for the first time */}
+    <Command className="flex h-[calc(100vh-3rem)] flex-col mlg:h-[calc(var(--popover-height)-3rem)]">
+      {/* cmdk input Searchbox */}
+      <FPCSearchBox />
+
       {isLoading ? (
+        // Load skeleton only when popover opens for the first time
         <FPCSkeleton />
       ) : (
-        <Command className="flex flex-col h-[calc(100vh-3rem)] mlg:h-[calc(var(--popover-height)-3rem)]">
-          {/* cmdk input Searchbox */}
-          <FPCSearchBox />
-
+        <>
           {/* No content message */}
           <CommandEmpty className="h-full">
             <FPCNoContentMessage />
@@ -35,8 +35,8 @@ export const FlowsPopoverContent = () => {
               <FPCFlowsList flowsList={data?.data} />
             </CommandList>
           </ScrollArea>
-        </Command>
+        </>
       )}
-    </>
+    </Command>
   );
 };

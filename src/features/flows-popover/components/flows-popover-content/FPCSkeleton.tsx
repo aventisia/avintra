@@ -5,9 +5,9 @@ import { Skeleton } from "@/react-toolkit/ui/skeleton";
  */
 export const FPCSkeleton = () => {
   return (
-    <div className="flex h-full w-full flex-col items-center">
+    <div className="flex h-full w-full flex-col items-center px-4">
       {new Array(3).fill(null).map((_, index) => (
-        <div key={index} className="flex w-full gap-3 p-3.5">
+        <div key={index} className="flex w-full gap-3 py-2">
           <Skeleton className="h-12 w-16 rounded-lg" />
           <div className="flex mt-1 flex-col gap-2">
             <Skeleton className="h-2.5 w-[13rem] rounded-md" />
