@@ -31,7 +31,7 @@ export const FlowsPopoverContent = () => {
 
           {/* Flows list */}
           <ScrollArea className="grow">
-            <CommandList className="mx-1.5 my-1.5 mb-1.5 border-none p-1">
+            <CommandList className="mx-2.5 mb-2.5 border-none p-1">
               <FPCFlowsList flowsList={data?.data} />
             </CommandList>
           </ScrollArea>
