@@ -39,7 +39,7 @@ public static class InitialNodesAndEdgesUtil
                     Deletable = false,
                 },
                 
-                // Plus node
+                // Plus node without source position
                 new
                 {
                     Id = plusNodeId,
