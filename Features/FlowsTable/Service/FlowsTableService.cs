@@ -335,7 +335,7 @@ public class FlowsTableService : IFlowsTableService
             // Task successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flows deleted successfully";
+            serviceResponse.Message = $"{ids.Count} flows deleted successfully";
         }
         catch (Exception ex)
         {
