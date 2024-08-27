@@ -24,11 +24,11 @@ export const useDefineStudioPreferencesForm = () => {
     resolver: zodResolver(studioPreferencesZodSchema),
     defaultValues: {
       layoutDirection: studio.layoutDirection,
-      hideMiniMap: studio.hideMiniMap,
-      hideUndoRedo: studio.hideUndoRedo,
-      hideIntractivityToggle: studio.hideIntractivityToggle,
-      hideZoomControls: studio.hideZoomControls,
-      disableDeleteAlert: studio.disableDeleteAlert,
+      miniMap: studio.miniMap,
+      undoRedo: studio.undoRedo,
+      intractivityToggle: studio.intractivityToggle,
+      zoomControls: studio.zoomControls,
+      deleteAlert: studio.deleteAlert,
     },
   });
 

@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const studioPreferencesZodSchema = z.object({
   layoutDirection: z.enum(["TB", "LR"]).default("TB"),
-  hideMiniMap: z.boolean().default(false),
-  hideUndoRedo: z.boolean().default(false),
-  hideIntractivityToggle: z.boolean().default(false),
-  hideZoomControls: z.boolean().default(false),
-  disableDeleteAlert: z.boolean().default(false),
+  miniMap: z.boolean().default(false),
+  undoRedo: z.boolean().default(false),
+  intractivityToggle: z.boolean().default(false),
+  zoomControls: z.boolean().default(false),
+  deleteAlert: z.boolean().default(false),
 });

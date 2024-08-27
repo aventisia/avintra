@@ -11,18 +11,18 @@ import { useShallow } from "zustand/react/shallow";
 
 export const ViewControls = () => {
   // Get Studio Preferences store state
-  const { hideIntractivityToggle, hideZoomControls } =
+  const { intractivityToggle, zoomControls } =
     useStudioPreferencesStore(
       useShallow((state) => ({
-        hideIntractivityToggle: state.studioPreferences.hideIntractivityToggle,
-        hideZoomControls: state.studioPreferences.hideZoomControls,
+        intractivityToggle: state.studioPreferences.intractivityToggle,
+        zoomControls: state.studioPreferences.zoomControls,
       })),
     );
 
   return (
     <Panel position="bottom-left">
       <div className="flex flex-col items-end space-y-4">
-        {!hideZoomControls && (
+        {zoomControls && (
           <VCBContainer>
             {/* Fit view button */}
             <VCActionButton action="fitView" Icon={Scan} />
@@ -41,7 +41,7 @@ export const ViewControls = () => {
           </VCBContainer>
         )}
 
-        {!hideIntractivityToggle && (
+        {intractivityToggle && (
           <VCBContainer>
             {/* Lock or unlock ReactFlow */}
             <VCBToggleLock />

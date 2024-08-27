@@ -5,11 +5,11 @@ import { Separator } from "@/react-toolkit/ui/separator";
 import { useCallback, useEffect } from "react";
 import { z } from "zod";
 import {
-  disableDeleteAlertProps,
-  hideIntractivityToggleProps,
-  hideMiniMapProps,
-  hideUndoRedoProps,
-  hideZoomControlsProps,
+  deleteAlertProps,
+  intractivityToggleProps,
+  miniMapProps,
+  undoRedoProps,
+  zoomControlsProps,
   layoutDirectionProps,
 } from "../constants/studio-preferences-form-field-props";
 import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
@@ -51,15 +51,15 @@ export const StudioPreferencesForm = () => {
       <RadioGroupField {...layoutDirectionProps} />
       <div className="space-y-1">
         <Separator className="h-[0.5px]" />
-        <SwitchField {...hideMiniMapProps} />
+        <SwitchField {...miniMapProps} />
         <Separator className="h-[0.5px]" />
-        <SwitchField {...hideUndoRedoProps} />
+        <SwitchField {...undoRedoProps} />
         <Separator className="h-[0.5px]" />
-        <SwitchField {...hideIntractivityToggleProps} />
+        <SwitchField {...intractivityToggleProps} />
         <Separator className="h-[0.5px]" />
-        <SwitchField {...hideZoomControlsProps} />
+        <SwitchField {...zoomControlsProps} />
         <Separator className="h-[0.5px]" />
-        <SwitchField {...disableDeleteAlertProps} />
+        <SwitchField {...deleteAlertProps} />
       </div>
     </Form>
   );

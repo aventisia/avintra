@@ -8,15 +8,15 @@ import { useShallow } from "zustand/react/shallow";
 
 export const FlowControls = () => {
   // Get Studio Preferences store state
-  const { hideUndoRedo } = useStudioPreferencesStore(
+  const { undoRedo } = useStudioPreferencesStore(
     useShallow((state) => ({
-      hideUndoRedo: state.studioPreferences.hideUndoRedo,
+      undoRedo: state.studioPreferences.undoRedo,
     })),
   );
 
   return (
     <>
-      {!hideUndoRedo && (
+      {undoRedo && (
         <Panel position="top-left" onContextMenu={(e) => e.preventDefault()}>
           <FCBContainer>
             {/* Undo */}

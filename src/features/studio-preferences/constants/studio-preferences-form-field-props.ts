@@ -19,55 +19,55 @@ const layoutDirectionProps: RadioGroupFieldProps = {
 };
 
 // Hide Mini Map
-const hideMiniMapProps: SwitchFieldProps = {
+const miniMapProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
-  name: "hideMiniMap",
-  label: "Hide Mini Map",
-  description: "Hides the mini map to navigate the flow",
+  name: "miniMap",
+  label: "Mini Map",
+  description: "Show a mini map to navigate the flow",
 };
 
 // Hide Undo/Redo
-const hideUndoRedoProps: SwitchFieldProps = {
+const undoRedoProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
-  name: "hideUndoRedo",
-  label: "Hide Undo/Redo",
-  description: "Hides undo/redo buttons to navigate the flow history",
+  name: "undoRedo",
+  label: "Undo/Redo",
+  description: "Show undo and redo buttons to revert changes in the flow",
 };
 
 // Hide Intractivity Toggle
-const hideIntractivityToggleProps: SwitchFieldProps = {
+const intractivityToggleProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
-  name: "hideIntractivityToggle",
-  label: "Hide Intractivity Toggle",
-  description: "Hides a toggle to enable/disable intractivity of the flow",
+  name: "intractivityToggle",
+  label: "Intractivity Toggle",
+  description: "Show a toggle button to enable or disable intractivity in the flow",
 };
 
 // Hide Zoom Controls
-const hideZoomControlsProps: SwitchFieldProps = {
+const zoomControlsProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
-  name: "hideZoomControls",
-  label: "Hide Zoom Controls",
-  description: "Hides zoom controls to zoom in and out of the flow",
+  name: "zoomControls",
+  label: "Zoom Controls",
+  description: "Show zoom in and zoom out buttons to adjust the flow zoom level",
 };
 
 // Enable Delete Alert
-const disableDeleteAlertProps: SwitchFieldProps = {
+const deleteAlertProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
-  name: "disableDeleteAlert",
-  label: "Disable Delete Alert",
-  description: "Disables the confirmation alert dialog before deleting a node",
+  name: "deleteAlert",
+  label: "Delete Alert",
+  description: "Show a confirmation alert before deleting a node",
 };
 
 export {
   layoutDirectionProps,
-  hideMiniMapProps,
-  hideUndoRedoProps,
-  hideIntractivityToggleProps,
-  hideZoomControlsProps,
-  disableDeleteAlertProps,
+  miniMapProps,
+  undoRedoProps,
+  intractivityToggleProps,
+  zoomControlsProps,
+  deleteAlertProps,
 };

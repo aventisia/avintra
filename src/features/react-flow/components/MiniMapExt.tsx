@@ -4,15 +4,15 @@ import { useShallow } from "zustand/react/shallow";
 
 export const MiniMapExt = () => {
   // Get Studio Preferences store state
-  const { hideMiniMap } = useStudioPreferencesStore(
+  const { miniMap } = useStudioPreferencesStore(
     useShallow((state) => ({
-      hideMiniMap: state.studioPreferences.hideMiniMap,
+      miniMap: state.studioPreferences.miniMap,
     })),
   );
 
   return (
     <>
-      {!hideMiniMap && (
+      {miniMap && (
         <div onContextMenu={(e) => e.preventDefault()}>
           <MiniMap
             ariaLabel={null}

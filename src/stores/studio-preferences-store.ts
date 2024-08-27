@@ -12,11 +12,11 @@ type Actions = {
 export const useStudioPreferencesStore = create<State & Actions>((set) => ({
   studioPreferences: {
     layoutDirection: "TB",
-    hideMiniMap: false,
-    hideUndoRedo: false,
-    hideIntractivityToggle: false,
-    hideZoomControls: false,
-    disableDeleteAlert: false,
+    miniMap: true,
+    undoRedo: true,
+    intractivityToggle: true,
+    zoomControls: true,
+    deleteAlert: true,
   },
 
   setStudioPreferences: (studioPreferences) =>
