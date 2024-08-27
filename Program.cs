@@ -13,11 +13,11 @@ var config = configurationBuilder.Build();
 
 /*---------Serilog Configuration---------*/
 
-var logger = new LoggerConfiguration()
+Log.Logger = new LoggerConfiguration()
                     .ReadFrom.Configuration(config)
                     .Enrich.FromLogContext()
                     .CreateLogger();
-builder.Logging.AddSerilog(logger);
+builder.Host.UseSerilog();
 
 /*-----Add services to the container-----*/
 
@@ -62,6 +62,8 @@ if (!app.Environment.IsDevelopment()) app.UseHsts();
 
 // In a Nginx setup with SSL termination, Nginx handles the HTTPS connection and forwards the request to your backend ASP.NET Core application using HTTP (port 80 by default).
 if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 app.UseStaticFiles();
 
