@@ -1,10 +1,10 @@
+import { CommandItem } from "@/react-toolkit/ui/command";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useOpenFlow } from "../../hooks/useOpenFlow";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 import { FlowListItem } from "../flow-list-item";
-import { CommandItem } from "@/react-toolkit/ui/command";
 
 interface FPCFlowListProps {
   flowsList: FlowsTableDto[] | undefined;

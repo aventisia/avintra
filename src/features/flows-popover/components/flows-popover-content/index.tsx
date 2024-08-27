@@ -1,5 +1,5 @@
+import { Command, CommandEmpty, CommandList } from "@/react-toolkit/ui/command";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { Command, CommandEmpty, CommandList } from "cmdk";
 import { useFetchFlows } from "../../hooks/useFetchFlows";
 import { FPCFlowsList } from "./FPCFlowsList";
 import { FPCNoContentMessage } from "./FPCNoContentMessage";
@@ -15,7 +15,7 @@ export const FlowsPopoverContent = () => {
 
   // Return the component
   return (
-    <Command className="flex h-[calc(100vh-3rem)] flex-col mlg:h-[calc(var(--popover-height)-3rem)]">
+    <Command>
       {/* cmdk input Searchbox */}
       <FPCSearchBox />
 
@@ -30,7 +30,7 @@ export const FlowsPopoverContent = () => {
           </CommandEmpty>
 
           {/* Flows list */}
-          <ScrollArea className="grow">
+          <ScrollArea>
             <CommandList className="mx-2.5 mb-2.5 border-none p-1">
               <FPCFlowsList flowsList={data?.data} />
             </CommandList>
