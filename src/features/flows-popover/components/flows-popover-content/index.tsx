@@ -20,7 +20,7 @@ export const FlowsPopoverContent = () => {
       {isLoading ? (
         <FPCSkeleton />
       ) : (
-        <Command>
+        <Command className="flex flex-col h-[calc(100vh-3rem)] mlg:h-[calc(var(--popover-height)-3rem)]">
           {/* cmdk input Searchbox */}
           <FPCSearchBox />
 
@@ -30,8 +30,8 @@ export const FlowsPopoverContent = () => {
           </CommandEmpty>
 
           {/* Flows list */}
-          <ScrollArea>
-            <CommandList className="mx-2.5 my-1 mb-2.5 border-none p-1">
+          <ScrollArea className="grow">
+            <CommandList className="mx-1.5 my-1.5 mb-1.5 border-none p-1">
               <FPCFlowsList flowsList={data?.data} />
             </CommandList>
           </ScrollArea>
