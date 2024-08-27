@@ -325,7 +325,7 @@ public class ProjectsTableService : IProjectsTableService
             // Task successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Projects deleted successfully";
+            serviceResponse.Message = $"{ids.Count} projects deleted successfully";
         }
         catch (Exception ex)
         {
