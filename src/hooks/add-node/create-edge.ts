@@ -9,8 +9,8 @@ export const createEdgeObj = (
     type: "customStepEdge",
     source: sourceNodeId,
     target: targetNodeId,
-    deletable: false,
-    selectable: false,
+    deletable: true,
+    selectable: true,
   } as Edge;
 };
 
