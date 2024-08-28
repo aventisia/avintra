@@ -1,5 +1,6 @@
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
+import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ReactFlow } from "@xyflow/react";
@@ -7,15 +8,15 @@ import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
-import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
+import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
+import "../remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
 import { ReactFlowContextMenu } from "./context-menu";
 import { FlowControls } from "./flow-controls";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
-import "../remove-attribution.css";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -59,6 +60,7 @@ export const ReactFlowExt = () => {
       <ReactFlow
         fitView
         minZoom={0.4}
+        defaultEdgeOptions={defaultEdgeOptions}
         nodeTypes={customNodeTypeObjMemo}
         edgeTypes={customEdgesTypeObjMemo}
         nodes={nodes}
