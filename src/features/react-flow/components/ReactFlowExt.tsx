@@ -15,6 +15,7 @@ import { ReactFlowContextMenu } from "./context-menu";
 import { FlowControls } from "./flow-controls";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
+import "../remove-attribution.css";
 
 /**
  * A custom extension of the ReactFlow component.
