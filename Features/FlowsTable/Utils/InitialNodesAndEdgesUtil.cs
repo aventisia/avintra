@@ -43,7 +43,7 @@ public static class InitialNodesAndEdgesUtil
                 new
                 {
                     Id = plusNodeId,
-                    Type = "plusNode",
+                    Type = "plusFirstNode",
                     Position = new { X = 0, Y = 150 },
                     Deletable = false,
                     Draggable = true,
@@ -56,11 +56,15 @@ public static class InitialNodesAndEdgesUtil
                 new
                 {
                     Id = Guid.NewGuid(),
-                    Type = "plusNodeEdge",
+                    Type = "customStepEdge",
                     Source = triggerNodeId,
                     Target = plusNodeId,
                     Deletable = false,
                     Selectable = false,
+                    Style = new {
+                        StrokeDasharray= "5,5",
+                        StrokeWidth= 1.5
+                    }
                 },
             };
 
