@@ -1,5 +1,7 @@
 import { activitiesList } from "@/data/activities-list";
-import { useAddNode } from "@/hooks/add-node";
+import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
+import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
+import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { CommandItem, CommandList } from "@/react-toolkit/ui/command";
 import { PopoverClose } from "@/react-toolkit/ui/popover";
 import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
@@ -15,11 +17,9 @@ export const NSCActivitiesList = ({
   originId,
 }: NSCActivitiesListProps) => {
   // Get addNode handlers
-  const {
-    addFirstNode,
-    addNodeFromCustomStepEdge,
-    addNodeFromPlaceholderNode,
-  } = useAddNode();
+  const addFirstNodeToFlow = useAddFirstNodeToFlow();
+  const addNodeFromEdge = useAddNodeFromEdge();
+  const addFirstNodeToBranch = useAddFirstNodeToBranch();
 
   // Return the component
   return (
@@ -29,12 +29,14 @@ export const NSCActivitiesList = ({
           key={item.name}
           value={item.label}
           onSelect={() => {
-            if (origin === "PlusNode") {
-              addFirstNode(item, originId);
-            } else if (origin === "CustomStepEdge") {
-              addNodeFromCustomStepEdge(item, originId);
-            } else if (origin === "PlaceholderNode") {
-              addNodeFromPlaceholderNode(item, originId);
+            console.log("origin", origin);
+            
+            if (origin === "plusFirstNode") {
+              addFirstNodeToFlow(item, originId);
+            } else if (origin === "PlusEdgeLabel") {
+              addNodeFromEdge(item, originId);
+            } else if (origin === "plusNode") {
+              addFirstNodeToBranch(item, originId);
             }
           }}
           className="rounded-lg p-1"
