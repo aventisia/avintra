@@ -71,7 +71,7 @@ const getLayoutedElements = (
     const targetNode = nodes.find((n) => n.id === edge.target) as Node;
 
     dagreGraph.setEdge(edge.source, edge.target, {
-      minlen: getEdgeMinlen(sourceNode.type, targetNode?.type), // Set the minlen for the edg. It multiplies the ranksep value.
+      minlen: getEdgeMinlen(sourceNode?.type, targetNode?.type), // Set the minlen for the edg. It multiplies the ranksep value.
     });
   });
 
