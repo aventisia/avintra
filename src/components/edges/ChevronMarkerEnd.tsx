@@ -1,9 +1,13 @@
-export const ChevronMarkerEnd = () => {
+interface ChevronMarkerEndProps {
+  edgeId: string;
+}
+
+export const ChevronMarkerEnd = ({ edgeId }: ChevronMarkerEndProps) => {
   return (
     <svg>
       <defs>
         <marker
-          id="chevronMarkerEnd"
+          id={`markerArrow_${edgeId}`}
           markerWidth="20"
           markerHeight="20"
           refX="13"
@@ -15,7 +19,6 @@ export const ChevronMarkerEnd = () => {
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
-            stroke="#94a3b8"
             strokeWidth="1"
           />
         </marker>
