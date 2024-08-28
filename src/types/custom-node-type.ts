@@ -1,7 +1,7 @@
 export type CustomNodeType =
   | "triggerNode"
   | "plusNode"
-  | "placeholderNode"
+  | "plusFirstNode"
   | "mergeBranchesNode"
   | "branchStartNode"
   | "branchEndNode"
