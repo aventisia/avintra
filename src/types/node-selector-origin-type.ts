@@ -1,5 +1,5 @@
 export type NodeSelectorOriginType =
   | "ReplaceTrigger"
-  | "CustomStepEdge"
-  | "PlaceholderNode"
-  | "PlusNode";
+  | "PlusEdgeLabel"
+  | "plusFirstNode"
+  | "plusNode";
