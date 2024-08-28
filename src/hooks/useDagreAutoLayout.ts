@@ -19,7 +19,7 @@ const nodeDimensionLookup: Record<CustomNodeType, NodeDimension> = {
   branchEndNode: { width: 10, height: 10 },
   mergeBranchesNode: { width: 16, height: 16 },
   flowEndNode: { width: 144, height: 44 },
-  placeholderNode: { width: 340, height: 82.7 },
+  plusFirstNode: { width: 340, height: 82.7 },
   plusNode: { width: 340, height: 82.7 },
   ifElseNode: { width: 340, height: 85 },
   triggerNode: { width: 340, height: 85 },
