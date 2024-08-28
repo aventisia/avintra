@@ -53,7 +53,7 @@ const getLayoutedElements = (
   // Set configurations for the dagre graph
   dagreGraph.setGraph({
     rankdir: direction, // Direction for rank nodes. Can be TB, BT, LR, or RL, where T = top, B = bottom, L = left, and R = right.
-    nodesep: 120, // Number of pixels that separate nodes horizontally in the layout.
+    nodesep: 200, // Number of pixels that separate nodes horizontally in the layout.
     ranksep: 15, // Number of pixels between each rank in the layout.
   });
 
