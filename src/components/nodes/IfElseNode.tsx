@@ -39,7 +39,7 @@ export const IfElseNode = ({
       <InputHandle position={targetPosition} />
 
       {/* Output (Source) Handle */}
-      <OutputHandle position={sourcePosition} />
+      <OutputHandle position={sourcePosition} connectionCount={2} />
     </NodeContainer>
   );
 };
