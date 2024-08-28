@@ -1,0 +1,24 @@
+import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
+import { NodeDataType } from "@/types/node-data-type";
+import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
+import { createNodeObj } from "./create-node-obj";
+
+/**
+ * Creates an activity node and returns an object containing the new node, new edge, and last node ID.
+ *
+ * @param nodeData - The data for the new node.
+ * @param sourceNodeId - The ID of the source node.
+ * @returns An object with the new nodes, new edges, and last node ID.
+ */
+export const createActivityNode = (
+  nodeData: NodeDataType,
+  sourceNodeId: string,
+): CreateNodesAndEdgesType => {
+  const newNode = createNodeObj(nodeData);
+  const newEdge = createPlusEdgeObj(sourceNodeId, newNode.id);
+  return {
+    newNodes: [newNode],
+    newEdges: [newEdge],
+    lastNodeId: newNode.id,
+  };
+};
