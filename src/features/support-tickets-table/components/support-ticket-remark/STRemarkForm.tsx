@@ -7,7 +7,7 @@ import { z } from "zod";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { RichTextAreaField } from "../minimal-tiptap/RichTextAreaField";
+import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 import { descriptionProps } from "../../constants/st-remark-form-field-props";
 
 interface STRemarkFormProps {

@@ -13,7 +13,7 @@ import { supportTicketsOptimisticMutationFn } from "../../apis/suport-tickets-ta
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { DATA_QUERY_KEY } from "../../constants/constants";
 import { useEffect } from "react";
-import { RichTextAreaField } from "../minimal-tiptap/RichTextAreaField";
+import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 
 export const SupportTicketCrudForm = () => {
   const { form, rowId, isDirty, crudAction, refineFormData } =

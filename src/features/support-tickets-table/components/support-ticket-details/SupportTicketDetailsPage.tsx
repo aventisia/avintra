@@ -9,7 +9,7 @@ import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
 import { useLocation } from "react-router-dom";
 import { STRemarkForm } from "../support-ticket-remark/STRemarkForm";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { RichTextAreaField } from "../minimal-tiptap/RichTextAreaField";
+import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
