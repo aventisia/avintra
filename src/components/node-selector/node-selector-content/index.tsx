@@ -1,3 +1,4 @@
+import { triggersList } from "@/data/triggers-list";
 import { cn } from "@/react-toolkit/lib/utils";
 import {
   Command,
@@ -6,23 +7,23 @@ import {
 } from "@/react-toolkit/ui/command";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { Tabs } from "@/react-toolkit/ui/tabs";
-import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
+import { useNodeSelectorStore } from "@/stores/node-selector-store";
 import { useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useShallow } from "zustand/react/shallow";
 import { NSCNoContentMessage } from "./NSCNoContentMessage";
+import { NSCNodesList } from "./NSCNodesList";
 import { NSCTabsContent } from "./NSCTabsContent";
 import { NSCTabsList } from "./NSCTabsList";
-import { NSCTriggersList } from "./NSCTriggersList";
 
-interface NodeSelectorContentProps {
-  origin: NodeSelectorOriginType;
-  originId: string;
-}
+export const NodeSelectorContent = () => {
+  // Get the origin and originId from the store
+  const { origin } = useNodeSelectorStore(
+    useShallow((state) => ({
+      origin: state.origin,
+    })),
+  );
 
-export const NodeSelectorContent = ({
-  origin,
-  originId,
-}: NodeSelectorContentProps) => {
   // Ref for command input
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,13 +43,13 @@ export const NodeSelectorContent = ({
   };
 
   // Is used to render the list of triggers
-  const isReplaceTrigger = origin === "ReplaceTrigger";
+  const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
   return (
     <Tabs
       defaultValue="all"
       onValueChange={onTabChange}
-      className={cn("h-full", !isReplaceTrigger && "pb-9")}
+      className={cn("h-full", !isOriginReplaceTrigger && "pb-9")}
     >
       <Command>
         {/* Searchbox */}
@@ -65,18 +66,18 @@ export const NodeSelectorContent = ({
 
         {/* List of Nodes */}
         <ScrollArea className="p-2">
-          {isReplaceTrigger ? (
+          {isOriginReplaceTrigger ? (
             // Contains the list of all triggers
-            <NSCTriggersList />
+            <NSCNodesList nodesList={triggersList} />
           ) : (
             // Contains the list of all tabs content
-            <NSCTabsContent origin={origin} originId={originId} />
+            <NSCTabsContent />
           )}
         </ScrollArea>
       </Command>
 
       {/* Contains list of all Tabs */}
-      {!isReplaceTrigger && <NSCTabsList />}
+      {!isOriginReplaceTrigger && <NSCTabsList />}
     </Tabs>
   );
 };
