@@ -11,6 +11,9 @@ import { FlowsPage } from "./pages/FlowsPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { SupportTicketsPage } from "./pages/SupportTicketsPage";
+import { SupportTicketDetailsPage } from "./features/support-tickets-table/components/support-ticket-details/SupportTicketDetailsPage";
+import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +48,18 @@ const router = createBrowserRouter(
         {
           path: "/tenants",
           element: <TenantsPage />,
+        },
+        {
+          path: "/supportticket",
+          element: <SupportTicketsPage />,
+        },
+        {
+          path: "/supportticket/details",
+          element: <SupportTicketDetailsPage />,
+        },
+        {
+          path: "/supportticket/create",
+          element: <STCreatePage />,
         },
         {
           path: "/page-not-found",
