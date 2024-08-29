@@ -1,18 +1,32 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { useNodeSelectorStore } from "@/stores/node-selector-store";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
 
-export const PlusEdgeLabel = () => {
+interface PlusEdgeLabelProps {
+  edgeId: string;
+}
+
+export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
+  // Get setOrigin from store
+  const { setOrigin } = useNodeSelectorStore(
+    useShallow((state) => ({
+      setOrigin: state.setOrigin,
+    })),
+  );
+
   return (
     <PopoverTrigger
       className={cn(
         buttonVariants({ variant: "outline", size: "icon5" }),
-        "group z-10 rounded-full opacity-50",
+        "group z-10 rounded-full opacity-0",
         "hover:bg-primary hover:opacity-100",
         "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
         "nodrag nopan",
       )}
+      onClick={() => setOrigin("PlusEdgeLabel", edgeId)}
     >
       <PlusIcon
         className={cn(
