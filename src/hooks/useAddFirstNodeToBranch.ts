@@ -17,7 +17,7 @@ export const useAddFirstNodeToBranch = () => {
   );
 
   // Auto layout the flow
-  const { autoLayoutOnAdd } = useDagreAutoLayout();
+  const autoLayout = useDagreAutoLayout();
 
   // Handler to add first node to branch
   const addFirstNodeToBranch = useCallback(
@@ -45,9 +45,7 @@ export const useAddFirstNodeToBranch = () => {
       );
 
       // Get plus node index
-      const plusNodeIndex = nodes.findIndex(
-        (node) => node.id === plusNodeId,
-      );
+      const plusNodeIndex = nodes.findIndex((node) => node.id === plusNodeId);
 
       // Add new nodes & remove plus node
       const updatedNodes = [
@@ -81,9 +79,9 @@ export const useAddFirstNodeToBranch = () => {
       ];
 
       // Auto organize node & edge
-      autoLayoutOnAdd(updatedNodes, updatedEdges);
+      autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     },
-    [edges, nodes, autoLayoutOnAdd],
+    [edges, nodes, autoLayout],
   );
 
   // Return the handler

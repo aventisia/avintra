@@ -18,7 +18,7 @@ export const useAddFirstNodeToFlow = () => {
   );
 
   // Auto layout the flow
-  const { autoLayoutOnAdd } = useDagreAutoLayout();
+  const autoLayout = useDagreAutoLayout();
 
   // Handler to add first node to flow
   const addFirstNodeToFlow = useCallback(
@@ -64,9 +64,9 @@ export const useAddFirstNodeToFlow = () => {
       ];
 
       // Auto organize node & edge
-      autoLayoutOnAdd(updatedNodes, updatedEdges);
+      autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     },
-    [edges, nodes, autoLayoutOnAdd],
+    [edges, nodes, autoLayout],
   );
 
   // Return the handler

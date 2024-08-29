@@ -20,7 +20,7 @@ export const useOnNodeDelete = () => {
   );
 
   // Auto layout the flow
-  const { autoLayoutOnAdd } = useDagreAutoLayout();
+  const autoLayout = useDagreAutoLayout();
 
   // Handler to reconnect edges on node delete
   const onNodesDelete: OnNodesDelete = useCallback(
@@ -48,9 +48,9 @@ export const useOnNodeDelete = () => {
       }, edges);
 
       // Auto organize node & edge
-      autoLayoutOnAdd(nodes, reconnectedEdges);
+      autoLayout({newNodes: nodes, newEdges:reconnectedEdges});
     },
-    [edges, autoLayoutOnAdd, nodes],
+    [edges, autoLayout, nodes],
   );
 
   return { onNodesDelete };

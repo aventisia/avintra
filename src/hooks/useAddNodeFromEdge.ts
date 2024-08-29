@@ -16,7 +16,7 @@ export const useAddNodeFromEdge = () => {
   );
 
   // Auto layout the flow
-  const { autoLayoutOnAdd } = useDagreAutoLayout();
+  const autoLayout = useDagreAutoLayout();
 
   // Handler to add new node from plus label of step edge
   const addNodeFromEdge = useCallback(
@@ -63,9 +63,9 @@ export const useAddNodeFromEdge = () => {
       ];
 
       // Auto organize node & edge
-      autoLayoutOnAdd(updatedNodes, updatedEdges2);
+      autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges2 });
     },
-    [edges, nodes, autoLayoutOnAdd],
+    [edges, nodes, autoLayout],
   );
 
   // Return the handler

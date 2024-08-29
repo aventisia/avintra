@@ -11,7 +11,7 @@ import { Clipboard, Copy, Library, Scissors } from "lucide-react";
 
 export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
   // Auto layout the flow
-  const { autoLayout } = useDagreAutoLayout();
+  const autoLayout = useDagreAutoLayout();
 
   return (
     <ContextMenu>
