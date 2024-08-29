@@ -1,27 +1,22 @@
 import { TabsContent } from "@/react-toolkit/ui/tabs";
-import { NSCActivitiesList } from "./NSCActivitiesList";
-import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
-import { NSCLogicNodesList } from "./NSCLogicNodesList";
+import { NSCNodesList } from "./NSCNodesList";
+import { activitiesList } from "@/data/activities-list";
+import { logicNodesList } from "@/data/logic-nodes-list";
 
-interface NSCTabsContentProps {
-  origin: NodeSelectorOriginType;
-  originId: string;
-}
-
-export const NSCTabsContent = ({ origin, originId }: NSCTabsContentProps) => {
+export const NSCTabsContent = () => {
   return (
     <>
       <TabsContent value="all" className="mt-[1px]">
-        <NSCActivitiesList origin={origin} originId={originId} />
+        <NSCNodesList nodesList={activitiesList} />
       </TabsContent>
       <TabsContent value="activities" className="mt-[1px]">
-        <NSCActivitiesList origin={origin} originId={originId} />
+        <NSCNodesList nodesList={activitiesList} />
       </TabsContent>
       <TabsContent value="logical" className="mt-[1px]">
-        <NSCLogicNodesList origin={origin} originId={originId} />
+        <NSCNodesList nodesList={logicNodesList} />
       </TabsContent>
       <TabsContent value="connectors" className="mt-[1px]">
-        <NSCActivitiesList origin={origin} originId={originId} />
+        <NSCNodesList nodesList={activitiesList} />
       </TabsContent>
     </>
   );
