@@ -19,7 +19,6 @@ export const ChevronMarkerEnd = ({ edgeId }: ChevronMarkerEndProps) => {
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="1"
           />
         </marker>
       </defs>
