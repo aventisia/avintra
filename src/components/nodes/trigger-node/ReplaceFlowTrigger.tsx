@@ -4,7 +4,9 @@ import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { NodeToolbar, Position } from "@xyflow/react";
 
-export const ReplaceFlowTrigger = () => {
+export const ReplaceFlowTrigger = (
+  props: React.ComponentPropsWithoutRef<typeof PopoverTrigger>,
+) => {
   return (
     <NodeToolbar offset={5} position={Position.Top}>
       <PopoverTrigger
@@ -13,6 +15,7 @@ export const ReplaceFlowTrigger = () => {
           "z-10 rounded-full opacity-80 hover:opacity-100",
           "aria-[expanded=true]:opacity-100",
         )}
+        {...props}
       >
         <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
       </PopoverTrigger>
