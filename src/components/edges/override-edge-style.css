@@ -3,14 +3,17 @@
   stroke: #94a3b8 !important; /* stroke-slate-400 */
 }
 
+.react-flow__edge marker path {
+  stroke-width: 1 !important;
+}
+
 .react-flow__edge.selected path {
   stroke: var(--primary) !important;
-  stroke-width: 1.5;
+  stroke-width: 1.5 !important;
 }
 
 .react-flow__edge.selected marker path {
-  stroke: var(--primary) !important;
-  stroke-width: 0.9;
+  stroke-width: 1.05 !important;
 }
 
 .react-flow__edge.selectable:hover:not(.selected) path {
