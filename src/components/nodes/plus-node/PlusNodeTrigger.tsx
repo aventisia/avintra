@@ -3,9 +3,11 @@ import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { PopoverAnchor } from "@radix-ui/react-popover";
 
-export const PlusNodeTrigger = () => {
+export const PlusNodeTrigger = (
+  props: React.ComponentPropsWithoutRef<typeof PopoverTrigger>,
+) => {
   return (
-    <PopoverTrigger className="group">
+    <PopoverTrigger className="group" {...props}>
       <div
         className={cn(
           "flex h-[5.3rem] w-[21.375rem] items-center justify-center rounded-lg bg-slate-100 px-4 py-3.5",
