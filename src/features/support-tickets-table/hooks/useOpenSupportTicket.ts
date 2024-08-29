@@ -10,8 +10,6 @@ import { useSupportTicketsTableStore } from "../stores/support-tickets-table-sto
  * @returns A function to handle opening the support ticket.
  */
 export const useOpenSupportTicket = (rowId: string) => {
-  console.log("inside open ST hook");
-
   // Get the navigate function
   const navigate = useNavigate();
 
