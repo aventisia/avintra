@@ -2,7 +2,7 @@ import { EdgeLabelRenderer } from "@xyflow/react";
 import { edgeLabelMapper } from "./EdgeLabelMapper";
 
 interface EdgeLabelContainerProps {
-  edgeId: string;
+  edgeId?: string;
   label: string | React.ReactNode;
   labelX?: number;
   labelY?: number;
@@ -23,7 +23,7 @@ export const EdgeLabelContainer = ({
           pointerEvents: "all",
         }}
       >
-        {edgeLabelMapper(edgeId, label as string)}
+        {edgeLabelMapper(label as string, edgeId)}
       </div>
     </EdgeLabelRenderer>
   );

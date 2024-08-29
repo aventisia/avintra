@@ -6,7 +6,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
 interface PlusEdgeLabelProps {
-  edgeId: string;
+  edgeId?: string;
 }
 
 export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
@@ -26,7 +26,7 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
         "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
         "nodrag nopan",
       )}
-      onClick={() => setOrigin("PlusEdgeLabel", edgeId)}
+      onClick={() => setOrigin("PlusEdgeLabel", edgeId || "")}
     >
       <PlusIcon
         className={cn(

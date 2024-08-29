@@ -4,7 +4,7 @@ import { BaseEdgeLabel } from "./edge-labels/BaseEdgeLabel";
 import { NodeSelector } from "../node-selector";
 import { PlusEdgeLabel } from "./edge-labels/PlusEdgeLabel";
 
-export const edgeLabelMapper = (edgeId: string, label: string): JSX.Element => {
+export const edgeLabelMapper = (label: string, edgeId?: string, ): JSX.Element => {
   switch (label.toLowerCase()) {
     case "true":
       return <TrueEdgeLabel />;
