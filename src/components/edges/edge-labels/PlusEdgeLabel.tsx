@@ -21,7 +21,7 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
     <PopoverTrigger
       className={cn(
         buttonVariants({ variant: "outline", size: "icon5" }),
-        "group z-10 rounded-full opacity-0",
+        "group z-10 rounded-full opacity-50",
         "hover:bg-primary hover:opacity-100",
         "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
         "nodrag nopan",
