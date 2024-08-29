@@ -1,6 +1,6 @@
-import { ActivityNodeDataType } from "@/types/activity-node-data-type";
+import { NodeDataType } from "@/types/node-data-type";
 
-export const activitiesList: ActivityNodeDataType[] = [
+export const activitiesList: NodeDataType[] = [
   {
     type: "activityNode",
     category: "Email",
