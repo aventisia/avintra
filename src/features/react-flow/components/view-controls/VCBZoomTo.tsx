@@ -36,7 +36,7 @@ export const VCBZoomTo = () => {
         className={cn(
           "max-w-[2.8rem] rounded-md font-mono text-3xs font-medium",
         )}
-        onClick={() => zoomTo(1)}
+        onClick={() => zoomTo(1, { duration: 500 })}
       >
         <span>{Math.round(zoomLevel * 100)}</span>
         <span className="ml-[0.5px] font-mono text-2xs">%</span>

@@ -29,11 +29,11 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
   // Define action handler based on action
   const actionHandler = () => {
     if (action === "fitView") {
-      fitView();
+      fitView({ duration: 500 });
     } else if (action === "zoomIn") {
-      zoomIn();
+      zoomIn({ duration: 500 });
     } else if (action === "zoomOut") {
-      zoomOut();
+      zoomOut({ duration: 500 });
     }
   };
 
