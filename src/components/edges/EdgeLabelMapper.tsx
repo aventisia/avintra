@@ -12,13 +12,8 @@ export const edgeLabelMapper = (edgeId: string, label: string): JSX.Element => {
       return <FalseEdgeLabel />;
     case "plus":
       return (
-        <NodeSelector
-          origin="PlusEdgeLabel"
-          originId={edgeId}
-          sideOffset={10}
-          alignOffset={-12}
-        >
-          <PlusEdgeLabel />
+        <NodeSelector sideOffset={10} alignOffset={-12}>
+          <PlusEdgeLabel edgeId={edgeId} />
         </NodeSelector>
       );
     default:
