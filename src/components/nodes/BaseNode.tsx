@@ -6,18 +6,22 @@ import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
 import { nodesIconMapper } from "@/components/node-icons/NodesIconMapper";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { NodeDataType } from '@/types/node-data-type';
-import React from 'react';
+import { NodeDataType } from "@/types/node-data-type";
+import React from "react";
 
-interface BaseNodeProps {
+interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   data: NodeDataType;
-  children?: React.ReactNode;
 }
 
-const BaseNode: React.FC<BaseNodeProps> = ({ selected, data, children }) => {
+const BaseNode: React.FC<BaseNodeProps> = ({
+  selected,
+  data,
+  children,
+  ...props
+}) => {
   return (
-    <NodeContainer selected={selected}>
+    <NodeContainer selected={selected} {...props}>
       <NodeHeader>
         {data.icon ? nodesIconMapper[data.icon] : <NodeImage src={data.img} />}
         <NodeHeading>{data.label}</NodeHeading>
