@@ -4,6 +4,7 @@ import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { CustomNodeType } from "@/types/custom-node-type";
 import dagre from "@dagrejs/dagre";
 import { Edge, Node, Position } from "@xyflow/react";
+import { timer } from "d3-timer";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -126,31 +127,57 @@ export const useDagreAutoLayout = () => {
     })),
   );
 
-  const autoLayout = useCallback(() => {
-    // Get layouted nodes and edges
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      nodes,
-      edges,
-      layoutDirection,
-    );
-
-    // Set the layouted nodes and edges
-    setNodes([...layoutedNodes]);
-    setEdges([...layoutedEdges]);
-  }, [nodes, edges, layoutDirection, setNodes, setEdges]);
-
-  const autoLayoutOnAdd = useCallback(
-    (newNodes: Node[], newEdges: Edge[]) => {
+  /** Organize the nodes and edges using the Dagre auto layout algorithm */
+  const autoLayout = useCallback(
+    (newNodesEdgesObj?: { newNodes: Node[]; newEdges: Edge[] }) => {
       // Get layouted nodes and edges
       const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(newNodes, newEdges, layoutDirection);
+        getLayoutedElements(
+          newNodesEdgesObj ? newNodesEdgesObj.newNodes : nodes,
+          newNodesEdgesObj ? newNodesEdgesObj.newEdges : edges,
+          layoutDirection,
+        );
 
-      // Set the layouted nodes and edges
-      setNodes([...layoutedNodes]);
+      // Set the layouted edges
       setEdges([...layoutedEdges]);
+
+      // Set duration for the animation
+      const duration = 300; // In milliseconds
+
+      // Set start and end positions for the nodes
+      const startPositions = newNodesEdgesObj
+        ? newNodesEdgesObj.newNodes.map((node) => node.position)
+        : nodes.map((node) => node.position);
+      const endPositions = layoutedNodes.map((node) => node.position);
+
+      // Animate the nodes using D3 timer
+      const d3Timer = timer((elapsed: number) => {
+        // Calculate the progress of the animation
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Interpolate the positions of the nodes
+        const interpolatedNodes = layoutedNodes.map((node, index) => ({
+          ...node,
+          position: {
+            x:
+              startPositions[index].x +
+              (endPositions[index].x - startPositions[index].x) * progress,
+            y:
+              startPositions[index].y +
+              (endPositions[index].y - startPositions[index].y) * progress,
+          },
+        }));
+
+        // Set the nodes with the interpolated positions
+        setNodes(interpolatedNodes);
+
+        // Stop the timer if the progress reaches 100%
+        if (progress === 1) d3Timer.stop();
+      });
     },
-    [layoutDirection, setNodes, setEdges],
+    [nodes, edges, layoutDirection, setNodes, setEdges],
   );
 
-  return { autoLayout, autoLayoutOnAdd };
+  // Return the auto layout function
+  return autoLayout;
 };
