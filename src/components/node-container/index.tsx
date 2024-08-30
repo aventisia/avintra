@@ -14,16 +14,16 @@ export const NodeContainer = ({
   return (
     <div
       className={cn(
-        "flex h-[5.3rem] rounded-lg border border-slate-300",
+        "flex h-[5.3rem] w-[21.375rem] rounded-lg border border-slate-300",
         className,
-        selected && "ring-1 ring-ring border-primary",
+        selected && "border-primary ring-1 ring-ring",
       )}
       {...props}
     >
-      <div className="custom-drag-handle flex items-center justify-center h-full w-5 rounded-l-lg bg-slate-100">
+      <div className="custom-drag-handle flex h-full w-5 items-center justify-center rounded-l-lg bg-slate-100">
         <GripVertical className="h-5 w-5 text-slate-300" />
       </div>
-      <div className="flex w-[20rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pt-[0.7rem] pb-3.5">
+      <div className="flex w-[20rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pb-3.5 pt-[0.7rem]">
         {children}
       </div>
     </div>
