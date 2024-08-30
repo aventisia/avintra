@@ -18,15 +18,20 @@ public class SupportTicketRemarksDto
     public Guid SupportTicketId { get; set; }
 
     /// <summary>
-    /// Gets or sets the SupportTicket number associated support ticket remark (optional).
+    /// Gets or sets the SupportTicket number associated support ticket remark.
     /// </summary>
     public string? TicketNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets the content of the message (text) within the conversation.
+    /// Gets or sets the content of the message (text) within the conversation. Min-1, Max-500
     /// </summary>
     [StringLength(500, MinimumLength = 1)]
     public required string Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the user who posted the comment.
+    /// </summary>
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the user's full name who posted the remark.
@@ -49,12 +54,39 @@ public class SupportTicketRemarksDto
     public string? Initials { get; set; }
 
     /// <summary>
-    /// Gets or sets when the remark was created.
+    /// Gets or sets a value indicating whether the remark has been edited.
+    /// </summary>
+    public bool? IsEdited { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating whether the remark record is disabled.
+    /// </summary>
+    /// <remarks>
+    /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
+    /// </remarks>
+    public bool? IsDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user who created the remark record.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public string? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the remark record was created.
+    /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? CreatedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the remark has been edited.
+    /// Gets or sets the username of the user who last modified the remark record. 
+    /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
-    public bool? IsEdited { get; set; }
+    public string? LastModifiedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the remark record was last modified. 
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public DateTimeOffset? LastModifiedOn { get; set; }
 }
