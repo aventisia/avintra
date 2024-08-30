@@ -6,9 +6,9 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { REMARKS_QUERY_KEY } from "../constants/constants";
 import { supportTicketRemarksZodSchema } from "../constants/support-ticket-zod-schema";
 import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
+import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 
 /**
  * Custom hook for defining a support ticket remark form.
@@ -32,6 +32,14 @@ export const useDefineSTRemarkForm = () => {
     })),
   );
 
+  // Get store data of support ticket
+  const { selectedRemarkId, remarksQueryKey } = useSupportTicketsTableStore(
+    useShallow((state) => ({
+      selectedRemarkId: state.selectedRemarkId,
+      remarksQueryKey: state.remarksQueryKey,
+    })),
+  );
+
   // Get query client
   const queryClient = useQueryClient();
 
@@ -40,10 +48,11 @@ export const useDefineSTRemarkForm = () => {
   const form = useForm<z.infer<typeof supportTicketRemarksZodSchema>>({
     resolver: zodResolver(supportTicketRemarksZodSchema),
     defaultValues: {
-      id: "",
-      supportTicketId: "",
+      id: rowId ?? "",
+      supportTicketId: rowId ?? "",
       ticketNumber: "",
       message: "",
+      userId: userSession?.tenantId ?? "",
       userFullName: userSession?.firstName + " " + userSession?.lastName,
       userName: userSession?.email ?? "",
       avatarSrc: userSession?.avatarSrc ?? "",
@@ -61,51 +70,48 @@ export const useDefineSTRemarkForm = () => {
     formState: { isDirty },
   } = form;
 
-  // Fetch support ticket remarks data on comment update
+  // Fetch support ticket remarks data when crud action is update
   useEffect(() => {
-    if (crudAction === "update") {
-      queryClient.getQueryData<SupportTicketRemarksDto[]>([REMARKS_QUERY_KEY]);
-    }
+    if (crudAction === "update" && selectedRemarkId) {
+      // Get support ticket remarks data from query client
+      const stRemarksData = queryClient.getQueryData<{
+        data: SupportTicketRemarksDto[];
+      }>(remarksQueryKey);
 
-    // set support ticket remark to form
-    if (crudAction === "update" && rowId) {
-      const remark = queryClient
-        .getQueryData<SupportTicketRemarksDto[]>([REMARKS_QUERY_KEY])
-        ?.find((r) => r.id === rowId);
-
-      if (remark) {
-        form.reset({
-          id: remark.id ?? "",
-          supportTicketId: remark.supportTicketId ?? "",
-          ticketNumber: remark.ticketNumber ?? "",
-          message: remark.message ?? "",
-          userFullName: remark.userFullName ?? "",
-          userName: remark.userName ?? "",
-          avatarSrc: remark.avatarSrc ?? "",
-          initials: remark.initials ?? "",
-          createdBy:
-            remark.createdBy ??
-            userSession?.firstName + " " + userSession?.lastName,
-          createdOn: remark?.createdOn
-            ? new Date(remark?.createdOn)
-            : new Date(),
-          lastModifiedBy:
-            remark?.lastModifiedBy ??
-            userSession?.firstName + " " + userSession?.lastName,
-          lastModifiedOn: remark?.lastModifiedOn
-            ? new Date(remark?.lastModifiedOn)
-            : new Date(),
-        });
+      // Get remark data by id
+      if (stRemarksData) {
+        const remark = stRemarksData?.data.find((item) => item.id === rowId);
+        if (remark) {
+          form.reset({
+            id: remark?.id ?? "",
+            supportTicketId: remark?.supportTicketId ?? "",
+            ticketNumber: remark?.ticketNumber ?? "",
+            message: remark?.message ?? "",
+            userFullName: remark?.userFullName ?? "",
+            userName: remark?.userName ?? "",
+            avatarSrc: remark?.avatarSrc ?? "",
+            initials: remark?.initials ?? "",
+            createdBy:
+              remark?.createdBy ??
+              userSession?.firstName + " " + userSession?.lastName,
+            createdOn: remark?.createdOn
+              ? new Date(remark?.createdOn)
+              : new Date(),
+            lastModifiedBy:
+              remark?.lastModifiedBy ??
+              userSession?.firstName + " " + userSession?.lastName,
+            lastModifiedOn: remark?.lastModifiedOn
+              ? new Date(remark?.lastModifiedOn)
+              : new Date(),
+          });
+        }
       }
     }
-  }, [crudAction, rowId, form, queryClient, userSession]);
+  }, [crudAction, rowId, form, queryClient, remarksQueryKey, userSession]);
 
-  // Refine form data based on crud action
   const refineFormData = (
     formData: z.infer<typeof supportTicketRemarksZodSchema>,
   ) => {
-    console.log("Refining form data: ", formData);
-
     return {
       ...formData,
       lastModifiedBy: userSession?.email ?? "",
@@ -122,7 +128,9 @@ export const useDefineSTRemarkForm = () => {
   return {
     form,
     isDirty,
+    remarksQueryKey,
     rowId,
+    selectedRemarkId,
     crudAction,
     refineFormData,
   };
