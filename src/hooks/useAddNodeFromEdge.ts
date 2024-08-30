@@ -1,10 +1,10 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
+import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
-import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
 
 export const useAddNodeFromEdge = () => {
   // Get ReactFlowExt store state & actions
@@ -24,10 +24,14 @@ export const useAddNodeFromEdge = () => {
       // Get step edge
       const stepEdge = edges.find((edge) => edge.id === stepEdgeId) as Edge;
 
+      // Get source node
+      const sourceNode = nodes.find((node) => node.id === stepEdge.source);
+
       // Create new node & edge
       const { newNodes, newEdges, lastNodeId } = createNodesAndEdgesUtil(
-        nodeData,
         stepEdge.source,
+        nodeData,
+        sourceNode?.position,
       );
 
       // Get source node index
@@ -53,7 +57,7 @@ export const useAddNodeFromEdge = () => {
       );
 
       // Get step edge index
-      const stepEdgeIndex = edges.findIndex((edge) => edge.id === stepEdgeId);
+      const stepEdgeIndex = updatedEdges1.findIndex((edge) => edge.id === stepEdgeId);
 
       // Add new edges before step edge
       const updatedEdges2 = [
