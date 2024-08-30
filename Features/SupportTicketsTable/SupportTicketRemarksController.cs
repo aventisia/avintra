@@ -12,6 +12,13 @@ public class SupportTicketRemarksController : BaseApiController
         _supportTicketRemarksService = supportTicketRemarksService;
     }
 
+    // Retrieves all remarks associated with a support ticket.
+    [HttpGet("list/{supportTicketId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SupportTicketRemarksDto>>>> GetSupportTicketRemarks(Guid supportTicketId)
+    {
+        return ResultHelper(await _supportTicketRemarksService.GetSupportTicketRemarksAsync(supportTicketId));
+    }
+
     // Create a new support ticket remark.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<SupportTicketRemarksDto>>> InsertSupportTicketRemark([FromBody] SupportTicketRemarksDto supportTicketRemarksDto)

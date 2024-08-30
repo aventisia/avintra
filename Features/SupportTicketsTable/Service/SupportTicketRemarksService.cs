@@ -18,6 +18,40 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
         _unitOfWork = unitOfWork;
     }
 
+    // Retrieves all remarks associated with a support ticket.
+    public async Task<ServiceResponse<IEnumerable<SupportTicketRemarksDto>>> GetSupportTicketRemarksAsync(Guid supportTicketId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketRemarksDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve support ticket remarks. Please try again"
+        };
+
+        try
+        {
+            // Retrieve all remarks associated with the support ticket
+            var supportTicketRemarks = await _unitOfWork.SupportTicketRemarkRepo
+                                        .GetByConditionAsync(w => w.SupportTicketId == supportTicketId) //PEDNING: Update condition
+                                        .OrderByDescending(w => w.CreatedOn)
+                                        .ProjectToType<SupportTicketRemarksDto>()
+                                        .ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = supportTicketRemarks.Adapt<IEnumerable<SupportTicketRemarksDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "support ticket remarks retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+
     // Create a new support ticket remark.
     public async Task<ServiceResponse<SupportTicketRemarksDto>> InsertSupportTicketRemarkAsync(SupportTicketRemarksDto supportTicketRemarksDto)
     {
@@ -46,6 +80,8 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
                 _logger.LogInformation("Context SaveChanges failed while inserting new support ticket remark");
                 return serviceResponse;
             }
+
+            newSupportTicketRemark.User = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == _userId).SingleOrDefaultAsync();
 
             // Task successful
             serviceResponse.Data = newSupportTicketRemark.Adapt<SupportTicketRemarksDto>();
