@@ -15,6 +15,7 @@ export const supportTicketRemarksZodSchema = z.object({
     .string()
     .min(1, { message: reqError("Message") })
     .max(500, { message: maxLenError("Message", 500) }),
+  userId: z.string(),
   userFullName: z.string().optional(),
   userName: z.string().optional(),
   avatarSrc: z.string().optional(),
@@ -31,7 +32,7 @@ export const supportTicketRemarksZodSchema = z.object({
  * Represents the Zod schema for a support ticket.
  */
 export const supportTicketZodSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   ticketNumber: z.string().optional(),
   subject: z
     .string()

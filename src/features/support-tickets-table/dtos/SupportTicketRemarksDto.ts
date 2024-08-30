@@ -26,7 +26,7 @@ export interface SupportTicketRemarksDto {
   /**
    * Gets or sets the user's unique identifier who posted the remark.
    */
-  userId?: string;
+  userId: string;
 
   /**
    * Gets or sets the user's full name who posted the remark.
