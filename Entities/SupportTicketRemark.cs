@@ -20,10 +20,35 @@ public class SupportTicketRemark : IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ticket number of the support ticket.
+    /// </summary>
+    public string? TicketNumber { get; set; }
+
+    /// <summary>
     /// Gets or sets the message of the support ticket remark.
     /// </summary>
     [MaxLength(500)]
     public required string Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user's full name who posted the remark.
+    /// </summary>
+    public string? UserFullName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username (A unique identifier) of the user who posted the remark.
+    /// </summary>
+    public string? UserName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user's avatar image URL (if available) of the user who posted the remark.
+    /// </summary>
+    public string? AvatarSrc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user's initials of the user who posted the remark.
+    /// </summary>
+    public string? Initials { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the remark has been edited.
@@ -41,6 +66,15 @@ public class SupportTicketRemark : IMustHaveTenant
     public DateTimeOffset LastModifiedOn { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the remark is disabled.
+    /// </summary>
+    /// <remarks>
+    /// It is only being used to filter the remark at the retrieval time. Only an admin should 
+    /// be able to disable the remark from the admin panel if it is not appropriate.
+    /// </remarks>
+    public bool IsDisabled { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the ID of the user who posted the comment.
     /// </summary>
     [RequiredGuid]
@@ -51,15 +85,6 @@ public class SupportTicketRemark : IMustHaveTenant
     /// </summary>
     [ForeignKey("UserId")]
     public virtual WorkspaceUser? User { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the remark is disabled.
-    /// </summary>
-    /// <remarks>
-    /// It is only being used to filter the remark at the retrieval time. Only an admin should 
-    /// be able to disable the remark from the admin panel if it is not appropriate.
-    /// </remarks>
-    public bool IsDisabled { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the ID of the support ticket.
