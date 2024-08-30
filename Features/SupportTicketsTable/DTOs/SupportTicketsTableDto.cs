@@ -22,7 +22,7 @@ public class SupportTicketsTableDto
     public required string Subject { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the support ticket. Max-500
+    /// Gets or sets the description of the support ticket. Min-100, Max-500
     /// </summary>
     [StringLength(500, MinimumLength = 100)]
     public required string Description { get; set; }
