@@ -6,18 +6,24 @@ import { MergeBranchesNode } from "@/components/nodes/MergeBranchesNode";
 import { PlusNode } from "@/components/nodes/plus-node";
 import { TriggerNode } from "@/components/nodes/trigger-node";
 
+// IMPORTANT NOTE: Add same node type in src/constants/custom-node-type-obj.ts
 export const CustomNodeTypeObj = {
-  triggerNode: TriggerNode,
-
-  /** This node type is used to add nodes from logical nodes. */
-  plusNode: PlusNode,
-
-  /** This node type is used to add the first node + flowEndNode in the flow. Will be used only once. */
-  plusFirstNode: PlusNode,
+  // ------------------------------------Support node types
+  plusFirstNode: PlusNode, // Used to add the first node & flowEndNode in the flow.
+  plusNode: PlusNode, // Used to add first node in a branch.
+  flowEndNode: FlowEndNode,
   branchStartNode: BranchNode,
   branchEndNode: BranchNode,
   mergeBranchesNode: MergeBranchesNode,
-  activityNode: ActivityNode,
+  
+  // ------------------------------------Logical node types
   ifElseNode: IfElseNode,
-  flowEndNode: FlowEndNode,
+  switchCaseNode: IfElseNode, // TODO
+  whileLoopNode: IfElseNode, // TODO
+  forLoopNode: IfElseNode, // TODO
+  forEachLoopNode: IfElseNode, // TODO
+
+  // ------------------------------------Base node types
+  triggerNode: TriggerNode,
+  activityNode: ActivityNode,
 };
