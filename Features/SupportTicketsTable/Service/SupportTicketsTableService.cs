@@ -36,12 +36,13 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             var result = Guid.TryParse(id, out Guid guidId);
 
             // if result is true then create where condition basis on guidId
-            var whereCondition = result ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId) : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id);
+            //var whereCondition = result ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId) : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id);
 
             // Try to get support ticket
             var supportTicket = await _unitOfWork.SupportTicketRepo
-                                        .GetByConditionAsync(whereCondition)
-                                        .SingleOrDefaultAsync();
+                .GetByConditionAsync(w => w.Id == Guid.Parse(id)) // Update condition
+                .ProjectToType<SupportTicketsTableDto>()
+                .SingleOrDefaultAsync();
 
             // support ticket doesn't exist
             if (supportTicket == null)
@@ -50,6 +51,11 @@ public class SupportTicketsTableService : ISupportTicketsTableService
                 serviceResponse.Message = "support ticket does not exist";
                 return serviceResponse;
             }
+
+            if (supportTicket.SupportTicketRemarks != null)
+            {
+                supportTicket.SupportTicketRemarks = supportTicket.SupportTicketRemarks.OrderBy(o => o.CreatedOn).ToList();
+            };
 
             // Task successful
             serviceResponse.Data = supportTicket.Adapt<SupportTicketsTableDto>();
