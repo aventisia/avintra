@@ -27,6 +27,11 @@ export const useAddFirstNodeToBranch = () => {
         (edge) => edge.target === plusNodeId,
       ) as Edge;
 
+      // Get branch start node
+      const branchStartNode = nodes.find(
+        (node) => node.id === branchStartNodeEdge.source,
+      );
+
       // Get branch end node edge
       const branchEndNodeEdge = edges.find(
         (edge) => edge.source === plusNodeId,
@@ -34,8 +39,9 @@ export const useAddFirstNodeToBranch = () => {
 
       // Create new node & edge
       const { newNodes, newEdges, lastNodeId } = createNodesAndEdgesUtil(
-        nodeData,
         branchStartNodeEdge.source,
+        nodeData,
+        branchStartNode?.position,
       );
 
       // Create edge from last node to branch end node
@@ -67,7 +73,7 @@ export const useAddFirstNodeToBranch = () => {
       ];
 
       // Get branch end node edge index
-      const branchEndNodeEdgeIndex = edges.findIndex(
+      const branchEndNodeEdgeIndex = updatedEdges1.findIndex(
         (edge) => edge.id === branchEndNodeEdge.id,
       );
 
