@@ -1,8 +1,6 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
-import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
-import { createSupportNodeObj } from "@/utils/create-nodes/create-support-node-obj";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -28,16 +26,28 @@ export const useAddFirstNodeToFlow = () => {
         (edge) => edge.target === plusNodeId,
       ) as Edge;
 
+      // Get source node
+      const sourceNode = nodes.find((node) => node.id === plusNodeEdge.source);
+
       // Create first node & edge
       const {
         newNodes: firstNode,
         newEdges: firstEdge,
         lastNodeId: firstNodeId,
-      } = createNodesAndEdgesUtil(nodeData, plusNodeEdge.source);
+      } = createNodesAndEdgesUtil(
+        plusNodeEdge.source,
+        nodeData,
+        sourceNode?.position,
+      );
 
       // Create flow end node & edge
-      const flowEndNode = createSupportNodeObj("flowEndNode");
-      const flowEndEdge = createPlusEdgeObj(firstNodeId, flowEndNode.id);
+      const { newNodes: flowEndNode, newEdges: flowEndEdge } =
+        createNodesAndEdgesUtil(
+          firstNodeId,
+          nodeData, // Not required for flow end node but added because its a required parameter
+          sourceNode?.position,
+          "flowEndNode",
+        );
 
       // Get plus node index
       const plusNodeIndex = nodes.findIndex((node) => node.id === plusNodeId);
@@ -46,7 +56,7 @@ export const useAddFirstNodeToFlow = () => {
       const updatedNodes = [
         ...nodes.slice(0, plusNodeIndex),
         ...firstNode,
-        ...[flowEndNode],
+        ...flowEndNode,
         ...nodes.slice(plusNodeIndex + 1),
       ];
 
@@ -59,7 +69,7 @@ export const useAddFirstNodeToFlow = () => {
       const updatedEdges = [
         ...edges.slice(0, plusNodeEdgeIndex),
         ...firstEdge,
-        flowEndEdge,
+        ...flowEndEdge,
         ...edges.slice(plusNodeEdgeIndex + 1),
       ];
 
