@@ -6,6 +6,18 @@ import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/supportticket-remarks`;
 
 /**
+ * Retrieves all remarks associated with a support ticket.
+ */
+const getSupportTicketRemarks = (supportTicketId?: string) => {
+  // Fetch remarks from API
+  return axiosInstance
+    .get<
+      IHttpResponse<SupportTicketRemarksDto[]>
+    >(`${baseAPIURL}/list/${supportTicketId}`)
+    .then((res) => res.data);
+};
+
+/**
  * Inserts a new support ticket remark.
  */
 const insertSupportTicketRemark = (
@@ -70,8 +82,9 @@ const supportTicketRemarksOptimisticMutationFn = ({
 };
 
 export {
-  deleteSupportTicketRemark,
+  getSupportTicketRemarks,
   insertSupportTicketRemark,
   updateSupportTicketRemark,
+  deleteSupportTicketRemark,
   supportTicketRemarksOptimisticMutationFn,
 };
