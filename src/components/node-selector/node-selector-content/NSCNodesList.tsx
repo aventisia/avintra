@@ -4,7 +4,6 @@ import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { CommandItem, CommandList } from "@/react-toolkit/ui/command";
 import { PopoverClose } from "@/react-toolkit/ui/popover";
-import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
 import { useNodeSelectorStore } from "@/stores/node-selector-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { useShallow } from "zustand/react/shallow";
@@ -49,22 +48,20 @@ export const NSCNodesList = ({ nodesList }: NSCNodesListProps) => {
 
   // Return the component
   return (
-    <StopPropagationWrapper>
-      <CommandList>
-        {nodesList.map((item) => (
-          <CommandItem
-            key={item.name}
-            value={item.label}
-            onSelect={() => nodeSelectionHandler(item)}
-            className="rounded-lg p-1"
-          >
-            {/* Node item with popover close */}
-            <PopoverClose className="w-full text-left">
-              <NodeToSelect data={item} />
-            </PopoverClose>
-          </CommandItem>
-        ))}
-      </CommandList>
-    </StopPropagationWrapper>
+    <CommandList>
+      {nodesList.map((item) => (
+        <CommandItem
+          key={item.name}
+          value={item.label}
+          onSelect={() => nodeSelectionHandler(item)}
+          className="rounded-lg p-1"
+        >
+          {/* Node item with popover close */}
+          <PopoverClose className="w-full text-left">
+            <NodeToSelect data={item} />
+          </PopoverClose>
+        </CommandItem>
+      ))}
+    </CommandList>
   );
 };
