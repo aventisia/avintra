@@ -28,24 +28,20 @@ export const useAddFirstNodeToFlow = () => {
 
       // Get source node
       const sourceNode = nodes.find((node) => node.id === plusNodeEdge.source);
+      if (!sourceNode) return;
 
       // Create first node & edge
       const {
         newNodes: firstNode,
         newEdges: firstEdge,
-        lastNodeId: firstNodeId,
-      } = createNodesAndEdgesUtil(
-        plusNodeEdge.source,
-        nodeData,
-        sourceNode?.position,
-      );
+        lastNode: firstNodeArrayLastNode,
+      } = createNodesAndEdgesUtil(sourceNode, nodeData);
 
       // Create flow end node & edge
       const { newNodes: flowEndNode, newEdges: flowEndEdge } =
         createNodesAndEdgesUtil(
-          firstNodeId,
+          firstNodeArrayLastNode,
           nodeData, // Not required for flow end node but added because its a required parameter
-          sourceNode?.position,
           "flowEndNode",
         );
 

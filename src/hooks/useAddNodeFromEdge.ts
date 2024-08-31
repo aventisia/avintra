@@ -26,12 +26,12 @@ export const useAddNodeFromEdge = () => {
 
       // Get source node
       const sourceNode = nodes.find((node) => node.id === stepEdge.source);
+      if (!sourceNode) return;
 
       // Create new node & edge
-      const { newNodes, newEdges, lastNodeId } = createNodesAndEdgesUtil(
-        stepEdge.source,
+      const { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(
+        sourceNode,
         nodeData,
-        sourceNode?.position,
       );
 
       // Get source node index
@@ -51,7 +51,7 @@ export const useAddNodeFromEdge = () => {
         edge.id === stepEdgeId
           ? {
               ...edge,
-              source: lastNodeId,
+              source: lastNode.id,
             }
           : edge,
       );
