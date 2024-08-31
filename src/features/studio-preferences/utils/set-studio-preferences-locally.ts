@@ -1,3 +1,4 @@
+import { USER_PREFERENCES_LS_KEY } from "@/react-toolkit/constants";
 import {
   StudioPreferencesType,
   UserPreferencesType,
@@ -8,7 +9,7 @@ export const setStudioPreferencesLocally = (
 ) => {
   // Get old user preferences from local storage
   const oldUserPreferencesLSObj = JSON.parse(
-    localStorage.getItem("userPreferences") || '""',
+    localStorage.getItem(USER_PREFERENCES_LS_KEY) || '""',
   ) as UserPreferencesType;
 
   // If user preferences does not exist in local storage, then return
@@ -22,7 +23,7 @@ export const setStudioPreferencesLocally = (
 
   // Set user preferences in local storage
   localStorage.setItem(
-    "userPreferences",
+    USER_PREFERENCES_LS_KEY,
     JSON.stringify(newUserPreferencesLSObj),
   );
 };

@@ -1,3 +1,4 @@
+import { USER_PREFERENCES_LS_KEY } from "@/react-toolkit/constants";
 import { UserPreferencesType } from "@/react-toolkit/types/user-preferences-type";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +10,7 @@ import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-
 export const useDefineStudioPreferencesForm = () => {
   // Get user preferences from browser local storage
   const { studio } = JSON.parse(
-    localStorage.getItem("userPreferences") || "null",
+    localStorage.getItem(USER_PREFERENCES_LS_KEY) || "null",
   ) as UserPreferencesType;
 
   // Get studio preferences store state and actions
