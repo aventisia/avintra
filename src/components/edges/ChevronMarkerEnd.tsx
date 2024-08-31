@@ -1,3 +1,5 @@
+import { MARKER_ARROW_PREFIX } from "@/constants";
+
 interface ChevronMarkerEndProps {
   edgeId: string;
 }
@@ -7,7 +9,7 @@ export const ChevronMarkerEnd = ({ edgeId }: ChevronMarkerEndProps) => {
     <svg>
       <defs>
         <marker
-          id={`markerArrow_${edgeId}`}
+          id={`${MARKER_ARROW_PREFIX}${edgeId}`}
           markerWidth="20"
           markerHeight="20"
           refX="13"
