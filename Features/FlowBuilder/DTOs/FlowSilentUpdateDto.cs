@@ -19,12 +19,7 @@ public class FlowSilentUpdateDto
     public string? Thumbnail { get; set; }
 
     /// <summary>
-    /// Gets or sets the JSON data representing the nodes of the flow.
+    /// Gets or sets the flow's nodes, edges, and viewport JSON data in string format
     /// </summary>
-    public required string Nodes { get; set; }
-
-    /// <summary>
-    /// Gets or sets the JSON data representing the edges of the flow.
-    /// </summary>
-    public required string Edges { get; set; }
+    public required string ReactFlowObject { get; set; }
 }

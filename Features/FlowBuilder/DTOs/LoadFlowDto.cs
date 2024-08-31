@@ -16,12 +16,7 @@ public class LoadFlowDto
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the JSON data for the flow's nodes.
+    /// Gets or sets the flow's nodes, edges, and viewport JSON data in string format
     /// </summary>
-    public string? Nodes { get; set; }
-
-    /// <summary>
-    /// Gets or sets the JSON data for the flow's edges.
-    /// </summary>
-    public string? Edges { get; set; }
+    public string? ReactFlowObject { get; set; }
 }
