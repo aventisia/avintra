@@ -1,3 +1,4 @@
+import { EDGE_BORDER_RADIUS } from "@/constants";
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import { EdgeLabelContainer } from "./EdgeLabelContainer";
@@ -20,7 +21,7 @@ export default function CustomStepEdge({
     sourceY,
     targetX,
     targetY,
-    borderRadius: 20,
+    borderRadius: EDGE_BORDER_RADIUS,
     sourcePosition,
     targetPosition,
   });
