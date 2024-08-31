@@ -4,6 +4,7 @@ import { IconProps } from "@/react-toolkit/types/icon-props";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useReactFlow } from "@xyflow/react";
+import { useCallback } from "react";
 
 interface VCActionButtonProps {
   action: "fitView" | "zoomIn" | "zoomOut";
@@ -28,7 +29,7 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
   };
 
   // Define action handler based on action
-  const actionHandler = () => {
+  const actionHandler = useCallback(() => {
     if (action === "fitView") {
       fitView({ duration: ZOOM_ANIMATION_DURATION });
     } else if (action === "zoomIn") {
@@ -36,7 +37,7 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
     } else if (action === "zoomOut") {
       zoomOut({ duration: ZOOM_ANIMATION_DURATION });
     }
-  };
+  }, [action, fitView, zoomIn, zoomOut]);
 
   // Render action button
   return (
