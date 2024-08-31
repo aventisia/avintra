@@ -31,7 +31,7 @@
     --sidebar-max-width: 14rem;
     --sidebar-min-width: 4.296rem;
     --icon-color: #2a2f3c;
-    --primary-text-color: #1b222d;
+    --popover-height: 70vh;
   }
 
   .dark {
