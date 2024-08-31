@@ -1,3 +1,4 @@
+import { MARKER_ARROW_PREFIX } from "@/constants";
 import { Edge } from "@xyflow/react";
 
 /**
@@ -19,7 +20,7 @@ export const createPlusEdgeObj = (
       id: id,
       source: sourceNodeId,
       target: targetNodeId,
-      markerEnd: `markerArrow_${id}`,
+      markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
       deletable: true,
       label: "plus",
     } as Edge;

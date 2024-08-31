@@ -1,3 +1,8 @@
+import {
+  MARKER_ARROW_PREFIX,
+  STROKE_DASHARRAY,
+  STROKE_WIDTH,
+} from "@/constants";
 import { Edge } from "@xyflow/react";
 
 /**
@@ -29,8 +34,11 @@ export const createCustomEdgeObj = (
     target: targetNodeId,
     deletable: isDeleteable,
     selectable: isDeleteable,
-    style: { strokeDasharray: isDotted ? "5,5" : undefined },
-    markerEnd: markerArrow ? `markerArrow_${id}` : undefined,
+    style: {
+      strokeDasharray: isDotted ? STROKE_DASHARRAY : undefined,
+      strokeWidth: STROKE_WIDTH,
+    },
+    markerEnd: markerArrow ? `${MARKER_ARROW_PREFIX}${id}` : undefined,
     label,
   } as Edge;
 };
