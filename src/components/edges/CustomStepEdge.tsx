@@ -29,7 +29,7 @@ export default function CustomStepEdge({
   return (
     <>
       {markerEnd ? <ChevronMarkerEnd edgeId={id} /> : null}
-      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />
+      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} className="stroke-[1.5]" />
       {label ? (
         <EdgeLabelContainer
           edgeId={id}
