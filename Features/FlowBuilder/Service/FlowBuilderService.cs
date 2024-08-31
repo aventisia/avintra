@@ -56,7 +56,7 @@ public class FlowBuilderService : IFlowBuilderService
         return serviceResponse;
     }
 
-    // Updates the flow's nodes, edges, etc. silently in the background whenever the user makes any changes
+    // Updates the flow's nodes, edges, viewport silently in the background whenever the user makes any changes
     public async Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto)
     {
         // Initialize ServiceResponse with failed response
