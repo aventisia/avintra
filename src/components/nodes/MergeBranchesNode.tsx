@@ -22,6 +22,7 @@ export const MergeBranchesNode = ({
           "opacity-0",
           sourcePosition === "bottom" ? "left-2 top-3.5" : "left-3.5 top-2",
         )}
+        // TODO: Validate if connection is a branch
         connectionCount={9999} // Set to a high number to allow multiple connections
       />
       <OutputHandle
