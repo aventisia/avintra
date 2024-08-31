@@ -1,4 +1,5 @@
 import { getTenantInfo } from "@/react-toolkit/apis/accounts-auth-apis";
+import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -22,7 +23,7 @@ export const useGetTenantInfoMutation = () => {
           // TODO: if SSO enabled then route
         } else {
           // Set userName in localstorage
-          localStorage.setItem("userName", data.userName);
+          localStorage.setItem(USER_NAME_LS_KEY, data.userName);
 
           // Set tenantId and email/username
           setLoginData({

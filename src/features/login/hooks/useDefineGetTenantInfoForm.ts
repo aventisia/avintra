@@ -1,3 +1,4 @@
+import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,7 +9,7 @@ export const useDefineGetTenantInfoForm = () => {
   const form = useForm<z.infer<typeof tenantInfoZodSchema>>({
     resolver: zodResolver(tenantInfoZodSchema),
     defaultValues: {
-      email: localStorage.getItem("userName") ?? "",
+      email: localStorage.getItem(USER_NAME_LS_KEY) ?? "",
     },
   });
 
