@@ -1,3 +1,4 @@
+import { DEBOUNCE_SAVE_DELAY } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useMutation } from "@tanstack/react-query";
@@ -68,7 +69,7 @@ export const useUpdateFlowSilently = () => {
         nodes: JSON.stringify(nodes),
         edges: JSON.stringify(edges),
       });
-    }, 3000); // Debounce save operation
+    }, DEBOUNCE_SAVE_DELAY); // Debounce save operation
 
     // Cleanup function to clear timeout on unmount or state change
     return () => clearTimeout(handler);
