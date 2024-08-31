@@ -1,4 +1,5 @@
 import { LayoutDirectionType } from "@/react-toolkit/types/user-preferences-type";
+import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { CustomNodeType } from "@/types/custom-node-type";
@@ -8,31 +9,11 @@ import { timer } from "d3-timer";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-// Type for node width and height lookup
-type NodeDimension = {
-  width: number;
-  height: number;
-};
-
-// Create lookup array for node's custom width and height
-const nodeDimensionLookup: Record<CustomNodeType, NodeDimension> = {
-  branchStartNode: { width: 10, height: 10 },
-  branchEndNode: { width: 10, height: 10 },
-  mergeBranchesNode: { width: 14.5, height: 16 },
-  flowEndNode: { width: 142.5, height: 44.2 },
-  plusFirstNode: { width: 340, height: 82.7 },
-  plusNode: { width: 340, height: 82.7 },
-  ifElseNode: { width: 340, height: 85 },
-  triggerNode: { width: 340, height: 85 },
-  activityNode: { width: 340, height: 85 },
-  switchCaseNode: { width: 340, height: 85 },
-  whileLoopNode: { width: 340, height: 85 },
-  forLoopNode: { width: 340, height: 85 },
-  forEachLoopNode: { width: 340, height: 85 },
-};
-
 // Get the minlen for the edge based on the node type
-const getEdgeMinlen = (sourceNodeType?: string, targetNodeType?: string) => {
+const getEdgeMinlen = (
+  sourceNodeType?: CustomNodeType,
+  targetNodeType?: CustomNodeType,
+) => {
   if (sourceNodeType === "branchStartNode") return 4;
   if (targetNodeType === "branchEndNode") return 4;
   if (sourceNodeType === "mergeBranchesNode") return 6;
@@ -72,7 +53,10 @@ const getLayoutedElements = (
     const targetNode = nodes.find((n) => n.id === edge.target) as Node;
 
     dagreGraph.setEdge(edge.source, edge.target, {
-      minlen: getEdgeMinlen(sourceNode?.type, targetNode?.type), // Set the minlen for the edg. It multiplies the ranksep value.
+      minlen: getEdgeMinlen(
+        sourceNode?.type as CustomNodeType,
+        targetNode?.type as CustomNodeType,
+      ), // Set the minlen for the edg. It multiplies the ranksep value.
     });
   });
 
