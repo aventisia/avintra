@@ -110,6 +110,6 @@ export const createIfElseNode = (
       falsePlus2BranchEndEdge,
       falseBranchEndToMergeBranchesEdge,
     ],
-    lastNodeId: mergeBranchesNode.id,
+    lastNode: mergeBranchesNode,
   };
 };

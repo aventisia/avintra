@@ -16,6 +16,6 @@ export const createFlowEndNode = (
   return {
     newNodes: [newNode],
     newEdges: [newEdge],
-    lastNodeId: newNode.id,
+    lastNode: newNode,
   };
 };

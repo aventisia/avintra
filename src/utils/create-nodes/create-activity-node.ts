@@ -19,6 +19,6 @@ export const createActivityNode = (
   return {
     newNodes: [newNode],
     newEdges: [newEdge],
-    lastNodeId: newNode.id,
+    lastNode: newNode,
   };
 };
