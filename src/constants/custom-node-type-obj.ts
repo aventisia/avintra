@@ -6,7 +6,7 @@ import { MergeBranchesNode } from "@/components/nodes/MergeBranchesNode";
 import { PlusNode } from "@/components/nodes/plus-node";
 import { TriggerNode } from "@/components/nodes/trigger-node";
 
-// IMPORTANT NOTE: Add same node type in src/constants/custom-node-type-obj.ts
+// IMPORTANT NOTE: Add same node type in src/types/custom-node-type.ts
 export const CustomNodeTypeObj = {
   // ------------------------------------Support node types
   plusFirstNode: PlusNode, // Used to add the first node & flowEndNode in the flow.
