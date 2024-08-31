@@ -3,9 +3,6 @@ export interface FlowSilentUpdateDto {
   /** Flow record's primary key (Guid) */
   id: string;
 
-  /** Flow's nodes json data */
-  nodes: string;
-
-  /** Flow's edges json data */
-  edges: string;
+  /** Flow's nodes, edges, and viewport JSON data in string format */
+  reactFlowObject: string;
 }
