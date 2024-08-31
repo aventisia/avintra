@@ -11,7 +11,7 @@ export const NodeSelector = ({
   ...props
 }: React.ComponentPropsWithoutRef<typeof PopoverContent>) => {
   return (
-    <StopPropagationWrapper>
+    <StopPropagationWrapper className="flex">
       <Popover>
         {/* Custom trigger basis trigger location */}
         {children}
