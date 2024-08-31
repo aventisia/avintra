@@ -10,6 +10,6 @@ export type CreateNodesAndEdgesType = {
   /** The newly created edges */
   newEdges: Edge[];
 
-  /** The source Id of the last node of newly created nodes array */
-  lastNodeId: string;
+  /** The the last node of newly created nodes array */
+  lastNode: Node;
 };
