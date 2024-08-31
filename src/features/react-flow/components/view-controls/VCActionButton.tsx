@@ -1,3 +1,4 @@
+import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { cn } from "@/react-toolkit/lib/utils";
 import { IconProps } from "@/react-toolkit/types/icon-props";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
@@ -29,11 +30,11 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
   // Define action handler based on action
   const actionHandler = () => {
     if (action === "fitView") {
-      fitView({ duration: 500 });
+      fitView({ duration: ZOOM_ANIMATION_DURATION });
     } else if (action === "zoomIn") {
-      zoomIn({ duration: 500 });
+      zoomIn({ duration: ZOOM_ANIMATION_DURATION });
     } else if (action === "zoomOut") {
-      zoomOut({ duration: 500 });
+      zoomOut({ duration: ZOOM_ANIMATION_DURATION });
     }
   };
 
