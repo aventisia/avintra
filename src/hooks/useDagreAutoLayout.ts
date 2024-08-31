@@ -1,4 +1,4 @@
-import { FLOW_LAYOUT_ANIMATION_DURATION } from "@/constants";
+import { AUTO_LAYOUT_ANIMATION_DURATION } from "@/constants";
 import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
 import { LayoutDirectionType } from "@/react-toolkit/types/user-preferences-type";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -127,7 +127,7 @@ export const useDagreAutoLayout = () => {
       setEdges([...layoutedEdges]);
 
       // Set duration for the animation
-      const duration = FLOW_LAYOUT_ANIMATION_DURATION; // In milliseconds
+      const duration = AUTO_LAYOUT_ANIMATION_DURATION; // In milliseconds
 
       // Set start and end positions for the nodes
       const startPositions = newNodesEdgesObj
