@@ -2,6 +2,7 @@ import { DEBOUNCE_SAVE_DELAY } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useMutation } from "@tanstack/react-query";
+import { useViewport } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
@@ -9,6 +10,9 @@ import { updateFlowSilently } from "../apis/react-flow-apis";
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
 
 export const useUpdateFlowSilently = () => {
+  // Get viewport state
+  const viewportState = useViewport();
+
   // Get global store state & actions
   const { currentFlow, setIsFlowSaving } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -63,15 +67,21 @@ export const useUpdateFlowSilently = () => {
       // Check if save is pending
       if (!isSavePending) return;
 
+      // Create react flow object
+      const reactFlowObject = {
+        nodes: nodes,
+        edges: edges,
+        viewport: viewportState,
+      };
+
       // Save flow data
       saveData({
         id: currentFlow.id,
-        nodes: JSON.stringify(nodes),
-        edges: JSON.stringify(edges),
+        reactFlowObject: JSON.stringify(reactFlowObject),
       });
     }, DEBOUNCE_SAVE_DELAY); // Debounce save operation
 
     // Cleanup function to clear timeout on unmount or state change
     return () => clearTimeout(handler);
-  }, [isSavePending, saveData, currentFlow.id, nodes, edges]);
+  }, [isSavePending, saveData, currentFlow.id, nodes, edges, viewportState]);
 };
