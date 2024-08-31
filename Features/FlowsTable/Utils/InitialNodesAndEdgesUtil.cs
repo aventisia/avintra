@@ -37,6 +37,7 @@ public static class InitialNodesAndEdgesUtil
                     Position = new { X = 0, Y = 0 },
                     SourcePosition = "bottom",
                     Deletable = false,
+                    DragHandle = ".custom-drag-handle",
                 },
                 
                 // Plus node without source position
