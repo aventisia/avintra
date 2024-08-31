@@ -15,15 +15,8 @@ const getFlowToLoad = (id: string) => {
   return axiosInstance
     .get<IHttpResponse<LoadFlowDto>>(`${baseAPIURL}/load/${id}`)
     .then((res) => res.data)
-    .catch((error) => {
-      // Show error toast
-      toast.error(error);
-
-      // Redirect to workspace projects page after 2 seconds
-      setTimeout(() => {
-        window.location.assign(`${import.meta.env.VITE_WORKSPACE_URL}projects`);
-      }, 2000);
-
+    .catch(() => {
+      toast.error("Unable to load flow. Please try again.");
       return null;
     });
 };
