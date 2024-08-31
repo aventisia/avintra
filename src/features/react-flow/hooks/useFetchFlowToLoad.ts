@@ -1,5 +1,7 @@
+import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -25,6 +27,9 @@ export const useFetchFlowToLoad = () => {
     })),
   );
 
+  // Get react flow hook to set viewport
+  const { setViewport, fitView } = useReactFlow();
+
   // Get flow when flowId changes
   useEffect(() => {
     async function fetchData() {
@@ -48,9 +53,22 @@ export const useFetchFlowToLoad = () => {
           name: data.data.name,
         });
 
-        // Set nodes and edges
-        setNodes(JSON.parse(data.data.nodes));
-        setEdges(JSON.parse(data.data.edges));
+        // Parse react flow object
+        const flow = JSON.parse(data.data.reactFlowObject);
+
+        if (flow) {
+          // Set nodes and edges
+          setNodes(flow.nodes);
+          setEdges(flow.edges);
+
+          // If flow more than 2 nodes then set the saved viewport
+          if (flow.nodes.length > 2) {
+            setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });
+          } else {
+            // Fit view if less than 2 nodes
+            fitView({ duration: ZOOM_ANIMATION_DURATION });
+          }
+        }
 
         // Set document title
         document.title = `${data.data.name} - ${import.meta.env.VITE_COMPANY_NAME} ${import.meta.env.VITE_APP_NAME}`;
@@ -58,7 +76,5 @@ export const useFetchFlowToLoad = () => {
     }
 
     fetchData();
-  }, [location, setNodes, setEdges, setIsFlowLoading, setCurrentFlow]);
-
-  // Return nodes and edges
+  }, [location, setNodes, setEdges, setIsFlowLoading, setCurrentFlow, setViewport, fitView]);
 };
