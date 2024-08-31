@@ -19,16 +19,16 @@ export const FlowsPopoverContent = () => {
       {/* cmdk input Searchbox */}
       <FPCSearchBox />
 
+      {/* No content message */}
+      <CommandEmpty className="h-full">
+        <FPCNoContentMessage />
+      </CommandEmpty>
+
       {isLoading ? (
         // Load skeleton only when popover opens for the first time
         <FPCSkeleton />
       ) : (
         <>
-          {/* No content message */}
-          <CommandEmpty className="h-full">
-            <FPCNoContentMessage />
-          </CommandEmpty>
-
           {/* Flows list */}
           <ScrollArea>
             <CommandList className="mx-2.5 mb-2.5 border-none p-1">

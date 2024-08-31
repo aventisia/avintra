@@ -7,7 +7,7 @@ import { Workflow } from "lucide-react";
 export const FPCNoContentMessage = () => {
   return (
     <NoContentMessage
-      className="-mt-4"
+      className="-mt-5"
       Icon={Workflow}
       primaryMessage="No flows found"
       secondaryMessage="Try adjusting your search or filter criteria"
