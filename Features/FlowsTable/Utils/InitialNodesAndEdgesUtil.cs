@@ -6,11 +6,8 @@ public static class InitialNodesAndEdgesUtil
     /// Retrieves the initial nodes for the flow.
     /// </summary>
     /// <returns>A serialized JSON string representing the initial nodes.</returns>
-    public static (string, string) GetInitialNodesAndEdges()
+    public static string GetInitialNodesAndEdges()
     {
-        string initialNodes = "[]";
-        string initialEdges = "[]";
-
         try
         {
             // Create ids of trigger and plus node
@@ -69,23 +66,34 @@ public static class InitialNodesAndEdgesUtil
                 },
             };
 
+            // Create view port object
+            var viewPort = new
+            {
+                X = 0,
+                Y = 0,
+                Zoom = 1
+            };
+
+            // Create react flow object
+            var reactFlowObject = new
+            {
+                Nodes = initialNodesList,
+                Edges = initialEdgesList,
+                Viewport = viewPort
+            };
+
             // Options for camel case
             var camelCaseOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
-            // Serialized initial node and edges list
-            initialNodes = JsonSerializer.Serialize(initialNodesList, camelCaseOptions);
-            initialEdges = JsonSerializer.Serialize(initialEdgesList, camelCaseOptions);
-
-            // Return serialized nodes and edges
-            return (initialNodes, initialEdges);
+            // Serialize and return the react flow object
+            return JsonSerializer.Serialize(reactFlowObject, camelCaseOptions);
         }
         catch
         {
-            // Return initial nodes and edges
-            return (initialNodes, initialEdges);
+            return "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
         }
     }
 }
