@@ -1,7 +1,9 @@
 import {
+  alphaNumericError,
   maxLenError,
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 import { z } from "zod";
 
 /**
@@ -28,18 +30,24 @@ export const supportTicketRemarksZodSchema = z.object({
   lastModifiedOn: z.date(),
 });
 
+export const subjectSchema = z
+  .string()
+  .min(1, { message: reqError("Subject") })
+  .max(255, { message: maxLenError("Subject", 255) })
+  .regex(alphaNumericRegex, {
+    message: alphaNumericError("Subject"),
+  });
+
 /**
  * Represents the Zod schema for a support ticket.
  */
 export const supportTicketZodSchema = z.object({
   id: z.string().optional(),
   ticketNumber: z.string().optional(),
-  subject: z
-    .string()
-    .min(1, { message: reqError("Subject") })
-    .max(255, { message: maxLenError("Subject", 255) }),
+  subject: subjectSchema,
   description: z
     .string()
+    .min(1, { message: reqError("Description") })
     .min(100, { message: reqError("Description of minimum 100 characters") })
     .max(500, { message: maxLenError("Description", 500) }),
   priority: z.string().optional(),
