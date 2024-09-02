@@ -9,11 +9,26 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 import { descriptionProps } from "../../constants/st-remark-form-field-props";
 
+/**
+ * Props for STRemarkForm component.
+ * @interface
+ */
 interface STRemarkFormProps {
   id: string;
+  remarkCount: number;
+  setRemarkCount: (count: number) => void;
 }
 
-export const STRemarkForm = ({ id }: STRemarkFormProps) => {
+/**
+ * STRemarkForm component.
+ * @param {STRemarkFormProps} props - Component props.
+ * @returns {JSX.Element} - Rendered component.
+ */
+export const STRemarkForm = ({
+  id,
+  remarkCount,
+  setRemarkCount,
+}: STRemarkFormProps) => {
   const { form, isDirty, remarksQueryKey, rowId, refineFormData } =
     useDefineSTRemarkForm();
 
@@ -34,7 +49,11 @@ export const STRemarkForm = ({ id }: STRemarkFormProps) => {
       crudAction: "create",
     });
 
-    form.reset();
+    // Increase remark count
+    setRemarkCount(remarkCount + 1);
+
+    // Reset form
+    await form.reset();
   };
 
   return (
@@ -44,12 +63,14 @@ export const STRemarkForm = ({ id }: STRemarkFormProps) => {
       className="w-full px-2.5 pb-5"
       key={id}
     >
+      {/* Rich text area field to add comment */}
       <RichTextAreaField
         {...descriptionProps}
         placeholder={"Add a comment"}
         editorContentClassName="p-5"
         editorClassName="focus:outline-none"
       />
+      {/* Submit button */}
       <div className="!mt-5 flex justify-end space-x-2">
         <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
           {"Add Comment"}
