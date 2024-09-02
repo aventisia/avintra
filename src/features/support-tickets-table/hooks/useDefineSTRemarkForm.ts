@@ -9,6 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import { supportTicketRemarksZodSchema } from "../constants/support-ticket-zod-schema";
 import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
+import { useLocation } from "react-router-dom";
 
 /**
  * Custom hook for defining a support ticket remark form.
@@ -32,10 +33,14 @@ export const useDefineSTRemarkForm = () => {
     })),
   );
 
+  // Get selected support ticket id from url params
+  const location = useLocation();
+  const selectedSupportTicketId =
+    new URLSearchParams(location.search).get("st") ?? "";
+
   // Get store data of support ticket
-  const { selectedRemarkId, remarksQueryKey } = useSupportTicketsTableStore(
+  const { remarksQueryKey } = useSupportTicketsTableStore(
     useShallow((state) => ({
-      selectedRemarkId: state.selectedRemarkId,
       remarksQueryKey: state.remarksQueryKey,
     })),
   );
@@ -49,7 +54,7 @@ export const useDefineSTRemarkForm = () => {
     resolver: zodResolver(supportTicketRemarksZodSchema),
     defaultValues: {
       id: rowId ?? "",
-      supportTicketId: rowId ?? "",
+      supportTicketId: selectedSupportTicketId ?? "",
       ticketNumber: "",
       message: "",
       userId: userSession?.tenantId ?? "",
@@ -72,7 +77,7 @@ export const useDefineSTRemarkForm = () => {
 
   // Fetch support ticket remarks data when crud action is update
   useEffect(() => {
-    if (crudAction === "update" && selectedRemarkId) {
+    if (crudAction === "update" && rowId) {
       // Get support ticket remarks data from query client
       const stRemarksData = queryClient.getQueryData<{
         data: SupportTicketRemarksDto[];
@@ -130,7 +135,6 @@ export const useDefineSTRemarkForm = () => {
     isDirty,
     remarksQueryKey,
     rowId,
-    selectedRemarkId,
     crudAction,
     refineFormData,
   };
