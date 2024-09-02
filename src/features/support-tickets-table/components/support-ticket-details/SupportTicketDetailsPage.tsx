@@ -15,18 +15,33 @@ import { STDetailsSideComponent } from "./STDetailsSideComponent";
 export const SupportTicketDetailsPage = () => {
   useDocumentTitle("Support Ticket Details");
 
+  // Get support ticket id from url params
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("st") ?? "";
 
+  // Fetch support ticket data
   const { data, refetch } = useFetchSupportTicket(id);
+
+  // Set support ticket data and remark count
   const [STData, setSTData] = useState<SupportTicketsTableDto | null>(
     data?.data ?? null,
   );
+  const [remarkCount, setRemarkCount] = useState<number>(0);
 
+  // Update support ticket data when data changes
   useEffect(() => {
-    setSTData(data?.data ?? null);
-  }, [data, STData]);
+    if (data?.data) {
+      setSTData(data.data);
+      setRemarkCount(data.data.remarkCount ?? 0); // Track remark count
+    }
+  }, [data]);
 
+  // Re-render component when remarkCount changes
+  useEffect(() => {
+    refetch();
+  }, [remarkCount]);
+
+  // State to store the id of the comment being edited
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
   // Handler to cancel editing
@@ -38,7 +53,6 @@ export const SupportTicketDetailsPage = () => {
   const handleFormSubmit = async () => {
     await refetch();
     setEditingCommentId(null); // Reset editing state
-    // reset crud action to create
   };
 
   return (
@@ -61,7 +75,7 @@ export const SupportTicketDetailsPage = () => {
                 })}
               </span>
               <DotSeparator />
-              <span>{STData.remarkCount} comments</span>
+              <span>{remarkCount} comments</span>
             </div>
             <Separator />
             <div className="my-8">
@@ -73,7 +87,7 @@ export const SupportTicketDetailsPage = () => {
                 {STData.description}
               </div>
             </div>
-            {(STData.remarkCount ?? 0) > 0 && (
+            {remarkCount > 0 && (
               <div className="my-6">
                 <div>
                   <p className="p-2">Comments</p>
@@ -113,7 +127,11 @@ export const SupportTicketDetailsPage = () => {
                 <Separator />
               </div>
             )}
-            <STRemarkForm id={id} refetch={handleFormSubmit} />
+            <STRemarkForm
+              id={id}
+              remarkCount={remarkCount}
+              setRemarkCount={setRemarkCount}
+            />
           </div>
           <div>
             <STDetailsSideComponent />
