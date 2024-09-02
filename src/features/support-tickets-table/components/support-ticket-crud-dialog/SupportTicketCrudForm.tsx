@@ -14,10 +14,14 @@ import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimist
 import { DATA_QUERY_KEY } from "../../constants/constants";
 import { useEffect } from "react";
 import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
+import { useNavigate } from "react-router-dom";
 
 export const SupportTicketCrudForm = () => {
   const { form, rowId, isDirty, crudAction, refineFormData } =
     useDefineSupportTicketForm();
+
+  // Get the navigate function to redirect to the support tickets table page
+  const navigate = useNavigate();
 
   // Define optimistic mutation to crete the support ticket
   const { mutate: mutateSupportTicket } = useListOptimisticMutation<
@@ -27,7 +31,7 @@ export const SupportTicketCrudForm = () => {
   >(supportTicketsOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof supportTicketZodSchema>) => {
+  const onSubmit = async (formData: z.infer<typeof supportTicketZodSchema>) => {
     // Perform the mutation
     mutateSupportTicket({
       id: rowId,
@@ -36,7 +40,10 @@ export const SupportTicketCrudForm = () => {
     });
 
     //reset form
-    form.reset();
+    await form.reset();
+
+    // Redirect to the support tickets table page
+    await navigate("/supportticket");
   };
 
   // reset form every time the component is re-rendered
@@ -45,6 +52,7 @@ export const SupportTicketCrudForm = () => {
     console.log("form reset");
   }, [form]);
 
+  // Check if the form is in read mode
   const isReadMode = crudAction === "read";
 
   return (
