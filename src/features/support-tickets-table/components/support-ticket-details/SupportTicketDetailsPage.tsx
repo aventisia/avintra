@@ -8,30 +8,12 @@ import { useEffect, useState } from "react";
 import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
 import { useLocation } from "react-router-dom";
 import { STRemarkForm } from "../support-ticket-remark/STRemarkForm";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
-import { REMARKS_QUERY_KEY } from "../../constants/constants";
-import { z } from "zod";
-import { supportTicketRemarksZodSchema } from "../../constants/support-ticket-zod-schema";
+import { STRemarkEditForm } from "../support-ticket-remark/STRemarkEditForm";
 import { STRemarkRowActions } from "../st-remark-row-actions/STRemarkRowActions";
-import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
-import { descriptionProps } from "../../constants/st-remark-form-field-props";
+import { STDetailsSideComponent } from "./STDetailsSideComponent";
 
 export const SupportTicketDetailsPage = () => {
   useDocumentTitle("Support Ticket Details");
-
-  const { form, isDirty, refineFormData } = useDefineSTRemarkForm();
-
-  // Define optimistic mutation to update the support ticket remark
-  const { mutate: mutateSupportTicketRemark } = useListOptimisticMutation<
-    SupportTicketRemarksDto,
-    SupportTicketRemarksDto | boolean,
-    SupportTicketRemarksDto
-  >(supportTicketRemarksOptimisticMutationFn, [REMARKS_QUERY_KEY]);
 
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("st") ?? "";
@@ -43,138 +25,99 @@ export const SupportTicketDetailsPage = () => {
 
   useEffect(() => {
     setSTData(data?.data ?? null);
-  }, [data]);
+  }, [data, STData]);
 
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (editingCommentId && STData) {
-      const remark = STData.supportTicketRemarks?.find(
-        (r) => r.id === editingCommentId,
-      );
-      if (remark) {
-        form.reset({ message: remark.message });
-      }
-    }
-  }, [editingCommentId, STData, form]);
-
-  const onSubmit = (
-    formData: z.infer<typeof supportTicketRemarksZodSchema>,
-  ) => {
-    if (editingCommentId) {
-      console.log(formData);
-
-      // Update the support ticket remark
-      mutateSupportTicketRemark({
-        id: editingCommentId,
-        payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
-        crudAction: "update",
-      });
-
-      // Refetch the support ticket data
-      refetch();
-      setEditingCommentId(null);
-    }
+  // Handler to cancel editing
+  const handleCancel = () => {
+    setEditingCommentId(null);
   };
 
-  const cancelEdit = () => {
-    setEditingCommentId(null);
-    form.reset({ message: "" });
+  // Handler for submitting the form (create/update comment)
+  const handleFormSubmit = async () => {
+    await refetch();
+    setEditingCommentId(null); // Reset editing state
+    // reset crud action to create
   };
 
   return (
     <>
       {STData ? (
-        <div key={STData.id} className="m-8 flex w-[60%] flex-col items-start">
-          <div>
-            <span className="text-2xl">{STData.subject}</span>{" "}
-            <span className="font-light">{`(${STData.ticketNumber})`}</span>
-          </div>
-          <div className="my-4 text-sm text-gray-500">
-            <span className="mr-2 rounded-2xl border px-4 py-2">
-              {STData.status}
-            </span>
-            <span>
-              Ticket opened{" "}
-              {formatDistanceToNow(STData.createdOn ?? new Date(), {
-                addSuffix: true,
-              })}
-            </span>
-            <DotSeparator />
-            <span>{STData.remarkCount} comments</span>
-          </div>
-          <Separator />
-          <div className="my-8">
+        <div className="flex h-screen px-[3%] py-[3%]">
+          <div key={STData.id} className="m-8 flex w-full flex-col items-start">
             <div>
-              <p className="p-2">Message</p>
+              <span className="text-2xl">{STData.subject}</span>{" "}
+              <span className="font-light">{`(${STData.ticketNumber})`}</span>
+            </div>
+            <div className="my-4 text-sm text-gray-500">
+              <span className="mr-2 rounded-2xl border px-4 py-2">
+                {STData.status}
+              </span>
+              <span>
+                Ticket opened{" "}
+                {formatDistanceToNow(STData.createdOn ?? new Date(), {
+                  addSuffix: true,
+                })}
+              </span>
+              <DotSeparator />
+              <span>{STData.remarkCount} comments</span>
             </div>
             <Separator />
-            <div className="p-2 text-base font-light">{STData.description}</div>
-          </div>
-          {(STData.remarkCount ?? 0) > 0 && (
-            <div className="my-6">
+            <div className="my-8">
               <div>
-                <p className="p-2">Comments</p>
+                <p className="p-2">Message</p>
               </div>
               <Separator />
               <div className="p-2 text-base font-light">
-                {STData.supportTicketRemarks?.map((remark) => (
-                  <div
-                    key={remark.id}
-                    className="relative my-4 rounded-md border p-2"
-                  >
-                    <div className="mb-2 flex items-center justify-between">
-                      <p className="text-sm text-gray-500">
-                        {remark.userFullName} commented{" "}
-                        {formatDistanceToNow(remark.createdOn ?? new Date(), {
-                          addSuffix: true,
-                        })}
-                      </p>
-                      <STRemarkRowActions
-                        rowId={remark.id}
-                        setEditingCommentId={setEditingCommentId}
-                      />
-                    </div>
-                    {editingCommentId === remark.id ? (
-                      <Form
-                        methods={form}
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="w-full px-2.5 pb-5"
-                      >
-                        <RichTextAreaField
-                          {...descriptionProps}
-                          placeholder="Edit your comment"
-                          editorContentClassName="p-5"
-                          editorClassName="focus:outline-none"
-                        />
-                        <div className="!mt-5 flex justify-end space-x-2">
-                          <Button
-                            type="submit"
-                            disabled={!isDirty}
-                            className="min-w-[5rem]"
-                          >
-                            Update Comment
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={cancelEdit}
-                            variant="destructive"
-                            className="min-w-[5rem]"
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </Form>
-                    ) : (
-                      <p className="text-base font-light">{remark.message}</p>
-                    )}
-                  </div>
-                ))}
+                {STData.description}
               </div>
-              <Separator />
             </div>
-          )}
-          <STRemarkForm ticketId={id} refetch={async () => await refetch()} />
+            {(STData.remarkCount ?? 0) > 0 && (
+              <div className="my-6">
+                <div>
+                  <p className="p-2">Comments</p>
+                </div>
+                <Separator />
+                <div className="p-2 text-base font-light">
+                  {STData.supportTicketRemarks?.map((remark) => (
+                    <div
+                      key={remark.id}
+                      className="relative my-4 rounded-md border p-2"
+                    >
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-sm text-gray-500">
+                          {remark.userFullName} commented{" "}
+                          {formatDistanceToNow(remark.createdOn ?? new Date(), {
+                            addSuffix: true,
+                          })}
+                        </p>
+                        <STRemarkRowActions
+                          rowId={remark.id}
+                          setEditingCommentId={setEditingCommentId}
+                        />
+                      </div>
+                      {editingCommentId === remark.id ? (
+                        <STRemarkEditForm
+                          id={remark.id}
+                          refetch={handleFormSubmit}
+                          initialContent={remark.message}
+                          onCancel={handleCancel}
+                        />
+                      ) : (
+                        <p className="text-base font-light">{remark.message}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Separator />
+              </div>
+            )}
+            <STRemarkForm id={id} refetch={handleFormSubmit} />
+          </div>
+          <div>
+            <STDetailsSideComponent />
+          </div>
         </div>
       ) : (
         <DataTableSkeleton />
