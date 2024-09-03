@@ -9,8 +9,10 @@ import {
 } from "@radix-ui/react-icons";
 import { LinkEditPopover } from "../link/link-edit-popover";
 import { ImageEditDialog } from "../image/image-edit-dialog";
-import { FormatAction } from "../../types/types";
+import type { FormatAction } from "../../types/types";
 import { ToolbarSection } from "../toolbar-section";
+import type { toggleVariants } from "../toggle";
+import type { VariantProps } from "class-variance-authority";
 
 type InsertElementAction = "codeBlock" | "blockquote" | "horizontalRule";
 interface InsertElement extends FormatAction {
@@ -50,7 +52,7 @@ const formatActions: InsertElement[] = [
   },
 ];
 
-interface SectionFiveProps {
+interface SectionFiveProps extends VariantProps<typeof toggleVariants> {
   editor: Editor;
   activeActions?: InsertElementAction[];
   mainActionCount?: number;
@@ -60,11 +62,13 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
   editor,
   activeActions = formatActions.map((action) => action.value),
   mainActionCount = 0,
+  size,
+  variant,
 }) => {
   return (
     <>
-      <LinkEditPopover editor={editor} />
-      <ImageEditDialog editor={editor} />
+      <LinkEditPopover editor={editor} size={size} variant={variant} />
+      <ImageEditDialog editor={editor} size={size} variant={variant} />
       <ToolbarSection
         editor={editor}
         actions={formatActions}
@@ -77,6 +81,8 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
           </>
         }
         dropdownTooltip="Insert elements"
+        size={size}
+        variant={variant}
       />
     </>
   );

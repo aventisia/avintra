@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/react";
 import { useState } from "react";
+import { ImageIcon } from "@radix-ui/react-icons";
 import { ToolbarButton } from "../toolbar-button";
 import {
   Dialog,
@@ -10,9 +11,14 @@ import {
   DialogTrigger,
 } from "@/react-toolkit/ui/dialog/Dialog";
 import { ImageEditBlock } from "./image-edit-block";
-import { ImageIcon } from "@radix-ui/react-icons";
+import type { VariantProps } from "class-variance-authority";
+import type { toggleVariants } from "../toggle";
 
-const ImageEditDialog = ({ editor }: { editor: Editor }) => {
+interface ImageEditDialogProps extends VariantProps<typeof toggleVariants> {
+  editor: Editor;
+}
+
+const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,6 +28,8 @@ const ImageEditDialog = ({ editor }: { editor: Editor }) => {
           isActive={editor.isActive("image")}
           tooltip="Image"
           aria-label="Image"
+          size={size}
+          variant={variant}
         >
           <ImageIcon className="size-5" />
         </ToolbarButton>

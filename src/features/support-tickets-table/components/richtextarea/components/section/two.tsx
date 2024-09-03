@@ -8,8 +8,10 @@ import {
   StrikethroughIcon,
   TextNoneIcon,
 } from "@radix-ui/react-icons";
-import { FormatAction } from "../../types/types";
+import type { FormatAction } from "../../types/types";
 import { ToolbarSection } from "../toolbar-section";
+import type { toggleVariants } from "../toggle";
+import type { VariantProps } from "class-variance-authority";
 
 type TextStyleAction =
   | "bold"
@@ -80,7 +82,7 @@ const formatActions: TextStyle[] = [
   },
 ];
 
-interface SectionTwoProps {
+interface SectionTwoProps extends VariantProps<typeof toggleVariants> {
   editor: Editor;
   activeActions?: TextStyleAction[];
   mainActionCount?: number;
@@ -90,6 +92,8 @@ export const SectionTwo: React.FC<SectionTwoProps> = ({
   editor,
   activeActions = formatActions.map((action) => action.value),
   mainActionCount = 2,
+  size,
+  variant,
 }) => {
   return (
     <ToolbarSection
@@ -100,6 +104,8 @@ export const SectionTwo: React.FC<SectionTwoProps> = ({
       dropdownIcon={<DotsHorizontalIcon className="size-5" />}
       dropdownTooltip="More formatting"
       dropdownClassName="w-8"
+      size={size}
+      variant={variant}
     />
   );
 };

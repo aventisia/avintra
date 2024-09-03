@@ -82,41 +82,41 @@
   --mt-accent-red-subtler: #5d1f1a;
   --mt-accent-purple-subtler: #352c63;
 
-    --hljs-string: #da936b;
-    --hljs-title: #f1d59d;
-    --hljs-comment: #aaaaaa;
-    --hljs-keyword: #6699cc;
-    --hljs-attr: #90cae8;
-    --hljs-literal: #f2777a;
-    --hljs-name: #5fc0a0;
-    --hljs-selector-tag: #e8c785;
-    --hljs-number: #b6e7b6;
+  --hljs-string: #da936b;
+  --hljs-title: #f1d59d;
+  --hljs-comment: #aaaaaa;
+  --hljs-keyword: #6699cc;
+  --hljs-attr: #90cae8;
+  --hljs-literal: #f2777a;
+  --hljs-name: #5fc0a0;
+  --hljs-selector-tag: #e8c785;
+  --hljs-number: #b6e7b6;
 }
 
 .minimal-tiptap-editor .ProseMirror {
-flex: 1;
-max-width: 100%;
-cursor: text;
-flex-direction: column;
-z-index: 0;
-outline: 0;
+  flex: 1;
+  max-width: 100%;
+  cursor: text;
+  flex-direction: column;
+  z-index: 0;
+  outline: 0;
 }
 
 .minimal-tiptap-editor .ProseMirror > div.editor {
-display: block;
-flex: 1;
-white-space: pre-wrap;
+  display: block;
+  flex: 1;
+  white-space: pre-wrap;
 }
 
 .minimal-tiptap-editor .ProseMirror .block-node:not(:last-child),
 .minimal-tiptap-editor .ProseMirror .list-node:not(:last-child),
 .minimal-tiptap-editor .ProseMirror .text-node:not(:last-child) {
-margin-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .minimal-tiptap-editor .ProseMirror ol,
 .minimal-tiptap-editor .ProseMirror ul {
-padding-left: 1.5rem;
+  padding-left: 1.5rem;
 }
 
 .minimal-tiptap-editor .ProseMirror blockquote,
@@ -125,81 +125,80 @@ padding-left: 1.5rem;
 .minimal-tiptap-editor .ProseMirror p,
 .minimal-tiptap-editor .ProseMirror pre,
 .minimal-tiptap-editor .ProseMirror ul {
-margin: 0;
+  margin: 0px;
 }
 
 .minimal-tiptap-editor .ProseMirror li {
-line-height: 7;
+  line-height: 1.75rem /* 28px */;
 }
 
 .minimal-tiptap-editor .ProseMirror p {
-        overflow-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .minimal-tiptap-editor .ProseMirror li .text-node:has(+ .list-node),
 .minimal-tiptap-editor .ProseMirror li > .list-node,
 .minimal-tiptap-editor .ProseMirror li > .text-node,
 .minimal-tiptap-editor .ProseMirror li p {
-        margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .minimal-tiptap-editor .ProseMirror blockquote {
-position: relative;
-padding-left: 3.5rem;
+  position: relative;
+  padding-left: 3.5rem;
 }
 
 .minimal-tiptap-editor .ProseMirror blockquote::before,
 .minimal-tiptap-editor .ProseMirror blockquote.is-empty::before {
-position: absolute;
-bottom: 0;
-left: 0;
-top: 0;
-height: 100%;
-width: 1px;
-border-radius: 0.125rem;
-
-background-color: rgba(var(--mt-accent-foreground), 0.15);
-content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  border-radius: 0.125rem;
+  background-color: rgba(var(--mt-accent-foreground), 0.15);
+  content: '';
 }
 
 .minimal-tiptap-editor .ProseMirror hr {
-margin-top: 0.75rem;
-margin-bottom: 0.75rem;
-height: 0.5rem;
-width: 100%;
-border: none;
-background-color: var(--mt-hr);
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  height: 0.5rem;
+  width: 100%;
+  border: none;
+  background-color: var(--mt-hr);
 }
 
 .minimal-tiptap-editor .ProseMirror-focused hr.ProseMirror-selectednode {
-border-radius: 9999px;
-outline: 2px solid;
-outline-offset: 1px;
-outline-color: var(--mt-muted-foreground);
+  border-radius: 9999px;
+  outline: 2px solid;
+  outline-offset: 1px;
+  outline-color: var(--mt-muted-foreground);
 }
 
 .minimal-tiptap-editor .ProseMirror .ProseMirror-gapcursor {
-pointer-events: none;
-position: absolute;
-display: none;
+  pointer-events: none;
+  position: absolute;
+  display: none;
 }
 
 .minimal-tiptap-editor .ProseMirror .ProseMirror-hideselection {
-caret-color: transparent;
+  caret-color: transparent;
 }
 
 .minimal-tiptap-editor .ProseMirror.resize-cursor {
-cursor: col-resize;
+  cursor: col-resize;
 }
 
 .minimal-tiptap-editor .ProseMirror .selection {
-display: inline-block;
+  display: inline-block;
 }
 
 .minimal-tiptap-editor .ProseMirror .selection,
 .minimal-tiptap-editor .ProseMirror *::selection,
 ::selection {
-background-color: rgba(var(--primary-color), 0.25);
+  background: rgba(var(--primary-color), 0.25);
 }
 
 /* Override native selection when custom selection is present */

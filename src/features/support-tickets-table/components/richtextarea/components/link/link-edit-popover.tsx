@@ -8,8 +8,14 @@ import {
 import { Link2Icon } from "@radix-ui/react-icons";
 import { ToolbarButton } from "../toolbar-button";
 import { LinkEditBlock } from "./link-edit-block";
+import type { VariantProps } from "class-variance-authority";
+import type { toggleVariants } from "../toggle";
 
-const LinkEditPopover = ({ editor }: { editor: Editor }) => {
+interface LinkEditPopoverProps extends VariantProps<typeof toggleVariants> {
+  editor: Editor;
+}
+
+const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
   const [open, setOpen] = React.useState(false);
 
   const { from, to } = editor.state.selection;
@@ -50,6 +56,8 @@ const LinkEditPopover = ({ editor }: { editor: Editor }) => {
           tooltip="Link"
           aria-label="Insert link"
           disabled={editor.isActive("codeBlock")}
+          size={size}
+          variant={variant}
         >
           <Link2Icon className="size-5" />
         </ToolbarButton>

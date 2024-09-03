@@ -1,19 +1,19 @@
 import * as React from "react";
+import "./styles/index.css";
+
 import { EditorContent } from "@tiptap/react";
-import { Content, Editor } from "@tiptap/react";
-import {
-  useMinimalTiptapEditor,
-  UseMinimalTiptapEditorProps,
-} from "./hooks/use-minimal-tiptap";
+import type { Content, Editor } from "@tiptap/react";
+import { Separator } from "@/react-toolkit/ui/separator";
+import { cn } from "@/react-toolkit/lib/utils";
+import { SectionOne } from "./components/section/one";
+import { SectionTwo } from "./components/section/two";
+import { SectionThree } from "./components/section/three";
+import { SectionFour } from "./components/section/four";
+import { SectionFive } from "./components/section/five";
 import { LinkBubbleMenu } from "./components/bubble-menu/link-bubble-menu";
 import { ImageBubbleMenu } from "./components/bubble-menu/image-bubble-menu";
-import { cn } from "@/react-toolkit/lib/utils";
-import SectionOne from "./components/section/one";
-import { Separator } from "@/react-toolkit/ui/separator";
-import SectionTwo from "./components/section/two";
-import SectionThree from "./components/section/three";
-import SectionFour from "./components/section/four";
-import SectionFive from "./components/section/five";
+import type { UseMinimalTiptapEditorProps } from "./hooks/use-minimal-tiptap";
+import { useMinimalTiptapEditor } from "./hooks/use-minimal-tiptap";
 
 export interface MinimalTiptapProps
   extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
@@ -24,8 +24,8 @@ export interface MinimalTiptapProps
 }
 
 const Toolbar = ({ editor }: { editor: Editor }) => (
-  <div className="overflow-x-auto border-b border-border p-2">
-    <div className="flex w-max items-center">
+  <div className="shrink-0 overflow-x-auto border-b border-border p-2">
+    <div className="flex w-max items-center gap-px">
       <SectionOne editor={editor} activeLevels={[1, 2, 3, 4, 5, 6]} />
 
       <Separator orientation="vertical" className="mx-2 h-7" />
@@ -75,13 +75,6 @@ export const MinimalTiptapEditor = React.forwardRef<
     ...props,
   });
 
-  // **Added useEffect to handle value prop changes**
-  React.useEffect(() => {
-    if (editor && value) {
-      editor.commands.setContent(value); // Ensure editor content is reset
-    }
-  }, [editor, value]); // Dependencies to trigger the effect
-
   if (!editor) {
     return null;
   }
@@ -95,14 +88,10 @@ export const MinimalTiptapEditor = React.forwardRef<
       )}
     >
       <Toolbar editor={editor} />
-
-      <div className="h-full grow" onClick={() => editor.chain().focus().run()}>
-        <EditorContent
-          editor={editor}
-          className={cn("minimal-tiptap-editor", editorContentClassName)}
-        />
-      </div>
-
+      <EditorContent
+        editor={editor}
+        className={cn("minimal-tiptap-editor", editorContentClassName)}
+      />
       <LinkBubbleMenu editor={editor} />
       <ImageBubbleMenu editor={editor} />
     </div>

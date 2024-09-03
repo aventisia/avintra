@@ -1,19 +1,21 @@
 import * as React from "react";
 import type { Editor } from "@tiptap/react";
 import { cn } from "@/react-toolkit/lib/utils";
+import { CaretDownIcon } from "@radix-ui/react-icons";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
+import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import { ToolbarButton } from "./toolbar-button";
 import { ShortcutKey } from "./shortcut-key";
 import { getShortcutKey } from "../utils/utils";
 import { FormatAction } from "../types/types";
-import { CaretDownIcon } from "@radix-ui/react-icons";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+import type { VariantProps } from "class-variance-authority";
+import type { toggleVariants } from "./toggle";
 
-interface ToolbarSectionProps {
+interface ToolbarSectionProps extends VariantProps<typeof toggleVariants> {
   editor: Editor;
   actions: FormatAction[];
   activeActions?: string[];
@@ -31,6 +33,8 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
   dropdownIcon,
   dropdownTooltip = "More options",
   dropdownClassName = "w-12",
+  size,
+  variant,
 }) => {
   const { mainActions, dropdownActions } = React.useMemo(() => {
     const sortedActions = actions
@@ -55,11 +59,13 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
         isActive={action.isActive(editor)}
         tooltip={`${action.label} ${action.shortcuts.map((s) => getShortcutKey(s).symbol).join(" ")}`}
         aria-label={action.label}
+        size={size}
+        variant={variant}
       >
         {action.icon}
       </ToolbarButton>
     ),
-    [editor],
+    [editor, size, variant],
   );
 
   const renderDropdownMenuItem = React.useCallback(
@@ -96,15 +102,13 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
               tooltip={dropdownTooltip}
               aria-label={dropdownTooltip}
               className={cn(dropdownClassName)}
+              size={size}
+              variant={variant}
             >
               {dropdownIcon || <CaretDownIcon className="size-5" />}
             </ToolbarButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="w-full"
-            onCloseAutoFocus={(event) => event.preventDefault()}
-          >
+          <DropdownMenuContent align="start" className="w-full">
             {dropdownActions.map(renderDropdownMenuItem)}
           </DropdownMenuContent>
         </DropdownMenu>

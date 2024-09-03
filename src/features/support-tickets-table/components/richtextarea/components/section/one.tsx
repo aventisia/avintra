@@ -7,11 +7,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
+import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import { ToolbarButton } from "../toolbar-button";
 import { ShortcutKey } from "../shortcut-key";
 import React, { useCallback, useMemo } from "react";
+import type { VariantProps } from "class-variance-authority";
+import type { toggleVariants } from "../toggle";
 import { FormatAction } from "../../types/types";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 
 interface TextStyle
   extends Omit<
@@ -74,13 +76,13 @@ const formatActions: TextStyle[] = [
   },
 ];
 
-interface SectionOneProps {
+interface SectionOneProps extends VariantProps<typeof toggleVariants> {
   editor: Editor;
   activeLevels?: Level[];
 }
 
 export const SectionOne: React.FC<SectionOneProps> = React.memo(
-  ({ editor, activeLevels = [1, 2, 3, 4, 5, 6] }) => {
+  ({ editor, activeLevels = [1, 2, 3, 4, 5, 6], size, variant }) => {
     const filteredActions = useMemo(
       () =>
         formatActions.filter(
@@ -123,24 +125,20 @@ export const SectionOne: React.FC<SectionOneProps> = React.memo(
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <ToolbarButton
-            isActive={
-              editor.isActive("heading") || editor.isActive("paragraph")
-            }
+            isActive={editor.isActive("heading")}
             tooltip="Text styles"
             aria-label="Text styles"
-            pressed={editor.isActive("heading") || editor.isActive("paragraph")}
+            pressed={editor.isActive("heading")}
             className="w-12"
             disabled={editor.isActive("codeBlock")}
+            size={size}
+            variant={variant}
           >
             <LetterCaseCapitalizeIcon className="size-5" />
             <CaretDownIcon className="size-5" />
           </ToolbarButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          className="w-full"
-          onCloseAutoFocus={(event) => event.preventDefault()}
-        >
+        <DropdownMenuContent align="start" className="w-full">
           {filteredActions.map(renderMenuItem)}
         </DropdownMenuContent>
       </DropdownMenu>

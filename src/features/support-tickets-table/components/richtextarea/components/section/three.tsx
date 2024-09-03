@@ -11,10 +11,11 @@ import { ToggleGroup, ToggleGroupItem } from "../toggle-group";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import { useTheme } from "../../hooks/use-theme";
+import type { toggleVariants } from "../toggle";
+import type { VariantProps } from "class-variance-authority";
 
 interface ColorItem {
   cssVar: string;
@@ -80,32 +81,30 @@ const MemoizedColorButton = React.memo<{
   const label = isDarkMode && color.darkLabel ? color.darkLabel : color.label;
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ToggleGroupItem
-            className="relative size-7 rounded-md p-0"
-            value={color.cssVar}
-            aria-label={label}
-            style={{ backgroundColor: color.cssVar }}
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.preventDefault();
-              onClick(color.cssVar);
-            }}
-          >
-            {isSelected && (
-              <CheckIcon
-                className="absolute inset-0 m-auto size-6"
-                style={{ color: inverse }}
-              />
-            )}
-          </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>{label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <ToggleGroupItem
+          className="relative size-7 rounded-md p-0"
+          value={color.cssVar}
+          aria-label={label}
+          style={{ backgroundColor: color.cssVar }}
+          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            onClick(color.cssVar);
+          }}
+        >
+          {isSelected && (
+            <CheckIcon
+              className="absolute inset-0 m-auto size-6"
+              style={{ color: inverse }}
+            />
+          )}
+        </ToggleGroupItem>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        <p>{label}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 });
 
@@ -139,7 +138,15 @@ const MemoizedColorPicker = React.memo<{
 
 MemoizedColorPicker.displayName = "MemoizedColorPicker";
 
-export const SectionThree: React.FC<{ editor: Editor }> = ({ editor }) => {
+interface SectionThreeProps extends VariantProps<typeof toggleVariants> {
+  editor: Editor;
+}
+
+export const SectionThree: React.FC<SectionThreeProps> = ({
+  editor,
+  size,
+  variant,
+}) => {
   const color =
     editor.getAttributes("textStyle")?.color || "hsl(var(--foreground))";
   const [selectedColor, setSelectedColor] = React.useState(color);
@@ -163,6 +170,8 @@ export const SectionThree: React.FC<{ editor: Editor }> = ({ editor }) => {
           tooltip="Text color"
           aria-label="Text color"
           className="w-12"
+          size={size}
+          variant={variant}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -184,11 +193,7 @@ export const SectionThree: React.FC<{ editor: Editor }> = ({ editor }) => {
           <CaretDownIcon className="size-5" />
         </ToolbarButton>
       </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-full"
-        onCloseAutoFocus={(event) => event.preventDefault()}
-      >
+      <PopoverContent align="start" className="w-full">
         <div className="space-y-1.5">
           {COLORS.map((palette, index) => (
             <MemoizedColorPicker
