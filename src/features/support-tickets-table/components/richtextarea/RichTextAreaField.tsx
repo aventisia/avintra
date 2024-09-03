@@ -35,12 +35,17 @@ const RichTextAreaField = ({
   label,
   isRequired,
   description,
-  placeholder,
-  disabled,
+  throttleDelay,
   className,
   editorContentClassName,
   output,
+  placeholder,
+  autofocus,
+  immediatelyRender,
+  editable,
+  injectCSS,
   editorClassName,
+  disabled,
   ...props
 }: RichTextAreaFieldProps) => {
   const { control } = useFormContext<FieldValues>();
@@ -62,17 +67,17 @@ const RichTextAreaField = ({
           <FormControl>
             <MinimalTiptapEditor
               {...field}
+              throttleDelay={throttleDelay}
+              className={cn(className)}
               editorContentClassName={editorContentClassName}
               output={output}
-              editorClassName={cn(editorClassName, "rich-text-editor")}
-              className={cn(className)}
               placeholder={placeholder}
-              autofocus={false}
-              immediatelyRender={true}
-              editable={!disabled}
-              injectCSS={true}
+              autofocus={autofocus}
+              immediatelyRender={immediatelyRender}
+              editable={editable}
+              injectCSS={injectCSS}
+              editorClassName={cn(editorClassName)}
               {...props}
-              ref={field.ref}
             />
           </FormControl>
           <FormMessage />
