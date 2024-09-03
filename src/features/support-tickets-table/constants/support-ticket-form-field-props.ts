@@ -29,7 +29,7 @@ const descriptionProps: RichTextAreaFieldProps = {
   label: "Description",
   isRequired: true,
   placeholder: "Add your description here...",
-  output: "text",
+  output: "html",
 };
 
 // Priority

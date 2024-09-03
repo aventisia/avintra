@@ -19,7 +19,7 @@ const messageProps: InputFieldProps = {
 const descriptionProps: RichTextAreaFieldProps = {
   name: "message",
   placeholder: "Add your comment here...",
-  output: "text",
+  output: "html",
 };
 
 export { idProps, messageProps, descriptionProps };
