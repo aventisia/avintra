@@ -66,9 +66,15 @@ export const STRemarkForm = ({
       {/* Rich text area field to add comment */}
       <RichTextAreaField
         {...descriptionProps}
-        placeholder={"Add a comment"}
+        throttleDelay={2000}
+        className="w-full"
         editorContentClassName="p-5"
+        autofocus={false}
+        immediatelyRender={true}
+        editable={true}
+        injectCSS={true}
         editorClassName="focus:outline-none"
+        disabled={false}
       />
       {/* Submit button */}
       <div className="!mt-5 flex justify-end space-x-2">

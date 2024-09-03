@@ -70,9 +70,15 @@ export const STRemarkEditForm = ({
     >
       <RichTextAreaField
         {...descriptionProps}
-        placeholder={"Edit your comment"}
+        throttleDelay={2000}
+        className="w-full"
         editorContentClassName="p-5"
+        autofocus={false}
+        immediatelyRender={true}
+        editable={true}
+        injectCSS={true}
         editorClassName="focus:outline-none"
+        disabled={false}
         value={initialContent}
       />
       <div className="!mt-5 flex justify-end space-x-2">
