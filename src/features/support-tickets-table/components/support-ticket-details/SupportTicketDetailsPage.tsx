@@ -11,6 +11,7 @@ import { STRemarkForm } from "../support-ticket-remark/STRemarkForm";
 import { STRemarkEditForm } from "../support-ticket-remark/STRemarkEditForm";
 import { STRemarkRowActions } from "../st-remark-row-actions/STRemarkRowActions";
 import { STDetailsSideComponent } from "./STDetailsSideComponent";
+import parse from "html-react-parser";
 
 export const SupportTicketDetailsPage = () => {
   useDocumentTitle("Support Ticket Details");
@@ -84,7 +85,7 @@ export const SupportTicketDetailsPage = () => {
               </div>
               <Separator />
               <div className="p-2 text-base font-light">
-                {STData.description}
+                {parse(STData.description)}
               </div>
             </div>
             {remarkCount > 0 && (
@@ -119,7 +120,8 @@ export const SupportTicketDetailsPage = () => {
                           onCancel={handleCancel}
                         />
                       ) : (
-                        <p className="text-base font-light">{remark.message}</p>
+                        // Render the support ticket remark message
+                        parse(remark.message ?? "")
                       )}
                     </div>
                   ))}
