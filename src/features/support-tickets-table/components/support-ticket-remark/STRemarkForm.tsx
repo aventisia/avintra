@@ -17,6 +17,7 @@ interface STRemarkFormProps {
   id: string;
   remarkCount: number;
   setRemarkCount: (count: number) => void;
+  refetch: () => void;
 }
 
 /**
@@ -28,6 +29,7 @@ export const STRemarkForm = ({
   id,
   remarkCount,
   setRemarkCount,
+  refetch,
 }: STRemarkFormProps) => {
   const { form, isDirty, remarksQueryKey, rowId, refineFormData } =
     useDefineSTRemarkForm();
@@ -51,7 +53,8 @@ export const STRemarkForm = ({
     // Increase remark count
     setRemarkCount(remarkCount + 1);
 
-    // Reset form
+    // Reset the form
+    refetch();
     await form.reset();
   };
 
