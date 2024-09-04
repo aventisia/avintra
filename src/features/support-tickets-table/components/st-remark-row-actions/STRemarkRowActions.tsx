@@ -7,11 +7,15 @@ import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 interface STRemarkRowActionsProps {
   rowId: string;
   setEditingCommentId: (id: string | null) => void;
+  remarkCount: number;
+  setRemarkCount: (count: number) => void;
 }
 
 export const STRemarkRowActions = ({
   rowId,
   setEditingCommentId,
+  remarkCount,
+  setRemarkCount,
 }: STRemarkRowActionsProps) => {
   return (
     // Dropdown menu for support ticket remark row action */}
@@ -27,7 +31,11 @@ export const STRemarkRowActions = ({
       <DropdownMenuSeparator />
 
       {/* Triggers Support ticket remark delete alert dialog  */}
-      <STRemarkDeleteAction rowId={rowId} />
+      <STRemarkDeleteAction
+        rowId={rowId}
+        remarkCount={remarkCount}
+        setRemarkCount={setRemarkCount}
+      />
     </DataTableRowActions>
   );
 };
