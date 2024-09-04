@@ -27,20 +27,22 @@ export const SupportTicketDetailsPage = () => {
   const [STData, setSTData] = useState<SupportTicketsTableDto | null>(
     data?.data ?? null,
   );
-  const [remarkCount, setRemarkCount] = useState<number>(0);
+  const [remarkCount, setRemarkCount] = useState<number>(
+    data?.data?.remarkCount ?? 0,
+  );
 
-  // Update support ticket data when data changes
+  // Update support ticket data and remark count when data changes
   useEffect(() => {
     if (data?.data) {
       setSTData(data.data);
-      setRemarkCount(data.data.remarkCount ?? 0); // Track remark count
+      setRemarkCount(data.data.remarkCount ?? 0);
     }
-  }, [data]);
+  }, [data, remarkCount]);
 
   // Re-render component when remarkCount changes
   useEffect(() => {
-    refetch();
-  }, [remarkCount]);
+    refetch(); // Refetch support ticket data when remarkCount changes
+  }, [remarkCount, refetch]);
 
   // State to store the id of the comment being edited
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export const SupportTicketDetailsPage = () => {
 
   // Handler for submitting the form (create/update comment)
   const handleFormSubmit = async () => {
-    await refetch();
+    await refetch(); // Refetch data after form submission
     setEditingCommentId(null); // Reset editing state
   };
 
@@ -110,6 +112,8 @@ export const SupportTicketDetailsPage = () => {
                         <STRemarkRowActions
                           rowId={remark.id}
                           setEditingCommentId={setEditingCommentId}
+                          remarkCount={remarkCount}
+                          setRemarkCount={setRemarkCount}
                         />
                       </div>
                       {editingCommentId === remark.id ? (
@@ -133,6 +137,7 @@ export const SupportTicketDetailsPage = () => {
               id={id}
               remarkCount={remarkCount}
               setRemarkCount={setRemarkCount}
+              refetch={handleFormSubmit}
             />
           </div>
           <div>
