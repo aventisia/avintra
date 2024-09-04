@@ -8,9 +8,15 @@ import { useShallow } from "zustand/react/shallow";
 
 interface STRemarkDeleteActionProps {
   rowId: string;
+  remarkCount: number;
+  setRemarkCount: (count: number) => void;
 }
 
-export const STRemarkDeleteAction = ({ rowId }: STRemarkDeleteActionProps) => {
+export const STRemarkDeleteAction = ({
+  rowId,
+  remarkCount,
+  setRemarkCount,
+}: STRemarkDeleteActionProps) => {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
@@ -39,6 +45,7 @@ export const STRemarkDeleteAction = ({ rowId }: STRemarkDeleteActionProps) => {
               payload: rowId,
               crudAction: "delete",
             });
+            setRemarkCount(remarkCount - 1);
           },
           alertType: "delete-record",
           additionalText: "support ticket remark",
