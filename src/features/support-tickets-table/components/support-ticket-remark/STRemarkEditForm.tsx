@@ -46,7 +46,7 @@ export const STRemarkEditForm = ({
       crudAction: "update",
     });
 
-    form.reset();
+    await form.reset();
     await refetch();
   };
 
