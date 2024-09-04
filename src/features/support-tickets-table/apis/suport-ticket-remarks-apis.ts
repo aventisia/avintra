@@ -24,15 +24,10 @@ const insertSupportTicketRemark = (
   newSupportTicketRemark: SupportTicketRemarksDto,
 ) => {
   return axiosInstance
-    .post<IHttpResponse<SupportTicketRemarksDto>>(
-      `${baseAPIURL}`,
-      newSupportTicketRemark,
-    )
-    .then((res) => res.data)
-    .catch((error) => {
-      console.error("Error inserting support ticket remark: ", error);
-      throw error;
-    });
+    .post<
+      IHttpResponse<SupportTicketRemarksDto>
+    >(`${baseAPIURL}`, newSupportTicketRemark)
+    .then((res) => res.data);
 };
 
 /**
@@ -65,17 +60,16 @@ const deleteSupportTicketRemark = (id: string) => {
  * @throws {Error} - If an invalid action type is provided.
  */
 const supportTicketRemarksOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
-}: IOptimisticMutation<SupportTicketRemarksDto | string>) => {
+}: IOptimisticMutation<SupportTicketRemarksDto | string | string>) => {
   switch (crudAction) {
     case "create":
       return insertSupportTicketRemark(payload as SupportTicketRemarksDto);
     case "update":
       return updateSupportTicketRemark(payload as SupportTicketRemarksDto);
     case "delete":
-      return deleteSupportTicketRemark(id);
+      return deleteSupportTicketRemark(payload as string);
     default:
       throw new Error("Invalid action type");
   }

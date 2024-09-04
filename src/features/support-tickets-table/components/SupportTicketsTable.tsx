@@ -1,6 +1,6 @@
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table/DataTable";
+import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
@@ -18,6 +18,7 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/react-toolkit/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { columnVisibilityState } from "../constants/column-visibility-state";
 
 /**
  * Renders a table of support tickets.
@@ -44,12 +45,17 @@ export const SupportTicketsTable = () => {
   // Sync data with store
   useEffect(() => {
     setSupportTicketsState(data?.data || [], selectedSupportTicket);
-  }, [data, setSupportTicketsState]);
+  }, [data, setSupportTicketsState, selectedSupportTicket]);
 
   const navigate = useNavigate();
 
   // Create a React table for support tickets data
-  const table = useDataTable(supportTicketsTableColumns, filteredData);
+  const table = useDataTable(
+    supportTicketsTableColumns,
+    filteredData,
+    columnVisibilityState,
+    true,
+  );
 
   const openCreateSupportTicketPage = () => {
     // Navigate to create support ticket page

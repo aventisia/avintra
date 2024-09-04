@@ -37,14 +37,13 @@ export const STRemarkForm = ({
     SupportTicketRemarksDto,
     SupportTicketRemarksDto | boolean,
     SupportTicketRemarksDto
-  >(supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
+  >([rowId], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
 
   // Define submit handler
   const onSubmit = async (
     formData: z.infer<typeof supportTicketRemarksZodSchema>,
   ) => {
     await mutateSupportTicketRemark({
-      id: rowId ?? "",
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
       crudAction: "create",
     });

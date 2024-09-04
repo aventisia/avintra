@@ -22,25 +22,15 @@ export const STRemarkEditForm = ({
   initialContent = "",
   onCancel,
 }: STRemarkFormEditProps) => {
-  const {
-    form,
-    isDirty,
-    remarksQueryKey,
-    selectedRemarkId,
-    rowId,
-    refineFormData,
-  } = useDefineSTRemarkEditForm();
-
-  console.log("remarkEditForm", form);
-  console.log("selectedRemarkId", selectedRemarkId);
-  console.log("RowId", rowId);
+  const { form, isDirty, remarksQueryKey, rowId, refineFormData } =
+    useDefineSTRemarkEditForm();
 
   // Define optimistic mutation to create/update the support ticket remark
   const { mutate: mutateSupportTicketRemark } = useListOptimisticMutation<
     SupportTicketRemarksDto,
     SupportTicketRemarksDto | boolean,
     SupportTicketRemarksDto
-  >(supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
+  >([rowId], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
 
   // Define submit handler
   const onSubmit = async (
@@ -52,7 +42,6 @@ export const STRemarkEditForm = ({
     console.log("Refined form data: ", refinedData);
 
     await mutateSupportTicketRemark({
-      id: selectedRemarkId ?? "",
       payload: refinedData as unknown as SupportTicketRemarksDto,
       crudAction: "update",
     });

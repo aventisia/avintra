@@ -12,12 +12,12 @@ interface STRemarkDeleteActionProps {
 
 export const STRemarkDeleteAction = ({ rowId }: STRemarkDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Get remarks query key
   const { remarksQueryKey } = useSupportTicketsTableStore(
     useShallow((state) => ({
-      remarksQueryKey: state.remarksQueryKey,
+      remarksQueryKey: [state.remarksQueryKey] as unknown as string[], // Update the type to be a string array
     })),
   );
 
@@ -26,25 +26,23 @@ export const STRemarkDeleteAction = ({ rowId }: STRemarkDeleteActionProps) => {
     string,
     SupportTicketRemarksDto | boolean,
     SupportTicketRemarksDto
-  >(supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
+  >([rowId], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
 
   // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the support ticket remark
-              deleteSupportTicketRemark({
-                id: rowId,
-                payload: rowId,
-                crudAction: "delete",
-              });
-            },
+        showDefaultAlertDialog({
+          confirmActionFn: () => {
+            // Delete the support ticket remark
+            deleteSupportTicketRemark({
+              payload: rowId,
+              crudAction: "delete",
+            });
           },
-          "support ticket remark",
-        );
+          alertType: "delete-record",
+          additionalText: "support ticket remark",
+        });
       }}
     />
   );

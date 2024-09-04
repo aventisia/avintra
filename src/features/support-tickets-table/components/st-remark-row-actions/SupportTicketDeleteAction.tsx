@@ -15,7 +15,7 @@ export const SupportTicketTDeleteAction = ({
   rowId,
 }: STRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultDeleteAlertDialog } = useShowAlertHandler();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ export const SupportTicketTDeleteAction = ({
     string,
     SupportTicketsTableDto | boolean,
     SupportTicketsTableDto
-  >(supportTicketsOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], supportTicketsOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
   return (
@@ -33,21 +33,19 @@ export const SupportTicketTDeleteAction = ({
       size={"sm"}
       className="group-focus:text-white"
       onClick={() => {
-        showDefaultDeleteAlertDialog(
-          {
-            confirmActionFn: () => {
-              // Delete the support ticket
-              deleteSupportTicket({
-                id: rowId,
-                payload: rowId,
-                crudAction: "delete",
-              });
-              // route to the support ticket table page
-              navigate("/supportticket");
-            },
+        showDefaultAlertDialog({
+          confirmActionFn: () => {
+            // Delete the support ticket
+            deleteSupportTicket({
+              payload: rowId,
+              crudAction: "delete",
+            });
+            // route to the support ticket table page
+            navigate("/supportticket");
           },
-          "support ticket",
-        );
+          alertType: "delete-record",
+          additionalText: "support ticket",
+        });
       }}
     >
       <TrashIcon className="m-[2px] h-3.5 w-3.5" />
