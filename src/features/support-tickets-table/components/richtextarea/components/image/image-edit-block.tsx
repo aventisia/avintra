@@ -1,7 +1,7 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Input } from "@/react-toolkit/ui/input";
-import { Label } from "@/react-toolkit/ui/label/label";
+import { Label } from "@/react-toolkit/ui/label";
 import type { Editor } from "@tiptap/react";
 import React, { useRef, useState } from "react";
 

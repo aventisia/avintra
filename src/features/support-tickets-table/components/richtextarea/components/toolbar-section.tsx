@@ -2,12 +2,12 @@ import * as React from "react";
 import type { Editor } from "@tiptap/react";
 import { cn } from "@/react-toolkit/lib/utils";
 import { CaretDownIcon } from "@radix-ui/react-icons";
+import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+} from "@/react-toolkit/ui/dropdown-menu";
 import { ToolbarButton } from "./toolbar-button";
 import { ShortcutKey } from "./shortcut-key";
 import { getShortcutKey } from "../utils/utils";

@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog/Dialog";
+} from "@/react-toolkit/ui/dialog";
 import { ImageEditBlock } from "./image-edit-block";
 import type { VariantProps } from "class-variance-authority";
 import type { toggleVariants } from "../toggle";

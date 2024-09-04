@@ -6,7 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu/dropdown-menu";
+} from "@/react-toolkit/ui/dropdown-menu";
 import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import { ToolbarButton } from "../toolbar-button";
 import { ShortcutKey } from "../shortcut-key";

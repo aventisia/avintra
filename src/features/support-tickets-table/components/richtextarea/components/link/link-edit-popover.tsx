@@ -4,7 +4,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover/Popover";
+} from "@/react-toolkit/ui/popover";
 import { Link2Icon } from "@radix-ui/react-icons";
 import { ToolbarButton } from "../toolbar-button";
 import { LinkEditBlock } from "./link-edit-block";

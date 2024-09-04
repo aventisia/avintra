@@ -6,7 +6,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/react-toolkit/ui/popover/Popover";
+} from "@/react-toolkit/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../toggle-group";
 import {
   Tooltip,
