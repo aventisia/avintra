@@ -39,11 +39,10 @@ export const useDefineSTRemarkEditForm = () => {
     new URLSearchParams(location.search).get("st") ?? "";
 
   // Get store data of support ticket
-  const { selectedSupportTicket, selectedRemarkId, remarksQueryKey } =
+  const { selectedSupportTicket, remarksQueryKey } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
         selectedSupportTicket: state.selectedSupportTicket,
-        selectedRemarkId: state.selectedRemarkId,
         remarksQueryKey: state.remarksQueryKey,
       })),
     );
@@ -80,7 +79,7 @@ export const useDefineSTRemarkEditForm = () => {
 
   // Fetch support ticket remarks data when crud action is update
   useEffect(() => {
-    if (crudAction === "update" && selectedRemarkId) {
+    if (crudAction === "update" && rowId) {
       // Get support ticket remarks data from query client
       const stRemarksData = queryClient.getQueryData<{
         data: SupportTicketRemarksDto[];
@@ -88,9 +87,7 @@ export const useDefineSTRemarkEditForm = () => {
 
       // Get remark data by id
       if (stRemarksData) {
-        const remark = stRemarksData?.data.find(
-          (item) => item.id === selectedRemarkId,
-        );
+        const remark = stRemarksData?.data.find((item) => item.id === rowId);
         if (remark) {
           form.reset({
             id: remark?.id ?? "",
@@ -117,7 +114,7 @@ export const useDefineSTRemarkEditForm = () => {
         }
       }
     }
-  }, [crudAction, form, queryClient, remarksQueryKey, userSession]);
+  }, [crudAction, rowId, form, queryClient, remarksQueryKey, userSession]);
 
   const refineFormData = (
     formData: z.infer<typeof supportTicketRemarksZodSchema>,
@@ -139,7 +136,6 @@ export const useDefineSTRemarkEditForm = () => {
     form,
     isDirty,
     remarksQueryKey,
-    selectedRemarkId,
     rowId,
     refineFormData,
   };
