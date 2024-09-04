@@ -10,7 +10,6 @@ const config = {
     "./react-toolkit/**/*.{html,js,jsx,ts,tsx,md,mdx}",
   ],
   prefix: "",
-  safelist: ["dark", "ProseMirror"], // Required for tiptap editor
   theme: {
     container: {
       center: true,
@@ -115,7 +114,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
 
 export default config;
