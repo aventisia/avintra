@@ -12,7 +12,6 @@ import { useDefineSupportTicketForm } from "../../hooks/useDefineSupportTicketFo
 import { supportTicketsOptimisticMutationFn } from "../../apis/suport-tickets-table-apis";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { DATA_QUERY_KEY } from "../../constants/constants";
-import { useEffect } from "react";
 import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 import { useNavigate } from "react-router-dom";
 
@@ -28,13 +27,12 @@ export const SupportTicketCrudForm = () => {
     SupportTicketsTableDto,
     SupportTicketsTableDto | boolean,
     SupportTicketsTableDto
-  >(supportTicketsOptimisticMutationFn, DATA_QUERY_KEY);
+  >([rowId], supportTicketsOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = async (formData: z.infer<typeof supportTicketZodSchema>) => {
     // Perform the mutation
     mutateSupportTicket({
-      id: rowId,
       payload: refineFormData(formData) as unknown as SupportTicketsTableDto,
       crudAction: crudAction,
     });
@@ -46,21 +44,11 @@ export const SupportTicketCrudForm = () => {
     await navigate("/supportticket");
   };
 
-  // reset form every time the component is re-rendered
-  useEffect(() => {
-    form.reset();
-    console.log("form reset");
-  }, [form]);
-
-  // Check if the form is in read mode
-  const isReadMode = crudAction === "read";
-
   return (
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       className="h-screen px-2.5 pb-5"
-      disabled={isReadMode}
     >
       {/* Subject */}
       <InputField {...subjectProps} autoFocus={true} />
@@ -68,9 +56,15 @@ export const SupportTicketCrudForm = () => {
       {/* Description */}
       <RichTextAreaField
         {...descriptionProps}
-        disabled={isReadMode}
+        throttleDelay={2000}
+        className="w-full"
         editorContentClassName="p-5"
+        autofocus={false}
+        immediatelyRender={true}
+        editable={true}
+        injectCSS={true}
         editorClassName="focus:outline-none"
+        disabled={false}
       />
 
       {/* Submit button */}
