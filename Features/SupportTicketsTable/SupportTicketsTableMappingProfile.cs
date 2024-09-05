@@ -23,7 +23,7 @@ public class SupportTicketsTableMappingProfile : IRegister
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
 
-        // Mapping for inserting support ticket record
+        // Mapping for inserting or updating support ticket record
         config.NewConfig<SupportTicketsTableDto, SupportTicket>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)

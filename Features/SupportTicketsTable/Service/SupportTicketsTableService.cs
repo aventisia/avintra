@@ -151,10 +151,85 @@ public class SupportTicketsTableService : ISupportTicketsTableService
                 return serviceResponse;
             }
 
+            newSupportTicket.CreatedByUser = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == _userId).SingleOrDefaultAsync();
+
             // Task successful
             serviceResponse.Data = newSupportTicket.Adapt<SupportTicketsTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "support ticket created successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates an existing support ticket.
+    public async Task<ServiceResponse<SupportTicketsTableDto>> UpdateSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<SupportTicketsTableDto>
+        {
+            Data = null,
+            Message = "Failed to update support ticket. Please try again"
+        };
+
+        try
+        {
+            // Validate support ticket existence
+            var supportTicket = await _unitOfWork.SupportTicketRepo
+                .GetByConditionAsync(w => w.Id == supportTicketsTableDto.Id)
+                .SingleOrDefaultAsync();
+
+            // Support ticket does not exist
+            if (supportTicket == null)
+            {
+                _logger.LogInformation($"Support ticket does not exist");
+                serviceResponse.Message = "Support ticket does not exist";
+                return serviceResponse;
+            }
+
+            // Validate support ticket uniqueness
+            var supportTicketAlreadyExists = await _unitOfWork.SupportTicketRepo
+                .GetByConditionAsync(w => w.TicketNumber != null && supportTicketsTableDto.TicketNumber != null && w.TicketNumber.ToLower() == supportTicketsTableDto.TicketNumber.ToLower() && w.Id != supportTicketsTableDto.Id)
+                .FirstOrDefaultAsync();
+
+            // Support ticket already exists
+            if (supportTicketAlreadyExists != null)
+            {
+                _logger.LogInformation($"Support ticket already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A support ticket with the same TicketNumber already exists. Please enter a unique TicketNumber";
+                return serviceResponse;
+            }
+
+            // Trim dto' string props
+            supportTicketsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(supportTicketsTableDto);
+
+            // Default mapping
+            supportTicket = supportTicketsTableDto.Adapt(supportTicket);
+            supportTicket.LastModifiedByUserId = _userId;
+
+            // Manual mapping
+            supportTicket.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Update support ticket
+            _unitOfWork.SupportTicketRepo.Update(supportTicket);
+
+            // Update-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating support ticket");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = supportTicket.Adapt<SupportTicketsTableDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Support ticket updated successfully";
         }
         catch (Exception ex)
         {
