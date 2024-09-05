@@ -7,7 +7,7 @@ import { TICKET_QUERY_KEY } from "../constants/constants";
 /**
  * Custom hook to fetch support ticket details using react query.
  * @param {string} id - The support ticket ID.
- * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
+ * @returns An object containing the fetched data, isFetching flag, isLoading flag and refetch function.
  */
 export const useFetchSupportTicket: (id: string) => {
   data: IHttpResponse<SupportTicketsTableDto> | undefined;
