@@ -7,22 +7,24 @@ import React from "react";
 import { useShallow } from "zustand/react/shallow";
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
-interface DTEditRowActionProps {
+interface DTRemarkEditActionProps {
   rowId: string;
   size?: "sm" | "md";
   crudAction: "update" | "read";
   setEditingCommentId: (id: string | null) => void;
+  onEdit: () => void;
 }
 
 /**
  * Represents a row action (Edit or View) dropdown item component for a data table.
  * This component renders a dropdown menu item for editing or viewing a row.
  */
-export const DTRemarkEditAction: React.FC<DTEditRowActionProps> = ({
+export const DTRemarkEditAction: React.FC<DTRemarkEditActionProps> = ({
   rowId,
   crudAction,
   size = "md",
   setEditingCommentId,
+  onEdit,
 }) => {
   // Get store state and actions
   const { setCrudDialogOptions } = useDTCrudDialogStore(
@@ -44,6 +46,9 @@ export const DTRemarkEditAction: React.FC<DTEditRowActionProps> = ({
           crudAction: crudAction,
         });
         setEditingCommentId(rowId);
+        if (crudAction === "update") {
+          onEdit();
+        }
       }}
     />
   );
