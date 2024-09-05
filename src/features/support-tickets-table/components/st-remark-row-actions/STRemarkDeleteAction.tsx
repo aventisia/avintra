@@ -10,12 +10,14 @@ interface STRemarkDeleteActionProps {
   rowId: string;
   remarkCount: number;
   setRemarkCount: (count: number) => void;
+  onDelete: () => void; // Added onDelete prop
 }
 
 export const STRemarkDeleteAction = ({
   rowId,
   remarkCount,
   setRemarkCount,
+  onDelete, // Destructure onDelete
 }: STRemarkDeleteActionProps) => {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
@@ -39,13 +41,14 @@ export const STRemarkDeleteAction = ({
     <DeleteDDMenuItem
       onClick={() => {
         showDefaultAlertDialog({
-          confirmActionFn: () => {
+          confirmActionFn: async () => {
             // Delete the support ticket remark
-            deleteSupportTicketRemark({
+            await deleteSupportTicketRemark({
               payload: rowId,
               crudAction: "delete",
             });
             setRemarkCount(remarkCount - 1);
+            onDelete(); // Call the onDelete function after deletion
           },
           alertType: "delete-record",
           additionalText: "support ticket remark",
