@@ -1,6 +1,5 @@
 import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { STRemarkDeleteAction } from "./STRemarkDeleteAction";
-//import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { DTRemarkEditAction } from "./DTRemarkEditAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 
@@ -9,6 +8,8 @@ interface STRemarkRowActionsProps {
   setEditingCommentId: (id: string | null) => void;
   remarkCount: number;
   setRemarkCount: (count: number) => void;
+  onDelete: (id: string) => void;
+  onEdit: () => void;
 }
 
 export const STRemarkRowActions = ({
@@ -16,25 +17,25 @@ export const STRemarkRowActions = ({
   setEditingCommentId,
   remarkCount,
   setRemarkCount,
+  onDelete,
+  onEdit,
 }: STRemarkRowActionsProps) => {
   return (
-    // Dropdown menu for support ticket remark row action */}
     <DataTableRowActions>
-      {/* Edit support ticket remark message */}
       <DTRemarkEditAction
         rowId={rowId}
         crudAction="update"
         setEditingCommentId={setEditingCommentId}
+        onEdit={onEdit}
       />
 
-      {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
 
-      {/* Triggers Support ticket remark delete alert dialog  */}
       <STRemarkDeleteAction
         rowId={rowId}
         remarkCount={remarkCount}
         setRemarkCount={setRemarkCount}
+        onDelete={() => onDelete(rowId)}
       />
     </DataTableRowActions>
   );
