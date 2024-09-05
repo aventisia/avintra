@@ -55,6 +55,11 @@ public class WorkspaceUser : IMustHaveTenant
     public virtual ICollection<FlowComment>? FlowComments { get; set; }
 
     /// <summary>
+    /// Gets or sets the list of SupportTicketRemarks to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<SupportTicketRemark>? SupportTicketRemarks { get; set; }
+
+    /// <summary>
     /// Gets or sets the version number used for row versioning. Row versioning helps detect conflicts between concurrent transactions.
     /// </summary>
     /// <remarks>
