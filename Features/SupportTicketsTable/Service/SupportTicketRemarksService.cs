@@ -67,12 +67,32 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Trim dto' string props
             supportTicketRemarksDto = TrimDtoStringPropsUtil.TrimDtoStringProps(supportTicketRemarksDto);
 
+            // Validate support ticket existence
+            var supportTicket = await _unitOfWork.SupportTicketRepo
+                                .GetByConditionAsync(w => w.Id == supportTicketRemarksDto.SupportTicketId)
+                                .SingleOrDefaultAsync();
+
+            // Support ticket does not exist
+            if (supportTicket == null)
+            {
+                _logger.LogInformation($"Support ticket does not exist");
+                serviceResponse.Message = "Support ticket does not exist";
+                return serviceResponse;
+            }
+
             // Default mapping
             var newSupportTicketRemark = supportTicketRemarksDto.Adapt<SupportTicketRemark>();
             newSupportTicketRemark.UserId = _userId;
 
+            // Manual mapping for support ticket
+            supportTicket.LastModifiedOn = DateTimeOffset.UtcNow;
+            supportTicket.LastModifiedByUserId = _userId;
+
             // Insert support ticket remark
             await _unitOfWork.SupportTicketRemarkRepo.InsertAsync(newSupportTicketRemark);
+
+            // Update support ticket
+            _unitOfWork.SupportTicketRepo.Update(supportTicket);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -122,6 +142,20 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
                 return serviceResponse;
             }
 
+            // Get support ticket having this remark
+            var supportTicket = await _unitOfWork.SupportTicketRepo
+                                .GetByConditionAsync(w => w.Id == supportTicketRemark.SupportTicketId)
+                                .SingleOrDefaultAsync();
+
+            // Support ticket does not exist
+            if (supportTicket == null)
+            {
+                _logger.LogInformation($"Support ticket does not exist");
+                serviceResponse.Message = "Support ticket does not exist";
+                return serviceResponse;
+            }
+
+
             // Trim dto' string props
             supportTicketRemarksDto = TrimDtoStringPropsUtil.TrimDtoStringProps(supportTicketRemarksDto);
 
@@ -130,8 +164,15 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             supportTicketRemark.LastModifiedOn = DateTimeOffset.UtcNow;
             supportTicketRemark.IsEdited = true;
 
+            // Manual mapping for support ticket
+            supportTicket.LastModifiedOn = DateTimeOffset.UtcNow;
+            supportTicket.LastModifiedByUserId = _userId;
+
             // Update support ticket remark
             _unitOfWork.SupportTicketRemarkRepo.Update(supportTicketRemark);
+
+            // Update support ticket
+            _unitOfWork.SupportTicketRepo.Update(supportTicket);
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -179,8 +220,28 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
                 return serviceResponse;
             }
 
+            // Get support ticket having this remark
+            var supportTicket = await _unitOfWork.SupportTicketRepo
+                                .GetByConditionAsync(w => w.Id == supportTicketRemark.SupportTicketId)
+                                .SingleOrDefaultAsync();
+
+            // Support ticket does not exist
+            if (supportTicket == null)
+            {
+                _logger.LogInformation($"Support ticket does not exist");
+                serviceResponse.Message = "Support ticket does not exist";
+                return serviceResponse;
+            }
+
+            // Manual mapping for support ticket
+            supportTicket.LastModifiedOn = DateTimeOffset.UtcNow;
+            supportTicket.LastModifiedByUserId = _userId;
+
             // Delete support ticket remark
             _unitOfWork.SupportTicketRemarkRepo.Delete(supportTicketRemark);
+
+            // Update support ticket
+            _unitOfWork.SupportTicketRepo.Update(supportTicket);
 
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
