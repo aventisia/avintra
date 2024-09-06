@@ -38,6 +38,11 @@ public class SupportTicketsTableDto
     public string? Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the reviewer's id who is assigned to review the support ticket.
+    /// </summary>
+    public Guid? ReviewerId { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of remarks associated with the support ticket.
     /// </summary>
     public int? RemarkCount { get; set; }
