@@ -39,6 +39,15 @@ public class SupportTicket : BaseEntity, IMustHaveTenant
     public string? Status { get; set; } = "Open";
 
     /// <summary>
+    /// Gets or sets the reviewer's id who is assigned to review the support ticket.
+    public Guid? ReviewerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the reviewer of the support ticket.
+    [ForeignKey("ReviewerId")]
+    public virtual WorkspaceUser? Reviewer { get; set; }
+
+    /// <summary>
     /// Gets or sets support ticket remarks to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<SupportTicketRemark>? SupportTicketRemarks { get; set; }
