@@ -29,5 +29,12 @@ public class SupportTicketsTableMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
+
+        // Mapping for updating support ticket status by reviewer
+        config.NewConfig<STUpdateByReviewerDto, SupportTicket>()
+            .Map(dest => dest.Id, src => src.TicketId)
+            .Map(dest => dest.TicketNumber, src => src.TicketNumber)
+            .Map(dest => dest.Status, src => src.Status)
+            .IgnoreNullValues(true);
     }
 }
