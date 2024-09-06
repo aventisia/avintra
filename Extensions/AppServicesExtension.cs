@@ -47,6 +47,7 @@ public static class AppServicesExtension
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
         services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();
+        services.AddScoped<ISupportTicketReviewerService, SupportTicketReviewerService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
