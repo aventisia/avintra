@@ -36,11 +36,11 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             var result = Guid.TryParse(id, out Guid guidId);
 
             // if result is true then create where condition basis on guidId
-            //var whereCondition = result ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId) : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id);
+            var whereCondition = result ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId) : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id);
 
             // Try to get support ticket
             var supportTicket = await _unitOfWork.SupportTicketRepo
-                .GetByConditionAsync(w => w.Id == Guid.Parse(id)) // Update condition
+                .GetByConditionAsync(whereCondition)
                 .ProjectToType<SupportTicketsTableDto>()
                 .SingleOrDefaultAsync();
 
@@ -52,6 +52,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
                 return serviceResponse;
             }
 
+            // Order support ticket remarks by createdOn
             if (supportTicket.SupportTicketRemarks != null)
             {
                 supportTicket.SupportTicketRemarks = supportTicket.SupportTicketRemarks.OrderBy(o => o.CreatedOn).ToList();
@@ -151,7 +152,11 @@ public class SupportTicketsTableService : ISupportTicketsTableService
                 return serviceResponse;
             }
 
+            // Get the user who created the support ticket
             newSupportTicket.CreatedByUser = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == _userId).SingleOrDefaultAsync();
+
+            // Get the reviewer of the support ticket
+            newSupportTicket.Reviewer = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == newSupportTicket.ReviewerId).SingleOrDefaultAsync();
 
             // Task successful
             serviceResponse.Data = newSupportTicket.Adapt<SupportTicketsTableDto>();
