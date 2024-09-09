@@ -172,7 +172,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         return serviceResponse;
     }
 
-    // Updates an existing support ticket.
+    // Updates an existing support ticket (not being used in the current implementation).
     public async Task<ServiceResponse<SupportTicketsTableDto>> UpdateSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto)
     {
         // Initialize ServiceResponse with failed response
@@ -216,6 +216,65 @@ public class SupportTicketsTableService : ISupportTicketsTableService
 
             // Default mapping
             supportTicket = supportTicketsTableDto.Adapt(supportTicket);
+            supportTicket.LastModifiedByUserId = _userId;
+
+            // Manual mapping
+            supportTicket.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Update support ticket
+            _unitOfWork.SupportTicketRepo.Update(supportTicket);
+
+            // Update-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating support ticket");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = supportTicket.Adapt<SupportTicketsTableDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Support ticket updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates an existing support ticket status by reviewer.
+    public async Task<ServiceResponse<SupportTicketsTableDto>> UpdateSupportTicketStatusAsync(STUpdateByReviewerDto stUpdateByReviewerDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<SupportTicketsTableDto>
+        {
+            Data = null,
+            Message = "Failed to update support ticket. Please try again"
+        };
+
+        try
+        {
+            // Validate support ticket existence
+            var supportTicket = await _unitOfWork.SupportTicketRepo
+                .GetByConditionAsync(w => (w.Id == stUpdateByReviewerDto.TicketId || (w.TicketNumber == stUpdateByReviewerDto.TicketNumber)) && w.ReviewerId == _userId)
+                .SingleOrDefaultAsync();
+
+            // Support ticket does not exist
+            if (supportTicket == null)
+            {
+                _logger.LogInformation($"Support ticket does not exist");
+                serviceResponse.Message = "Support ticket does not exist";
+                return serviceResponse;
+            }
+
+            // Trim dto' string props
+            stUpdateByReviewerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(stUpdateByReviewerDto);
+
+            // Default mapping
+            supportTicket = stUpdateByReviewerDto.Adapt(supportTicket);
             supportTicket.LastModifiedByUserId = _userId;
 
             // Manual mapping
