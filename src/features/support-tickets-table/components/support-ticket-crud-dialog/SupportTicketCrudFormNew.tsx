@@ -202,6 +202,7 @@ export const SupportTicketCrudFormNew = () => {
           <STStatusUpdateAction
             ticketId={data?.data.id}
             ticketNumber={data?.data.ticketNumber}
+            onUpdate={refetch}
           />
           <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
             Add Comment
