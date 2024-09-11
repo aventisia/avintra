@@ -19,7 +19,6 @@ export const useFetchSupportTicket: (id: string) => {
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: [TICKET_QUERY_KEY, id],
     queryFn: () => getSupportTicket(id),
-    enabled: !!id, // Ensure query is only executed if id is truthy
   });
 
   // Return data, isFetching, and isLoading flags
