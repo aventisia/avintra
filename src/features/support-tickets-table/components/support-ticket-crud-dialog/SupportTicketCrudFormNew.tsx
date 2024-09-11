@@ -48,12 +48,6 @@ export const SupportTicketCrudFormNew = () => {
 
   const handleCancel = () => setEditingCommentId(null);
 
-  const handleEditRemark = () => {
-    console.log("Calling refetch for editing remark...");
-    refetch();
-    console.log("Refetch successful");
-  };
-
   const handleDeleteRemark = (deletedRemarkId: string) => {
     setRemarks(remarks.filter((remark) => remark.id !== deletedRemarkId));
     setRemarkCount(remarkCount - 1);
@@ -141,7 +135,7 @@ export const SupportTicketCrudFormNew = () => {
                       rowId={remark.id}
                       setEditingCommentId={setEditingCommentId}
                       onDelete={() => handleDeleteRemark(remark.id)}
-                      onEdit={handleEditRemark}
+                      onEdit={refetch}
                     />
                   </div>
                   {editingCommentId === remark.id ? (
@@ -161,7 +155,7 @@ export const SupportTicketCrudFormNew = () => {
                       />
                       <div className="!mt-5 flex justify-end space-x-2">
                         <Button
-                          onClick={handleEditRemark}
+                          onClick={refetch}
                           disabled={!isDirty}
                           className="min-w-[5rem]"
                         >
@@ -202,6 +196,7 @@ export const SupportTicketCrudFormNew = () => {
           <STStatusUpdateAction
             ticketId={data?.data.id}
             ticketNumber={data?.data.ticketNumber}
+            currentStatus={data?.data.status}
             onUpdate={refetch}
           />
           <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
