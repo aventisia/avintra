@@ -10,16 +10,19 @@ import { updateSupportTicketStatus } from "../../apis/suport-tickets-table-apis"
 interface STStatusUpdateActionProps {
   ticketId: string | undefined;
   ticketNumber: string | undefined;
+  onUpdate: () => void;
 }
 
 export const STStatusUpdateAction = ({
   ticketId,
   ticketNumber,
+  onUpdate,
 }: STStatusUpdateActionProps) => {
   // update ticket status
   const data = { ticketId: ticketId || "", ticketNumber };
   const updateTicketStatus = async (status: string) => {
     await updateSupportTicketStatus({ ...data, status });
+    onUpdate();
   };
 
   return (
