@@ -12,8 +12,9 @@ import { ProjectsPage } from "./pages/ProjectsPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
-import { SupportTicketDetailsPage } from "./features/support-tickets-table/components/support-ticket-details/SupportTicketDetailsPage";
+//import { SupportTicketDetailsPage } from "./features/support-tickets-table/components/support-ticket-details/SupportTicketDetailsPage";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
+import { SupportTicketCrudFormNew } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketCrudFormNew";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,7 +56,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/supportticket/details",
-          element: <SupportTicketDetailsPage />,
+          element: <SupportTicketCrudFormNew />,
         },
         {
           path: "/supportticket/create",
