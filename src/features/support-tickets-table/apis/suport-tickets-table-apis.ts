@@ -2,9 +2,13 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
+import { STUpdateByReviewerDto } from "../dtos/STUpdateByReviewerDto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/supportticket`;
 
+/**
+ * Retrieves a support ticket.
+ */
 const getSupportTicket = (id: string) => {
   return axiosInstance
     .get<IHttpResponse<SupportTicketsTableDto>>(`${baseAPIURL}/${id}`)
@@ -31,6 +35,16 @@ const insertSupportTicket = (newSupportTicket: SupportTicketsTableDto) => {
     .then((res) => res.data);
 };
 
+const updateSupportTicketStatus = (
+  updatedSupportTicketStatus: STUpdateByReviewerDto,
+) => {
+  return axiosInstance
+    .put<
+      IHttpResponse<SupportTicketsTableDto>
+    >(`${baseAPIURL}/ticket-status`, updatedSupportTicketStatus)
+    .then((res) => res.data);
+};
+
 /**
  * Deletes a support ticket.
  */
@@ -48,7 +62,6 @@ const deleteSupportTicket = (id: string) => {
  * @throws {Error} - If an invalid action type is provided.
  */
 const supportTicketsOptimisticMutationFn = ({
-  id,
   payload,
   crudAction,
 }: IOptimisticMutation<SupportTicketsTableDto | string>) => {
@@ -56,7 +69,7 @@ const supportTicketsOptimisticMutationFn = ({
     case "create":
       return insertSupportTicket(payload as SupportTicketsTableDto);
     case "delete":
-      return deleteSupportTicket(id);
+      return deleteSupportTicket(payload as string);
     default:
       throw new Error("Invalid action type");
   }
@@ -68,4 +81,5 @@ export {
   insertSupportTicket,
   supportTicketsOptimisticMutationFn,
   getSupportTicket,
+  updateSupportTicketStatus,
 };
