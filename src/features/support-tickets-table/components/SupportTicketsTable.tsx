@@ -30,22 +30,28 @@ export const SupportTicketsTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
   // Fetch support tickets data
-  const { data } = useFetchSupportTickets();
+  const { data, refetch } = useFetchSupportTickets();
 
   // Get store setSupportTicketsState action
-  const { filteredData, selectedSupportTicket, setSupportTicketsState } =
-    useSupportTicketsTableStore(
-      useShallow((state) => ({
-        filteredData: state.filteredData,
-        selectedSupportTicket: state.selectedSupportTicket,
-        setSupportTicketsState: state.setSupportTicketsState,
-      })),
-    );
+  const {
+    filteredData,
+    selectedSupportTicket,
+    userRole,
+    setSupportTicketsState,
+  } = useSupportTicketsTableStore(
+    useShallow((state) => ({
+      filteredData: state.filteredData,
+      selectedSupportTicket: state.selectedSupportTicket,
+      userRole: state.userRole,
+      setSupportTicketsState: state.setSupportTicketsState,
+    })),
+  );
 
   // Sync data with store
   useEffect(() => {
-    setSupportTicketsState(data?.data || [], selectedSupportTicket);
-  }, [data, setSupportTicketsState, selectedSupportTicket]);
+    refetch();
+    setSupportTicketsState(data?.data || [], selectedSupportTicket, userRole);
+  }, [refetch, data, setSupportTicketsState, selectedSupportTicket, userRole]);
 
   const navigate = useNavigate();
 
