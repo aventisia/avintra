@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { getSupportTicket } from "../apis/suport-tickets-table-apis";
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
@@ -13,7 +13,9 @@ export const useFetchSupportTicket: (id: string) => {
   data: IHttpResponse<SupportTicketsTableDto> | undefined;
   isFetching: boolean;
   isLoading: boolean;
-  refetch: () => void;
+  refetch: () => Promise<
+    QueryObserverResult<IHttpResponse<SupportTicketsTableDto>, Error>
+  >;
 } = (id) => {
   // Get support tickets using react query
   const { data, isFetching, isLoading, refetch } = useQuery({
