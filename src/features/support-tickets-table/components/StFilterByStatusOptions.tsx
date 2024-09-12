@@ -2,16 +2,19 @@ import { useState } from "react";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
+import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
+import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
 export const StFilterByStatusOptions = () => {
   // Fetch support tickets data
-  const { data } = useFetchSupportTickets();
+  const { data, refetch } = useFetchSupportTickets();
 
   // Get store setSupportTicketsState action
-  const { selectedSupportTicket, setSupportTicketsState } =
+  const { selectedSupportTicket, userRole, setSupportTicketsState } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
         selectedSupportTicket: state.selectedSupportTicket,
+        userRole: state.userRole,
         setSupportTicketsState: state.setSupportTicketsState,
       })),
     );
@@ -22,20 +25,38 @@ export const StFilterByStatusOptions = () => {
   const handleFilter = (status: string | undefined) => {
     setFilterStatus(status);
     if (status === undefined) {
-      setSupportTicketsState(data?.data || [], selectedSupportTicket);
+      setSupportTicketsState(data?.data || [], selectedSupportTicket, userRole);
     } else {
       setSupportTicketsState(
-        data?.data.filter((ticket) => ticket.status === status) || [],
+        data?.data.filter(
+          (ticket: SupportTicketsTableDto) => ticket.status === status,
+        ) || [],
         selectedSupportTicket,
+        userRole,
       );
     }
   };
 
+  const handleRoleChange = (userRole: string) => {
+    console.log("Role changed to: ", userRole);
+
+    setSupportTicketsState(data?.data || [], selectedSupportTicket, userRole);
+    // Refetch the data to reflect the role change
+    const result = refetch().then(() => console.log("Refetching data..."));
+    console.log("Refetch result: ", result);
+
+    console.log(`Changed Data based on role: ${userRole}`, data?.data);
+  };
+
   // Calculate ticket counts
   const openCount =
-    data?.data.filter((ticket) => ticket.status === "Open").length || 0;
+    data?.data.filter(
+      (ticket: SupportTicketsTableDto) => ticket.status === "Open",
+    ).length || 0;
   const closedCount =
-    data?.data.filter((ticket) => ticket.status === "Closed").length || 0;
+    data?.data.filter(
+      (ticket: SupportTicketsTableDto) => ticket.status === "Closed",
+    ).length || 0;
   const totalCount = data?.data.length || 0;
 
   return (
@@ -62,6 +83,15 @@ export const StFilterByStatusOptions = () => {
       >
         {totalCount} All
       </div>
+      <Tabs
+        defaultValue="Reviewer"
+        onValueChange={(value) => handleRoleChange(value)}
+      >
+        <TabsList>
+          <TabsTrigger value="Reviewer">Reviewer</TabsTrigger>
+          <TabsTrigger value="User">User</TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 };
