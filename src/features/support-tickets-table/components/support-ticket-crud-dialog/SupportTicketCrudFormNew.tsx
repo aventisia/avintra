@@ -32,13 +32,19 @@ export const SupportTicketCrudFormNew = () => {
   const { data, isFetching, isLoading, refetch } = useFetchSupportTicket(id);
 
   // Initialize states
-  const [remarks, setRemarks] = useState<SupportTicketRemarksDto[]>([]);
-  const [remarkCount, setRemarkCount] = useState<number>(0);
+  const [remarks, setRemarks] = useState<SupportTicketRemarksDto[]>(
+    data?.data.supportTicketRemarks ?? [],
+  );
+  const [remarkCount, setRemarkCount] = useState<number>(
+    data?.data.remarkCount ?? 0,
+  );
 
   const { subject, ticketNumber, status, createdOn, description } =
     data?.data ?? {};
 
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+
+  const [editedRemark, setEditedRemark] = useState<string | null>("");
 
   const { mutate: mutateSupportTicketRemark } = useListOptimisticMutation<
     SupportTicketRemarksDto,
@@ -48,19 +54,25 @@ export const SupportTicketCrudFormNew = () => {
 
   const handleCancel = () => setEditingCommentId(null);
 
+  const handleEditRemark = () => {
+    const newRemarks = remarks.map((remark) => {
+      if (remark.id === editingCommentId) {
+        return { ...remark, message: editedRemark ?? "" };
+      }
+      return remark;
+    });
+    setRemarks(newRemarks);
+  };
+
   const handleDeleteRemark = (deletedRemarkId: string) => {
     setRemarks(remarks.filter((remark) => remark.id !== deletedRemarkId));
     setRemarkCount(remarkCount - 1);
-    console.log("Calling refetch after delete...");
-    refetch();
-    console.log("Data refetched successfully after delete");
+    refetch().then(() => console.log("Refetching data..."));
   };
 
   const onSubmit = async (
     formData: z.infer<typeof supportTicketRemarksZodSchema>,
   ) => {
-    console.log(formData);
-
     formData.id = editingCommentId ?? id;
 
     await mutateSupportTicketRemark({
@@ -68,21 +80,20 @@ export const SupportTicketCrudFormNew = () => {
       crudAction: crudAction,
     });
 
-    console.log("Calling refetch after form submission...");
-    refetch();
+    refetch().then(() => console.log("Refetching data..."));
     form.reset();
     setEditingCommentId(null);
   };
 
-  // Update remarks and remarkCount when data changes
   useEffect(() => {
     console.log("refetching data...");
     refetch();
     if (data?.data) {
       setRemarks(data.data.supportTicketRemarks ?? []);
       setRemarkCount(data.data.remarkCount ?? 0);
+      setEditedRemark("");
     }
-  }, [data, remarkCount, refetch]);
+  }, [data, refetch]);
 
   if (isLoading || isFetching) {
     return <DataTableSkeleton />;
@@ -135,7 +146,7 @@ export const SupportTicketCrudFormNew = () => {
                       rowId={remark.id}
                       setEditingCommentId={setEditingCommentId}
                       onDelete={() => handleDeleteRemark(remark.id)}
-                      onEdit={refetch}
+                      onEdit={handleEditRemark}
                     />
                   </div>
                   {editingCommentId === remark.id ? (
@@ -152,6 +163,7 @@ export const SupportTicketCrudFormNew = () => {
                         editorClassName="focus:outline-none"
                         disabled={false}
                         value={remark.message}
+                        onBlur={(value) => console.log(value)}
                       />
                       <div className="!mt-5 flex justify-end space-x-2">
                         <Button
@@ -159,7 +171,7 @@ export const SupportTicketCrudFormNew = () => {
                           disabled={!isDirty}
                           className="min-w-[5rem]"
                         >
-                          {"Save changes"}
+                          Save changes
                         </Button>
                         <Button
                           type="button"
