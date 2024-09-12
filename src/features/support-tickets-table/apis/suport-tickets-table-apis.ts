@@ -25,6 +25,15 @@ const getSupportTickets = () => {
 };
 
 /**
+ * Retrieves a list of all support tickets.
+ */
+const getAllSupportTickets = () => {
+  return axiosInstance
+    .get<IHttpResponse<SupportTicketsTableDto[]>>(`${baseAPIURL}/all`)
+    .then((res) => res.data);
+};
+
+/**
  * Inserts a new support ticket.
  */
 const insertSupportTicket = (newSupportTicket: SupportTicketsTableDto) => {
@@ -82,4 +91,5 @@ export {
   supportTicketsOptimisticMutationFn,
   getSupportTicket,
   updateSupportTicketStatus,
+  getAllSupportTickets,
 };
