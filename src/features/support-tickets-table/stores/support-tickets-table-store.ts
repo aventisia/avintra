@@ -10,9 +10,6 @@ type State = {
 
   /** remarks query key for support ticket remarks */
   remarksQueryKey: string[];
-
-  /** user role : Reviewer or User */
-  userRole: string;
 };
 
 type Actions = {
@@ -20,7 +17,6 @@ type Actions = {
   setSupportTicketsState: (
     filteredData: SupportTicketsTableDto[],
     selectedSupportTicket: SupportTicketsTableDto | null,
-    userRole: string,
   ) => void;
 };
 
@@ -28,13 +24,11 @@ export const useSupportTicketsTableStore = create<State & Actions>((set) => ({
   filteredData: [],
   selectedSupportTicket: null,
   remarksQueryKey: [],
-  userRole: "Reviewer",
 
-  setSupportTicketsState: (filteredData, selectedSupportTicket, userRole) =>
+  setSupportTicketsState: (filteredData, selectedSupportTicket) =>
     set(() => ({
       filteredData,
       selectedSupportTicket,
       remarksQueryKey: ["remarks", selectedSupportTicket?.id ?? ""],
-      userRole,
     })),
 }));
