@@ -116,8 +116,9 @@ public class ResetPwdService : IResetPwdService
                 return serviceResponse;
             }
 
-            // Update user.PwdSetOn
+            // Update user.PwdSetOn and Email Confirmed to true
             user.PwdSetOn = newPwdSetOn;
+            user.EmailConfirmed = true; // Email is confirmed. If user is able to reset password. Accounts created via Admin will have this flag set to false and will be set to true when user resets password.
             _unitOfWork.AccountUserRepo.Update(user);
 
             // Terminate all sessions job failed
