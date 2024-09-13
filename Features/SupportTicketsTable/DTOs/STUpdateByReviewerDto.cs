@@ -1,5 +1,7 @@
 namespace WorkspaceAPIs.DTOs;
-
+/// <summary>
+/// Represents a data transfer object (DTO) for a support ticket status update by a reviewer.
+/// </summary>
 public class STUpdateByReviewerDto
 {
     /// <summary>
