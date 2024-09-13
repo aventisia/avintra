@@ -36,7 +36,9 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             var result = Guid.TryParse(id, out Guid guidId);
 
             // if result is true then create where condition basis on guidId
-            var whereCondition = result ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId) : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id);
+            var whereCondition = result
+                ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId && (w.CreatedByUserId == _userId))
+                : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id && (w.CreatedByUserId == _userId));
 
             // Try to get support ticket
             var supportTicket = await _unitOfWork.SupportTicketRepo
@@ -74,6 +76,39 @@ public class SupportTicketsTableService : ISupportTicketsTableService
 
     // Retrieves list of support tickets.
     public async Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetSupportTicketsAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketsTableDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Try to get support tickets
+            var supportTickets = await _unitOfWork.SupportTicketRepo
+                                        .GetByConditionAsync(w => w.CreatedByUserId == _userId) //PEDNING: Update condition
+                                        .OrderByDescending(o => o.CreatedOn)
+                                        .ProjectToType<SupportTicketsTableDto>()
+                                        .ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = supportTickets.Adapt<List<SupportTicketsTableDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "support tickets retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves list of all support tickets.
+    public async Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetAllSupportTicketsAsync()
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketsTableDto>>
@@ -186,7 +221,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         {
             // Validate support ticket existence
             var supportTicket = await _unitOfWork.SupportTicketRepo
-                .GetByConditionAsync(w => w.Id == supportTicketsTableDto.Id)
+                .GetByConditionAsync(w => w.Id == supportTicketsTableDto.Id && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
             // Support ticket does not exist
@@ -259,7 +294,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         {
             // Validate support ticket existence
             var supportTicket = await _unitOfWork.SupportTicketRepo
-                .GetByConditionAsync(w => (w.Id == stUpdateByReviewerDto.TicketId || (w.TicketNumber == stUpdateByReviewerDto.TicketNumber)) && w.ReviewerId == _userId)
+                .GetByConditionAsync(w => (w.Id == stUpdateByReviewerDto.TicketId || (w.TicketNumber == stUpdateByReviewerDto.TicketNumber)))
                 .SingleOrDefaultAsync();
 
             // Support ticket does not exist
@@ -318,7 +353,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         {
             // Validate support ticket existence
             var supportTicket = await _unitOfWork.SupportTicketRepo
-                                        .GetByConditionAsync(w => w.Id == id)
+                                        .GetByConditionAsync(w => w.Id == id && w.CreatedByUserId == _userId)
                                         .SingleOrDefaultAsync();
 
             // support ticket does not exist
