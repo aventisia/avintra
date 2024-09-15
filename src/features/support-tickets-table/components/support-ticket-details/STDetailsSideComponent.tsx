@@ -7,11 +7,20 @@ import { useEffect, useState } from "react";
 import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
 import { formatDistanceToNow } from "date-fns";
 import { SupportTicketTDeleteAction } from "../st-remark-row-actions/SupportTicketDeleteAction";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useShallow } from "zustand/react/shallow";
 
 /**
  * Support ticket details side component.
  */
 export const STDetailsSideComponent = () => {
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
   // useNavigate hook for navigation
   const navigate = useNavigate();
 
@@ -23,6 +32,7 @@ export const STDetailsSideComponent = () => {
 
   // Fetch support ticket data
   const { data } = useFetchSupportTicket(id);
+  console.log("Fetched Data:", data);
 
   // State for support ticket data
   const [STData, setSTData] = useState<SupportTicketsTableDto | null>(
@@ -98,7 +108,10 @@ export const STDetailsSideComponent = () => {
       </div>
       <Separator />
       {/* Support ticket delete component */}
-      {data && <SupportTicketTDeleteAction rowId={id} />}
+      {data &&
+        !userSession?.userRoles.some((role) =>
+          ["SA", "GA", "GSA"].includes(role),
+        ) && <SupportTicketTDeleteAction rowId={id} />}
     </div>
   );
 };
