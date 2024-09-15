@@ -7,6 +7,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
     private readonly ILogger<SupportTicketsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly List<string> _userRoles;
 
     public SupportTicketsTableService(
         ILogger<SupportTicketsTableService> logger,
@@ -16,8 +17,17 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
+        // Set _userRoles
+        _userRoles = httpContextAccessor.HttpContext?.User?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
+
         _logger = logger;
         _unitOfWork = unitOfWork;
+    }
+
+    // Check if user is an agent
+    private bool IsAgent()
+    {
+        return _userRoles.Contains("GA") || _userRoles.Contains("SA") || _userRoles.Contains("GSA");
     }
 
     // Retrieves a support ticket by its ID/ticketNumber.
@@ -35,10 +45,10 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // check if id is valid Guid
             var result = Guid.TryParse(id, out Guid guidId);
 
-            // if result is true then create where condition basis on guidId
+            // if result is true then create where condition basis on guidId and _userId/IsAgent
             var whereCondition = result
-                ? (Expression<Func<SupportTicket, bool>>)(w => w.Id == guidId && (w.CreatedByUserId == _userId))
-                : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id && (w.CreatedByUserId == _userId));
+                ? (Expression<Func<SupportTicket, bool>>)(w => (w.Id == guidId || w.TicketNumber == id) && (w.CreatedByUserId == _userId || IsAgent()))
+                : (Expression<Func<SupportTicket, bool>>)(w => w.TicketNumber == id && (w.CreatedByUserId == _userId || IsAgent()));
 
             // Try to get support ticket
             var supportTicket = await _unitOfWork.SupportTicketRepo
@@ -86,9 +96,14 @@ public class SupportTicketsTableService : ISupportTicketsTableService
 
         try
         {
+            // Create where condition basis on _userId/IsAgent
+            var whereCondition = IsAgent()
+                ? (Expression<Func<SupportTicket, bool>>)(w => true)
+                : (Expression<Func<SupportTicket, bool>>)(w => w.CreatedByUserId == _userId);
+
             // Try to get support tickets
             var supportTickets = await _unitOfWork.SupportTicketRepo
-                                        .GetByConditionAsync(w => w.CreatedByUserId == _userId) //PEDNING: Update condition
+                                        .GetByConditionAsync(whereCondition)
                                         .OrderByDescending(o => o.CreatedOn)
                                         .ProjectToType<SupportTicketsTableDto>()
                                         .ToListAsync();
@@ -108,37 +123,37 @@ public class SupportTicketsTableService : ISupportTicketsTableService
     }
 
     // Retrieves list of all support tickets.
-    public async Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetAllSupportTicketsAsync()
-    {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketsTableDto>>
-        {
-            Data = null,
-            StatusCode = 400
-        };
+    // public async Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetAllSupportTicketsAsync()
+    // {
+    //     // Initialize ServiceResponse with failed response
+    //     var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketsTableDto>>
+    //     {
+    //         Data = null,
+    //         StatusCode = 400
+    //     };
 
-        try
-        {
-            // Try to get support tickets
-            var supportTickets = await _unitOfWork.SupportTicketRepo
-                                        .GetByConditionAsync(w => true) //PEDNING: Update condition
-                                        .OrderByDescending(o => o.CreatedOn)
-                                        .ProjectToType<SupportTicketsTableDto>()
-                                        .ToListAsync();
+    //     try
+    //     {
+    //         // Try to get support tickets
+    //         var supportTickets = await _unitOfWork.SupportTicketRepo
+    //                                     .GetByConditionAsync(w => true) //PEDNING: Update condition
+    //                                     .OrderByDescending(o => o.CreatedOn)
+    //                                     .ProjectToType<SupportTicketsTableDto>()
+    //                                     .ToListAsync();
 
-            // Task successful
-            serviceResponse.Data = supportTickets.Adapt<List<SupportTicketsTableDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "support tickets retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
+    //         // Task successful
+    //         serviceResponse.Data = supportTickets.Adapt<List<SupportTicketsTableDto>>();
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "support tickets retrieved successfully";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex.ToString());
+    //         return serviceResponse;
+    //     }
 
-        return serviceResponse;
-    }
+    //     return serviceResponse;
+    // }
 
     // Inserts a new support ticket.
     public async Task<ServiceResponse<SupportTicketsTableDto>> InsertSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto)
