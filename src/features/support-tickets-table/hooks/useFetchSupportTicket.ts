@@ -7,7 +7,7 @@ import { TICKET_QUERY_KEY } from "../constants/constants";
 /**
  * Custom hook to fetch support ticket details using react query.
  * @param {string} id - The support ticket ID.
- * @returns An object containing the fetched data, isFetching flag, isLoading flag and refetch function.
+ * @returns An object containing the fetched data, isFetching flag, isLoading flag, and refetch function.
  */
 export const useFetchSupportTicket: (id: string) => {
   data: IHttpResponse<SupportTicketsTableDto> | undefined;
@@ -16,13 +16,13 @@ export const useFetchSupportTicket: (id: string) => {
   refetch: () => Promise<
     QueryObserverResult<IHttpResponse<SupportTicketsTableDto>, Error>
   >;
-} = (id) => {
-  // Get support tickets using react query
+} = (id: string) => {
+  // Get support ticket using react query
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: [TICKET_QUERY_KEY, id],
     queryFn: () => getSupportTicket(id),
+    enabled: !!id, // Only fetch if ID is valid
   });
 
-  // Return data, isFetching, and isLoading flags
   return { data, isFetching, isLoading, refetch };
 };
