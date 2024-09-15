@@ -19,6 +19,8 @@ import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
 import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
 import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideComponent";
 import { STStatusUpdateAction } from "./STStatusUpdateAction";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useShallow } from "zustand/react/shallow";
 
 export const SupportTicketCrudFormNew = () => {
   const { form, isDirty, remarksQueryKey, crudAction, rowId, refineFormData } =
@@ -30,6 +32,13 @@ export const SupportTicketCrudFormNew = () => {
 
   // Fetch support ticket data
   const { data, isFetching, isLoading, refetch } = useFetchSupportTicket(id);
+
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
 
   // Initialize states
   const [remarks, setRemarks] = useState<SupportTicketRemarksDto[]>(
@@ -70,12 +79,12 @@ export const SupportTicketCrudFormNew = () => {
     refetch().then(() => console.log("Refetching data..."));
   };
 
-  const onSubmit = async (
+  const onSubmit = (
     formData: z.infer<typeof supportTicketRemarksZodSchema>,
   ) => {
     formData.id = editingCommentId ?? id;
 
-    await mutateSupportTicketRemark({
+    mutateSupportTicketRemark({
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
       crudAction: crudAction,
     });
@@ -86,14 +95,12 @@ export const SupportTicketCrudFormNew = () => {
   };
 
   useEffect(() => {
-    console.log("refetching data...");
-    refetch();
     if (data?.data) {
       setRemarks(data.data.supportTicketRemarks ?? []);
       setRemarkCount(data.data.remarkCount ?? 0);
       setEditedRemark("");
     }
-  }, [data, refetch]);
+  }, [data?.data, remarkCount]);
 
   if (isLoading || isFetching) {
     return <DataTableSkeleton />;
@@ -142,12 +149,15 @@ export const SupportTicketCrudFormNew = () => {
                         addSuffix: true,
                       })}
                     </p>
-                    <STRemarkRowActionsNew
-                      rowId={remark.id}
-                      setEditingCommentId={setEditingCommentId}
-                      onDelete={() => handleDeleteRemark(remark.id)}
-                      onEdit={handleEditRemark}
-                    />
+                    {userSession?.firstName + " " + userSession?.lastName ===
+                      remark.userFullName && (
+                      <STRemarkRowActionsNew
+                        rowId={remark.id}
+                        setEditingCommentId={setEditingCommentId}
+                        onDelete={() => handleDeleteRemark(remark.id)}
+                        onEdit={handleEditRemark}
+                      />
+                    )}
                   </div>
                   {editingCommentId === remark.id ? (
                     <>
@@ -205,12 +215,16 @@ export const SupportTicketCrudFormNew = () => {
           disabled={false}
         />
         <div className="!mt-5 flex w-full justify-end gap-2">
-          <STStatusUpdateAction
-            ticketId={data?.data.id}
-            ticketNumber={data?.data.ticketNumber}
-            currentStatus={data?.data.status}
-            onUpdate={refetch}
-          />
+          {userSession?.userRoles.some((role) =>
+            ["SA", "GA", "GSA"].includes(role),
+          ) && (
+            <STStatusUpdateAction
+              ticketId={data?.data.id}
+              ticketNumber={data?.data.ticketNumber}
+              currentStatus={data?.data.status}
+              onUpdate={refetch}
+            />
+          )}
           <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
             Add Comment
           </Button>
