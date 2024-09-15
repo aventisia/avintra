@@ -19,7 +19,7 @@ public interface ISupportTicketsTableService
     /// Retrieves all support tickets.
     /// </summary>
     /// <returns> The task result contains the service response with the collection of support ticket DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetAllSupportTicketsAsync();
+    //  Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetAllSupportTicketsAsync();
 
     /// <summary>
     /// Inserts a new support ticket.
