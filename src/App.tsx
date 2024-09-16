@@ -15,6 +15,7 @@ import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 //import { SupportTicketDetailsPage } from "./features/support-tickets-table/components/support-ticket-details/SupportTicketDetailsPage";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketCrudFormNew } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketCrudFormNew";
+import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,6 +54,10 @@ const router = createBrowserRouter(
         {
           path: "/supportticket",
           element: <SupportTicketsPage />,
+        },
+        {
+          path: "/supportticket-reviewer",
+          element: <SupportTicketsReviewerPage />,
         },
         {
           path: "/supportticket/details",
