@@ -5,17 +5,20 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
     private readonly ILogger<SupportTicketRemarksService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly INotificationHelperService _notificationHelperService;
 
     public SupportTicketRemarksService(
         ILogger<SupportTicketRemarksService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        INotificationHelperService notificationHelperService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _notificationHelperService = notificationHelperService;
     }
 
     // Retrieves all remarks associated with a support ticket.
@@ -91,9 +94,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Insert support ticket remark
             await _unitOfWork.SupportTicketRemarkRepo.InsertAsync(newSupportTicketRemark);
 
-            // Update support ticket
-            _unitOfWork.SupportTicketRepo.Update(supportTicket);
-
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
@@ -102,6 +102,76 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             }
 
             newSupportTicketRemark.User = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == _userId).SingleOrDefaultAsync();
+
+            // Update the support ticket's ReviewerId if the user adding the remark is not the creator
+            if (supportTicket.CreatedByUserId != _userId)
+            {
+                supportTicket.ReviewerId = _userId;
+                _unitOfWork.SupportTicketRepo.Update(supportTicket);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Context SaveChanges failed while updating support ticket with new reviewer.");
+                    return serviceResponse;
+                }
+
+                // Create notification for the creator
+                var notificationToCreator = new Notification
+                {
+                    TenantId = supportTicket.TenantId,
+                    Message = $"A new remark has been added by the reviewer on your support ticket '{supportTicket.TicketNumber}'.",
+                    Type = NotificationTypesEnum.Alert,
+                    ActionUrl = $"/supportticket/details?st={supportTicket.Id}",
+                    CreatedByUserId = _userId,
+                    CreatedOn = DateTimeOffset.UtcNow,
+                    LastModifiedByUserId = _userId,
+                };
+
+                await _unitOfWork.NotificationRepo.InsertAsync(notificationToCreator);
+                await _unitOfWork.SaveAsync();
+
+                // Add users to the notification
+                var creatorUserId = supportTicket.CreatedByUserId;
+
+                // Use NotificationHelperService to handle user relationships
+                var addedSuccessfully = await _notificationHelperService.AddNotificationUsers(notificationToCreator.Id, new List<Guid> { creatorUserId });
+                if (!addedSuccessfully)
+                {
+                    _logger.LogWarning("Failed to add notification users.");
+                    serviceResponse.Message = "Failed to notify user.";
+                    return serviceResponse;
+                }
+
+                await _unitOfWork.SaveAsync();
+            }
+            else if (supportTicket.ReviewerId.HasValue)
+            {
+                // Create notification for the reviewer
+                var notificationToReviewer = new Notification
+                {
+                    TenantId = supportTicket.TenantId,
+                    Message = $"'{(newSupportTicketRemark.User != null ? newSupportTicketRemark.User.FirstName + " " + newSupportTicketRemark.User.LastName : "User")}' has replied to your remark on the support ticket '{supportTicket.TicketNumber}'.",
+                    Type = NotificationTypesEnum.Alert,
+                    ActionUrl = $"/supportticket/details?st={supportTicket.Id}",
+                    CreatedByUserId = _userId,
+                    CreatedOn = DateTimeOffset.UtcNow,
+                    LastModifiedByUserId = _userId,
+                };
+
+                await _unitOfWork.NotificationRepo.InsertAsync(notificationToReviewer);
+                await _unitOfWork.SaveAsync();
+
+                // Add users to the notification
+                var reviewerUserId = supportTicket.ReviewerId.Value;
+                var addedSuccessfully = await _notificationHelperService.AddNotificationUsers(notificationToReviewer.Id, new List<Guid> { reviewerUserId });
+                if (!addedSuccessfully)
+                {
+                    _logger.LogWarning("Failed to add notification users.");
+                    serviceResponse.Message = "Failed to notify user.";
+                    return serviceResponse;
+                }
+                await _unitOfWork.SaveAsync();
+            }
 
             // Task successful
             serviceResponse.Data = newSupportTicketRemark.Adapt<SupportTicketRemarksDto>();
