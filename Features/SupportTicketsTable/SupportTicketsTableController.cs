@@ -26,14 +26,6 @@ public class SupportTicketsTableController : BaseApiController
         return ResultHelper(await _supportTicketsTableService.GetSupportTicketsAsync());
     }
 
-    // New action to retrieve all support tickets for authorized reviewers
-    // [HttpGet("all")]
-    // [Authorize(Roles = "GA,SA,GSA")]
-    // public async Task<ActionResult<ServiceResponse<IEnumerable<SupportTicketsTableDto>>>> GetAllSupportTickets()
-    // {
-    //     return ResultHelper(await _supportTicketsTableService.GetAllSupportTicketsAsync());
-    // }
-
     // Inserts a new support ticket.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<SupportTicketsTableDto>>> InsertSupportTicket([FromBody] SupportTicketsTableDto supportTicketDto)
