@@ -8,11 +8,13 @@ public class SupportTicketsTableService : ISupportTicketsTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly List<string> _userRoles;
+    private readonly INotificationHelperService _notificationHelperService;
 
     public SupportTicketsTableService(
         ILogger<SupportTicketsTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        INotificationHelperService notificationHelperService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,6 +24,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _notificationHelperService = notificationHelperService;
     }
 
     // Check if user is an agent
@@ -122,39 +125,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
         return serviceResponse;
     }
 
-    // Retrieves list of all support tickets.
-    // public async Task<ServiceResponse<IEnumerable<SupportTicketsTableDto>>> GetAllSupportTicketsAsync()
-    // {
-    //     // Initialize ServiceResponse with failed response
-    //     var serviceResponse = new ServiceResponse<IEnumerable<SupportTicketsTableDto>>
-    //     {
-    //         Data = null,
-    //         StatusCode = 400
-    //     };
-
-    //     try
-    //     {
-    //         // Try to get support tickets
-    //         var supportTickets = await _unitOfWork.SupportTicketRepo
-    //                                     .GetByConditionAsync(w => true) //PEDNING: Update condition
-    //                                     .OrderByDescending(o => o.CreatedOn)
-    //                                     .ProjectToType<SupportTicketsTableDto>()
-    //                                     .ToListAsync();
-
-    //         // Task successful
-    //         serviceResponse.Data = supportTickets.Adapt<List<SupportTicketsTableDto>>();
-    //         serviceResponse.StatusCode = 200;
-    //         serviceResponse.Message = "support tickets retrieved successfully";
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex.ToString());
-    //         return serviceResponse;
-    //     }
-
-    //     return serviceResponse;
-    // }
-
     // Inserts a new support ticket.
     public async Task<ServiceResponse<SupportTicketsTableDto>> InsertSupportTicketAsync(SupportTicketsTableDto supportTicketsTableDto)
     {
@@ -207,6 +177,37 @@ public class SupportTicketsTableService : ISupportTicketsTableService
 
             // Get the reviewer of the support ticket
             newSupportTicket.Reviewer = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == newSupportTicket.ReviewerId).SingleOrDefaultAsync();
+
+            // Get the user who created the support ticket
+            var creator = await _unitOfWork.WorkspaceUserRepo.GetByConditionAsync(w => w.Id == _userId).SingleOrDefaultAsync();
+
+            // Create notification for the creator
+            var notificationToCreator = new Notification
+            {
+                TenantId = newSupportTicket.TenantId,
+                Message = $"Your support ticket '{newSupportTicket.TicketNumber}' has been successfully created.",
+                Type = NotificationTypesEnum.Information,
+                ActionUrl = $"/supportticket/details?st={newSupportTicket.Id}",
+                CreatedByUserId = _userId,
+                CreatedOn = DateTimeOffset.UtcNow,
+                LastModifiedByUserId = _userId,
+            };
+
+            // Insert the notification
+            await _unitOfWork.NotificationRepo.InsertAsync(notificationToCreator);
+            // Save changes for the notification
+            await _unitOfWork.SaveAsync();
+
+            // Add the creator as a notification recipient
+            var addedSuccessfully = await _notificationHelperService.AddNotificationUsers(notificationToCreator.Id, new List<Guid> { _userId });
+            if (!addedSuccessfully)
+            {
+                _logger.LogWarning("Failed to add notification users.");
+                serviceResponse.Message = "Failed to notify user.";
+                return serviceResponse;
+            }
+            // Save changes for the notification
+            await _unitOfWork.SaveAsync();
 
             // Task successful
             serviceResponse.Data = newSupportTicket.Adapt<SupportTicketsTableDto>();
@@ -338,6 +339,34 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             {
                 _logger.LogInformation("Context SaveChanges failed while updating support ticket");
                 return serviceResponse;
+            }
+
+            // Check if the status is being updated to "Closed"
+            if (supportTicket.Status == "Closed")
+            {
+                var notification = new Notification
+                {
+                    TenantId = supportTicket.TenantId,
+                    Message = $"Your support ticket '{supportTicket.TicketNumber}' has been closed.",
+                    Type = NotificationTypesEnum.Alert,
+                    ActionUrl = $"/supportticket/details?st={supportTicket.Id}",
+                    CreatedByUserId = _userId,
+                    CreatedOn = DateTimeOffset.UtcNow,
+                    LastModifiedByUserId = _userId,
+                };
+
+                await _unitOfWork.NotificationRepo.InsertAsync(notification);
+                await _unitOfWork.SaveAsync();
+
+                var userIds = new List<Guid> { supportTicket.CreatedByUserId };
+                var addedSuccessfully = await _notificationHelperService.AddNotificationUsers(notification.Id, userIds);
+                if (!addedSuccessfully)
+                {
+                    _logger.LogWarning("Failed to add notification users.");
+                    serviceResponse.Message = "Failed to notify user.";
+                    return serviceResponse;
+                }
+                await _unitOfWork.SaveAsync();
             }
 
             // Task successful
