@@ -84,7 +84,7 @@ const workspaceAppConfig: IAppConfig = {
           {
             Icon: QuestionMarkCircleIcon,
             name: "support",
-            route: "/supportticket",
+            route: "/supportticket-reviewer",
           },
         ],
       },
