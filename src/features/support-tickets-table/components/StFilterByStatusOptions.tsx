@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
@@ -9,7 +9,7 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 export const StFilterByStatusOptions = () => {
   // Fetch support tickets data
-  const { data, refetch } = useFetchSupportTickets();
+  const { data } = useFetchSupportTickets();
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -19,73 +19,105 @@ export const StFilterByStatusOptions = () => {
   );
 
   // Get store setSupportTicketsState action
-  const { filteredData, selectedSupportTicket, setSupportTicketsState } =
+  const { selectedSupportTicket, setSupportTicketsState } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
-        filteredData: state.filteredData,
         selectedSupportTicket: state.selectedSupportTicket,
         setSupportTicketsState: state.setSupportTicketsState,
       })),
     );
 
-  // Filter support tickets by status
+  // Manage filter status
   const [filterStatus, setFilterStatus] = useState<string | undefined>();
 
+  // Manage role selection
+  const [currentRole, setCurrentRole] = useState<string>("Reviewer");
+
+  // Get counts of open, closed, and total tickets
+  const [counts, setCounts] = useState<{
+    openCount: number;
+    closedCount: number;
+    totalCount: number;
+  }>({
+    openCount: 0,
+    closedCount: 0,
+    totalCount: 0,
+  });
+
+  // Apply filters and update filteredData
+  const applyFilters = (data: SupportTicketsTableDto[]) => {
+    let filtered = data;
+
+    // Filter by role
+    if (currentRole === "User") {
+      filtered = filtered.filter(
+        (ticket: SupportTicketsTableDto) =>
+          ticket.createdBy ===
+          userSession?.firstName + " " + userSession?.lastName,
+      );
+      const openTicketsCount = filtered.filter(
+        (ticket: SupportTicketsTableDto) => ticket.status === "Open",
+      ).length;
+      const closedTicketsCount = filtered.filter(
+        (ticket: SupportTicketsTableDto) => ticket.status === "Closed",
+      ).length;
+      setCounts({
+        openCount: openTicketsCount,
+        closedCount: closedTicketsCount,
+        totalCount: openTicketsCount + closedTicketsCount,
+      });
+    }
+
+    // If the role is Reviewer, reset the counts
+    if (currentRole === "Reviewer") {
+      setCounts({
+        openCount: data.filter(
+          (ticket: SupportTicketsTableDto) => ticket.status === "Open",
+        ).length,
+        closedCount: data.filter(
+          (ticket: SupportTicketsTableDto) => ticket.status === "Closed",
+        ).length,
+        totalCount: data.length,
+      });
+    }
+
+    // Filter by status
+    if (filterStatus !== undefined) {
+      filtered = filtered.filter(
+        (ticket: SupportTicketsTableDto) => ticket.status === filterStatus,
+      );
+    }
+
+    setSupportTicketsState(filtered, selectedSupportTicket, false);
+  };
+
+  // Handle status filter changes
   const handleFilter = (status: string | undefined) => {
     setFilterStatus(status);
-    if (status === undefined) {
-      setSupportTicketsState(data?.data || [], selectedSupportTicket);
-    } else {
-      setSupportTicketsState(
-        data?.data.filter(
-          (ticket: SupportTicketsTableDto) => ticket.status === status,
-        ) || [],
-        selectedSupportTicket,
-      );
+    if (data?.data) {
+      applyFilters(data.data);
     }
   };
 
-  // Filter support tickets by role
+  // Handle role changes
   const handleRoleChange = (role: string) => {
-    if (role === "User") {
-      setSupportTicketsState(
-        data?.data.filter(
-          (ticket: SupportTicketsTableDto) =>
-            ticket.createdBy ===
-            userSession?.firstName + " " + userSession?.lastName,
-        ) || [],
-        selectedSupportTicket,
-      );
-    } else {
-      setSupportTicketsState(data?.data || [], selectedSupportTicket);
-      refetch().then(() => console.log("Refetching data..."));
+    setCurrentRole(role);
+    if (data?.data) {
+      applyFilters(data.data);
     }
   };
 
-  // Calculate counts based on filteredData
-  const getCounts = () => {
-    if (!filteredData) return { openCount: 0, closedCount: 0, totalCount: 0 };
-
-    const openCount = filteredData.filter(
-      (ticket: SupportTicketsTableDto) => ticket.status === "Open",
-    ).length;
-
-    const closedCount = filteredData.filter(
-      (ticket: SupportTicketsTableDto) => ticket.status === "Closed",
-    ).length;
-
-    const totalCount = filteredData.length;
-
-    return { openCount, closedCount, totalCount };
-  };
-
-  // Get filter counts
-  const { openCount, closedCount, totalCount } = getCounts();
+  // Initial application of filters
+  useEffect(() => {
+    if (data?.data) {
+      applyFilters(data.data);
+    }
+  }, [data, currentRole, filterStatus]);
 
   return (
-    <div className="mx-4 mt-4 flex space-x-4">
+    <div className="mt-2 flex">
       {/* Filter buttons for Open, Closed, and All */}
-      <div>
+      <div className="mx-4 flex space-x-4">
         <Button
           className={`cursor-pointer ${filterStatus === "Open" ? "font-medium" : "font-extralight"}`}
           onClick={() =>
@@ -93,7 +125,7 @@ export const StFilterByStatusOptions = () => {
           }
           variant={"link"}
         >
-          {openCount} Open
+          {counts.openCount} Open
         </Button>
         <Button
           className={`cursor-pointer ${filterStatus === "Closed" ? "font-medium" : "font-extralight"}`}
@@ -102,14 +134,14 @@ export const StFilterByStatusOptions = () => {
           }
           variant={"link"}
         >
-          {closedCount} Closed
+          {counts.closedCount} Closed
         </Button>
         <Button
           className={`cursor-pointer ${filterStatus === undefined ? "font-medium" : "font-extralight"}`}
           onClick={() => handleFilter(undefined)}
           variant={"link"}
         >
-          {totalCount} All
+          {counts.totalCount} All
         </Button>
       </div>
       {/* Toggle button for Reviewer/User */}
