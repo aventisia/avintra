@@ -8,6 +8,9 @@ type State = {
   /** selected support ticket */
   selectedSupportTicket: SupportTicketsTableDto | null;
 
+  /** Flag to check if selected support ticket data changed */
+  isSelectedSTDataChanged: boolean;
+
   /** remarks query key for support ticket remarks */
   remarksQueryKey: string[];
 };
@@ -17,18 +20,25 @@ type Actions = {
   setSupportTicketsState: (
     filteredData: SupportTicketsTableDto[],
     selectedSupportTicket: SupportTicketsTableDto | null,
+    isSelectedSTDataChanged: boolean,
   ) => void;
 };
 
 export const useSupportTicketsTableStore = create<State & Actions>((set) => ({
   filteredData: [],
   selectedSupportTicket: null,
+  isSelectedSTDataChanged: false,
   remarksQueryKey: [],
 
-  setSupportTicketsState: (filteredData, selectedSupportTicket) =>
+  setSupportTicketsState: (
+    filteredData,
+    selectedSupportTicket,
+    isSelectedSTDataChanged,
+  ) =>
     set(() => ({
       filteredData,
       selectedSupportTicket,
+      isSelectedSTDataChanged,
       remarksQueryKey: ["remarks", selectedSupportTicket?.id ?? ""],
     })),
 }));
