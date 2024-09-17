@@ -429,6 +429,11 @@ public class SupportTicketsTableService : ISupportTicketsTableService
                 return serviceResponse;
             }
 
+            // Get the reviewer of the support ticket
+            var reviewer = await _unitOfWork.WorkspaceUserRepo
+                .GetByConditionAsync(w => w.Id == supportTicket.ReviewerId)
+                .SingleOrDefaultAsync();
+
             // Delete support ticket
             _unitOfWork.SupportTicketRepo.Delete(supportTicket);
 
@@ -437,6 +442,33 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             {
                 _logger.LogInformation("Context SaveChanges failed while deleting support ticket");
                 return serviceResponse;
+            }
+
+            // Create notification for the reviewer
+            if (reviewer != null)
+            {
+                var notificationToReviewer = new Notification
+                {
+                    TenantId = supportTicket.TenantId,
+                    Message = $"The support ticket '{supportTicket.TicketNumber}' that you were reviewing has been deleted.",
+                    Type = NotificationTypesEnum.Alert,
+                    CreatedByUserId = _userId,
+                    CreatedOn = DateTimeOffset.UtcNow,
+                    LastModifiedByUserId = _userId,
+                };
+
+                // Insert the notification
+                await _unitOfWork.NotificationRepo.InsertAsync(notificationToReviewer);
+
+                // Add the reviewer as a notification recipient
+                var addedSuccessfully = await _notificationHelperService.AddNotificationUsers(notificationToReviewer.Id, new List<Guid> { reviewer.Id });
+                if (!addedSuccessfully)
+                {
+                    _logger.LogWarning("Failed to add notification users.");
+                    serviceResponse.Message = "Failed to notify reviewer.";
+                    return serviceResponse;
+                }
+                await _unitOfWork.SaveAsync();
             }
 
             // Task successful
