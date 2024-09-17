@@ -32,7 +32,6 @@ export const STDetailsSideComponent = () => {
 
   // Fetch support ticket data
   const { data } = useFetchSupportTicket(id);
-  console.log("Fetched Data:", data);
 
   // State for support ticket data
   const [STData, setSTData] = useState<SupportTicketsTableDto | null>(
