@@ -21,6 +21,7 @@ import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideC
 import { STStatusUpdateAction } from "./STStatusUpdateAction";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
+import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
 
 export const SupportTicketCrudFormNew = () => {
   const { form, isDirty, remarksQueryKey, crudAction, rowId, refineFormData } =
@@ -39,6 +40,15 @@ export const SupportTicketCrudFormNew = () => {
       userSession: state.userSession,
     })),
   );
+
+  // Get store isSelectedSTDataChanged and setSupportTicketsState action
+  const { isSelectedSTDataChanged, setSupportTicketsState } =
+    useSupportTicketsTableStore(
+      useShallow((state) => ({
+        isSelectedSTDataChanged: state.isSelectedSTDataChanged,
+        setSupportTicketsState: state.setSupportTicketsState,
+      })),
+    );
 
   // Initialize states
   const [remarks, setRemarks] = useState<SupportTicketRemarksDto[]>(
@@ -82,14 +92,24 @@ export const SupportTicketCrudFormNew = () => {
   const onSubmit = (
     formData: z.infer<typeof supportTicketRemarksZodSchema>,
   ) => {
-    formData.id = editingCommentId ?? id;
+    const newRemark = {
+      id: Date.now().toString(), // Temporary ID
+      ...formData,
+      userFullName: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+    };
+
+    setRemarks((prevRemarks) => [newRemark, ...prevRemarks]);
+    setRemarkCount((prevCount) => prevCount + 1);
 
     mutateSupportTicketRemark({
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
       crudAction: crudAction,
     });
 
-    refetch().then(() => console.log("Refetching data..."));
+    setSupportTicketsState([], data?.data ?? null, true);
+
+    refetch().then(() => console.log("Refetching data after submit..."));
     form.reset();
     setEditingCommentId(null);
   };
@@ -100,7 +120,12 @@ export const SupportTicketCrudFormNew = () => {
       setRemarkCount(data.data.remarkCount ?? 0);
       setEditedRemark("");
     }
-  }, [data?.data, remarkCount]);
+  }, [data?.data, setRemarkCount, remarkCount]);
+
+  useEffect(() => {
+    refetch();
+    setSupportTicketsState([], data?.data ?? null, false);
+  }, [refetch, setSupportTicketsState, data?.data, isSelectedSTDataChanged]);
 
   if (isLoading || isFetching) {
     return <DataTableSkeleton />;
@@ -213,6 +238,7 @@ export const SupportTicketCrudFormNew = () => {
           injectCSS={true}
           editorClassName="focus:outline-none"
           disabled={false}
+          onBlur={(value) => console.log(value)}
         />
         <div className="!mt-5 flex w-full justify-end gap-2">
           {userSession?.userRoles.some((role) =>
