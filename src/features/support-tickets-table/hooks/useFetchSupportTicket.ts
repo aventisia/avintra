@@ -2,7 +2,7 @@ import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { getSupportTicket } from "../apis/suport-tickets-table-apis";
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
-import { TICKET_QUERY_KEY } from "../constants/constants";
+import { getTicketQueryKey } from "../constants/constants";
 
 /**
  * Custom hook to fetch support ticket details using react query.
@@ -19,7 +19,7 @@ export const useFetchSupportTicket: (id: string) => {
 } = (id: string) => {
   // Get support ticket using react query
   const { data, isFetching, isLoading, refetch } = useQuery({
-    queryKey: [TICKET_QUERY_KEY, id],
+    queryKey: getTicketQueryKey(id),
     queryFn: () => getSupportTicket(id),
     enabled: !!id, // Only fetch if ID is valid
   });
