@@ -6,7 +6,7 @@ import { STRemarkDeleteActionNew } from "./STRemarkDeleteActionNew";
 interface STRemarkRowActionsNewProps {
   rowId: string;
   setEditingCommentId: (id: string | null) => void;
-  onDelete: (id: string) => void;
+  onDelete: () => void;
   onEdit: () => void;
 }
 
@@ -27,7 +27,7 @@ export const STRemarkRowActionsNew = ({
 
       <DropdownMenuSeparator />
 
-      <STRemarkDeleteActionNew rowId={rowId} onDelete={() => onDelete(rowId)} />
+      <STRemarkDeleteActionNew rowId={rowId} onDelete={onDelete} />
     </DataTableRowActions>
   );
 };
