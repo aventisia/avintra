@@ -2,7 +2,6 @@ import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
-//import { STRowActions } from "./support-ticket-row-actions/SupportTicketRowActions";
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
 import { Key } from "react";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
