@@ -7,8 +7,9 @@ const DATA_QUERY_KEY = ["supportTickets"];
 
 /**
  * The unique key for the supportTicket query to be used in the query client. ["supportTicket", ticketId]
+ *  Defining TICKET_QUERY_KEY as a function that accepts a ticket ID
  */
-const TICKET_QUERY_KEY = "supportTicket";
+const getTicketQueryKey = (ticketId: string) => ["supportTicket", ticketId];
 
 /**
  * The heading for the supportTickets table.
@@ -35,7 +36,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 
 export {
   DATA_QUERY_KEY,
-  TICKET_QUERY_KEY,
+  getTicketQueryKey,
   TABLE_HEADING,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
