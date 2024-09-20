@@ -37,7 +37,7 @@ export const useOpenSupportTicket = (rowId: string) => {
     );
 
     // Set the selected support ticket in the store
-    setSupportTicketsState(filteredData, supportTicketData || null);
+    setSupportTicketsState(filteredData, supportTicketData || null, false);
 
     // Navigate to support ticket details page
     navigate(`/supportticket/details?st=${rowId}`);
