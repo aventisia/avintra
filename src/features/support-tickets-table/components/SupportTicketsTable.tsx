@@ -33,11 +33,10 @@ export const SupportTicketsTable = () => {
   const { data, refetch } = useFetchSupportTickets();
 
   // Get store setSupportTicketsState action
-  const { filteredData, selectedSupportTicket, setSupportTicketsState } =
+  const { filteredData, setSupportTicketsState } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
         filteredData: state.filteredData,
-        selectedSupportTicket: state.selectedSupportTicket,
         setSupportTicketsState: state.setSupportTicketsState,
       })),
     );
@@ -45,8 +44,8 @@ export const SupportTicketsTable = () => {
   // Sync data with store
   useEffect(() => {
     refetch();
-    setSupportTicketsState(data?.data || [], selectedSupportTicket);
-  }, [refetch, data, setSupportTicketsState, selectedSupportTicket]);
+    setSupportTicketsState(data?.data || [], null, false);
+  }, [refetch, data, setSupportTicketsState]);
 
   const navigate = useNavigate();
 
