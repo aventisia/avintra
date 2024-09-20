@@ -22,13 +22,12 @@ type FetchSTRemarksReturnType = {
 export const useFetchSTRemarks = (): FetchSTRemarksReturnType => {
   // Get support ticket id from URL params
   const location = useLocation();
-  const id = new URLSearchParams(location.search).get("st") ?? "";
-
+  const id = new URLSearchParams(location.search).get("st") ?? ""; 
+  
   // Get support tickets store state and actions
-  const { selectedSupportTicket, remarksQueryKey } =
+  const { remarksQueryKey } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
-        selectedSupportTicket: state.selectedSupportTicket,
         remarksQueryKey: state.remarksQueryKey,
       })),
     );
@@ -36,10 +35,7 @@ export const useFetchSTRemarks = (): FetchSTRemarksReturnType => {
   // Get support ticket remarks using react query
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: remarksQueryKey,
-    queryFn: () =>
-      selectedSupportTicket
-        ? getSupportTicketRemarks(selectedSupportTicket.id)
-        : getSupportTicketRemarks(id),
+    queryFn: () => getSupportTicketRemarks(id),
   });
 
   // Return isFetching and isLoading flag
