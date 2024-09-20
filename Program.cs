@@ -3,13 +3,30 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 /*---------appsettings and sharedsettings---------*/
+
+// Build non senstive configuration from json files
 var configurationBuilder = new ConfigurationBuilder();
 configurationBuilder.Sources.Clear();
 configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile("emailsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
-var config = configurationBuilder.Build();
+var initialConfig = configurationBuilder.Build();
+
+// Get sensitive data from environment variables
+var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
+var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
+var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
+
+// Update sensitive data in configuration
+var config = new ConfigurationBuilder().AddConfiguration(initialConfig).AddInMemoryCollection(new Dictionary<string, string?>
+{
+    { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
+    { "ConnectionStringConfig:AppDb:Host", DB_HOST },
+    { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
+    { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
+    { "JwtConfig:SecretKey", JWT_SECRET_KEY }
+}).Build();
 
 /*---------Serilog Configuration---------*/
 
