@@ -22,6 +22,7 @@ import { STStatusUpdateAction } from "./STStatusUpdateAction";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
 import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
+import { useFetchSTRemarks } from "../../hooks/useFetchSTRemarks";
 
 export const SupportTicketCrudFormNew = () => {
   const { form, isDirty, remarksQueryKey, crudAction, rowId, refineFormData } =
@@ -33,6 +34,9 @@ export const SupportTicketCrudFormNew = () => {
 
   // Fetch support ticket data
   const { data, isFetching, isLoading, refetch } = useFetchSupportTicket(id);
+
+  // Fetch support ticket remarks
+  const { data: stRemarks, refetch: refetchRemarks } = useFetchSTRemarks();
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -54,11 +58,8 @@ export const SupportTicketCrudFormNew = () => {
   const [remarks, setRemarks] = useState<SupportTicketRemarksDto[]>(
     data?.data.supportTicketRemarks ?? [],
   );
-  const [remarkCount, setRemarkCount] = useState<number>(
-    data?.data.remarkCount ?? 0,
-  );
 
-  const { subject, ticketNumber, status, createdOn, description } =
+  const { subject, ticketNumber, status, createdOn, description, remarkCount } =
     data?.data ?? {};
 
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
@@ -81,12 +82,12 @@ export const SupportTicketCrudFormNew = () => {
       return remark;
     });
     setRemarks(newRemarks);
+    refetchRemarks();
+    refetch();
   };
 
-  const handleDeleteRemark = (deletedRemarkId: string) => {
-    setRemarks(remarks.filter((remark) => remark.id !== deletedRemarkId));
-    setRemarkCount(remarkCount - 1);
-    refetch().then(() => console.log("Refetching data..."));
+  const handleDeleteRemark = () => {
+    setSupportTicketsState([], data?.data ?? null, true);
   };
 
   const onSubmit = (
@@ -100,7 +101,6 @@ export const SupportTicketCrudFormNew = () => {
     };
 
     setRemarks((prevRemarks) => [newRemark, ...prevRemarks]);
-    setRemarkCount((prevCount) => prevCount + 1);
 
     mutateSupportTicketRemark({
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
@@ -109,23 +109,18 @@ export const SupportTicketCrudFormNew = () => {
 
     setSupportTicketsState([], data?.data ?? null, true);
 
-    refetch().then(() => console.log("Refetching data after submit..."));
+    //refetch().then(() => console.log("Refetching data after submit..."));
+    //refetchRemarks().then(() => console.log("Refetching all remarks after submit..."));
     form.reset();
     setEditingCommentId(null);
+    setEditedRemark("");
   };
 
   useEffect(() => {
-    if (data?.data) {
-      setRemarks(data.data.supportTicketRemarks ?? []);
-      setRemarkCount(data.data.remarkCount ?? 0);
-      setEditedRemark("");
-    }
-  }, [data?.data, setRemarkCount, remarkCount]);
-
-  useEffect(() => {
-    refetch();
+    refetchRemarks().then(() => console.log("Refetching all reamrks data..."));
+    refetch().then(() => console.log("Refetching support ticket..."));
     setSupportTicketsState([], data?.data ?? null, false);
-  }, [refetch, setSupportTicketsState, data?.data, isSelectedSTDataChanged]);
+  }, [refetchRemarks, refetch, setSupportTicketsState, data?.data, isSelectedSTDataChanged]);
 
   if (isLoading || isFetching) {
     return <DataTableSkeleton />;
@@ -155,14 +150,14 @@ export const SupportTicketCrudFormNew = () => {
             {parse(description ?? "")}
           </div>
         </div>
-        {remarkCount > 0 ? (
+        {stRemarks && stRemarks.data.length > 0 ? (
           <div className="my-6 w-full">
             <div>
               <p className="p-2">Comments</p>
             </div>
             <Separator />
             <div className="w-full p-2">
-              {remarks.map((remark) => (
+              {stRemarks?.data.map((remark) => (
                 <div
                   key={remark.id}
                   className="relative my-4 w-full rounded-md border p-2"
@@ -179,7 +174,7 @@ export const SupportTicketCrudFormNew = () => {
                       <STRemarkRowActionsNew
                         rowId={remark.id}
                         setEditingCommentId={setEditingCommentId}
-                        onDelete={() => handleDeleteRemark(remark.id)}
+                        onDelete={handleDeleteRemark}
                         onEdit={handleEditRemark}
                       />
                     )}
