@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace WorkspaceAPIs.Services;
 
 public class SupportTicketRemarksService : ISupportTicketRemarksService
@@ -5,6 +7,7 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
     private readonly ILogger<SupportTicketRemarksService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly List<string> _userRoles;
     private readonly INotificationHelperService _notificationHelperService;
 
     public SupportTicketRemarksService(
@@ -16,9 +19,18 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
+        // Set _userRoles
+        _userRoles = httpContextAccessor.HttpContext?.User?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
+
         _logger = logger;
         _unitOfWork = unitOfWork;
         _notificationHelperService = notificationHelperService;
+    }
+
+    // Check if user is an agent
+    private bool IsAgent()
+    {
+        return _userRoles.Contains("GA") || _userRoles.Contains("SA") || _userRoles.Contains("GSA");
     }
 
     // Retrieves all remarks associated with a support ticket.
@@ -33,10 +45,24 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
 
         try
         {
+            // Check if support ticket exists for the input support ticket id
+            var supportTicket = await _unitOfWork.SupportTicketRepo
+                .GetByConditionAsync(w => (w.Id == supportTicketId) && (w.CreatedByUserId == _userId || IsAgent()))
+                .ProjectToType<SupportTicketsTableDto>()
+                .SingleOrDefaultAsync();
+
+            // support ticket doesn't exist
+            if (supportTicket == null)
+            {
+                _logger.LogInformation($"support ticket not found for Id {supportTicketId}");
+                serviceResponse.Message = "support ticket does not exist";
+                return serviceResponse;
+            }
+            
             // Retrieve all remarks associated with the support ticket
             var supportTicketRemarks = await _unitOfWork.SupportTicketRemarkRepo
-                                        .GetByConditionAsync(w => w.SupportTicketId == supportTicketId) //PEDNING: Update condition
-                                        .OrderByDescending(w => w.CreatedOn)
+                                        .GetByConditionAsync(w => w.SupportTicketId == supportTicketId)
+                                        .OrderBy(w => w.CreatedOn)
                                         .ProjectToType<SupportTicketRemarksDto>()
                                         .ToListAsync();
 
