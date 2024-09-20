@@ -23,9 +23,11 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
 import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
 import { useFetchSTRemarks } from "../../hooks/useFetchSTRemarks";
+import { useQueryClient } from "@tanstack/react-query";
+import { getTicketQueryKey } from "../../constants/constants";
 
 export const SupportTicketCrudFormNew = () => {
-  const { form, isDirty, remarksQueryKey, crudAction, rowId, refineFormData } =
+  const { form, isDirty, crudAction, rowId, refineFormData } =
     useDefineSTRemarkForm();
 
   // Get support ticket id from URL params
@@ -46,11 +48,12 @@ export const SupportTicketCrudFormNew = () => {
   );
 
   // Get store isSelectedSTDataChanged and setSupportTicketsState action
-  const { isSelectedSTDataChanged, setSupportTicketsState } =
+  const { setSupportTicketsState, isSelectedSTDataChanged, remarksQueryKey } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
-        isSelectedSTDataChanged: state.isSelectedSTDataChanged,
         setSupportTicketsState: state.setSupportTicketsState,
+        isSelectedSTDataChanged: state.isSelectedSTDataChanged,
+        remarksQueryKey: state.remarksQueryKey,
       })),
     );
 
@@ -63,8 +66,9 @@ export const SupportTicketCrudFormNew = () => {
     data?.data ?? {};
 
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-
   const [editedRemark, setEditedRemark] = useState<string | null>("");
+
+  const queryClient = useQueryClient(); // Initialize QueryClient
 
   const { mutate: mutateSupportTicketRemark } = useListOptimisticMutation<
     SupportTicketRemarksDto,
@@ -86,41 +90,52 @@ export const SupportTicketCrudFormNew = () => {
     refetch();
   };
 
-  const handleDeleteRemark = () => {
-    setSupportTicketsState([], data?.data ?? null, true);
+  const handleDeleteRemark = async () => {
+    setSupportTicketsState([], null, true);
+    await refetchRemarks();
+    // await refetch();
   };
 
-  const onSubmit = (
-    formData: z.infer<typeof supportTicketRemarksZodSchema>,
-  ) => {
+  const onSubmit = async (formData: z.infer<typeof supportTicketRemarksZodSchema>,) => {
     const newRemark = {
-      id: Date.now().toString(), // Temporary ID
+      id: Date.now().toString(),
       ...formData,
-      userFullName: userSession?.firstName + " " + userSession?.lastName,
+      userFullName: `${userSession?.firstName} ${userSession?.lastName}`,
       createdOn: new Date(),
     };
 
-    setRemarks((prevRemarks) => [newRemark, ...prevRemarks]);
+    setRemarks(prevRemarks => [newRemark, ...prevRemarks]);
 
-    mutateSupportTicketRemark({
+    await mutateSupportTicketRemark({
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
       crudAction: crudAction,
     });
 
-    setSupportTicketsState([], data?.data ?? null, true);
+    // Invalidate queries after submission
+    queryClient.invalidateQueries({queryKey: getTicketQueryKey(id)});
+    queryClient.invalidateQueries({queryKey: remarksQueryKey});
 
-    //refetch().then(() => console.log("Refetching data after submit..."));
-    //refetchRemarks().then(() => console.log("Refetching all remarks after submit..."));
+    await Promise.all([refetch(), refetchRemarks()]);
+    
+    console.log("Refetched after submit");
+    setSupportTicketsState([], null, true);
+    
     form.reset();
     setEditingCommentId(null);
     setEditedRemark("");
   };
 
   useEffect(() => {
-    refetchRemarks().then(() => console.log("Refetching all reamrks data..."));
-    refetch().then(() => console.log("Refetching support ticket..."));
-    setSupportTicketsState([], data?.data ?? null, false);
-  }, [refetchRemarks, refetch, setSupportTicketsState, data?.data, isSelectedSTDataChanged]);
+    if (isSelectedSTDataChanged) {
+      Promise.all([refetch(), refetchRemarks()])
+        .then(() => console.log("Refetched support ticket and remarks data..."))
+        .catch(error => console.error("Refetch error: ", error));
+      queryClient.invalidateQueries({queryKey: getTicketQueryKey(id)});
+      queryClient.invalidateQueries({queryKey: remarksQueryKey});
+      setSupportTicketsState([], null, false);
+      console.log("ST data @ useEffect: ", data?.data);
+    }
+  }, [isSelectedSTDataChanged, refetch, refetchRemarks, setSupportTicketsState, data, id, queryClient, remarksQueryKey]);
 
   if (isLoading || isFetching) {
     return <DataTableSkeleton />;
