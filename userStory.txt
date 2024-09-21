@@ -1,0 +1,41 @@
+Title: support ticket
+
+Data fields: issueType, priority (optional), subject (Required Field), description (Required Field), attachments (optional field, specify acceptable file types and size limits)
+View (user): ticketNumber, status, issueType, priority, subject, description, attachments, createdBy, createdOn, lastModifiedBy, lastmodifiedOn, comment (if any)
+view (agent): ticketNumber, status, issueType, priority, subject, description, attachments, createdBy, createdOn, lastModifiedBy, lastmodifiedOn, comment (if any), internalNotes (if any)
+Update (user): ticketNumber (view only), status (view only), issueType (view only), priority, subject (view only), description, attachments (add new if applicable), comment (add new if applicable)
+Update (agent): ticketNumber (view only), status, issueType (view only), priority, subject (view only), description (view only), attachments (add new if applicable), comment (add new if applicable), internalNotes (add new if applicable)
+
+Create: 
+1.1 Create (by user):
+a. Authorization: Verify if the user have permission to create a support ticket
+b. Simple UI
+c. Required fields: issueType, priority (optional), subject (Required Field), description (Required Field), attachments (optional field, specify acceptable file types and size limits)
+d. onSubmition: 
+Validate all fields.
+prompt with a summary and ticketNumber for confirmation to user of generation of supportTicket.
+1.2 Create by Agent
+a. Provide an interface for agents to manually create tickets.
+b. Implement automatic ticket creation for customer submissions.
+c. Ensure that both methods of ticket creation are properly recorded and tracked.
+2. PostSubmition: 
+Assign a unique ticket number for each submission.
+Tracking: Provide a tracking feature or dashboard for users to view the status of their tickets. allow agents to update ticketStatus field in realtime. Allow users and agents to filter and search tickets based on their status.
+implement access control, users can only view and manage their own tickets.
+View: Allow users to see the details, updates and changes to their tickets. status field default to open after creation.
+Edit (user): Allow users to edit the ticket description and add information. Restrict editing of fundamental details such as ticket ID and creation date. Provide an interface for users to make updates within the allowed scope.
+Edit (agent): Allow agrent to add comment, internal comment, update status (open, pending, inProgress, solved, closed).
+Delete: Display a confirmation dialog before allowing users to delete a ticket with options to confirm or cancel the action. Allow deletion of tickets only if their status is open. Restrict deletion of tickets that are resolved or closed. Provide a clear error message if deletion is attempted on a non-open ticket. 
+Escalation: Implement mechanisms for prioritizing and escalating tickets based on priority or severity.
+Notification: Send email or in-app notifications for ticket creation, progress updates, and resolution. Allow users to opt-in for notifications or set preferences for communication. Allow users to configure their notification preferences. Integrate with notification services to send alerts via email, SMS, or in-app notifications. Provide notifications for ticket updates, status changes, and upcoming deadlines.
+3. During Ticket resultion: 
+Internal Notes and Comments: Provide a field for agents to add internal notes or comments on tickets. Ensure that these notes are visible only to internal users and not to customers. Allow agents to view and edit their own notes and see notes added by other agents.
+Customer Communication: Integrate communication channels (e.g., email, SMS) within the ticket interface. Allow agents to send and receive messages directly from the ticket.Ensure communication history is linked to the ticket for context and continuity.
+Threaded Conversations: Display conversations in a threaded format within the ticket. Ensure that replies and messages are grouped by conversation threads. Allow agents to easily follow the flow of communication and context.
+4. After Ticket resolution:
+Data Retention: Clearly communicate data retention policies to users. Ensure that tickets and associated data are stored according to the defined policies.
+Performance Metrics: Provide dashboards that display key performance metrics such as ticket volume, resolution times, customer satisfaction, and agent performance. Allow customization of reports and dashboards based on user roles and needs.
+Trend Analysis: Implement tools for analyzing trends and patterns in ticket data. Provide visualizations and reports on recurring issues and customer complaints. Allow the generation of actionable insights based on trend analysis.
+5. Alternatives:
+FAQs: Provide links to relevant knowledge base articles and FAQs on the ticket submission page. Ensure that the knowledge base is searchable and organized by issue type.
+Support Channels: Provide information on alternative support channels (e.g., phone, live chat) on the ticket submission page. Ensure that users are aware of all available support options.
