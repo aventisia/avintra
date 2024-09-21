@@ -11,6 +11,10 @@ import { FlowsPage } from "./pages/FlowsPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { SupportTicketsPage } from "./pages/SupportTicketsPage";
+import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
+import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
+import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +49,22 @@ const router = createBrowserRouter(
         {
           path: "/tenants",
           element: <TenantsPage />,
+        },
+        {
+          path: "/supportticket",
+          element: <SupportTicketsPage />,
+        },
+        {
+          path: "/supportticket-reviewer",
+          element: <SupportTicketsReviewerPage />,
+        },
+        {
+          path: "/supportticket/details",
+          element: <SupportTicketEditForm />,
+        },
+        {
+          path: "/supportticket/create",
+          element: <STCreatePage />,
         },
         {
           path: "/page-not-found",
