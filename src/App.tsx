@@ -1,3 +1,4 @@
+import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -25,6 +26,7 @@ const router = createBrowserRouter(
     {
       path: "/",
       element: <WorkspaceUILayout />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: "/",
