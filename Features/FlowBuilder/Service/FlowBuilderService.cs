@@ -32,7 +32,7 @@ public class FlowBuilderService : IFlowBuilderService
         {
             // Try to get flow
             var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.Id == id)
+                                        .GetByConditionAsync(w => w.Id == id && w.CreatedByUserId == _userId)
                                         .SingleOrDefaultAsync();
 
             // Flow doesn't exist
@@ -70,7 +70,7 @@ public class FlowBuilderService : IFlowBuilderService
         {
             // Validate flow existence
             var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.Id == flowSilentUpdateDto.Id)
+                                        .GetByConditionAsync(w => w.Id == flowSilentUpdateDto.Id && w.CreatedByUserId == _userId)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
