@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 export const useSetStudioPreferences = () => {
   // Get user preferences from browser local storage
   const { studio } = JSON.parse(
-    localStorage.getItem(USER_PREFERENCES_LS_KEY) || "null",
+    localStorage.getItem(USER_PREFERENCES_LS_KEY) || "{}",
   ) as UserPreferencesType;
 
   // Get studio preferences store state and actions
@@ -19,6 +19,10 @@ export const useSetStudioPreferences = () => {
 
   // Set Studio preferences on load only once
   useEffect(() => {
+    // If no studio preferences found in local storage, return
+    if (!studio) return;
+
+    // Set studio preferences in store
     setStudioPreferences({
       layoutDirection: studio.layoutDirection,
       miniMap: studio.miniMap,
@@ -27,6 +31,5 @@ export const useSetStudioPreferences = () => {
       zoomControls: studio.zoomControls,
       deleteAlert: studio.deleteAlert,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setStudioPreferences, studio]);
 };
