@@ -81,6 +81,7 @@ const router = createBrowserRouter(
     {
       path: "/redirect",
       element: <RedirectPage />,
+      errorElement: <ErrorPage />,
     },
   ],
   { basename: import.meta.env.BASE_URL },
