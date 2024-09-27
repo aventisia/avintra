@@ -20,7 +20,7 @@ export const CustomNodeTypeObj = {
   ifElseNode: IfElseNode,
   switchCaseNode: IfElseNode, // TODO
   whileLoopNode: IfElseNode, // TODO
-  forLoopNode: IfElseNode, // TODO
+  forLoopNode: ForLoopNode, // TODO
   forEachLoopNode: IfElseNode, // TODO
 
   // ------------------------------------Base node types
