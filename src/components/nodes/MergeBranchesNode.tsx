@@ -1,5 +1,5 @@
 import { InputHandle } from "@/components/handles/InputHandle";
-import { NodeProps } from "@xyflow/react";
+import { NodeProps, Position } from "@xyflow/react";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { Merge } from "lucide-react";
 import { cn } from "@/react-toolkit/lib/utils";
@@ -27,6 +27,16 @@ export const MergeBranchesNode = ({
       />
       <OutputHandle
         position={sourcePosition}
+        className={cn(
+          "opacity-0",
+          sourcePosition === "bottom"
+            ? "bottom-2.5 right-0"
+            : "bottom-0 right-2",
+        )}
+      />
+      <OutputHandle
+        id="branch-return"
+        position={Position.Right}
         className={cn(
           "opacity-0",
           sourcePosition === "bottom"
