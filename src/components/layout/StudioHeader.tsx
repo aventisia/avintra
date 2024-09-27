@@ -1,6 +1,5 @@
-import { ETLIAMenu } from "@/features/etlia-menu/components/ETLIAMenu";
-import { StudioPreferences } from "@/features/studio-preferences/components";
 import { FlowsPopover } from "@/features/flows-popover/components/FlowsPopover";
+import { StudioPreferences } from "@/features/studio-preferences/components";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
@@ -23,10 +22,9 @@ const StudioHeader = ({ className }: StudioHeaderProps) => {
         <div className="flex flex-grow items-center">
           <AppLogo className="h-7 text-lg" />
           <DotSeparator className="ml-[0.9rem] mr-[0.9rem]" />
-          <ETLIAMenu />
+          <FlowsPopover className="mt-0 mlg:mt-4" />
         </div>
         <div className="flex items-center gap-4">
-          <FlowsPopover className="mt-0 mlg:mt-4" />
           <div className="flex gap-1">
             <StudioPreferences />
             <UnreadNotifications className="mt-0 mlg:mt-4" />

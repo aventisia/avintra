@@ -38,7 +38,7 @@ export const FlowsPopover = ({
       <FlowsPopoverTrigger />
       {/* Popover content */}
       <PopoverContent
-        align="end"
+        align="start"
         variant={"responsive"}
         className={cn(className)}
         {...props}
