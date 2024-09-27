@@ -7,7 +7,7 @@ import { Node } from "@xyflow/react";
  * @param nodeType - The type of the support node.
  * @returns A new support node object.
  */
-export const createSupportNodeObj = (nodeType: SupportNodeType, draggable: boolean = false): Node => {
+export const createSupportNodeObj = (nodeType: SupportNodeType, draggable: boolean = true): Node => {
   return {
     id: window.crypto.randomUUID(),
     type: nodeType,

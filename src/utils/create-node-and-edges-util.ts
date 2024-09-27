@@ -5,7 +5,9 @@ import { NodeDataType } from "@/types/node-data-type";
 import { Node, XYPosition } from "@xyflow/react";
 import { createActivityNode } from "./create-nodes/create-activity-node";
 import { createFlowEndNode } from "./create-nodes/create-flow-end-node";
+import { createForLoopNode } from "./create-nodes/create-for-loop-node";
 import { createIfElseNode } from "./create-nodes/create-if-else-node";
+import { createSwitchCaseNode } from "./create-nodes/create-switch-case-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -15,7 +17,7 @@ import { createIfElseNode } from "./create-nodes/create-if-else-node";
  * @param newNodeType - The type of the node.
  * @returns An object containing the new nodes, new edges, and the ID of the last node.
  */
-export const createNodesAndEdgesUtil = (
+const createNodesAndEdgesUtil = (
   sourceNode: Node,
   newNodeData: NodeDataType,
   newNodeType?: CustomNodeType,
@@ -31,6 +33,12 @@ export const createNodesAndEdgesUtil = (
   switch (newNodeType ? newNodeType : newNodeData.type) {
     case "ifElseNode":
       nodesAndEdgesObj = createIfElseNode(newNodeData, sourceNode.id);
+      break;
+    case "switchCaseNode":
+      nodesAndEdgesObj = createSwitchCaseNode(newNodeData, sourceNode.id);
+      break;
+    case "forLoopNode":
+      nodesAndEdgesObj = createForLoopNode(newNodeData, sourceNode.id);
       break;
     case "activityNode":
       nodesAndEdgesObj = createActivityNode(newNodeData, sourceNode.id);
@@ -76,3 +84,5 @@ const getNewNodeXY = (
   // Return the center coordinates
   return { x, y };
 };
+
+export { createNodesAndEdgesUtil, getNewNodeXY };
