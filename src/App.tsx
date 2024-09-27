@@ -1,3 +1,4 @@
+import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { AuthUILayout } from "@/components/layout/AuthUILayout";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
     {
       path: "/",
       element: <AuthUILayout />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: "/",
@@ -58,6 +60,7 @@ const router = createBrowserRouter(
     {
       path: "/redirect",
       element: <RedirectPage />,
+      errorElement: <ErrorPage />,
     },
   ],
   { basename: import.meta.env.BASE_URL },
