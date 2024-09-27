@@ -1,0 +1,63 @@
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useCallback } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useDagreAutoLayout } from "./useDagreAutoLayout";
+import { createNewSwitchCaseBranch } from "@/utils/create-nodes/create-new-switch-case-branch";
+import { SwitchCaseNodeDataType } from "@/types/switch-case-node-data-type";
+
+export const useAddSwitchCaseBranch = () => {
+  // Get ReactFlowExt store state & actions
+  const { nodes, edges } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+    })),
+  );
+
+  // Auto layout the flow
+  const autoLayout = useDagreAutoLayout();
+
+  // Handler to add first node to flow
+  const addSwitchCaseBranch = useCallback(
+    (nodeData: SwitchCaseNodeDataType, switchNodeId: string) => {
+      // Get source node
+      const sourceNode = nodes.find((node) => node.id === switchNodeId);
+      if (!sourceNode) return;
+
+      // Create new node & edge
+      const { newNodes, newEdges } = createNewSwitchCaseBranch(
+        sourceNode,
+        nodeData.mergeBranchesNodeId,
+      );
+
+      // Get default branch start node index
+      const sourceNodeIndex = nodes.findIndex(
+        (node) => node.id === nodeData.defaultBranchStartNodeId,
+      );
+
+      // Add new swithc case branch nodes before default case branch start node
+      const updatedNodes = [
+        ...nodes.slice(0, sourceNodeIndex + 1),
+        ...newNodes,
+        ...nodes.slice(sourceNodeIndex + 1),
+      ];
+
+      // Get step edge index
+      const stepEdgeIndex = edges.findIndex((edge) => edge.id === nodeData.switchCase2DefaultBranchStartEdgeId);
+
+      // Add new edges before step edge
+      const updatedEdges = [
+        ...edges.slice(0, stepEdgeIndex),
+        ...newEdges,
+        ...edges.slice(stepEdgeIndex),
+      ];
+
+      // Auto organize node & edge
+      autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
+    },
+    [edges, nodes, autoLayout],
+  );
+
+  // Return the handler
+  return addSwitchCaseBranch;
+};
