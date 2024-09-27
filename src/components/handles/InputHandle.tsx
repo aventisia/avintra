@@ -2,12 +2,14 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { Handle, Position, useHandleConnections } from "@xyflow/react";
 
 interface InputHandleProps {
+  id?: string;
   position?: Position;
   connectionCount?: number;
   className?: string;
 }
 
 export const InputHandle = ({
+  id,
   position = Position.Top,
   connectionCount = 1,
   className,
@@ -18,6 +20,7 @@ export const InputHandle = ({
 
   return (
     <Handle
+      id={id}
       type={"target"}
       position={position}
       isConnectable={connections.length < connectionCount}

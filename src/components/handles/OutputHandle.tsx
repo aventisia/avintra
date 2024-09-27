@@ -2,12 +2,14 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { Handle, Position, useHandleConnections } from "@xyflow/react";
 
 interface OutputHandleProps {
+  id?: string;
   position?: Position;
   connectionCount?: number;
   className?: string;
 }
 
 export const OutputHandle = ({
+  id,
   position = Position.Bottom,
   connectionCount = 1,
   className,
@@ -18,6 +20,7 @@ export const OutputHandle = ({
 
   return (
     <Handle
+      id={id}
       type="source"
       position={position}
       isConnectable={connections.length < connectionCount}
