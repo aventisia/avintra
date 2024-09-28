@@ -3,36 +3,29 @@ import { StudioPreferences } from "@/features/studio-preferences/components";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { cn } from "@/react-toolkit/lib/utils";
 import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { Panel } from "@xyflow/react";
 
-interface StudioHeaderProps {
-  className?: string;
-}
-
-const StudioHeader = ({ className }: StudioHeaderProps) => {
+const StudioHeader = () => {
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-10 flex w-full flex-col justify-center border-none bg-white/95 px-0 backdrop-blur-md",
-        className,
-      )}
-    >
-      <div className={cn("flex h-[3rem] w-full items-center md:px-2.5")}>
-        <div className="flex flex-grow items-center">
-          <AppLogo className="h-7 text-lg" />
-          <DotSeparator className="ml-[0.9rem] mr-[0.9rem]" />
-          <FlowsPopover className="mt-0 mlg:mt-4" />
+    <>
+      <Panel position="top-left" onContextMenu={(e) => e.preventDefault()}>
+        <div className="flex h-10 items-center rounded-lg bg-white pl-2">
+          <AppLogo className="h-6 text-sm font-bold" />
+          <DotSeparator className="ml-[0.9rem] mr-[0.1rem]" />
+          <FlowsPopover className="mt-0 mlg:mt-0" />
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex gap-1">
+      </Panel>
+      <Panel position="top-right" onContextMenu={(e) => e.preventDefault()}>
+        <div className="flex h-10 items-center rounded-lg gap-2 bg-white px-1.5">
+          <div className="flex items-center gap-1">
             <StudioPreferences />
-            <UnreadNotifications className="mt-0 mlg:mt-4" />
+            <UnreadNotifications className="mt-0 mlg:mt-1.5" triggerSize="icon7" />
           </div>
-          <UserAccountModal />
+          <UserAccountModal className="mt-1.5 -mr-1" sizeClassName="h-7 w-7" />
         </div>
-      </div>
-    </header>
+      </Panel>
+    </>
   );
 };
 

@@ -1,3 +1,4 @@
+import { StudioHeader } from "@/components/layout/StudioHeader";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
@@ -11,10 +12,10 @@ import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
-import "../remove-attribution.css";
+import "../styles/override-panel-style.css";
+import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
 import { ReactFlowContextMenu } from "./context-menu";
-import { FlowControls } from "./flow-controls";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
 
@@ -76,7 +77,7 @@ export const ReactFlowExt = () => {
         nodesConnectable={!isLocked}
         elementsSelectable={!isLocked}
       >
-        <FlowControls />
+        <StudioHeader />
         <ViewControls />
         <BackgroundExt />
         <MiniMapExt />
