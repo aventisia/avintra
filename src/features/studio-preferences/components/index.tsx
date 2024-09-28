@@ -19,7 +19,7 @@ export const StudioPreferences = () => {
       <PopoverContent
         align="end"
         variant={"responsive"}
-        className="mt-0 mlg:mt-4"
+        className="mt-0 mlg:mt-1.5"
       >
         <PopoverDefaultHeader heading={POPOVER_HEADING} />
         <ScrollArea className="grow px-1.5 py-3">

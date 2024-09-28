@@ -10,7 +10,7 @@ export const StudioPreferencesTrigger = () => {
     <Tooltip content={POPOVER_HEADING}>
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "ghost", size: "icon8" }),
+          buttonVariants({ variant: "ghost", size: "icon7" }),
           "hidden mlg:flex",
           "aria-[expanded=true]:bg-slate-100",
         )}
