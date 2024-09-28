@@ -5,7 +5,6 @@ import { Scan } from "lucide-react";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBToggleLock } from "./VCBToggleLock";
-import { VCBZoomTo } from "./VCBZoomTo";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { useShallow } from "zustand/react/shallow";
 
@@ -32,9 +31,6 @@ export const ViewControls = () => {
 
             {/* Zoom out */}
             <VCActionButton action="zoomOut" Icon={MinusIcon} />
-
-            {/* Zoom to 100% (reset) */}
-            <VCBZoomTo />
 
             {/* Zoom in */}
             <VCActionButton action="zoomIn" Icon={PlusIcon} />
