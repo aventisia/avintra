@@ -24,6 +24,7 @@ const workspaceAppConfig: IAppConfig = {
     navLocation: NavLocation.sidebar,
     sideNavMenuSections: [
       {
+        showSection: true, // TODO: Remove this once we have a way to handle this using user roles
         sectionName: "main menu",
         menuItems: [
           {
@@ -54,6 +55,7 @@ const workspaceAppConfig: IAppConfig = {
         ],
       },
       {
+        showSection: false, // TODO: Remove this once we have a way to handle this using user roles
         sectionName: "admin options",
         menuItems: [
           {
