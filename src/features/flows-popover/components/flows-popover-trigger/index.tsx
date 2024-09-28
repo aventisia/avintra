@@ -30,7 +30,7 @@ export const FlowsPopoverTrigger = () => {
     <PopoverTrigger
       className={cn(
         buttonVariants({ variant: "ghost" }),
-        "group mr-1 flex h-8 max-w-[15rem] gap-1.5 bg-slate-50 px-3",
+        "group flex h-full max-w-[15rem] gap-1.5 px-3",
         isPopoverOpen && "bg-slate-100",
       )}
     >
