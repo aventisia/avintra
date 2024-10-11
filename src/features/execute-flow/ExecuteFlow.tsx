@@ -6,7 +6,7 @@ const ExecuteFlow = () => {
   const isFlowExecuting = false;
 
   return (
-    <div className="flex h-9 items-center justify-center gap-2 rounded-lg bg-muted p-1.5">
+    <div className="flex h-7 items-center justify-center gap-2 rounded-lg bg-muted">
       {isFlowExecuting ? (
         <>
           <Tooltip content="Pause">
@@ -23,7 +23,7 @@ const ExecuteFlow = () => {
       ) : (
         <Button
           variant={"ghost"}
-          className="group h-7 gap-1.5 whitespace-nowrap rounded-md px-2 hover:bg-white hover:text-foreground hover:shadow-sm"
+          className="group h-7 gap-1.5 whitespace-nowrap rounded-md px-2"
         >
           <PlayIcon className="h-4 w-4 text-green-500" />
           Execute
