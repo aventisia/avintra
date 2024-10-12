@@ -8,6 +8,34 @@ export const activitiesList: NodeDataType[] = [
     label: "If folder exists",
     description: "Mark the path if the folder exists",
     img: `${import.meta.env.BASE_URL}function.png`,
+    inputs: [
+      {
+        name: "path",
+        type: "string",
+        label: "Path",
+        description: "The path of the folder to check",
+        fieldType: "input",
+      },
+      {
+        name: "path",
+        type: "string",
+        label: "Path",
+        description: "The path of the folder to check",
+        fieldType: "select",
+        valueList: [
+          "exists", 
+          "Does not exists" 
+        ]
+      },
+    ],
+    outputs: [
+      {
+        name: "exists",
+        type: "boolean",
+        label: "Exists",
+        description: "True if the folder exists, false otherwise",
+      },
+    ],
   },
   {
     type: "activityNode",
