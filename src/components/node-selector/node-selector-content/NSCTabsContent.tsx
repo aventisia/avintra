@@ -7,7 +7,7 @@ export const NSCTabsContent = () => {
   return (
     <>
       <TabsContent value="all" className="mt-[1px]">
-        <NSCNodesList nodesList={activitiesList} />
+        <NSCNodesList nodesList={[...activitiesList,...logicNodesList]} />
       </TabsContent>
       <TabsContent value="activities" className="mt-[1px]">
         <NSCNodesList nodesList={activitiesList} />
