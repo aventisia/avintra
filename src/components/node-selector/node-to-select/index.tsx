@@ -3,6 +3,7 @@ import { NodeDataType } from "@/types/node-data-type";
 import { NTSDescription } from "./NTSDescription";
 import { NTSImage } from "./NTSImage";
 import { NTSLabel } from "./NTSLabel";
+import { Badge } from "@/react-toolkit/ui/badge";
 
 interface NodeToSelectProps {
   data: NodeDataType;
@@ -23,7 +24,10 @@ export const NodeToSelect = ({ data }: NodeToSelectProps) => {
 
       <div className="grow space-y-0.5">
         {/* Node heading */}
-        <NTSLabel>{data.label}</NTSLabel>
+        <div className="flex gap-2">
+          <NTSLabel>{data.label}</NTSLabel>
+          <Badge className="text-3xs py-0 px-2" variant={"outline"}>{data.category}</Badge>
+        </div>
 
         {/* Node description */}
         <NTSDescription>{data.description}</NTSDescription>
