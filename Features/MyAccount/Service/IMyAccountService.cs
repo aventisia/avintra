@@ -26,6 +26,13 @@ public interface IMyAccountService
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the password update was successful or not.</returns>
     Task<ServiceResponse<bool>> UpdatePwdAsync(PwdUpdateDto pwdUpdateDto);
 
+    /// <summary>
+    /// Update user's first and last name
+    /// </summary>
+    /// <param name="nameUpdateDto">the name update dto</param>
+    /// <returns></returns>
+    Task<ServiceResponse<bool>> UpdateNameAsync(NameUpdateDto nameUpdateDto);
+
     // acccounts-api/me/update-profile/
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/

@@ -66,6 +66,13 @@ public class MyAccountController : BaseApiController
         return ResultHelper(result);
     }
 
+    
+    
+    [HttpPost("update-user-name")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateUserName([FromBody] NameUpdateDto nameUpdateDto)
+    {
+        return ResultHelper(await _myAccountService.UpdateNameAsync(nameUpdateDto));
+    }
 
 
 

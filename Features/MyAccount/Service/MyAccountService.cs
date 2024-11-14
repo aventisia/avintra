@@ -511,4 +511,52 @@ public class MyAccountService : IMyAccountService
 
         return serviceResponse;
     }
+
+
+    public async Task<ServiceResponse<bool>> UpdateNameAsync(NameUpdateDto nameUpdateDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to update your name. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateNameAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
+                serviceResponse.Message = "User does not exist";
+                return serviceResponse;
+            }
+
+            // Update account User using UserManager
+            user.FirstName = nameUpdateDto.FirstName;
+            user.LastName = nameUpdateDto.LastName;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user");
+                serviceResponse.Message = "User's name update failed";
+                return serviceResponse;
+            }
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            Console.WriteLine(ex.ToString());
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }       
 }
