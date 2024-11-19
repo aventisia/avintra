@@ -1,4 +1,4 @@
-export type NodeSelectorOriginType =
+export type ActionSelectorOriginType =
   | "ReplaceTrigger"
   | "PlusEdgeLabel"
   | "plusFirstNode"
