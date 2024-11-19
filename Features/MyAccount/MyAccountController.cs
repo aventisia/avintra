@@ -66,12 +66,25 @@ public class MyAccountController : BaseApiController
         return ResultHelper(result);
     }
 
-    
-    
-    [HttpPost("update-user-name")]
-    public async Task<ActionResult<ServiceResponse<bool>>> UpdateUserName([FromBody] NameUpdateDto nameUpdateDto)
+    //Update first and last name of the user (request is from MyAcccount)    
+    [HttpPost("update-name")]
+    public async Task<ActionResult<ServiceResponse<NameUpdateDto>>> UpdateName([FromBody] NameUpdateDto nameUpdateDto)
     {
         return ResultHelper(await _myAccountService.UpdateNameAsync(nameUpdateDto));
+    }
+
+    //Update email of the user (request is from MyAcccount) -------Endpoint not tested, should be tested while deployement
+    [HttpPost("update-email")]
+    public async Task<ActionResult<ServiceResponse<EmailUpdateDto>>> UpdateEmail([FromBody] EmailUpdateDto emailUpdateDto)
+    {
+        return ResultHelper(await _myAccountService.UpdateEmailAsync(emailUpdateDto));
+    }
+
+    //Update two factor authentication of the user (request is from MyAcccount) -------Endpoint not tested, should be tested while deployement
+    [HttpPost("toggle-2fa")]
+    public async Task<ActionResult<ServiceResponse<Toggle2FADto>>> Toggle2FA([FromBody] Toggle2FADto toggle2FADto)
+    {
+        return ResultHelper(await _myAccountService.Toggle2FAAsync(toggle2FADto));
     }
 
 
