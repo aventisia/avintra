@@ -16,6 +16,8 @@ public interface IUnitOfWork
     ISupportTicketRepo SupportTicketRepo { get; }
     ISupportTicketRemarkRepo SupportTicketRemarkRepo { get; }
 
+    IFlowTemplateRepo flowTemplateRepo{ get; }
+
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>
