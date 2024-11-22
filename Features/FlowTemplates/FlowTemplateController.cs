@@ -11,13 +11,13 @@ public class FlowTemplateController : BaseApiController
     {
         _flowTemplateService = flowTemplateService;
     }
-    
-   // Create a new flow template
-   [HttpPost("create-template")]
-   public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> CreateFlowTemplate([FromBody]FlowTemplateDto flowTemplateDto)
-   {
-    return ResultHelper(await _flowTemplateService.CreateFlowTemplateAsync(flowTemplateDto));
-   }
+
+    // Create a new flow template
+    [HttpPost("create-template")]
+    public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> CreateFlowTemplate([FromBody] FlowTemplateDto flowTemplateDto)
+    {
+        return ResultHelper(await _flowTemplateService.CreateFlowTemplateAsync(flowTemplateDto));
+    }
 
     // Fetching flow template by its ID.
     [HttpGet("{id}")]
@@ -28,9 +28,16 @@ public class FlowTemplateController : BaseApiController
 
     // Fetching trending templates list
     [HttpGet("trending-templates")]
-     public async Task<ActionResult<ServiceResponse<IEnumerable<FlowTemplateDto>>>> GetTrendingTemplates()
-     {
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowTemplateDto>>>> GetTrendingTemplates()
+    {
         return ResultHelper(await _flowTemplateService.GetTrendingTemplatesAsync());
-     }
-    
+    }
+
+    // Retrive template list based on category and search query
+    [HttpGet("templates-category-by-name")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>>> GetFlowTemplateCategoryBySearchQuery(string Category,string Name)
+    {
+        return ResultHelper(await _flowTemplateService.GetFlowTemplateCategoryBySearchQueryAsync(Category,Name));
+    }
+
 }

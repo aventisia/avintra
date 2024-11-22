@@ -101,6 +101,7 @@ public class FlowTemplateService : IFlowTemplateService
         return serviceResponse;
     }
 
+    // Retrive flow template list
     public async Task<ServiceResponse<IEnumerable<FlowTemplateDto>>> GetTrendingTemplatesAsync()
     {
         // Initialize ServiceResponse with failed response
@@ -113,18 +114,18 @@ public class FlowTemplateService : IFlowTemplateService
         {
             // Try to get trending templates list 
             var trendingTemplates = await _unitOfWork.flowTemplateRepo
-              .GetAllAsync() 
-              .OrderByDescending(o => o.UsagesCount) 
+              .GetAllAsync()
+              .OrderByDescending(o => o.UsagesCount)
               .ToListAsync();
-         
-             // Check condition if trending templates
-              if(trendingTemplates== null)
-              {
+
+            // Check condition if trending templates
+            if (trendingTemplates == null)
+            {
                 _logger.LogInformation("No trending templates found.");
                 serviceResponse.Message = "No trending templates found for the user.";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
-              }
+            }
 
             // Task successful
             serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<FlowTemplateDto>>();
@@ -139,4 +140,46 @@ public class FlowTemplateService : IFlowTemplateService
         }
         return serviceResponse;
     }
+
+    // Retrive template based on category and search query
+    public async Task<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>> GetFlowTemplateCategoryBySearchQueryAsync(string Category, string Name)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>
+        {
+            Data = null,
+            Message = "Failed to get flow template category by search query. Please try again"
+        };
+
+        try
+        {
+            // Fetch all templates and filter based on category and search query
+            var templates = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(t => t.Category == Category && t.Name == Name)
+                .Select(t => new FlowTemplateCategoryBySearchQueryDto
+                {
+                    Category = t.Category,
+                    Name = t.Name
+                }).ToListAsync();
+
+            // If templates are found, set the Data property to the result
+            if (templates.Any())
+            {
+                serviceResponse.Data = templates;
+                serviceResponse.Message = "Successfully fetched flow template category by search query.";
+            }
+            else
+            {
+                serviceResponse.Message = "No matching templates found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurred while fetching flow template category by search query.";
+        }
+
+        return serviceResponse;
+    }
+
+
 }

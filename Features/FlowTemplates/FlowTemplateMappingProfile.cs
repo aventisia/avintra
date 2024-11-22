@@ -13,6 +13,9 @@ namespace WorkspaceAPIs.MappingProfiles
 
             // Request mapping for getting flow template record
             config.NewConfig<FlowTemplate , FlowTemplateDto>();
+
+            // Request mapping for getting flow template record by category and name
+            config.NewConfig<FlowTemplate,FlowTemplateCategoryBySearchQueryDto>();
             
         }
     }
