@@ -4,9 +4,15 @@ import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { ReactFlow } from "@xyflow/react";
+import {
+  Edge,
+  EdgeMouseHandler,
+  Node,
+  NodeMouseHandler,
+  ReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
@@ -18,6 +24,7 @@ import { BackgroundExt } from "./BackgroundExt";
 import { ReactFlowContextMenu } from "./context-menu";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -55,6 +62,25 @@ export const ReactFlowExt = () => {
   // Reconnect nodes if a middle node is deleted
   const { onNodesDelete } = useOnNodeDelete();
 
+  // Setter functions for context menu node
+  const { setSelectedNode, setSelectedEdge } = useContextMenuActionsStore();
+
+  // Define onNodeContextMenu handler
+  const onNodeContextMenu: NodeMouseHandler = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      setSelectedNode(node);
+    },
+    [setSelectedNode],
+  );
+
+  // Define onEdgeContextMenu handler
+  const onEdgeContextMenu: EdgeMouseHandler = useCallback(
+    (_: React.MouseEvent, edge: Edge) => {
+      setSelectedEdge(edge);
+    },
+    [setSelectedEdge],
+  );
+
   // Render ReactFlow component
   return (
     <ReactFlowContextMenu>
@@ -72,6 +98,8 @@ export const ReactFlowExt = () => {
         onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
         onConnect={onConnect}
         deleteKeyCode={["Delete", "Backspace"]}
+        onNodeContextMenu={onNodeContextMenu}
+        onEdgeContextMenu={onEdgeContextMenu}
         // Toggles Reactflows interactivity
         nodesDraggable={!isLocked}
         nodesConnectable={!isLocked}
