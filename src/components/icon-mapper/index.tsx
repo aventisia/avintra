@@ -1,25 +1,38 @@
-import { ConditionalNodeIcon, LoopNodeIcon } from "./LogicalNodeIcons";
-import { TriggerNodeIcon } from "./TriggerNodeIcon";
 import {
+  BrainCircuit,
+  Cable,
   CalendarCheck,
+  ChevronsLeftRightEllipsis,
   CircleAlert,
   DatabaseZap,
   FileCheck,
   Globe,
+  Keyboard,
   ListCheck,
   MailCheck,
   MonitorCheck,
   MonitorCog,
   MousePointerClick,
+  SquareFunction,
   TimerReset,
   Webhook,
-  ChevronsLeftRightEllipsis,
 } from "lucide-react";
+import { ConditionalNodeIcon, LoopNodeIcon } from "./LogicalNodeIcons";
+import { NodesCategoryL1Icon } from "./NodesCategoryL1Icon";
+import { TriggerNodeIcon } from "./TriggerNodeIcon";
 
-export const nodesIconMapper: { [key: string]: JSX.Element } = {
+export const iconMapper: { [key: string]: JSX.Element } = {
+  // Nodes Categories L1
+  AppIntegrationsIcon: <NodesCategoryL1Icon Icon={Cable} />,
+  DataTransformationsIcon: <NodesCategoryL1Icon Icon={DatabaseZap} />,
+  AutomationEssentialsIcon: <NodesCategoryL1Icon Icon={SquareFunction} />,
+  UIAutomationAndUserActionsIcon: <NodesCategoryL1Icon Icon={Keyboard} />,
+  IntelligentAutomationIcon: <NodesCategoryL1Icon Icon={BrainCircuit} />,
+
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,
   LoopNodeIcon: <LoopNodeIcon />,
+
   // Trigger Nodes
   ManualTriggerIcon: <TriggerNodeIcon Icon={MousePointerClick} />,
   ScheduleTriggerIcon: <TriggerNodeIcon Icon={CalendarCheck} />,
