@@ -1,6 +1,6 @@
 import { Popover, PopoverContent } from "@/react-toolkit/ui/popover";
 import React from "react";
-import { NodeSelectorContent } from "./node-selector-content";
+import { ActionSelectorContent } from "./ActionSelectorContent";
 import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
 
 /**
@@ -17,13 +17,15 @@ export const NodeSelector = ({
         {children}
         {/* Popover content */}
         <PopoverContent
+          collisionPadding={10}
           align="start"
           side="right"
           variant={"responsive"}
+          className="mlg:h-[30rem]"
           {...props}
         >
           {/* Node selector content */}
-          <NodeSelectorContent />
+          <ActionSelectorContent />
         </PopoverContent>
       </Popover>
     </StopPropagationWrapper>

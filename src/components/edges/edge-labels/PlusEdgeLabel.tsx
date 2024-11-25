@@ -1,7 +1,7 @@
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover";
-import { useNodeSelectorStore } from "@/stores/node-selector-store";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 

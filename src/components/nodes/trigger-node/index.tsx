@@ -1,11 +1,11 @@
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeSelector } from "@/components/node-selector";
-import { useNodeSelectorStore } from "@/stores/node-selector-store";
 import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import BaseNode from "../BaseNode";
 import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
+import { NodeSelector } from "@/features/action-selector/components";
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 
 type TriggerNode = Node<TriggerNodeDataType, "triggerNode">;
 

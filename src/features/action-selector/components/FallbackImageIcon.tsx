@@ -1,10 +1,10 @@
 import { cn } from "@/react-toolkit/lib/utils";
 
-interface NTSImageProps extends React.HTMLAttributes<HTMLImageElement> {
+interface FallbackImageIconProps extends React.HTMLAttributes<HTMLImageElement> {
   src?: string;
 }
 
-export const NTSImage = ({ className, src, ...props }: NTSImageProps) => {
+export const FallbackImageIcon = ({ className, src, ...props }: FallbackImageIconProps) => {
   return (
     <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-md">
       <img
