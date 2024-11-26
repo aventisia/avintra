@@ -1,23 +1,25 @@
 import { PrimaryCategoryType } from "../types/primary-category-type";
-import { uiAutomationAndUserActions } from "./ui-automation-n-user-actions/ui-automation-action-categories";
+import { dataTransformationsActions } from "./data-transformations/data-transformations-action-categories";
+import { uiAutomationAndUserActions } from "./ui-interface-automations/ui-interface-automations-action-categories";
+import { workFlowLogicsActions } from "./workflow-logics/workflow-logics-action-categories";
 
 export const actionSelectorData: PrimaryCategoryType[] = [
   {
-    name: "automationEssentials",
+    name: "workFlowLogics",
     label: "Workflow Logics",
     description: "Core actions to build the foundation of any automation flow",
     icon: "AutomationEssentialsIcon",
-    actionCategories: [],
+    actionCategories: workFlowLogicsActions,
   },
   {
     name: "dataTransformations",
     label: "Data Transformations",
     description: "Clean, transform, and structure your data with ease",
     icon: "DataTransformationsIcon",
-    actionCategories: [],
+    actionCategories: dataTransformationsActions,
   },
   {
-    name: "uiAutomationAndUserActions",
+    name: "uiInterfaceAutomations",
     label: "UI Interface Automations",
     description:
       "Automate your desktop with actions that mimic user interactions, from mouse clicks to keyboard entries",
@@ -33,7 +35,7 @@ export const actionSelectorData: PrimaryCategoryType[] = [
     actionCategories: [],
   },
   {
-    name: "intelligentAutomation",
+    name: "aiIntegrations",
     label: "AI Integrations",
     description: "AI-powered advanced actions for smarter, dynamic automation",
     icon: "IntelligentAutomationIcon",
