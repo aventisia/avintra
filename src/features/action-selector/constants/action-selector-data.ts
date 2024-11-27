@@ -1,4 +1,5 @@
 import { PrimaryCategoryType } from "../types/primary-category-type";
+import { appIntegrationActions } from "./app-integrations/app-integrations-action-categoires";
 import { dataTransformationsActions } from "./data-transformations/data-transformations-action-categories";
 import { uiAutomationAndUserActions } from "./ui-interface-automations/ui-interface-automations-action-categories";
 import { workFlowLogicsActions } from "./workflow-logics/workflow-logics-action-categories";
@@ -32,7 +33,7 @@ export const actionSelectorData: PrimaryCategoryType[] = [
     description:
       "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
     icon: "AppIntegrationsIcon",
-    actionCategories: [],
+    actionCategories: appIntegrationActions,
   },
   {
     name: "aiIntegrations",
