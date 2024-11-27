@@ -1,5 +1,5 @@
 import { CommandItem, CommandList } from "@/react-toolkit/ui/command";
-import { ActionCategory } from "./ActionCategory";
+import { ActionToSelect } from "./ActionToSelect";
 import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
@@ -11,18 +11,28 @@ import {
 } from "@/react-toolkit/ui/accordion";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { FallbackImageIcon } from "./FallbackImageIcon";
-import { iconMapper } from "@/components/icon-mapper";
 import { Separator } from "@/react-toolkit/ui/separator";
+import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
+import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
+import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
+import { useReplaceNode } from "@/hooks/useReplaceNode";
+import { NodeDataType } from "@/types/node-data-type";
 
 export const ActionCategoryList = () => {
-  // Get primaryCategory, setActionCategory function from the store
-  const { primaryCategoryLabel, setPrimaryCategoryLabel, setActionCategory } =
+  // Get the origin and originId from the store
+  const { origin, originId } = useNodeSelectorStore(
+    useShallow((state) => ({
+      origin: state.origin,
+      originId: state.originId,
+    })),
+  );
+
+  // Get primaryCategory function from the store
+  const { primaryCategoryLabel, setPrimaryCategoryLabel } =
     useNodeSelectorStore(
       useShallow((state) => ({
         primaryCategoryLabel: state.primaryCategoryLabel,
         setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
-        setActionCategory: state.setActionCategory,
       })),
     );
 
@@ -30,6 +40,34 @@ export const ActionCategoryList = () => {
   const actionCategories = actionSelectorData.find(
     (item) => item.label === primaryCategoryLabel,
   )?.actionCategories;
+
+  // Get add/replace Node handlers
+  const addFirstNodeToFlow = useAddFirstNodeToFlow();
+  const addNodeFromEdge = useAddNodeFromEdge();
+  const addFirstNodeToBranch = useAddFirstNodeToBranch();
+  const replaceNodeHandler = useReplaceNode();
+
+  // Handle the node selection
+  const nodeSelectionHandler = (item: NodeDataType) => {
+    // Set the primary category label to null
+    setPrimaryCategoryLabel(null);
+
+    // Switch based on the origin
+    switch (origin) {
+      case "plusFirstNode":
+        addFirstNodeToFlow(item, originId);
+        break;
+      case "PlusEdgeLabel":
+        addNodeFromEdge(item, originId);
+        break;
+      case "plusNode":
+        addFirstNodeToBranch(item, originId);
+        break;
+      case "ReplaceTrigger":
+        replaceNodeHandler(item);
+        break;
+    }
+  };
 
   // Return the primary category list
   return (
@@ -47,30 +85,22 @@ export const ActionCategoryList = () => {
       </div>
       {actionCategories?.map((item, index) => (
         <>
-          <CommandItem className="rounded-lg p-1">
+          <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value={item.name} className="border-none">
                 <AccordionTrigger className="px-1.5 py-2">
-                  <div className="flex w-full gap-3 text-sm">
-                    {/* Category icon or image */}
-                    {item.icon ? (
-                      <div>{iconMapper[item.icon]}</div>
-                    ) : (
-                      <FallbackImageIcon src={item.img} />
-                    )}
-                    {item.label}
-                  </div>
+                  <div className="flex w-full gap-3 text-sm">{item.label}</div>
                 </AccordionTrigger>
                 <AccordionContent>
                   {item.actions?.map((action) => (
                     <CommandItem
                       key={action.name}
                       value={action.label}
-                      className="rounded-lg p-1"
-                      onSelect={() => setActionCategory(action.name)}
+                      className="rounded-lg p-1 hover:bg-accent"
+                      onSelect={() => nodeSelectionHandler(action)}
                     >
                       {/* Action item */}
-                      <ActionCategory data={action} />
+                      <ActionToSelect data={action} />
                     </CommandItem>
                   ))}
                 </AccordionContent>
