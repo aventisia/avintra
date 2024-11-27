@@ -3,7 +3,7 @@ import { uiAutomationAndUserActions } from "./ui-automation-n-user-actions/ui-au
 
 export const actionSelectorData: PrimaryCategoryType[] = [
   {
-    name: "automationEssentials",
+    name: "workflowLogics",
     label: "Workflow Logics",
     description: "Core actions to build the foundation of any automation flow",
     icon: "AutomationEssentialsIcon",
