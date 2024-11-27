@@ -516,6 +516,235 @@ public class MyAccountService : IMyAccountService
         return serviceResponse;
     }
 
+    //Update user's first and last name
+    public async Task<ServiceResponse<NameUpdateDto>> UpdateNameAsync(NameUpdateDto nameUpdateDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<NameUpdateDto>()
+        {
+            Data = null,
+            Message = "Failed to update your name. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateNameAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
+                serviceResponse.Message = "User does not exist";
+                return serviceResponse;
+            }
+
+            // Update account User using UserManager
+            user.FirstName = nameUpdateDto.FirstName;
+            user.LastName = nameUpdateDto.LastName;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user");
+                serviceResponse.Message = "User's name update failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Name has been updated for account {_userName}");
+            serviceResponse.Data = nameUpdateDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your name has been updated successfully";
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    //Update user's email
+    public async Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<EmailUpdateDto>()
+        {
+            Data = null,
+            Message = "Failed to update your email. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateEmailAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
+                serviceResponse.Message = "User does not exist";
+                return serviceResponse;
+            }
+
+            //Check if user is an Aventisia employee
+            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+
+            //if user is an Aventisia employee
+            if(IsAE)
+            {
+                _logger.LogInformation("Failed to update email for Aventesia employee");
+                serviceResponse.Message = "Unable to update email for Aventesia employee";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+                       .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
+                       .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {emailUpdateDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(emailUpdateDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {emailUpdateDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Update account User using UserManager
+            user.Email = emailUpdateDto.Email;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user");
+                serviceResponse.Message = "User's email update failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
+            serviceResponse.Data = emailUpdateDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your email has been updated successfully";
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }  
+
+    //Update user's two factor authentication
+    public async Task<ServiceResponse<Toggle2FADto>> Toggle2FAAsync(Toggle2FADto toggle2FADto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<Toggle2FADto>()
+        {
+            Data = null,
+            Message = "Failed to update two factor aunthentication. Please try again later"
+        };
+
+        try
+        {
+            var methodName = nameof(UpdateEmailAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
+                serviceResponse.Message = "User does not exist";
+                return serviceResponse;
+            }
+
+            // Verifty email to disable two factor authentication
+            if (!toggle2FADto.TwoFactorEnabled)
+            {
+                // Get Verification secret code
+                var verificationCode = await _unitOfWork.VerificationCodeRepo
+                           .GetByConditionAsync(w => w.Id == toggle2FADto.VerificationCodeId)
+                           .SingleOrDefaultAsync();
+
+                // Verification secret code not found
+                if (verificationCode == null)
+                {
+                    _logger.LogInformation($"Verification code not found for email {user.Email}");
+                    serviceResponse.Message = "Failed to verify code. Please try again";
+                    return serviceResponse;
+                }
+
+                // Match Verification secret code
+                var verificationCodeMatches = verificationCode.SecretCode.Equals(toggle2FADto.SecretCode)
+                    && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+                // Delete Verification secret Code
+                _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+                await _unitOfWork.SaveAsync();
+
+                // Secret code did not match
+                if (!verificationCodeMatches)
+                {
+                    _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                    serviceResponse.Message = "Failed to verify code. Please try again";
+                    return serviceResponse;
+                }
+            }
+
+            // Update account User using UserManager
+            user.TwoFactorEnabled = toggle2FADto.TwoFactorEnabled;
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating 2FA for the user");
+                serviceResponse.Message = "User's two factor authentication update failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: Two factor authentication has been updated for account {_userName}");
+            serviceResponse.Data = toggle2FADto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your two factor authentication has been updated successfully";
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }     
+
     // Gets user's active sessions to view latest user's info
     public async Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync()
     {
