@@ -102,10 +102,10 @@ public class FlowTemplateService : IFlowTemplateService
     }
 
     // Retrive flow template list
-    public async Task<ServiceResponse<IEnumerable<FlowTemplateDto>>> GetTrendingTemplatesAsync()
+    public async Task<ServiceResponse<IEnumerable<TrendingFlowTemplateDto>>> GetTrendingTemplatesAsync()
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<FlowTemplateDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<TrendingFlowTemplateDto>>
         {
             Data = null,
             Message = "Failed to get trending templates,Please try again"
@@ -128,7 +128,7 @@ public class FlowTemplateService : IFlowTemplateService
             }
 
             // Task successful
-            serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<FlowTemplateDto>>();
+            serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingFlowTemplateDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Trending templates retrieved successfully";
         }

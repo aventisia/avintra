@@ -28,7 +28,7 @@ public class FlowTemplateController : BaseApiController
 
     // Fetching trending templates list
     [HttpGet("trending-templates")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowTemplateDto>>>> GetTrendingTemplates()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TrendingFlowTemplateDto>>>> GetTrendingTemplates()
     {
         return ResultHelper(await _flowTemplateService.GetTrendingTemplatesAsync());
     }

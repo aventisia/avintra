@@ -68,7 +68,8 @@ public class WorkspaceDbContext : DbContext
 
         // Configure One-to-Many Relationship between Flow and FlowTemplate
          modelBuilder.Entity<Flow>().HasOne(one => one.FlowTemplate).WithMany(ft => ft.Flows).HasForeignKey(fKey => fKey.TemplateId).OnDelete(DeleteBehavior.Restrict);
-      
+         modelBuilder.Entity<FlowTemplate>()
+            .HasKey(ft => ft.TemplateId );
     }
 
     // On Save Changes - write tenant Id to table

@@ -20,7 +20,7 @@ public interface IFlowTemplateService
     /// Retrieves list of trending templates.
     /// </summary>
     /// <returns>The task result contains the service response with the list of trending templates</returns>
-    Task<ServiceResponse<IEnumerable<FlowTemplateDto>>> GetTrendingTemplatesAsync();
+    Task<ServiceResponse<IEnumerable<TrendingFlowTemplateDto>>> GetTrendingTemplatesAsync();
 
     /// <summary>
     /// Retrieves list of flow template category by search query.
