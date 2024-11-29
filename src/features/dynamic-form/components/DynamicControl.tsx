@@ -1,0 +1,428 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { IDynamicFieldSchema, DynamicFieldLabel } from "..";
+import { cn } from "@/react-toolkit/lib/utils";
+import { format } from "date-fns";
+import { ControllerRenderProps, FieldValues } from "react-hook-form";
+import {
+  InformationCircleIcon,
+  CalendarIcon,
+} from "@heroicons/react/24/outline";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Input } from "@/react-toolkit/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/react-toolkit/ui/input-otp";
+import { PhoneInput } from "@/react-toolkit/ui/custom/PhoneInput";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/react-toolkit/ui/select";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from "@/react-toolkit/ui/custom/MultiSelector";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { TagInput } from "@/react-toolkit/ui/custom/TagInput";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/react-toolkit/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/react-toolkit/ui/command";
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { Switch } from "@/react-toolkit/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/react-toolkit/ui/radio-group";
+import { Calendar } from "@/react-toolkit/ui/calendar";
+import { Textarea } from "@/react-toolkit/ui/textarea";
+import { Slider } from "@/features/dynamic-form/components/slider";
+import { FormControl } from "@/react-toolkit/ui/form/FormControl";
+import { FormDescription } from "@/react-toolkit/ui/form/FormDescription";
+import { FormItem } from "@/react-toolkit/ui/form/FormItem";
+import { CodeEditor } from "./code-editor/CodeEditor";
+
+interface DynamicControlProps {
+  field: ControllerRenderProps<FieldValues, string>;
+  fData: IDynamicFieldSchema;
+  form?: any;
+}
+
+const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
+  switch (fData.type) {
+    case "text":
+    case "number":
+    case "email":
+    case "file":
+    case "color":
+    case "time":
+    case "password":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <Input
+              className={cn(fData.className)}
+              readOnly={fData.readonly}
+              type={fData.type}
+              placeholder={fData.placeholder}
+              {...field}
+            />
+          </FormControl>
+        </>
+      );
+    case "otp":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <InputOTP className={cn(fData.className)} maxLength={6} {...field}>
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          </FormControl>
+        </>
+      );
+    case "phone":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <PhoneInput
+              defaultCountry="US"
+              className={fData.className}
+              readOnly={fData.readonly}
+              placeholder={fData.placeholder}
+              {...field}
+            />
+          </FormControl>
+        </>
+      );
+    case "select":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <Select
+            disabled={fData.disabled}
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder={fData.placeholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {fData?.selectOptions?.map((item, index) => (
+                <SelectItem key={index} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </>
+      );
+    //TODO: Check UI element selector
+    case "ui-element-selector":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <Select
+            disabled={fData.disabled}
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder={fData.placeholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <div className="p-4">
+                <Input type="text" placeholder="Search..." className="mb-2" />
+                <Button>Button</Button>
+              </div>
+            </SelectContent>
+          </Select>
+        </>
+      );
+
+    case "multi-selector":
+      return (
+        <div>
+          <DynamicFieldLabel fData={fData} />
+          <MultiSelector onValuesChange={field.onChange} values={field.value}>
+            <FormControl>
+              <MultiSelectorTrigger disabled={fData.disabled}>
+                <MultiSelectorInput
+                  disabled={fData.disabled}
+                  placeholder={fData.placeholder}
+                />
+              </MultiSelectorTrigger>
+            </FormControl>
+            {fData?.selectOptions?.length !== field.value.length && (
+              <MultiSelectorContent>
+                <MultiSelectorList>
+                  {fData?.selectOptions
+                    ?.filter((option) => !field.value.includes(option.value))
+                    .map((item, index) => (
+                      <MultiSelectorItem key={index} value={item.value}>
+                        <div className="flex items-center gap-2">
+                          {item.label}
+                          {item.description && (
+                            <Tooltip content={item.description}>
+                              <InformationCircleIcon className="h-4 w-4" />
+                            </Tooltip>
+                          )}
+                        </div>
+                      </MultiSelectorItem>
+                    ))}
+                </MultiSelectorList>
+              </MultiSelectorContent>
+            )}
+          </MultiSelector>
+        </div>
+      );
+    case "tag-input":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <TagInput
+              className={fData.className}
+              readOnly={fData.readonly}
+              placeholder={fData.placeholder}
+              {...field}
+            />
+          </FormControl>
+        </>
+      );
+    case "combobox":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  disabled={fData.disabled}
+                  variant="outline"
+                  role="combobox"
+                  className={cn(
+                    "w-full justify-between pl-3 pr-[0.68rem] font-normal",
+                    !field.value && "text-muted-foreground",
+                  )}
+                >
+                  {field.value ? field.value : fData.placeholder}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command className="w-full">
+                <CommandInput placeholder={fData.placeholder} />
+                <CommandEmpty>No result found</CommandEmpty>
+                <CommandGroup>
+                  {fData?.selectOptions?.map((item, index) => (
+                    <CommandItem
+                      value={item.label}
+                      key={index}
+                      onSelect={() => {
+                        form?.setValue(fData.name, item.value);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          item.value === field.value
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                      />
+                      {item.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </>
+      );
+    case "checkbox":
+      return (
+        <div
+          className={cn(
+            "flex flex-row items-start space-x-3 space-y-0 rounded-md border border-input p-4",
+            fData.disabled ? "opacity-70" : "",
+          )}
+        >
+          <FormControl>
+            <Checkbox
+              disabled={fData.disabled}
+              className="mt-[0.12rem]"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          </FormControl>
+          <div className="space-y-1 leading-none">
+            <DynamicFieldLabel className="ml-0 text-sm" fData={fData} />
+            {fData.description && (
+              <FormDescription>{fData.description}</FormDescription>
+            )}
+          </div>
+        </div>
+      );
+    case "switch":
+      return (
+        <div
+          className={cn(
+            "flex flex-row items-center justify-between rounded-lg border p-4",
+            fData.disabled ? "opacity-70" : "",
+          )}
+        >
+          <div className="space-y-1">
+            <DynamicFieldLabel className="ml-0 text-sm" fData={fData} />
+            {fData.description && (
+              <FormDescription>{fData.description}</FormDescription>
+            )}
+          </div>
+          <FormControl>
+            <Switch
+              disabled={fData.disabled}
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          </FormControl>
+        </div>
+      );
+    case "radio-group":
+      return (
+        <div className="flex flex-col items-start justify-between space-y-2 rounded-lg border p-4">
+          <DynamicFieldLabel className="ml-0 text-sm" fData={fData} />
+          <FormControl>
+            <RadioGroup
+              disabled={fData.disabled}
+              onValueChange={field.onChange}
+              defaultValue={field.value}
+              className="flex flex-col space-y-1"
+            >
+              {fData?.selectOptions?.map((item, index) => (
+                <FormItem
+                  key={index}
+                  className="flex items-center gap-1.5 space-y-0"
+                >
+                  <FormControl>
+                    <RadioGroupItem value={item.value} />
+                  </FormControl>
+                  <p className="ml-1 text-sm font-normal">{item.label}</p>
+                  <Tooltip content={item.description}>
+                    <InformationCircleIcon className="h-4 w-4" />
+                  </Tooltip>
+                </FormItem>
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </div>
+      );
+    case "date":
+      return (
+        <div className="flex flex-col gap-1">
+          <DynamicFieldLabel fData={fData} />
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  disabled={fData.disabled}
+                  variant={"outline"}
+                  className={cn(
+                    "w-full pl-3 pr-[0.68rem] text-left font-normal",
+                    !field.value && "text-muted-foreground",
+                  )}
+                >
+                  {field.value ? (
+                    format(field.value, "PPP")
+                  ) : (
+                    <span>{fData.placeholder}</span>
+                  )}
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto rounded-lg bg-white p-0 shadow"
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={field.value}
+                onSelect={field.onChange}
+                disabled={(date) => date < new Date("1900-01-01")}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      );
+    case "slider":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <Slider defaultValue={fData.defaultValue} max={100} step={1} />
+          </FormControl>
+        </>
+      );
+    case "textarea":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <Textarea
+              className={cn(fData.className)}
+              placeholder={fData.placeholder}
+              {...field}
+            />
+          </FormControl>
+        </>
+      );
+    case "codeEditor":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <FormControl>
+            <CodeEditor
+              language={fData.language}
+              // placeholder={fData.placeholder}
+              {...field}
+            />
+          </FormControl>
+        </>
+      );
+  }
+};
+
+export { DynamicControl };
