@@ -3,13 +3,12 @@ namespace WorkspaceAPIs.Entities
     /// <summary>
     /// Represents an entity that stores flow template data.
     /// </summary>
-    public class FlowTemplate : BaseEntity
+    public class FlowTemplate : BaseEntity,IMustHaveTenant
     {
         /// <summary>
-        /// Gets or sets the primary key of the FlowTemplate record.
+        /// Gets or sets the primary key of the tenant record.
         /// </summary>
-        [Key]
-        public Guid TemplateId { get; set; }
+        public Guid TenantId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the flow template. Max-255 characters.
@@ -32,9 +31,9 @@ namespace WorkspaceAPIs.Entities
         /// <summary>
         /// Gets or sets the category of the flow template (e.g., Workflow, Automation, etc.).
         /// </summary>
-        [MaxLength(100)]
-        public string? Category { get; set; }
-
+        [MaxLength(50)]
+        public CategoryTypesEnum Type { get; set; }
+         
         /// <summary>
         /// Gets or sets the number of times this template has been used to create flows.
         /// This will be used to track trending templates.

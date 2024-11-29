@@ -19,8 +19,15 @@ public class FlowTemplateController : BaseApiController
         return ResultHelper(await _flowTemplateService.CreateFlowTemplateAsync(flowTemplateDto));
     }
 
+    // Create publish flow as a template
+    [HttpPost("publish-flow-template")]
+    public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> PublishFlowAsTemplate(Guid flowId)
+    {
+      return ResultHelper(await _flowTemplateService.PublishFlowAsTemplateAsync(flowId));  
+    }
+
     // Fetching flow template by its ID.
-    [HttpGet("{id}")]
+    [HttpGet("{TemplateId}")]
     public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> GetFlowTemplate(Guid TemplateId)
     {
         return ResultHelper(await _flowTemplateService.GetFlowTemplateAsync(TemplateId));
@@ -35,9 +42,9 @@ public class FlowTemplateController : BaseApiController
 
     // Retrive template list based on category and search query
     [HttpGet("templates-category-by-name")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>>> GetFlowTemplateCategoryBySearchQuery(string Category,string Name)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>>> GetFlowTemplateCategoryBySearchQuery(CategoryTypesEnum Type,string Name)
     {
-        return ResultHelper(await _flowTemplateService.GetFlowTemplateCategoryBySearchQueryAsync(Category,Name));
+        return ResultHelper(await _flowTemplateService.GetFlowTemplateCategoryBySearchQueryAsync(Type,Name));
     }
 
 }

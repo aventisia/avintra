@@ -31,7 +31,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowComment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SupportTicket>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SupportTicketRemark>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-       
+        modelBuilder.Entity<FlowTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -44,6 +44,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Project>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectTypesEnum>());
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
+        modelBuilder.Entity<FlowTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<CategoryTypesEnum>());
 
         // Configure One-to-One relationship between Project and WorkspaceUser
         modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -68,8 +69,7 @@ public class WorkspaceDbContext : DbContext
 
         // Configure One-to-Many Relationship between Flow and FlowTemplate
          modelBuilder.Entity<Flow>().HasOne(one => one.FlowTemplate).WithMany(ft => ft.Flows).HasForeignKey(fKey => fKey.TemplateId).OnDelete(DeleteBehavior.Restrict);
-         modelBuilder.Entity<FlowTemplate>()
-            .HasKey(ft => ft.TemplateId );
+        
     }
 
     // On Save Changes - write tenant Id to table

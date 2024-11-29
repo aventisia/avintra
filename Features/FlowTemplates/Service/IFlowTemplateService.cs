@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.Services;
 public interface IFlowTemplateService
 {
- /// <summary>
+    /// <summary>
     /// Creates a new flow template
     /// </summary>
     /// <param name="flowTemplateDto">Message composer submitted data</param>
@@ -9,14 +9,21 @@ public interface IFlowTemplateService
     Task<ServiceResponse<FlowTemplateDto>> CreateFlowTemplateAsync(FlowTemplateDto flowTemplateDto);
 
     /// <summary>
+    /// Creates a new publish flow as a template
+    /// </summary>
+    /// <param name="flowTemplateDto">Message composer submitted data</param>
+    /// <returns>Returns newly created publish flow as a template</returns>
+    Task<ServiceResponse<FlowTemplateDto>> PublishFlowAsTemplateAsync (Guid flowId);
+
+    /// <summary>
     /// Retrieves flow template
     /// </summary>
-    /// <param name="TemplateId">Message composer submitted data</param>
+    /// <param name="Id">Message composer submitted data</param>
     /// <returns>The task result contains the service response with flow template.</returns>
 
-    Task<ServiceResponse<FlowTemplateDto>> GetFlowTemplateAsync (Guid TemplateId);
+    Task<ServiceResponse<FlowTemplateDto>> GetFlowTemplateAsync (Guid Id);
 
-     /// <summary>
+    /// <summary>
     /// Retrieves list of trending templates.
     /// </summary>
     /// <returns>The task result contains the service response with the list of trending templates</returns>
@@ -28,5 +35,5 @@ public interface IFlowTemplateService
     /// <param name="Category Name">Message composer submitted data</param>
     /// <returns>The task result contains the service response with the list of flow template category by search query.</returns>
 
-    Task<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>> GetFlowTemplateCategoryBySearchQueryAsync(string Category,string Name);
+    Task<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>> GetFlowTemplateCategoryBySearchQueryAsync(CategoryTypesEnum Type ,string Name);
 }

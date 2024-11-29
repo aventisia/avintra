@@ -64,6 +64,58 @@ public class FlowTemplateService : IFlowTemplateService
         return serviceResponse;
     }
 
+    // Publish flow as a template
+    public async Task<ServiceResponse<FlowTemplateDto>> PublishFlowAsTemplateAsync(Guid flowId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<FlowTemplateDto>
+        {
+            Data = null,
+            Message = "Failed to publish flow as template. Please try again"
+        };
+        try
+        {
+            var flow = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(w => w.Id == flowId).FirstOrDefaultAsync();
+            if (flow == null)
+            {
+                _logger.LogError($"Flow not found for Id:{flowId}");
+                serviceResponse.Message = "flow does not exist";
+                return serviceResponse;
+            }
+            // Trim dto string props
+            var trimmedFlow = TrimDtoStringPropsUtil.TrimDtoStringProps(flow);
+
+            // Map the DTO to the entity
+            var newFlowTemplate = trimmedFlow.Adapt<FlowTemplate>();
+            newFlowTemplate.Type = CategoryTypesEnum.CategoryTypeA;
+            newFlowTemplate.CreatedByUserId = _userId;
+            newFlowTemplate.LastModifiedByUserId = _userId;
+
+            // Insert flow template into the database
+            await _unitOfWork.flowTemplateRepo.InsertAsync(newFlowTemplate);
+
+            // Insert-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while publishing flow as a template");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = newFlowTemplate.Adapt<FlowTemplateDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Publish flow as a template successfully";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occured while publishing flow as template";
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
     // Retrive flow template by its Id
     public async Task<ServiceResponse<FlowTemplateDto>> GetFlowTemplateAsync(Guid TemplateId)
     {
@@ -76,7 +128,7 @@ public class FlowTemplateService : IFlowTemplateService
         try
         {
             // Try to get flow-template
-            var flowTemplate = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(w => w.TemplateId == TemplateId).FirstOrDefaultAsync();
+            var flowTemplate = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(w => w.Id == TemplateId).FirstOrDefaultAsync();
 
             if (flowTemplate == null)
             {
@@ -142,7 +194,7 @@ public class FlowTemplateService : IFlowTemplateService
     }
 
     // Retrive template based on category and search query
-    public async Task<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>> GetFlowTemplateCategoryBySearchQueryAsync(string Category, string Name)
+    public async Task<ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>> GetFlowTemplateCategoryBySearchQueryAsync(CategoryTypesEnum Type, string Name)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>
@@ -154,10 +206,10 @@ public class FlowTemplateService : IFlowTemplateService
         try
         {
             // Fetch all templates and filter based on category and search query
-            var templates = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(t => t.Category == Category && t.Name == Name)
+            var templates = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(t => t.Type == Type && t.Name == Name)
                 .Select(t => new FlowTemplateCategoryBySearchQueryDto
                 {
-                    Category = t.Category,
+                    Type = t.Type,
                     Name = t.Name
                 }).ToListAsync();
 

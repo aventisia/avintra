@@ -5,6 +5,7 @@ namespace WorkspaceAPIs.DTOs
     /// </summary>
     public class FlowTemplateDto
     {
+        
         /// <summary>
         /// Gets or sets the name of the flow template. Max-255 characters.
         /// </summary>
@@ -26,8 +27,8 @@ namespace WorkspaceAPIs.DTOs
         /// <summary>
         /// Gets or sets the category of the flow template (e.g., Workflow, Automation, etc.).
         /// </summary>
-        [MaxLength(100)]
-        public string? Category { get; set; }
+        
+        public required CategoryTypesEnum Type { get; set; }
 
         /// <summary>
         /// Gets or sets the number of times this template has been used to create flows.
