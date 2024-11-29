@@ -11,14 +11,6 @@ export const systemActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "ifProcess",
-    label: "If process",
-    description:
-      "Marks the beginning of a conditional block of actions depending on whether a process is running or not",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
     name: "runApplication",
     label: "Run application",
     description:

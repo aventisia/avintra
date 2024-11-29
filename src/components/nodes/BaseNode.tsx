@@ -18,6 +18,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   selected,
   data,
   children,
+  id,
   ...props
 }) => {
   return (
@@ -25,7 +26,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
       <NodeHeader>
         {data.icon ? iconMapper[data.icon] : <NodeImage src={data.img} />}
         <NodeHeading>{data.label}</NodeHeading>
-        <OpenNodeConfig data={data} />
+        <OpenNodeConfig data={data} id={id} />
       </NodeHeader>
       <Separator className="h-[0.5px] w-full bg-border" />
       <NodeDescription>{data.description}</NodeDescription>

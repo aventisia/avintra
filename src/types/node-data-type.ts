@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CustomNodeType } from "./custom-node-type";
 
 type NodeTypeAndCategory = {
@@ -12,6 +13,7 @@ type NodeDataType = {
   description: string;
   icon?: string;
   img?: string;
+  fieldValues?: { [key: string]: any };
 };
 
 export type { NodeTypeAndCategory, NodeDataType };

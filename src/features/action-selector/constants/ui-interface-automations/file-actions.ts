@@ -39,13 +39,6 @@ export const fileActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "deleteFiles",
-    label: "Delete file(s)",
-    description: "Delete one or more files",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
     name: "readTextFromFile",
     label: "Read text from file",
     description: "Read the contents of a text file",
@@ -78,14 +71,6 @@ export const fileActions: NodeDataType[] = [
     label: "Get file path part",
     description:
       "Retrieve one or more parts(directory, filename, extension,etc.) from a text that represents a file path",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
-    name: "getTemporaryFile",
-    label: "Get temporary file",
-    description:
-      "Create a uniquely names, empty temporary file on disk, and get the file object (which is a representation, and can access the file and all its information)",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
