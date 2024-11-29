@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Inspired from: https://nainacodes.com/blog/create-form-from-json-schema
 import { FormProvider, useForm } from "react-hook-form";
-import {
-  IDynamicFieldSchema,
-  IDynamicFormCategory,
-  renderFormField,
-} from "..";
+import { IDynamicFieldSchema, IDynamicFormCategory, renderFormField } from "..";
 import { cn } from "@/react-toolkit/lib/utils";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
@@ -41,7 +37,7 @@ const DynamicForm = ({
   onSubmit,
 }: DynamicFormProps) => {
   const form = useForm({ defaultValues: formFieldValuesToFill });
-  console.log("formFieldValuesToFill", formFieldValuesToFill);
+
   const {
     // handleSubmit,
     watch,
