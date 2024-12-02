@@ -1,11 +1,11 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeSelector } from "@/components/node-selector";
-import { useNodeSelectorStore } from "@/stores/node-selector-store";
-import { NodeSelectorOriginType } from "@/types/node-selector-origin-type";
 import { NodeProps } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import { PlusNodeTrigger } from "./PlusNodeTrigger";
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
+import { NodeSelector } from "@/features/action-selector/components";
+import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
 
 export const PlusNode = ({
   id,
@@ -24,7 +24,7 @@ export const PlusNode = ({
     <>
       <NodeSelector sideOffset={10} alignOffset={-10}>
         <PlusNodeTrigger
-          onClick={() => setOrigin(type as NodeSelectorOriginType, id)}
+          onClick={() => setOrigin(type as ActionSelectorOriginType, id)}
         />
       </NodeSelector>
 

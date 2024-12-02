@@ -1,10 +1,13 @@
 import { TrueEdgeLabel } from "./edge-labels/TrueEdgeLabel";
 import { FalseEdgeLabel } from "./edge-labels/FalseEdgeLabel";
 import { BaseEdgeLabel } from "./edge-labels/BaseEdgeLabel";
-import { NodeSelector } from "../node-selector";
 import { PlusEdgeLabel } from "./edge-labels/PlusEdgeLabel";
+import { NodeSelector } from "@/features/action-selector/components";
 
-export const edgeLabelMapper = (label: string, edgeId?: string, ): JSX.Element => {
+export const edgeLabelMapper = (
+  label: string,
+  edgeId?: string,
+): JSX.Element => {
   switch (label.toLowerCase()) {
     case "true":
       return <TrueEdgeLabel />;
