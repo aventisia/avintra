@@ -61,32 +61,10 @@ export const workstationActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "controlScreensaver",
-    label: "Control screensaver",
-    description: "Enables, disables, starts or stops the screensaver",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
     name: "getScreenResolution",
     label: "Get screen resolution",
     description:
       "Gets the width, height, bit count and frequency of a selected monitor",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
-    name: "setScreenResolution",
-    label: "Set screen resolution",
-    description:
-      "Sets the width, height, bit count and frequency of a selected monitor",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
-    name: "logOffUser",
-    label: "Log off user",
-    description: "Logs off the current user",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {

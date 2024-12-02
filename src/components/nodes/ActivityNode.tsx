@@ -11,9 +11,10 @@ export const ActivityNode = ({
   selected,
   sourcePosition,
   targetPosition,
+  id,
 }: NodeProps<ActivityNode>) => {
   return (
-    <BaseNode selected={selected} data={data}>
+    <BaseNode id={id} selected={selected} data={data}>
       <InputHandle position={targetPosition} />
       <OutputHandle position={sourcePosition} />
     </BaseNode>

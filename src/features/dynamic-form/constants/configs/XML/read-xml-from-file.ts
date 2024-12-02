@@ -1,0 +1,56 @@
+import {
+  IDynamicFieldSchema,
+  IDynamicFormKeysCategory,
+  ActivityConfig,
+} from "../../..";
+
+const readXmlFromFileFieldList: IDynamicFieldSchema[] = [
+  {
+    name: "filePath",
+    type: "text",
+    label: "File path",
+    description: "The file that contains the XML document to read",
+    defaultValue: "",
+  },
+  {
+    name: "encoding",
+    type: "select",
+    label: "Encoding",
+    description: "The encoding used for the specified file",
+    selectOptions: [
+      { label: "System default", value: "systemDefault" },
+      { label: "ASCII", value: "ASCII" },
+      { label: "Unicode", value: "Unicode" },
+      { label: "Unicode big endian", value: "unicodeBigEndian" },
+      { label: "UTF-8", value: "UTF-8" },
+    ],
+    defaultValue: "systemDefault",
+  },
+  {
+    name: "xmlDocument",
+    type: "switch",
+    label: "XmlDocument",
+    description: "The variable that holds the read XML document",
+    defaultValue: false,
+  },
+];
+
+const readXmlFromFileFieldCategories: IDynamicFormKeysCategory[] = [
+  {
+    title: "Basic",
+    formFieldKeys: [["filePath"], ["encoding"]],
+  },
+
+  {
+    title: "Output",
+    formFieldKeys: [["xmlDocument"]],
+  },
+];
+
+const readXmlFromFile: ActivityConfig = {
+  fieldList: readXmlFromFileFieldList,
+  fieldCategories: readXmlFromFileFieldCategories,
+  fieldsToWatch: [],
+};
+
+export default readXmlFromFile;
