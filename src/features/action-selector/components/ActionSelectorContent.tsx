@@ -45,7 +45,7 @@ export const ActionSelectorContent = () => {
       <ScrollArea className="p-2">
         {isOriginReplaceTrigger ? (
           // Contains the list of all triggers
-          <PrimaryCategoryList />
+          <ActionCategoryList />
         ) : (
           // Contains the list of all primary categories
           <>
