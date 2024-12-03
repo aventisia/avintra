@@ -33,7 +33,7 @@ public class FlowsTableDto
     /// <summary>
     /// Gets or sets the thumbnail of the flow.
     /// </summary>
-    [StringLength(255)]
+   
     public string? Thumbnail { get; set; }
 
     /// <summary>
