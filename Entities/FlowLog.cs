@@ -6,6 +6,12 @@ namespace WorkspaceAPIs.Entities;
 
 public class FlowLog : BaseEntity
 {
+     /// <summary>
+    /// Gets or sets the primary key of the FlowLog record.
+    /// </summary>
+    [Key]
+    public Guid Id { get; set; }
+    
     public Guid FlowId { get; set; }
 
     /// <summary>
@@ -28,7 +34,7 @@ public class FlowLog : BaseEntity
     /// <summary>
     /// Gets or sets the type of the status Max-20 characters.
     /// </summary>
-    [MaxLength(50)]
+    [MaxLength(200)]
     public string  Status { get; set; }
 
     /// <summary>

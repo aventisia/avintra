@@ -12,4 +12,13 @@ public interface IFlowLogService
    
     Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync (FlowLogDto flowLogDto);
 
+    ///<summary>
+    /// Update flow log 
+    ///</summary>
+    ///<param name="FlowLogDto">The data required to update the flow log.</param>
+    /// <returns>The task result contains the service response with the updated flow log details.</returns>
+
+    Task<ServiceResponse<FlowLogDto>> UpdateFlowLogAsync (FlowLogDto flowLogDto);
+
+
 }
