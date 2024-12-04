@@ -104,4 +104,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<FlowComment> FlowComments { get; set; }
     public DbSet<SupportTicket> SupportTickets { get; set; }
     public DbSet<SupportTicketRemark> SupportTicketRemarks { get; set; }
+    public DbSet<FlowLog> FlowLog { get; set; }
 }
