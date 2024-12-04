@@ -42,6 +42,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Project>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectTypesEnum>());
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
+        modelBuilder.Entity<FlowLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<FlowLogStatusEnum>());
 
         // Configure One-to-One relationship between Project and WorkspaceUser
         modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -62,6 +63,9 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between SupportTicket and WorkspaceUser
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        
+        // Configure One-to-Many relationship between FlowLog and flow
+        modelBuilder.Entity<FlowLog>().HasOne(f => f.Flow).WithMany(f => f.FlowLog).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
     }
 
     // On Save Changes - write tenant Id to table

@@ -11,7 +11,7 @@ public class FlowLog : BaseEntity
     /// </summary>
     [Key]
     public Guid Id { get; set; }
-    
+
     public Guid FlowId { get; set; }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class FlowLog : BaseEntity
     /// Gets or sets the type of the status Max-20 characters.
     /// </summary>
     [MaxLength(200)]
-    public string  Status { get; set; }
+    public FlowLogStatusEnum  Status { get; set; }
 
     /// <summary>
     /// Gets or sets the duration of the flow log. Represents the time span.
