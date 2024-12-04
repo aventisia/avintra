@@ -13,6 +13,7 @@ public class FlowLog : BaseEntity
     /// </summary>
     [ForeignKey("FlowId")]
     public virtual Flow? Flow { get; set; }
+    
     /// <summary>
     /// Gets or sets the name of the flow. Max-255 characters.
     /// </summary>
@@ -33,7 +34,7 @@ public class FlowLog : BaseEntity
     /// <summary>
     /// Gets or sets the duration of the flow log. Represents the time span.
     /// </summary>
-    public TimeSpan Duration { get; set; } = TimeSpan.Zero;
+     public DateTimeOffset Duration { get; set; } 
 
 
 }

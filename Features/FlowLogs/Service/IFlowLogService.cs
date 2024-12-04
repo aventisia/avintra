@@ -4,5 +4,12 @@ namespace WorkspaceAPIs.Services;
 /// </summary>
 public interface IFlowLogService
 {
+    /// <summary>
+    /// Inserts a new flow.
+    /// </summary>
+    /// <param name="FlowLogDto">The data required to insert the flow.</param>
+    /// <returns>The task result contains the service response with the inserted flow details.</returns>
+   
+    Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync (FlowLogDto flowLogDto);
 
 }
