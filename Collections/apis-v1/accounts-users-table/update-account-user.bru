@@ -14,7 +14,7 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    id: bru.getGlobalEnvVar("RECORD_ID"),
+    id: bru.getGlobalEnvVar("ACCOUNT_USER_ID"),
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),

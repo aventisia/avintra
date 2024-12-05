@@ -18,10 +18,10 @@ script:post-response {
     // Extract first 3 user Ids
     const userIds = userList.slice(0, 3).map(user => user.id);
     
-    // Set RECORD_ID_LIST
-    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify(userIds));
+    // Set ACCOUNT_USER_ID_LIST
+    bru.setGlobalEnvVar("ACCOUNT_USER_ID_LIST", JSON.stringify(userIds));
   } else {
     // Set empty array
-    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify([]));
+    bru.setGlobalEnvVar("ACCOUNT_USER_ID_LIST", JSON.stringify([]));
   }
 }
