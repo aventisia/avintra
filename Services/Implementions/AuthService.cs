@@ -61,7 +61,7 @@ public class AuthService : IAuthService
             // Task successful
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Email is available";
+            serviceResponse.Message = $"{checkAvailabilityDto.UserInput.Trim().ToLower()} is available";
         }
         catch (Exception ex)
         {

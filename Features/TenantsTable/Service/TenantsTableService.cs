@@ -119,7 +119,7 @@ public class TenantsTableService : ITenantsTableService
             // Task successful
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Tenant name is available";
+            serviceResponse.Message = $"{checkAvailabilityDto.UserInput.Trim()} tenant name is available";
         }
         catch (Exception ex)
         {

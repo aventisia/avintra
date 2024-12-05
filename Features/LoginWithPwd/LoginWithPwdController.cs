@@ -14,7 +14,6 @@ public class LoginWithPwdController : BaseApiController
         _authService = authService;
     }
 
-
     // Authenticates an individual or tenant's user using the provided username and password.
     [HttpPost("login")]
     public async Task<ActionResult<ServiceResponse<UserSessionDto>>> AuthenticateUser([FromBody] PwdLoginDto pwdLoginDto)
