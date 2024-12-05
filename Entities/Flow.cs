@@ -55,4 +55,9 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// Gets or sets the list of FlowComments to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<FlowComment>? FlowComments { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of FlowVersions to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<FlowVersion>? FlowVersions { get; set; }
 }

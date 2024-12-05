@@ -24,6 +24,8 @@ public class UnitOfWork : IUnitOfWork
 
     public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
 
+    public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
