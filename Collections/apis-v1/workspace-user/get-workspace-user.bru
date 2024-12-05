@@ -1,0 +1,11 @@
+meta {
+  name: Get workspace user
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/user/{{WORKSPACE_USER_ID}}
+  body: none
+  auth: none
+}
