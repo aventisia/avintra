@@ -1,0 +1,40 @@
+meta {
+  name: Login with pwd
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/login
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      "email": "gaurav@aventisia.com",
+      "pwd": "{{MY_PWD}}"
+  }
+}
+
+script:pre-request {
+  req.setBody({
+    email: bru.getGlobalEnvVar("MY_EMAIL"),
+    pwd: bru.getGlobalEnvVar("MY_PWD")
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200 && 
+     res.getBody().message=== "TwoFA is enabled")
+  {
+      bru.setGlobalEnvVar(
+        "VERIFICATION_CODE_ID", 
+        res.getBody().data.verificationCodeId
+      );
+  }
+}
+
+docs {
+  > If two-factor authentication (2FA) is enabled for the user, the response will include a verification code and a message indicating "TwoFA is enabled" instead of a JWT token. To authenticate the user, you must then call the `Verify 2FA Code` endpoint.
+}
