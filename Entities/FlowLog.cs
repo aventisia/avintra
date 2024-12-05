@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents an entity that stores flow log data.
 /// </summary>
 
-public class FlowLog : BaseEntity
+public class FlowLog : IMustHaveTenant
 {
      /// <summary>
     /// Gets or sets the primary key of the FlowLog record.
@@ -19,12 +19,6 @@ public class FlowLog : BaseEntity
     /// </summary>
     [ForeignKey("FlowId")]
     public virtual Flow? Flow { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the name of the flow. Max-255 characters.
-    /// </summary>
-    [MaxLength(255)]
-    public required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the record was start modified.
@@ -40,7 +34,11 @@ public class FlowLog : BaseEntity
     /// <summary>
     /// Gets or sets the duration of the flow log. Represents the time span.
     /// </summary>
-     public DateTimeOffset Duration { get; set; } 
+     public long Duration { get; set; } 
 
+     public float Version {get;set;}
 
+    [MaxLength(500)]
+     public string Remark { get; set; }
+    public Guid TenantId {get;set;}
 }
