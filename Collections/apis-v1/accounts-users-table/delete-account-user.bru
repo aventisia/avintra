@@ -1,0 +1,20 @@
+meta {
+  name: Delete account user
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/user/{{RECORD_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "RECORD_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

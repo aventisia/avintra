@@ -1,0 +1,27 @@
+meta {
+  name: Get account users
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/user/
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    // Get user list
+    const userList = res.getBody().data;
+    
+    // Extract first 3 user Ids
+    const userIds = userList.slice(0, 3).map(user => user.id);
+    
+    // Set RECORD_ID_LIST
+    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify(userIds));
+  } else {
+    // Set empty array
+    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify([]));
+  }
+}
