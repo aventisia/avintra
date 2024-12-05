@@ -1,0 +1,27 @@
+meta {
+  name: Get tenants
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    // Get tenant list
+    const tenantList = res.getBody().data;
+    
+    // Extract first 3 tenant Ids
+    const tenantIds = tenantList.slice(0, 3).map(tenant => tenant.id);
+    
+    // Set RECORD_ID_LIST
+    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify(tenantIds));
+  } else {
+    // Set empty array
+    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify([]));
+  }
+}
