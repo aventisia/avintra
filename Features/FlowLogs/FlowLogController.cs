@@ -6,18 +6,24 @@ namespace WorkspaceAPIs.Controllers;
 
 public class FlowLogController : BaseApiController
 {
-      private readonly IFlowLogService _flowLogService;
+    private readonly IFlowLogService _flowLogService;
 
-      public FlowLogController(IFlowLogService flowLogService)
-      {
+    public FlowLogController(IFlowLogService flowLogService)
+    {
         _flowLogService = flowLogService;
-      }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowLogDto>>>> GetFlowLog(Guid flowId)
+    {
+      return ResultHelper (await _flowLogService.GetFlowLogAsync (flowId));
+    }
 
     // Inserts a new flow log.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<FlowLogDto>>> CreateFlowLog([FromBody] FlowLogDto flowLogDto)
     {
-        return ResultHelper(await _flowLogService.CreateFlowLogAsync(flowLogDto));
+      return ResultHelper(await _flowLogService.CreateFlowLogAsync(flowLogDto));
     }
 
     // Update Flow log
@@ -26,5 +32,14 @@ public class FlowLogController : BaseApiController
     {
       return ResultHelper(await _flowLogService.UpdateFlowLogAsync(flowLogDto));
     }
+
+     // Deletes flow log permanently
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFlowLog(Guid id)
+    {
+        return ResultHelper(await _flowLogService.DeleteFlowLogAsync(id));
+    }
+
+    
 
 }

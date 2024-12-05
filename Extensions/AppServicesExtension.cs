@@ -26,6 +26,7 @@ public static class AppServicesExtension
         config.Apply(new FlowBuilderMappingProfile());
         config.Apply(new SupportTicketsTableMappingProfile());
         config.Apply(new SupportTicketRemarksMappingProfile());
+        config.Apply(new FlowLogMappingProfile());  
         services.AddSingleton(config);
     }
 

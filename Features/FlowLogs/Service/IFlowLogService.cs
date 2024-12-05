@@ -5,12 +5,20 @@ namespace WorkspaceAPIs.Services;
 public interface IFlowLogService
 {
     /// <summary>
+    /// get flow log Record.
+    /// </summary>
+    /// <param name="FlowLogDto">The data required to insert the flow.</param>
+    /// <returns>The task result contains the service response with the inserted flow details.</returns>
+
+    Task<ServiceResponse<IEnumerable<FlowLogDto>>> GetFlowLogAsync(Guid flowId);
+
+    /// <summary>
     /// Inserts a new flow.
     /// </summary>
     /// <param name="FlowLogDto">The data required to insert the flow.</param>
     /// <returns>The task result contains the service response with the inserted flow details.</returns>
    
-    Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync (FlowLogDto flowLogDto);
+    Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync(FlowLogDto flowLogDto);
 
     ///<summary>
     /// Update flow log 
@@ -20,5 +28,11 @@ public interface IFlowLogService
 
     Task<ServiceResponse<FlowLogDto>> UpdateFlowLogAsync (FlowLogDto flowLogDto);
 
+    /// <summary>
+    /// Deletes flow log permanently
+    /// </summary>
+    /// <param name="id">Flow comment Id (Primary Key)</param>
+    /// <returns>True if delete job is successful, else false</returns>
 
+    Task<ServiceResponse<bool>> DeleteFlowLogAsync(Guid id);
 }

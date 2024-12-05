@@ -2,105 +2,202 @@ namespace WorkspaceAPIs.Services;
 
 public class FlowLogService : IFlowLogService
 {
-   private readonly ILogger<FlowLogService> _logger;
-   private readonly IUnitOfWork _unitOfWork;
-   private readonly Guid _userId;
+    private readonly ILogger<FlowLogService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    //private readonly Guid _userId;
 
-   public FlowLogService(ILogger<FlowLogService> logger,
-   IUnitOfWork unitOfWork,
-   IHttpContextAccessor httpContextAccessor)
-   {
-      // Set _userId
-      _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    public FlowLogService(ILogger<FlowLogService> logger,
+    IUnitOfWork unitOfWork,
+    IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _userId
+        // _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
-      _logger = logger;
-      _unitOfWork = unitOfWork;
-   }
- 
-     // Create a new flow log
-   public async Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync(FlowLogDto flowLogDto)
-   {
-      // Initialize ServiceResponse with failed response
-      var serviceResponse = new ServiceResponse<FlowLogDto>
-      {
-         Data = null,
-         Message = "Failed to insert flow log. Please try again"
-      };
-      try
-      {
-         // Trim dto' string props
-         flowLogDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowLogDto);
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+    }
 
-         // Default mapping
-         var newFlowLog = flowLogDto.Adapt<FlowLog>();
-         newFlowLog.CreatedByUserId = _userId;
-         newFlowLog.LastModifiedByUserId = _userId;
+    public async Task<ServiceResponse<IEnumerable<FlowLogDto>>> GetFlowLogAsync(Guid flowId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<FlowLogDto>>
+        {
+            Data = null,
+            Message = "Failed to fetch flow log. Please try again",
+            StatusCode = 400
+        };
 
-         // Insert flow
-         await _unitOfWork.flowLogRepo.InsertAsync(newFlowLog);
+        try
+        {
+            // Fetch the flows from the repository using both flowId and flowName for filtering
+            var flows = await _unitOfWork.flowLogRepo.GetByConditionAsync(w => w.FlowId == flowId)
+            .Include(f => f.Flow).ToListAsync();
 
-         // Insert-Job failed
-         if (!await _unitOfWork.SaveAsync())
-         {
-            _logger.LogInformation("Context SaveChanges failed while inserting new flow log");
-            return serviceResponse;
-         }
 
-         // Task successful
-         serviceResponse.Data = newFlowLog.Adapt<FlowLogDto>();
-         serviceResponse.StatusCode = 200;
-         serviceResponse.Message = "Flow log created successfully";
-      }
-      catch (Exception ex)
-      {
-         _logger.LogError(ex.ToString());
-         return serviceResponse;
-      }
+            // If data is found, adapt and set the response
+            if (flows.Any())
+            {
+                serviceResponse.Data = flows.Adapt<IEnumerable<FlowLogDto>>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Flows retrieved successfully";
+            }
+            else
+            {
+                serviceResponse.StatusCode = 404;
+                serviceResponse.Message = "No matching flows found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurred while fetching the flow log.";
+        }
 
-      return serviceResponse;
+        return serviceResponse;
+    }
 
-   }
-     
-    // Update a flow log
-   public async Task<ServiceResponse<FlowLogDto>> UpdateFlowLogAsync (FlowLogDto flowLogDto)
-   {
-       // Initialize ServiceResponse with failed response
-      var serviceResponse = new ServiceResponse<FlowLogDto>
-      {
-         Data = null,
-         Message = "Failed to update flow log. Please try again"
-      };
-      try
-      {
+    // Create a new flow log
+    public async Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync(FlowLogDto flowLogDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<FlowLogDto>
+        {
+            Data = null,
+            Message = "Failed to insert flow log. Please try again"
+        };
+        try
+        {
             // Trim dto' string props
             flowLogDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowLogDto);
 
             // Default mapping
-             var updateFlowLog = flowLogDto.Adapt<FlowLog>();
-             updateFlowLog.CreatedByUserId = _userId;
-             updateFlowLog.LastModifiedByUserId = _userId;
-         
-            // Update flow log
-            _unitOfWork.flowLogRepo.Update(updateFlowLog);
+            var newFlowLog = flowLogDto.Adapt<FlowLog>();
 
-            // Update-Job failed
+            // Insert flow
+            await _unitOfWork.flowLogRepo.InsertAsync(newFlowLog);
+
+            // Insert-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while inserting new flow log");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = newFlowLog.Adapt<FlowLogDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow log created successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+
+    }
+
+    // Update a flow log
+    public async Task<ServiceResponse<FlowLogDto>> UpdateFlowLogAsync(FlowLogDto flowLogDto)
+    {
+        //Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<FlowLogDto>
+        {
+            Data = null,
+            Message = "Failed to update flow log. Please try again"
+        };
+        try
+        {
+            //Validate flow lo existence
+            var flowLog = await _unitOfWork.flowLogRepo.GetByConditionAsync(w => w.Id == flowLogDto.Id).SingleOrDefaultAsync();
+            //GetByConditionAsync(w => w.Id == flowLogDto.Id).SingleOrDefaultAsync();
+
+            // flow log does not exist
+            if (flowLog == null)
+            {
+                _logger.LogInformation($"flow log does not exist");
+                serviceResponse.Message = "flow log not exist";
+                return serviceResponse;
+            }
+
+            var newFlowLog = flowLogDto.Adapt(flowLog);
+
+            //Trim dto' string props
+            flowLogDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowLogDto);
+
+            //Update flow log
+            _unitOfWork.flowLogRepo.Update(flowLog);
+
+            //  Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while silently updating flow log ");
                 return serviceResponse;
             }
 
-            // Task successful
-            serviceResponse.Data = updateFlowLog.Adapt<FlowLogDto>();
+            //Task successful
+            serviceResponse.Data = flowLog.Adapt<FlowLogDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow log updated successfully";
-      }
-      catch (Exception ex)
-      {
-          _logger.LogError(ex.ToString());
-         return serviceResponse;
-      }
-      return serviceResponse;
-   }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while updating flow log";
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // Deletes flow log permanently
+    public async Task<ServiceResponse<bool>> DeleteFlowLogAsync(Guid id)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete flow log. Please try again"
+        };
+
+        try
+        {
+            // Validate flow log existence
+            var flowLog = await _unitOfWork.flowLogRepo
+                .GetByConditionAsync(w => w.Id == id)
+                .SingleOrDefaultAsync();
+
+            // Flow log does not exist
+            if (flowLog == null)
+            {
+                _logger.LogInformation($"Flow log does not exist");
+                serviceResponse.Message = "Log does not exist";
+                return serviceResponse;
+            }
+
+            // Delete flow log
+            _unitOfWork.flowLogRepo.Delete(flowLog);
+
+            // Delete-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting flow log");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow log deleted successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
 
 }
