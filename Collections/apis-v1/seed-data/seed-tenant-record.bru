@@ -27,7 +27,7 @@ script:pre-request {
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "RECORD_ID",
+          "TENANT_ID",
           res.getBody().data.id
       );
   }

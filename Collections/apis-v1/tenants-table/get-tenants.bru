@@ -18,10 +18,10 @@ script:post-response {
     // Extract first 3 tenant Ids
     const tenantIds = tenantList.slice(0, 3).map(tenant => tenant.id);
     
-    // Set RECORD_ID_LIST
-    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify(tenantIds));
+    // Set TENANT_ID_LIST
+    bru.setGlobalEnvVar("TENANT_ID_LIST", JSON.stringify(tenantIds));
   } else {
     // Set empty array
-    bru.setGlobalEnvVar("RECORD_ID_LIST", JSON.stringify([]));
+    bru.setGlobalEnvVar("TENANT_ID_LIST", JSON.stringify([]));
   }
 }

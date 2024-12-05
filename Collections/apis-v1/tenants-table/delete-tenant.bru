@@ -5,7 +5,7 @@ meta {
 }
 
 delete {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/{{RECORD_ID}}
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/{{TENANT_ID}}
   body: none
   auth: none
 }
@@ -13,7 +13,7 @@ delete {
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-        "RECORD_ID", 
+        "TENANT_ID", 
         "00000000-0000-0000-0000-000000000000"
       );
   }

@@ -15,7 +15,7 @@ script:pre-request {
   const moment = require('moment');
   
   req.setBody({
-    id: bru.getGlobalEnvVar("RECORD_ID"),
+    id: bru.getGlobalEnvVar("TENANT_ID"),
     name: faker.company.name(),
     expiresOn: moment().add(1, 'years').toISOString(),
     isSSOEnabled: false,
