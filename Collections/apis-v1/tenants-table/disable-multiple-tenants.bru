@@ -1,7 +1,7 @@
 meta {
   name: Disable multiple tenants
   type: http
-  seq: 6
+  seq: 7
 }
 
 post {
@@ -13,15 +13,15 @@ post {
 script:pre-request {
   // Set tenantIds in request body
   req.setBody(
-    JSON.parse(bru.getGlobalEnvVar("TENANT_ID_LIST"))
+    JSON.parse(`["${bru.getGlobalEnvVar("TENANT_ID")}"]`)
   )
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "TENANT_ID_LIST",
-          JSON.stringify([])
+        "TENANT_ID", 
+        "00000000-0000-0000-0000-000000000000"
       );
   }
 }
