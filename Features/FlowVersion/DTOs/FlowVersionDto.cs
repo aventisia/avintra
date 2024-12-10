@@ -26,12 +26,12 @@ public class FlowVersionDto
     /// <summary>
     /// Gets or sets the the user who created the record.
     /// </summary>
-    public string CreatedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the the username who created the record.
     /// </summary>
-    public string CreatedByUsername { get; set; }
+    public string? CreatedByUsername { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the record was created.

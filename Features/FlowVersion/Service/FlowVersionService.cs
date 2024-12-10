@@ -123,6 +123,7 @@ public class FlowVersionService : IFlowVersionService
             //update a flow version
             _unitOfWork.FlowVersionRepo.Update(newFlowVersion);
             newFlowVersion.CreatedByUserId = _userId;
+            newFlowVersion.LastModifiedByUserId = _userId;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
