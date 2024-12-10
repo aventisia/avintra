@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("FlowLog")]
+[Route("Flow-log")]
 [ApiController]
 [Authorize]
 
@@ -13,7 +13,7 @@ public class FlowLogController : BaseApiController
         _flowLogService = flowLogService;
     }
 
-    [HttpGet]
+    [HttpGet("list/{flowId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<FlowLogDto>>>> GetFlowLog(Guid flowId)
     {
       return ResultHelper (await _flowLogService.GetFlowLogAsync (flowId));
@@ -21,9 +21,9 @@ public class FlowLogController : BaseApiController
 
     // Inserts a new flow log.
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<FlowLogDto>>> CreateFlowLog([FromBody] FlowLogDto flowLogDto)
+    public async Task<ActionResult<ServiceResponse<FlowLogDto>>> InsertFlowLog([FromBody] FlowLogDto flowLogDto)
     {
-      return ResultHelper(await _flowLogService.CreateFlowLogAsync(flowLogDto));
+      return ResultHelper(await _flowLogService.InsertFlowLogAsync(flowLogDto));
     }
 
     // Update Flow log

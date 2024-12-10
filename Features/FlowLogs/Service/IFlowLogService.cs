@@ -5,10 +5,10 @@ namespace WorkspaceAPIs.Services;
 public interface IFlowLogService
 {
     /// <summary>
-    /// get flow log Record.
+    /// get list of flow log Record.
     /// </summary>
-    /// <param name="FlowLogDto">The data required to insert the flow.</param>
-    /// <returns>The task result contains the service response with the inserted flow details.</returns>
+    /// <param name="flowId">Flow's record Id (Primary Key of Flow Entity)</param>
+    /// <returns>List of flows log linked to the provided flowId</returns>
 
     Task<ServiceResponse<IEnumerable<FlowLogDto>>> GetFlowLogAsync(Guid flowId);
 
@@ -16,9 +16,9 @@ public interface IFlowLogService
     /// Inserts a new flow.
     /// </summary>
     /// <param name="FlowLogDto">The data required to insert the flow.</param>
-    /// <returns>The task result contains the service response with the inserted flow details.</returns>
+    /// <returns>The task result contains the service response with the inserted flow log details.</returns>
    
-    Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync(FlowLogDto flowLogDto);
+    Task<ServiceResponse<FlowLogDto>> InsertFlowLogAsync(FlowLogDto flowLogDto);
 
     ///<summary>
     /// Update flow log 

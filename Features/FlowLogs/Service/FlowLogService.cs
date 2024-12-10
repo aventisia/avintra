@@ -17,6 +17,7 @@ public class FlowLogService : IFlowLogService
         _unitOfWork = unitOfWork;
     }
 
+    // Retrive list of flow log by flowId
     public async Task<ServiceResponse<IEnumerable<FlowLogDto>>> GetFlowLogAsync(Guid flowId)
     {
         // Initialize ServiceResponse with failed response
@@ -33,19 +34,11 @@ public class FlowLogService : IFlowLogService
             var flows = await _unitOfWork.flowLogRepo.GetByConditionAsync(w => w.FlowId == flowId)
             .Include(f => f.Flow).ToListAsync();
 
-
-            // If data is found, adapt and set the response
-            if (flows.Any())
-            {
-                serviceResponse.Data = flows.Adapt<IEnumerable<FlowLogDto>>();
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "Flows retrieved successfully";
-            }
-            else
-            {
-                serviceResponse.StatusCode = 404;
-                serviceResponse.Message = "No matching flows found.";
-            }
+            // Task successful          
+            serviceResponse.Data = flows.Adapt<IEnumerable<FlowLogDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow log retrieved successfully";
+           
         }
         catch (Exception ex)
         {
@@ -57,7 +50,7 @@ public class FlowLogService : IFlowLogService
     }
 
     // Create a new flow log
-    public async Task<ServiceResponse<FlowLogDto>> CreateFlowLogAsync(FlowLogDto flowLogDto)
+    public async Task<ServiceResponse<FlowLogDto>> InsertFlowLogAsync(FlowLogDto flowLogDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<FlowLogDto>
