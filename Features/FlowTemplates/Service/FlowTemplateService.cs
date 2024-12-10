@@ -20,7 +20,7 @@ public class FlowTemplateService : IFlowTemplateService
     }
 
     //Creates a new flow template
-    public async Task<ServiceResponse<FlowTemplateDto>> CreateFlowTemplateAsync(FlowTemplateDto flowTemplateDto)
+    public async Task<ServiceResponse<FlowTemplateDto>> InsertFlowTemplateAsync(FlowTemplateDto flowTemplateDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<FlowTemplateDto>
@@ -87,7 +87,7 @@ public class FlowTemplateService : IFlowTemplateService
 
             // Map the DTO to the entity
             var newFlowTemplate = trimmedFlow.Adapt<FlowTemplate>();
-            newFlowTemplate.Type = CategoryTypesEnum.CategoryTypeA;
+            newFlowTemplate.Type = CategoryTypesEnum.CategoryType1;
             newFlowTemplate.CreatedByUserId = _userId;
             newFlowTemplate.LastModifiedByUserId = _userId;
 
@@ -213,16 +213,20 @@ public class FlowTemplateService : IFlowTemplateService
                     Name = t.Name
                 }).ToListAsync();
 
-            // If templates are found, set the Data property to the result
-            if (templates.Any())
+            // Check condition if trending templates
+            if (templates == null)
             {
-                serviceResponse.Data = templates;
-                serviceResponse.Message = "Successfully fetched flow template category by search query.";
+                _logger.LogInformation("No flow templates category by search query found.");
+                serviceResponse.Message = "No flow templates category by name found for the user.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
             }
-            else
-            {
-                serviceResponse.Message = "No matching templates found.";
-            }
+
+            // Task successful
+            serviceResponse.Data = templates.Adapt<IEnumerable<FlowTemplateCategoryBySearchQueryDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully fetched flow template category by search query.";
+
         }
         catch (Exception ex)
         {

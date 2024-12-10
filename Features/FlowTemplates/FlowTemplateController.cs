@@ -14,9 +14,9 @@ public class FlowTemplateController : BaseApiController
 
     // Create a new flow template
     [HttpPost("create-template")]
-    public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> CreateFlowTemplate([FromBody] FlowTemplateDto flowTemplateDto)
+    public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> InsertFlowTemplate([FromBody] FlowTemplateDto flowTemplateDto)
     {
-        return ResultHelper(await _flowTemplateService.CreateFlowTemplateAsync(flowTemplateDto));
+        return ResultHelper(await _flowTemplateService.InsertFlowTemplateAsync(flowTemplateDto));
     }
 
     // Create publish flow as a template

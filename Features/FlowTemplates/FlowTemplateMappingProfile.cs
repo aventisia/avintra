@@ -14,7 +14,7 @@ namespace WorkspaceAPIs.MappingProfiles
             //Request mapping for publishing flow as a template record
             config.NewConfig<FlowTemplateDto,FlowTemplate>()
             .Ignore(dest => dest.Type)
-            .Ignore(dest => dest.UsagesCount)
+            //.Ignore(dest => dest.UsagesCount)
             .IgnoreNullValues(true);
 
             // Request mapping for getting flow template record

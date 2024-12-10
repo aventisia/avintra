@@ -6,7 +6,7 @@ public interface IFlowTemplateService
     /// </summary>
     /// <param name="flowTemplateDto">Message composer submitted data</param>
     /// <returns>Returns newly created flow template</returns>
-    Task<ServiceResponse<FlowTemplateDto>> CreateFlowTemplateAsync(FlowTemplateDto flowTemplateDto);
+    Task<ServiceResponse<FlowTemplateDto>> InsertFlowTemplateAsync(FlowTemplateDto flowTemplateDto);
 
     /// <summary>
     /// Creates a new publish flow as a template
