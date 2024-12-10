@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/create
   body: none
   auth: none
 }
@@ -15,8 +15,8 @@ script:pre-request {
   
   req.setBody({
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    isLocked: false,
-    isDraft: false,
+    isLocked: faker.datatype.boolean(),
+    isDraft: faker.datatype.boolean(),
   })
 }
 
