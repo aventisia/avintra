@@ -5,6 +5,7 @@ namespace WorkspaceAPIs.DTOs
     /// </summary>
     public class FlowTemplateDto
     {
+        public Guid FlowId { get; set; }
         
         /// <summary>
         /// Gets or sets the name of the flow template. Max-255 characters.

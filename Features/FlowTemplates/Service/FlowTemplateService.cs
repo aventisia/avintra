@@ -75,7 +75,7 @@ public class FlowTemplateService : IFlowTemplateService
         };
         try
         {
-            var flow = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(w => w.Id == flowId).FirstOrDefaultAsync();
+            var flow = await _unitOfWork.FlowRepo.GetByConditionAsync(w => w.Id == flowId).FirstOrDefaultAsync();
             if (flow == null)
             {
                 _logger.LogError($"Flow not found for Id:{flowId}");

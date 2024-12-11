@@ -57,15 +57,14 @@ public class Flow : BaseEntity, IMustHaveTenant
     
     public virtual ICollection<FlowComment>? FlowComments { get; set; }
 
-     /// <summary>
+    /// <summary>
     /// Gets or sets the list of FlowTemplate to manage the one-to-many relation.
     /// </summary>
    
-     public Guid TemplateId {get;set;}
-     /// <summary>
+    
+    /// <summary>
     /// Gets or sets the flow template
     /// </summary>
-    [ForeignKey("TemplateId")]
-     public virtual FlowTemplate? FlowTemplate { get; set; }
+     public virtual ICollection<FlowTemplate>? FlowTemplate { get; set; }
 
 }

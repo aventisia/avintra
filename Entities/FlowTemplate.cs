@@ -40,11 +40,12 @@ namespace WorkspaceAPIs.Entities
         /// </summary>
         public int UsagesCount { get; set; }
 
+        public Guid FlowId { get; set; }
         /// <summary>
         /// Gets or sets the list of Flows that are based on this template 
-        /// </summary>
-        public virtual ICollection<Flow>? Flows { get; set; } 
-      
+        /// </summary>     
+        [ForeignKey("FlowId")]
+        public virtual Flow? Flow { get; set; }
     }
 }
 
