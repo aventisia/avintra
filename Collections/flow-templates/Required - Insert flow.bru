@@ -23,7 +23,7 @@ script:pre-request {
 
 script:post-response {
   if(res.getStatus() == 200){
-    bru.getGlobalEnvVar(
+    bru.setGlobalEnvVar(
     "FLOW_ID",
     res.getBody().data.id
     );

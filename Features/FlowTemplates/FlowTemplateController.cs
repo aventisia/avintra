@@ -20,7 +20,7 @@ public class FlowTemplateController : BaseApiController
     }
 
     // Create publish flow as a template
-    [HttpPost("publish-flow-template")]
+    [HttpPost("publish-flow-template/{flowId}")]
     public async Task<ActionResult<ServiceResponse<FlowTemplateDto>>> PublishFlowAsTemplate(Guid flowId)
     {
       return ResultHelper(await _flowTemplateService.PublishFlowAsTemplateAsync(flowId));  
