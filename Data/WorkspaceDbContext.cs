@@ -66,7 +66,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         
         // Configure One-to-Many relationship between FlowLog and flow
-        modelBuilder.Entity<FlowLog>().HasOne(f => f.Flow).WithMany(f => f.FlowLog).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Flow>().HasMany(many => many.FlowLog).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
     }
 
     // On Save Changes - write tenant Id to table
