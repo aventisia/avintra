@@ -16,6 +16,8 @@ public class FlowVersionMappingProfile : IRegister
 
         config.NewConfig<FlowVersionDto, FlowVersion>()
             .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.IsLocked)
+            .Ignore(dest => dest.IsDraft)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)

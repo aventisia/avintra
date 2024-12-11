@@ -63,6 +63,8 @@ public class FlowVersionService : IFlowVersionService
         {
             // Default mapping
             var newFlowVersion = flowVersionDto.Adapt<FlowVersion>();
+            newFlowVersion.IsLocked = false;
+            newFlowVersion.IsDraft = false;
             newFlowVersion.CreatedByUserId = _userId;
             newFlowVersion.LastModifiedByUserId = _userId;
 
@@ -106,7 +108,7 @@ public class FlowVersionService : IFlowVersionService
         {
             // Validate flow version existence
             var flowVersion = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v => v.Id == flowVersionDto.Id && v.CreatedByUserId == _userId)
+                .GetByConditionAsync(v => v.Id == flowVersionDto.Id)
                 .SingleOrDefaultAsync();
 
             // Flow version does not exist
@@ -120,8 +122,10 @@ public class FlowVersionService : IFlowVersionService
             // Auto mapping 
             var newFlowVersion = flowVersionDto.Adapt(flowVersion);
 
-            //update a flow version
-            _unitOfWork.FlowVersionRepo.Update(newFlowVersion);
+            //create a new flow version
+            await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
+            newFlowVersion.IsLocked = false;
+            newFlowVersion.IsDraft = false;
             newFlowVersion.CreatedByUserId = _userId;
             newFlowVersion.LastModifiedByUserId = _userId;
 
