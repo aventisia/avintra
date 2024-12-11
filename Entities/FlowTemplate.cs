@@ -40,7 +40,7 @@ namespace WorkspaceAPIs.Entities
         /// </summary>
         public int UsagesCount { get; set; }
 
-        public Guid FlowId { get; set; }
+        public required Guid FlowId { get; set; }
         /// <summary>
         /// Gets or sets the list of Flows that are based on this template 
         /// </summary>     

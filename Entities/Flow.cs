@@ -60,11 +60,6 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the list of FlowTemplate to manage the one-to-many relation.
     /// </summary>
-   
-    
-    /// <summary>
-    /// Gets or sets the flow template
-    /// </summary>
-     public virtual ICollection<FlowTemplate>? FlowTemplate { get; set; }
+    public virtual ICollection<FlowTemplate>? FlowTemplate { get; set; }
 
 }

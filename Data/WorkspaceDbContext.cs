@@ -68,7 +68,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-Many Relationship between Flow and FlowTemplate
-        modelBuilder.Entity<Flow>().HasMany(many => many.FlowTemplate).WithOne(one => one.Flow).HasForeignKey(f => f.FlowId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Flow>().HasMany(many => many.FlowTemplate).WithOne(one => one.Flow).HasForeignKey(f => f.FlowId).IsRequired();
         
     }
 
