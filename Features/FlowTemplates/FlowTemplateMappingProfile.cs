@@ -9,8 +9,9 @@ namespace WorkspaceAPIs.MappingProfiles
         public void Register(TypeAdapterConfig config)
         {
             // Request mapping for inserting or updating a flow template record
-            config.NewConfig<FlowTemplateDto, FlowTemplate>();
-
+            config.NewConfig<FlowTemplateDto, FlowTemplate>()
+            .Ignore(dest => dest.Id)
+            .IgnoreNullValues(true);
             //Request mapping for publishing flow as a template record
             config.NewConfig<Flow,FlowTemplate>()
             .Map(dest => dest.FlowId,src => src.Id)

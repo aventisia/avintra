@@ -5,6 +5,7 @@ namespace WorkspaceAPIs.DTOs
     /// </summary>
     public class FlowTemplateDto
     {
+        public Guid Id { get; set; }
         public Guid FlowId { get; set; }
         
         /// <summary>
