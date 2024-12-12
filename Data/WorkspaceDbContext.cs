@@ -33,6 +33,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<SupportTicketRemark>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
 
         // Unique property
@@ -72,6 +74,9 @@ public class WorkspaceDbContext : DbContext
 
         //Configure one-to-many relationship between Flow and Flow version
         modelBuilder.Entity<Flow>().HasMany(f => f.FlowVersions).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
+
+        //Configure one-to-many relationship between Plan and Subscription
+        modelBuilder.Entity<Plan>().HasMany(f => f.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
     }
 
     // On Save Changes - write tenant Id to table
@@ -117,5 +122,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<SupportTicketRemark> SupportTicketRemarks { get; set; }
     public DbSet<FlowLog> FlowLog { get; set; }
     public DbSet<FlowVersion> FlowVersions { get; set; }
+    public DbSet<Plan> Plans { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
 
 }
