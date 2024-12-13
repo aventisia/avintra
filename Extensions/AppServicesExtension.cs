@@ -25,6 +25,8 @@ public static class AppServicesExtension
         config.Apply(new TenantsTableMappingProfile());
         config.Apply(new AccountUsersTableMappingProfile());
         config.Apply(new SessionLogMappingProfile());
+        config.Apply(new SubscriptionMappingProfile());
+        
         services.AddSingleton(config);
     }
 
@@ -79,6 +81,7 @@ public static class AppServicesExtension
         services.AddScoped<ITenantAccountService, TenantAccountService>();
         services.AddScoped<ITenantsTableService, TenantsTableService>();
         services.AddScoped<IAccountUsersTableService, AccountUsersTableService>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

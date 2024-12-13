@@ -21,6 +21,9 @@ public class UnitOfWork : IUnitOfWork
 
     public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext);
 
+    public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_accountsDbContext);
+
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
