@@ -42,4 +42,9 @@ public class SubscriptionDto
     /// Gets or sets a value indicating whether the subscription is active or not
     /// </summary>
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Id of the user who created the record.
+    /// </summary>
+    public Guid? CreatedByUserId { get; set; }
 }
