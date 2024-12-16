@@ -38,3 +38,4 @@ global using Microsoft.IdentityModel.Tokens;
 
 global using Mapster;
 global using Ardalis.GuardClauses;
+global using System.Text.RegularExpressions;
