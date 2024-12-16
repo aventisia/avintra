@@ -308,9 +308,12 @@ import removeXMLElementAttribute from "../constants/configs/XML/remove-xml-eleme
 import setXmlElementAttribute from "../constants/configs/XML/set-xml-element-attribute";
 import setXMLElementValue from "../constants/configs/XML/set-xml-element-value";
 import writeXmlToFile from "../constants/configs/XML/write-xml-to-file";
+import scheduleTrigger from "../constants/configs/triggers/schedule-trigger";
 import { ActivityConfig } from "../types/dynamic-form-types";
 
 const dynamicActionMapper: { [key: string]: ActivityConfig } = {
+  //Triggers
+  scheduleTrigger,
   //Variables
   // createNewDataTable,
   insertRowIntoDataTable,
