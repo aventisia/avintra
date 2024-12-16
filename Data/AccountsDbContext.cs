@@ -94,4 +94,5 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<SessionLog> SessionLogs { get; set; }
     public DbSet<ObsoletePwd> ObsoletePwds { get; set; }
     public DbSet<VerificationCode> VerificationCodes { get; set; }
+    public DbSet<AuditLog> AuditLogs{ get; set; }
 }

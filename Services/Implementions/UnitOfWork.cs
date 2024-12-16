@@ -20,7 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext);
 
     public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext);
-
+    public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
