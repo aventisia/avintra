@@ -135,6 +135,44 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("FlowComment");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Duration")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("FlowId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Remark")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTimeOffset>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<float>("Version")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlowId");
+
+                    b.ToTable("FlowLog");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -500,6 +538,17 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
+                        .WithMany("FlowLog")
+                        .HasForeignKey("FlowId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Flow");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Notification", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -604,6 +653,8 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
                 {
                     b.Navigation("FlowComments");
+
+                    b.Navigation("FlowLog");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Notification", b =>
