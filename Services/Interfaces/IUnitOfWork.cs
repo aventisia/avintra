@@ -15,6 +15,8 @@ public interface IUnitOfWork
     IVerificationCodeRepo VerificationCodeRepo { get; }
 
     ISubscriptionRepo SubscriptionRepo{ get; }
+
+    ICustomRoleRepo CustomRoleRepo{ get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

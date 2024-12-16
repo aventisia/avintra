@@ -82,6 +82,8 @@ public static class AppServicesExtension
         services.AddScoped<ITenantsTableService, TenantsTableService>();
         services.AddScoped<IAccountUsersTableService, AccountUsersTableService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<ICustomRoleService, CustomRoleService>();
+
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

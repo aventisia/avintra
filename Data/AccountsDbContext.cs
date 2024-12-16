@@ -102,4 +102,6 @@ public class AccountsDbContext : IdentityDbContext<
 
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<CustomRole> CustomRoles { get; set; }
+
 }
