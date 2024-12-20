@@ -32,7 +32,8 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Gloabl TenantId filters
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        
+        modelBuilder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId ==  CurrentTenantId);
+
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
@@ -58,7 +59,7 @@ public class AccountsDbContext : IdentityDbContext<
         modelBuilder.Entity<Plan>().HasMany(p => p.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
 
         // Configure one-to-many relationship between Subscription and Invoice
-         modelBuilder.Entity<Invoice>().HasOne(i => i.Subscription).WithMany(s => s.Invoice).HasForeignKey(i => i.SubscriptionId);
+        modelBuilder.Entity<Subscription>().HasMany(i => i.Invoice).WithOne(s => s.Subscription).HasForeignKey(fKey => fKey.SubscriptionId).IsRequired();
     }
 
     // On Save Changes - write tenant Id to table

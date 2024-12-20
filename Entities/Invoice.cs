@@ -1,9 +1,10 @@
 namespace AccountsAPIs.Entities;
 
-public class Invoice
+public class Invoice :BaseEntity, IMustHaveTenant
 {
     [Key]
     public Guid Id { get; set; }
+    public Guid TenantId {get; set;}
     public Guid SubscriptionId { get; set; } 
     [ForeignKey("SubscriptionId")]
     public virtual Subscription? Subscription { get; set; } 
