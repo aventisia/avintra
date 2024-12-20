@@ -17,6 +17,8 @@ public interface IUnitOfWork
     ISubscriptionRepo SubscriptionRepo{ get; }
 
     ICustomRoleRepo CustomRoleRepo{ get; }
+
+    IInvoiceRepo InvoiceRepo { get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

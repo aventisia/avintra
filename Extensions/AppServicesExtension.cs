@@ -26,6 +26,7 @@ public static class AppServicesExtension
         config.Apply(new AccountUsersTableMappingProfile());
         config.Apply(new SessionLogMappingProfile());
         config.Apply(new SubscriptionMappingProfile());
+        config.Apply(new InvoiceMappingProfile());
         
         services.AddSingleton(config);
     }
@@ -83,6 +84,7 @@ public static class AppServicesExtension
         services.AddScoped<IAccountUsersTableService, AccountUsersTableService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ICustomRoleService, CustomRoleService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
 
 
         // Common Services

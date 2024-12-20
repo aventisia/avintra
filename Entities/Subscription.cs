@@ -38,5 +38,7 @@ public class Subscription : BaseEntity, IMustHaveTenant
     [ForeignKey("PlanId")]
     public virtual Plan? Plan { get; set; } 
 
+    public virtual ICollection<Invoice>? Invoice { get; set; }
+
 }
 

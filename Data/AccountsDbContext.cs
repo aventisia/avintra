@@ -56,7 +56,9 @@ public class AccountsDbContext : IdentityDbContext<
 
         //Configure one-to-many relationship between Plan and Subscription
         modelBuilder.Entity<Plan>().HasMany(p => p.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
-    
+
+        // Configure one-to-many relationship between Subscription and Invoice
+         modelBuilder.Entity<Invoice>().HasOne(i => i.Subscription).WithMany(s => s.Invoice).HasForeignKey(i => i.SubscriptionId);
     }
 
     // On Save Changes - write tenant Id to table
@@ -103,5 +105,7 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<CustomRole> CustomRoles { get; set; }
+
+    public DbSet<Invoice> Invoices{ get; set; }
 
 }
