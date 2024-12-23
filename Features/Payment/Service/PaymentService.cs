@@ -3,7 +3,7 @@ namespace AccountsAPIs.Services;
 
 public class PaymentService : IPaymentService
 {
-     private readonly UserManager<AccountUser> _userManager;
+    private readonly UserManager<AccountUser> _userManager;
     private readonly SignInManager<AccountUser> _signInManager;
     private readonly HttpContext _httpContext;
     private readonly ILogger<AuthService> _logger;
@@ -17,7 +17,7 @@ public class PaymentService : IPaymentService
     private readonly Guid _sessionId;
     private readonly Guid _userId;
 
-    public PaymentService( UserManager<AccountUser> userManager,
+    public PaymentService(UserManager<AccountUser> userManager,
         SignInManager<AccountUser> signInManager,
         IHttpContextAccessor httpContextAccessor,
         ILogger<AuthService> logger,
@@ -44,6 +44,85 @@ public class PaymentService : IPaymentService
         _identityConfig = identityConfig;
         _emailService = emailService;
     }
+
+    // retrive payment by Id
+    public async Task<ServiceResponse<PaymentDto>> GetPaymentAsync(Guid id)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<PaymentDto>
+        {
+            Data = null,
+            StatusCode = 400,
+            Message = "Failed to retrive payment, please try again"
+        };
+        try
+        {
+            // try to get payment record by Id
+            var payment = await _unitOfWork.PaymentRepo
+            .GetByConditionAsync(w => w.Id == id)
+            .FirstOrDefaultAsync();
+
+            // payment not found
+            if (payment == null)
+            {
+                _logger.LogInformation($"payment by Id does not found {id}");
+                serviceResponse.Message = "payment does not exist";
+                return serviceResponse;
+            }
+
+            // Task Successful
+            serviceResponse.Data = payment.Adapt<PaymentDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Payment retrived successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while retriving payment";
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // retrive payment list by InvoiceId
+    public async Task<ServiceResponse<IEnumerable<PaymentDto>>> GetPaymentInvoiceAsync(Guid invoiceId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<PaymentDto>>
+        {
+            Data = null,
+            StatusCode = 400,
+            Message = "Failed to retrive payment list by invoice, please try again"
+        };
+        try
+        {
+            // Try to retrive data by invoiceId
+            var paymentInvoice = await _unitOfWork.PaymentRepo
+            .GetByConditionAsync(w => w.InvoiceId == invoiceId).ToListAsync();
+
+            if (paymentInvoice == null)
+            {
+                _logger.LogInformation($"payment list by invoiceId does not found {invoiceId}");
+                serviceResponse.Message = "payment list for invoiceId does not exist";
+                return serviceResponse;
+            }
+
+            // Task Succesful
+            serviceResponse.Data = paymentInvoice.Adapt<IEnumerable<PaymentDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Payment list by invoicId retrived successfully";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while retriving payment list by invoiceId";
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // Create a new Payment  
     public async Task<ServiceResponse<PaymentDto>> InsertPaymentAsync(PaymentDto paymentDto)
     {
         // Initialize ServiceResponse with failed response
@@ -55,12 +134,12 @@ public class PaymentService : IPaymentService
         };
         try
         {  // Default mapping
-           var payment = paymentDto.Adapt<Payment>();
-           
-           // Insert payment
-           await _unitOfWork.PaymentRepo.InsertAsync(payment);
+            var payment = paymentDto.Adapt<Payment>();
 
-           // Insert-Job failed
+            // Insert payment
+            await _unitOfWork.PaymentRepo.InsertAsync(payment);
+
+            // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while inserting new Invoice.");

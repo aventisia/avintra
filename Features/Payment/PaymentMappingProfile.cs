@@ -8,5 +8,8 @@ public class PaymentMappingProfile : IRegister
         config.NewConfig<PaymentDto, Payment>()
         .Ignore(dest => dest.Id)
         .IgnoreNullValues(true);
+
+        // Mapping for retriving the payment Record.
+        config.NewConfig<Payment ,PaymentDto>();
     }
 }
