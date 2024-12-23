@@ -1,0 +1,21 @@
+meta {
+  name: Update role
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/role/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("ROLE_ID"),
+    FullName: faker.person.jobType(),
+    Description: faker.lorem.sentence(),
+  })
+}
