@@ -33,7 +33,8 @@ public class AccountsDbContext : IdentityDbContext<
         // Gloabl TenantId filters
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId ==  CurrentTenantId);
-
+        modelBuilder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
@@ -60,6 +61,10 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Configure one-to-many relationship between Subscription and Invoice
         modelBuilder.Entity<Subscription>().HasMany(i => i.Invoice).WithOne(s => s.Subscription).HasForeignKey(fKey => fKey.SubscriptionId).IsRequired();
+       
+        // Configure one-to-many relationship between Invoice and payment
+        modelBuilder.Entity<Invoice>().HasMany(i => i.Payment).WithOne(p => p.Invoice).HasForeignKey(p => p.InvoiceId);
+    
     }
 
     // On Save Changes - write tenant Id to table
@@ -106,7 +111,7 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<CustomRole> CustomRoles { get; set; }
-
     public DbSet<Invoice> Invoices{ get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
 }

@@ -27,6 +27,7 @@ public static class AppServicesExtension
         config.Apply(new SessionLogMappingProfile());
         config.Apply(new SubscriptionMappingProfile());
         config.Apply(new InvoiceMappingProfile());
+        config.Apply(new PaymentMappingProfile());
         
         services.AddSingleton(config);
     }
@@ -85,7 +86,7 @@ public static class AppServicesExtension
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ICustomRoleService, CustomRoleService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
-
+        services.AddScoped<IPaymentService,PaymentService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

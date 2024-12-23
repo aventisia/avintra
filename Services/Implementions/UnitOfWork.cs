@@ -24,7 +24,7 @@ public class UnitOfWork : IUnitOfWork
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_accountsDbContext);
     public ICustomRoleRepo CustomRoleRepo => new CustomRoleRepo(_accountsDbContext);
     public IInvoiceRepo InvoiceRepo => new InvoiceRepo(_accountsDbContext);
-
+    public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 

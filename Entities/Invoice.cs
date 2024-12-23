@@ -11,4 +11,6 @@ public class Invoice :BaseEntity, IMustHaveTenant
     public decimal Amount { get; set; }
     public DateTime GeneratedDate { get; set; }
     public bool IsPaid { get; set; }
+
+    public virtual ICollection<Payment>? Payment { get; set; }
 }
