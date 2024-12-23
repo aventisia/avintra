@@ -1,13 +1,14 @@
 namespace AccountsAPIs.Services;
 
-public class CustomRoleService : ICustomRoleService
+public class AccountRoleService : IAccountRoleService
 {
-    private readonly ILogger<CustomRoleService> _logger;
+    private readonly ILogger<AccountRoleService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
 
-    public CustomRoleService(
-        ILogger<CustomRoleService> logger,
+
+    public AccountRoleService(
+        ILogger<AccountRoleService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
@@ -19,10 +20,10 @@ public class CustomRoleService : ICustomRoleService
     }
 
     //Get list of roles
-    public async Task<ServiceResponse<IEnumerable<CustomRoleDto>>> GetCustomRoleListAsync()
+    public async Task<ServiceResponse<IEnumerable<AccountRoleDto>>> GetAccountRoleListAsync()
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<CustomRoleDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<AccountRoleDto>>
         {
             Data = null,
             StatusCode = 400
@@ -30,13 +31,13 @@ public class CustomRoleService : ICustomRoleService
 
         try
         {
-            //Try to get custom roles
-            var customRoles = await _unitOfWork.CustomRoleRepo
+            //Try to get roles
+            var roles = await _unitOfWork.AccountRoleRepo
             .GetByConditionAsync(s => s.IsDisabled == false)
             .OrderByDescending(o => o.Id).ToListAsync();
 
             // Task successful
-            serviceResponse.Data = customRoles.Adapt<IEnumerable<CustomRoleDto>>();
+            serviceResponse.Data = roles.Adapt<IEnumerable<AccountRoleDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Roles retrieved successfully";
         }
@@ -49,11 +50,11 @@ public class CustomRoleService : ICustomRoleService
         return serviceResponse;
     }
 
-    //Creates a custom role
-    public async Task<ServiceResponse<CustomRoleDto>> InsertCustomRoleAsync(CustomRoleDto customRoleDto)
+    //Creates a role
+    public async Task<ServiceResponse<AccountRoleDto>> InsertAccountRoleAsync(AccountRoleDto accountRoleDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<CustomRoleDto>
+        var serviceResponse = new ServiceResponse<AccountRoleDto>
         {
             Data = null,
             StatusCode = 400
@@ -61,13 +62,25 @@ public class CustomRoleService : ICustomRoleService
 
         try
         {
+            //Try to get roles
+            var roles = await _unitOfWork.AccountRoleRepo
+            .GetAllAsync().ToListAsync();
+
+            //Check for duplicate role
+            if (roles.Any(r => r.FullName == accountRoleDto.FullName))
+            {
+                _logger.LogInformation($"Role already exists, please select another role name.");
+                serviceResponse.Message = "Role already exists, please select another role name.";
+                return serviceResponse;
+            }
+
             // Default mapping
-            var newRole = customRoleDto.Adapt<CustomRole>();
+            var newRole = accountRoleDto.Adapt<AccountRole>();
             newRole.CreatedByUserId = _userId;
             newRole.LastModifiedByUserId = _userId;
 
             //Insert a role
-            await _unitOfWork.CustomRoleRepo.InsertAsync(newRole);
+            await _unitOfWork.AccountRoleRepo.InsertAsync(newRole);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -77,7 +90,7 @@ public class CustomRoleService : ICustomRoleService
             }
 
             // Task successful
-            serviceResponse.Data = newRole.Adapt<CustomRoleDto>();
+            serviceResponse.Data = newRole.Adapt<AccountRoleDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Role added successfully";
 
@@ -92,10 +105,10 @@ public class CustomRoleService : ICustomRoleService
     }
 
     //Updates a role
-    public async Task<ServiceResponse<CustomRoleDto>> UpdateCustomRoleAsync(CustomRoleDto customRoleDto)
+    public async Task<ServiceResponse<AccountRoleDto>> UpdateAccountRoleAsync(AccountRoleDto accountRoleDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<CustomRoleDto>
+        var serviceResponse = new ServiceResponse<AccountRoleDto>
         {
             Data = null,
             StatusCode = 400
@@ -103,9 +116,21 @@ public class CustomRoleService : ICustomRoleService
 
         try
         {
+            //Try to get roles
+            var roles = await _unitOfWork.AccountRoleRepo
+            .GetAllAsync().ToListAsync();
+
+            //Check for duplicate role
+            if (roles.Any(r => r.FullName == accountRoleDto.FullName))
+            {
+                _logger.LogInformation($"Role already exists, please select another role name.");
+                serviceResponse.Message = "Role already exists, please select another role name.";
+                return serviceResponse;
+            }
+
             // Validate role existence
-            var role = await _unitOfWork.CustomRoleRepo
-                .GetByConditionAsync(r => r.Id == customRoleDto.Id)
+            var role = await _unitOfWork.AccountRoleRepo
+                .GetByConditionAsync(r => r.Id == accountRoleDto.Id)
                 .SingleOrDefaultAsync();
 
             // Role does not exist
@@ -117,10 +142,10 @@ public class CustomRoleService : ICustomRoleService
             }
 
             // Auto mapping 
-            var newRole = customRoleDto.Adapt(role);
+            var newRole = accountRoleDto.Adapt(role);
 
             //create an updated role
-            _unitOfWork.CustomRoleRepo.Update(newRole);
+            _unitOfWork.AccountRoleRepo.Update(newRole);
             newRole.CreatedByUserId = _userId;
             newRole.LastModifiedByUserId = _userId;
 
@@ -132,7 +157,7 @@ public class CustomRoleService : ICustomRoleService
             }
 
             // Task successful
-            serviceResponse.Data = newRole.Adapt<CustomRoleDto>();
+            serviceResponse.Data = newRole.Adapt<AccountRoleDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Role updated successfully";
 
@@ -147,7 +172,7 @@ public class CustomRoleService : ICustomRoleService
 
 
     //Deletes a role
-    public async Task<ServiceResponse<bool>> DeleteCustomeRoleAsync(Guid id)
+    public async Task<ServiceResponse<bool>> DeleteAccountRoleAsync(Guid id)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -159,8 +184,8 @@ public class CustomRoleService : ICustomRoleService
         try
         {
             //Try to get role using identifier
-            var role = await _unitOfWork.CustomRoleRepo
-            .GetByConditionAsync(v => v.Id == id)
+            var role = await _unitOfWork.AccountRoleRepo
+            .GetByConditionAsync(r => r.Id == id)
             .SingleOrDefaultAsync();
 
             //Check if role not exists
@@ -172,7 +197,7 @@ public class CustomRoleService : ICustomRoleService
             }
 
             //Delete role
-            _unitOfWork.CustomRoleRepo.Delete(role);
+            _unitOfWork.AccountRoleRepo.Delete(role);
 
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
@@ -187,7 +212,7 @@ public class CustomRoleService : ICustomRoleService
             serviceResponse.Message = "Role deleted successfully";
 
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
             return serviceResponse;
@@ -195,5 +220,4 @@ public class CustomRoleService : ICustomRoleService
         return serviceResponse;
     }
 
-    
 }

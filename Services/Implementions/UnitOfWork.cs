@@ -10,19 +10,17 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext);
-
     public ITenantRepo TenantRepo => new TenantRepo(_accountsDbContext);
-
     public IActiveSessionRepo ActiveSessionRepo => new ActiveSessionRepo(_accountsDbContext);
-
     public ISessionLogRepo SessionLogRepo => new SessionLogRepo(_accountsDbContext);
-
     public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext);
-
     public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext);
-
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_accountsDbContext);
-    public ICustomRoleRepo CustomRoleRepo => new CustomRoleRepo(_accountsDbContext);
+    public IAccountRoleRepo AccountRoleRepo => new AccountRoleRepo(_accountsDbContext);
+    public IPermissionRepo PermissionRepo => new PermissionRepo(_accountsDbContext);
+    public IRolePermissionRepo RolePermissionRepo => new RolePermissionRepo(_accountsDbContext);
+
+
 
 
 
