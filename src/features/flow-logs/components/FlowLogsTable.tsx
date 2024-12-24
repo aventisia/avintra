@@ -8,10 +8,14 @@ import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { logsTableColumns } from "./LogTableColumns";
 import { columnVisibilityState } from "../constants/columns-visibility-state";
 import { useFetchFlowLogs } from "../hooks/useFetchFlowLogs";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 export const FlowLogsTable = () => {
   // Fetch flow logs data
   const { data } = useFetchFlowLogs();
+
+  const navigate = useNavigate();
 
   // Create a React table for flow logs data
   const table = useDataTable(
@@ -23,8 +27,10 @@ export const FlowLogsTable = () => {
   // Return the rendered DataTable component.
   return (
     <>
+      <div className="m-5 space-y-4 pb-4 pt-[17px]">
+      <Button variant="link" onClick={() => navigate(-1)}>Back to flow</Button>
       {data ? (
-        <div className="m-5 space-y-4 pb-4 pt-[17px]">
+        <>
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <DTHeading heading={TABLE_HEADING} />
@@ -44,11 +50,12 @@ export const FlowLogsTable = () => {
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
+          </>
+        ) : (
+          // Show data table skeleton while fetching the flow logs data
+          <DataTableSkeleton />
+        )}
         </div>
-      ) : (
-        // Show data table skeleton while fetching the flow logs data
-        <DataTableSkeleton />
-      )}
     </>
   );
 };
