@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { FlowLogsDTO } from "../dtos/flow-logs-dtos";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { getFormattedDate } from "../utils";
 
 /**
  * Array of table columns for the flow logs table.
@@ -29,7 +30,7 @@ export const logsTableColumns: ColumnDef<FlowLogsDTO>[] = [
     header: ({ column }) => (
       <DTColumnHeader column={column} title={"Start time"} />
     ),
-    cell: ({ row }) => <div>{row.getValue("startTime")}</div>,
+    cell: ({ row }) => <div>{getFormattedDate(row.getValue("startTime"))}</div>,
   },
   {
     accessorKey: "duration",
