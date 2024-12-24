@@ -1,0 +1,46 @@
+import { ColumnDef } from "@tanstack/react-table";
+import { FlowLogsDTO } from "../dtos/flow-logs-dtos";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+
+/**
+ * Array of table columns for the flow logs table.
+ * Each column object contains an accessorKey, header component, and cell component.
+ */
+export const logsTableColumns: ColumnDef<FlowLogsDTO>[] = [
+  {
+    accessorKey: "flowName",
+    header: ({ column }) => <DTColumnHeader column={column} title={"Flow"} />,
+    cell: ({ row }) => <div>{row.getValue("flowName")}</div>,
+  },
+  {
+    accessorKey: "version",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={"Version"} />
+    ),
+    cell: ({ row }) => <div>{row.getValue("version")}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => <DTColumnHeader column={column} title={"Status"} />,
+    cell: ({ row }) => <div>{row.getValue("status")}</div>,
+  },
+  {
+    accessorKey: "startTime",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={"Start time"} />
+    ),
+    cell: ({ row }) => <div>{row.getValue("startTime")}</div>,
+  },
+  {
+    accessorKey: "duration",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={"Duration"} />
+    ),
+    cell: ({ row }) => <div>{row.getValue("duration")}</div>,
+  },
+  {
+    accessorKey: "remark",
+    header: ({ column }) => <DTColumnHeader column={column} title={"Remark"} />,
+    cell: ({ row }) => <div>{row.getValue("remark")}</div>,
+  },
+];

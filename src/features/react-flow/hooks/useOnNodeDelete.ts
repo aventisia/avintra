@@ -39,6 +39,7 @@ export const useOnNodeDelete = () => {
           outgoers.map(({ id: target }) => ({
             id: window.crypto.randomUUID(),
             type: "customStepEdge",
+            label: "plus",
             source,
             target,
           })),
@@ -48,7 +49,7 @@ export const useOnNodeDelete = () => {
       }, edges);
 
       // Auto organize node & edge
-      autoLayout({newNodes: nodes, newEdges:reconnectedEdges});
+      autoLayout({ newNodes: nodes, newEdges: reconnectedEdges });
     },
     [edges, autoLayout, nodes],
   );

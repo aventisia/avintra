@@ -1,4 +1,5 @@
 import { ExecuteFlow } from "@/features/execute-flow/ExecuteFlow";
+import FlowLogHeader from "@/features/flow-logs/components/FlowLogHeader";
 import { FlowVersions } from "@/features/flow-versions/components";
 import { FlowsPopover } from "@/features/flows-popover/components/FlowsPopover";
 import { StudioPreferences } from "@/features/studio-preferences/components";
@@ -6,6 +7,7 @@ import { UnreadNotifications } from "@/react-toolkit/features/unread-notificatio
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { Separator } from "@/react-toolkit/ui/separator";
 import { Panel } from "@xyflow/react";
 
 const StudioHeader = () => {
@@ -21,6 +23,9 @@ const StudioHeader = () => {
       <Panel position="top-right" onContextMenu={(e) => e.preventDefault()}>
         <div className="flex h-10 items-center gap-2 rounded-lg bg-white px-1.5">
           <ExecuteFlow />
+          <Separator orientation="vertical" className="h-6" />
+          <FlowLogHeader />
+          <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center gap-1">
             <FlowVersions />
             <StudioPreferences />
