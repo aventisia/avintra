@@ -19,15 +19,15 @@ public class InvoiceController : BaseApiController
     return ResultHelper(await _invoiceService.GetAllInvoiceAsync());
   }
 
-  //Retrieves all invoices associated with a specific subscription.
-  [HttpGet("list/subscriptionId")]
+  //Retrieves all invoices list associated with a specific subscription.
+  [HttpGet("list/{subscriptionId}")]
   public async Task<ActionResult<IEnumerable<InvoiceDto>>> GetInvoiceBySubscription (Guid subscriptionId)
   {
     return ResultHelper(await _invoiceService.GetInvoiceBySubscriptionAsync(subscriptionId));
   }
 
   // Retrive invoice by Id
-  [HttpGet("id")]
+  [HttpGet("{id}")]
   public async Task<ActionResult<ServiceResponse<InvoiceDto>>> GetInvoice(Guid id)
   {
     return ResultHelper(await _invoiceService.GetInvoiceAsync(id));
@@ -47,7 +47,7 @@ public class InvoiceController : BaseApiController
     return ResultHelper(await _invoiceService.UpdateInvoiceAsync(invoiceDto));
   }
 
-  // Delete Invoice
+  // Delete Invoice by Id
   [HttpDelete("delete/{id}")]
   public async Task<ActionResult<ServiceResponse<bool>>> DeleteInvoice (Guid id)
   {

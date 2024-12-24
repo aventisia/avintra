@@ -1,0 +1,23 @@
+meta {
+  name: update invoice
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/invoice/update-invoice
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({
+    subscriptionId: "5b6c99e4-008d-4ad7-9d0e-c77416e237d5",
+    id: bru.getGlobalEnvVar("INVOICE_ID"),
+    amount: 349,
+    generatedDate: new Date(),
+    isPaid: false  
+  })
+}

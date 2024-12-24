@@ -91,7 +91,7 @@ public class InvoiceService : IInvoiceService
             // Try to get invoice by subscriptionId
             var invoice = await _unitOfWork.InvoiceRepo
             .GetByConditionAsync(w => w.SubscriptionId == subscriptionId)
-            .FirstOrDefaultAsync();
+            .ToListAsync();
 
             if (invoice == null)
             {
@@ -211,7 +211,7 @@ public class InvoiceService : IInvoiceService
             .FirstOrDefaultAsync();
 
             // Invoice does not exist
-            if (invoice != null)
+            if (invoice == null)
             {
                 _logger.LogInformation($"Invoice does not exist");
                 serviceResponse.Message = "Invoice not exist";
@@ -220,11 +220,11 @@ public class InvoiceService : IInvoiceService
 
             // Default mapping
             var newInvoice = invoiceDto.Adapt(invoice);
-            newInvoice.CreatedByUserId = _userId;
-            newInvoice.LastModifiedByUserId = _userId;
-
+            
             // update invoice
             _unitOfWork.InvoiceRepo.Update(newInvoice);
+             newInvoice.CreatedByUserId = _userId;
+            newInvoice.LastModifiedByUserId = _userId;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -265,7 +265,7 @@ public class InvoiceService : IInvoiceService
             .FirstOrDefaultAsync();
 
             // Invoice does not exist
-            if (invoice != null)
+            if (invoice == null)
             {
                 _logger.LogInformation($"Invoice does not exist");
                 serviceResponse.Message = "Invoice not exist";
