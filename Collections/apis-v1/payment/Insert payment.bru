@@ -1,0 +1,32 @@
+meta {
+  name: Insert payment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/payment/insert-payment
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({
+    invoiceId: "3fa85f64-5717-4562-b3fc-2c963f66afa8",
+    amountPaid: 349,
+    paymentDate: "2024-12-24T06:55:29.862Z",
+    paymentMethod: "Credit card",
+    paymentStatus: "success"  
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "PAYMENT_ID",
+    res.getBody().data.id
+    );
+  }
+}

@@ -135,6 +135,8 @@ public class PaymentService : IPaymentService
         try
         {  // Default mapping
             var payment = paymentDto.Adapt<Payment>();
+            payment.CreatedByUserId = _userId;
+            payment.LastModifiedByUserId = _userId;
 
             // Insert payment
             await _unitOfWork.PaymentRepo.InsertAsync(payment);

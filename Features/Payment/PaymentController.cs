@@ -13,7 +13,7 @@ public class PaymentController : BaseApiController
   }
 
   //Retrive a specific payment by ID.
-  [HttpGet("id")]
+  [HttpGet("{id}")]
   public async Task<ActionResult<ServiceResponse<PaymentDto>>> GetPayment(Guid id)
   {
     return ResultHelper(await _PaymentService.GetPaymentAsync(id));
