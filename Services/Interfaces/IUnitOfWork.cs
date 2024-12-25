@@ -14,6 +14,7 @@ public interface IUnitOfWork
 
     IFlowVersionRepo FlowVersionRepo{ get; }
     ISubscriptionRepo SubscriptionRepo{ get; }
+    IExecutionLogRepo ExecutionLogRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

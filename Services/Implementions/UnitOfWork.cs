@@ -28,6 +28,9 @@ public class UnitOfWork : IUnitOfWork
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
 
+    public IExecutionLogRepo ExecutionLogRepo => new ExecutionLogRepo(_workspaceDbContext);
+
+
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
