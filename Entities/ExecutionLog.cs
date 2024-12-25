@@ -1,7 +1,12 @@
 namespace WorkspaceAPIs.Entities;
 
-public class ExecutionLog : BaseEntity
+public class ExecutionLog : BaseEntity, IMustHaveTenant
 {
+    /// <summary>
+    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
+    /// </summary>
+    public Guid TenantId { get; set; }
+    
     /// <summary>
     /// Gets or sets the action name for the execution log
     /// </summary>

@@ -34,6 +34,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
 
         // Unique property

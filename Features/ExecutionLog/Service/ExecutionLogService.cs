@@ -121,7 +121,7 @@ public class ExecutionLogService : IExecutionLogService
             var newLog = executionLogDto.Adapt(log);
 
             //create a new execution log
-            await _unitOfWork.ExecutionLogRepo.InsertAsync(newLog);
+            _unitOfWork.ExecutionLogRepo.Update(newLog);
             newLog.CreatedByUserId = _userId;
             newLog.LastModifiedByUserId = _userId;
 
