@@ -60,6 +60,10 @@ public class AccountsDbContext : IdentityDbContext<
         // Configure Many-to-Many relationship between Permission and Custom Role
         modelBuilder.Entity<RolePermission>().HasOne(o => o.Permission).WithMany(r => r.RolePermissions).HasForeignKey(fkey =>fkey.PermissionId).IsRequired();
         modelBuilder.Entity<RolePermission>().HasOne(o => o.AccountRole).WithMany(r => r.RolePermissions).HasForeignKey(fkey =>fkey.AccountRoleId).IsRequired();
+
+        // Configure Many-to-Many relationship between AccountUser and AccountRole
+        modelBuilder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
+        modelBuilder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
             
     }
 
