@@ -21,6 +21,8 @@ public interface IUnitOfWork
     IInvoiceRepo InvoiceRepo { get; }
 
     IPaymentRepo PaymentRepo {get;}
+
+    IPlanRepo planRepo{ get; }
     
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

@@ -1,0 +1,33 @@
+meta {
+  name: Insert plan
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/plan/insert-plan
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({
+   planName: faker.string.alpha,
+   description: faker.lorem.paragraph(),
+   monthlyPrice: 349,
+   yearlyPrice: 0,
+   isDisabled: true  
+  })
+    
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "PLAN_ID",
+    res.getBody().data.id
+    );
+  }
+}
