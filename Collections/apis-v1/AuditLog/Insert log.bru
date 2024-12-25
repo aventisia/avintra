@@ -1,0 +1,36 @@
+meta {
+  name: Insert Log
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/audit-log/insert-log
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({ 
+      userId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      entityName: "FlowTemplate",
+      entityId: "3fa85f64-5717-4562-b3fc-2c963f66afa3",
+      action: "Update",
+      changes: "modify the property",
+      timestamp: new Date()
+    });
+  
+  
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "AUDIT_LOG_ID",
+          res.getBody().data.id
+      );
+  }
+}

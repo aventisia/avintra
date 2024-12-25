@@ -80,7 +80,7 @@ public static class AppServicesExtension
         services.AddScoped<ITenantAccountService, TenantAccountService>();
         services.AddScoped<ITenantsTableService, TenantsTableService>();
         services.AddScoped<IAccountUsersTableService, AccountUsersTableService>();
-        //services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

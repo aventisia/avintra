@@ -2,6 +2,8 @@
  * https://aspnano.com/asp-net-core-multi-tenant-app-multiple-databases-guide/
  * https://codewithmukesh.com/blog/multitenancy-in-aspnet-core/
 */
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace AccountsAPIs.Data;
 
@@ -16,14 +18,18 @@ public class AccountsDbContext : IdentityDbContext<
         IdentityUserToken<Guid>>
 {
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private Guid CurrentTenantId { get; set; }
+    private Guid CurrentUserId { get; set; }
 
     public AccountsDbContext(
-        ICurrentTenantService currentTenantService,
+        ICurrentTenantService currentTenantService, IHttpContextAccessor httpContextAccessor,
         DbContextOptions<AccountsDbContext> options) : base(options)
     {
         _currentTenantService = currentTenantService;
         CurrentTenantId = _currentTenantService.CurrentTenantId;
+        _httpContextAccessor = httpContextAccessor;
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +37,7 @@ public class AccountsDbContext : IdentityDbContext<
         base.OnModelCreating(modelBuilder);
 
         // Gloabl TenantId filters
-        
+
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
@@ -48,7 +54,7 @@ public class AccountsDbContext : IdentityDbContext<
         // Configure One-to-One relationship between Tenant and AccountUser
         modelBuilder.Entity<Tenant>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tenant>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-        
+
         // Configure Many-to-Many relationship between AccountUser and AccountRole
         modelBuilder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         modelBuilder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
@@ -66,6 +72,29 @@ public class AccountsDbContext : IdentityDbContext<
                     break;
             }
         }
+
+        var auditEntries = new List<AuditLog>();
+
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.State == EntityState.Deleted)
+            {
+                var auditEntry = new AuditLog
+                {
+                    UserId = CurrentUserId, // Fetch the current user's ID
+                    EntityName = entry.Entity.GetType().Name,
+                    EntityId = entry.Properties.FirstOrDefault(p => p.Metadata.IsPrimaryKey())?.CurrentValue as Guid? ?? Guid.Empty,
+                    Action = entry.State.ToString(),
+                    Changes = GetChanges(entry),
+                    Timestamp = DateTime.UtcNow
+                };
+
+                auditEntries.Add(auditEntry);
+            }
+
+            AuditLogs.AddRange(auditEntries);
+
+        }
         var result = base.SaveChanges();
         return result;
     }
@@ -82,10 +111,62 @@ public class AccountsDbContext : IdentityDbContext<
                     break;
             }
         }
+        //Collect audit log entries
+        var auditEntries = new List<AuditLog>();
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.State == EntityState.Deleted)
+            {
+                var auditEntry = new AuditLog
+                {
+                    UserId = CurrentUserId,
+                    EntityName = entry.Entity.GetType().Name,
+                    EntityId = entry.Properties.FirstOrDefault(p => p.Metadata.IsPrimaryKey())?.CurrentValue as Guid? ?? Guid.Empty,
+                    Action = entry.State.ToString(),
+                    Changes = GetChanges(entry),
+                    Timestamp = DateTime.UtcNow
+                };
+
+                auditEntries.Add(auditEntry);
+            }
+        }
+
+        // Add the audit log entries to the DbContext
+        AuditLogs.AddRange(auditEntries);
+
+        // Call base SaveChangesAsync
         var result = await base.SaveChangesAsync(cancellationToken);
         return result;
     }
 
+    private string GetChanges(EntityEntry entry)
+    {
+        if (entry.State == EntityState.Added)
+        {
+            return JsonSerializer.Serialize(entry.CurrentValues.Properties.ToDictionary(p => p.Name, p => entry.CurrentValues[p]));
+        }
+        else if (entry.State == EntityState.Deleted)
+        {
+            return JsonSerializer.Serialize(entry.OriginalValues.Properties.ToDictionary(p => p.Name, p => entry.OriginalValues[p]));
+        }
+        else if (entry.State == EntityState.Modified)
+        {
+            var changes = new Dictionary<string, object>();
+            foreach (var property in entry.Properties)
+            {
+                if (property.IsModified)
+                {
+                    changes[property.Metadata.Name] = new
+                    {
+                        OldValue = property.OriginalValue,
+                        NewValue = property.CurrentValue
+                    };
+                }
+            }
+            return JsonSerializer.Serialize(changes);
+        }
+        return null;
+    }
     public override DbSet<AccountRole> Roles { get; set; }
     public override DbSet<AccountUser> Users { get; set; }
     public override DbSet<AccountUserRole> UserRoles { get; set; }
@@ -94,5 +175,5 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<SessionLog> SessionLogs { get; set; }
     public DbSet<ObsoletePwd> ObsoletePwds { get; set; }
     public DbSet<VerificationCode> VerificationCodes { get; set; }
-    public DbSet<AuditLog> AuditLogs{ get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 }
