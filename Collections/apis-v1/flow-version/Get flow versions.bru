@@ -9,3 +9,11 @@ get {
   body: none
   auth: none
 }
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    flowId: bru.getGlobalEnvVar("FLOW_ID"),
+  })
+}

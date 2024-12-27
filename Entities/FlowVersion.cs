@@ -27,4 +27,9 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("FlowId")]
     public virtual Flow? Flow { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
 }
