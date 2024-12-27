@@ -123,13 +123,16 @@ public class FlowVersionService : IFlowVersionService
                 return serviceResponse;
             }
 
+            //Get count of versions of a related flow
+            var versionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(flowVersion.FlowId);
+
             // Auto mapping 
             var updatedFlowVersion = flowVersionDto.Adapt<FlowVersion>();
             updatedFlowVersion.IsLocked = false;
             updatedFlowVersion.IsDraft = false;
             updatedFlowVersion.CreatedByUserId = _userId;
             updatedFlowVersion.LastModifiedByUserId = _userId;
-            updatedFlowVersion.VersionNumber = flowVersion.VersionNumber +1;
+            updatedFlowVersion.VersionNumber = versionCount +1;
             //create a new flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(updatedFlowVersion);
 
