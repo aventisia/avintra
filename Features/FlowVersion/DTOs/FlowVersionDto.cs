@@ -37,4 +37,14 @@ public class FlowVersionDto
     /// Gets or sets the date and time when the record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets initials of the user who created the record
+    /// </summary>
+    public string? CreatedByUserInitials{ get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
 }

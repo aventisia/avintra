@@ -12,6 +12,9 @@ public class FlowVersionMappingProfile : IRegister
             : null)
         .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
             ? src.CreatedByUser.UserName
+            : null)
+        .Map(dest => dest.CreatedByUserInitials, src => src.CreatedByUser != null
+            ? GetUserInitialsUtil.GetUserInitials(src.CreatedByUser.FirstName, src.CreatedByUser.LastName)
             : null);
 
         config.NewConfig<FlowVersionDto, FlowVersion>()
@@ -22,6 +25,7 @@ public class FlowVersionMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.VersionNumber)
             .IgnoreNullValues(true);
 
     }

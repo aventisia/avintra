@@ -14,9 +14,7 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    flowId: bru.getGlobalEnvVar("FLOW_ID"),
     id: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
-    isLocked: false,
-    isDraft: false,  
+    flowId: bru.getGlobalEnvVar("FLOW_ID")
   })
 }

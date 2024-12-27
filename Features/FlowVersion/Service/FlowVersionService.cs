@@ -32,8 +32,8 @@ public class FlowVersionService : IFlowVersionService
         {
             //Try to get flow versions
             var flowVersions = await _unitOfWork.FlowVersionRepo
-            .GetByConditionAsync(v => v.Flow.Id == flowId).Include(w => w.CreatedByUser)
-            .OrderBy(o => o.CreatedOn).ToListAsync();
+            .GetByConditionAsync(v => v.FlowId == flowId).Include(c => c.CreatedByUser)
+            .OrderBy(o => o.VersionNumber).ToListAsync();
 
             // Task successful
             serviceResponse.Data = flowVersions.Adapt<IEnumerable<FlowVersionDto>>();
@@ -61,12 +61,16 @@ public class FlowVersionService : IFlowVersionService
 
         try
         {
+            //Get count of versions of a related flow
+            var versionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(flowVersionDto.FlowId);
+
             // Default mapping
             var newFlowVersion = flowVersionDto.Adapt<FlowVersion>();
             newFlowVersion.IsLocked = false;
             newFlowVersion.IsDraft = false;
             newFlowVersion.CreatedByUserId = _userId;
             newFlowVersion.LastModifiedByUserId = _userId;
+            newFlowVersion.VersionNumber = versionCount + 1;
 
             //Insert a flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
@@ -120,14 +124,14 @@ public class FlowVersionService : IFlowVersionService
             }
 
             // Auto mapping 
-            var newFlowVersion = flowVersionDto.Adapt(flowVersion);
-
+            var updatedFlowVersion = flowVersionDto.Adapt<FlowVersion>();
+            updatedFlowVersion.IsLocked = false;
+            updatedFlowVersion.IsDraft = false;
+            updatedFlowVersion.CreatedByUserId = _userId;
+            updatedFlowVersion.LastModifiedByUserId = _userId;
+            updatedFlowVersion.VersionNumber = flowVersion.VersionNumber +1;
             //create a new flow version
-            await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
-            newFlowVersion.IsLocked = false;
-            newFlowVersion.IsDraft = false;
-            newFlowVersion.CreatedByUserId = _userId;
-            newFlowVersion.LastModifiedByUserId = _userId;
+            await _unitOfWork.FlowVersionRepo.InsertAsync(updatedFlowVersion);
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -137,9 +141,9 @@ public class FlowVersionService : IFlowVersionService
             }
 
             // Task successful
-            serviceResponse.Data = newFlowVersion.Adapt<FlowVersionDto>();
+            serviceResponse.Data = updatedFlowVersion.Adapt<FlowVersionDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Version updated successfully";
+            serviceResponse.Message = "New version created successfully";
 
         }
         catch (Exception ex)
