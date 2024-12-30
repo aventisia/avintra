@@ -7,7 +7,7 @@ export interface FlowVersionDto {
    *
    * Not making it required because same DTO is used for insert and update.
    */
-  id?: string;
+  Id?: string;
 
   /**
    * Gets or sets the ID of the flow this version is associated with.
@@ -26,14 +26,18 @@ export interface FlowVersionDto {
   /**
    * Gets or sets the username of the user who created the flow record
    */
-  createdBy?: string;
+  CreatedBy?: string;
   /**
    * Gets or sets the username of the user who created the flow record
    */
-  createdByUsername?: string;
+  CreatedByUsername?: string;
 
   /**
    * Gets or sets the date and time when the flow record was created.
    */
-  createdOn?: Date;
+  CreatedOn?: Date;
+
+  CreatedByUserInitials?: string;
+
+  VersionNumber?:number;
 }
