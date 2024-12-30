@@ -7,6 +7,7 @@ import { FVIDraftAction } from "./FVIDraftAction";
 interface FlowVersionItemActionsProps {
   flowId: string;
   isView: boolean;
+  versionID: string;
 }
 
 /**
@@ -15,13 +16,14 @@ interface FlowVersionItemActionsProps {
 export const FlowVersionItemActions = ({
   flowId,
   isView,
+  versionID,
 }: FlowVersionItemActionsProps) => {
   return (
     <DropdownMenu>
       <FVIActionsTrigger />
       <DropdownMenuContent align="end" className="w-[8rem] min-w-[6rem]">
         <FVIViewAction flowId={flowId} />
-        {!isView && <FVIDraftAction flowId={flowId} />}
+        {!isView && <FVIDraftAction versionID={versionID} />}
       </DropdownMenuContent>
     </DropdownMenu>
   );
