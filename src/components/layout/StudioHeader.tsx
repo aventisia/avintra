@@ -1,5 +1,6 @@
 import { ExecuteFlow } from "@/features/execute-flow/ExecuteFlow";
 import FlowLogHeader from "@/features/flow-logs/components/FlowLogHeader";
+import { FlowVersions } from "@/features/flow-versions/components";
 import { FlowsPopover } from "@/features/flows-popover/components/FlowsPopover";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
@@ -26,6 +27,7 @@ const StudioHeader = () => {
           <FlowLogHeader />
           <Separator orientation="vertical" className="h-6" />
           <div className="flex items-center gap-1">
+            <FlowVersions />
             <StudioPreferences />
             <UnreadNotifications
               className="mt-0 mlg:mt-1.5"

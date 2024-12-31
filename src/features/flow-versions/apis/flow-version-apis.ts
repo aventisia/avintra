@@ -1,0 +1,29 @@
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { FlowVersionDto } from "../dtos/flow-version-dto";
+
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow-version`;
+
+/**
+ * Retrieves all flows versions of a flow.
+ */
+const getFlowVersions = (FlowId?: string) => {
+  // Return if FlowId is not provided (FlowId can be null if not passed in query params)
+  if (!FlowId) return Promise.resolve(null);
+
+  // Fetch flows from API
+  return axiosInstance
+    .get<IHttpResponse<FlowVersionDto[]>>(`${baseAPIURL}/list/${FlowId}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new flow.
+ */
+const insertFlowVersion = (newFlowVersion: FlowVersionDto) => {
+  return axiosInstance
+    .post<IHttpResponse<FlowVersionDto>>(`${baseAPIURL}/create`, newFlowVersion)
+    .then((res) => res.data);
+};
+
+export { getFlowVersions, insertFlowVersion };
