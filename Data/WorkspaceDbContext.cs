@@ -32,6 +32,11 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<SupportTicket>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SupportTicketRemark>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -67,6 +72,15 @@ public class WorkspaceDbContext : DbContext
         
         // Configure One-to-Many relationship between FlowLog and flow
         modelBuilder.Entity<Flow>().HasMany(many => many.FlowLog).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
+
+        //Configure one-to-many relationship between Flow and Flow version
+        modelBuilder.Entity<Flow>().HasMany(f => f.FlowVersions).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
+
+        //Configure one-to-many relationship between Plan and Subscription
+        modelBuilder.Entity<Plan>().HasMany(f => f.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
+
+        //Configure one-to-many relationship between Flow and Execution Log
+        modelBuilder.Entity<Flow>().HasMany(f => f.ExecutionLogs).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
     }
 
     // On Save Changes - write tenant Id to table
@@ -82,6 +96,7 @@ public class WorkspaceDbContext : DbContext
             }
         }
         var result = base.SaveChanges();
+        
         return result;
     }
 
@@ -110,4 +125,9 @@ public class WorkspaceDbContext : DbContext
     public DbSet<SupportTicket> SupportTickets { get; set; }
     public DbSet<SupportTicketRemark> SupportTicketRemarks { get; set; }
     public DbSet<FlowLog> FlowLog { get; set; }
+    public DbSet<FlowVersion> FlowVersions { get; set; }
+    public DbSet<Plan> Plans { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<ExecutionLog> ExecutionLogs{ get; set; }
+
 }

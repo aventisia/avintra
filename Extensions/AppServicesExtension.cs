@@ -27,6 +27,10 @@ public static class AppServicesExtension
         config.Apply(new SupportTicketsTableMappingProfile());
         config.Apply(new SupportTicketRemarksMappingProfile());
         config.Apply(new FlowLogMappingProfile());  
+        config.Apply(new FlowVersionMappingProfile());
+        config.Apply(new SubscriptionMappingProfile());
+        config.Apply(new ExecutionLogMappingProfile());
+
         services.AddSingleton(config);
     }
 
@@ -49,6 +53,9 @@ public static class AppServicesExtension
         services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
         services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();
         services.AddScoped<IFlowLogService, FlowLogService>();
+        services.AddScoped<IFlowVersionService, FlowVersionService>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<IExecutionLogService, ExecutionLogService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
