@@ -23,5 +23,13 @@ public class Plan : BaseEntity,IMustHaveTenant
     /// Gets or sets the yearly price of the plan. Represented in the local currency.
     /// </summary>
     public decimal YearlyPrice { get; set; }  
+
+    /// <summary>
+    /// Gets or sets the features of the plan. Max-1000 characters.
+    /// </summary>
+    [MaxLength(1000)]
+    public string? Features { get; set; }
+
+    public string? Status { get; set; }  // 'Active', 'Inactive', 'Archived'
     public virtual ICollection<Subscription>? Subscriptions{ get; set; }
 }

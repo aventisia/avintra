@@ -26,7 +26,7 @@ public class PlanService : IPlanService
     }
 
     // Retrive plan list
-    public async Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync(Guid id)
+    public async Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync()
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<PlanDto>>
@@ -36,7 +36,7 @@ public class PlanService : IPlanService
         };
         try
         {
-            var plan = await _unitOfWork.planRepo.GetByConditionAsync(w => w.Id == id)
+            var plan = await _unitOfWork.planRepo.GetAllAsync()
             .ToListAsync();
 
             // Plan does not exist
@@ -55,6 +55,43 @@ public class PlanService : IPlanService
         {
             _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retrive plan list";
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // Retrive plan list by status
+    public async Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(string status)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<PlanDto>>
+        {
+            Data = null,
+            Message = "Failed to retrive plan status.Please try again"
+        };
+        try
+        {
+            // Fetch plans based on status 
+            var plans = await _unitOfWork.planRepo.
+            GetByConditionAsync(w => w.Status == status)
+            .ToListAsync();
+
+            // Plan does not exist
+            if (plans == null)
+            {
+                _logger.LogInformation($"Plan does not exist");
+                serviceResponse.Message = "Plan not exist";
+                return serviceResponse;
+            }
+            // Task successful
+            serviceResponse.Data = plans.Adapt<IEnumerable<PlanDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "plan status list retrived successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while retrive plan status list";
             return serviceResponse;
         }
         return serviceResponse;
@@ -113,6 +150,7 @@ public class PlanService : IPlanService
             return serviceResponse;
         }
         return serviceResponse;
+        
     }
     // Update plan
     public async Task<ServiceResponse<PlanDto>> UpdatePlanAsync(PlanDto planDto)
@@ -130,22 +168,21 @@ public class PlanService : IPlanService
             .GetByConditionAsync(w => w.Id == planDto.Id)
             .FirstOrDefaultAsync();
 
-            // plan does not exist
+            // if plan does not exist
             if (planUpdate == null)
             {
                 _logger.LogInformation($"plan does not exist");
                 serviceResponse.Message = "plan not exist";
                 return serviceResponse;
             }
+             // Default mapping 
             var newPlan = planDto.Adapt(planUpdate);
+
+            // Update plan
+            _unitOfWork.planRepo.Update(newPlan);
             newPlan.CreatedByUserId = _userId;
             newPlan.LastModifiedByUserId = _userId;
 
-            // Trim dto' string props
-            planDto = TrimDtoStringPropsUtil.TrimDtoStringProps(planDto);
-
-            // Update plan
-            _unitOfWork.planRepo.Update(planUpdate);
             //  Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
@@ -154,7 +191,7 @@ public class PlanService : IPlanService
             }
 
             //Task successful
-            serviceResponse.Data = planUpdate.Adapt<PlanDto>();
+            serviceResponse.Data = newPlan.Adapt<PlanDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Plan updated successfully";
         }
@@ -165,7 +202,65 @@ public class PlanService : IPlanService
             return serviceResponse;
         }
         return serviceResponse;
+        
     }
+   
+
+    public async Task<ServiceResponse<PlanFeaturesDto>> UpdatePlanFeatureAsync(PlanFeaturesDto PlanFeatureDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<PlanFeaturesDto>
+        {
+            Data = null,
+            Message = "Failed to update plan features. Please try again"
+        };
+        try
+        {
+            // Validate the plan exists
+            var planToUpdate = await _unitOfWork.planRepo
+                .GetByConditionAsync(w => w.Id == PlanFeatureDto.Id)
+                .FirstOrDefaultAsync();
+
+            // Plan does not exist
+            if (planToUpdate == null)
+            {
+                _logger.LogInformation($"Plan with ID {PlanFeatureDto.Id} does not exist");
+                serviceResponse.Message = "Plan does not exist";
+                return serviceResponse;
+            }
+
+            // Trim string properties to avoid unnecessary whitespace
+            PlanFeatureDto = TrimDtoStringPropsUtil.TrimDtoStringProps(PlanFeatureDto);
+
+            planToUpdate.Features = PlanFeatureDto.Features;
+            planToUpdate.LastModifiedByUserId = _userId;
+
+            // Save changes to the database
+            _unitOfWork.planRepo.Update(planToUpdate);
+
+            // Ensure changes are committed to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation($"Failed to save changes when updating plan with ID {PlanFeatureDto.Id}");
+                serviceResponse.Message = "Failed to save changes";
+                return serviceResponse;
+            }
+
+            //Task successful
+            serviceResponse.Data = planToUpdate.Adapt<PlanFeaturesDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Plan updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while updating plan";
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Delete plan 
     public async Task<ServiceResponse<bool>> DeletePlanAsync(Guid id)
     {

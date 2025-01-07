@@ -14,10 +14,12 @@ script:pre-request {
   const {faker} = require('@faker-js/faker');
   
   req.setBody({
-   planName: faker.string.alpha,
+   planName:"Plan A",
    description: faker.lorem.paragraph(),
    monthlyPrice: 349,
    yearlyPrice: 0,
+   features: "",
+   status: "Active",
    isDisabled: true  
   })
     

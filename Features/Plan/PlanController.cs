@@ -13,10 +13,17 @@ public class PlanController : BaseApiController
    }
 
   // Retrive plan by Id
-  [HttpGet("{id}")]
-  public async Task<ActionResult<ServiceResponse<PlanDto>>> GetPlan(Guid id)
+  [HttpGet]
+  public async Task<ActionResult<ServiceResponse<IEnumerable<PlanDto>>>> GetPlan()
   {
-    return ResultHelper(await _planService.GetPlanAsync(id));
+    return ResultHelper(await _planService.GetPlanAsync());
+  }
+  
+  // Retrive plan status list
+  [HttpGet("status")]
+  public async Task<ActionResult<ServiceResponse<IEnumerable<PlanDto>>>> GetPlanStatus(string status)
+  {
+    return ResultHelper(await _planService.GetPlanStatusAsync(status));
   }
 
   // Create a new Plan
@@ -31,6 +38,13 @@ public class PlanController : BaseApiController
   public async Task<ActionResult<ServiceResponse<PlanDto>>> UpdatePlan([FromBody] PlanDto PlanDto)
   {
     return ResultHelper(await _planService.UpdatePlanAsync(PlanDto));
+  }
+
+  // Update Plan Feature
+  [HttpPut("update-plan-feature")]
+  public async Task<ActionResult<ServiceResponse<PlanFeaturesDto>>> UpdatePlanFeature([FromBody] PlanFeaturesDto PlanFeatureDto)
+  {
+    return ResultHelper(await _planService.UpdatePlanFeatureAsync(PlanFeatureDto));
   }
 
   // Delete plan by Id

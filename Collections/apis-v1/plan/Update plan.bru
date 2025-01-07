@@ -15,10 +15,12 @@ script:pre-request {
   
   req.setBody({
    id: bru.getGlobalEnvVar("PLAN_ID"),
-   planName: faker.string.alpha,
+   planName: "Plan B",
    description: faker.lorem.paragraph(),
    monthlyPrice: 349,
    yearlyPrice: 2590,
+    features: "",
+   status: "Active",
    isDisabled: true  
   })
 }

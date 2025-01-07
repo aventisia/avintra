@@ -4,10 +4,11 @@ public interface IPlanService
     /// <summary>
     /// Get plan list .
     /// </summary>
-    /// <param name="id">The data required to get the plan.</param>
     /// <returns>The task result contains the service response with the get plan details.</returns>
 
-    Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync (Guid id);
+    Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync();
+
+    Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(string status);
 
     /// <summary>
     /// Inserts a new plan.
@@ -22,6 +23,7 @@ public interface IPlanService
     /// <param name="PlanDto">The data required to update the plan.</param>
     /// <returns>The task result contains the service response with the updated plan details.</returns>
     Task<ServiceResponse<PlanDto>> UpdatePlanAsync (PlanDto planDto);
+    Task<ServiceResponse<PlanFeaturesDto>> UpdatePlanFeatureAsync (PlanFeaturesDto planFeatureDto);
 
     /// <summary>
     /// Delete plan.
