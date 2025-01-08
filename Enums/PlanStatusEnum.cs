@@ -8,8 +8,8 @@ namespace AspNetToolkit.Enums;
 /// </remarks>
 public enum PlanStatusEnum
 {
-    Active1,
-    Inactive2,
-    Archived3
+    Active,
+    Inactive,
+    Archived
 
 }
