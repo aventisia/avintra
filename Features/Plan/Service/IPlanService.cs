@@ -6,9 +6,11 @@ public interface IPlanService
     /// </summary>
     /// <returns>The task result contains the service response with the get plan details.</returns>
 
-    Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync();
+    Task<ServiceResponse<IEnumerable<PlanListDto>>> GetPlansAsync();
 
     Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(PlanStatusEnum status);
+
+    Task<ServiceResponse<PlanListDto>> GetPlanAsync (Guid id);
 
     /// <summary>
     /// Inserts a new plan.

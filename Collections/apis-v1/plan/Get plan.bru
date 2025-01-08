@@ -1,11 +1,11 @@
 meta {
   name: Get plan
   type: http
-  seq: 4
+  seq: 6
 }
 
 get {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/plan
+  url: {{ACCOUNTS_APIS_BASE_URL}}/plan/{{PLAN_ID}}
   body: none
   auth: none
 }

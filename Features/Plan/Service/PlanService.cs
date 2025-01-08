@@ -26,10 +26,10 @@ public class PlanService : IPlanService
     }
 
     // Retrive plan list
-    public async Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync()
+    public async Task<ServiceResponse<IEnumerable<PlanListDto>>> GetPlansAsync()
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<PlanDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<PlanListDto>>
         {
             Data = null,
             Message = "Failed to retrive plan . Please try again"
@@ -47,7 +47,7 @@ public class PlanService : IPlanService
                 return serviceResponse;
             }
             // Task successful
-            serviceResponse.Data = plan.Adapt<IEnumerable<PlanDto>>();
+            serviceResponse.Data = plan.Adapt<IEnumerable<PlanListDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "plan retrived successfully";
         }
@@ -55,6 +55,41 @@ public class PlanService : IPlanService
         {
             _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retrive plan list";
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+    
+    // Retrive plan by Id
+    public async Task<ServiceResponse<PlanListDto>> GetPlanAsync (Guid id)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<PlanListDto>
+        {
+            Data = null,
+            Message = "Failed to retrive plan . Please try again"
+        };
+        try
+        {
+            var plan = await _unitOfWork.planRepo
+            .GetByConditionAsync(w => w.Id == id).FirstOrDefaultAsync();
+
+            // Plan does not exist
+            if (plan == null)
+            {
+                _logger.LogInformation($"Plan does not exist");
+                serviceResponse.Message = "Plan not exist";
+                return serviceResponse;
+            }
+            // Task successful
+            serviceResponse.Data = plan.Adapt<PlanListDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "plan retrived successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while retrive plan by id";
             return serviceResponse;
         }
         return serviceResponse;

@@ -12,13 +12,20 @@ public class PlanController : BaseApiController
     _planService = planService;
    }
 
-  // Retrive plan by Id
+  // Retrive plan list
   [HttpGet]
-  public async Task<ActionResult<ServiceResponse<IEnumerable<PlanDto>>>> GetPlan()
+  public async Task<ActionResult<ServiceResponse<IEnumerable<PlanListDto>>>> GetPlan()
   {
-    return ResultHelper(await _planService.GetPlanAsync());
+    return ResultHelper(await _planService.GetPlansAsync());
   }
   
+  // Retrive plan by Id
+  [HttpGet("{id}")]
+  public async Task<ActionResult<ServiceResponse<PlanListDto>>> GetPlanById (Guid id)
+  {
+    return ResultHelper(await _planService.GetPlanAsync(id));
+  }
+
   // Retrive plan status list
   [HttpGet("status")]
   public async Task<ActionResult<ServiceResponse<IEnumerable<PlanDto>>>> GetPlanStatus(PlanStatusEnum status)
