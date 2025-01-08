@@ -1,11 +1,11 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class ExecutionLogMappingProfile : IRegister
+public class FlowExecutionLogMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // Mapping of DTO to get list of logs to show on the UI.
-        config.NewConfig<ExecutionLog, ExecutionLogDto>()
+        config.NewConfig<FlowExecutionLog, FlowExecutionLogDto>()
         .Map(dest => dest.CreatedBy, 
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -15,7 +15,7 @@ public class ExecutionLogMappingProfile : IRegister
             : null);
 
         //Mapping entity to insert or update the record
-        config.NewConfig<ExecutionLogDto, ExecutionLog>()
+        config.NewConfig<FlowExecutionLogDto, FlowExecutionLog>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)

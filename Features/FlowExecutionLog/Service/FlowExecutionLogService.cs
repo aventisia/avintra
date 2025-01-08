@@ -1,13 +1,13 @@
 namespace WorkspaceAPIs.Services;
 
-public class ExecutionLogService : IExecutionLogService
+public class FlowExecutionLogService : IFlowExecutionLogService
 {
-    private readonly ILogger<ExecutionLogService> _logger;
+    private readonly ILogger<FlowExecutionLogService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
 
-    public ExecutionLogService(
-        ILogger<ExecutionLogService> logger,
+    public FlowExecutionLogService(
+        ILogger<FlowExecutionLogService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
@@ -19,10 +19,10 @@ public class ExecutionLogService : IExecutionLogService
     }
 
     // Get a list of exexution logs of a single flow using flow identifier
-    public async Task<ServiceResponse<IEnumerable<ExecutionLogDto>>> GetExecutionLogsAsync(Guid flowId)
+    public async Task<ServiceResponse<IEnumerable<FlowExecutionLogDto>>> GetFlowExecutionLogsAsync(Guid flowId)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<ExecutionLogDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<FlowExecutionLogDto>>
         {
             Data = null,
             StatusCode = 400
@@ -30,15 +30,15 @@ public class ExecutionLogService : IExecutionLogService
 
         try
         {
-            //Try to get execution logs
-            var logs = await _unitOfWork.ExecutionLogRepo
+            //Try to get flow execution logs
+            var logs = await _unitOfWork.FlowExecutionLogRepo
             .GetByConditionAsync(v => v.FlowId == flowId)
             .OrderBy(o => o.CreatedOn).ToListAsync();
 
             // Task successful
-            serviceResponse.Data = logs.Adapt<IEnumerable<ExecutionLogDto>>();
+            serviceResponse.Data = logs.Adapt<IEnumerable<FlowExecutionLogDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Execution logs retrieved successfully";
+            serviceResponse.Message = "Flow Execution logs retrieved successfully";
         }
         catch (Exception ex)
         {
@@ -49,11 +49,11 @@ public class ExecutionLogService : IExecutionLogService
         return serviceResponse;
     }
 
-    //Creates a flow version
-    public async Task<ServiceResponse<ExecutionLogDto>> InsertExecutionLogAsync(ExecutionLogDto executionLogDto)
+    //Creates a flow execution log
+    public async Task<ServiceResponse<FlowExecutionLogDto>> InsertFlowExecutionLogAsync(FlowExecutionLogDto flowExecutionLogDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<ExecutionLogDto>
+        var serviceResponse = new ServiceResponse<FlowExecutionLogDto>
         {
             Data = null,
             StatusCode = 400
@@ -62,12 +62,12 @@ public class ExecutionLogService : IExecutionLogService
         try
         {
             // Default mapping
-            var newLog = executionLogDto.Adapt<ExecutionLog>();
+            var newLog = flowExecutionLogDto.Adapt<FlowExecutionLog>();
             newLog.CreatedByUserId = _userId;
             newLog.LastModifiedByUserId = _userId;
 
             //Insert an execution log
-            await _unitOfWork.ExecutionLogRepo.InsertAsync(newLog);
+            await _unitOfWork.FlowExecutionLogRepo.InsertAsync(newLog);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -77,9 +77,9 @@ public class ExecutionLogService : IExecutionLogService
             }
 
             // Task successful
-            serviceResponse.Data = newLog.Adapt<ExecutionLogDto>();
+            serviceResponse.Data = newLog.Adapt<FlowExecutionLogDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Execution log added successfully";
+            serviceResponse.Message = "Flow Execution log added successfully";
 
         }
         catch (Exception ex)
@@ -92,11 +92,11 @@ public class ExecutionLogService : IExecutionLogService
         return serviceResponse;
     }
 
-    //Updates an execution log
-    public async Task<ServiceResponse<ExecutionLogDto>> UpdateExecutionLogAsync(ExecutionLogDto executionLogDto)
+    //Updates a flow execution log
+    public async Task<ServiceResponse<FlowExecutionLogDto>> UpdateFlowExecutionLogAsync(FlowExecutionLogDto flowExecutionLogDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<ExecutionLogDto>
+        var serviceResponse = new ServiceResponse<FlowExecutionLogDto>
         {
             Data = null,
             StatusCode = 400
@@ -105,23 +105,23 @@ public class ExecutionLogService : IExecutionLogService
         try
         {
             // Validate execution log existence
-            var log = await _unitOfWork.ExecutionLogRepo
-                .GetByConditionAsync(v => v.Id == executionLogDto.Id)
+            var log = await _unitOfWork.FlowExecutionLogRepo
+                .GetByConditionAsync(v => v.Id == flowExecutionLogDto.Id)
                 .SingleOrDefaultAsync();
 
             // execution log does not exist
             if (log == null)
             {
-                _logger.LogInformation($"An execution log does not exist");
-                serviceResponse.Message = "An execution log does not exist";
+                _logger.LogInformation($"A flow execution log does not exist");
+                serviceResponse.Message = "A flow execution log does not exist";
                 return serviceResponse;
             }
 
             // Auto mapping 
-            var newLog = executionLogDto.Adapt(log);
+            var newLog = flowExecutionLogDto.Adapt(log);
 
-            //create a new execution log
-            _unitOfWork.ExecutionLogRepo.Update(newLog);
+            //create a new flow execution log
+            _unitOfWork.FlowExecutionLogRepo.Update(newLog);
             newLog.CreatedByUserId = _userId;
             newLog.LastModifiedByUserId = _userId;
 
@@ -133,9 +133,9 @@ public class ExecutionLogService : IExecutionLogService
             }
 
             // Task successful
-            serviceResponse.Data = newLog.Adapt<ExecutionLogDto>();
+            serviceResponse.Data = newLog.Adapt<FlowExecutionLogDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "An execution log updated successfully";
+            serviceResponse.Message = "A flow execution log updated successfully";
 
         }
         catch (Exception ex)
@@ -147,8 +147,8 @@ public class ExecutionLogService : IExecutionLogService
         return serviceResponse;
     }
 
-    //Deletes a execution log
-    public async Task<ServiceResponse<bool>> DeleteExecutionLogAsync(Guid id)
+    //Deletes a flow execution log
+    public async Task<ServiceResponse<bool>> DeleteFlowExecutionLogAsync(Guid id)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -159,21 +159,21 @@ public class ExecutionLogService : IExecutionLogService
 
         try
         {
-            //Try to get an execution log using identifier
-            var log = await _unitOfWork.ExecutionLogRepo
+            //Try to get a flow execution log using identifier
+            var log = await _unitOfWork.FlowExecutionLogRepo
             .GetByConditionAsync(v => v.Id == id)
             .SingleOrDefaultAsync();
 
             //Check if log not exists
             if (log == null)
             {
-                _logger.LogInformation($"An execution log does not exist");
-                serviceResponse.Message = "An execution log does not exist";
+                _logger.LogInformation($"A flow execution log does not exist");
+                serviceResponse.Message = "A flow execution log does not exist";
                 return serviceResponse;
             }
 
-            //Delete log
-            _unitOfWork.ExecutionLogRepo.Delete(log);
+            //Delete a flow execution log
+            _unitOfWork.FlowExecutionLogRepo.Delete(log);
 
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
@@ -185,7 +185,7 @@ public class ExecutionLogService : IExecutionLogService
             // Task successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Execution log deleted successfully";
+            serviceResponse.Message = "Flow execution log deleted successfully";
 
         }
         catch (Exception ex)

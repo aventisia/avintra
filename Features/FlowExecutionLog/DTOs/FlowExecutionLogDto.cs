@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.DTOs;
 
-public class ExecutionLogDto
+public class FlowExecutionLogDto
 {
     /// <summary>
     /// Gets or sets the execution log identifier
@@ -20,6 +20,21 @@ public class ExecutionLogDto
     /// Gets or sets the output data for the execution log
     /// </summary>
     public string OutputData { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration for the flow execution log
+    /// </summary>
+    public int? Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status for the flow execution log
+    /// </summary>
+    public FlowExecutionLogStatusEnum? Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the error message for the flow execution log
+    /// </summary>
+    public string? ErrorMessage { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the flow to which the execution log belongs.

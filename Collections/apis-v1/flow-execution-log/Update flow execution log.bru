@@ -1,11 +1,11 @@
 meta {
-  name: Insert execution log
+  name: Update flow execution log
   type: http
-  seq: 3
+  seq: 4
 }
 
-post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/execution-log/create
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-execution-log/update
   body: none
   auth: none
 }
@@ -14,17 +14,21 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
+    id: bru.getGlobalEnvVar("EXECUTION_LOG_ID"),
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
     actionName: faker.system.commonFileName(),
     inputData: faker.lorem.sentence(),
-    outputData: faker.lorem.sentence()
+    outputData: faker.lorem.sentence(),
+    Duration:200,
+    Status:"Succeeded",
+    ErrorMessage:"No error"
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "LOG_ID",
+          "EXECUTION_LOG_ID",
           res.getBody().data.id
       );
   }
