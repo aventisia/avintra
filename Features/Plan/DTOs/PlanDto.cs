@@ -29,7 +29,7 @@ public class PlanDto
     [MaxLength(1000)]
     public string? Features { get; set; }
 
-    public string?  Status { get; set; }  // 'Active', 'Inactive', 'Archived'
+    public PlanStatusEnum Status { get; set; } 
 
     /// <summary>
     /// Gets or sets a value indicating whether the record is disabled. Use this to mark a record as disabled if it's outdated or no longer required when deletion is not possible.

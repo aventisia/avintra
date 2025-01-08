@@ -61,7 +61,7 @@ public class PlanService : IPlanService
     }
 
     // Retrive plan list by status
-    public async Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(string status)
+    public async Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(PlanStatusEnum status)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<PlanDto>>
@@ -164,19 +164,19 @@ public class PlanService : IPlanService
         try
         {
             // validate existing plan
-            var planUpdate = await _unitOfWork.planRepo
+            var plan = await _unitOfWork.planRepo
             .GetByConditionAsync(w => w.Id == planDto.Id)
             .FirstOrDefaultAsync();
 
             // if plan does not exist
-            if (planUpdate == null)
+            if (plan == null)
             {
                 _logger.LogInformation($"plan does not exist");
                 serviceResponse.Message = "plan not exist";
                 return serviceResponse;
             }
              // Default mapping 
-            var newPlan = planDto.Adapt(planUpdate);
+            var newPlan = planDto.Adapt(plan);
 
             // Update plan
             _unitOfWork.planRepo.Update(newPlan);

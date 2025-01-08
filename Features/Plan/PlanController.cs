@@ -21,7 +21,7 @@ public class PlanController : BaseApiController
   
   // Retrive plan status list
   [HttpGet("status")]
-  public async Task<ActionResult<ServiceResponse<IEnumerable<PlanDto>>>> GetPlanStatus(string status)
+  public async Task<ActionResult<ServiceResponse<IEnumerable<PlanDto>>>> GetPlanStatus(PlanStatusEnum status)
   {
     return ResultHelper(await _planService.GetPlanStatusAsync(status));
   }

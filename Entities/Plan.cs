@@ -29,7 +29,8 @@ public class Plan : BaseEntity,IMustHaveTenant
     /// </summary>
     [MaxLength(1000)]
     public string? Features { get; set; }
-
-    public string? Status { get; set; }  // 'Active', 'Inactive', 'Archived'
+    
+    [MaxLength(50)]
+    public PlanStatusEnum Status { get; set; }  
     public virtual ICollection<Subscription>? Subscriptions{ get; set; }
 }

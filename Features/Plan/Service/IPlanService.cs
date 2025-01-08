@@ -8,7 +8,7 @@ public interface IPlanService
 
     Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanAsync();
 
-    Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(string status);
+    Task<ServiceResponse<IEnumerable<PlanDto>>> GetPlanStatusAsync(PlanStatusEnum status);
 
     /// <summary>
     /// Inserts a new plan.
