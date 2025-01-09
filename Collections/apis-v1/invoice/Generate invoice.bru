@@ -1,7 +1,7 @@
 meta {
   name: Generate invoice
   type: http
-  seq: 7
+  seq: 1
 }
 
 post {
@@ -14,15 +14,27 @@ script:pre-request {
   const {faker} = require('@faker-js/faker');
   
   req.setBody({
-   
     subscriptionId: "5b6c99e4-008d-4ad7-9d0e-c77416e237d5",
-    amount: 349,
+    amount: 3499,
     generatedDate: new Date(),
     isPaid: true,
-    invoiceNumber: "INV-2025-002",
+    invoiceNumber: "INV-2025-006",
     tax: 20,
     discount:10,
-    totalAmount: 359,
+    totalAmount: 3489,
     dueDate: "2025-01-09T07:30:58.476Z",
+    status: "unpaid",
   })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "INVOICE_ID",
+    res.getBody().data.id
+    );
+     bru.setGlobalEnvVar(
+          "SUBSCRIPTION_ID", 
+          res.getBody().data.subscriptionId)
+  }
 }

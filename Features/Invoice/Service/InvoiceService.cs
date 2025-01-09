@@ -194,10 +194,10 @@ public class InvoiceService : IInvoiceService
     }
 
     // Update Invoice
-    public async Task<ServiceResponse<InvoiceDto>> UpdateInvoiceAsync(InvoiceDto invoiceDto)
+    public async Task<ServiceResponse<GenerateInvoiceDto>> UpdateInvoiceAsync(GenerateInvoiceDto invoiceDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<InvoiceDto>
+        var serviceResponse = new ServiceResponse<GenerateInvoiceDto>
         {
             Data = null,
             StatusCode = 400,
@@ -218,6 +218,20 @@ public class InvoiceService : IInvoiceService
                 return serviceResponse;
             }
 
+            // Calculate Tax
+            decimal taxRate = 0.10m; // 10% tax (this could vary based on location)
+            decimal taxAmount = invoiceDto.Amount * taxRate;
+
+            // Apply Discount 
+            decimal discount = invoiceDto.Discount;
+
+            // Calculate Total Amount
+            decimal totalAmount = (invoiceDto.Amount + taxAmount) - discount;
+
+            // Generate Invoice Number (can be customized)
+            string invoiceNumber = GenerateInvoiceNumber(invoiceDto.TenantId);
+
+
             // Default mapping
             var newInvoice = invoiceDto.Adapt(invoice);
 
@@ -234,7 +248,7 @@ public class InvoiceService : IInvoiceService
             }
 
             // Task Successful
-            serviceResponse.Data = newInvoice.Adapt<InvoiceDto>();
+            serviceResponse.Data = newInvoice.Adapt<GenerateInvoiceDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Invoice updated sucessfully";
         }
@@ -322,33 +336,20 @@ public class InvoiceService : IInvoiceService
             decimal taxRate = 0.10m; // 10% tax (this could vary based on location)
             decimal taxAmount = invoiceDto.Amount * taxRate;
 
-            // 3. Apply Discount 
+            // Apply Discount 
             decimal discount = invoiceDto.Discount;
 
-            // 4. Calculate Total Amount
+            // Calculate Total Amount
             decimal totalAmount = (invoiceDto.Amount + taxAmount) - discount;
 
-            // 5. Generate Invoice Number (can be customized)
+            // Generate Invoice Number (can be customized)
             string invoiceNumber = GenerateInvoiceNumber(invoiceDto.TenantId);
 
-            // 6. Create and Save the Invoice
-            var invoice = new Invoice
-            {
-                TenantId = invoiceDto.TenantId,
-                SubscriptionId = invoiceDto.SubscriptionId,
-                Amount = invoiceDto.Amount,
-                Tax = taxAmount,
-                Discount = discount,
-                TotalAmount = totalAmount,
-                GeneratedDate = invoiceDto.GeneratedDate,
-                DueDate = invoiceDto.DueDate,
-                InvoiceNumber = invoiceDto.InvoiceNumber,
-                Status = invoiceDto.Status ?? "unpaid", // Default to "unpaid"
-                IsPaid = invoiceDto.IsPaid,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-            };
-
+            // Default mapping
+            var invoice = invoiceDto.Adapt<Invoice>();
+            invoice.CreatedByUserId = _userId;
+            invoice.LastModifiedByUserId = _userId;
+          
             //Insert the Invoice into the Database
             await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
 

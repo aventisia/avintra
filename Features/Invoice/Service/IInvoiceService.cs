@@ -34,7 +34,7 @@ public interface IInvoiceService
     /// </summary>
     /// <param name="InvoiceDto">Invoice DTO</param>
     /// <returns>A updated Invoice</returns>
-    Task<ServiceResponse<InvoiceDto>> UpdateInvoiceAsync(InvoiceDto invoiceDto);
+    Task<ServiceResponse<GenerateInvoiceDto>> UpdateInvoiceAsync(GenerateInvoiceDto invoiceDto);
 
     /// <summary>
     /// Deletes a Invoice

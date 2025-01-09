@@ -42,7 +42,7 @@ public class InvoiceController : BaseApiController
 
   // Update Invoice
   [HttpPut("update-invoice")]
-  public async Task<ActionResult<ServiceResponse<InvoiceDto>>> UpdateInvoice([FromBody] InvoiceDto invoiceDto)
+  public async Task<ActionResult<ServiceResponse<GenerateInvoiceDto>>> UpdateInvoice([FromBody] GenerateInvoiceDto invoiceDto)
   {
     return ResultHelper(await _invoiceService.UpdateInvoiceAsync(invoiceDto));
   }

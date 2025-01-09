@@ -25,4 +25,12 @@ public class InvoiceDto
     /// Gets or sets the IsPaid
     /// </summary>
     public bool IsPaid { get; set; }
+
+    public string? InvoiceNumber {get;set;}
+    //public DateTime InvoiceDate {get;set;}
+    public decimal Tax { get; set; }
+    public decimal Discount { get; set; }
+    public decimal TotalAmount  {get;set;}
+    public DateTime DueDate {get;set;}
+    public string? Status {get;set;}   //"unpaid",paid
 }
