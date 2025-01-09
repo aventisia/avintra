@@ -68,6 +68,7 @@
     "react-dropdown-menu": "^0.0.2",
     "react-hook-form": "^7.52.1",
     "react-hotkeys-hook": "^4.5.0",
+    "react-json-view": "^1.21.3",
     "react-perfect-scrollbar": "^1.5.8",
     "react-phone-number-input": "^3.4.3",
     "react-router-dom": "^6.24.1",
