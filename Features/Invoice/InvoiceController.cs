@@ -53,4 +53,11 @@ public class InvoiceController : BaseApiController
   {
     return ResultHelper(await _invoiceService.DeleteInvoiceAsync(id));
   }
+
+  // Generate a new Invoice
+  [HttpPost("generate-invoice")]
+  public async Task<ActionResult<ServiceResponse<GenerateInvoiceDto>>> GenerateInvoice ([FromBody]GenerateInvoiceDto invoiceDto)
+  {
+    return ResultHelper(await _invoiceService.GenerateInvoiceAsync(invoiceDto));
+  }
 }

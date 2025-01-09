@@ -11,6 +11,12 @@ public class InvoiceMappingProfile : IRegister
 
         // Mapping for Get the Invoice Record.
         config.NewConfig<Invoice , InvoiceDto>();
+
+        // Mapping for Generate invoice Record.
+        config.NewConfig<GenerateInvoiceDto,Invoice>()
+        .Ignore(dest => dest.Id)
+        .Ignore(dest => dest.TenantId)
+        .IgnoreNullValues(true);
         
     }
 }

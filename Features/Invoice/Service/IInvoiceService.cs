@@ -42,5 +42,5 @@ public interface IInvoiceService
     /// <param name="id">Id</param>
     /// <returns>True, if delete job is successful, else false</returns>
     Task<ServiceResponse<bool>> DeleteInvoiceAsync(Guid id);
-
+    Task<ServiceResponse<GenerateInvoiceDto>> GenerateInvoiceAsync(GenerateInvoiceDto generateInvoiceRequest);
 }

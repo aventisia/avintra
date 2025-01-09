@@ -77,7 +77,7 @@ public class InvoiceService : IInvoiceService
     }
 
     //Retrieves all invoices associated with a specific subscription.
-    public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetInvoiceBySubscriptionAsync (Guid subscriptionId)
+    public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetInvoiceBySubscriptionAsync(Guid subscriptionId)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>
@@ -100,7 +100,7 @@ public class InvoiceService : IInvoiceService
                 return serviceResponse;
             }
 
-             // Task Successful
+            // Task Successful
             serviceResponse.Data = invoice.Adapt<IEnumerable<InvoiceDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Invoice list by subscriptionId retrived successfully";
@@ -113,7 +113,7 @@ public class InvoiceService : IInvoiceService
         }
         return serviceResponse;
     }
-    
+
     // Retrive Invoice by Id
     public async Task<ServiceResponse<InvoiceDto>> GetInvoiceAsync(Guid id)
     {
@@ -150,7 +150,7 @@ public class InvoiceService : IInvoiceService
         }
         return serviceResponse;
     }
-    
+
     // Insert a new Invoice
     public async Task<ServiceResponse<InvoiceDto>> InsertInvoiceAsync(InvoiceDto invoiceDto)
     {
@@ -220,10 +220,10 @@ public class InvoiceService : IInvoiceService
 
             // Default mapping
             var newInvoice = invoiceDto.Adapt(invoice);
-            
+
             // update invoice
             _unitOfWork.InvoiceRepo.Update(newInvoice);
-             newInvoice.CreatedByUserId = _userId;
+            newInvoice.CreatedByUserId = _userId;
             newInvoice.LastModifiedByUserId = _userId;
 
             // Update-Job failed
@@ -248,7 +248,7 @@ public class InvoiceService : IInvoiceService
     }
 
     // Delete Invoice by Id
-    public async Task<ServiceResponse<bool>> DeleteInvoiceAsync (Guid id)
+    public async Task<ServiceResponse<bool>> DeleteInvoiceAsync(Guid id)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -259,7 +259,7 @@ public class InvoiceService : IInvoiceService
         };
         try
         {
-             // validate Invoice existence
+            // validate Invoice existence
             var invoice = await _unitOfWork.InvoiceRepo
             .GetByConditionAsync(w => w.Id == id)
             .FirstOrDefaultAsync();
@@ -273,8 +273,8 @@ public class InvoiceService : IInvoiceService
             }
 
             // Delete Invoice
-             _unitOfWork.InvoiceRepo.Delete(invoice);
-            
+            _unitOfWork.InvoiceRepo.Delete(invoice);
+
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
             {
@@ -296,4 +296,93 @@ public class InvoiceService : IInvoiceService
         return serviceResponse;
     }
 
+    public async Task<ServiceResponse<GenerateInvoiceDto>> GenerateInvoiceAsync(GenerateInvoiceDto invoiceDto)
+    {
+        var serviceResponse = new ServiceResponse<GenerateInvoiceDto>
+        {
+            Data = null,
+            StatusCode = 400,
+            Message = "Failed to generate invoice, please try again."
+        };
+
+        try
+        {
+            // Validate Subscription existence
+            var subscription = await _unitOfWork.SubscriptionRepo
+            .GetByConditionAsync(w => w.Id == invoiceDto.SubscriptionId)
+           .FirstOrDefaultAsync();
+
+            if (subscription == null)
+            {
+                serviceResponse.Message = "Invalid subscription or tenant mismatch.";
+                return serviceResponse;
+            }
+
+            // Calculate Tax
+            decimal taxRate = 0.10m; // 10% tax (this could vary based on location)
+            decimal taxAmount = invoiceDto.Amount * taxRate;
+
+            // 3. Apply Discount 
+            decimal discount = invoiceDto.Discount;
+
+            // 4. Calculate Total Amount
+            decimal totalAmount = (invoiceDto.Amount + taxAmount) - discount;
+
+            // 5. Generate Invoice Number (can be customized)
+            string invoiceNumber = GenerateInvoiceNumber(invoiceDto.TenantId);
+
+            // 6. Create and Save the Invoice
+            var invoice = new Invoice
+            {
+                TenantId = invoiceDto.TenantId,
+                SubscriptionId = invoiceDto.SubscriptionId,
+                Amount = invoiceDto.Amount,
+                Tax = taxAmount,
+                Discount = discount,
+                TotalAmount = totalAmount,
+                GeneratedDate = invoiceDto.GeneratedDate,
+                DueDate = invoiceDto.DueDate,
+                InvoiceNumber = invoiceDto.InvoiceNumber,
+                Status = invoiceDto.Status ?? "unpaid", // Default to "unpaid"
+                IsPaid = invoiceDto.IsPaid,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+
+            //Insert the Invoice into the Database
+            await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
+
+            // Check if SaveAsync was successful
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while inserting new Invoice.");
+                return serviceResponse;
+            }
+
+            // Task Successful
+            serviceResponse.Data = invoice.Adapt<GenerateInvoiceDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Invoice generated and inserted successfully.";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurred while generating and inserting the invoice.";
+        }
+
+        return serviceResponse;
+    }
+
+    // Helper function to generate a unique Invoice Number
+    private string GenerateInvoiceNumber(Guid tenantId)
+    {
+        var lastInvoice = _unitOfWork.InvoiceRepo.GetByConditionAsync(i => i.TenantId == tenantId)
+                                   .OrderByDescending(i => i.GeneratedDate)
+                                   .FirstOrDefault();
+
+        int nextInvoiceNumber = lastInvoice == null ? 1 : int.Parse(lastInvoice.InvoiceNumber.Split('-').Last()) + 1;
+
+        return $"INV-{DateTime.UtcNow.Year}-{nextInvoiceNumber:D3}"; //INV-2025-001
+    }
 }

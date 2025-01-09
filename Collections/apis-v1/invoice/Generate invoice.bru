@@ -1,0 +1,28 @@
+meta {
+  name: Generate invoice
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/invoice/generate-invoice
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({
+   
+    subscriptionId: "5b6c99e4-008d-4ad7-9d0e-c77416e237d5",
+    amount: 349,
+    generatedDate: new Date(),
+    isPaid: true,
+    invoiceNumber: "INV-2025-002",
+    tax: 20,
+    discount:10,
+    totalAmount: 359,
+    dueDate: "2025-01-09T07:30:58.476Z",
+  })
+}
