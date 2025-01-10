@@ -57,19 +57,20 @@ const getLayoutedElements = (
       minlen: getEdgeMinlen(
         sourceNode?.type as CustomNodeType,
         targetNode?.type as CustomNodeType,
-      ), // Set the minlen for the edg. It multiplies the ranksep value.
+      ), // Set the minlen for the edge. It multiplies the ranksep value.
     });
   });
 
-  // Do the layout
+  // Perform the layout
   dagre.layout(dagreGraph);
 
   // To ensure branchStartNodes' siblings have identical y-position
   const siblingGroups: { [parentId: string]: Node[] } = {};
 
+  // Group branchStartNodes by their parent node to adjust their positions later
   nodes.forEach((node) => {
     if (node.type === "branchStartNode") {
-      // Group sibling branchStartNodes by parent node
+      // Find the parent node by its target edge
       const parentNode = edges.find((edge) => edge.target === node.id);
       if (parentNode) {
         const parentId = parentNode.source;
@@ -92,11 +93,14 @@ const getLayoutedElements = (
     if (node.type === "branchStartNode") {
       const parentId = edges.find((edge) => edge.target === node.id)?.source;
       if (parentId && siblingGroups[parentId]) {
-        // All siblings should have the same y-position, we use the y position of the first sibling
-        const siblingYPosition = dagreGraph.node(
-          siblingGroups[parentId][0].id,
-        ).y;
+        // Get the parent node's position (we'll use this for the siblings' position)
+        const parentNodePosition = dagreGraph.node(parentId);
 
+        // Add space (height of two nodes) to the parent's y-position to prevent overlap
+        const siblingYPosition =
+          parentNodePosition.y +  150;
+
+        // Assign the adjusted y-position to the current node
         nodeWithPosition.y = siblingYPosition;
       }
     }
