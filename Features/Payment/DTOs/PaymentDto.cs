@@ -30,5 +30,9 @@ public class PaymentDto
     /// <summary>
     /// Gets or sets the paymentStatus
     /// </summary>
-     public string? PaymentStatus { get; set; }
+    public string? PaymentStatus { get; set; }
+    public string? TransactionId {get;set;}
+    public string? UTRNumber {get;set;}
+    public string? UPIId {get;set;}
+    public string? GatewayName { get; set; }
 }

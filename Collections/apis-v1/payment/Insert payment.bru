@@ -14,11 +14,16 @@ script:pre-request {
   const {faker} = require('@faker-js/faker');
   
   req.setBody({
-    invoiceId: "3fa85f64-5717-4562-b3fc-2c963f66afa8",
+    invoiceId: "48877521-a870-421f-a29a-19fd5b1bf061",
     amountPaid: 349,
     paymentDate: "2024-12-24T06:55:29.862Z",
     paymentMethod: "Credit card",
-    paymentStatus: "success"  
+    paymentStatus: "failed", 
+    transactionId:"txn_1234567890abcdef",
+    utrNumber: "SBINH0123456789",
+    upiId: "9876543210@icici",
+    gatewayName: "Razorpay"
+    
   })
 }
 

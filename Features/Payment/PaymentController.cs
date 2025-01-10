@@ -32,4 +32,10 @@ public class PaymentController : BaseApiController
   {
     return ResultHelper(await _PaymentService.InsertPaymentAsync(paymentDto));
   }
+
+  [HttpPut("update-status")]
+  public async Task<ActionResult<ServiceResponse<PaymentStatusDto>>> UpdatePaymentStatus([FromBody]PaymentStatusDto paymentStatusDto)
+  {
+    return ResultHelper(await _PaymentService.UpdatePaymentStatusAsync(paymentStatusDto));
+  }
 }

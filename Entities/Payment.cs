@@ -34,5 +34,14 @@ public class Payment : BaseEntity, IMustHaveTenant
     /// </summary>
     public string? PaymentStatus { get; set; }
 
+    public string? TransactionId {get;set;}
+    public string? UTRNumber {get;set;}
+    public string? UPIId {get;set;}
+    public string? GatewayName { get; set; }
+
+    // public string? Currency { get; set; }
+    // public decimal? TaxAmount { get; set; }
+    // public decimal? Discount { get; set; }
+    // public string? CouponCode { get; set; }
 
 }

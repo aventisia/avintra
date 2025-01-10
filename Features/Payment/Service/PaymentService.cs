@@ -52,7 +52,6 @@ public class PaymentService : IPaymentService
         var serviceResponse = new ServiceResponse<PaymentDto>
         {
             Data = null,
-            StatusCode = 400,
             Message = "Failed to retrive payment, please try again"
         };
         try
@@ -91,7 +90,6 @@ public class PaymentService : IPaymentService
         var serviceResponse = new ServiceResponse<IEnumerable<PaymentDto>>
         {
             Data = null,
-            StatusCode = 400,
             Message = "Failed to retrive payment list by invoice, please try again"
         };
         try
@@ -129,11 +127,26 @@ public class PaymentService : IPaymentService
         var serviceResponse = new ServiceResponse<PaymentDto>
         {
             Data = null,
-            StatusCode = 400,
             Message = "Failed to insert payment, please try again"
         };
         try
-        {  // Default mapping
+        {  
+            // Trim dto' string props
+            paymentDto = TrimDtoStringPropsUtil.TrimDtoStringProps(paymentDto);
+
+            // Try to get user
+            var user = await _unitOfWork.AccountUserRepo
+                    .GetByConditionAsync(w => w.UserName == _userName)
+                    .SingleOrDefaultAsync();
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation($"User not found for username {_userName}");
+                serviceResponse.Message = "User does not exist";
+                return serviceResponse;
+            }
+            // Default mapping
             var payment = paymentDto.Adapt<Payment>();
             payment.CreatedByUserId = _userId;
             payment.LastModifiedByUserId = _userId;
@@ -158,6 +171,62 @@ public class PaymentService : IPaymentService
             _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while inserting payment";
             return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // Update payment status
+    public async Task<ServiceResponse<PaymentStatusDto>> UpdatePaymentStatusAsync (PaymentStatusDto paymentStatusDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<PaymentStatusDto>
+        {
+            Data = null,
+            Message = "Failed to update payment status, please try again"
+        };
+        try
+        {
+            // Trim dto' string props
+            paymentStatusDto = TrimDtoStringPropsUtil.TrimDtoStringProps(paymentStatusDto);
+
+            // Validate existence payment
+            var payment = await _unitOfWork.PaymentRepo
+            .GetByConditionAsync(w => w.Id == paymentStatusDto.Id )
+            .FirstOrDefaultAsync();
+
+            // if payment does not exist
+            if(payment == null)
+            {
+                _logger.LogInformation($"payment does not exist");
+                serviceResponse.Message = "payment not exist";
+                return serviceResponse;
+            }
+
+            // Default mapping
+            var updatePayment = paymentStatusDto.Adapt(payment);
+
+            // Update payment status
+            _unitOfWork.PaymentRepo.Update(updatePayment);
+            updatePayment.CreatedByUserId = _userId;
+            updatePayment.LastModifiedByUserId = _userId;
+
+            //  Update-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while silently updating payment status ");
+                return serviceResponse;
+            }
+
+            //Task successful
+            serviceResponse.Data = updatePayment.Adapt<PaymentStatusDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Plan updated successfully";
+        }
+        catch (Exception ex)
+        {
+           _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurs while updating payment status";
+            return serviceResponse; 
         }
         return serviceResponse;
     }

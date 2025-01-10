@@ -9,7 +9,13 @@ public class PaymentMappingProfile : IRegister
         .Ignore(dest => dest.Id)
         .IgnoreNullValues(true);
 
+        // Mapping for PaymentStatus Update 
+        config.NewConfig<PaymentStatusDto,Payment>()
+        .Ignore(dest => dest.Id)
+        .IgnoreNullValues(true);
+
         // Mapping for retriving the payment Record.
         config.NewConfig<Payment ,PaymentDto>();
+
     }
 }
