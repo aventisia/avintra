@@ -10,5 +10,5 @@ public class PaymentStatusDto
     /// <summary>
     /// Gets or sets the paymentStatus
     /// </summary>
-    public string? PaymentStatus { get; set; }
+    public PaymentStatusEnum PaymentStatus { get; set; }
 }

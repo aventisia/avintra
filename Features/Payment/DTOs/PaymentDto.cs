@@ -25,12 +25,12 @@ public class PaymentDto
     /// <summary>
     /// Gets or sets the paymentMethod
     /// </summary>
-    public string? PaymentMethod { get; set; }
+    public PaymentMethodEnum PaymentMethod { get; set; }
 
     /// <summary>
     /// Gets or sets the paymentStatus
     /// </summary>
-    public string? PaymentStatus { get; set; }
+    public PaymentStatusEnum PaymentStatus { get; set; }
     public string? TransactionId {get;set;}
     public string? UTRNumber {get;set;}
     public string? UPIId {get;set;}

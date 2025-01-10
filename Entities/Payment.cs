@@ -27,12 +27,12 @@ public class Payment : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the PaymentMethod
     /// </summary>
-    public string? PaymentMethod { get; set; }
+    public PaymentMethodEnum PaymentMethod { get; set; }
 
     /// <summary>
     /// Gets or sets the PaymentStatus
     /// </summary>
-    public string? PaymentStatus { get; set; }
+    public PaymentStatusEnum PaymentStatus { get; set; }
 
     public string? TransactionId {get;set;}
     public string? UTRNumber {get;set;}
