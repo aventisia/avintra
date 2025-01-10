@@ -46,6 +46,18 @@ public class AuthService : IAuthService
 
         try
         {
+            //Valid  email format
+            string regex = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
+
+            //Check if user input matches with valid email format
+            if(!Regex.IsMatch(checkAvailabilityDto.UserInput, regex, RegexOptions.IgnoreCase))
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "An email entered  is invalid. Please try different email address";
+                return serviceResponse;
+            }
+
             // Get user by email (Note: email and username are same)
             var user = await _userManager.FindByNameAsync(checkAvailabilityDto.UserInput.Trim().ToLower());
 

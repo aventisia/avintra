@@ -37,7 +37,8 @@ public class AccountsDbContext : IdentityDbContext<
         base.OnModelCreating(modelBuilder);
 
         // Gloabl TenantId filters
-
+        modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
@@ -51,13 +52,25 @@ public class AccountsDbContext : IdentityDbContext<
         modelBuilder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AccountUser>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
+        // Configure One-to-One relationship between AccountRole and AccountUser
+        modelBuilder.Entity<AccountRole>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AccountRole>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
         // Configure One-to-One relationship between Tenant and AccountUser
         modelBuilder.Entity<Tenant>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tenant>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        
+        //Configure one-to-many relationship between Plan and Subscription
+        modelBuilder.Entity<Plan>().HasMany(p => p.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
+
+        // Configure Many-to-Many relationship between Permission and Custom Role
+        modelBuilder.Entity<RolePermission>().HasOne(o => o.Permission).WithMany(r => r.RolePermissions).HasForeignKey(fkey =>fkey.PermissionId).IsRequired();
+        modelBuilder.Entity<RolePermission>().HasOne(o => o.AccountRole).WithMany(r => r.RolePermissions).HasForeignKey(fkey =>fkey.AccountRoleId).IsRequired();
 
         // Configure Many-to-Many relationship between AccountUser and AccountRole
         modelBuilder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         modelBuilder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
+            
     }
 
     // On Save Changes - write tenant Id to table
@@ -175,5 +188,10 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<SessionLog> SessionLogs { get; set; }
     public DbSet<ObsoletePwd> ObsoletePwds { get; set; }
     public DbSet<VerificationCode> VerificationCodes { get; set; }
+    public DbSet<Plan> Plans { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set;}
+
     public DbSet<AuditLog> AuditLogs { get; set; }
 }
