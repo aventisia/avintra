@@ -1,31 +1,20 @@
 namespace AccountsAPIs.DTOs;
 
-public class CustomRoleDto
-{
+public class RolePermissionDto
+{   
     /// <summary>
-    /// Gets or sets the Id of a role
+    /// Gets or sets the Id of a role permission
     /// </summary>
     public Guid Id { get; set; }
+    /// <summary>
+    /// Gets or sets primary key of custom role record
+    /// </summary>
+    public required Guid CustomRoleId { get; set;}
 
     /// <summary>
-    /// Gets or sets the name of a role
+    /// Gets or sets primary key of permission record
     /// </summary>
-    public string FullName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the short name of a role
-    /// </summary>
-    public string? ShortName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the description for the role
-    /// </summary>
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the role is disabled. 
-    /// </summary>
-    public bool IsDisabled { get; set; }
+    public required Guid PermissionId { get; set;}
 
     /// <summary>
     /// Gets or sets the the user who created the record.
@@ -46,4 +35,5 @@ public class CustomRoleDto
     /// Gets or sets the Id of the user who created the record.
     /// </summary>
     public Guid? CreatedByUserId { get; set; }
+
 }

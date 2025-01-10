@@ -14,13 +14,16 @@ public class SubscriptionController : BaseApiController
 
     // Gets a list of subscriptions of single Plan using Plan Id and UserId
     [HttpGet]
+    
     public async Task<ActionResult<ServiceResponse<IEnumerable<SubscriptionDto>>>> GetSubscriptions(Guid planId, Guid userId)
     {
         return ResultHelper(await _subscriptionService.GetSubscriptionListAsync(planId, userId));
     }
 
     // Creates a new subscription
+    
     [HttpPost]
+    [HasPermission(Auth.ReadAccess)]
     public async Task<ActionResult<ServiceResponse<SubscriptionDto>>> InsertSubscription([FromBody] SubscriptionDto subscriptionDto)
     {
         return ResultHelper(await _subscriptionService.InsertSubscriptionAsync(subscriptionDto));

@@ -14,16 +14,20 @@ public interface IUnitOfWork
 
     IVerificationCodeRepo VerificationCodeRepo { get; }
 
-    ISubscriptionRepo SubscriptionRepo{ get; }
+    ISubscriptionRepo SubscriptionRepo { get; }
 
-    ICustomRoleRepo CustomRoleRepo{ get; }
+    IPermissionRepo PermissionRepo { get; }
+
+    IAccountRoleRepo AccountRoleRepo { get; }
+
+    IRolePermissionRepo RolePermissionRepo { get; }
 
     IInvoiceRepo InvoiceRepo { get; }
 
     IPaymentRepo PaymentRepo {get;}
 
     IPlanRepo planRepo{ get; }
-    
+
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>

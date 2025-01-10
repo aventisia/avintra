@@ -61,6 +61,9 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
+// builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+// builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 /*--Configure the HTTP request pipeline.--*/
 
