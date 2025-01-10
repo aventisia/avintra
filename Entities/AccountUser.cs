@@ -111,4 +111,5 @@ public class AccountUser : IdentityUser<Guid>
     /// Gets or sets the list of user roles associated with the user.
     /// </summary>
     public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
+
 }
