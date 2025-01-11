@@ -14,9 +14,9 @@ configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariab
 var initialConfig = configurationBuilder.Build();
 
 // Get sensitive data from environment variables
-var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("ACC_DB_HOST"), "ACC_DB_HOST cannot be null");
-var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("ACC_DB_CREDENTIALS"), "ACC_DB_CREDENTIALS cannot be null");
-var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("ACC_JWT_SECRET_KEY"), "ACC_JWT_SECRET_KEY cannot be null");
+var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
+var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
+var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
 
 // Update sensitive data in configuration
 var config = new ConfigurationBuilder().AddConfiguration(initialConfig).AddInMemoryCollection(new Dictionary<string, string?>
@@ -61,7 +61,7 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 // builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
