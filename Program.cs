@@ -14,9 +14,9 @@ configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariab
 var initialConfig = configurationBuilder.Build();
 
 // Get sensitive data from environment variables
-var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("WOR_DB_HOST"), "WOR_DB_HOST cannot be null");
-var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("WOR_DB_CREDENTIALS"), "WOR_DB_CREDENTIALS cannot be null");
-var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("WOR_JWT_SECRET_KEY"), "WOR_JWT_SECRET_KEY cannot be null");
+var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
+var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
+var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
 
 // Update sensitive data in configuration
 var config = new ConfigurationBuilder().AddConfiguration(initialConfig).AddInMemoryCollection(new Dictionary<string, string?>
