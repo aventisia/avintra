@@ -101,7 +101,7 @@ app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
 
-app.MapControllers();
+app.MapControllers().WithGroupName("api");
 
 await app.SeedInitialData();
 
