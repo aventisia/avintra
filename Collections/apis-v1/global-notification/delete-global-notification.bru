@@ -1,0 +1,20 @@
+meta {
+  name: Delete global notification
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/global/{{GLOBAL_NOTIFICATION_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "GLOBAL_NOTIFICATION_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

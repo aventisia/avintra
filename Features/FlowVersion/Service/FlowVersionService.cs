@@ -1,0 +1,210 @@
+namespace WorkspaceAPIs.Services;
+
+public class FlowVersionService : IFlowVersionService
+{
+    private readonly ILogger<FlowVersionService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+
+    public FlowVersionService(
+        ILogger<FlowVersionService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+    }
+
+    // Get a list of flow versions of a single flow using flow identifier
+    public async Task<ServiceResponse<IEnumerable<FlowVersionDto>>> GetFlowVersionsAsync(Guid flowId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<FlowVersionDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            //Try to get flow versions
+            var flowVersions = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(v => v.FlowId == flowId).Include(c => c.CreatedByUser)
+            .OrderBy(o => o.VersionNumber).ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = flowVersions.Adapt<IEnumerable<FlowVersionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Versions retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Creates a flow version
+    public async Task<ServiceResponse<FlowVersionDto>> InsertFlowVersionAsync(FlowVersionDto flowVersionDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<FlowVersionDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            //Get count of versions of a related flow
+            var versionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(flowVersionDto.FlowId);
+
+            // Default mapping
+            var newFlowVersion = flowVersionDto.Adapt<FlowVersion>();
+            newFlowVersion.IsLocked = false;
+            newFlowVersion.IsDraft = false;
+            newFlowVersion.CreatedByUserId = _userId;
+            newFlowVersion.LastModifiedByUserId = _userId;
+            newFlowVersion.VersionNumber = versionCount + 1;
+
+            //Insert a flow version
+            await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
+
+            // Insert-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while inserting new flow version");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = newFlowVersion.Adapt<FlowVersionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Version added successfully";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            Console.WriteLine(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Updates a flow version
+    public async Task<ServiceResponse<FlowVersionDto>> UpdateFlowVersionAsync(FlowVersionDto flowVersionDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<FlowVersionDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Validate flow version existence
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(v => v.Id == flowVersionDto.Id)
+                .SingleOrDefaultAsync();
+
+            // Flow version does not exist
+            if (flowVersion == null)
+            {
+                _logger.LogInformation($"Flow version does not exist");
+                serviceResponse.Message = "Version does not exist";
+                return serviceResponse;
+            }
+
+            //Get count of versions of a related flow
+            var versionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(flowVersion.FlowId);
+
+            // Auto mapping 
+            var updatedFlowVersion = flowVersionDto.Adapt<FlowVersion>();
+            updatedFlowVersion.IsLocked = false;
+            updatedFlowVersion.IsDraft = false;
+            updatedFlowVersion.CreatedByUserId = _userId;
+            updatedFlowVersion.LastModifiedByUserId = _userId;
+            updatedFlowVersion.VersionNumber = versionCount +1;
+            //create a new flow version
+            await _unitOfWork.FlowVersionRepo.InsertAsync(updatedFlowVersion);
+
+            // Update-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating flow version");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = updatedFlowVersion.Adapt<FlowVersionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "New version created successfully";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Deletes a flow version
+    public async Task<ServiceResponse<bool>> DeleteFlowVersionAsync(Guid id)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            StatusCode = 400
+        };
+
+        try
+        {
+            //Try to get version using identifier
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(v => v.Id == id)
+            .SingleOrDefaultAsync();
+
+            //Check if version not exists
+            if (flowVersion == null)
+            {
+                _logger.LogInformation($"Flow version does not exist");
+                serviceResponse.Message = "Version does not exist";
+                return serviceResponse;
+            }
+
+            //Delete version
+            _unitOfWork.FlowVersionRepo.Delete(flowVersion);
+
+            //Delete-job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting flow version");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Version deleted successfully";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+}
