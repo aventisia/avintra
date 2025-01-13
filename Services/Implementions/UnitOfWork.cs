@@ -19,10 +19,7 @@ public class UnitOfWork : IUnitOfWork
     public IAccountRoleRepo AccountRoleRepo => new AccountRoleRepo(_accountsDbContext);
     public IPermissionRepo PermissionRepo => new PermissionRepo(_accountsDbContext);
     public IRolePermissionRepo RolePermissionRepo => new RolePermissionRepo(_accountsDbContext);
-
-
-
-
+    public IBillingAccountRepo BillingAccountRepo => new BillingAccountRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
@@ -33,7 +30,7 @@ public class UnitOfWork : IUnitOfWork
                 ? await _accountsDbContext.SaveChangesAsync() > 0
                 : true;
         }
-        
+
         // Save changes without checking change tracker
         return await _accountsDbContext.SaveChangesAsync() > 0;
     }

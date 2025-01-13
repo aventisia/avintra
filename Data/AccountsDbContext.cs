@@ -32,6 +32,7 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Gloabl TenantId filters
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
@@ -64,6 +65,11 @@ public class AccountsDbContext : IdentityDbContext<
         // Configure Many-to-Many relationship between AccountUser and AccountRole
         modelBuilder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         modelBuilder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
+
+        // Configure One-to-One relationship between BillingAccount and AccountUser
+        modelBuilder.Entity<BillingAccount>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<BillingAccount>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
             
     }
 
@@ -111,5 +117,6 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set;}
+    public DbSet<BillingAccount> BillingAccounts { get; set; }
 
 }

@@ -28,6 +28,7 @@ public static class AppServicesExtension
         config.Apply(new SubscriptionMappingProfile());
         config.Apply(new AccountRoleMappingProfile());
         config.Apply(new PermissionMappingProfile());
+        config.Apply(new BillingAccountMappingProfile());
         
         services.AddSingleton(config);
     }
@@ -72,6 +73,8 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("VerificationCodeConfig").Get<VerificationCodeConfig>(), "VerificationCodeConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExternalAPIsConfig").Get<ExternalAPIsConfig>(), "ExternalAPIsConfig cannot be null"));
+        services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
         // Feature services
         services.AddScoped<ICreateAccountService, CreateAccountService>();
@@ -86,8 +89,7 @@ public static class AppServicesExtension
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IAccountRoleService, AccountRoleService>();
         services.AddScoped<IPermissionService, PermissionService>();
-        services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+        services.AddScoped<IBillingAccountService, BillingAccountService>();
 
 
 
