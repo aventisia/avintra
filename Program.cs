@@ -11,15 +11,17 @@ configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnCh
 configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile("emailsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
-var initialConfig = configurationBuilder.Build();
+var config = configurationBuilder.Build();
 
+if(builder.Environment.IsProduction())
+{
 // Get sensitive data from environment variables
-var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("ACC_DB_HOST"), "ACC_DB_HOST cannot be null");
-var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("ACC_DB_CREDENTIALS"), "ACC_DB_CREDENTIALS cannot be null");
-var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("ACC_JWT_SECRET_KEY"), "ACC_JWT_SECRET_KEY cannot be null");
+var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
+var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
+var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
 
 // Update sensitive data in configuration
-var config = new ConfigurationBuilder().AddConfiguration(initialConfig).AddInMemoryCollection(new Dictionary<string, string?>
+ config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
 {
     { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
     { "ConnectionStringConfig:AppDb:Host", DB_HOST },
@@ -27,6 +29,7 @@ var config = new ConfigurationBuilder().AddConfiguration(initialConfig).AddInMem
     { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
     { "JwtConfig:SecretKey", JWT_SECRET_KEY }
 }).Build();
+}
 
 /*---------Serilog Configuration---------*/
 

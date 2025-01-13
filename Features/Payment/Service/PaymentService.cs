@@ -142,10 +142,10 @@ public class PaymentService : IPaymentService
             // Insert payment
             await _unitOfWork.PaymentRepo.InsertAsync(payment);
 
-            // Insert-Job failed
+            // Insert-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new Invoice.");
+                _logger.LogInformation("Context SaveChanges failed while inserting payment");
                 return serviceResponse;
             }
 
@@ -198,13 +198,12 @@ public class PaymentService : IPaymentService
             updatePayment.CreatedByUserId = _userId;
             updatePayment.LastModifiedByUserId = _userId;
 
-            //  Update-Job failed
+            // Insert-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while silently updating payment status ");
+                _logger.LogInformation("Context SaveChanges failed while update payment");
                 return serviceResponse;
             }
-
             //Task successful
             serviceResponse.Data = updatePayment.Adapt<PaymentStatusDto>();
             serviceResponse.StatusCode = 200;

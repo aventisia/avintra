@@ -34,9 +34,12 @@ public class Payment : BaseEntity, IMustHaveTenant
     /// </summary>
     public PaymentStatusEnum PaymentStatus { get; set; }
 
+    [MaxLength(20)]
     public string? TransactionId {get;set;}
+    [MaxLength(20)]
     public string? UTRNumber {get;set;}
-    public string? UPIId {get;set;}
+    
+    [MaxLength(25)]
     public string? GatewayName { get; set; }
 
     // public string? Currency { get; set; }
