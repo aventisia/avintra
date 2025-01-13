@@ -43,7 +43,7 @@ export const conditionalsActions: NodeDataType[] = [
   // },
   {
     type: "switchCaseNode",
-    name: "switch",
+    name: "conditionalCase",
     label: "Conditional",
     description:
       "Dispatches execution to different parts of the switch body based on the value of the expression.",
