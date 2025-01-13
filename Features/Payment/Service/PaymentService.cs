@@ -134,18 +134,6 @@ public class PaymentService : IPaymentService
             // Trim dto' string props
             paymentDto = TrimDtoStringPropsUtil.TrimDtoStringProps(paymentDto);
 
-            // Try to get user
-            var user = await _unitOfWork.AccountUserRepo
-                    .GetByConditionAsync(w => w.UserName == _userName)
-                    .SingleOrDefaultAsync();
-
-            // User doesn't exist
-            if (user == null)
-            {
-                _logger.LogInformation($"User not found for username {_userName}");
-                serviceResponse.Message = "User does not exist";
-                return serviceResponse;
-            }
             // Default mapping
             var payment = paymentDto.Adapt<Payment>();
             payment.CreatedByUserId = _userId;
