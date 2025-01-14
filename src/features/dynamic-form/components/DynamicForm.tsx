@@ -8,6 +8,13 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/react-toolkit/ui/accordion";
+import OnErrorTabs from "./OnErrorTabs";
 
 interface DynamicFormProps {
   /** An array of objects defining the form categories and fields. */
@@ -65,7 +72,7 @@ const DynamicForm = ({
         return (
           <div
             className={cn(
-              "mt-2.5 w-full",
+              "mt-3 w-full",
               fieldsToRender[0].visible ? "block" : "hidden",
             )}
           >
@@ -78,7 +85,7 @@ const DynamicForm = ({
             {fieldsToRender?.map((fData, index) => (
               <div
                 className={cn(
-                  "mt-2.5 w-full",
+                  "mt-3 w-full",
                   fData.containerClassName ? fData.containerClassName : "grow",
                   fData.visible ? "block" : "hidden",
                 )}
@@ -100,59 +107,72 @@ const DynamicForm = ({
       className={cn("", className)}
       onSubmit={form.handleSubmit(submitHandler)}
     >
-      <ScrollArea className="h-full flex-1 px-2">
+      <ScrollArea className="h-[calc(100vh-8rem)] px-2">
         <FormProvider {...form}>
-          {formFieldCategories.length === 1 ? (
-            // If form has single category
-            <div className="mb-2 pt-2">
-              {formFieldCategories[0].formFields?.map((fItem, index) => (
-                <div key={index}>{renderFieldInFlexView(fItem)}</div>
+          {/*Form basic category */}
+          <div className="mb-3">
+            {formFieldCategories[0].formFields?.map((fItem, index) => (
+              <div key={index}>{renderFieldInFlexView(fItem)}</div>
+            ))}
+          </div>
+          {/* If form has multiple categories add those to accordion */}
+          {formFieldCategories.length > 1 && (
+            <div className="w-full">
+              {/* Exclude basic category */}
+              {formFieldCategories?.slice(1).map((category) => (
+                <>
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="mb-3 w-full rounded-lg bg-slate-100 px-2.5"
+                  >
+                    <AccordionItem
+                      value={category.title}
+                      className="border-none"
+                    >
+                      <AccordionTrigger className="py-2">
+                        <div className="flex w-full gap-3 text-sm">
+                          {category.title}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        {category.formFields?.map((fItem, index) => (
+                          <div key={index}>{renderFieldInFlexView(fItem)}</div>
+                        ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </>
               ))}
-            </div>
-          ) : (
-            // If form has multiple categories
-            <div className="w-full px-2">
-              {formFieldCategories?.map((category, index) => (
-                <div key={index} className="pt-2">
-                  <div className="flex items-center gap-3 font-medium">
-                    {/* <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm">
-                      {index + 1}
-                    </div> */}
-                    <h2 className="text-[0.85rem] decoration-1 underline-offset-4 group-hover:underline">
-                      {category.title}
-                    </h2>
-                  </div>
-                  <div className="">
-                    {category.formFields?.map((fItem, index) => (
-                      <div key={index} className="mt-2.5">
-                        {renderFieldInFlexView(fItem)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <Accordion
+                type="single"
+                collapsible
+                className="mb-3 w-full rounded-lg bg-slate-100 px-2.5"
+              >
+                <AccordionItem value={"error"} className="border-none">
+                  <AccordionTrigger className="py-2">
+                    <div className="flex w-full gap-3 text-sm">On Error</div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <OnErrorTabs />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           )}
         </FormProvider>
       </ScrollArea>
       <Separator className="my-2 h-[0.5px] w-full" />
-      <div className="flex w-full justify-between self-end px-4 pb-3.5">
-        <div>
-          <Button size={"xs"} variant={"outline"}>
-            On error
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button size="xs" variant={"outline"}>
-            Cancel
-          </Button>
-          {!viewOnly && (
-            <SubmitButton
-              size={"xs"}
-              isPending={isMutationPending || isSubmitting}
-            />
-          )}
-        </div>
+      <div className="flex w-full items-center justify-end gap-2 px-4 pb-3.5">
+        <Button size="xs" variant={"outline"}>
+          Cancel
+        </Button>
+        {!viewOnly && (
+          <SubmitButton
+            size={"xs"}
+            isPending={isMutationPending || isSubmitting}
+          />
+        )}
       </div>
     </Form>
   );

@@ -6,6 +6,10 @@ export interface FlowLogsDTO {
    * Gets or sets the name of the flow.
    */
   flowName: string;
+  /**
+   * Gets or sets the id of the flow.
+   */
+  flowId: string;
 
   /**
    * Gets or sets the version of the flow.
