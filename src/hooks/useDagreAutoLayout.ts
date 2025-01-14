@@ -57,21 +57,54 @@ const getLayoutedElements = (
       minlen: getEdgeMinlen(
         sourceNode?.type as CustomNodeType,
         targetNode?.type as CustomNodeType,
-      ), // Set the minlen for the edg. It multiplies the ranksep value.
+      ), // Set the minlen for the edge. It multiplies the ranksep value.
     });
   });
 
-  // Do the layout
+  // Perform the layout
   dagre.layout(dagreGraph);
 
-  // Update the nodes and edges with the layouted positions
-  const newNodes = nodes.map((node) => {
+  // To ensure branchStartNodes' siblings have identical y-position
+  const siblingGroups: { [parentId: string]: Node[] } = {};
+
+  // Group branchStartNodes by their parent node to adjust their positions later
+  nodes.forEach((node) => {
+    if (node.type === "branchStartNode") {
+      // Find the parent node by its target edge
+      const parentNode = edges.find((edge) => edge.target === node.id);
+      if (parentNode) {
+        const parentId = parentNode.source;
+        if (!siblingGroups[parentId]) {
+          siblingGroups[parentId] = [];
+        }
+        siblingGroups[parentId].push(node);
+      }
+    }
+  });
+
+  // Adjust the y-axis positions for sibling branchStartNodes
+  const adjustedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
 
     // Get the width and height of the node
     const nodeDimension = nodeDimensionLookup[node.type as CustomNodeType];
 
-    // Set target and source positions based on the direction
+    // If the node is a branchStartNode and it has siblings, adjust the y-position
+    if (node.type === "branchStartNode") {
+      const parentId = edges.find((edge) => edge.target === node.id)?.source;
+      if (parentId && siblingGroups[parentId]) {
+        // Get the parent node's position (we'll use this for the siblings' position)
+        const parentNodePosition = dagreGraph.node(parentId);
+
+        // Add space (height of two nodes) to the parent's y-position to prevent overlap
+        const siblingYPosition =
+          parentNodePosition.y +  150;
+
+        // Assign the adjusted y-position to the current node
+        nodeWithPosition.y = siblingYPosition;
+      }
+    }
+
     const newNode: Node = {
       ...node,
       targetPosition: direction === "LR" ? Position.Left : Position.Top,
@@ -87,8 +120,7 @@ const getLayoutedElements = (
     return newNode;
   });
 
-  // Return the layouted nodes
-  return { nodes: newNodes, edges: edges };
+  return { nodes: adjustedNodes, edges };
 };
 
 /**

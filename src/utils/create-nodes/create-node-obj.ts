@@ -7,7 +7,7 @@ import { Node } from "@xyflow/react";
  * @param nodeData - The data for the node.
  * @returns The created node object.
  */
-export const createNodeObj = (nodeData: NodeDataType): Node => {
+export const createNodeObj = (nodeData: NodeDataType,parentId?:string): Node => {
   return {
     id: window.crypto.randomUUID(),
     type: nodeData.type,
@@ -17,5 +17,6 @@ export const createNodeObj = (nodeData: NodeDataType): Node => {
     deletable: true,
     draggable: true,
     selectable: true,
+    parentId
   } as Node;
 };
