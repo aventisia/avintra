@@ -1,14 +1,11 @@
 {
-  "name": "auth",
+  "name": "accounts",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 3001",
-    "dev-build": "tsc && vite build --base=/dev/auth/",
-    "test-build": "tsc && vite build --base=/test/auth/",
-    "uat-build": "tsc && vite build --base=/uat/auth/",
-    "prod-build": "tsc && vite build --base=/auth/",
+    "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -70,7 +67,7 @@
     "@typescript-eslint/parser": "^7.15.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
@@ -80,6 +77,6 @@
     "tailwindcss": "^3.4.6",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
-    "vite-plugin-eslint": "^1.8.1"
+    "vite-plugin-eslint2": "^5.0.3"
   }
 }
