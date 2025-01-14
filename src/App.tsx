@@ -1,5 +1,5 @@
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
-import { AuthUILayout } from "@/components/layout/AuthUILayout";
+import { AccountsUILayout } from "@/components/layout/AccountsUILayout";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,7 +28,7 @@ const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <AuthUILayout />,
+      element: <AccountsUILayout />,
       errorElement: <ErrorPage />,
       children: [
         {
