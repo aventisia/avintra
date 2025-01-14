@@ -29,6 +29,7 @@ public static class AppServicesExtension
         config.Apply(new AccountRoleMappingProfile());
         config.Apply(new PermissionMappingProfile());
         
+        config.Apply(new ActiveSessionMappingProfile());
         services.AddSingleton(config);
     }
 

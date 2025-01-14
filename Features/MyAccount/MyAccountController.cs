@@ -65,7 +65,7 @@ public class MyAccountController : BaseApiController
         // Return
         return ResultHelper(result);
     }
-
+    
     //Update first and last name of the user (request is from MyAcccount)    
     [HttpPost("update-name")]
     public async Task<ActionResult<ServiceResponse<NameUpdateDto>>> UpdateName([FromBody] NameUpdateDto nameUpdateDto)
@@ -86,8 +86,26 @@ public class MyAccountController : BaseApiController
     {
         return ResultHelper(await _myAccountService.Toggle2FAAsync(toggle2FADto));
     }
+    // Gets user's active sessions to view latest user's info
+    [HttpGet("active-sessions")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ActiveSessionDto>>>> GetAllActiveSession()
+    {
+        return ResultHelper(await _myAccountService.GetAllActiveSessionsAsync());
+    }
+    
+    // Gets user's 2fa-status to view latest user's info
+    [HttpGet("2fa-status")]
+    public async Task<ActionResult<ServiceResponse<bool>>> GetCurrent2FAStatus()
+    {
+        return ResultHelper(await _myAccountService.GetCurrent2FAStatusAsync());
+    }
 
-
+    // Deletes an user account.
+    [HttpDelete("delete-account")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteUserAccount(DeleteUserAccountDto deleteUserAccountDto)
+    {
+        return ResultHelper(await _myAccountService.DeleteUserAccountAsync( deleteUserAccountDto));
+    }
 
 
     // acccounts-api/me/update-profile/

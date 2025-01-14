@@ -1,3 +1,6 @@
+using Microsoft.Graph.Models;
+using Microsoft.OpenApi.Any;
+
 namespace AccountsAPIs.Services;
 
 public class MyAccountService : IMyAccountService
@@ -12,6 +15,7 @@ public class MyAccountService : IMyAccountService
     private readonly IEmailService _emailService;
     private readonly IdentityConfig _identityConfig;
     private readonly JwtConfig _jwtConfig;
+    private readonly string _jwt;
     private readonly string _userName;
     private readonly Guid _sessionId;
     private readonly Guid _userId;
@@ -669,7 +673,7 @@ public class MyAccountService : IMyAccountService
 
         try
         {
-            var methodName = nameof(Toggle2FAAsync);
+            var methodName = nameof(UpdateEmailAsync);
 
             // Get user
             var user = await _userManager.FindByNameAsync(_userName);
@@ -682,38 +686,41 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Get Verification secret code
-            var verificationCode = await _unitOfWork.VerificationCodeRepo
-                .GetByConditionAsync(w => w.Id == toggle2FADto.VerificationCodeId)
-                .SingleOrDefaultAsync();
-
-            // Verification secret code not found
-            if (verificationCode == null)
+            // Verifty email to disable two factor authentication
+            if (!toggle2FADto.TwoFactorEnabled)
             {
-                _logger.LogInformation($"Verification code not found for email {user.Email}");
-                serviceResponse.Message = "Failed to verify code. Please try again";
-                return serviceResponse;
+                // Get Verification secret code
+                var verificationCode = await _unitOfWork.VerificationCodeRepo
+                           .GetByConditionAsync(w => w.Id == toggle2FADto.VerificationCodeId)
+                           .SingleOrDefaultAsync();
+
+                // Verification secret code not found
+                if (verificationCode == null)
+                {
+                    _logger.LogInformation($"Verification code not found for email {user.Email}");
+                    serviceResponse.Message = "Failed to verify code. Please try again";
+                    return serviceResponse;
+                }
+
+                // Match Verification secret code
+                var verificationCodeMatches = verificationCode.SecretCode.Equals(toggle2FADto.SecretCode)
+                    && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+                // Delete Verification secret Code
+                _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+                await _unitOfWork.SaveAsync();
+
+                // Secret code did not match
+                if (!verificationCodeMatches)
+                {
+                    _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                    serviceResponse.Message = "Failed to verify code. Please try again";
+                    return serviceResponse;
+                }
             }
-
-            // Match Verification secret code
-            var verificationCodeMatches = verificationCode.SecretCode.Equals(toggle2FADto.SecretCode)
-                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
-
-            // Delete Verification secret Code
-            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
-            await _unitOfWork.SaveAsync();
-
-            // Secret code did not match
-            if (!verificationCodeMatches)
-            {
-                _logger.LogInformation($"Invalid verification code for email {user.Email}");
-                serviceResponse.Message = "Failed to verify code. Please try again";
-                return serviceResponse;
-            }
-            
 
             // Update account User using UserManager
-            user.TwoFactorEnabled = !user.TwoFactorEnabled;
+            user.TwoFactorEnabled = toggle2FADto.TwoFactorEnabled;
             var updateUserResult = await _userManager.UpdateAsync(user);
 
             // User Update-Job failed
@@ -728,8 +735,7 @@ public class MyAccountService : IMyAccountService
             _logger.LogInformation($"{methodName}: Two factor authentication has been updated for account {_userName}");
             serviceResponse.Data = toggle2FADto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = toggle2FADto.TwoFactorEnabled ? "Your two factor authentication has been enabled":
-            "Your two factor authentication has been disabled";
+            serviceResponse.Message = "Your two factor authentication has been updated successfully";
         }
         catch(Exception ex)
         {
@@ -738,4 +744,199 @@ public class MyAccountService : IMyAccountService
         }
         return serviceResponse;
     }     
+
+    // Gets user's active sessions to view latest user's info
+    public async Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<ActiveSessionDto>>
+        {
+            Data = null,
+            Message = "An error occurred while retrieving active sessions",
+
+        };
+
+        try
+        {
+            // Fetch all active sessions for the user that have not expired yet
+            var activeSessions = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.UserId == _userId && w.SessionExpiresOn > DateTimeOffset.UtcNow)
+                .ToListAsync();
+
+            // Check condition if no active session
+            if (!activeSessions.Any())
+            {
+                _logger.LogInformation("No active sessions found.");
+                serviceResponse.Message = "No active sessions found for the specified user.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // Map the ActiveSession entities to ActiveSessionDto using Mapster
+            serviceResponse.Data = activeSessions
+                .Adapt<IEnumerable<ActiveSessionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Active sessions retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Gets user's 2fa-status to view latest user's info
+    public async Task<ServiceResponse<bool>> GetCurrent2FAStatusAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "An error occurred while retrieving Two-factor authentication status"
+        };
+
+        try
+        {
+            // Fetch the user from the database using userId
+            var user = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+
+            // If the user is not found, return an error response
+            if (user == null)
+            {
+                serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // If the user is found, set the Data property to the TwoFactorEnabled value
+            serviceResponse.Data = user.TwoFactorEnabled;
+
+            // Set success message and status code
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Two-factor authentication status retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    //Delete user account 
+    public async Task<ServiceResponse<bool>> DeleteUserAccountAsync(DeleteUserAccountDto deleteUserAccountDto)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete user. Please try again"
+        };
+
+        try
+        {
+            // Get User By Name
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User not found
+            if (user == null)
+            {
+                _logger.LogInformation("User not found");
+                serviceResponse.Message = "User not found";
+                return serviceResponse;
+            }
+
+             var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+            if (isAE)
+            {
+                _logger.LogInformation("Failed to delete Aventisia user");
+                serviceResponse.Message = "Unable to delete Aventisia user";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+                       .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
+                       .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(deleteUserAccountDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+            // Delete active sessions
+            var activeSessions = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.UserId == user.Id && w.SessionExpiresOn > DateTimeOffset.UtcNow)
+                .ToListAsync();
+
+            if (activeSessions.Any())
+                _unitOfWork.ActiveSessionRepo.Delete(activeSessions);
+
+            // Delete obsolete password record
+            var obsoletePwd = await _unitOfWork.ObsoletePwdRepo
+                .GetByConditionAsync(w => w.UserId == user.Id)
+                .FirstOrDefaultAsync();
+
+            if (obsoletePwd != null)
+                _unitOfWork.ObsoletePwdRepo.Delete(obsoletePwd);
+
+            // Delete session logs
+            var sessionLogs = await _unitOfWork.SessionLogRepo.GetByConditionAsync(w => w.UserId == user.Id).ToListAsync();
+            if (sessionLogs.Any())
+                _unitOfWork.SessionLogRepo.Delete(sessionLogs);
+
+            // Delete user
+            var deleteUserResult = await _userManager.DeleteAsync(user);
+            if (!deleteUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed to delete user");
+                return serviceResponse;
+            }
+
+            // Try to delete user in other databases
+            var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(user.Id, _jwt, false);
+            if (!deleteUserInOtherDbsResult)
+            {
+                _logger.LogInformation("Failed to delete user in other databases");
+                return serviceResponse;
+            }
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "User deleted successfully";
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while deleting the user");
+            serviceResponse.Message = "An error occurred while deleting the user";
+        }
+        return serviceResponse;
+    }
+
 }
+
+
+
+
