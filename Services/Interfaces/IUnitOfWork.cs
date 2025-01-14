@@ -21,6 +21,8 @@ public interface IUnitOfWork
     IAccountRoleRepo AccountRoleRepo { get; }
 
     IRolePermissionRepo RolePermissionRepo { get; }
+    
+    IAuditLogRepo AuditLogRepo { get; }
 
     IInvoiceRepo InvoiceRepo { get; }
 

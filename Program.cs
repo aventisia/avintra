@@ -64,7 +64,7 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 // builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
@@ -104,7 +104,7 @@ app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
 
-app.MapControllers();
+app.MapControllers().WithGroupName("api");
 
 await app.SeedInitialData();
 

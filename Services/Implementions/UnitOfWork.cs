@@ -23,7 +23,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IInvoiceRepo InvoiceRepo => new InvoiceRepo(_accountsDbContext);
     public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
-    public IPlanRepo planRepo => new PlanRepo(_accountsDbContext);
+    public IPlanRepo planRepo => new PlanRepo(_accountsDbContext);    
+    public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
