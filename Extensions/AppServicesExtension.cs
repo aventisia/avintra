@@ -29,6 +29,7 @@ public static class AppServicesExtension
         config.Apply(new AccountRoleMappingProfile());
         config.Apply(new PermissionMappingProfile());
         
+        config.Apply(new AuditLogMappingProfile());
         config.Apply(new ActiveSessionMappingProfile());
         services.AddSingleton(config);
     }
@@ -91,6 +92,7 @@ public static class AppServicesExtension
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 
+        services.AddScoped<IAuditLogService, AuditLogService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

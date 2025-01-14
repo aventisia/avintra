@@ -23,7 +23,8 @@ public class UnitOfWork : IUnitOfWork
 
 
 
-
+    
+    public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 

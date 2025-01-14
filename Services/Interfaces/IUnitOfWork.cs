@@ -21,6 +21,8 @@ public interface IUnitOfWork
     IAccountRoleRepo AccountRoleRepo { get; }
 
     IRolePermissionRepo RolePermissionRepo { get; }
+    
+    IAuditLogRepo AuditLogRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
