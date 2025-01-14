@@ -11,9 +11,10 @@ export const IfElseNode = ({
   selected,
   sourcePosition,
   targetPosition,
+  id
 }: NodeProps<IfElseNode>) => {
   return (
-    <BaseNode selected={selected} data={data}>
+    <BaseNode selected={selected} data={data} id={id} >
       <InputHandle position={targetPosition} />
       <OutputHandle position={sourcePosition} connectionCount={2} />
     </BaseNode>
