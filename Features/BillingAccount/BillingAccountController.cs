@@ -14,7 +14,6 @@ public class BillingAccountController : BaseApiController
 
     // Gets a list of billing accounts
     [HttpGet]
-
     public async Task<ActionResult<ServiceResponse<IEnumerable<BillingAccountDto>>>> GetBillingAccountList()
     {
         return ResultHelper(await _billingAccountService.GetBillingAccountListAsync());

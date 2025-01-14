@@ -1,0 +1,32 @@
+meta {
+  name: Insert billing account
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/billing-account
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+    address: faker.location.secondaryAddress(),
+    billingEmail:faker.internet.email(),
+    phoneNumber:faker.phone.number(),
+    contactPerson:faker.person.fullName()
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "BILLING_ACCOUNT_ID",
+          res.getBody().data.id
+      );
+  }
+}
