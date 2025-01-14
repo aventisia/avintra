@@ -27,6 +27,24 @@ public interface IMyAccountService
     Task<ServiceResponse<bool>> UpdatePwdAsync(PwdUpdateDto pwdUpdateDto);
 
     /// <summary>
+    /// Gets user's active sessions to view latest user's info
+    /// </summary>
+    /// <returns>User's active session info without JWT</returns>
+     Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync();
+
+    /// <summary>
+    /// Gets user's 2fa-status to view latest user's info
+    /// </summary>
+     Task<ServiceResponse<bool>> GetCurrent2FAStatusAsync();
+
+    // <summary>
+    /// Deletes an user account.
+    /// </summary>
+    /// <param name="id">The ID of the user  account to delete.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> indicating the success or failure of the operation.</returns>
+    Task<ServiceResponse<bool>> DeleteUserAccountAsync(DeleteUserAccountDto deleteUserAccountDto);
+
+    /// <summary>
     /// Update user's first and last name
     /// </summary>
     /// <param name="nameUpdateDto">the name update dto</param>
@@ -52,4 +70,6 @@ public interface IMyAccountService
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
     // acccounts-api/me/terminate-session/
+
+   
 }

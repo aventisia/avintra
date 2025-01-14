@@ -1,0 +1,11 @@
+meta {
+  name: Get 2fa status
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/me/2fa-status
+  body: none
+  auth: none
+}
