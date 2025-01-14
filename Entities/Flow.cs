@@ -54,6 +54,7 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the list of FlowComments to manage the one-to-many relation.
     /// </summary>
+    
     public virtual ICollection<FlowComment>? FlowComments { get; set; }
 
     /// <summary>
@@ -69,4 +70,10 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// Gets or sets the list of Execution Logs to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<ExecutionLog>? ExecutionLogs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of FlowTemplate to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<FlowTemplate>? FlowTemplate { get; set; }
+
 }

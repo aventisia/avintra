@@ -32,6 +32,8 @@ public class UnitOfWork : IUnitOfWork
 
 
 
+    public  IFlowTemplateRepo flowTemplateRepo=> new FlowTemplateRepo(_workspaceDbContext);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
