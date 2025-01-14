@@ -1,0 +1,11 @@
+meta {
+  name: Get invoice subscription
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/invoice/list/{{SUBSCRIPTION_ID}}
+  body: none
+  auth: none
+}

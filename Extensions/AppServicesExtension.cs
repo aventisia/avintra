@@ -28,6 +28,9 @@ public static class AppServicesExtension
         config.Apply(new SubscriptionMappingProfile());
         config.Apply(new AccountRoleMappingProfile());
         config.Apply(new PermissionMappingProfile());
+        config.Apply(new InvoiceMappingProfile());
+        config.Apply(new PaymentMappingProfile());
+        config.Apply(new PlanMappingProfile());
         
         config.Apply(new AuditLogMappingProfile());
         config.Apply(new ActiveSessionMappingProfile());
@@ -91,7 +94,9 @@ public static class AppServicesExtension
         services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
-
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IPaymentService,PaymentService>();
+        services.AddScoped<IPlanService,PlanService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
 
         // Common Services

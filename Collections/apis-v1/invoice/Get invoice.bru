@@ -1,0 +1,11 @@
+meta {
+  name: Get invoice
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/invoice/{{INVOICE_ID}}
+  body: none
+  auth: none
+}

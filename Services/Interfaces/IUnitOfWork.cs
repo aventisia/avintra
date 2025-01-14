@@ -24,6 +24,12 @@ public interface IUnitOfWork
     
     IAuditLogRepo AuditLogRepo { get; }
 
+    IInvoiceRepo InvoiceRepo { get; }
+
+    IPaymentRepo PaymentRepo {get;}
+
+    IPlanRepo planRepo{ get; }
+
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>

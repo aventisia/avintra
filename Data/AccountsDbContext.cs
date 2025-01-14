@@ -38,7 +38,9 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Gloabl TenantId filters
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        
+        modelBuilder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId ==  CurrentTenantId);
+        modelBuilder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         // Unique property
         modelBuilder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
@@ -47,7 +49,10 @@ public class AccountsDbContext : IdentityDbContext<
         modelBuilder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
         modelBuilder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         modelBuilder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());
-
+        modelBuilder.Entity<Plan>().Property(e => e.Status).HasConversion(new EnumToStringConverter<PlanStatusEnum>());
+        modelBuilder.Entity<Payment>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusEnum>());
+        modelBuilder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
+        
         // Configure One-to-One relationship between AccountUser and AccountUser
         modelBuilder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AccountUser>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -70,7 +75,16 @@ public class AccountsDbContext : IdentityDbContext<
         // Configure Many-to-Many relationship between AccountUser and AccountRole
         modelBuilder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         modelBuilder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
-            
+
+        //Configure one-to-many relationship between Plan and Subscription
+        modelBuilder.Entity<Plan>().HasMany(p => p.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
+
+        // Configure one-to-many relationship between Subscription and Invoice
+        modelBuilder.Entity<Subscription>().HasMany(i => i.Invoice).WithOne(s => s.Subscription).HasForeignKey(fKey => fKey.SubscriptionId).IsRequired();
+       
+        // Configure one-to-many relationship between Invoice and payment
+        modelBuilder.Entity<Invoice>().HasMany(i => i.Payment).WithOne(p => p.Invoice).HasForeignKey(p => p.InvoiceId);
+    
     }
 
     // On Save Changes - write tenant Id to table
@@ -192,6 +206,8 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set;}
+    public DbSet<Invoice> Invoices{ get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     public DbSet<AuditLog> AuditLogs { get; set; }
 }
