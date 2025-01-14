@@ -2,6 +2,7 @@ import { iconMapper } from "@/components/icon-mapper";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
+import { Badge } from "@/react-toolkit/ui/badge";
 
 interface PrimaryCategoryProps {
   data: PrimaryCategoryType;
@@ -22,6 +23,11 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
         <div className="flex gap-2">
           <h2 className="flex items-center text-xs font-medium text-foreground">
             {data.label}
+            {!data.actionCategories.length && (
+              <Badge variant="outline" className="ml-1">
+                Coming Soon
+              </Badge>
+            )}
           </h2>
         </div>
 
