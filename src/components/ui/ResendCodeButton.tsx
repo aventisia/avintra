@@ -40,7 +40,7 @@ const ResendCodeButton = ({
 
   return (
     <Button
-      className="h-0 gap-1 p-0 font-normal"
+      className="h-0 gap-1 text-md p-0 font-normal"
       variant={"link"}
       disabled={disabled || timer > 0}
       onClick={resendCodeFn}
@@ -55,7 +55,7 @@ const ResendCodeButton = ({
           {timer > 0 ? (
             <>
               Resend in
-              <div className="flex w-12 justify-center rounded-sm bg-slate-100 font-medium">
+              <div className="flex w-12 justify-center text-md rounded-sm bg-slate-100 font-medium">
                 <div className="w-[1.2rem]">{formattedMinutes(timer)}</div>
                 <div className="w-1">:</div>
                 <div className="w-[1.2rem]">{formattedSeconds(timer)}</div>
