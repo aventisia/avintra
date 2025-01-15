@@ -30,6 +30,8 @@ public interface IUnitOfWork
 
     IPlanRepo planRepo{ get; }
 
+    IBillingAccountRepo BillingAccountRepo { get; }
+
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>

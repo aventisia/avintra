@@ -25,6 +25,8 @@ public class UnitOfWork : IUnitOfWork
     public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
     public IPlanRepo planRepo => new PlanRepo(_accountsDbContext);    
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
+    public IBillingAccountRepo BillingAccountRepo => new BillingAccountRepo(_accountsDbContext);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
@@ -34,7 +36,7 @@ public class UnitOfWork : IUnitOfWork
                 ? await _accountsDbContext.SaveChangesAsync() > 0
                 : true;
         }
-        
+
         // Save changes without checking change tracker
         return await _accountsDbContext.SaveChangesAsync() > 0;
     }

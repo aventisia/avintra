@@ -38,6 +38,7 @@ public class AccountsDbContext : IdentityDbContext<
 
         // Gloabl TenantId filters
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId ==  CurrentTenantId);
         modelBuilder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -84,6 +85,11 @@ public class AccountsDbContext : IdentityDbContext<
        
         // Configure one-to-many relationship between Invoice and payment
         modelBuilder.Entity<Invoice>().HasMany(i => i.Payment).WithOne(p => p.Invoice).HasForeignKey(p => p.InvoiceId);
+
+        // Configure One-to-One relationship between BillingAccount and AccountUser
+        modelBuilder.Entity<BillingAccount>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<BillingAccount>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
     
     }
 
@@ -208,6 +214,7 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<RolePermission> RolePermissions { get; set;}
     public DbSet<Invoice> Invoices{ get; set; }
     public DbSet<Payment> Payments { get; set; }
+    public DbSet<BillingAccount> BillingAccounts { get; set; }
 
     public DbSet<AuditLog> AuditLogs { get; set; }
 }
