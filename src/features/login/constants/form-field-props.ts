@@ -1,13 +1,15 @@
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
 
+const className = "h-11 text-md";
+
 // Email
 const emailProps: InputFieldProps = {
   name: "email",
   placeholder: "Email",
   isRequired: true,
   type: "email",
-  className: "h-11 text-md",
+  className: className,
 };
 
 // Password
@@ -16,7 +18,7 @@ const pwdProps: InputFieldProps = {
   placeholder: "Password",
   type: "password",
   isRequired: true,
-  className: "h-11 text-md",
+  className: className,
 };
 
 // Verification code

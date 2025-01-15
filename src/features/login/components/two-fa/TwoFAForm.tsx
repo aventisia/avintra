@@ -49,7 +49,7 @@ export const TwoFAForm = () => {
 
       {/* Submit button */}
       <SubmitButton
-        className="!mt-5 w-full"
+        className="text-md !mt-5 h-11 w-full"
         primaryText="Verify code"
         isPending={isSubmitting || isCheckPending}
       />
