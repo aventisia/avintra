@@ -69,7 +69,7 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the list of Execution Logs to manage the one-to-many relation.
     /// </summary>
-    public virtual ICollection<ExecutionLog>? ExecutionLogs { get; set; }
+    public virtual ICollection<FlowExecutionLog>? FlowExecutionLogs { get; set; }
 
     /// <summary>
     /// Gets or sets the list of FlowTemplate to manage the one-to-many relation.
