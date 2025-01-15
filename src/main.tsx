@@ -1,4 +1,3 @@
-import "@/react-toolkit/styles/slide-animation.css";
 import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper";
 import { SonnerToaster } from "@/react-toolkit/ui/sonner/SonnerToaster";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
@@ -6,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./slide-animation.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
