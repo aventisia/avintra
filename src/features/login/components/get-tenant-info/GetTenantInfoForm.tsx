@@ -32,7 +32,7 @@ export const GetTenantInfoForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="!mt-5 w-full"
+        className="!mt-5 w-full h-11 text-md"
         primaryText="Continue"
         isPending={isSubmitting || isInfoPending}
       />

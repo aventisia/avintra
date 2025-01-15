@@ -7,6 +7,7 @@ const emailProps: InputFieldProps = {
   placeholder: "Email",
   isRequired: true,
   type: "email",
+  className: "h-11 text-md",
 };
 
 // Password
@@ -15,6 +16,7 @@ const pwdProps: InputFieldProps = {
   placeholder: "Password",
   type: "password",
   isRequired: true,
+  className: "h-11 text-md",
 };
 
 // Verification code
@@ -25,4 +27,3 @@ const verificationCodeProps: InputOtpFieldProps = {
 };
 
 export { emailProps, pwdProps, verificationCodeProps };
-

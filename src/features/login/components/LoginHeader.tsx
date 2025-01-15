@@ -9,7 +9,7 @@ export const LoginHeader = () => {
       <AppLogo />
       <a
         href="/help?id=login"
-        className={cn(buttonVariants({ variant: "link" }), "text-right")}
+        className={cn(buttonVariants({ variant: "link" }), "text-right text-md")}
       >
         Help?
       </a>

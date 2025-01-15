@@ -8,7 +8,7 @@ const ContentFooter = ({ children, className }: ContentFooterProps) => {
   return (
     <div
       className={cn(
-        "!mt-7 flex w-full items-center justify-center gap-1 text-center text-sm text-foreground",
+        "!mt-7 flex w-full items-center justify-center gap-1 text-center text-md text-foreground",
         className,
       )}
     >

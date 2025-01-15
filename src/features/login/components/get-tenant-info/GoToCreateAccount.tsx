@@ -1,4 +1,5 @@
 import { ContentFooter } from "@/components/ui/ContentFooter";
+import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +17,7 @@ export const GoToCreateAccount = () => {
           navigate("/create-account");
         }}
         href={`${import.meta.env.BASE_URL}create-account`}
-        className={buttonVariants({ variant: "link" })}
+        className={cn(buttonVariants({ variant: "link" }), "text-md")}
       >
         Create free account
       </a>

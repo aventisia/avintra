@@ -9,10 +9,10 @@ const ContentHeader = ({
 }: ContentHeaderProps) => {
   return (
     <div className="w-full overflow-hidden">
-      <h2 className="flex items-center text-3xl font-medium text-foreground">
+      <h2 className="flex items-center text-4xl font-medium text-foreground">
         {biggerHeading}
       </h2>
-      <p className="mt-2 flex items-center text-sm text-muted-foreground">
+      <p className="mt-3 flex items-center text-md text-muted-foreground">
         {smallerHeading}
       </p>
     </div>
