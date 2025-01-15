@@ -21,6 +21,14 @@ public interface IUnitOfWork
     IAccountRoleRepo AccountRoleRepo { get; }
 
     IRolePermissionRepo RolePermissionRepo { get; }
+    
+    IAuditLogRepo AuditLogRepo { get; }
+
+    IInvoiceRepo InvoiceRepo { get; }
+
+    IPaymentRepo PaymentRepo {get;}
+
+    IPlanRepo planRepo{ get; }
 
     IBillingAccountRepo BillingAccountRepo { get; }
 

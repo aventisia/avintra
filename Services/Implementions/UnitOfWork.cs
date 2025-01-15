@@ -19,6 +19,12 @@ public class UnitOfWork : IUnitOfWork
     public IAccountRoleRepo AccountRoleRepo => new AccountRoleRepo(_accountsDbContext);
     public IPermissionRepo PermissionRepo => new PermissionRepo(_accountsDbContext);
     public IRolePermissionRepo RolePermissionRepo => new RolePermissionRepo(_accountsDbContext);
+
+
+    public IInvoiceRepo InvoiceRepo => new InvoiceRepo(_accountsDbContext);
+    public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
+    public IPlanRepo planRepo => new PlanRepo(_accountsDbContext);    
+    public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingAccountRepo BillingAccountRepo => new BillingAccountRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)

@@ -13,15 +13,15 @@ configurationBuilder.AddJsonFile("emailsettings.json", optional: false, reloadOn
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 var config = configurationBuilder.Build();
 
-if (builder.Environment.IsProduction())
+if(builder.Environment.IsProduction())
 {
-    // Get sensitive data from environment variables
-    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
-    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
-    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
+// Get sensitive data from environment variables
+var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
+var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
+var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
 
-    // Update sensitive data in configuration
-    config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
+// Update sensitive data in configuration
+ config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
 {
     { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
     { "ConnectionStringConfig:AppDb:Host", DB_HOST },
@@ -64,7 +64,7 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 // builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 // builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
@@ -104,7 +104,7 @@ app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
 
-app.MapControllers();
+app.MapControllers().WithGroupName("api");
 
 await app.SeedInitialData();
 
