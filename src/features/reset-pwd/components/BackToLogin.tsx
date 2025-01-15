@@ -20,7 +20,7 @@ export const BackToLogin = () => {
   return (
     <ContentFooter>
       <Button
-        className="h-0 p-0 font-normal"
+        className="text-md h-0 p-0 font-normal"
         variant={"link"}
         onClick={() => {
           setStepNo(1);

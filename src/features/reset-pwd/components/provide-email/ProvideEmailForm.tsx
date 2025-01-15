@@ -31,15 +31,15 @@ export const ProvideEmailForm = () => {
       disabled={isSubmitting || isCodePending}
       checkDirtyForm={false}
     >
-          {/* Email */}
-          <InputField {...emailProps} />
+      {/* Email */}
+      <InputField {...emailProps} />
 
-          {/* Submit form */}
-          <SubmitButton
-            className="!mt-5 w-full"
-            primaryText="Continue"
-            isPending={isSubmitting || isCodePending}
-          />
+      {/* Submit form */}
+      <SubmitButton
+        className="text-md !mt-5 h-11 w-full"
+        primaryText="Continue"
+        isPending={isSubmitting || isCodePending}
+      />
     </Form>
   );
 };

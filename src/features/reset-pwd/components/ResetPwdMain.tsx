@@ -27,7 +27,10 @@ export const ResetPwdMain = () => {
           <AppLogo />
           <a
             href="/help?id=reset-pwd"
-            className={cn(buttonVariants({ variant: "link" }), "text-right")}
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "text-md text-right",
+            )}
           >
             Help?
           </a>

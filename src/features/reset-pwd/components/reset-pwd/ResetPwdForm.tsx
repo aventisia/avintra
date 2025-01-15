@@ -45,7 +45,7 @@ export const ResetPwdForm = () => {
       <CheckboxField
         name="logoffFromAllSessions"
         label={
-          <FormLabel className="text-sm font-normal">
+          <FormLabel className="text-md font-normal">
             Logout from all active sessions
           </FormLabel>
         }
@@ -53,7 +53,7 @@ export const ResetPwdForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="!mt-5 w-full"
+        className="text-md !mt-5 h-11 w-full"
         primaryText="Continue"
         isPending={isSubmitting || isResetPending}
       />
