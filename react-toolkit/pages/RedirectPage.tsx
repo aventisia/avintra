@@ -25,7 +25,7 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
   return (
     <div
       className={cn(
-        "flex h-screen w-full flex-col items-center justify-between p-3 lg:w-[100%]",
+        "flex w-full flex-col items-center justify-between p-3 pb-0 lg:w-[100%]",
         className,
       )}
     >
@@ -33,12 +33,15 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
         <AppLogo doNotShowAppName={true} />
         <a
           href="/help?id=redirect"
-          className={cn(buttonVariants({ variant: "link" }), "text-right")}
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "text-md text-right",
+          )}
         >
           Help?
         </a>
       </div>
-      <div className="-mt-4 flex items-center gap-3">
+      <div className="text-md -mt-4 flex items-center gap-3">
         <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
         {message ? message : "Loading..."}
       </div>
