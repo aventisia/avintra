@@ -41,7 +41,7 @@ pipeline {
         stage('Database migration') {
             steps {
                 script {
-                    sshagent(credentials: ['gcfs_vps_ssh']) {
+                    sshagent(credentials: ['aventisia_vps_ssh']) {
                         // Set target server based on branch
                         def targetServer = getTargetServer(env.BRANCH_NAME)
                         
