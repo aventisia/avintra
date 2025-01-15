@@ -485,12 +485,3 @@ $RECYCLE.BIN/
 
 # Published folder
 [Pp]ublished/
-
-# Saving senstive info in environment variables so not ignoring settings.json file
-emailsettings.json
-
-# Migration folder (Temporary ignore till the time initial dev is going on)
-[Mm]igrations/
-
-# UserStories
-UserStories*

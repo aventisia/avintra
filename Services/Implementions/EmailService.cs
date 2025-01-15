@@ -1,133 +1,114 @@
-/*Using statements are only required here. Also, Microsoft.Graph.Models 
-create ambiguous error due to Tenant object*/
-
-using Azure.Identity;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
+using MimeKit;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 
 namespace AspNetToolkit.Services;
 
+/// <summary>
+/// Implements the email service using MailKit and SendGrid SMTP.
+/// </summary>
 public class EmailService : IEmailService
 {
-    private readonly EmailConfig _emailConfig;
+    private readonly SmtpConfig _smtpConfig;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(
-        EmailConfig emailConfig,
-        ILogger<EmailService> logger)
+    public EmailService(SmtpConfig smtpConfig, ILogger<EmailService> logger)
     {
-        _emailConfig = emailConfig;
+        _smtpConfig = smtpConfig;
         _logger = logger;
     }
 
-    // Sends a general email without an email template.
-    public async Task<bool> SendEmail(
-        string toEmailAddresses,
-        string subject,
-        string? content,
-        string? ccEmailAddresses = null)
+    /// <inheritdoc />
+    public async Task<bool> SendEmail(string toEmailAddresses, string subject, string? content, string? ccEmailAddresses = null)
     {
         try
         {
-            // TenantId missing
-            if (string.IsNullOrWhiteSpace(_emailConfig.MS365EmailService.TenantId))
-            {
-                _logger.LogError($"EmailConfig:TenantId cannot be null");
-                return false;
-            }
+            // Validates the smtp server configuration.
+            Guard.Against.Null(_smtpConfig, "Smtp Server config cannot be null");
 
-            // AppId missing
-            if (string.IsNullOrWhiteSpace(_emailConfig.MS365EmailService.AppId))
-            {
-                _logger.LogError($"EmailConfig:AppId cannot be null");
-                return false;
-            }
-
-            // Secret missing
-            if (string.IsNullOrWhiteSpace(_emailConfig.MS365EmailService.Secret))
-            {
-                _logger.LogError($"EmailConfig:Secret cannot be null");
-                return false;
-            }
-
-            // FromEmailAddress missing
-            if (string.IsNullOrWhiteSpace(_emailConfig.MS365EmailService.FromEmailAddress))
-            {
-                _logger.LogError($"EmailConfig:FromEmailAddress cannot be null");
-                return false;
-            }
-
-            // ToEmailAddress missing
+            // Validates inputs.
             if (string.IsNullOrWhiteSpace(toEmailAddresses))
             {
-                _logger.LogError($"ToEmailAddress is requird to send email");
+                _logger.LogError("Recipient email address is required.");
                 return false;
             }
 
-            // Subject missing
             if (string.IsNullOrWhiteSpace(subject))
             {
-                _logger.LogError($"Subject is requird to send email");
+                _logger.LogError("Subject is required to send email.");
                 return false;
             }
 
-            // Content missing
             if (string.IsNullOrWhiteSpace(content))
             {
-                _logger.LogError($"Email contnent is required to send email");
+                _logger.LogError("Email content is required.");
                 return false;
             }
 
+            var message = new MimeMessage();
 
-            // Define "AVENTISIA Support Email Service" credentials
-            var clientSecretCredential = new ClientSecretCredential(
-                _emailConfig.MS365EmailService.TenantId,
-                _emailConfig.MS365EmailService.AppId,
-                _emailConfig.MS365EmailService.Secret);
+            // Sets the the sender's name and address.
+            message.From.Add(new MailboxAddress(_smtpConfig.MailFromName, _smtpConfig.MailFromAddress));
 
-            // Define new Microsoft Graph client
-            var graphServiceClient = new GraphServiceClient(clientSecretCredential);
+            // Splits the recipient email addresses and adds them to the message.
+            var toEmailAddressList = toEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Send email
-            await graphServiceClient
-                .Users[_emailConfig.MS365EmailService.FromEmailAddress]
-                .SendMail
-                .PostAsync(new Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody()
+            // Sets the recipients' addresses.
+            foreach (var toEmailAddress in toEmailAddressList)
+            {
+                message.To.Add(new MailboxAddress(string.Empty, toEmailAddress.Trim()));
+            }
+
+            // Adds CC if provided
+            if (!string.IsNullOrWhiteSpace(ccEmailAddresses))
+            {
+                // Splits the CC email addresses and adds them to the message.
+                var ccEmailAddressList = ccEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Sets the CC recipients' addresses.
+                foreach (var ccEmailAddress in ccEmailAddressList)
                 {
-                    SaveToSentItems = true,
-                    Message = new Message()
-                    {
-                        Subject = subject,
-                        Body = new ItemBody
-                        {
-                            ContentType = BodyType.Html,
-                            Content = content
-                        },
-                        ToRecipients = new List<Recipient>()
-                        {
-                            new Recipient
-                            {
-                                EmailAddress = new EmailAddress
-                                {
-                                    Address = toEmailAddresses
-                                }
-                            }
-                        },
-                        CcRecipients = GetOptionalCcRecipients(ccEmailAddresses)
-                    }
-                });
+                    message.Cc.Add(new MailboxAddress(string.Empty, ccEmailAddress.Trim()));
+                }
+            }
 
-            // Log information
-            _logger.LogInformation($"Email has been sent to {toEmailAddresses} " +
-                $"with subject {subject}");
+            // Sets the subject of the email.
+            message.Subject = subject;
+
+            // Sets the body of the email.
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = content,
+                HtmlBody = content
+            };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            // Creates a new SMTP client.
+            using (var client = new SmtpClient())
+            {
+                // Force a secure connection over TLS.
+                var socketOptions = SecureSocketOptions.SslOnConnect;
+
+                // Connects to the SMTP server.
+                await client.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port, socketOptions);
+
+                // Authenticates with the SMTP server if credentials are provided.
+                await client.AuthenticateAsync(_smtpConfig.Username, _smtpConfig.ApiKey);
+
+                // Sends the email.
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+
+            // Log the email sent and return true.
+            _logger.LogInformation($"Email has been sent to {toEmailAddresses} with subject {subject}");
+            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError($"An error occurred while sending email: {ex.Message}");
             return false;
         }
-
-        return true;
     }
 
     // Sends an email using an email template.
@@ -146,7 +127,7 @@ public class EmailService : IEmailService
             case EmailTypesEnum.AccountCreated:
                 return await SendEmail(
                             toEmailAddress,
-                            "Welcome to AVENTISIA!",
+                            "Welcome to Aventisia!",
                             LoadAndRenderEmailTemplate(
                                 "AccountCreatedEmailTemplate.html",
                                 placeholderValues)
@@ -194,58 +175,32 @@ public class EmailService : IEmailService
     {
         try
         {
-            // Get template file
-            var file = new FileInfo(Path.Combine(
-                Directory.GetCurrentDirectory(),
-                Path.Combine(Path.Combine("StaticFiles", "EmailTemplates")
-                    , templateFile)));
+            // Gets the full path of the template file from the directory.
+            var file = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "EmailTemplates", templateFile));
 
-            // File does not exist
+            // Checks if the template file exists.
             if (!file.Exists)
             {
-                _logger.LogError($"Email template file does not exists " +
+                _logger.LogError($"Email template file does not exist " +
                     $"with file name {templateFile}");
                 return null;
             }
 
-            // Load the template file.  
-            var templateContent = File.ReadAllText(file.FullName);
+            // Reads all the contents of the template file.
+            string templateContent = File.ReadAllText(file.FullName);
 
             // Replace the placeholders with the actual values.
             foreach (var placeholder in placeholderValues.Keys)
             {
-                templateContent = templateContent.Replace(
-                    placeholder,
-                    placeholderValues[placeholder]);
+                templateContent = templateContent.Replace(placeholder, placeholderValues[placeholder]);
             }
 
-            // Return the rendered template.
             return templateContent;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError($"Error while rendering email template: {ex.Message}");
             return null;
         }
-    }
-
-    /*-------------Helper Functions-------------*/
-
-    // Gets the optional CC recipients.
-    private List<Recipient>? GetOptionalCcRecipients(string ccEmailAddresses)
-    {
-        if (ccEmailAddresses == null)
-            return new List<Recipient>();
-
-        return new List<Recipient>()
-        {
-            new Recipient
-            {
-                EmailAddress = new EmailAddress
-                {
-                    Address = ccEmailAddresses
-                }
-            }
-        };
     }
 }
