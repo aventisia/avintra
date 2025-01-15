@@ -2,7 +2,7 @@ import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
 import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { SeparatorWithText } from "@/react-toolkit/ui/custom/SeparatorWithText";
+import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
 import { CreateAccountForm } from "./CreateAccountForm";
 import { GoToLogin } from "./GoToLogin";
 

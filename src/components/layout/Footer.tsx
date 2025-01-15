@@ -1,5 +1,3 @@
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-
 const Footer = () => {
   return (
     <div className="flex items-center justify-center space-x-2 px-3 pb-1 text-2xs text-muted-foreground xs:pb-0">
@@ -9,7 +7,7 @@ const Footer = () => {
       >
         Terms of Service
       </a>
-      <DotSeparator />
+      <span className="mx-2 -mt-3.5 text-[1.5rem] text-slate-500">.</span>
       <a
         href="/privacy"
         className="underline-offset-4 hover:text-primary hover:underline"
