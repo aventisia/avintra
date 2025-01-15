@@ -23,7 +23,6 @@ public class SubscriptionController : BaseApiController
     // Creates a new subscription
     
     [HttpPost]
-    [HasPermission(Auth.ReadAccess)]
     public async Task<ActionResult<ServiceResponse<SubscriptionDto>>> InsertSubscription([FromBody] SubscriptionDto subscriptionDto)
     {
         return ResultHelper(await _subscriptionService.InsertSubscriptionAsync(subscriptionDto));
