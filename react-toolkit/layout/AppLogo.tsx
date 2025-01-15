@@ -14,7 +14,7 @@ interface AppLogoProps {
 /** Component to render logo without app name or with app name */
 const AppLogo = ({
   doNotShowAppName = false,
-  className = "h-8 text-xl",
+  className = "h-7 text-xl",
 }: AppLogoProps) => {
   return (
     <a

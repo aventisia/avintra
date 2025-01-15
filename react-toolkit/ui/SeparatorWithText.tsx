@@ -14,11 +14,11 @@ const SeparatorWithText = ({
   return (
     <div className="flex w-full justify-center">
       <div style={{ width: width }} className="flex items-center">
-        <span className="h-[0.06rem] flex-grow rounded bg-border"></span>
+        <span className="h-[0.5px] flex-grow rounded bg-border"></span>
         {overlayText ? (
-          <span className="text-2xs mx-3 rounded">{overlayText}</span>
+          <span className="text-xs mx-3 rounded">{overlayText}</span>
         ) : null}
-        <span className="h-[0.06rem] flex-grow rounded bg-border"></span>
+        <span className="h-[0.5px] flex-grow rounded bg-border"></span>
       </div>
     </div>
   );
