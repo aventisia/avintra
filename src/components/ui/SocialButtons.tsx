@@ -2,8 +2,8 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 const SocialButtons = () => {
   return (
-    <div className="flex w-full flex-col space-x-0 space-y-3 xs:flex-row xs:space-x-3 xs:space-y-0">
-      <Button className="text-md h-11 flex-grow basis-0" variant="outline">
+    <div className="flex w-full flex-col gap-3 xs:flex-row">
+      <Button className="text-md h-11 flex-grow" variant="outline">
         <img
           className="mr-2.5 h-[1.2rem] w-[1.2rem]"
           src={import.meta.env.BASE_URL + "google_g_logo.svg"}
@@ -11,7 +11,7 @@ const SocialButtons = () => {
         />
         Google
       </Button>
-      <Button className="text-md h-11 flex-grow basis-0" variant="outline">
+      <Button className="text-md h-11 flex-grow" variant="outline">
         <img
           className="mr-2.5 h-[1.1rem] w-[1.1rem]"
           src={import.meta.env.BASE_URL + "github_logo_black.svg"}
