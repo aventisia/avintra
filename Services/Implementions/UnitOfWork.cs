@@ -25,6 +25,8 @@ public class UnitOfWork : IUnitOfWork
     public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
 
     public IFlowLogRepo flowLogRepo=> new FlowLogRepo(_workspaceDbContext);
+
+    public  IFlowTemplateRepo flowTemplateRepo=> new FlowTemplateRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
 

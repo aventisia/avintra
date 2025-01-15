@@ -98,6 +98,6 @@ app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
 
-app.MapControllers();
+app.MapControllers().WithGroupName("api");
 
 app.Run();
