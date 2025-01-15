@@ -23,13 +23,13 @@ const RightContainer = ({
   return (
     <div className="relative hidden overflow-hidden rounded-[1.5rem] bg-slate-100 lg:block lg:w-[50%]">
       <div className="absolute w-full">
-        <div className="mt-0 flex flex-col gap-3 px-16 py-14">
+        <div className="mt-0 flex flex-col gap-3 px-[5.5rem] py-16">
           <h2 className="text-5xl font-medium leading-[3.5rem] text-secondary">
             {heading}
           </h2>
           <p className="text-muted-foreground">{subHeading}</p>
         </div>
-        <div className="-mt-6 ml-14 h-[100rem] overflow-hidden rounded-[1rem] border-[0.35rem] border-white lg:w-[62rem] xl:w-[70rem]">
+        <div className="-mt-6 ml-[5rem] h-[100rem] overflow-hidden rounded-[1rem] border-[0.35rem] border-white lg:w-[62rem] xl:w-[70rem]">
           <img
             className="rounded-[1rem] object-cover"
             src={imgSrc}
