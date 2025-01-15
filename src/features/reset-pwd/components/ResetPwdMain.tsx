@@ -48,7 +48,12 @@ export const ResetPwdMain = () => {
         {/* App footer */}
         <MinimalFooter />
       </LeftContainer>
-      <RightContainer></RightContainer>
+
+      <RightContainer
+        heading="Your AI-Powered Journey Starts Here"
+        subHeading="Enter your gateway to affordable, scalable, and practical automation."
+        imgSrc="flowbuilder.svg"
+      />
     </>
   );
 };

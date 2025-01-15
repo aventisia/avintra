@@ -45,7 +45,11 @@ export const LoginMain = () => {
             <MinimalFooter />
           </LeftContainer>
 
-          <RightContainer></RightContainer>
+          <RightContainer
+            heading="Your AI-Powered Journey Starts Here"
+            subHeading="Enter your gateway to affordable, scalable, and practical automation."
+            imgSrc="flowbuilder.svg"
+          />
         </>
       )}
     </>
