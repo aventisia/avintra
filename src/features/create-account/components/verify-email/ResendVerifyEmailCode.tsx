@@ -7,7 +7,7 @@ export const ResendVerifyEmailCode = () => {
   const { resendCodeHandler, isResendCodePending } = useResendCodeMutation();
 
   return (
-    <ContentFooter className="!mb-3 flex-col gap-4 mlg:!mb-0 mlg:flex-row mlg:gap-1">
+    <ContentFooter className="text-md !mb-3 flex-col gap-4 mlg:!mb-0 mlg:flex-row mlg:gap-1">
       Did not receive the code?
       <ResendCodeButton
         isPending={isResendCodePending}

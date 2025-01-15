@@ -26,7 +26,10 @@ export const CreateAccountMain = () => {
           <AppLogo />
           <a
             href="/help?id=create-account"
-            className={cn(buttonVariants({ variant: "link" }), "text-right")}
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "text-md text-right",
+            )}
           >
             Help?
           </a>

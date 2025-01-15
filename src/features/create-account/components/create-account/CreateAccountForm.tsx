@@ -93,7 +93,7 @@ export const CreateAccountForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="!mt-5 w-full"
+        className="text-md !mt-5 h-11 w-full"
         primaryText="Create"
         isPending={isSubmitting || isCodePending}
         disabled={!isAvailable || isCheckPending}

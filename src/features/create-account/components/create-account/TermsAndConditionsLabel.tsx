@@ -3,7 +3,7 @@ import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
 export const TermsAndConditionsLabel = () => {
   return (
-    <p className="mt-[0.5px] text-sm font-normal">
+    <p className="text-md mt-[0.5px] font-normal">
       I agree to the{" "}
       <a
         href="/help?id=create-account"
