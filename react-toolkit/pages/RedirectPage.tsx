@@ -25,7 +25,7 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-center justify-between p-3 pb-0 lg:w-[100%]",
+        "flex h-screen w-full flex-col items-center justify-between p-6 pb-3 lg:w-[100%]",
         className,
       )}
     >
