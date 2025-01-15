@@ -1,0 +1,55 @@
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
+import * as React from "react";
+
+/** SubmitButton props interface */
+interface SubmitButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  /** Mutation/form (isPending/isSubmitting) state can be passed to show loading animation */
+  isPending: boolean;
+  /** (Optional): Button's text to show when "isPending" prop is false. Default value is Submit */
+  primaryText?: string;
+  /** (Optional): Button's text to show when "isPending" prop is true. Default value is Please wait */
+  secondaryText?: string;
+}
+
+/** Implementation of button for form submit using buttonVariants tailwind classes */
+export const SubmitButton = React.forwardRef<
+  HTMLButtonElement,
+  SubmitButtonProps
+>(
+  (
+    {
+      className,
+      variant,
+      size,
+      isPending,
+      primaryText = "Submit",
+      secondaryText = "Please wait",
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <button
+        type="submit"
+        className={cn("gap-2", buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+        disabled={isPending}
+      >
+        {isPending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {secondaryText}
+          </>
+        ) : (
+          <>{primaryText}</>
+        )}
+      </button>
+    );
+  },
+);
