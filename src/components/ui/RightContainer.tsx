@@ -29,7 +29,7 @@ const RightContainer = ({
           </h2>
           <p className="text-muted-foreground">{subHeading}</p>
         </div>
-        <div className="-mt-6 ml-[5rem] h-[100rem] overflow-hidden rounded-[1rem] border-[0.35rem] border-white lg:w-[62rem] xl:w-[70rem]">
+        <div className="-mt-6 ml-[5rem] h-[100rem] overflow-hidden rounded-[1rem] border-[0.35rem] border-white shadow lg:w-[62rem] xl:w-[70rem]">
           <img
             className="rounded-[1rem] object-cover"
             src={imgSrc}
