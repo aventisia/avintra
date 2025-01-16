@@ -1,6 +1,3 @@
-using Microsoft.Graph.Models;
-using Microsoft.OpenApi.Any;
-
 namespace AccountsAPIs.Services;
 
 public class MyAccountService : IMyAccountService
