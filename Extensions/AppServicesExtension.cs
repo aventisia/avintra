@@ -72,7 +72,7 @@ public static class AppServicesExtension
     public static void AddAppDependencies(this IServiceCollection services, IConfiguration config)
     {
         // Signleton
-        services.AddSingleton(Guard.Against.Null(config.GetSection("EmailConfig").Get<EmailConfig>(), "EmailConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantDefaultConfig").Get<TenantDefaultConfig>(), "TenantDefaultConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultUsersConfig").Get<DefaultUsersConfig>(), "DefaultUsersConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("IdentityConfig").Get<IdentityConfig>(), "IdentityConfig cannot be null"));

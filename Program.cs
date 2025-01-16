@@ -9,7 +9,6 @@ var configurationBuilder = new ConfigurationBuilder();
 configurationBuilder.Sources.Clear();
 configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reloadOnChange: true);
-configurationBuilder.AddJsonFile("emailsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 var config = configurationBuilder.Build();
 
