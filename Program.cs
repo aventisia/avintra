@@ -90,6 +90,8 @@ app.UseStaticFiles();
 
 app.UseCookiePolicy();
 
+app.UsePathBase(new PathString("/api"));
+
 app.UseRouting();
 
 app.UseCors("CorsPolicy");
@@ -100,7 +102,7 @@ app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
 
-app.MapControllers().WithGroupName("api");
+app.MapControllers();
 
 await app.SeedInitialData();
 
