@@ -12,7 +12,7 @@ configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reload
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 var config = configurationBuilder.Build();
 
-if (builder.Environment.IsProduction())
+if (!builder.Environment.IsEnvironment("Localhost"))
 {
     // Get sensitive data from environment variables
     var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
