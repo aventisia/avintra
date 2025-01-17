@@ -1,5 +1,3 @@
-using Microsoft.Graph.Models;
-
 namespace WorkspaceAPIs.MappingProfiles;
 
 public class SubscriptionMappingProfile : IRegister

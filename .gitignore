@@ -485,9 +485,3 @@ $RECYCLE.BIN/
 
 # Published folder
 [Pp]ublished/
-
-# Saving senstive info in environment variables so not ignoring settings.json file
-emailsettings.json
-
-# UserStories
-UserStories*

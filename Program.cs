@@ -9,25 +9,25 @@ var configurationBuilder = new ConfigurationBuilder();
 configurationBuilder.Sources.Clear();
 configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reloadOnChange: true);
-configurationBuilder.AddJsonFile("emailsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 var config = configurationBuilder.Build();
-if(builder.Environment.IsProduction())
+
+if (!builder.Environment.IsEnvironment("Localhost"))
 {
     // Get sensitive data from environment variables
-var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("WOR_DB_HOST"), "WOR_DB_HOST cannot be null");
-var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("WOR_DB_CREDENTIALS"), "WOR_DB_CREDENTIALS cannot be null");
-var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("WOR_JWT_SECRET_KEY"), "WOR_JWT_SECRET_KEY cannot be null");
+    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
+    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
+    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
 
-// Update sensitive data in configuration
-config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
-{
-    { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
-    { "ConnectionStringConfig:AppDb:Host", DB_HOST },
-    { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
-    { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
-    { "JwtConfig:SecretKey", JWT_SECRET_KEY }
-}).Build();
+    // Update sensitive data in configuration
+    config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
+    {
+        { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
+        { "ConnectionStringConfig:AppDb:Host", DB_HOST },
+        { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
+        { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
+        { "JwtConfig:SecretKey", JWT_SECRET_KEY }
+    }).Build();
 }
 
 /*---------Serilog Configuration---------*/
@@ -54,6 +54,7 @@ builder.Services.AddDbContextConfig(config);
 
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddEmailService();
 builder.Services.AddSharedDependencies(config);
 builder.Services.AddAppDependencies(config);
 builder.Services.AddMappingProfiles();
@@ -68,7 +69,7 @@ var app = builder.Build();
 
 // app.UseRateLimiter();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsEnvironment("Localhost"))
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
@@ -77,10 +78,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (!app.Environment.IsDevelopment()) app.UseHsts();
+if (!app.Environment.IsEnvironment("Localhost")) app.UseHsts();
 
 // In a Nginx setup with SSL termination, Nginx handles the HTTPS connection and forwards the request to your backend ASP.NET Core application using HTTP (port 80 by default).
-if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+if (app.Environment.IsEnvironment("Localhost")) app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging();
 
@@ -90,6 +91,8 @@ app.UseCookiePolicy();
 
 app.UseRouting();
 
+app.UsePathBase(new PathString("/api"));
+
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
@@ -98,6 +101,6 @@ app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
 
-app.MapControllers().WithGroupName("api");
+app.MapControllers();
 
 app.Run();

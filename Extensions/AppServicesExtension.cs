@@ -40,8 +40,8 @@ public static class AppServicesExtension
     {
 
         // Signleton
-        services.AddSingleton(Guard.Against.Null(config.GetSection("EmailConfig").Get<EmailConfig>(), "EmailConfig cannot be null"));
-
+        services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
+        
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<IProjectsTableService, ProjectsTableService>();
