@@ -50,6 +50,6 @@ public class FlowLog : IMustHaveTenant
     /// Gets or sets the Remark Max-500 characters.
     /// </summary>
     [MaxLength(500)]
-     public string Remark { get; set; }
+     public required string Remark { get; set; }
    
 }

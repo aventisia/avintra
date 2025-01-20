@@ -24,12 +24,12 @@ public class FlowLogDto
     /// <summary>
     /// Gets or sets the Remark Max-500 characters.
     /// </summary>
-    public string Remark { get; set; }
+    public required string Remark { get; set; }
 
     /// <summary>
     /// Gets or sets the version
     /// </summary>
     public float Version {get;set;}
 
-    public string flowName { get; set; }
+    public required string flowName { get; set; }
 }

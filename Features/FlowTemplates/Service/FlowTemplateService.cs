@@ -4,7 +4,6 @@ public class FlowTemplateService : IFlowTemplateService
 {
     private readonly ILogger<FlowTemplateService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IFlowTemplateService _flowTemplateService;
     private readonly Guid _userId;
 
     public FlowTemplateService(

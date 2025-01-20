@@ -9,17 +9,17 @@ public class FlowExecutionLogDto
     /// <summary>
     /// Gets or sets the action name for the execution log
     /// </summary>
-    public string ActionName { get; set; }
+    public required string ActionName { get; set; }
 
     /// <summary>
     /// Gets or sets the input data for the execution log
     /// </summary>
-    public string InputData { get; set; }
+    public required string InputData { get; set; }
 
     /// <summary>
     /// Gets or sets the output data for the execution log
     /// </summary>
-    public string OutputData { get; set; }
+    public required string OutputData { get; set; }
 
     /// <summary>
     /// Gets or sets the duration for the flow execution log
