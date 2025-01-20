@@ -287,6 +287,9 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
+        // TODO: Till the time IntneralAPIs project is not ready, return true
+        return true;
+
         // Return if user is not AE
         if (!isAE) return true;
 
@@ -316,6 +319,9 @@ public class AuthHelperService : IAuthHelperService
             _logger.LogInformation($"Failed to delete user in Workspace database for user Id: {userId}");
             return false;
         }
+
+        // TODO: Till the time IntneralAPIs project is not ready, return true
+        return true;
 
         // Return if user is not AE
         if (!isAE) return true;
