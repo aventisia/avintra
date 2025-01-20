@@ -33,7 +33,7 @@ export const useValidateUserSessionForLoginPage = () => {
       navigate(
         "/redirect?msg=Loading...&url=" +
           (userSessionStoreObj.isAE
-            ? import.meta.env.VITE_INTRANET_CENTER_URL
+            ? import.meta.env.VITE_WORKSPACE_URL
             : import.meta.env.VITE_WORKSPACE_URL),
       );
     },
