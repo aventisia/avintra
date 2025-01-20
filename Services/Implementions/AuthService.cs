@@ -213,29 +213,29 @@ public class AuthService : IAuthService
             // Insert ActiveSession
             await _unitOfWork.ActiveSessionRepo.InsertAsync(activeSession);
 
-            // // User is not created in other databases yet.
-            // if (user.IsCreatedInOtherDbs == false)
-            // {
-            //     try
-            //     {
-            //         // Get user roles
-            //         var userRoles = await _userManager.GetRolesAsync(user);
+            // User is not created in other databases yet.
+            if (user.IsCreatedInOtherDbs == false)
+            {
+                try
+                {
+                    // Get user roles
+                    var userRoles = await _userManager.GetRolesAsync(user);
 
-            //         // Try to add user in other databases
-            //         var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt, userRoles.Contains("AE"));
+                    // Try to add user in other databases
+                    var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt, userRoles.Contains("AE"));
 
-            //         // Failed to add user in other databases
-            //         if (!createUserInOtherDbsResult) return serviceResponse;
+                    // Failed to add user in other databases
+                    if (!createUserInOtherDbsResult) return serviceResponse;
 
-            //         // Update user's IsCreatedInOtherDbs status
-            //         user.IsCreatedInOtherDbs = true;
-            //         _unitOfWork.AccountUserRepo.Update(user);
-            //     }
-            //     catch
-            //     {
-            //         // Try catch important because on create-account request AccountUserRepo.Update will throw unnecessary exception
-            //     }
-            // }
+                    // Update user's IsCreatedInOtherDbs status
+                    user.IsCreatedInOtherDbs = true;
+                    _unitOfWork.AccountUserRepo.Update(user);
+                }
+                catch
+                {
+                    // Try catch important because on create-account request AccountUserRepo.Update will throw unnecessary exception
+                }
+            }
 
             // ActiveSession Insert job failed
             if (!await _unitOfWork.SaveAsync())
