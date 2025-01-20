@@ -10,8 +10,6 @@ public class AuditLogService : IAuditLogService
     private readonly string _userName;
     private readonly IdentityConfig _identityConfig;
     private readonly JwtConfig _jwtConfig;
-    private readonly string _jwt;
-    private readonly Guid _sessionId;
 
     public AuditLogService(ILogger<AuthService> logger,
       IUnitOfWork unitOfWork, UserManager<AccountUser> userManager, SignInManager<AccountUser> signInManager,

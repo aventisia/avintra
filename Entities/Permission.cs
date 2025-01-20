@@ -7,7 +7,7 @@ public class Permission: BaseEntity
     /// </summary>
     
     [MaxLength(50)]
-    public string Name { get; set;}
+    public required string Name { get; set;}
 
     /// <summary>
     /// Gets or sets the description for the permission

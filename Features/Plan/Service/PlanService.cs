@@ -8,8 +8,6 @@ public class PlanService : IPlanService
     private readonly string _userName;
     private readonly IdentityConfig _identityConfig;
     private readonly JwtConfig _jwtConfig;
-    private readonly string _jwt;
-    private readonly Guid _sessionId;
 
     public PlanService(ILogger<AuthService> logger,
       IUnitOfWork unitOfWork,
