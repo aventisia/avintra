@@ -66,7 +66,7 @@ public class TenantResolver
             }
 
             // Try to get JWT
-            string jwt = GetJwtOfRequestUtil.GetJwtOfRequest(context);
+            string jwt = GetJwtOfRequestUtil.GetJwtOfRequest(context) ?? string.Empty;
 
             // JWT found
             if (!string.IsNullOrEmpty(jwt))
@@ -77,8 +77,8 @@ public class TenantResolver
                 // JWTInfo found
                 if (jwtInfo != null)
                 {
-                    tenantId = jwtInfo.TenantId;
-                    userId = jwtInfo.UserId;
+                    tenantId = jwtInfo?.TenantId ?? "Unknown";
+                    userId = jwtInfo?.UserId ?? "Unknown";
                     return;
                 }
             }
@@ -94,7 +94,7 @@ public class TenantResolver
             if (!string.IsNullOrEmpty(tenantIdFromHeader))
             {
                 // Set tenant Id 
-                tenantId = tenantIdFromHeader;
+                tenantId = tenantIdFromHeader.ToString();
                 userId = "Unknown"; // Even we can try to get userId from UserName cookie but its safe to set unknown since user is not autheraized
                 return;
             }

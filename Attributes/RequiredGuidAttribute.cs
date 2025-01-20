@@ -10,11 +10,11 @@ public class RequiredGuidAttribute : ValidationAttribute
         _errorMessageTemplate = errorMessage;
     }
 
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
     {
         if (value is Guid guidValue && guidValue != Guid.Empty)
         {
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
         else
         {
