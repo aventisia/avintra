@@ -287,18 +287,18 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // Return if user is not AE
-        if (!isAE) return true;
+        // // Return if user is not AE
+        // if (!isAE) return true;
 
-        // Create or Update user in InternalDb database
-        response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.InternalUser, jwt, user);
+        // // Create or Update user in InternalDb database
+        // response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.InternalUser, jwt, user);
 
-        // Failed to Create or Update user in Internal database
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogInformation($"Failed to {crudType} user in Internal database for {user.UserName}");
-            return false;
-        }
+        // // Failed to Create or Update user in Internal database
+        // if (!response.IsSuccessStatusCode)
+        // {
+        //     _logger.LogInformation($"Failed to {crudType} user in Internal database for {user.UserName}");
+        //     return false;
+        // }
 
         // Task completed successfully
         return true;
@@ -317,11 +317,13 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // Return if user is not AE
-        if (!isAE) return true;
+        return true;
 
-        // Delete user in InternalDb database
-        return await DeleteUserInInternalDbAsync(userId, jwt);
+        // // Return if user is not AE
+        // if (!isAE) return true;
+
+        // // Delete user in InternalDb database
+        // return await DeleteUserInInternalDbAsync(userId, jwt);
     }
 
     // Delete a user in InternalDb
