@@ -64,6 +64,36 @@ namespace WorkspaceAPIs.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Plans",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Plans_WorkspaceUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Plans_WorkspaceUsers_LastModifiedByUserId",
+                        column: x => x.LastModifiedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
@@ -160,6 +190,46 @@ namespace WorkspaceAPIs.Data.Migrations
                     table.ForeignKey(
                         name: "FK_NotificationUsers_WorkspaceUsers_UserId",
                         column: x => x.UserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DueDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    PlanId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "Plans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_WorkspaceUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_WorkspaceUsers_LastModifiedByUserId",
+                        column: x => x.LastModifiedByUserId,
                         principalTable: "WorkspaceUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -276,6 +346,155 @@ namespace WorkspaceAPIs.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "FlowExecutionLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ActionName = table.Column<string>(type: "text", nullable: false),
+                    InputData = table.Column<string>(type: "text", nullable: false),
+                    OutputData = table.Column<string>(type: "text", nullable: false),
+                    Duration = table.Column<int>(type: "integer", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true),
+                    ErrorMessage = table.Column<string>(type: "text", nullable: true),
+                    FlowId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlowExecutionLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FlowExecutionLogs_Flows_FlowId",
+                        column: x => x.FlowId,
+                        principalTable: "Flows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlowExecutionLogs_WorkspaceUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlowExecutionLogs_WorkspaceUsers_LastModifiedByUserId",
+                        column: x => x.LastModifiedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FlowLog",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FlowId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Duration = table.Column<long>(type: "bigint", nullable: false),
+                    Version = table.Column<float>(type: "real", nullable: false),
+                    Remark = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlowLog", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FlowLog_Flows_FlowId",
+                        column: x => x.FlowId,
+                        principalTable: "Flows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FlowTemplates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ReactFlowObject = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    UsagesCount = table.Column<int>(type: "integer", nullable: false),
+                    FlowId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlowTemplates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FlowTemplates_Flows_FlowId",
+                        column: x => x.FlowId,
+                        principalTable: "Flows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlowTemplates_WorkspaceUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlowTemplates_WorkspaceUsers_LastModifiedByUserId",
+                        column: x => x.LastModifiedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FlowVersions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsLocked = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDraft = table.Column<bool>(type: "boolean", nullable: false),
+                    FlowId = table.Column<Guid>(type: "uuid", nullable: false),
+                    VersionNumber = table.Column<int>(type: "integer", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlowVersions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FlowVersions_Flows_FlowId",
+                        column: x => x.FlowId,
+                        principalTable: "Flows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlowVersions_WorkspaceUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlowVersions_WorkspaceUsers_LastModifiedByUserId",
+                        column: x => x.LastModifiedByUserId,
+                        principalTable: "WorkspaceUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_FlowComment_FlowId",
                 table: "FlowComment",
@@ -285,6 +504,26 @@ namespace WorkspaceAPIs.Data.Migrations
                 name: "IX_FlowComment_UserId",
                 table: "FlowComment",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowExecutionLogs_CreatedByUserId",
+                table: "FlowExecutionLogs",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowExecutionLogs_FlowId",
+                table: "FlowExecutionLogs",
+                column: "FlowId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowExecutionLogs_LastModifiedByUserId",
+                table: "FlowExecutionLogs",
+                column: "LastModifiedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowLog_FlowId",
+                table: "FlowLog",
+                column: "FlowId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Flows_CreatedByUserId",
@@ -301,6 +540,36 @@ namespace WorkspaceAPIs.Data.Migrations
                 table: "Flows",
                 columns: new[] { "ProjectId", "Name" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowTemplates_CreatedByUserId",
+                table: "FlowTemplates",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowTemplates_FlowId",
+                table: "FlowTemplates",
+                column: "FlowId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowTemplates_LastModifiedByUserId",
+                table: "FlowTemplates",
+                column: "LastModifiedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowVersions_CreatedByUserId",
+                table: "FlowVersions",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowVersions_FlowId",
+                table: "FlowVersions",
+                column: "FlowId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FlowVersions_LastModifiedByUserId",
+                table: "FlowVersions",
+                column: "LastModifiedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_CreatedByUserId",
@@ -323,6 +592,16 @@ namespace WorkspaceAPIs.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Plans_CreatedByUserId",
+                table: "Plans",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plans_LastModifiedByUserId",
+                table: "Plans",
+                column: "LastModifiedByUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Projects_CreatedByUserId",
                 table: "Projects",
                 column: "CreatedByUserId");
@@ -337,6 +616,21 @@ namespace WorkspaceAPIs.Data.Migrations
                 table: "Projects",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_CreatedByUserId",
+                table: "Subscriptions",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_LastModifiedByUserId",
+                table: "Subscriptions",
+                column: "LastModifiedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_PlanId",
+                table: "Subscriptions",
+                column: "PlanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SupportTicket_CreatedByUserId",
@@ -383,7 +677,22 @@ namespace WorkspaceAPIs.Data.Migrations
                 name: "FlowComment");
 
             migrationBuilder.DropTable(
+                name: "FlowExecutionLogs");
+
+            migrationBuilder.DropTable(
+                name: "FlowLog");
+
+            migrationBuilder.DropTable(
+                name: "FlowTemplates");
+
+            migrationBuilder.DropTable(
+                name: "FlowVersions");
+
+            migrationBuilder.DropTable(
                 name: "NotificationUsers");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions");
 
             migrationBuilder.DropTable(
                 name: "SupportTicketRemark");
@@ -393,6 +702,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "Plans");
 
             migrationBuilder.DropTable(
                 name: "SupportTicket");
