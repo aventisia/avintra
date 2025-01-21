@@ -7,6 +7,7 @@ public class AuthHelperService : IAuthHelperService
     private readonly IdentityConfig _identityConfig;
     private readonly ExternalAPIsConfig _externalAPIsConfig;
     private readonly JwtConfig _jwtConfig;
+    private readonly CookiePolicyConfig _cookiePolicyConfig;
     private readonly ILogger<AuthHelperService> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,7 +18,8 @@ public class AuthHelperService : IAuthHelperService
         IUnitOfWork unitOfWork,
         IdentityConfig identityConfig,
         ExternalAPIsConfig externalAPIsConfig,
-        JwtConfig jwtConfig)
+        JwtConfig jwtConfig,
+        CookiePolicyConfig cookiePolicyConfig)
     {
         _userManager = userManager;
         _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
@@ -26,6 +28,7 @@ public class AuthHelperService : IAuthHelperService
         _identityConfig = identityConfig;
         _externalAPIsConfig = externalAPIsConfig;
         _jwtConfig = jwtConfig;
+        _cookiePolicyConfig = cookiePolicyConfig;
     }
 
     // Validates the null, disabled, and expired status of a tenant.
@@ -248,8 +251,8 @@ public class AuthHelperService : IAuthHelperService
         // Create cookieOptions
         var cookieOptions = new CookieOptions();
 
-        // Set domain. TODO: get this from appsettings
-        cookieOptions.Domain = ".aventisia.com";
+        // Set domain
+        cookieOptions.Domain = _cookiePolicyConfig.Domain;
 
         // Set expiry
         if (expiry.HasValue) cookieOptions.Expires = expiry;
