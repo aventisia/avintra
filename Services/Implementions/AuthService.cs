@@ -224,12 +224,13 @@ public class AuthService : IAuthService
                     // Try to add user in other databases
                     var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt, userRoles.Contains("AE"));
 
-                    // Failed to add user in other databases
-                    if (!createUserInOtherDbsResult) return serviceResponse;
+                    // TODO: Need to fix 401 error in Workspace API
+                    // // Failed to add user in other databases
+                    // if (!createUserInOtherDbsResult) return serviceResponse;
 
-                    // Update user's IsCreatedInOtherDbs status
-                    user.IsCreatedInOtherDbs = true;
-                    _unitOfWork.AccountUserRepo.Update(user);
+                    // // Update user's IsCreatedInOtherDbs status
+                    // user.IsCreatedInOtherDbs = true;
+                    // _unitOfWork.AccountUserRepo.Update(user);
                 }
                 catch
                 {
