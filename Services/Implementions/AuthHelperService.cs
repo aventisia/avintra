@@ -248,6 +248,9 @@ public class AuthHelperService : IAuthHelperService
         // Create cookieOptions
         var cookieOptions = new CookieOptions();
 
+        // Set domain. TODO: get this from appsettings
+        cookieOptions.Domain = ".aventisia.com";
+
         // Set expiry
         if (expiry.HasValue) cookieOptions.Expires = expiry;
 
