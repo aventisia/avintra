@@ -2,7 +2,8 @@ namespace WorkspaceAPIs.Controllers;
 
 [Route("user")]
 [ApiController]
-[Authorize]
+// TODO: Uncomment below line later
+// [Authorize]
 public class WorkspaceUserController : BaseApiController
 {
     private readonly IWorkspaceUserService _userService;
