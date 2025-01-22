@@ -19,7 +19,6 @@ export const useOpenFlow = () => {
     // Open flow in studio
     window.open(
       `${import.meta.env.VITE_STUDIO_URL}flow?p=${projectId}&f=${rowId}`,
-      "_blank",
     );
   };
 
