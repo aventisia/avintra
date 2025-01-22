@@ -18,7 +18,7 @@ pipeline {
                     def buildMode = ''
                     switch(env.BRANCH_NAME) {
                         case 'dev':
-                            buildMode = 'development'
+                            buildMode = 'devserver'
                             break
                         case 'uat':
                             buildMode = 'staging'

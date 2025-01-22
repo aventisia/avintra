@@ -17,8 +17,8 @@ const axiosInstance = axios.create({
 // Intercept request
 axiosInstance.interceptors.request.use(
   (request) => {
-    // Attach jwt from LS if app is running in localhost
-    if (!import.meta.env.SSR) {
+    // Attach jwt from LS if its DEV env
+    if (import.meta.env.DEV) {
       request.headers["Authorization"] =
         `Bearer ${localStorage.getItem(DEV_JWT_LS_KEY)}`;
     }
@@ -33,7 +33,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   async (response) => {
     // Add artificial delay for DEV env
-    if (!import.meta.env.SSR) await sleep(ARTIFICIAL_DELAY);
+    if (import.meta.env.DEV) await sleep(ARTIFICIAL_DELAY);
     // If success just return the response
     return response;
   },

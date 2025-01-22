@@ -22,8 +22,7 @@ export const useValidateUserSession = () => {
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn:
-      import.meta.env.SSR ? refreshSession : getMySession,
+    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;
@@ -45,11 +44,11 @@ export const useValidateUserSession = () => {
 
   // Refresh the session on app-load.
   useEffect(() => {
-    if (import.meta.env.SSR) {
+    if (import.meta.env.DEV) {
+      mutate();
+    } else {
       if (isUserSessionValid()) mutate();
       else redirectToLoginUtil();
-    } else {
-      mutate();
     }
   }, [mutate]);
 
