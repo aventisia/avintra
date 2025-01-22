@@ -1,0 +1,68 @@
+import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
+import { IconProps } from "@/react-toolkit/types/icon-props";
+import { NavLink } from "react-router-dom";
+
+interface SidebarMenuItemProps {
+  Icon: React.ComponentType<IconProps>;
+  name: string;
+  route: string;
+  badge?: string;
+}
+
+const SidebarMenuItem = ({
+  Icon,
+  name,
+  route,
+  badge,
+}: SidebarMenuItemProps) => {
+  const { navbarOnSheetOpen, setNavbarOnSheetOpen, sidebarExpand } =
+    useBaseLayoutStore();
+
+  function closeNavbarOnSheet() {
+    if (navbarOnSheetOpen) {
+      setNavbarOnSheetOpen(false);
+    }
+  }
+
+  return (
+    <div className={`${sidebarExpand ? "mx-3" : "mx-4"}`}>
+      <NavLink
+        to={route}
+        className={({ isActive }) => {
+          return isActive ? "active group rounded-lg" : "group rounded-lg";
+        }}
+        onClick={closeNavbarOnSheet}
+      >
+        <li className="my-1.5 flex h-9 cursor-pointer items-center justify-between overflow-hidden rounded-lg border-0 pr-3.5 transition-[width] duration-500 hover:bg-slate-100 group-[.active]:bg-slate-100">
+          <div className="flex items-center justify-center">
+            <div
+              className={`mr-1 flex h-9 items-center justify-center ${
+                sidebarExpand ? "w-[2.5rem]" : "w-9"
+              }`}
+            >
+              <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color]" />
+            </div>
+            <span
+              className={`whitespace-nowrap text-sm font-medium capitalize tracking-wide ${
+                sidebarExpand ? "block" : "hidden"
+              }`}
+            >
+              {name}
+            </span>
+          </div>
+          {badge && (
+            <span
+              className={`rounded-xl bg-slate-200 px-2.5 py-0.5 text-sm ${
+                sidebarExpand ? "block" : "hidden"
+              }`}
+            >
+              {badge}
+            </span>
+          )}
+        </li>
+      </NavLink>
+    </div>
+  );
+};
+
+export { SidebarMenuItem };

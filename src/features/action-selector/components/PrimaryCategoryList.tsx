@@ -22,6 +22,7 @@ export const PrimaryCategoryList = () => {
             value={item.label}
             className="rounded-lg p-1"
             onSelect={() => setPrimaryCategoryLabel(item.label)}
+            disabled={!item.actionCategories.length}
           >
             {/* Primary category item */}
             <PrimaryCategory data={item} />

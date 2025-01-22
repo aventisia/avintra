@@ -310,6 +310,7 @@ import setXMLElementValue from "../constants/configs/XML/set-xml-element-value";
 import writeXmlToFile from "../constants/configs/XML/write-xml-to-file";
 import scheduleTrigger from "../constants/configs/triggers/schedule-trigger";
 import { ActivityConfig } from "../types/dynamic-form-types";
+import forEachLoop from "../constants/configs/loops/for-each-loop";
 
 const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Triggers
@@ -357,6 +358,9 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   elseIfCondition,
   ifCondition,
   switchCase,
+
+  //Loop
+  loop:forEachLoop,
 
   //Flow control
   comment,

@@ -1,0 +1,66 @@
+import { UNIActions } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIActions";
+import { UNIAvatar } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIAvatar";
+import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
+import { cn } from "@/react-toolkit/lib/utils";
+import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { formatDistanceToNow } from "date-fns";
+import { memo } from "react";
+
+interface UnreadNotificationItemProps {
+  /** Index of the notification item in the list */
+  index: number;
+
+  /** Unread notification data */
+  data: UnreadNotificationDto;
+}
+
+/**
+ * Renders a single unread notification item.
+ *
+ * @param {number} props.index - The index of the notification item.
+ * @param {Object} props.data - The data of the notification item.
+ * @returns {JSX.Element} The rendered UnreadNotificationItem component.
+ */
+export const UnreadNotificationItem = memo(
+  ({ index, data }: UnreadNotificationItemProps) => {
+    // Format the time since the notification was created
+    const formattedTime = formatDistanceToNow(data.createdOn, {
+      addSuffix: true,
+    });
+
+    // Return the notification item
+    return (
+      <a
+        href={data.actionUrl}
+        className={cn(
+          "group relative flex w-full gap-3.5 px-3.5 py-2.5 leading-[1.1rem] hover:bg-slate-50",
+          index > 0 && "border-t",
+          data.actionUrl && "cursor-pointer",
+        )}
+      >
+        {/* Mark as read Button with Tooltip */}
+        <UNIActions id={data.id} />
+
+        {/* Unread notification Item User or App avatar */}
+        <UNIAvatar />
+
+        {/* Notification container for message, time and type */}
+        <div className="mr-7 flex flex-col gap-2">
+          {/* Message */}
+          <p className="flex items-center text-xs tracking-wide text-foreground">
+            {data.message}
+          </p>
+          {/* Type and Time container */}
+          <div className="flex items-center text-2xs text-muted-foreground">
+            {/* Date and time */}
+            <span>{formattedTime}</span>
+            {/* Dot separator */}
+            <DotSeparator />
+            {/* Notification type */}
+            <span>{data.type}</span>
+          </div>
+        </div>
+      </a>
+    );
+  },
+);

@@ -72,7 +72,7 @@ const DynamicForm = ({
         return (
           <div
             className={cn(
-              "mt-3 w-full",
+              "w-full",
               fieldsToRender[0].visible ? "block" : "hidden",
             )}
           >
@@ -85,7 +85,7 @@ const DynamicForm = ({
             {fieldsToRender?.map((fData, index) => (
               <div
                 className={cn(
-                  "mt-3 w-full",
+                  "w-full",
                   fData.containerClassName ? fData.containerClassName : "grow",
                   fData.visible ? "block" : "hidden",
                 )}
@@ -104,15 +104,18 @@ const DynamicForm = ({
   return (
     <Form
       methods={form}
-      className={cn("", className)}
+      className={cn("space-y-4", className)}
       onSubmit={form.handleSubmit(submitHandler)}
     >
-      <ScrollArea className="h-[calc(100vh-8rem)] px-2">
+      {/* Scrollable input fields container using ScrollArea */}
+      <ScrollArea className="mt-4 max-h-[calc(60vh-4rem)] flex-grow px-4">
         <FormProvider {...form}>
           {/*Form basic category */}
-          <div className="mb-3">
+          <div className="">
             {formFieldCategories[0].formFields?.map((fItem, index) => (
-              <div key={index}>{renderFieldInFlexView(fItem)}</div>
+              <div key={index} className="mt-3 first:mt-0">
+                {renderFieldInFlexView(fItem)}
+              </div>
             ))}
           </div>
           {/* If form has multiple categories add those to accordion */}
@@ -124,7 +127,7 @@ const DynamicForm = ({
                   <Accordion
                     type="single"
                     collapsible
-                    className="mb-3 w-full rounded-lg bg-slate-100 px-2.5"
+                    className="mb-3 w-full rounded-lg bg-slate-100 px-2.5 first:mt-3"
                   >
                     <AccordionItem
                       value={category.title}
@@ -137,7 +140,9 @@ const DynamicForm = ({
                       </AccordionTrigger>
                       <AccordionContent>
                         {category.formFields?.map((fItem, index) => (
-                          <div key={index}>{renderFieldInFlexView(fItem)}</div>
+                          <div key={index} className="mt-3">
+                            {renderFieldInFlexView(fItem)}
+                          </div>
                         ))}
                       </AccordionContent>
                     </AccordionItem>
@@ -147,7 +152,7 @@ const DynamicForm = ({
               <Accordion
                 type="single"
                 collapsible
-                className="mb-3 w-full rounded-lg bg-slate-100 px-2.5"
+                className="w-full rounded-lg bg-slate-100 px-2.5"
               >
                 <AccordionItem value={"error"} className="border-none">
                   <AccordionTrigger className="py-2">
@@ -162,14 +167,14 @@ const DynamicForm = ({
           )}
         </FormProvider>
       </ScrollArea>
-      <Separator className="my-2 h-[0.5px] w-full" />
-      <div className="flex w-full items-center justify-end gap-2 px-4 pb-3.5">
+      <Separator className="my-0 h-[0.5px] w-full" />
+      <div className="flex w-full items-center justify-end gap-2 px-4 pb-4">
         <Button size="xs" variant={"outline"}>
           Cancel
         </Button>
         {!viewOnly && (
           <SubmitButton
-            size={"xs"}
+            size="xs"
             isPending={isMutationPending || isSubmitting}
           />
         )}

@@ -144,7 +144,8 @@ const extractDataFromWebPageFieldCategories: IDynamicFormKeysCategory[] = [
     title: "Basic",
     formFieldKeys: [
       ["webBrowserInstance"],
-      ["uIElement"]["extractionParameter"],
+      ["uIElement"],
+      ["extractionParameter"],
       ["maxWebPagesToProcess"],
       ["sendPhysicalClickForNextPage"],
       ["pageCssSelector"],
