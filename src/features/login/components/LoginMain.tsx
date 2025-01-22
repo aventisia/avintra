@@ -1,9 +1,9 @@
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+//import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { useShallow } from "zustand/react/shallow";
-import { useValidateUserSessionForLoginPage } from "../hooks/useValidateUserSessionForLoginPage";
+//import { useValidateUserSessionForLoginPage } from "../hooks/useValidateUserSessionForLoginPage";
 import { useLoginStore } from "../stores/login-store";
 import { GetTenantInfo } from "./get-tenant-info/GetTenantInfo";
 import { LoginHeader } from "./LoginHeader";
@@ -18,40 +18,40 @@ export const LoginMain = () => {
     })),
   );
 
-  // Validate user session
-  const { isPending } = useValidateUserSessionForLoginPage();
+  // TODO: Validate user session
+  //const { isPending } = useValidateUserSessionForLoginPage();
 
   // Return component
   return (
     <>
-      {isPending ? (
+      {/* {isPending ? (
         <RedirectPage className="h-auto p-3 pb-0" />
-      ) : (
-        <>
-          <LeftContainer>
-            {/* Logog + Help link */}
-            <LoginHeader />
+      ) : ( */}
+      <>
+        <LeftContainer>
+          {/* Logog + Help link */}
+          <LoginHeader />
 
-            {/* Step 1 - Get tenant info step */}
-            {stepNo === 1 && <GetTenantInfo />}
+          {/* Step 1 - Get tenant info step */}
+          {stepNo === 1 && <GetTenantInfo />}
 
-            {/* Step 2 - Pwd login step */}
-            {stepNo === 2 && <PwdLogin />}
+          {/* Step 2 - Pwd login step */}
+          {stepNo === 2 && <PwdLogin />}
 
-            {/* Step 3 - 2FA step */}
-            {stepNo === 3 && <TwoFA />}
+          {/* Step 3 - 2FA step */}
+          {stepNo === 3 && <TwoFA />}
 
-            {/* App footer */}
-            <MinimalFooter />
-          </LeftContainer>
+          {/* App footer */}
+          <MinimalFooter />
+        </LeftContainer>
 
-          <RightContainer
-            heading="Your AI-Powered Journey Starts Here"
-            subHeading="Enter your gateway to affordable, scalable, and practical automation."
-            imgSrc="flowbuilder.svg"
-          />
-        </>
-      )}
+        <RightContainer
+          heading="Your AI-Powered Journey Starts Here"
+          subHeading="Enter your gateway to affordable, scalable, and practical automation."
+          imgSrc="flowbuilder.svg"
+        />
+      </>
+      {/* )} */}
     </>
   );
 };
