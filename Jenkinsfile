@@ -2,7 +2,7 @@
 def getBuildMode(branchName) {
     switch(branchName) {
         case 'dev':
-            return 'development'
+            return 'testing'
         case 'uat':
             return 'staging'
         case 'main':
