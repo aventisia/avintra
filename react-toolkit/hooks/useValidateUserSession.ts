@@ -22,30 +22,32 @@ export const useValidateUserSession = () => {
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
+    mutationFn:
+      import.meta.env.MODE === "local" ? getMySession : refreshSession,
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;
-      
+
       // Set authenticated user locally and session obj in store
       setUserSession(setUserSessionLocally(httpResponse.data));
     },
     onError: (error) => {
       // Show error toast
       toast.error(error.toString());
-      
+
       // Remove user session from store
       setUserSession(null);
 
       // Remove user session from local storage and redirect to login page
-      removeUserSessionLocally(true); 
+      removeUserSessionLocally(true);
     },
   });
 
   // Refresh the session on app-load.
   useEffect(() => {
-    if (import.meta.env.DEV) mutate();
-    if (import.meta.env.PROD) {
+    if (import.meta.env.MODE === "local") {
+      mutate();
+    } else {
       if (isUserSessionValid()) mutate();
       else redirectToLoginUtil();
     }

@@ -7,7 +7,7 @@
  */
 export function redirectToLoginUtil() {
   setTimeout(() => {
-    if (!import.meta.env.DEV)
+    if (import.meta.env.MODE !== "local")
       window.location.assign(import.meta.env.VITE_LOGIN_URL);
   }, 2000);
 }
