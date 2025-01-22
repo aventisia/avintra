@@ -3,9 +3,7 @@ import {
   refreshSession,
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { redirectToLoginUtil } from "@/react-toolkit/utils/redirect-utils";
 import {
-  isUserSessionValid,
   removeUserSessionLocally,
   setUserSessionLocally,
 } from "@/react-toolkit/utils/user-session-utils";
@@ -44,11 +42,7 @@ export const useValidateUserSession = () => {
 
   // Refresh the session on app-load.
   useEffect(() => {
-    if (import.meta.env.DEV) mutate();
-    if (import.meta.env.PROD) {
-      if (isUserSessionValid()) mutate();
-      else redirectToLoginUtil();
-    }
+    mutate();
   }, [mutate]);
 
   // return isPending state
