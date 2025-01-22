@@ -202,10 +202,10 @@ public class MyAccountService : IMyAccountService
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
 
             // Set all cookies to blank
-            _authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
-            _authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
-            _authHelperService.RemoveCookie(CookieNamesEnum.RefreshToken.ToString());
-            _authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
+            //_authHelperService.RemoveCookie(CookieNamesEnum.SessionId.ToString());
+            //_authHelperService.RemoveCookie(CookieNamesEnum.AccessToken.ToString());
+            //_authHelperService.RemoveCookie(CookieNamesEnum.RefreshToken.ToString());
+            //_authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
 
             // Something is missing
             if (sessionIdString == null || userName == null || userAgent == null)
