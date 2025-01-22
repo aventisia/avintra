@@ -18,7 +18,7 @@ const setUserSessionLocally = (
 ): IUserSessionStore => {
   // Decode jwt basis env. DO NOT REMOVE DEV CONDITION
   const decodedJwt = jwtDecode<IJwtPayload>(
-    import.meta.env.MODE === "local"
+    import.meta.env.DEV
       ? localStorage.getItem(DEV_JWT_LS_KEY) || ""
       : userSession.accessToken,
   );
