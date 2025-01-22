@@ -77,6 +77,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           <DynamicFieldLabel fData={fData} />
           <FormControl>
             <Input
+              fieldSize="sm"
               className={cn(fData.className)}
               readOnly={fData.readonly}
               type={fData.type}
@@ -132,13 +133,13 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger size="sm">
                 <SelectValue placeholder={fData.placeholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
               {fData?.selectOptions?.map((item, index) => (
-                <SelectItem key={index} value={item.value}>
+                <SelectItem size="sm" key={index} value={item.value}>
                   {item.label}
                 </SelectItem>
               ))}
@@ -157,14 +158,19 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
             defaultValue={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger size="sm">
                 <SelectValue placeholder={fData.placeholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
               <div className="p-4">
-                <Input type="text" placeholder="Search..." className="mb-2" />
-                <Button>Button</Button>
+                <Input
+                  fieldSize="sm"
+                  type="text"
+                  placeholder="Search..."
+                  className="mb-2"
+                />
+                <Button size="sm">Button</Button>
               </div>
             </SelectContent>
           </Select>
@@ -177,7 +183,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           <DynamicFieldLabel fData={fData} />
           <MultiSelector onValuesChange={field.onChange} values={field.value}>
             <FormControl>
-              <MultiSelectorTrigger disabled={fData.disabled}>
+              <MultiSelectorTrigger size="sm" disabled={fData.disabled}>
                 <MultiSelectorInput
                   disabled={fData.disabled}
                   placeholder={fData.placeholder}
@@ -190,7 +196,11 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
                   {fData?.selectOptions
                     ?.filter((option) => !field.value.includes(option.value))
                     .map((item, index) => (
-                      <MultiSelectorItem key={index} value={item.value}>
+                      <MultiSelectorItem
+                        size="sm"
+                        key={index}
+                        value={item.value}
+                      >
                         <div className="flex items-center gap-2">
                           {item.label}
                           {item.description && (
@@ -213,6 +223,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           <DynamicFieldLabel fData={fData} />
           <FormControl>
             <TagInput
+              fieldSize="sm"
               className={fData.className}
               readOnly={fData.readonly}
               placeholder={fData.placeholder}
@@ -231,6 +242,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
                 <Button
                   disabled={fData.disabled}
                   variant="outline"
+                  size="sm"
                   role="combobox"
                   className={cn(
                     "w-full justify-between pl-3 pr-[0.68rem] font-normal",
@@ -300,18 +312,21 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
       return (
         <div
           className={cn(
-            "flex flex-row items-center justify-between rounded-lg border p-4",
+            "flex flex-row items-center justify-between rounded-lg border p-3",
             fData.disabled ? "opacity-70" : "",
           )}
         >
           <div className="space-y-1">
-            <DynamicFieldLabel className="ml-0 text-sm" fData={fData} />
+            <DynamicFieldLabel className="ml-0 text-xs" fData={fData} />
             {fData.description && (
-              <FormDescription>{fData.description}</FormDescription>
+              <FormDescription className="text-xs">
+                {fData.description}
+              </FormDescription>
             )}
           </div>
           <FormControl>
             <Switch
+              size="sm"
               disabled={fData.disabled}
               checked={field.value}
               onCheckedChange={field.onChange}
@@ -336,7 +351,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
                   className="flex items-center gap-1.5 space-y-0"
                 >
                   <FormControl>
-                    <RadioGroupItem value={item.value} />
+                    <RadioGroupItem size="sm" value={item.value} />
                   </FormControl>
                   <p className="ml-1 text-sm font-normal">{item.label}</p>
                   <Tooltip content={item.description}>
@@ -358,6 +373,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
                 <Button
                   disabled={fData.disabled}
                   variant={"outline"}
+                  size="sm"
                   className={cn(
                     "w-full pl-3 pr-[0.68rem] text-left font-normal",
                     !field.value && "text-muted-foreground",
@@ -402,6 +418,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           <DynamicFieldLabel fData={fData} />
           <FormControl>
             <Textarea
+              size="sm"
               className={cn(fData.className)}
               placeholder={fData.placeholder}
               {...field}

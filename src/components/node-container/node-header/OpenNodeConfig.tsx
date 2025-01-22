@@ -96,11 +96,12 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
           align="start"
           side="right"
           variant={"responsive"}
+          className="max-h-fit min-w-[30vw]"
         >
           <PopoverDefaultHeader heading={data.label} />
           {activityConfig && (
             <DynamicForm
-              className="flex h-[516px] flex-col"
+              className="flex h-full flex-col"
               formFieldCategories={getFormFields(
                 "insert",
                 activityConfig?.fieldList,
