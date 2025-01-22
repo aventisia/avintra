@@ -1,6 +1,5 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import {
-  isUserSessionValid,
   removeUserSessionLocally,
   setUserSessionLocally,
 } from "@/react-toolkit/utils/user-session-utils";
@@ -46,8 +45,7 @@ export const useValidateUserSessionForLoginPage = () => {
 
   // Refresh the session if exists
   useEffect(() => {
-    if (isUserSessionValid()) mutate();
-    else navigate("/login");
+    mutate();
   }, [mutate, navigate]);
 
   // return isPending state

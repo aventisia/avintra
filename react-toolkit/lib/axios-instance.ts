@@ -32,6 +32,10 @@ axiosInstance.interceptors.request.use(
       request.headers["Authorization"] =
         `Bearer ${localStorage.getItem(DEV_JWT_LS_KEY)}`;
     }
+
+    // Include cookies with the request
+    request.withCredentials = true;
+
     return request;
   },
   (error) => {
@@ -129,4 +133,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export { axiosInstance };
-

@@ -46,17 +46,6 @@ const setUserSessionLocally = (
   };
 };
 
-const getTenantId = () => {
-  const userSessionLS = JSON.parse(
-    localStorage.getItem(USER_SESSION_LS_KEY) || '""',
-  ) as IUserSessionLS;
-
-  // Session does not exist
-  if (!userSessionLS) return null;
-
-  return userSessionLS.tenantId;
-};
-
 const removeUserSessionLocally = (redirectToLogin?: boolean) => {
   localStorage.removeItem(USER_SESSION_LS_KEY);
 
@@ -64,24 +53,7 @@ const removeUserSessionLocally = (redirectToLogin?: boolean) => {
   if (redirectToLogin) redirectToLoginUtil();
 };
 
-/** Checks whether user session exists or not. If exists, then checks whether expired or not */
-const isUserSessionValid = () => {
-  // Get userSessionLS
-  const userSessionLS = JSON.parse(
-    localStorage.getItem(USER_SESSION_LS_KEY) || '""',
-  ) as IUserSessionLS;
-
-  // Session does not exist or Session expired
-  if (!userSessionLS || new Date(userSessionLS.expiresOn) <= new Date())
-    return false;
-
-  // Session is valid
-  return true;
-};
-
 export {
-  getTenantId,
-  isUserSessionValid,
   removeUserSessionLocally,
   setUserSessionLocally,
 };
