@@ -6,8 +6,8 @@
  * `import.meta.env.VITE_LOGIN_URL` environment variable after a delay of 2 seconds.
  */
 export function redirectToLoginUtil() {
-  // setTimeout(() => {
-  //   if (!import.meta.env.DEV)
-  //     window.location.assign(import.meta.env.VITE_LOGIN_URL);
-  // }, 2000);
+  setTimeout(() => {
+    if (!import.meta.env.DEV)
+      window.location.assign(import.meta.env.VITE_LOGIN_URL);
+  }, 2000);
 }

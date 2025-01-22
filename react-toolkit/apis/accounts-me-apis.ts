@@ -3,7 +3,6 @@ import { TerminateSessionDto } from "@/react-toolkit/dtos/request/terminate-sess
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { redirectToLoginUtil } from "@/react-toolkit/utils/redirect-utils";
-import { getTenantId } from "@/react-toolkit/utils/user-session-utils";
 import { toast } from "sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
@@ -25,11 +24,7 @@ const getMySession = () => {
 /** Refreshes user session using cookies */
 const refreshSession = () => {
   return axiosInstance
-    .put<IHttpResponse<UserSessionDto>>(`${baseAPIURL}/refresh-session`, null, {
-      headers: {
-        tntid: getTenantId()?.toString(),
-      },
-    })
+    .put<IHttpResponse<UserSessionDto>>(`${baseAPIURL}/refresh-session`)
     .then((res) => res.data)
     .catch((error) => {
       // Show error toast
@@ -53,6 +48,5 @@ export {
   getMySession,
   logOffFromCurrentSession,
   refreshSession,
-  terminateUserSelectedSessions
+  terminateUserSelectedSessions,
 };
-
