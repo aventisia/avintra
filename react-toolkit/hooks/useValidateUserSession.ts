@@ -1,5 +1,5 @@
 import {
-  getMySession,
+  //getMySession,
   refreshSession,
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -19,11 +19,14 @@ import { toast } from "sonner";
  */
 export const useValidateUserSession = () => {
   const { setUserSession } = useUserSessionStore();
+  console.log(import.meta.env.MODE);
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
+    mutationFn: refreshSession,
     onSuccess: (httpResponse) => {
+      console.log(httpResponse);
+
       // Return, If response is null
       if (!httpResponse) return;
 
