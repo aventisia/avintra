@@ -164,6 +164,14 @@ public class EmailService : IEmailService
                                 "PwdUpdateCompleteEmailTemplate.html",
                                 placeholderValues)
                             );
+            case EmailTypesEnum.ContactUsRequest:
+                return await SendEmail(
+                            toEmailAddress,
+                            "New Contact Us Request",
+                            LoadAndRenderEmailTemplate(
+                                "ContactUsRequestEmailTemplate.html",
+                                placeholderValues)
+                            );
         }
 
         _logger.LogError($"Email type {emailType} did not match with any email template");

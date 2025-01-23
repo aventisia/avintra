@@ -19,4 +19,9 @@ public class GeneralConfig
     /// Gets or sets the company name.
     /// </summary>
     public required string Company { get; set; }
+
+    /// <summary>
+    /// Gets or sets the emails that will receive sales inquiries.
+    /// </summary>
+    public required string SalesEmails { get; set; }
 }

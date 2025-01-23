@@ -34,4 +34,9 @@ public enum EmailTypesEnum
     /// Email type to send email when password has ben updated successfully (Your password has been updated).
     /// </summary>
     PwdUpdated,
+
+    /// <summary>
+    /// Email type to send email when user submits a contact us form.
+    /// </summary>
+    ContactUsRequest,
 }
