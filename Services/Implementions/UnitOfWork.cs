@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     public ISessionLogRepo SessionLogRepo => new SessionLogRepo(_accountsDbContext);
     public IObsoletePwdRepo ObsoletePwdRepo => new ObsoletePwdRepo(_accountsDbContext);
     public IVerificationCodeRepo VerificationCodeRepo => new VerificationCodeRepo(_accountsDbContext);
+    public IContactUsRepo ContactUsRepo => new ContactUsRepo(_accountsDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_accountsDbContext);
     public IAccountRoleRepo AccountRoleRepo => new AccountRoleRepo(_accountsDbContext);
     public IPermissionRepo PermissionRepo => new PermissionRepo(_accountsDbContext);

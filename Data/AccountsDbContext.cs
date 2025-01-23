@@ -172,7 +172,7 @@ public class AccountsDbContext : IdentityDbContext<
         return result;
     }
 
-    private string GetChanges(EntityEntry entry)
+    private string? GetChanges(EntityEntry entry)
     {
         if (entry.State == EntityState.Added)
         {
@@ -208,6 +208,7 @@ public class AccountsDbContext : IdentityDbContext<
     public DbSet<SessionLog> SessionLogs { get; set; }
     public DbSet<ObsoletePwd> ObsoletePwds { get; set; }
     public DbSet<VerificationCode> VerificationCodes { get; set; }
+    public DbSet<ContactUs> ContactUs { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Permission> Permissions { get; set; }

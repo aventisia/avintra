@@ -13,6 +13,8 @@ public interface IUnitOfWork
     IObsoletePwdRepo ObsoletePwdRepo { get; }
 
     IVerificationCodeRepo VerificationCodeRepo { get; }
+    
+    IContactUsRepo ContactUsRepo { get; }
 
     ISubscriptionRepo SubscriptionRepo { get; }
 
