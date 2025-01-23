@@ -14,18 +14,6 @@ public class ContactUsDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the phone number of the contact. Max-20.
-    /// </summary>
-    [StringLength(20)]
-    public string? Phone { get; set; }
-
-    /// <summary>
-    /// Gets or sets the brief message of the contact. Max-500.
-    /// </summary>
-    [StringLength(500)]
-    public required string Message { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the contact. Max-100 characters.
     /// </summary>
     [StringLength(100)]
@@ -36,6 +24,18 @@ public class ContactUsDto
     /// </summary>
     [StringLength(254)]
     public required string Email { get; set; }
+
+    /// <summary>
+    /// Gets or sets the phone number of the contact. Max-20.
+    /// </summary>
+    [StringLength(20)]
+    public string? Phone { get; set; }
+
+    /// <summary>
+    /// Gets or sets the brief message of the contact. Max-500.
+    /// </summary>
+    [StringLength(500)]
+    public required string Message { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the user record was created. 
