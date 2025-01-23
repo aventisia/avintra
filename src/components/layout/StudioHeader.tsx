@@ -15,7 +15,7 @@ const StudioHeader = () => {
     <>
       <Panel position="top-left" onContextMenu={(e) => e.preventDefault()}>
         <div className="flex h-10 items-center rounded-lg bg-white pl-2">
-          <AppLogo className="h-6 text-sm font-bold" />
+          <AppLogo className="h-5 text-sm font-bold" />
           <DotSeparator className="ml-[0.9rem] mr-[0.1rem]" />
           <FlowsPopover className="mt-0 mlg:mt-0" />
         </div>
