@@ -5,6 +5,14 @@ import { PlayIcon, PauseIcon, StopIcon } from "@heroicons/react/24/solid";
 const ExecuteFlow = () => {
   const isFlowExecuting = false;
 
+  const openFile = () => {
+    console.log("open file");
+    const filePath =
+      "C:\\My Space\\PLAYGROUND\\StockAnalysisAutomationDemo\\StockAnalysisAutomationDemo.exe";
+    if (window)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).electron.openFile(filePath);
+  };
   return (
     <div className="flex h-7 items-center justify-center gap-2 rounded-lg bg-muted">
       {isFlowExecuting ? (
@@ -24,6 +32,7 @@ const ExecuteFlow = () => {
         <Button
           variant={"ghost"}
           className="group h-7 gap-1.5 whitespace-nowrap rounded-md px-2"
+          onClick={() => openFile()}
         >
           <PlayIcon className="h-4 w-4 text-green-500" />
           Execute
@@ -34,4 +43,4 @@ const ExecuteFlow = () => {
 };
 
 export { ExecuteFlow };
-0
+0;
