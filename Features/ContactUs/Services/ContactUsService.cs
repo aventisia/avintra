@@ -132,7 +132,7 @@ public class ContactUsService : IContactUsService
                     {"{{userMessage}}", contactUsDto.Message }
                 }))
             {
-                _logger.LogError($"Error occurred while sending verification code " +
+                _logger.LogError($"Error occurred while sending new contact us request " +
                     $"email to {_generalConfig.SalesEmails} and " +
                     $"request type {EmailTypesEnum.ContactUsRequest}");
                 return serviceResponse;
