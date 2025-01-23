@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from "@/react-toolkit/ui/accordion";
 import OnErrorTabs from "./OnErrorTabs";
+import { PopoverClose } from "@/react-toolkit/ui/popover";
 
 interface DynamicFormProps {
   /** An array of objects defining the form categories and fields. */
@@ -169,14 +170,19 @@ const DynamicForm = ({
       </ScrollArea>
       <Separator className="my-0 h-[0.5px] w-full" />
       <div className="flex w-full items-center justify-end gap-2 px-4 pb-4">
-        <Button size="xs" variant={"outline"}>
-          Cancel
-        </Button>
+        <PopoverClose>
+          <Button size="xs" variant={"outline"}>
+            Cancel
+          </Button>
+        </PopoverClose>
+
         {!viewOnly && (
-          <SubmitButton
-            size="xs"
-            isPending={isMutationPending || isSubmitting}
-          />
+          <PopoverClose>
+            <SubmitButton
+              size="xs"
+              isPending={isMutationPending || isSubmitting}
+            />
+          </PopoverClose>
         )}
       </div>
     </Form>
