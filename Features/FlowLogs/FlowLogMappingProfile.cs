@@ -14,8 +14,6 @@ public class FlowLogMappingProfile : IRegister
         .Map(dest => dest.flowName, src => src.Flow.Name)
         .Map(dest => dest.Version,src => src.Version )
         .Map(dest => dest.Duration,src => src.Duration );
-
-        
     }
 }
 
