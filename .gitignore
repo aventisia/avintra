@@ -30,8 +30,5 @@ TO-DELETE-*
 # Ignore sample-* files
 sample-*
 
-# Ignore react-toolkit
-react-toolkit
-
 # Ignore all user-stories* files
 user-stories*
