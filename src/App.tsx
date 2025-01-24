@@ -16,6 +16,7 @@ import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import ComingSoon from "./pages/CommingSoon";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,18 @@ const router = createBrowserRouter(
         {
           path: "/project/flows",
           element: <FlowsPage />,
+        },
+        {
+          path: "/home",
+          element: <ComingSoon />,
+        },
+        {
+          path: "/account",
+          element: <ComingSoon />,
+        },
+        {
+          path: "/marketplace",
+          element: <ComingSoon />,
         },
         {
           path: "/users",
