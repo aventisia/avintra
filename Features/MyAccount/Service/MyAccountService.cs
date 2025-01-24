@@ -30,6 +30,7 @@ public class MyAccountService : IMyAccountService
         IEmailService emailService)
     {
         // Set _userName, _sessionId & _userId
+        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
         _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());

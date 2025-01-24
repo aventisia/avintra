@@ -534,7 +534,7 @@ public class AccountUsersTableService : IAccountUsersTableService
     }
 
     // HelperFn: Transform roles "FullName" to "Name". Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
-    private async Task<List<string>> TransformRoleFullNameToName(List<string> rolesToTransform)
+    private async Task<List<string?>> TransformRoleFullNameToName(List<string> rolesToTransform)
     {
         try
         {
@@ -553,7 +553,7 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch
         {
-            return new List<string>();
+            return new List<string?>();
         }
     }
 
