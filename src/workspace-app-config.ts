@@ -15,7 +15,7 @@ import {
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
-  showChatAssistant: true,
+  showChatAssistant: false,
   searchBoxOptions: {
     show: true,
     position: "center",
