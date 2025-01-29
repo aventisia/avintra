@@ -1,6 +1,6 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { DEV_JWT_LS_KEY, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
-import { redirectToLoginUtil } from "@/react-toolkit/utils/redirect-util";
+import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 import { sleep } from "@/react-toolkit/utils/sleep-util";
 import axios from "axios";
 import { toast } from "sonner";
@@ -104,7 +104,7 @@ axiosInstance.interceptors.response.use(
         toast.error(errorMessage);
 
         // Remove user session from local storage and redirect to login page
-        redirectToLoginUtil();
+        redirectToLoginOn401Util();
         break;
       case 403:
         toast.error(errorMessage);

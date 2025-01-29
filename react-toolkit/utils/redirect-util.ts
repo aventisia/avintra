@@ -1,14 +1,16 @@
 /**
- * Redirects the user to the login page after a delay of 2 seconds.
- *
- * This function checks if the application is not in development mode
- * (`import.meta.env.DEV` is false). If so, it redirects the user to the
- * login URL specified in the environment variable `VITE_LOGIN_URL`.
- *
- * @remarks
- * The redirection is delayed by 2 seconds using `setTimeout`.
+ * Redirects the user to the login page if a 401 Unauthorized response is detected.
+ * 
+ * This function sets a local storage item "sessionExpired" to "true" to indicate that the session has expired.
+ * It then redirects the user to the login page after a delay of 2 seconds, but only if the application is not in development mode.
+ * 
+ * The login URL is retrieved from the environment variable `VITE_LOGIN_URL`.
  */
-export function redirectToLoginUtil() {
+export function redirectToLoginOn401Util() {
+  // Set identifier that session has expired
+  localStorage.setItem("sessionExpired", "true");
+
+  // Redirect to login page
   setTimeout(() => {
     if (!import.meta.env.DEV)
       window.location.assign(import.meta.env.VITE_LOGIN_URL);
