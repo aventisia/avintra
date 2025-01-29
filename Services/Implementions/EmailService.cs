@@ -12,16 +12,18 @@ public class EmailService : IEmailService
     private readonly SmtpConfig _smtpConfig;
     private readonly ILogger<EmailService> _logger;
     private readonly GeneralConfig _generalConfig;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public EmailService(SmtpConfig smtpConfig, ILogger<EmailService> logger, GeneralConfig generalConfig)
+    public EmailService(SmtpConfig smtpConfig, ILogger<EmailService> logger, GeneralConfig generalConfig, IWebHostEnvironment webHostEnvironment)
     {
         _smtpConfig = smtpConfig;
         _logger = logger;
         _generalConfig = generalConfig;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     /// <inheritdoc />
-    public async Task<bool> SendEmail(string toEmailAddresses, string subject, string? content, 
+    public async Task<bool> SendEmail(string toEmailAddresses, string subject, string? content,
         string? ccEmailAddresses = null, string? bccEmailAddresses = null)
     {
         try
@@ -87,8 +89,8 @@ public class EmailService : IEmailService
                     message.Bcc.Add(new MailboxAddress(string.Empty, bccEmailAddress.Trim()));
                 }
             }
-            
-           
+
+
 
             // Sets the subject of the email.
             message.Subject = subject;
@@ -104,15 +106,18 @@ public class EmailService : IEmailService
             // Creates a new SMTP client.
             using (var client = new SmtpClient())
             {
-                // Force a secure connection over TLS.
-                var socketOptions = SecureSocketOptions.SslOnConnect;
 
-                // Connects to the SMTP server.
+                // Use no encryption for "Localhost" environment, otherwise use SSL encryption.
+                var socketOptions = _webHostEnvironment.IsEnvironment("Localhost") ? SecureSocketOptions.None : SecureSocketOptions.SslOnConnect;
+
+                // Connects to the SMTP server using the specified host, port, and security options.
                 await client.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port, socketOptions);
 
-                // Authenticates with the SMTP server if credentials are provided.
-                await client.AuthenticateAsync(_smtpConfig.Username, _smtpConfig.ApiKey);
-
+                // If not in "Localhost" environment, authenticate with the SMTP server using the provided credentials.
+                if (!_webHostEnvironment.IsEnvironment("Localhost"))
+                {
+                    await client.AuthenticateAsync(_smtpConfig.Username, _smtpConfig.ApiKey);
+                }
                 // Sends the email.
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
@@ -148,8 +153,8 @@ public class EmailService : IEmailService
                             toEmailAddresses: toEmailAddress,
                             subject: "Welcome to Aventisia!",
                             content: LoadAndRenderEmailTemplate(
-                                "AccountCreatedEmailTemplate.html", placeholderValues), 
-                            ccEmailAddresses: null, 
+                                "AccountCreatedEmailTemplate.html", placeholderValues),
+                            ccEmailAddresses: null,
                             bccEmailAddresses: bccEmailAddresses
                             );
             case EmailTypesEnum.TwoFA:

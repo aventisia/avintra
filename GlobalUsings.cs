@@ -37,6 +37,7 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.OpenApi.Models;
+global using Microsoft.AspNetCore.Hosting;
 
 global using Newtonsoft.Json;
 global using Ardalis.GuardClauses;
