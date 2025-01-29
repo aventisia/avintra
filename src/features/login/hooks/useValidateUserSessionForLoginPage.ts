@@ -1,8 +1,5 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import {
-  removeUserSessionLocally,
-  setUserSessionLocally,
-} from "@/react-toolkit/utils/user-session-utils";
+import { getDecodedUserSession } from "@/react-toolkit/utils/decode-user-session";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,19 +23,18 @@ export const useValidateUserSessionForLoginPage = () => {
       if (!httpResponse) return;
 
       // Set authenticated user locally
-      const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
+      const decodedUserSession = getDecodedUserSession(httpResponse.data);
 
       // Route as per user type (internal or external)
       navigate(
         "/redirect?msg=Loading...&url=" +
-          (userSessionStoreObj.isAE
+          (decodedUserSession.isAE
             ? import.meta.env.VITE_WORKSPACE_URL
             : import.meta.env.VITE_WORKSPACE_URL),
       );
     },
     onError: (error) => {
       toast.error(error.toString());
-      removeUserSessionLocally();
       navigate("/login");
     },
   });
