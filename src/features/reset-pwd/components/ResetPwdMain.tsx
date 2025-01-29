@@ -1,5 +1,6 @@
 import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { LeftContainer } from "@/components/ui/LeftContainer";
+import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
@@ -21,7 +22,7 @@ export const ResetPwdMain = () => {
 
   // Return component
   return (
-    <>
+    <PageContainer>
       <LeftContainer>
         <HeaderContainer>
           <AppLogo />
@@ -54,6 +55,6 @@ export const ResetPwdMain = () => {
         subHeading="Enter your gateway to affordable, scalable, and practical automation."
         imgSrc="flowbuilder.svg"
       />
-    </>
+    </PageContainer>
   );
 };

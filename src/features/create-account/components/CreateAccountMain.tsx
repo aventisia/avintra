@@ -1,5 +1,6 @@
 import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { LeftContainer } from "@/components/ui/LeftContainer";
+import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
@@ -20,7 +21,7 @@ export const CreateAccountMain = () => {
 
   // Return component
   return (
-    <>
+    <PageContainer>
       <LeftContainer>
         <HeaderContainer>
           <AppLogo />
@@ -50,6 +51,6 @@ export const CreateAccountMain = () => {
         subHeading="Sign up to build intuitive, AI-powered workflows tailored to your needs."
         imgSrc="flowbuilder.svg"
       />
-    </>
+    </PageContainer>
   );
 };
