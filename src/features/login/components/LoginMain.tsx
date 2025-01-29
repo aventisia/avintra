@@ -19,8 +19,9 @@ export const LoginMain = () => {
     })),
   );
 
+  // Validate user session
   const { isPending } = useValidateUserSessionForLoginPage();
-
+  
   // Return component
   return (
     <>

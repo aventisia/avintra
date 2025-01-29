@@ -7,8 +7,8 @@ import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const NotFoundPage = () => {
   return (
-    <div className="flex max-h-screen w-full flex-col items-center justify-between p-3 pb-0 lg:w-[100%]">
-      <div className="flex w-full items-center justify-between p-5 xs:p-3">
+    <div className="flex max-h-screen w-full flex-col items-center justify-between p-3 lg:w-[100%]">
+      <div className="flex w-full items-center justify-between p-5 xs:p-6">
         <AppLogo doNotShowAppName={true} />
         <a
           href="/help?id=help-on-error"

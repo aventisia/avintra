@@ -16,7 +16,7 @@ const ErrorPage = () => {
 
   return (
     <div className="flex h-screen w-full flex-col items-center p-3 lg:w-[100%]">
-      <div className="flex w-full items-center justify-between p-5 xs:p-3">
+      <div className="flex w-full items-center justify-between p-5 xs:p-6">
         <AppLogo doNotShowAppName={true} />
         <a
           href="/help?id=help-on-error"
