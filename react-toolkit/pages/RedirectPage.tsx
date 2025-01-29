@@ -2,7 +2,7 @@ import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Loader2 } from "lucide-react";
+import LoadingSpinner from "@/react-toolkit/ui/loading-spinner/LoadingSpinner";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -35,14 +35,14 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
           href="/help?id=redirect"
           className={cn(
             buttonVariants({ variant: "link" }),
-            "text-md text-right",
+            "text-right text-md",
           )}
         >
           Help?
         </a>
       </div>
-      <div className="text-md -mt-4 flex items-center gap-3">
-        <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
+      <div className="-mt-4 flex items-center gap-3 text-md">
+        <LoadingSpinner />
         {message ? message : "Loading..."}
       </div>
       <MinimalFooter />
@@ -51,3 +51,4 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
 };
 
 export { RedirectPage };
+
