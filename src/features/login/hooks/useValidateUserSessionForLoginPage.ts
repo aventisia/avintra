@@ -1,5 +1,5 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { getDecodedUserSession } from "@/react-toolkit/utils/decode-user-session";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,12 +23,12 @@ export const useValidateUserSessionForLoginPage = () => {
       if (!httpResponse) return;
 
       // Set authenticated user locally
-      const decodedUserSession = getDecodedUserSession(httpResponse.data);
+      const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
 
       // Route as per user type (internal or external)
       navigate(
         "/redirect?msg=Loading...&url=" +
-          (decodedUserSession.isAE
+          (userSessionStoreObj.isAE
             ? import.meta.env.VITE_WORKSPACE_URL
             : import.meta.env.VITE_WORKSPACE_URL),
       );

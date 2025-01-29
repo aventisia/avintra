@@ -1,4 +1,4 @@
-import { getDecodedUserSession } from "@/react-toolkit/utils/decode-user-session";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -29,12 +29,12 @@ export const useCreateAccountMutation = () => {
         setCreateAccountData(null);
 
         // Set authenticated user locally
-        const decodedUserSession = getDecodedUserSession(httpResponse.data);
+        const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
 
         // Route as per user type (internal or external)
         navigate(
           "/redirect?msg=Logging in...&url=" +
-            (decodedUserSession.isAE
+            (userSessionStoreObj.isAE
               ? import.meta.env.VITE_WORKSPACE_URL
               : import.meta.env.VITE_WORKSPACE_URL),
         );

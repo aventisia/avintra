@@ -1,4 +1,4 @@
-import { DEV_JWT_LS_KEY } from "@/react-toolkit/constants";
+import { DEV_JWT_LS_KEY, SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import {
   IJwtPayload,
@@ -6,7 +6,7 @@ import {
 } from "@/react-toolkit/types/user-session-types";
 import { jwtDecode } from "jwt-decode";
 
-const getDecodedUserSession = (
+const setUserSessionLocally = (
   userSession: UserSessionDto,
 ): IUserSessionStore => {
   // Decode jwt basis env. DO NOT REMOVE DEV CONDITION
@@ -15,6 +15,9 @@ const getDecodedUserSession = (
       ? localStorage.getItem(DEV_JWT_LS_KEY) || ""
       : userSession.accessToken,
   );
+
+  // Set user session status in local storage
+  localStorage.setItem(SESSION_EXPIRED_LS_KEY, "false");
 
   // create roles array
   const roles: string[] =
@@ -34,4 +37,6 @@ const getDecodedUserSession = (
   };
 };
 
-export { getDecodedUserSession };
+export {
+  setUserSessionLocally,
+};
