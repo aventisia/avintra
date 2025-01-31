@@ -10,6 +10,4 @@ public enum ProjectTypesEnum
 {
     Worcflow,
     MLModel,
-    ProjectType3,
-    ProjectType4
 }
