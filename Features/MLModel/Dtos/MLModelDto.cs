@@ -1,0 +1,60 @@
+namespace MLModelBuilderAPIs.Dtos;
+
+public class MLModelDto
+{
+    /// <summary>
+    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
+    /// </summary>
+    public Guid TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the primary key for the ML model.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of ML model. Max character is 50.
+    /// </summary>
+    [MaxLength(50)]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of ML model.
+    /// </summary>
+    public ModelTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of ML model
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date of training of ML model.
+    /// </summary>
+    public DateTimeOffset TrainedOn { get; set; }
+
+    /// <summary>
+    ///Gets or sets the status of ML model.
+    /// </summary>/
+    public ModelStatusEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the user who created the record.
+    /// </summary>
+    public Guid CreatedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the user who modified the record last.
+    /// </summary>
+    public Guid LastModifiedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the user who created the record.
+    /// </summary>
+    public string? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the username who created the record.
+    /// </summary>
+    public string? CreatedByUsername { get; set; }
+}

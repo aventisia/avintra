@@ -1,4 +1,5 @@
 using MLModelBuilderAPIs.Data;
+using MLModelBuilderAPIs.Repos;
 
 namespace MLModelBuilderAPIs.Services;
 
@@ -11,6 +12,10 @@ public class UnitOfWork : IUnitOfWork
         _mlModelBuilderDbContext = mlModelBuilderDbContext;
     }
 
+    public IDataFieldRepo DataFieldRepo => new DataFieldRepo(_mlModelBuilderDbContext);
+    public IMLModelRepo MLModelRepo => new MLModelRepo(_mlModelBuilderDbContext);
+    public IExtractedDataRepo ExtractedDataRepo => new ExtractedDataRepo(_mlModelBuilderDbContext);
+    public IUploadedDocRepo UploadedDocRepo => new UploadedDocRepo(_mlModelBuilderDbContext);
 
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)

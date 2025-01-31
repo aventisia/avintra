@@ -1,5 +1,4 @@
 
-
 namespace MLModelBuilderAPIs.Extensions;
 
 public static class AppServicesExtension
@@ -18,17 +17,22 @@ public static class AppServicesExtension
     {
         // Mapster mapping profiles
         var config = TypeAdapterConfig.GlobalSettings;
+        config.Apply(new MLModelMappingProfile());
+        config.Apply(new ExtractedDataMappingProfile());
+        config.Apply(new DataFieldMappingProfile());
 
         services.AddSingleton(config);
     }
 
     public static void AddAppDependencies(this IServiceCollection services, IConfiguration config)
     {
-
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
         
         //Feature Services
+        services.AddScoped<IMLModelService, MLModelService>();
+        services.AddScoped<IExtractedDataService, ExtractedDataService>();
+        services.AddScoped<IDataFieldService, DataFieldService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

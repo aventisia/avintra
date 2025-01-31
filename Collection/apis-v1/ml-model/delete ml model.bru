@@ -1,0 +1,17 @@
+meta {
+  name: delete ml model
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model/{{MLMODEL_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  req.setBody({
+    Id: bru.getGlobalEnvVar("MLMODEL_ID"),
+  })
+}

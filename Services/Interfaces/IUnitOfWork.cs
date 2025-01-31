@@ -14,4 +14,9 @@ public interface IUnitOfWork
     /// </summary>
     /// <returns>True if there are pending changes, otherwise false.</returns>
     bool HasChanges();
+
+    IDataFieldRepo DataFieldRepo { get; }
+    IMLModelRepo MLModelRepo { get; }
+    IExtractedDataRepo ExtractedDataRepo { get; }
+    IUploadedDocRepo UploadedDocRepo { get; }
 }

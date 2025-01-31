@@ -3,17 +3,21 @@ global using AspNetToolkit.Controllers;
 global using AspNetToolkit.DTOs;
 global using AspNetToolkit.Data;
 global using AspNetToolkit.Entities;
-global using AspNetToolkit.Enums;
 global using AspNetToolkit.Extensions;
 global using AspNetToolkit.Middleware;
 global using AspNetToolkit.Repos;
 global using AspNetToolkit.Services;
+global using AspNetToolkit.Enums;
 global using AspNetToolkit.Utils;
 global using AspNetToolkit.Attributes;
 
 global using MLModelBuilderAPIs.Data;
 global using MLModelBuilderAPIs.Services;
 global using MLModelBuilderAPIs.Extensions;
+global using MLModelBuilderAPIs.Repos;
+global using MLModelBuilderAPIs.Dtos;
+global using MLModelBuilderAPIs.Entities;
+global using MLModelBuilderAPIs.MappingProfiles;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
