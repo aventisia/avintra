@@ -8,8 +8,5 @@ namespace AspNetToolkit.Enums;
 /// </remarks>
 public enum FlowTypesEnum
 {
-    FlowType1,
-    FlowType2,
-    FlowType3,
-    FlowType4
+    AutomationAgent
 }

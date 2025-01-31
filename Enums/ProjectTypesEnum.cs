@@ -8,8 +8,8 @@ namespace AspNetToolkit.Enums;
 /// </remarks>
 public enum ProjectTypesEnum
 {
-    ProjectType1,
-    ProjectType2,
+    Worcflow,
+    MLModel,
     ProjectType3,
     ProjectType4
 }
