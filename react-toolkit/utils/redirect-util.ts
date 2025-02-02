@@ -12,9 +12,9 @@ export function redirectToLoginOn401Util() {
   // Set identifier that session has expired
   localStorage.setItem(SESSION_EXPIRED_LS_KEY, "true");
 
-  // Redirect to login page
+  // Redirect to login page if not in development mode and not in the login page
   setTimeout(() => {
-    if (!import.meta.env.DEV)
+    if (!import.meta.env.DEV && window.location.pathname !== "/login")
       window.location.assign(import.meta.env.VITE_LOGIN_URL);
   }, 2000);
 }

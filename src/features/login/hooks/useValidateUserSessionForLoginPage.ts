@@ -4,7 +4,6 @@ import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils"
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 /**
  * Custom hook to validate the user session for the login page.
@@ -34,10 +33,7 @@ export const useValidateUserSessionForLoginPage = () => {
             : import.meta.env.VITE_WORKSPACE_URL),
       );
     },
-    onError: (error) => {
-      toast.error(error.toString());
-      navigate("/login");
-    },
+    // onError is not required since axios instance handles 401 error and redirects to login page
   });
 
   // Refresh the session if exists
