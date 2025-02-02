@@ -1,4 +1,5 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -41,10 +42,11 @@ export const useValidateUserSessionForLoginPage = () => {
 
   // Refresh the session if exists
   useEffect(() => {
-    if (
-      localStorage.getItem("sessionExpired") != null &&
-      !localStorage.getItem("sessionExpired")
-    ) {
+    // Get session expired flag
+    const sessionExpired = localStorage.getItem(SESSION_EXPIRED_LS_KEY);
+
+    // If session is not expired, refresh the session
+    if (sessionExpired != null && !JSON.parse(sessionExpired)) {
       mutate();
     }
   }, [mutate]);

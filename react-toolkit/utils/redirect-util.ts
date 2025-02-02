@@ -1,3 +1,5 @@
+import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
+
 /**
  * Redirects the user to the login page if a 401 Unauthorized response is detected.
  * 
@@ -8,7 +10,7 @@
  */
 export function redirectToLoginOn401Util() {
   // Set identifier that session has expired
-  localStorage.setItem("sessionExpired", "true");
+  localStorage.setItem(SESSION_EXPIRED_LS_KEY, "true");
 
   // Redirect to login page
   setTimeout(() => {
