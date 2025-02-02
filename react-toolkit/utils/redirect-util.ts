@@ -14,7 +14,7 @@ export function redirectToLoginOn401Util() {
 
   // Redirect to login page if not in development mode and not in the login page
   setTimeout(() => {
-    if (!import.meta.env.DEV && window.location.pathname !== "/login")
+    if (!import.meta.env.DEV)
       window.location.assign(import.meta.env.VITE_LOGIN_URL);
   }, 2000);
 }

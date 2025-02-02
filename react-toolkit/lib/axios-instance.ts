@@ -1,5 +1,5 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DEV_JWT_LS_KEY, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
+import { DEV_JWT_LS_KEY, INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 import { sleep } from "@/react-toolkit/utils/sleep-util";
 import axios from "axios";
@@ -103,8 +103,8 @@ axiosInstance.interceptors.response.use(
       case 401:
         toast.error(errorMessage);
 
-        // Set sessionExpired=true in local storage and redirect to login page
-        redirectToLoginOn401Util();
+        // Redirect to login page if error is not "Invalid credentials"
+        if (errorMessage !== INVALID_CREDS) redirectToLoginOn401Util();
         break;
       case 403:
         toast.error(errorMessage);

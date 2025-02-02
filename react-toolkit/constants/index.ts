@@ -1,3 +1,10 @@
+
+/**
+ * A constant string representing an error message for invalid credentials.
+ * Any change to the backend error message should be reflected here.
+ */
+const INVALID_CREDS = "Invalid credentials";
+
 /**
  * Local storage key for storing user preferences.
  * This key is used to save and retrieve user-specific settings
@@ -34,6 +41,7 @@ const REQUEST_TIMEOUT = 30000;
 const COPYRIGHT_TEXT = `© ${new Date().getFullYear()} Aventisia Technologies Pvt Ltd. All Rights Reserved.`;
 
 export {
+  INVALID_CREDS,
   USER_PREFERENCES_LS_KEY,
   SESSION_EXPIRED_LS_KEY,
   DEV_JWT_LS_KEY,
