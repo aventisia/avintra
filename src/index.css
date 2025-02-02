@@ -27,7 +27,7 @@
     --icon: rgb(17, 16, 31);
     --border: rgb(234, 234, 253);
     --input: rgb(224, 224, 241);
-    --ring: rgb(79, 70, 229);
+    --ring: rgba(78, 70, 229, 0.2);
     --radius: 0.5rem;
   }
 

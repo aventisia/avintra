@@ -1,18 +1,18 @@
 import { cva } from "class-variance-authority";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors duration-0 focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-80",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors duration-0 focus-visible:outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-80",
   {
     variants: {
       variant: {
         default:
-          "hover:bg-primary/90 border border-primary bg-primary text-primary-foreground focus-visible:border-black focus-visible:ring-black",
+          "hover:bg-primary/90 border border-primary bg-primary shadow-sm shadow-black/5 transition-shadow text-primary-foreground focus-visible:border-primary focus-visible:ring-ring",
         caution:
           "border border-transparent bg-transparent text-destructive hover:bg-destructive hover:text-white focus:border-destructive focus:!bg-destructive focus:!text-white focus:ring-transparent",
         destructive:
           "hover:bg-destructive/90 border border-destructive bg-destructive text-destructive-foreground focus-visible:border-black focus-visible:ring-black",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground focus-visible:border-primary focus-visible:ring-ring",
+          "border border-input bg-background shadow-sm shadow-black/5 transition-shadow hover:bg-accent hover:text-accent-foreground focus-visible:border-primary focus-visible:ring-ring",
         secondary:
           "hover:bg-secondary/80 border border-secondary bg-secondary text-secondary-foreground focus-visible:border-black focus-visible:ring-black",
         ghost:
