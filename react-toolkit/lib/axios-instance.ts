@@ -103,7 +103,7 @@ axiosInstance.interceptors.response.use(
       case 401:
         toast.error(errorMessage);
 
-        // Remove user session from local storage and redirect to login page
+        // Set sessionExpired=true in local storage and redirect to login page
         redirectToLoginOn401Util();
         break;
       case 403:

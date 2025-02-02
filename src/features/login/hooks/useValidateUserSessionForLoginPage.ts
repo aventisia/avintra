@@ -41,8 +41,13 @@ export const useValidateUserSessionForLoginPage = () => {
 
   // Refresh the session if exists
   useEffect(() => {
-    if (!localStorage.getItem("sessionExpired")) mutate();
-  }, [mutate, navigate]);
+    if (
+      localStorage.getItem("sessionExpired") != null &&
+      !localStorage.getItem("sessionExpired")
+    ) {
+      mutate();
+    }
+  }, [mutate]);
 
   // return isPending state
   return { isPending };
