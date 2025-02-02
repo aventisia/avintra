@@ -6,14 +6,14 @@ const className = "h-11 text-md";
 // First Name
 const firstNameProps: InputFieldProps = {
   name: "firstName",
-  placeholder: "Firstname",
+  placeholder: "First name",
   className: className,
 };
 
 // Last Name
 const lastNameProps: InputFieldProps = {
   name: "lastName",
-  placeholder: "Lastname",
+  placeholder: "Last name",
   className: className,
 };
 
