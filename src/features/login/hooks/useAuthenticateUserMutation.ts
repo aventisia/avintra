@@ -1,3 +1,4 @@
+import { PWD_EXPIRED, TWO_FA_ENABLED } from "@/react-toolkit/constants";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +28,7 @@ export const useAuthenticateUserMutation = () => {
       mutationFn: authenticateUser,
       onSuccess: ({ data, message }) => {
         // Password  has expired
-        if (message.includes("Your password has been expired")) {
+        if (message.includes(PWD_EXPIRED)) {
           // Ask to reset password
           toast.warning("Password expired", {
             description: message,
@@ -37,7 +38,7 @@ export const useAuthenticateUserMutation = () => {
         }
 
         // TwoFA is enabled
-        if (message.includes("TwoFA is enabled")) {
+        if (message.includes(TWO_FA_ENABLED)) {
           // Set verification code id
           setTwoFACodeData({
             email: data.email,
@@ -59,7 +60,7 @@ export const useAuthenticateUserMutation = () => {
         // Set authenticated user locally
         const userSessionStoreObj = setUserSessionLocally(data);
 
-        // Route as per user type (internal or external)
+        // TODO: Route as per user type (internal or external)
         navigate(
           "/redirect?msg=Logging in...&url=" +
             (userSessionStoreObj.isAE

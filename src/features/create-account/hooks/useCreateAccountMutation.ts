@@ -31,7 +31,7 @@ export const useCreateAccountMutation = () => {
         // Set authenticated user locally
         const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
 
-        // Route as per user type (internal or external)
+        // TODO: Route as per user type (internal or external)
         navigate(
           "/redirect?msg=Logging in...&url=" +
             (userSessionStoreObj.isAE

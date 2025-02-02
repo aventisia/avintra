@@ -28,7 +28,7 @@ export const useCheck2FACodeMutation = () => {
         // Set authenticated user locally
         const userSessionStoreObj = setUserSessionLocally(data);
 
-        // Route as per user type (internal or external)
+        // TODO: Route as per user type (internal or external)
         navigate(
           "/redirect?msg=Logging in...&url=" +
             (userSessionStoreObj.isAE
