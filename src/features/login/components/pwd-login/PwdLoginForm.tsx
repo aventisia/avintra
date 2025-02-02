@@ -38,9 +38,6 @@ export const PwdLoginForm = () => {
       email: loginData.email,
       pwd: formData.pwd,
     });
-
-    // Reset form
-    form.reset();
   };
 
   // Return form
