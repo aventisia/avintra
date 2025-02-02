@@ -38,6 +38,9 @@ export const PwdLoginForm = () => {
       email: loginData.email,
       pwd: formData.pwd,
     });
+
+    // Reset form
+    form.reset();
   };
 
   // Return form
@@ -53,7 +56,7 @@ export const PwdLoginForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="text-md !mt-5 h-11 w-full"
+        className="!mt-5 h-11 w-full text-md"
         primaryText="Login"
         isPending={isSubmitting || isAuthPending}
       />
