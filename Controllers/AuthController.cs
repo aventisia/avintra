@@ -43,6 +43,6 @@ public class AuthController : BaseApiController
         if (!Enum.IsDefined(typeof(VerificationCodeRequestTypesEnum), createVerificationCodeDto.RequestType))
             return Forbid("Request type is not allowed");
 
-        return Ok(await _authService.CreateVerificationCodeAsync(createVerificationCodeDto));
+        return ResultHelper(await _authService.CreateVerificationCodeAsync(createVerificationCodeDto));
     }
 }

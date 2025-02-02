@@ -17,6 +17,6 @@ public class VerificationCodeController : BaseApiController
     [HttpPost("verify-code")]
     public async Task<ActionResult<ServiceResponse<bool>>> CheckVerificationCode([FromBody] CheckVerificationCodeDto checkVerificationCodeDto)
     {
-        return Ok(await _verificationCodeService.CheckVerificationCodeAsync(checkVerificationCodeDto));
+        return ResultHelper(await _verificationCodeService.CheckVerificationCodeAsync(checkVerificationCodeDto));
     }
 }
