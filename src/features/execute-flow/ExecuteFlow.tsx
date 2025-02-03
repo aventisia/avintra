@@ -6,12 +6,16 @@ const ExecuteFlow = () => {
   const isFlowExecuting = false;
 
   const openFile = () => {
-    console.log("open file");
-    const filePath =
-      "C:\\My Space\\PLAYGROUND\\StockAnalysisAutomationDemo\\StockAnalysisAutomationDemo.exe";
-    if (window)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).electron.openFile(filePath);
+    console.log("opening file");
+    try {
+      const filePath =
+        "C:\\My Space\\PLAYGROUND\\StockAnalysisAutomationDemo\\StockAnalysisAutomationDemo.exe";
+      if (window)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).electron.openFile(filePath);
+    } catch (error) {
+      console.log("Error in opening file", error);
+    }
   };
   return (
     <div className="flex h-7 items-center justify-center gap-2 rounded-lg bg-muted">
