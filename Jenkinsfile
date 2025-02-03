@@ -58,7 +58,7 @@ pipeline {
                             echo 'Migrating database schema...'
                             sh '''
                                 export ASPNETCORE_ENVIRONMENT=Production
-                                dotnet ef database update
+                                dotnet ef database update --context=MLModelBuilderDbContext
                             '''
                         }
                     }
