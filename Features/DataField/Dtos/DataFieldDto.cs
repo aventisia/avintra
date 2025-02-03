@@ -1,3 +1,5 @@
+using FieldTypesEnum = MLModelBuilderAPIs.Enum.FieldTypesEnum;
+
 namespace MLModelBuilderAPIs.Dtos;
 
 /// <summary>

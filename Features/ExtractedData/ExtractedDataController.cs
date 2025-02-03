@@ -28,14 +28,14 @@ public class ExtractedDataController : BaseApiController
 
     //Inserts an extracted data
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<ExtractedDataDto>>> InsertModelLibrary([FromBody] ExtractedDataDto extractedDataDto)
+    public async Task<ActionResult<ServiceResponse<ExtractedDataDto>>> InsertExtractedData([FromBody] ExtractedDataDto extractedDataDto)
     {
         return ResultHelper(await _extractedDataService.InsertExtractedDataAsync(extractedDataDto));
     }
 
     //Updates an extracted data
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<ExtractedDataDto>>> UpdateMLModel([FromBody] ExtractedDataDto extractedDataDto)
+    public async Task<ActionResult<ServiceResponse<ExtractedDataDto>>> UpdateExtractedData([FromBody] ExtractedDataDto extractedDataDto)
     {
         return ResultHelper(await _extractedDataService.UpdateExtractedDataAsync(extractedDataDto));
     }
