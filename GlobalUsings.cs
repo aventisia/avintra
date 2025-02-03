@@ -18,6 +18,7 @@ global using MLModelBuilderAPIs.Repos;
 global using MLModelBuilderAPIs.Dtos;
 global using MLModelBuilderAPIs.Entities;
 global using MLModelBuilderAPIs.MappingProfiles;
+global using MLModelBuilderAPIs.Enum;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
