@@ -1,5 +1,5 @@
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
+// import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
+// import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { Navbar } from "@/react-toolkit/layout/navbar";
 import { NavbarOnSheet } from "@/react-toolkit/layout/NavbarOnSheet";
@@ -84,8 +84,8 @@ const Header = ({
           {extraContentRight}
           {userSession ? (
             <>
-              <UnreadNotifications />
-              <UserAccountModal />
+              {/* <UnreadNotifications /> */}
+              {/* <UserAccountModal /> */}
             </>
           ) : (
             <>
