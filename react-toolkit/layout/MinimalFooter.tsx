@@ -1,3 +1,5 @@
+import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+
 /** Component renders a simple and small footer with copyright information
  * and Terms of service, Privecy policy links */
 const MinimalFooter = () => {
@@ -9,7 +11,7 @@ const MinimalFooter = () => {
       >
         Terms of Service
       </a>
-      <span className="mx-2 -mt-3.5 text-[1.5rem] text-slate-500">.</span>
+      <DotSeparator />
       <a
         href="/privacy"
         className="underline-offset-4 hover:text-primary hover:underline"
@@ -21,3 +23,4 @@ const MinimalFooter = () => {
 };
 
 export { MinimalFooter };
+

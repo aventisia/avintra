@@ -1,7 +1,7 @@
 import { cn } from "@/react-toolkit/lib/utils";
 
 interface AppLogoProps {
-  /** Set to true, if want to forcefully hide app name */
+  /** Set to true, if want to forcefully override app name with AVENTISIA name */
   doNotShowAppName?: boolean;
 
   /** (Optional): To pass css classes to override style
@@ -11,10 +11,10 @@ interface AppLogoProps {
   className?: string;
 }
 
-/** Component to render logo without app name or with app name */
+/** Component to render logo with AVENTISIA or app name text */
 const AppLogo = ({
   doNotShowAppName = false,
-  className = "h-8 text-xl",
+  className = "h-6 text-xl",
 }: AppLogoProps) => {
   return (
     <a
@@ -26,12 +26,14 @@ const AppLogo = ({
     >
       <img
         className={cn(className)}
-        src={import.meta.env.BASE_URL + "logo.svg"}
+        src={import.meta.env.BASE_URL + "favicon.svg"}
         alt={import.meta.env.VITE_COMPANY_NAME + " Logo"}
       />
-      {import.meta.env.VITE_APP_NAME && !doNotShowAppName && (
-        <h1>{import.meta.env.VITE_APP_NAME}</h1>
-      )}
+      <h1>
+        {import.meta.env.VITE_APP_NAME && !doNotShowAppName
+          ? import.meta.env.VITE_APP_NAME
+          : import.meta.env.VITE_COMPANY_NAME}
+      </h1>
     </a>
   );
 };
