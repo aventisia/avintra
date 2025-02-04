@@ -33,9 +33,14 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public DateTimeOffset TrainedOn { get; set; }
 
     /// <summary>
-    ///Gets or sets the status of ML model.
+    /// Gets or sets the status of ML model.
     /// </summary>/
     public ModelStatusEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of LLM.
+    /// </summary>/
+    public LLMEnum LLM { get; set; }
 
     /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.

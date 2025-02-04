@@ -8,11 +8,6 @@ namespace MLModelBuilderAPIs.Dtos;
 public class DataFieldDto
 {
     /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
-    /// </summary>
-    public Guid TenantId { get; set; }
-
-    /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.
     /// </summary>/
     public Guid MLModelId { get; set; }

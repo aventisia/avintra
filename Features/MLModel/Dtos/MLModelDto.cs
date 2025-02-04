@@ -6,11 +6,6 @@ namespace MLModelBuilderAPIs.Dtos;
 public class MLModelDto
 {
     /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
-    /// </summary>
-    public Guid TenantId { get; set; }
-
-    /// <summary>
     /// Gets or sets the primary key for the ML model.
     /// </summary>
     public Guid Id { get; set; }
@@ -25,6 +20,11 @@ public class MLModelDto
     /// Gets or sets the type of ML model.
     /// </summary>
     public ModelTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of LLM.
+    /// </summary>/
+    public LLMEnum LLM { get; set; }
 
     /// <summary>
     /// Gets or sets the description of ML model

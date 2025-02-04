@@ -11,11 +11,6 @@ public class ExtractedDataDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
-    /// </summary>
-    public Guid TenantId { get; set; }
-
-    /// <summary>
     /// Gets or sets the library identifier to which the data model record is associated
     /// </summary>
     public Guid MLModelId { get; set; }

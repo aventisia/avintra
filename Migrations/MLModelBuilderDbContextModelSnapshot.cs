@@ -149,6 +149,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("LLM")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 

@@ -127,7 +127,7 @@ public class MLModelService : IMLModelService
             newMLModel.CreatedByUserId = _userId;
             newMLModel.LastModifiedByUserId = _userId;
 
-            //create a new ML model
+            //update a ML model
             _unitOfWork.MLModelRepo.Update(newMLModel);
 
 

@@ -17,7 +17,9 @@ script:pre-request {
     Id: bru.getGlobalEnvVar("MLMODEL_ID"),
     Name: faker.person.jobType(),
     Type: "Extraction",
+    LLM: "LLM1",
     Description: faker.lorem.sentence(),
-    Status:"Active"
+    Status:"Active",
+    TrainedOn: faker.date.anytime()
   })
 }
