@@ -26,6 +26,11 @@ public class ExtractedDataDto
     public string? DataObject { get; set; }
 
     /// <summary>
+    /// Gets or sets the date of creation of extracted data.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the user who created the record.
     /// </summary>
     public Guid CreatedByUserId { get; set; }
