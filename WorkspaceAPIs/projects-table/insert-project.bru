@@ -1,0 +1,36 @@
+meta {
+  name: Insert project
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    type: "ProjectType1",
+    name: faker.company.name(),
+    description: faker.lorem.paragraph(),
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "PROJECT_ID",
+          res.getBody().data.id
+      );
+  }
+}

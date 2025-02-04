@@ -1,0 +1,37 @@
+meta {
+  name: Insert payment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/payment/insert-payment
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({
+    invoiceId: "4f8fa22c-249c-48ce-acaa-8155b9708b1d",
+    amountPaid: 349,
+    paymentDate: "2025-12-24T06:55:29.862Z",
+    paymentMethod: "CreditCard",
+    paymentStatus: "failed", 
+    transactionId:"txn_1234567890abcdef",
+    utrNumber: "SBINH0123456789",
+    upiId: "9876543210@icici",
+    gatewayName: "Razorpay"
+    
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "PAYMENT_ID",
+    res.getBody().data.id
+    );
+  }
+}

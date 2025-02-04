@@ -1,0 +1,11 @@
+meta {
+  name: Get invoice
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://localhost:4000/payment/list/{{INVOICE_ID}}
+  body: none
+  auth: none
+}

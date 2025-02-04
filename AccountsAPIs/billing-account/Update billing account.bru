@@ -1,0 +1,24 @@
+meta {
+  name: Update billing account
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/billing-account
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("BILLING_ACCOUNT_ID"),
+    tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+    address: faker.location.secondaryAddress(),
+    billingEmail:faker.internet.email(),
+    phoneNumber:faker.phone.number(),
+    contactPerson:faker.person.fullName()
+  })
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Update global notification
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/global/
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("GLOBAL_NOTIFICATION_ID"),
+    message: faker.lorem.paragraph(),
+    type: "Alert",
+    actionUrl: faker.image.url()
+  })
+}
