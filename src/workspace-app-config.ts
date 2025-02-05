@@ -1,21 +1,20 @@
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
-  ArchiveBoxIcon,
+  //ArchiveBoxIcon,
   Cog6ToothIcon,
   CreditCardIcon,
   FolderIcon,
-  HomeIcon,
+  //HomeIcon,
   IdentificationIcon,
   QuestionMarkCircleIcon,
-  UserCircleIcon,
   UserGroupIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
-  showChatAssistant: true,
+  showChatAssistant: false,
   searchBoxOptions: {
     show: true,
     position: "center",
@@ -27,26 +26,21 @@ const workspaceAppConfig: IAppConfig = {
         showSection: true, // TODO: Remove this once we have a way to handle this using user roles
         sectionName: "main menu",
         menuItems: [
-          {
-            Icon: HomeIcon,
-            name: "home",
-            route: "/home",
-          },
+          // {
+          //   Icon: HomeIcon,
+          //   name: "home",
+          //   route: "/home",
+          // },
           {
             Icon: FolderIcon,
             name: "projects",
             route: "/projects",
           },
-          {
-            Icon: ArchiveBoxIcon,
-            name: "marketplace",
-            route: "/marketplace",
-          },
-          {
-            Icon: UserCircleIcon,
-            name: "account",
-            route: "/account",
-          },
+          // {
+          //   Icon: ArchiveBoxIcon,
+          //   name: "marketplace",
+          //   route: "/marketplace",
+          // },
           {
             Icon: QuestionMarkCircleIcon,
             name: "support",

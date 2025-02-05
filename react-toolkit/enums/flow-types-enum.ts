@@ -1,11 +1,9 @@
 /**
  * Enum representing the types of Flow.
  *
- * IMPORTANT NOTE: Any changes to this file should be manually synced with back-end enum file.
+ * IMPORTANT NOTE: Any changes to this file should be manually synced with back-end enum file and
+ * also we need to update existing flows in the database.
  */
 export enum FlowTypesEnum {
-  FlowType1 = "FlowType1",
-  FlowType2 = "FlowType2",
-  FlowType3 = "FlowType3",
-  FlowType4 = "FlowType4",
+  AutomationAgent = "Automation Agent",
 }

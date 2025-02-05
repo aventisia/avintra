@@ -1,4 +1,4 @@
-import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
+// import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Header } from "@/react-toolkit/layout/Header";
 import { cn } from "@/react-toolkit/lib/utils";
@@ -33,7 +33,7 @@ export const WorkspaceUILayout = () => {
               <Outlet />
             </main>
           </ScrollArea>
-          <ChatAssistant />
+          {/* <ChatAssistant /> */}
         </div>
       )}
     </>
