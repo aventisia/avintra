@@ -40,7 +40,7 @@ public class MLModelService : IMLModelService
         {
             //Try to get ML model 
             var mlModels = await _unitOfWork.MLModelRepo
-                .GetAllAsync().OrderBy(ml => ml.CreatedOn).ToListAsync();
+                .GetAllAsync().OrderByDescending(ml => ml.CreatedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = mlModels.Adapt<IEnumerable<MLModelDto>>();

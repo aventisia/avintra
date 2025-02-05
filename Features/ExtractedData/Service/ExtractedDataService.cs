@@ -42,7 +42,7 @@ public class ExtractedDataService : IExtractedDataService
             //Try to get extracted data
             var data = await _unitOfWork.ExtractedDataRepo
                 .GetByConditionAsync(d => d.MLModelId == mlModelId)
-                .OrderBy(ml => ml.CreatedOn).ToListAsync();
+                .OrderByDescending(ml => ml.CreatedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = data.Adapt<IEnumerable<ExtractedDataDto>>();
