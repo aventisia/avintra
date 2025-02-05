@@ -47,15 +47,15 @@ const router = createBrowserRouter(
         },
         {
           path: "/home",
-          element: <ComingSoon />,
+          element: <ComingSoon feature="home" />,
         },
         {
           path: "/account",
-          element: <ComingSoon />,
+          element: <ComingSoon feature="Account" />,
         },
         {
           path: "/marketplace",
-          element: <ComingSoon />,
+          element: <ComingSoon feature="Marketplace" />,
         },
         {
           path: "/users",

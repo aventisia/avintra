@@ -1,27 +1,11 @@
 import React from "react";
 import { RocketLaunchIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { useLocation } from "react-router-dom";
+interface ComingSoonProps {
+  /** Feature name */
+  feature: string;
+}
 
-const ComingSoon: React.FC = () => {
-  const location = useLocation();
-
-  const getPageNameFromPath = React.useCallback((path: string): string => {
-    if (!path) return "Page";
-
-    return (
-      path
-        .replace(/^\//, "")
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ") || "Page"
-    );
-  }, []);
-
-  const pageName = React.useMemo(
-    () => getPageNameFromPath(location.pathname),
-    [location.pathname, getPageNameFromPath],
-  );
-
+const ComingSoon = ({ feature }: ComingSoonProps) => {
   return (
     <div className="container mx-auto max-w-2xl px-4 py-16">
       <div className="flex flex-col items-center space-y-8 text-center">
@@ -41,12 +25,11 @@ const ComingSoon: React.FC = () => {
 
         <div className="space-y-4">
           <h1 className="text-3xl font-bold text-gray-900">
-            {pageName} Page is Coming Soon
+            <span className="capitalize">{feature}</span> Page is Coming Soon
           </h1>
 
           <p className="mx-auto max-w-md text-lg text-gray-600">
-            We're currently working on developing the {pageName.toLowerCase()}{" "}
-            feature. Stay tuned for exciting updates!
+            {`We're currently working on developing the ${feature.toLowerCase()} feature. Stay tuned for exciting updates!`}{" "}
           </p>
         </div>
       </div>
