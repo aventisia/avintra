@@ -21,7 +21,7 @@ public class DataFieldController : BaseApiController
     #region Methods
 
     //Retrieve the list of fields
-    [HttpGet("list/{id}")]
+    [HttpGet("list/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<DataFieldDto>>>> GetDataFields(Guid mlModelId)
     {
         return ResultHelper(await _dataFieldService.GetDataFieldsAsync(mlModelId));
