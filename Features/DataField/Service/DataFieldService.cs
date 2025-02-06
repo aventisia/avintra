@@ -41,7 +41,7 @@ public class DataFieldService : IDataFieldService
         {
             // Try to get data fields
             var fields = await _unitOfWork.DataFieldRepo
-                        .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                        .GetByConditionAsync(w => w.MLModelId == mlModelId).Include(c => c.CreatedByUser)
                         .OrderByDescending(o => o.CreatedOn).ToListAsync();
 
             // Task successful
@@ -214,7 +214,7 @@ public class DataFieldService : IDataFieldService
         {
             //Try to get a data field using identifier
             var field = await _unitOfWork.DataFieldRepo
-            .GetByConditionAsync(v => v.Id == id)
+            .GetByConditionAsync(v => v.Id == id).Include(c => c.CreatedByUser)
             .SingleOrDefaultAsync();
 
             //Check if field not exists

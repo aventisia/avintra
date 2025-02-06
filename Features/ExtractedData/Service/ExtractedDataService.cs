@@ -41,7 +41,7 @@ public class ExtractedDataService : IExtractedDataService
         {
             //Try to get extracted data
             var data = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(d => d.MLModelId == mlModelId)
+                .GetByConditionAsync(d => d.MLModelId == mlModelId).Include(c => c.CreatedByUser)
                 .OrderByDescending(ml => ml.CreatedOn).ToListAsync();
 
             // Task successful
@@ -217,7 +217,7 @@ public class ExtractedDataService : IExtractedDataService
         {
             //Try to get data using identifier
             var data = await _unitOfWork.ExtractedDataRepo
-            .GetByConditionAsync(v => v.Id == id)
+            .GetByConditionAsync(v => v.Id == id).Include(c => c.CreatedByUser)
             .SingleOrDefaultAsync();
 
             //Check if data not exists

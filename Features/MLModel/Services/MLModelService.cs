@@ -40,7 +40,8 @@ public class MLModelService : IMLModelService
         {
             //Try to get ML model 
             var mlModels = await _unitOfWork.MLModelRepo
-                .GetAllAsync().OrderByDescending(ml => ml.CreatedOn).ToListAsync();
+                .GetAllAsync().Include(c => c.CreatedByUser)
+                .OrderByDescending(ml => ml.CreatedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = mlModels.Adapt<IEnumerable<MLModelDto>>();
@@ -215,7 +216,7 @@ public class MLModelService : IMLModelService
         {
             //Try to get a ML model using identifier
             var mlModel = await _unitOfWork.MLModelRepo
-            .GetByConditionAsync(v => v.Id == id)
+            .GetByConditionAsync(v => v.Id == id).Include(c => c.CreatedByUser)
             .SingleOrDefaultAsync();
 
             //Check if ML Model not exists

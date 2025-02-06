@@ -1,0 +1,19 @@
+meta {
+  name: Get extracted data list
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data/list
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    MLModelId: bru.getGlobalEnvVar("EDATA_ID"),
+  })
+}

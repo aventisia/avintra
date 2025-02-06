@@ -1,0 +1,19 @@
+meta {
+  name: Get data field by Id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/data-field/{{DATA_FIELD_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    Id: bru.getGlobalEnvVar("DATA_FIELD_ID")
+  })
+}
