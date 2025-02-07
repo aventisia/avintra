@@ -12,12 +12,14 @@ public interface IEmailService
     /// <param name="subject">The subject of the email.</param>
     /// <param name="content">The content of the email.</param>
     /// <param name="ccEmailAddresses">The email addresses to be CC'd.</param>
+    /// /// <param name="bccEmailAddresses">The email addresses to be BCC'd.</param>
     /// <returns>A boolean result indicating whether the email was sent successfully.</returns>
     Task<bool> SendEmail(
         string toEmailAddresses,
         string subject,
         string? content,
-        string? ccEmailAddresses = null);
+        string? ccEmailAddresses = null,
+        string? bccEmailAddresses = null);
 
     /// <summary>
     /// Sends an email using an email template.

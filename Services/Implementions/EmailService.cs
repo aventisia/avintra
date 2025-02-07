@@ -19,7 +19,8 @@ public class EmailService : IEmailService
     }
 
     /// <inheritdoc />
-    public async Task<bool> SendEmail(string toEmailAddresses, string subject, string? content, string? ccEmailAddresses = null)
+    public async Task<bool> SendEmail(string toEmailAddresses, string subject, string? content, 
+        string? ccEmailAddresses = null, string? bccEmailAddresses = null)
     {
         try
         {
@@ -69,6 +70,19 @@ public class EmailService : IEmailService
                 foreach (var ccEmailAddress in ccEmailAddressList)
                 {
                     message.Cc.Add(new MailboxAddress(string.Empty, ccEmailAddress.Trim()));
+                }
+            }
+
+            // Adds BCC if provided
+            if (!string.IsNullOrWhiteSpace(bccEmailAddresses))
+            {
+                // Splits the BCC email addresses and adds them to the message.
+                var bccEmailAddressesList = bccEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Sets the BCC recipients' addresses.
+                foreach (var bccEmailAddress in bccEmailAddressesList)
+                {
+                    message.Bcc.Add(new MailboxAddress(_smtpConfig.MailFromName, _smtpConfig.MailFromAddress));
                 }
             }
 
