@@ -84,7 +84,7 @@ public class EmailService : IEmailService
                 // Sets the CC recipients' addresses.
                 foreach (var bccEmailAddress in bccEmailAddressList)
                 {
-                    message.Bcc.Add(new MailboxAddress(_generalConfig.SalesEmails, _generalConfig.SalesEmails));
+                    message.Bcc.Add(new MailboxAddress(string.Empty, bccEmailAddress.Trim()));
                 }
             }
             
