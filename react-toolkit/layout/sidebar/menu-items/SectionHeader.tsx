@@ -16,10 +16,7 @@ const SectionHeader = ({
   return (
     <>
       {index !== 0 && index !== menuSectionsLength && (
-        <hr
-          className={`mb-5 mt-5 border-gray-200 transition-all duration-500 ${
-            sidebarExpand ? "mx-8" : "mx-5"
-          }`}
+        <hr className={`mb-5 mt-5 border-gray-200 transition-all duration-500 ${sidebarExpand ? "mx-8" : "mx-5"}`}
         />
       )}
       <h3

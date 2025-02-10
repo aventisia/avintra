@@ -17,6 +17,12 @@ import { STCreatePage } from "./features/support-tickets-table/components/suppor
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import ComingSoon from "./pages/CommingSoon";
+import MyAccountPage from "./pages/MyAccountPage";
+import { SecurityTab } from "./features/my-account/components/security-tab/SecurityTab";
+import { EmailSettingsTab } from "./features/my-account/components/email-settings-tab/EmailSettingsTab";
+import { DeviceHistoryTab } from "./features/my-account/components/device-history-tab/DeviceHistoryTab";
+import { AccountDeactivationTab } from "./features/my-account/components/account-deactivation-tab/AccountDeactivationTab";
+import { ProfileInfoTab } from "./features/my-account/components/profile-info-tab/ProfileInfoTab";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,7 +57,30 @@ const router = createBrowserRouter(
         },
         {
           path: "/account",
-          element: <ComingSoon />,
+          element: <MyAccountPage />,
+          errorElement: import.meta.env.DEV && <ErrorPage />,
+          children: [
+            {
+              path: "/account/profile-info",
+              element: <ProfileInfoTab />,
+            },
+            {
+              path: "/account/email-settings",
+              element: <EmailSettingsTab />,
+            },
+            {
+              path: "/account/security",
+              element: <SecurityTab />,
+            },
+            {
+              path: "/account/device-history",
+              element: <DeviceHistoryTab />,
+            },
+            {
+              path: "/account/account-deactivation",
+              element: <AccountDeactivationTab />,
+            },
+          ],
         },
         {
           path: "/marketplace",
