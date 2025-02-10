@@ -31,7 +31,8 @@ public interface IEmailService
     Task<bool> SendEmailUsingTemplate(
         EmailTypesEnum emailType,
         string toEmailAddress,
-        Dictionary<string, string> placeholderValues);
+        Dictionary<string, string> placeholderValues,
+        string? bccEmailAddresses = null);
 
     /// <summary>
     /// Gets the email template after replacing the placeholders with actual values.

@@ -11,11 +11,13 @@ public class EmailService : IEmailService
 {
     private readonly SmtpConfig _smtpConfig;
     private readonly ILogger<EmailService> _logger;
+    private readonly GeneralConfig _generalConfig;
 
-    public EmailService(SmtpConfig smtpConfig, ILogger<EmailService> logger)
+    public EmailService(SmtpConfig smtpConfig, ILogger<EmailService> logger, GeneralConfig generalConfig)
     {
         _smtpConfig = smtpConfig;
         _logger = logger;
+        _generalConfig = generalConfig;
     }
 
     /// <inheritdoc />
@@ -73,18 +75,20 @@ public class EmailService : IEmailService
                 }
             }
 
-            // Adds BCC if provided
+            // Adds BCC get notified of account creation
             if (!string.IsNullOrWhiteSpace(bccEmailAddresses))
             {
-                // Splits the BCC email addresses and adds them to the message.
-                var bccEmailAddressesList = bccEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                // Splits the CC email addresses and adds them to the message.
+                var bccEmailAddressList = bccEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                // Sets the BCC recipients' addresses.
-                foreach (var bccEmailAddress in bccEmailAddressesList)
+                // Sets the CC recipients' addresses.
+                foreach (var bccEmailAddress in bccEmailAddressList)
                 {
-                    message.Bcc.Add(new MailboxAddress(_smtpConfig.MailFromName, _smtpConfig.MailFromAddress));
+                    message.Bcc.Add(new MailboxAddress(_generalConfig.SalesEmails, _generalConfig.SalesEmails));
                 }
             }
+            
+           
 
             // Sets the subject of the email.
             message.Subject = subject;
@@ -126,7 +130,8 @@ public class EmailService : IEmailService
     }
 
     // Sends an email using an email template.
-    public async Task<bool> SendEmailUsingTemplate(EmailTypesEnum emailType, string toEmailAddress, Dictionary<string, string> placeholderValues)
+    public async Task<bool> SendEmailUsingTemplate(EmailTypesEnum emailType, string toEmailAddress, Dictionary<string, string> placeholderValues,
+                    string? bccEmailAddresses = null)
     {
         switch (emailType)
         {
@@ -144,7 +149,7 @@ public class EmailService : IEmailService
                             "Welcome to Aventisia!",
                             LoadAndRenderEmailTemplate(
                                 "AccountCreatedEmailTemplate.html",
-                                placeholderValues)
+                                placeholderValues), bccEmailAddresses
                             );
             case EmailTypesEnum.TwoFA:
                 return await SendEmail(
