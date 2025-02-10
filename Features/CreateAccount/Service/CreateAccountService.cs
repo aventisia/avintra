@@ -7,19 +7,22 @@ public class CreateAccountService : ICreateAccountService
     private readonly ILogger<CreateAccountService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
+    private readonly GeneralConfig _generalConfig;
 
     public CreateAccountService(
         UserManager<AccountUser> userManager,
         IEmailService emailService,
         ILogger<CreateAccountService> logger,
         IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService)
+        IAuthHelperService authHelperService,
+        GeneralConfig generalConfig)
     {
         _userManager = userManager;
         _emailService = emailService;
         _logger = logger;
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
+        _generalConfig = generalConfig;
     }
 
     // Creates a new account for an individual user (IU) or Aventisia employee.
@@ -150,7 +153,7 @@ public class CreateAccountService : ICreateAccountService
             var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
 
             // Failed to send AccountCreated email
-            if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.AccountCreated, createAccountDto.Email, placeholderValues))
+            if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.AccountCreated, createAccountDto.Email, placeholderValues, _generalConfig.SalesEmails))
             {
                 _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
                 /*Still moving forward as account is already saved in the database*/
