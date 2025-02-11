@@ -153,7 +153,8 @@ public class CreateAccountService : ICreateAccountService
             var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
 
             // Failed to send AccountCreated email
-            if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.AccountCreated, createAccountDto.Email, placeholderValues, _generalConfig.SalesEmails))
+            if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues, 
+                bccEmailAddresses: _generalConfig.SalesEmails))
             {
                 _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
                 /*Still moving forward as account is already saved in the database*/
