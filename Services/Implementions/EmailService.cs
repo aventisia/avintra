@@ -78,10 +78,10 @@ public class EmailService : IEmailService
             // Adds BCC get notified of account creation
             if (!string.IsNullOrWhiteSpace(bccEmailAddresses))
             {
-                // Splits the CC email addresses and adds them to the message.
+                // Splits the BCC email addresses and adds them to the message.
                 var bccEmailAddressList = bccEmailAddresses.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                // Sets the CC recipients' addresses.
+                // Sets the BCC recipients' addresses.
                 foreach (var bccEmailAddress in bccEmailAddressList)
                 {
                     message.Bcc.Add(new MailboxAddress(string.Empty, bccEmailAddress.Trim()));
@@ -149,7 +149,7 @@ public class EmailService : IEmailService
                             "Welcome to Aventisia!",
                             LoadAndRenderEmailTemplate(
                                 "AccountCreatedEmailTemplate.html",
-                                placeholderValues), bccEmailAddresses
+                                placeholderValues), null, bccEmailAddresses
                             );
             case EmailTypesEnum.TwoFA:
                 return await SendEmail(
