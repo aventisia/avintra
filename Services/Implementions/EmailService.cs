@@ -145,11 +145,12 @@ public class EmailService : IEmailService
                             );
             case EmailTypesEnum.AccountCreated:
                 return await SendEmail(
-                            toEmailAddress,
-                            "Welcome to Aventisia!",
-                            LoadAndRenderEmailTemplate(
-                                "AccountCreatedEmailTemplate.html",
-                                placeholderValues), null, bccEmailAddresses
+                            toEmailAddresses: toEmailAddress,
+                            subject: "Welcome to Aventisia!",
+                            content: LoadAndRenderEmailTemplate(
+                                "AccountCreatedEmailTemplate.html", placeholderValues), 
+                            ccEmailAddresses: null, 
+                            bccEmailAddresses: bccEmailAddresses
                             );
             case EmailTypesEnum.TwoFA:
                 return await SendEmail(
