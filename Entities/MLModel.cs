@@ -1,7 +1,3 @@
-
-using ModelStatusEnum = MLModelBuilderAPIs.Enum.ModelStatusEnum;
-using ModelTypesEnum = MLModelBuilderAPIs.Enum.ModelTypesEnum;
-
 namespace MLModelBuilderAPIs.Entities;
 
 public class MLModel : BaseEntity, IMustHaveTenant

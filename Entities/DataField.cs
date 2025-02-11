@@ -1,6 +1,3 @@
-
-using FieldTypesEnum = MLModelBuilderAPIs.Enum.FieldTypesEnum;
-
 namespace MLModelBuilderAPIs.Entities;
 
 public class DataField : BaseEntity, IMustHaveTenant

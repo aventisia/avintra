@@ -20,6 +20,7 @@ public static class AppServicesExtension
         config.Apply(new MLModelMappingProfile());
         config.Apply(new ExtractedDataMappingProfile());
         config.Apply(new DataFieldMappingProfile());
+        config.Apply(new UploadedDocMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -33,6 +34,7 @@ public static class AppServicesExtension
         services.AddScoped<IMLModelService, MLModelService>();
         services.AddScoped<IExtractedDataService, ExtractedDataService>();
         services.AddScoped<IDataFieldService, DataFieldService>();
+        services.AddScoped<IUploadedDocService, UploadedDocService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

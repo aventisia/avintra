@@ -1,0 +1,19 @@
+meta {
+  name: Download file
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    url: "/home/ashish11/Repos/Backend/MLModelBuilderAPIs/wwwroot/files/f9f4e8a1-000a-4454-8b23-a679a71750ea.pdf"
+  })
+}

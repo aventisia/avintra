@@ -3,16 +3,30 @@ namespace MLModelBuilderAPIs.Services;
 public interface IUploadedDocService
 {
     /// <summary>
-    /// Get a list of uploaded docs
+    /// Upload multiple files
     /// </summary>
-    /// <param name="mlModelId">ML Model Id</param>
-    /// <returns>A list of uploaded dpcs</returns>
-    Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocListAsync(Guid mlModelId);
+    /// <param name="files">List of files</param>
+    /// <returns></returns>
+    Task<ServiceResponse<IEnumerable<FileDetailDto>>> UploadFilesAsync(List<IFormFile> files);
 
     /// <summary>
-    /// Inserts a doc
+    /// Insert uploaded doc record
     /// </summary>
-    /// <param name="docList">List of documents</param>
-    /// <returns>A new doc</returns>
-    Task<ServiceResponse<IEnumerable<UploadedDocDto>>> InsertUploadedDocsAsync(IEnumerable<UploadedDocDto> docList);
+    /// <param name="uploadedDocDto"> Uploaded Doc Dto</param>
+    /// <returns>Uploaded doc record</returns>
+    Task<ServiceResponse<UploadedDocDto>> InsertUploadedDocAsync(UploadedDocDto uploadedDocDto);
+
+    /// <summary>
+    /// Delete file
+    /// </summary>
+    /// <param name="fileUrl">File Url</param>
+    /// <returns>True if delete job is successful, else false</returns>
+    ServiceResponse<bool> DeleteFileAsync(string fileUrl);
+
+    /// <summary>
+    /// Download files
+    /// </summary>
+    /// <param name="fileUrl"></param>
+    /// <returns></returns>
+    ServiceResponse<FileDetailDto> DownloadFileAsync(string fileUrl);
 }

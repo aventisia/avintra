@@ -7,9 +7,9 @@ global using AspNetToolkit.Extensions;
 global using AspNetToolkit.Middleware;
 global using AspNetToolkit.Repos;
 global using AspNetToolkit.Services;
-global using AspNetToolkit.Enums;
 global using AspNetToolkit.Utils;
 global using AspNetToolkit.Attributes;
+global using AspNetToolkit.Enums;
 
 global using MLModelBuilderAPIs.Data;
 global using MLModelBuilderAPIs.Services;
@@ -18,7 +18,6 @@ global using MLModelBuilderAPIs.Repos;
 global using MLModelBuilderAPIs.Dtos;
 global using MLModelBuilderAPIs.Entities;
 global using MLModelBuilderAPIs.MappingProfiles;
-global using MLModelBuilderAPIs.Enum;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;

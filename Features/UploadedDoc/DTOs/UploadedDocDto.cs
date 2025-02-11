@@ -2,15 +2,11 @@ namespace MLModelBuilderAPIs.Dtos;
 
 public class UploadedDocDto
 {
+    
     /// <summary>
     /// Gets or sets the primary key for the Uploaded doc.
     /// </summary>
     public Guid Id { get; set; }
-
-    /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
-    /// </summary>
-    public Guid TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of Uploaded file. Max character is 50.
@@ -31,7 +27,7 @@ public class UploadedDocDto
     /// <summary>
     /// Gets or sets file properties of an uploaded doc
     /// </summary>
-    public required IFormFile File { get; set; }
+    public IFormFile? File { get; set; }
 
     /// <summary>
     /// Gets or sets the path of uploaded file. 

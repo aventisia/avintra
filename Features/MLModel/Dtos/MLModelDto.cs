@@ -1,6 +1,3 @@
-using ModelStatusEnum = MLModelBuilderAPIs.Enum.ModelStatusEnum;
-using ModelTypesEnum = MLModelBuilderAPIs.Enum.ModelTypesEnum;
-
 namespace MLModelBuilderAPIs.Dtos;
 
 public class MLModelDto
