@@ -8,8 +8,7 @@ export const MyAccountSidebar = () => {
         <div className="box box--stacked flex flex-col px-5 pb-6 pt-5">
           {MY_ACCOUNT_SIDEBAR_LINKS.map((link) => (
             <MyAccountSidebarLink
-              key={link.linkId}
-              linkId={link.linkId}
+              key={link.linkLabel}
               linkLabel={link.linkLabel}
               linkTo={link.linkTo}
               linkIcon={link.linkIcon}

@@ -1,7 +1,8 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { useShallow } from "zustand/react/shallow";
+import { useShallow } from 'zustand/react/shallow'
+
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store'
+import { Button } from '@/react-toolkit/ui/buttons/Button'
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField'
 
 export const EmailSettingsTab = () => {
   const { userSession } = useUserSessionStore(

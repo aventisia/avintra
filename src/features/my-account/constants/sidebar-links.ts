@@ -3,7 +3,7 @@ import type { MyAccountSidebarLink } from "../types/my-account-sidebar-link";
 export const MY_ACCOUNT_SIDEBAR_LINKS: MyAccountSidebarLink[] = [
   {
     linkLabel: "Profile Info",
-    linkTo: "/account/profile-info",
+    linkTo: "/account",
     linkIcon: "UserRound",
   },
   {

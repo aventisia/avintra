@@ -1,29 +1,28 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputDivElement } from "../InputDivElement";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { useUpdatePassword } from "../../hooks/useUpdatePassword";
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import type { PwdUpdateDto } from "@/react-toolkit/dtos/request/pwd-update-dto";
-import type { PwdZodSchema } from "../../types/pwd-zod-schema";
-import { updateMyAccountPassword } from "../../apis/my-account-apis";
-import { UN_QUERY_KEY_UPDATE_PASSWORD } from "../../constants/constants";
-import type { z } from "zod";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { Button } from '@/react-toolkit/ui/buttons/Button'
+import { Form } from '@/react-toolkit/ui/form/Form'
+import { useOptimisticMutation } from '@/react-toolkit/hooks/useOptimisticMutation'
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField'
 
+import { InputDivElement } from '../InputDivElement'
+import { useUpdatePassword } from '../../hooks/useUpdatePassword'
+import { updateMyAccountPassword } from '../../apis/my-account-apis'
+import { UN_QUERY_KEY_UPDATE_PASSWORD } from '../../constants/constants'
+
+import type { PwdUpdateDto } from "@/react-toolkit/dtos/request/pwd-update-dto"
+import type { PwdZodSchema } from "../../types/pwd-zod-schema"
+import type { z } from "zod"
 export const SecurityTab = () => {
   const { form, refineFormData } = useUpdatePassword();
 
-  const { mutate } = useOptimisticMutation<
-    PwdUpdateDto,
-    PwdUpdateDto,
-    PwdUpdateDto
-  >(updateMyAccountPassword, UN_QUERY_KEY_UPDATE_PASSWORD, [
-    form.getValues() as PwdUpdateDto,
-  ]);
+  const { mutate } = useOptimisticMutation<PwdUpdateDto, boolean, PwdUpdateDto>(
+    updateMyAccountPassword,
+    UN_QUERY_KEY_UPDATE_PASSWORD,
+    [form.getValues()],
+  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof PwdZodSchema>) => {
-    mutate(refineFormData(formData) as unknown as PwdUpdateDto);
+    mutate(refineFormData(formData));
   };
 
   return (
@@ -78,6 +77,7 @@ export const SecurityTab = () => {
       <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
         <Button
           variant="default"
+          type="submit"
           className="border-primary/50 w-full px-4 md:w-auto"
         >
           Save Changes

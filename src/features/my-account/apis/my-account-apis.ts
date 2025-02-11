@@ -1,10 +1,11 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { IHttpResponse } from '@/react-toolkit/dtos/http-response';
+import { axiosInstance } from '@/react-toolkit/lib/axios-instance';
+
 import type { CompanyDto } from "../dtos/my-account-company-dto";
 import type { MyAccountDto } from "../dtos/my-account-profile-dto";
 import type { MyAccountPasswordDto } from "../dtos/my-account-password-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/my-account`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/me`;
 
 export const getMyAccountInfo = async (userId: string) => {
     if (!userId) return Promise.resolve(null);
@@ -52,15 +53,12 @@ export const updateCompanyInfo = async (
     return res.data;
 };
 
-export const updateMyAccountPassword = async (
+export const updateMyAccountPassword = (
     myAccountPasswordDto: MyAccountPasswordDto,
-) => {
-    const res = await axiosInstance.put<IHttpResponse<MyAccountPasswordDto>>(
-        `${baseAPIURL}/update-password`,
-        myAccountPasswordDto,
-    );
-    return res.data;
-};
+) => axiosInstance.post<IHttpResponse<boolean>>(
+    `${baseAPIURL}/update-pwd`,
+    myAccountPasswordDto,
+).then((res) => res.data);
 
 export const updateMyAccountEmail = async (
     userId: string,
