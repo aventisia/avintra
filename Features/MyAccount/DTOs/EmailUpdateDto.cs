@@ -21,6 +21,6 @@ public class EmailUpdateDto
     /// Gets or sets the verification code or OTP (One-Time Password) provided by the user.
     /// </summary>
     [StringLength(255)]
-    public required string SecretCode { get; set; } 
+    public required string SecretCode { get; set; }
 
 }

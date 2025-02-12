@@ -107,7 +107,7 @@ public class VerificationCodeService : IVerificationCodeService
                         .GetByConditionAsync(w => w.UserName == checkVerificationCodeDto.Email)
                         .AsNoTracking()
                         .SingleOrDefaultAsync();
-                
+
                 // Get Jwt validity config
                 var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
                     _jwtConfig.PwdResetJwtValidityInMinutes);
@@ -134,7 +134,8 @@ public class VerificationCodeService : IVerificationCodeService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 

@@ -76,7 +76,8 @@ public class PaymentService : IPaymentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retriving payment";
             return serviceResponse;
         }
@@ -113,7 +114,8 @@ public class PaymentService : IPaymentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retriving payment list by invoiceId";
             return serviceResponse;
         }
@@ -130,7 +132,7 @@ public class PaymentService : IPaymentService
             Message = "Failed to insert payment, please try again"
         };
         try
-        {  
+        {
             // Trim dto' string props
             paymentDto = TrimDtoStringPropsUtil.TrimDtoStringProps(paymentDto);
 
@@ -156,7 +158,8 @@ public class PaymentService : IPaymentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while inserting payment";
             return serviceResponse;
         }
@@ -164,7 +167,7 @@ public class PaymentService : IPaymentService
     }
 
     // Update payment status
-    public async Task<ServiceResponse<PaymentStatusDto>> UpdatePaymentStatusAsync (PaymentStatusDto paymentStatusDto)
+    public async Task<ServiceResponse<PaymentStatusDto>> UpdatePaymentStatusAsync(PaymentStatusDto paymentStatusDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<PaymentStatusDto>
@@ -179,11 +182,11 @@ public class PaymentService : IPaymentService
 
             // Validate existence payment
             var payment = await _unitOfWork.PaymentRepo
-            .GetByConditionAsync(w => w.Id == paymentStatusDto.Id )
+            .GetByConditionAsync(w => w.Id == paymentStatusDto.Id)
             .FirstOrDefaultAsync();
 
             // if payment does not exist
-            if(payment == null)
+            if (payment == null)
             {
                 _logger.LogInformation($"payment does not exist");
                 serviceResponse.Message = "payment not exist";
@@ -211,9 +214,10 @@ public class PaymentService : IPaymentService
         }
         catch (Exception ex)
         {
-           _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while updating payment status";
-            return serviceResponse; 
+            return serviceResponse;
         }
         return serviceResponse;
     }

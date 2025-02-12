@@ -67,7 +67,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -171,7 +172,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -310,7 +312,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -378,7 +381,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -410,7 +414,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -456,7 +461,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return false;
         }
     }
@@ -518,7 +524,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Update-Job failed
             if (!isUpdateSuccessful)
                 return serviceResponse;
-            
+
             // Task successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -526,7 +532,8 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 

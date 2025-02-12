@@ -91,7 +91,8 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return false;
         }
 
@@ -172,7 +173,8 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return false;
         }
 

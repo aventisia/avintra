@@ -1,7 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("tenant-account")]
-[ApiController]
+[Route("tenant-account"), ApiController, Authorize]
 public class TenantAccountController : BaseApiController
 {
     private readonly ITenantAccountService _tenantAccountService;
@@ -12,6 +11,11 @@ public class TenantAccountController : BaseApiController
     }
 
     // acccounts-api/tenant/user/
+    // [HttpGet("user")]
+    // public async Task<ActionResult<ServiceResponse<UpdateUserProfileDto>>> GetTenantUser(UpdateUserProfileDto updateUserProfileDto)
+    // {
+    //     return ResultHelper(await _tenantAccountService.GetTenantUserAsync());
+    // }
     // acccounts-api/tenant/users/
     // acccounts-api/tenant/add-user/
     // acccounts-api/tenant/add-users/

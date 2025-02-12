@@ -194,7 +194,7 @@ public static class AccountsDbInitialSeed
                     DaysBeforePwdExpires = tenantDefaultConfig.DaysBeforePwdExpires,
                     IdleSessionTimeoutMinutes = tenantDefaultConfig.IdleSessionTimeoutInMinutes,
                     IsDefault = true,
-                    IsEditable = defaultTenant.Equals(DefaultTenantsEnum.IndividualUsers) ? false : true,
+                    IsEditable = !defaultTenant.Equals(DefaultTenantsEnum.IndividualUsers),
                     SSOConfigJson = "",
                     DbOption = DatabaseOptionsEnum.Isolated,
                     CreatedByUserId = superUserId,
@@ -227,7 +227,7 @@ public static class AccountsDbInitialSeed
             var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
 
             // Get default Tenant for individual user
-            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.IsDefault == true && w.Name == tenantName).SingleOrDefaultAsync();
+            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.IsDefault && w.Name == tenantName).SingleOrDefaultAsync();
 
             // Default Tenant not found
             if (defaultTenant == null)
@@ -288,7 +288,7 @@ public static class AccountsDbInitialSeed
             var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia);
 
             // Get default Tenant for super user
-            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.IsDefault == true && w.Name == tenantName).SingleOrDefaultAsync();
+            var defaultTenant = await accountsDbContext.Tenants.Where(w => w.IsDefault && w.Name == tenantName).SingleOrDefaultAsync();
 
             // Default Tenant not found
             if (defaultTenant == null)

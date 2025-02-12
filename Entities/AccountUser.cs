@@ -1,3 +1,5 @@
+using AccountsAPIs.AccountApiEnum;
+
 namespace AccountsAPIs.Entities;
 
 /// <summary>
@@ -111,5 +113,56 @@ public class AccountUser : IdentityUser<Guid>
     /// Gets or sets the list of user roles associated with the user.
     /// </summary>
     public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date of birth of the user.
+    /// </summary>
+    public DateTime DateOfBirth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the phone number type of the user. either Home or Office
+    /// </summary>
+    public PhoneNumberType PhoneNumberType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address line 1 of the user. Max-50.
+    /// </summary>
+    [StringLength(200)]
+    public string? AddressLine1 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address line 2 of the user. Max-50.
+    /// </summary>
+    [StringLength(200)]
+    public string? AddressLine2 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the gender of the user profile
+    /// </summary>
+    public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
+
+    /// <summary>
+    /// Gets or sets the country of the user. Max-100.
+    /// </summary>
+    [StringLength(100)]
+    public string? Country { get; set; }
+
+    /// <summary>
+    /// Gets or sets the state or province of the user. Max-100.
+    /// </summary>
+    [StringLength(100)]
+    public string? StateOrProvince { get; set; }
+
+    /// <summary>
+    /// Gets or sets the city of the user. Max-100.
+    /// </summary>
+    [StringLength(100)]
+    public string? City { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Zip or postal code of the user. Max-10.
+    /// </summary>
+    [StringLength(10)]
+    public string? ZipOrPostalCode { get; set; }
 
 }

@@ -43,7 +43,8 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -97,7 +98,8 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -164,7 +166,8 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
@@ -214,7 +217,8 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;

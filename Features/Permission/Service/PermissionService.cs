@@ -47,7 +47,7 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
             return serviceResponse;
         }
 
@@ -89,7 +89,8 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -144,7 +145,8 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
@@ -192,9 +194,10 @@ public class PermissionService : IPermissionService
             serviceResponse.Message = "Permission deleted successfully";
 
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
@@ -207,15 +210,15 @@ public class PermissionService : IPermissionService
         .ThenInclude(x => x.Role)
         .ThenInclude(x => x.RolePermissions)
         .ThenInclude(x => x.Permission)
-        .Where(x =>x.Id == userId)
+        .Where(x => x.Id == userId)
         .Select(x => x.UserRoles)
         .ToArrayAsync();
 
         return roles
         .SelectMany(x => x)
-        .SelectMany(x =>x.Role.RolePermissions)
+        .SelectMany(x => x.Role.RolePermissions)
         .Select(x => x.Permission.Name)
         .ToHashSet();
-        
+
     }
 }

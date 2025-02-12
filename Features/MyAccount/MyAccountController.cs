@@ -1,8 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("me")]
-[ApiController]
-[Authorize]
+[Route("me"), ApiController, Authorize]
 public class MyAccountController : BaseApiController
 {
     private readonly IAuthService _authService;
@@ -65,7 +63,7 @@ public class MyAccountController : BaseApiController
         // Return
         return ResultHelper(result);
     }
-    
+
     //Update first and last name of the user (request is from MyAcccount)    
     [HttpPost("update-name")]
     public async Task<ActionResult<ServiceResponse<NameUpdateDto>>> UpdateName([FromBody] NameUpdateDto nameUpdateDto)
@@ -92,7 +90,7 @@ public class MyAccountController : BaseApiController
     {
         return ResultHelper(await _myAccountService.GetAllActiveSessionsAsync());
     }
-    
+
     // Gets user's 2fa-status to view latest user's info
     [HttpGet("2fa-status")]
     public async Task<ActionResult<ServiceResponse<bool>>> GetCurrent2FAStatus()
@@ -104,12 +102,16 @@ public class MyAccountController : BaseApiController
     [HttpDelete("delete-account")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteUserAccount(DeleteUserAccountDto deleteUserAccountDto)
     {
-        return ResultHelper(await _myAccountService.DeleteUserAccountAsync( deleteUserAccountDto));
+        return ResultHelper(await _myAccountService.DeleteUserAccountAsync(deleteUserAccountDto));
     }
 
 
     // acccounts-api/me/update-profile/
+    [HttpPut("update-profile")]
+    public async Task<ActionResult<ServiceResponse<UpdateUserProfileDto>>> UpdateUserProfile(UpdateUserProfileDto updateUserProfileDto)
+    {
+        return ResultHelper(await _myAccountService.UpdateUserProfileAsync(updateUserProfileDto));
+    }
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
-    // acccounts-api/me/terminate-sessions/
 }

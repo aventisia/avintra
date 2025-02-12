@@ -69,7 +69,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retriving list of invoice";
             return serviceResponse;
         }
@@ -107,7 +108,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retriving list of invoice by subscription";
             return serviceResponse;
         }
@@ -144,7 +146,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retrive invoice by Id";
             return serviceResponse;
         }
@@ -185,7 +188,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while inserting invoice";
             return serviceResponse;
         }
@@ -254,7 +258,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while updating invoice";
             return serviceResponse;
         }
@@ -303,7 +308,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while deleting invoice";
             return serviceResponse;
         }
@@ -349,7 +355,7 @@ public class InvoiceService : IInvoiceService
             var invoice = invoiceDto.Adapt<Invoice>();
             invoice.CreatedByUserId = _userId;
             invoice.LastModifiedByUserId = _userId;
-          
+
             //Insert the Invoice into the Database
             await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
 
@@ -368,7 +374,8 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurred while generating and inserting the invoice.";
         }
 

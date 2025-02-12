@@ -73,7 +73,8 @@ public class AuditLogService : IAuditLogService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
@@ -118,7 +119,8 @@ public class AuditLogService : IAuditLogService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while deteting audit log";
             return serviceResponse;
         }

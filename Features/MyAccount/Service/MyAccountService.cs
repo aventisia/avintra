@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace AccountsAPIs.Services;
 
 public class MyAccountService : IMyAccountService
@@ -16,6 +18,11 @@ public class MyAccountService : IMyAccountService
     private readonly string _userName;
     private readonly Guid _sessionId;
     private readonly Guid _userId;
+
+    const string invalidcredentials = "Invalid credentials";
+    const string userDoesNotExists = "User does not exists";
+    const string userNotFoundTemplate = "{methodName}: User not found for username {_userName}";
+
 
     public MyAccountService(
         UserManager<AccountUser> userManager,
@@ -37,7 +44,7 @@ public class MyAccountService : IMyAccountService
 
         _userManager = userManager;
         _signInManager = signInManager;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
         _logger = logger;
         _unitOfWork = unitOfWork;
         _authService = authService;
@@ -67,8 +74,8 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"User not found for username {_userName}");
-                serviceResponse.Message = "User does not exist";
+                _logger.LogInformation("User not found for username {_userName}", _userName);
+                serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
 
@@ -80,7 +87,7 @@ public class MyAccountService : IMyAccountService
             // User session doesn't exist
             if (session == null)
             {
-                _logger.LogInformation($"User session not found for session Id {_sessionId}");
+                _logger.LogInformation("User session not found for session Id {_sessionId}", _sessionId);
                 serviceResponse.Message = "User session does not exist";
                 return serviceResponse;
             }
@@ -103,7 +110,7 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
             return serviceResponse;
         }
 
@@ -169,14 +176,15 @@ public class MyAccountService : IMyAccountService
             _authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
 
             // Task successful
-            _logger.LogInformation($"User has logged off successfully. Session Id - {_sessionId}, username - {_userName} and device Id - {userAgent}");
+            _logger.LogInformation("User has logged off successfully. Session Id - {_sessionId}, username - {_userName} and device Id - {userAgent}", _sessionId, _userName, userAgent);
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "You have been logged off successfully";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -211,7 +219,7 @@ public class MyAccountService : IMyAccountService
             // Something is missing
             if (sessionIdString == null || userName == null || userAgent == null)
             {
-                _logger.LogInformation($"{CookieNamesEnum.SessionId} or {CookieNamesEnum.UserName} or User-Agent not found");
+                _logger.LogInformation("{SessionId} or {UserName} or User-Agent not found", CookieNamesEnum.SessionId, CookieNamesEnum.UserName);
                 serviceResponse.Message = "Unable to refresh the session";
                 return serviceResponse;
             }
@@ -234,8 +242,8 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"{userName} account not found");
-                serviceResponse.Message = "Invalid credentials";
+                _logger.LogInformation("{UserName} account not found", userName);
+                serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
 
@@ -249,7 +257,7 @@ public class MyAccountService : IMyAccountService
             // Account is locked
             if (user.LockoutEnd > DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation($"{userName} account is locked");
+                _logger.LogInformation("{UserName} account is locked", userName);
                 serviceResponse.Message = "Your account is locked. Please contact support adminstrator";
                 return serviceResponse;
             }
@@ -257,15 +265,15 @@ public class MyAccountService : IMyAccountService
             // Account is disabled
             if (user.IsDisabled)
             {
-                _logger.LogInformation($"{userName} account is disabled");
+                _logger.LogInformation("{UserName} account is disabled", userName);
                 serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
                 return serviceResponse;
             }
 
             // Password has expired
-            if (user.Tenant.IsPwdNeverExpiresEnabled == false && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
+            if (!user.Tenant.IsPwdNeverExpiresEnabled && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
             {
-                _logger.LogInformation($"{userName} account's password has been expired");
+                _logger.LogInformation("{UserName} account's password has been expired", userName);
                 /********IMPORTANCT NOTE********
                 DO NOT CHANGE the message's part "Your password has
                 been expired" as it has to match on frontend side
@@ -284,7 +292,7 @@ public class MyAccountService : IMyAccountService
             if (activeSession == null)
             {
                 _logger.LogInformation($"Active session not found for account {userName}");
-                serviceResponse.Message = "Invalid credentials";
+                serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
 
@@ -292,7 +300,7 @@ public class MyAccountService : IMyAccountService
             if (activeSession.DeviceId != userAgent)
             {
                 _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = "Invalid credentials";
+                serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
 
@@ -300,7 +308,7 @@ public class MyAccountService : IMyAccountService
             if (activeSession.RefreshToken != refreshToken)
             {
                 _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
-                serviceResponse.Message = "Invalid credentials";
+                serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
 
@@ -359,7 +367,8 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -387,8 +396,8 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
-                serviceResponse.Message = "User does not exist";
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
 
@@ -507,7 +516,8 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -535,8 +545,8 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
-                serviceResponse.Message = "User does not exist";
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
 
@@ -559,9 +569,10 @@ public class MyAccountService : IMyAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your name has been updated successfully";
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
@@ -588,8 +599,8 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
-                serviceResponse.Message = "User does not exist";
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
 
@@ -597,7 +608,7 @@ public class MyAccountService : IMyAccountService
             var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
 
             //if user is an Aventisia employee
-            if(IsAE)
+            if (IsAE)
             {
                 _logger.LogInformation("Failed to update email for Aventesia employee");
                 serviceResponse.Message = "Unable to update email for Aventesia employee";
@@ -651,13 +662,14 @@ public class MyAccountService : IMyAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your email has been updated successfully";
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
-    }  
+    }
 
     //Update user's two factor authentication
     public async Task<ServiceResponse<Toggle2FADto>> Toggle2FAAsync(Toggle2FADto toggle2FADto)
@@ -679,8 +691,8 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"{methodName}: User not found for username {_userName}");
-                serviceResponse.Message = "User does not exist";
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
 
@@ -735,13 +747,14 @@ public class MyAccountService : IMyAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your two factor authentication has been updated successfully";
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
-    }     
+    }
 
     // Gets user's active sessions to view latest user's info
     public async Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync()
@@ -778,7 +791,8 @@ public class MyAccountService : IMyAccountService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -818,7 +832,8 @@ public class MyAccountService : IMyAccountService
         catch (Exception ex)
         {
 
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
             return serviceResponse;
         }
 
@@ -847,7 +862,7 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-             var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
             if (isAE)
             {
                 _logger.LogInformation("Failed to delete Aventisia user");
@@ -929,6 +944,70 @@ public class MyAccountService : IMyAccountService
         {
             _logger.LogError(ex, "An error occurred while deleting the user");
             serviceResponse.Message = "An error occurred while deleting the user";
+        }
+        return serviceResponse;
+    }
+
+    //Update user's profile details updateUserProfileDto
+    public async Task<ServiceResponse<UpdateUserProfileDto>> UpdateUserProfileAsync(UpdateUserProfileDto updateUserProfileDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UpdateUserProfileDto>()
+        {
+            Data = null,
+            Message = "Failed to update your profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateUserProfileAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            user.AvatarSrc = updateUserProfileDto.AvatarSrc;
+            user.FirstName = updateUserProfileDto.FirstName;
+            user.LastName = updateUserProfileDto.LastName;
+            user.DateOfBirth = updateUserProfileDto.DateOfBirth;
+            user.PhoneNumber = updateUserProfileDto.PhoneNumber;
+            user.PhoneNumberType = updateUserProfileDto.PhoneNumberType;
+            user.AddressLine1 = updateUserProfileDto.AddressLine1;
+            user.AddressLine2 = updateUserProfileDto.AddressLine2;
+            user.Gender = updateUserProfileDto.Gender;
+            user.Country = updateUserProfileDto.Country;
+            user.City = updateUserProfileDto.City;
+            user.StateOrProvince = updateUserProfileDto.StateOrProvince;
+            user.ZipOrPostalCode = updateUserProfileDto.ZipOrPostalCode;
+
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while updating user's profile");
+                serviceResponse.Message = "User's profile update failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: profile has been updated for account {_userName}");
+            serviceResponse.Data = updateUserProfileDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your profile has been updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
         }
         return serviceResponse;
     }

@@ -51,15 +51,16 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retrive plan list";
             return serviceResponse;
         }
         return serviceResponse;
     }
-    
+
     // Retrive plan by Id
-    public async Task<ServiceResponse<PlanListDto>> GetPlanAsync (Guid id)
+    public async Task<ServiceResponse<PlanListDto>> GetPlanAsync(Guid id)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<PlanListDto>
@@ -86,7 +87,8 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retrive plan by id";
             return serviceResponse;
         }
@@ -123,7 +125,8 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while retrive plan status list";
             return serviceResponse;
         }
@@ -166,11 +169,12 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             return serviceResponse;
         }
         return serviceResponse;
-        
+
     }
     // Update plan
     public async Task<ServiceResponse<PlanDto>> UpdatePlanAsync(PlanDto planDto)
@@ -195,7 +199,7 @@ public class PlanService : IPlanService
                 serviceResponse.Message = "plan not exist";
                 return serviceResponse;
             }
-             // Default mapping 
+            // Default mapping 
             var newPlan = planDto.Adapt(plan);
 
             // Update plan
@@ -217,14 +221,15 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while updating plan";
             return serviceResponse;
         }
         return serviceResponse;
-        
+
     }
-   
+
 
     public async Task<ServiceResponse<PlanFeaturesDto>> UpdatePlanFeatureAsync(PlanFeaturesDto PlanFeatureDto)
     {
@@ -273,7 +278,8 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while updating plan";
             return serviceResponse;
         }
@@ -320,7 +326,8 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+
             serviceResponse.Message = "An error occurs while deteting plan";
             return serviceResponse;
         }

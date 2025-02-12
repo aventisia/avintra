@@ -12,13 +12,16 @@ configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reload
 configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 var config = configurationBuilder.Build();
 
-if (!builder.Environment.IsEnvironment("Localhost"))
+
+var IsEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
+
+if (!IsEnvironmentLocalhost)
 {
     // Get sensitive data from environment variables
-    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
-    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
-    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
-    var SMTP_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("SMTP_API_KEY"), "SMTP_API_KEY cannot be null");
+    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), message: "DB_HOST cannot be null");
+    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), message: "DB_CREDENTIALS cannot be null");
+    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), message: "JWT_SECRET_KEY cannot be null");
+    var SMTP_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("SMTP_API_KEY"), message: "SMTP_API_KEY cannot be null");
 
     // Update sensitive data in configuration
     config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
@@ -72,7 +75,7 @@ var app = builder.Build();
 
 // app.UseRateLimiter();
 
-if (app.Environment.IsEnvironment("Localhost"))
+if (IsEnvironmentLocalhost)
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
@@ -81,10 +84,10 @@ if (app.Environment.IsEnvironment("Localhost"))
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (!app.Environment.IsEnvironment("Localhost")) app.UseHsts();
+if (!IsEnvironmentLocalhost) app.UseHsts();
 
 // In a Nginx setup with SSL termination, Nginx handles the HTTPS connection and forwards the request to your backend ASP.NET Core application using HTTP (port 80 by default).
-if (app.Environment.IsEnvironment("Localhost")) app.UseHttpsRedirection();
+if (IsEnvironmentLocalhost) app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging();
 
@@ -108,4 +111,4 @@ app.MapControllers();
 
 await app.SeedInitialData();
 
-app.Run();
+await app.RunAsync();
