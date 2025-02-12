@@ -154,6 +154,37 @@ public class UploadedDocService : IUploadedDocService
         return serviceResponse;
     }
 
+    // Retrieves list of uploaded docs
+    public async Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<UploadedDocDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Try to get uploaded docs
+            var docs = await _unitOfWork.UploadedDocRepo
+                        .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                        .Include(c => c.CreatedByUser)
+                        .OrderByDescending(o => o.CreatedOn).ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = docs.Adapt<IEnumerable<UploadedDocDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Docs retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
     // Deletes a file from the server's storage based on the file URL.
     public ServiceResponse<bool> DeleteFileAsync(string fileUrl)
     {
@@ -203,6 +234,7 @@ public class UploadedDocService : IUploadedDocService
                 File.Delete(filePath);
 
                 // Update the response to indicate success
+                serviceResponse.StatusCode = 200;
                 serviceResponse.Data = true;
                 serviceResponse.Message = "File deleted successfully.";
                 _logger.LogInformation("File {FileName} deleted from {FilePath}.", fileName, filePath);

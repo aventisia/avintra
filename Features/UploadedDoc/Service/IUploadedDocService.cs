@@ -17,6 +17,13 @@ public interface IUploadedDocService
     Task<ServiceResponse<UploadedDocDto>> InsertUploadedDocAsync(UploadedDocDto uploadedDocDto);
 
     /// <summary>
+    /// Retrieves the list of uploaded docs
+    /// </summary>
+    /// <param name="mlModelId"></param>
+    /// <returns>List of uploaded docs</returns>
+    Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId);
+
+    /// <summary>
     /// Delete file
     /// </summary>
     /// <param name="fileUrl">File Url</param>

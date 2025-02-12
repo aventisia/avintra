@@ -25,6 +25,13 @@ public class UploadedDocController: BaseApiController
         return ResultHelper(await _uploadedDocService.InsertUploadedDocAsync(uploadedDocDto));
     }
 
+    //Retrieves list of uploaded docs
+    [HttpGet("list/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UploadedDocDto>>>> GetUploadedDocs(Guid mlModelId)
+    {
+        return ResultHelper(await _uploadedDocService.GetUploadedDocsAsync(mlModelId));
+    }
+
     //Delete files
     [HttpDelete]
     public ActionResult<ServiceResponse<bool>> DeleteFile (string fileUrl)
