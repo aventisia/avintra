@@ -28,6 +28,12 @@ public class MLModelController : BaseApiController
     return ResultHelper(await _mlModelService.GetMLModelListAsync());
   }
 
+  [HttpPost("IsMLModelNameAvailable")]
+  public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMLModelNameAvailable(CheckAvailabilityDto checkAvailabilityDto)
+  {
+    return ResultHelper(await _mlModelService.IsMLModelNameAvailableAsync(checkAvailabilityDto));
+  }
+
   //Inserts a new ML model
   [HttpPost]
   public async Task<ActionResult<ServiceResponse<MLModelDto>>> InsertMLModel([FromBody] MLModelDto mlModelDto)

@@ -56,6 +56,48 @@ public class MLModelService : IMLModelService
         return serviceResponse;
     }
 
+    // Checks the availability of a ml model name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check ML model name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate model uniqueness
+            var modelAlreadyExists = await _unitOfWork.MLModelRepo
+                                                        .GetByConditionAsync(w =>
+                                                            w.CreatedByUserId == _userId &&
+                                                            w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                        .FirstOrDefaultAsync();
+
+            // Model already exists
+            if (modelAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A model with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "ML Model name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     //Creates a ML model
     public async Task<ServiceResponse<MLModelDto>> InsertMLModelAsync(MLModelDto mlModelDto)
     {
@@ -68,6 +110,25 @@ public class MLModelService : IMLModelService
 
         try
         {
+            // Validate model uniqueness
+            var modelAlreadyExists = await _unitOfWork.MLModelRepo
+                                                        .GetByConditionAsync(w =>
+                                                            w.CreatedByUserId == _userId &&
+                                                            w.Name.ToLower() == mlModelDto.Name.Trim().ToLower())
+                                                        .FirstOrDefaultAsync();
+
+            // Model already exists
+            if (modelAlreadyExists != null)
+            {
+                _logger.LogInformation($"Model already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A model with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Trim dto' string props
+            mlModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelDto);
+
             // Default mapping
             var newMLModel = mlModelDto.Adapt<MLModel>();
             newMLModel.CreatedByUserId = _userId;
@@ -122,6 +183,26 @@ public class MLModelService : IMLModelService
                 serviceResponse.Message = "ML model does not exist";
                 return serviceResponse;
             }
+
+            // Validate model uniqueness
+            var modelAlreadyExists = await _unitOfWork.MLModelRepo
+                                                        .GetByConditionAsync(w =>
+                                                            w.CreatedByUserId == _userId &&
+                                                            w.Name.ToLower() == mlModelDto.Name.Trim().ToLower()
+                                                            && w.Id != mlModelDto.Id)
+                                                        .FirstOrDefaultAsync();
+
+            // Model already exists
+            if (modelAlreadyExists != null)
+            {
+                _logger.LogInformation($"Model already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A model with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Trim dto' string props
+            mlModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelDto);
 
             // Auto mapping 
             var newMLModel = mlModelDto.Adapt(mlModel);

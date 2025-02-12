@@ -9,6 +9,13 @@ public interface IMLModelService
     Task<ServiceResponse<IEnumerable<MLModelDto>>> GetMLModelListAsync();
 
     /// <summary>
+    /// Checks model name uniqueness
+    /// </summary>
+    /// <param name="checkAvailabilityDto"></param>
+    /// <returns>True if name is available, else false</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
     /// Inserts a ML model
     /// </summary>
     /// <param name="mlModelDto">ML Model Dto</param>
