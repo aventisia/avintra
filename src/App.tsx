@@ -8,6 +8,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { MLModelBuilderLayout } from "./components/layout/Layout";
+import { ModelLibraryPage } from "./pages/ModelLibraryPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,7 +31,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/model-library",
-          element: <h1>Model Library </h1>,
+          element: <ModelLibraryPage />,
         },
         {
           path: "/label-data",
