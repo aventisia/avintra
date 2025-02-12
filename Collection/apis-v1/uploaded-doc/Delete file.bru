@@ -1,0 +1,15 @@
+meta {
+  name: Delete file
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc?fileurl=/files/43f05a1b-9f96-4c73-8059-03219d175252.pdf
+  body: none
+  auth: none
+}
+
+params:query {
+  fileurl: /files/43f05a1b-9f96-4c73-8059-03219d175252.pdf
+}

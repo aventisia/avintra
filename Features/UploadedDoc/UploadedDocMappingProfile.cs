@@ -17,10 +17,6 @@ public class UploadedDocMappingProfile : IRegister
         //Mapping entity to insert or update the record
         config.NewConfig<UploadedDocDto, UploadedDoc>()
             .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.Path)
-            .Ignore(dest => dest.Size)
-            .Ignore(dest => dest.Name)
-            .Ignore(dest => dest.Type)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)

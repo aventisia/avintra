@@ -25,11 +25,6 @@ public class UploadedDocDto
     public long Size { get; set; }
 
     /// <summary>
-    /// Gets or sets file properties of an uploaded doc
-    /// </summary>
-    public IFormFile? File { get; set; }
-
-    /// <summary>
     /// Gets or sets the path of uploaded file. 
     /// </summary>
     public required string Path { get; set; }

@@ -19,8 +19,8 @@ public class UploadedDocController: BaseApiController
         return ResultHelper(await _uploadedDocService.UploadFilesAsync(files));
     }
     //Inserts uploaded file record
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<UploadedDocDto>>> InsertUploadedDocAsync(UploadedDocDto uploadedDocDto)
+    [HttpPost("insert-file")]
+    public async Task<ActionResult<ServiceResponse<UploadedDocDto>>> InsertUploadedDoc(UploadedDocDto uploadedDocDto)
     {
         return ResultHelper(await _uploadedDocService.InsertUploadedDocAsync(uploadedDocDto));
     }
@@ -32,10 +32,57 @@ public class UploadedDocController: BaseApiController
         return ResultHelper(_uploadedDocService.DeleteFileAsync(fileUrl));
     }
 
-    //Download file
+    // Endpoint to download a file based on the file URL.
     [HttpGet]
-    public ActionResult<ServiceResponse<FileDetailDto>> DownloadFile (string fileUrl)
+    public async Task<IActionResult> DownloadFile([FromQuery] string fileUrl)
     {
-        return ResultHelper(_uploadedDocService.DownloadFileAsync(fileUrl));
+        if (string.IsNullOrEmpty(fileUrl))
+        {
+            return BadRequest("File URL is required.");
+        }
+
+        // Call the service to get file details
+        var response = _uploadedDocService.DownloadFileAsync(fileUrl);
+
+        if (response.Data == null)
+        {
+            return NotFound(response.Message);
+        }
+
+        var fileDetail = response.Data;
+
+        // Resolve the full file path using the file details
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileDetail.Path.TrimStart('/'));
+
+        // Check if the file exists before serving
+        if (System.IO.File.Exists(filePath))
+        {
+            // Determine MIME type based on the file extension
+            var contentType = GetContentType(filePath);
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            // Return the file with the appropriate content type and file name
+            return File(fileBytes, contentType, fileDetail.Name);
+        }
+
+        return NotFound("File not found.");
     }
+
+    // Get the content type based on the file extension
+    private string GetContentType(string filePath)
+    {
+        var fileExtension = Path.GetExtension(filePath).ToLower();
+
+        return fileExtension switch
+        {
+            ".pdf" => "application/pdf",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".txt" => "text/plain",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            _ => "application/octet-stream"
+        };
+    }
+
 }
