@@ -105,12 +105,18 @@ public class MyAccountController : BaseApiController
         return ResultHelper(await _myAccountService.DeleteUserAccountAsync(deleteUserAccountDto));
     }
 
-
     // acccounts-api/me/update-profile/
     [HttpPut("update-profile")]
-    public async Task<ActionResult<ServiceResponse<UpdateUserProfileDto>>> UpdateUserProfile(UpdateUserProfileDto updateUserProfileDto)
+    public async Task<ActionResult<ServiceResponse<UserProfileDto>>> UpdateUserProfile(UserProfileDto updateUserProfileDto)
     {
         return ResultHelper(await _myAccountService.UpdateUserProfileAsync(updateUserProfileDto));
+    }
+
+    // acccounts-api/me/update-profile/
+    [HttpGet("profile")]
+    public async Task<ActionResult<ServiceResponse<UserProfileDto>>> GetUserProfile()
+    {
+        return ResultHelper(await _myAccountService.GetUserProfileAsync());
     }
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/

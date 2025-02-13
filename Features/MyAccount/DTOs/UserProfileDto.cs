@@ -5,12 +5,12 @@ namespace AccountsAPIs.DTOs;
 /// <summary>
 /// Represents the data transfer object for updating the first name and last name of a user account.
 /// </summary>
-public class UpdateUserProfileDto
+public class UserProfileDto
 {
     /// <summary>
-    /// Gets or sets the source of the user's avatar (profile pic).
+    /// Gets or sets the first name of the user. Max-50.
     /// </summary>
-    [MaxLength(255)]
+    [StringLength(255)]
     public string? AvatarSrc { get; set; }
     /// <summary>
     /// Gets or sets the first name of the user. Max-50.
@@ -41,16 +41,10 @@ public class UpdateUserProfileDto
     public required PhoneNumberType PhoneNumberType { get; set; }
 
     /// <summary>
-    /// Gets or sets the address line 1 of the user. Max-50.
+    /// Gets or sets the address of the user. Max-50.
     /// </summary>
-    [StringLength(200)]
-    public required string AddressLine1 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the address line 2 of the user. Max-50.
-    /// </summary>
-    [StringLength(200)]
-    public required string AddressLine2 { get; set; }
+    [StringLength(300)]
+    public required string Address { get; set; }
 
     /// <summary>
     /// Gets or sets the gender of the user profile

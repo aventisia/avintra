@@ -12,11 +12,16 @@ public class TenantAccountController : BaseApiController
 
     // acccounts-api/tenant/user/
     // [HttpGet("user")]
-    // public async Task<ActionResult<ServiceResponse<UpdateUserProfileDto>>> GetTenantUser(UpdateUserProfileDto updateUserProfileDto)
+    // public async Task<ActionResult<ServiceResponse<GetUserTenantInfoDto>>> GetTenantUserInfo()
     // {
-    //     return ResultHelper(await _tenantAccountService.GetTenantUserAsync());
+    //     return ResultHelper(await _tenantAccountService.GetTenantUserInfoAsync());
     // }
     // acccounts-api/tenant/users/
+    // [HttpGet("users")]
+    // public async Task<ActionResult<ServiceResponse<GetUserTenantInfoDto>>> GetAllTenantUser(UpdateUserProfileDto updateUserProfileDto)
+    // {
+    //     return ResultHelper(await _tenantAccountService.GetAllTenantUserAsync());
+    // }
     // acccounts-api/tenant/add-user/
     // acccounts-api/tenant/add-users/
     // acccounts-api/tenant/update-user/

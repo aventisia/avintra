@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace AccountsAPIs.Data.Migrations
+namespace AccountsAPIs.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
     partial class AccountsDbContextModelSnapshot : ModelSnapshot
@@ -93,16 +93,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("AccountUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AddressLine1")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("AddressLine2")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("AvatarSrc")
                         .HasMaxLength(255)
@@ -211,10 +204,6 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("UserCompanyId")
-                        .IsRequired()
-                        .HasColumnType("uuid");
-
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -238,64 +227,10 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("UserCompanyId");
-
                     b.HasIndex("UserName")
                         .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("AccountsAPIs.Entities.AccountUserCompany", b =>
-                {
-                    b.Property<Guid>("UserCompanyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AccountUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AddressLine1")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("AddressLine2")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("CompanyType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("StateOrProvince")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ZipOrPostalCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.HasKey("UserCompanyId");
-
-                    b.ToTable("AccountUserCompany");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.AccountUserRole", b =>
@@ -1192,14 +1127,6 @@ namespace AccountsAPIs.Data.Migrations
                         .WithMany("Users")
                         .HasForeignKey("TenantId");
 
-                    b.HasOne("AccountsAPIs.Entities.AccountUserCompany", "AccountUserCompany")
-                        .WithMany("AccountUsers")
-                        .HasForeignKey("UserCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AccountUserCompany");
-
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
@@ -1497,11 +1424,6 @@ namespace AccountsAPIs.Data.Migrations
             modelBuilder.Entity("AccountsAPIs.Entities.AccountUser", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("AccountsAPIs.Entities.AccountUserCompany", b =>
-                {
-                    b.Navigation("AccountUsers");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Invoice", b =>

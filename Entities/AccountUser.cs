@@ -125,16 +125,10 @@ public class AccountUser : IdentityUser<Guid>
     public PhoneNumberType PhoneNumberType { get; set; }
 
     /// <summary>
-    /// Gets or sets the address line 1 of the user. Max-50.
+    /// Gets or sets the address of the user. Max-50.
     /// </summary>
-    [StringLength(200)]
-    public string? AddressLine1 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the address line 2 of the user. Max-50.
-    /// </summary>
-    [StringLength(200)]
-    public string? AddressLine2 { get; set; }
+    [StringLength(300)]
+    public string? Address { get; set; }
 
     /// <summary>
     /// Gets or sets the gender of the user profile

@@ -4,7 +4,7 @@ public class TenantAccountService : ITenantAccountService
 {
     private readonly ILogger<TenantAccountService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    
+
     public TenantAccountService(
         ILogger<TenantAccountService> logger,
         IUnitOfWork unitOfWork)

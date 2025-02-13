@@ -949,10 +949,10 @@ public class MyAccountService : IMyAccountService
     }
 
     //Update user's profile details updateUserProfileDto
-    public async Task<ServiceResponse<UpdateUserProfileDto>> UpdateUserProfileAsync(UpdateUserProfileDto updateUserProfileDto)
+    public async Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto updateUserProfileDto)
     {
         //Initialize ServiceResponse with Failed response
-        var serviceResponse = new ServiceResponse<UpdateUserProfileDto>()
+        var serviceResponse = new ServiceResponse<UserProfileDto>()
         {
             Data = null,
             Message = "Failed to update your profile. Please try again later"
@@ -974,14 +974,12 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            user.AvatarSrc = updateUserProfileDto.AvatarSrc;
             user.FirstName = updateUserProfileDto.FirstName;
             user.LastName = updateUserProfileDto.LastName;
             user.DateOfBirth = updateUserProfileDto.DateOfBirth;
             user.PhoneNumber = updateUserProfileDto.PhoneNumber;
             user.PhoneNumberType = updateUserProfileDto.PhoneNumberType;
-            user.AddressLine1 = updateUserProfileDto.AddressLine1;
-            user.AddressLine2 = updateUserProfileDto.AddressLine2;
+            user.Address = updateUserProfileDto.Address;
             user.Gender = updateUserProfileDto.Gender;
             user.Country = updateUserProfileDto.Country;
             user.City = updateUserProfileDto.City;
@@ -999,7 +997,7 @@ public class MyAccountService : IMyAccountService
             }
 
             // Task successful
-            _logger.LogInformation($"{methodName}: profile has been updated for account {_userName}");
+            _logger.LogInformation("{MethodName}: profile has been updated for account {_UserName}", methodName, _userName);
             serviceResponse.Data = updateUserProfileDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your profile has been updated successfully";
@@ -1011,6 +1009,73 @@ public class MyAccountService : IMyAccountService
         }
         return serviceResponse;
     }
+
+    //Update user's profile details updateUserProfileDto
+    public async Task<ServiceResponse<UserProfileDto>> GetUserProfileAsync()
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserProfileDto>()
+        {
+            Data = null,
+            Message = "Failed to get your profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateUserProfileAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            var userProfileDetails = new UserProfileDto
+            {
+                AvatarSrc = user.AvatarSrc,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateOfBirth = user.DateOfBirth,
+                PhoneNumber = user.PhoneNumber,
+                PhoneNumberType = user.PhoneNumberType,
+                Address = user.Address,
+                Gender = user.Gender,
+                Country = user.Country,
+                City = user.City,
+                StateOrProvince = user.StateOrProvince,
+                ZipOrPostalCode = user.ZipOrPostalCode,
+            };
+
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while getting user's profile");
+                serviceResponse.Message = "User's profile get failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation("{MethodName}: profile has been fetched for account {_UserName}", methodName, _userName);
+            serviceResponse.Data = userProfileDetails;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your profile has been fetched successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
 
 }
 
