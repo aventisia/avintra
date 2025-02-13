@@ -1,24 +1,28 @@
-// import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-// import { isModelNameAvailable } from "../apis/models-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
+  modelNameSchema,
   // modelNameSchema,
   modelZodSchema,
 } from "../constants/model-zod-schema";
 import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
+import { isModelNameAvailable } from "../apis/model-library-table-apis";
 
 /**
  * Custom hook for defining a model form.
  */
 export const useDefineModelForm = () => {
+  // Set model name state (required for avaialbility check)
+  const [modelName, setModelName] = useState("");
+
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -28,7 +32,7 @@ export const useDefineModelForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { rowId, crudAction },
+    crudDialogOptions: { showDialog, rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -74,6 +78,9 @@ export const useDefineModelForm = () => {
     // Get model data by id
     const modelData = modelsData?.data.find((item) => item.id === rowId);
 
+    // Set model name
+    setModelName(modelData?.name ?? "");
+
     // Set model data to form
     form.reset({
       id: rowId,
@@ -96,19 +103,19 @@ export const useDefineModelForm = () => {
   }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
-  // const {
-  //   isAvailable,
-  //   isCheckPending,
-  //   handleInputChange,
-  //   availabilityMessage,
-  //   setAvailabilityMessage,
-  // } = useCheckAvailability<z.infer<typeof modelZodSchema>, z.ZodString>({
-  //   defaultInputValue: modelName,
-  //   fieldName: "name",
-  //   form,
-  //   fieldSchema: modelNameSchema,
-  //   checkAvailabilityAPIFn: isModelNameAvailable,
-  // });
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof modelZodSchema>, z.ZodString>({
+    defaultInputValue: modelName,
+    fieldName: "name",
+    form,
+    fieldSchema: modelNameSchema,
+    checkAvailabilityAPIFn: isModelNameAvailable,
+  });
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof modelZodSchema>) => {
@@ -125,9 +132,9 @@ export const useDefineModelForm = () => {
   }, [isDirty, toggleFormDirty]);
 
   // Reset availability message when dialog closes
-  // useEffect(() => {
-  //   if (!showDialog) setAvailabilityMessage(null);
-  // }, [setAvailabilityMessage, showDialog]);
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
 
   // Return form and methods
   return {
@@ -137,10 +144,10 @@ export const useDefineModelForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    // isAvailable,
-    // availabilityMessage,
-    // setAvailabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
   };
 };

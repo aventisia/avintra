@@ -28,11 +28,11 @@ export const ModelCrudForm = () => {
     isDirty,
     rowId,
     crudAction,
-    // isAvailable,
-    // availabilityMessage,
-    // setAvailabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
     setShowDialog,
     refineFormData,
   } = useDefineModelForm();
@@ -53,7 +53,7 @@ export const ModelCrudForm = () => {
     });
 
     // Reset the availability message
-    // setAvailabilityMessage(null);
+    setAvailabilityMessage(null);
 
     // Close the dialog
     setShowDialog(false);
@@ -73,11 +73,11 @@ export const ModelCrudForm = () => {
       {/* Model Id */}
       {isReadMode && <InputField {...idProps} />}
 
-       {/* Name */}
-       <InputField
+      {/* Name */}
+      <InputField
         {...nameProps}
-        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        // nonErrorMessage={availabilityMessage}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
       />
 
       {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
@@ -93,7 +93,6 @@ export const ModelCrudForm = () => {
       ) : (
         form.getValues("llm") !== "" && <SelectField {...llmProps} />
       )}
-     
 
       {/* Description */}
       <TextareaField {...descriptionProps} />
@@ -113,7 +112,11 @@ export const ModelCrudForm = () => {
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+          <Button
+            type="submit"
+            disabled={!isDirty || !isAvailable || isCheckPending}
+            className="min-w-[5rem]"
+          >
             {crudAction === "create" ? "Create new  model" : "Save changes"}
           </Button>
         </div>

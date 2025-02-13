@@ -2,6 +2,8 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/ml-model`;
 
@@ -59,6 +61,19 @@ const deleteModels = (ids: string[]) => {
     .then((res) => res.data);
 };
 
+
+/**
+ * Checks the availability of a model name.
+ */
+const isModelNameAvailable = (postObj: CheckAvailabilityDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<TrueFalseResultDto>
+    >(`${baseAPIURL}/IsMLModelNameAvailable`, postObj)
+    .then((res) => res.data);
+};
+
+
 /**
  * Performs an optimistic mutation on a model based on the provided CRUD action.
  *
@@ -91,5 +106,6 @@ export {
   updateModel,
   deleteModel,
   deleteModels,
+  isModelNameAvailable,
   modelOptimisticMutationFn,
 };
