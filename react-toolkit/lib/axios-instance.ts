@@ -1,6 +1,5 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DEV_JWT_LS_KEY, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
-import { sleep } from "@/react-toolkit/utils/sleep-util";
+import { ARTIFICIAL_DELAY, DEV_JWT_LS_KEY, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
 import {
   removeUserSessionLocally,
   setUserSessionLocally,
@@ -8,15 +7,6 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 
-/**
- * Creates an Axios instance with predefined configuration.
- *
- * The instance is configured with:
- * - A timeout specified by the `REQUEST_TIMEOUT` constant.
- * - Default headers including `Content-Type` set to `application/json`.
- *
- * @constant {AxiosInstance} axiosInstance - The configured Axios instance.
- */
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
   headers: {
@@ -24,7 +14,7 @@ const axiosInstance = axios.create({
   },
 });
 
-// Intercept request and add JWT token to the header if its DEV env
+// Intercept request
 axiosInstance.interceptors.request.use(
   (request) => {
     // Attach jwt from LS if its DEV env
@@ -32,6 +22,10 @@ axiosInstance.interceptors.request.use(
       request.headers["Authorization"] =
         `Bearer ${localStorage.getItem(DEV_JWT_LS_KEY)}`;
     }
+
+    // Include cookies with the request
+    request.withCredentials = true;
+
     return request;
   },
   (error) => {
@@ -39,22 +33,22 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-// Intercept response and handle errors
+// Intercept response
 axiosInstance.interceptors.response.use(
   async (response) => {
-    // Artificial delay for development
-    if (import.meta.env.DEV) await sleep(import.meta.env.VITE_ARTIFICIAL_DELAY);
-
+    // Add artificial delay for DEV env
+    if (import.meta.env.DEV) await sleep(ARTIFICIAL_DELAY);
+    // If success just return the response
     return response;
   },
   async (error) => {
-    // Set original request
+    // Keep original request
     const originalRequest = error.config;
 
     // If response null
     if (!error.response) return Promise.reject(error);
 
-    // If response status is 401 and request is not login, verify-2fa-code, refresh-session, my-session, logoff
+    // If Access Token was expired
     if (
       !originalRequest.url.includes("/auth/login") &&
       !originalRequest.url.includes("/auth/verify-2fa-code") &&
@@ -64,23 +58,18 @@ axiosInstance.interceptors.response.use(
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
-      // Set original request retry to true
       originalRequest._retry = true;
-
-      // Refresh the session
       const newSession = await refreshSession();
-
-      // If new session is available, set the user session
-      if (newSession) setUserSessionLocally(newSession.data);
-
-      // Return the original request
+      if (newSession) {
+        setUserSessionLocally(newSession.data);
+      }
       return axiosInstance(originalRequest);
     }
 
-    // Set empty error message
+    // Define errorMessage variable
     let errorMessage = "";
 
-    // If error response data is string
+    // Error is a string
     if (typeof error.response.data == "string") {
       errorMessage = error.response.data;
     }
@@ -127,6 +116,10 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+function sleep(ms = 2000): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export { axiosInstance };
 

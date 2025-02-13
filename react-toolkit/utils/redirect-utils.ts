@@ -1,12 +1,9 @@
 /**
- * Redirects the user to the login page after a delay of 2 seconds.
+ * Redirects the user to the login page if the application is not in development mode.
  *
- * This function checks if the application is not in development mode
- * (`import.meta.env.DEV` is false). If so, it redirects the user to the
- * login URL specified in the environment variable `VITE_LOGIN_URL`.
- *
- * @remarks
- * The redirection is delayed by 2 seconds using `setTimeout`.
+ * This function checks if the application is running in development mode using the `import.meta.env.DEV` flag.
+ * If the application is not in development mode, it redirects the user to the login URL specified in the
+ * `import.meta.env.VITE_LOGIN_URL` environment variable after a delay of 2 seconds.
  */
 export function redirectToLoginUtil() {
   setTimeout(() => {

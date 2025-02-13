@@ -17,9 +17,7 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
   const message = searchParams.get("msg"); // loading or wait message
 
   useEffect(() => {
-    if (url) {
-      window.location.assign(url);
-    }
+    url ? window.location.assign(url) : null;
   });
 
   return (
