@@ -12,8 +12,7 @@ interface UserSessionDto {
   /** 2 char long user name's initials */
   userInitials: string;
 
-  /**
-   * JWT to only extract user data from.
+  /** JWT to only extract user data from.
    * Also, to send it in Authorization Header as Bearer if client does not support cookies
    */
   accessToken: string;

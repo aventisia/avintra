@@ -34,7 +34,7 @@ export function DTViewOptions<TData>({
         <AdjustmentsHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
         View
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px] bg-white">
+      <DropdownMenuContent align="end" className="w-[150px]">
         <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table

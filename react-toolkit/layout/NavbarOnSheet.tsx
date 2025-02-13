@@ -6,11 +6,11 @@ import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/react-toolkit/ui/dialog/index";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTrigger,
+} from "@/react-toolkit/ui/sheet";
 import { Bars3BottomLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
@@ -24,11 +24,11 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
     useBaseLayoutStore();
 
   return (
-    <Dialog
+    <Sheet
       open={navbarOnSheetOpen}
       onOpenChange={() => setNavbarOnSheetOpen(!navbarOnSheetOpen)}
     >
-      <DialogTrigger asChild>
+      <SheetTrigger asChild>
         <Button
           variant="outline"
           size="icon8"
@@ -40,15 +40,15 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
         >
           <Bars3BottomLeftIcon className="h-7 w-7" />
         </Button>
-      </DialogTrigger>
-      <DialogContent side="left" className="w-[--sidebar-max-width]">
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[--sidebar-max-width]">
         <PerfectScrollbar>
           <div className="flex h-[--header-height] items-center p-4">
-            <DialogClose asChild>
+            <SheetClose asChild>
               <Button variant="ghost" size="icon8" className="mr-3.5">
                 <XMarkIcon className="h-5 w-5" />
               </Button>
-            </DialogClose>
+            </SheetClose>
             <AppLogo />
           </div>
           <nav className="h-auto">
@@ -58,9 +58,10 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
             {appConfig.showUpgradeCard && <UpgradeCard />}
           </nav>
         </PerfectScrollbar>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 
 export { NavbarOnSheet };
+

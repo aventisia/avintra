@@ -1,5 +1,10 @@
-import { DEV_JWT_LS_KEY, USER_SESSION_LS_KEY } from "@/react-toolkit/constants";
+import {
+  DEV_JWT_LS_KEY,
+  USER_PREFERENCES_LS_KEY,
+  USER_SESSION_LS_KEY,
+} from "@/react-toolkit/constants";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
+import { UserPreferencesType } from "@/react-toolkit/types/user-preferences-type";
 import {
   IJwtPayload,
   IUserSessionLS,
@@ -28,6 +33,9 @@ const setUserSessionLocally = (
   // Set user session in local storage
   localStorage.setItem(USER_SESSION_LS_KEY, JSON.stringify(userSessionLS));
 
+  // Set user preferences in local storage
+  setUserPreferencesLocally();
+
   // create roles array
   const roles: string[] =
     decodedJwt["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
@@ -44,6 +52,37 @@ const setUserSessionLocally = (
     userRoles: roles,
     expiresOn: new Date(decodedJwt.exp * 1000),
   };
+};
+
+const setUserPreferencesLocally = (userPreferences?: UserPreferencesType) => {
+  // Get user preferences from local storage
+  const oldUserPreferencesLSObj = JSON.parse(
+    localStorage.getItem(USER_PREFERENCES_LS_KEY) || '""',
+  ) as UserPreferencesType;
+
+  // If user preferences already exist, then return
+  if (!userPreferences && oldUserPreferencesLSObj) return;
+
+  // Create user preferences local storage object
+  const userPreferencesLS: UserPreferencesType = {
+    theme: userPreferences?.theme ? userPreferences.theme : "light",
+    studio: userPreferences?.studio
+      ? userPreferences.studio
+      : {
+          layoutDirection: "TB",
+          miniMap: true,
+          undoRedo: true,
+          intractivityToggle: true,
+          zoomControls: true,
+          deleteAlert: true,
+        },
+  };
+
+  // Set user preferences in local storage
+  localStorage.setItem(
+    USER_PREFERENCES_LS_KEY,
+    JSON.stringify(userPreferencesLS),
+  );
 };
 
 const getTenantId = () => {
@@ -79,9 +118,27 @@ const isUserSessionValid = () => {
   return true;
 };
 
+const addSecondsToDate = (date: Date, secondsToAdd: number): Date => {
+  // Convert date into seconds
+  let dateInSeconds = date.getTime() / 1000;
+  // Add seconds
+  dateInSeconds += secondsToAdd;
+  // Convert back to date
+  return new Date(dateInSeconds * 1000);
+};
+
+const convertDateTimeToUTC = (dateInput: Date) => {
+  return new Date(
+    dateInput.getTime() + dateInput.getTimezoneOffset() * 60 * 1000,
+  );
+};
+
 export {
+  addSecondsToDate,
+  convertDateTimeToUTC,
   getTenantId,
   isUserSessionValid,
   removeUserSessionLocally,
+  setUserPreferencesLocally,
   setUserSessionLocally,
 };
