@@ -11,7 +11,8 @@ const TWO_FA_ENABLED = "TwoFA is enabled";
 const PWD_EXPIRED = "Your password has been expired";
 
 /**
- * A constant string representing an error message for invalid credentials.
+ * A constant string representing an error message for invalid credentials. 
+ * Basis this message flag we don't route user to login page on 401 error
  * Any change to the backend error message should be reflected here.
  */
 const INVALID_CREDS = "Invalid credentials";
