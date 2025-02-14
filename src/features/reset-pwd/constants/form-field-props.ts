@@ -1,7 +1,9 @@
+import { FloatingLabelInputFieldProps } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
 
 const className = "h-11 text-md";
+const labelClassName = "text-md";
 
 // Email
 const emailProps: InputFieldProps = {
@@ -21,21 +23,22 @@ const verificationCodeProps: InputOtpFieldProps = {
 };
 
 // New password
-const newPwdProps: InputFieldProps = {
+const newPwdProps: FloatingLabelInputFieldProps = {
+  label: "New password",
   name: "newPwd",
-  placeholder: "New password",
   type: "password",
-  isRequired: true,
   className: className,
+  labelClassName: labelClassName,
 };
 
 // Confirm new password
-const confirmNewPwdProps: InputFieldProps = {
+const confirmNewPwdProps: FloatingLabelInputFieldProps = {
+  label: "Confirm password",
   name: "confirmNewPwd",
-  placeholder: "Confirm password",
   type: "password",
-  isRequired: true,
   className: className,
+  labelClassName: labelClassName,
 };
 
 export { confirmNewPwdProps, emailProps, newPwdProps, verificationCodeProps };
+

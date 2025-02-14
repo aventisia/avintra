@@ -1,6 +1,6 @@
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { FloatingLabelInputField } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
 import { z } from "zod";
@@ -36,10 +36,10 @@ export const ResetPwdForm = () => {
       checkDirtyForm={false}
     >
       {/* New password */}
-      <InputField {...newPwdProps} />
+      <FloatingLabelInputField {...newPwdProps} />
 
       {/* Confirm new password */}
-      <InputField {...confirmNewPwdProps} />
+      <FloatingLabelInputField {...confirmNewPwdProps} />
 
       {/* Log off from all sessions */}
       <CheckboxField

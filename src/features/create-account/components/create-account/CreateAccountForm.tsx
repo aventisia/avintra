@@ -1,7 +1,7 @@
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { FloatingLabelInputField } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import * as z from "zod";
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
@@ -64,14 +64,14 @@ export const CreateAccountForm = () => {
     >
       <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
         {/* First Name */}
-        <InputField {...firstNameProps} />
+        <FloatingLabelInputField {...firstNameProps} />
 
         {/* Last Name */}
-        <InputField {...lastNameProps} />
+        <FloatingLabelInputField {...lastNameProps} />
       </div>
 
       {/* Email */}
-      <InputField
+      <FloatingLabelInputField
         {...emailProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
@@ -79,10 +79,10 @@ export const CreateAccountForm = () => {
 
       <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
         {/* Password */}
-        <InputField {...pwdProps} />
+        <FloatingLabelInputField {...pwdProps} />
 
         {/* Confirm Password */}
-        <InputField {...confirmPwdProps} />
+        <FloatingLabelInputField {...confirmPwdProps} />
       </div>
 
       {/* Terms and Conditions */}
@@ -93,7 +93,7 @@ export const CreateAccountForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="text-md !mt-5 h-11 w-full"
+        className="!mt-5 h-11 w-full text-md"
         primaryText="Create"
         isPending={isSubmitting || isCodePending}
         disabled={!isAvailable || isCheckPending}

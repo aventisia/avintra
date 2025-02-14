@@ -1,47 +1,50 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { FloatingLabelInputFieldProps } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
 import { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
 
 const className = "h-11 text-md";
+const labelClassName = "text-md";
 
 // First Name
-const firstNameProps: InputFieldProps = {
+const firstNameProps: FloatingLabelInputFieldProps = {
+  label: "First name",
   name: "firstName",
-  placeholder: "First name",
   className: className,
+  labelClassName: labelClassName,
 };
 
 // Last Name
-const lastNameProps: InputFieldProps = {
+const lastNameProps: FloatingLabelInputFieldProps = {
+  label: "Last name",
   name: "lastName",
-  placeholder: "Last name",
   className: className,
+  labelClassName: labelClassName,
 };
 
 // Email
-const emailProps: InputFieldProps = {
+const emailProps: FloatingLabelInputFieldProps = {
+  label: "Email",
   name: "email",
-  placeholder: "Email",
-  isRequired: true,
   type: "email",
   className: className,
+  labelClassName: labelClassName,
 };
 
 // Password
-const pwdProps: InputFieldProps = {
+const pwdProps: FloatingLabelInputFieldProps = {
+  label: "Password",
   name: "pwd",
-  placeholder: "Password",
   type: "password",
-  isRequired: true,
   className: className,
+  labelClassName: labelClassName,
 };
 
 // Confirm Password
-const confirmPwdProps: InputFieldProps = {
+const confirmPwdProps: FloatingLabelInputFieldProps = {
+  label: "Confirm password",
   name: "confirmPwd",
-  placeholder: "Confirm password",
   type: "password",
-  isRequired: true,
   className: className,
+  labelClassName: labelClassName,
 };
 
 // Verification code
