@@ -1,8 +1,8 @@
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
-import { SocialButtons } from "@/components/ui/SocialButtons";
+//import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
+// import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
 import { GetTenantInfoForm } from "./GetTenantInfoForm";
 import { GoToCreateAccount } from "./GoToCreateAccount";
 
@@ -15,14 +15,14 @@ export const GetTenantInfo = () => {
     <ContentContainer className="fadeInRTL">
       <ContentHeader
         biggerHeading="Log in to your account"
-        smallerHeading="Select method to Log in:"
+        smallerHeading="Enter your email address"
       />
 
       {/* Social sign in options */}
-      <SocialButtons />
+      {/* <SocialButtons /> */}
 
       {/* Separator */}
-      <SeparatorWithText width="98%" overlayText="or continue with email" />
+      {/* <SeparatorWithText width="98%" overlayText="or continue with email" /> */}
 
       {/* Get Tenant Info form */}
       <GetTenantInfoForm />

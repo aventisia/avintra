@@ -1,8 +1,8 @@
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
-import { SocialButtons } from "@/components/ui/SocialButtons";
+//import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
+//import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
 import { CreateAccountForm } from "./CreateAccountForm";
 import { GoToLogin } from "./GoToLogin";
 
@@ -15,14 +15,14 @@ export const CreateAccount = () => {
     <ContentContainer className="fadeInRTL">
       <ContentHeader
         biggerHeading="Create account"
-        smallerHeading="Select method to sign up:"
+        smallerHeading="Enter your details to get started"
       />
 
       {/* Social sign up options */}
-      <SocialButtons />
+      {/* <SocialButtons /> */}
 
       {/* Separator */}
-      <SeparatorWithText overlayText="or" />
+      {/* <SeparatorWithText overlayText="or" /> */}
 
       {/* Create account form */}
       <CreateAccountForm />
