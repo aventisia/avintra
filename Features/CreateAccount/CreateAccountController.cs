@@ -2,18 +2,12 @@ namespace AccountsAPIs.Controllers;
 
 [Route("auth")]
 [ApiController]
-public class CreateAccountController : BaseApiController
+public class CreateAccountController(
+    ICreateAccountService createAccountService,
+    IAuthService authService) : BaseApiController
 {
-    private readonly ICreateAccountService _createAccountService;
-    private readonly IAuthService _authService;
-
-    public CreateAccountController(
-        ICreateAccountService createAccountService,
-        IAuthService authService)
-    {
-        _createAccountService = createAccountService;
-        _authService = authService;
-    }
+    private readonly ICreateAccountService _createAccountService = createAccountService;
+    private readonly IAuthService _authService = authService;
 
     // Creates a new account for an individual user (IU) or Aventisia employee.
     [HttpPost("create-account")]

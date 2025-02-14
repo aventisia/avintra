@@ -3,14 +3,9 @@ namespace AccountsAPIs.Controllers;
 [Route("role")]
 [ApiController]
 [Authorize]
-public class AccountRoleController : BaseApiController
+public class AccountRoleController(IAccountRoleService accountRoleService) : BaseApiController
 {
-    private readonly IAccountRoleService _accountRoleService;
-
-    public AccountRoleController(IAccountRoleService accountRoleService)
-    {
-        _accountRoleService = accountRoleService;
-    }
+    private readonly IAccountRoleService _accountRoleService = accountRoleService;
 
     // Gets a list of roles
     [HttpGet]

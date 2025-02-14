@@ -1,9 +1,5 @@
 namespace AccountsAPIs.Repos;
 
-public class ActiveSessionRepo : RepositoryBase<ActiveSession, AccountsDbContext>, IActiveSessionRepo
+public class ActiveSessionRepo(AccountsDbContext accountsDbContext) : RepositoryBase<ActiveSession, AccountsDbContext>(accountsDbContext), IActiveSessionRepo
 {
-    public ActiveSessionRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
-    {
-    
-    }
 }

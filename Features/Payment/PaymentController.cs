@@ -3,17 +3,12 @@ namespace AccountsAPIs.Controllers;
 [Route("payment")]
 [ApiController]
 [Authorize]
-public class PaymentController : BaseApiController
+public class PaymentController(IPaymentService paymentService) : BaseApiController
 {
-  private readonly IPaymentService _PaymentService;
+  private readonly IPaymentService _PaymentService = paymentService;
 
-  public PaymentController(IPaymentService paymentService)
-  {
-    _PaymentService = paymentService;
-  }
-
-  //Retrive a specific payment by ID.
-  [HttpGet("{id}")]
+    //Retrive a specific payment by ID.
+    [HttpGet("{id}")]
   public async Task<ActionResult<ServiceResponse<PaymentDto>>> GetPayment(Guid id)
   {
     return ResultHelper(await _PaymentService.GetPaymentAsync(id));

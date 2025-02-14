@@ -1,49 +1,30 @@
 namespace AccountsAPIs.Services;
 
-public class InvoiceService : IInvoiceService
+public class InvoiceService(
+    UserManager<AccountUser> userManager,
+    SignInManager<AccountUser> signInManager,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService,
+    IAuthService authService,
+    JwtConfig jwtConfig,
+    IdentityConfig identityConfig,
+    IEmailService emailService) : IInvoiceService
 {
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly SignInManager<AccountUser> _signInManager;
-    private readonly HttpContext _httpContext;
-    private readonly ILogger<AuthService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthService _authService;
-    private readonly IAuthHelperService _authHelperService;
-    private readonly IEmailService _emailService;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
-    private readonly string _userName;
-    private readonly Guid _sessionId;
-    private readonly Guid _userId;
-
-    public InvoiceService(
-        UserManager<AccountUser> userManager,
-        SignInManager<AccountUser> signInManager,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<AuthService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService,
-        IAuthService authService,
-        JwtConfig jwtConfig,
-        IdentityConfig identityConfig,
-        IEmailService emailService)
-    {
-        // Set _userName, _sessionId & _userId
-        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-        _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _authService = authService;
-        _authHelperService = authHelperService;
-        _jwtConfig = jwtConfig;
-        _identityConfig = identityConfig;
-        _emailService = emailService;
-    }
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly SignInManager<AccountUser> _signInManager = signInManager;
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthService _authService = authService;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
+    private readonly IEmailService _emailService = emailService;
+    private readonly IdentityConfig _identityConfig = identityConfig;
+    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+    private readonly Guid _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     // Retrive all Invoices list.
     public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetAllInvoiceAsync()

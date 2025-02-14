@@ -19,4 +19,5 @@ public partial class AccountsDbContext
     public DbSet<Payment> Payments { get; set; }
     public DbSet<BillingAccount> BillingAccounts { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<Address> Addresses { get; set; }
 }

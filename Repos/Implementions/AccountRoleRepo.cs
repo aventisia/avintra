@@ -1,12 +1,6 @@
 namespace AccountsAPIs.Repos;
 
-public class AccountRoleRepo : RepositoryBase<AccountRole, AccountsDbContext>, IAccountRoleRepo
+public class AccountRoleRepo(AccountsDbContext accountsDbContext) : RepositoryBase<AccountRole, AccountsDbContext>(accountsDbContext), IAccountRoleRepo
 {
-    private readonly AccountsDbContext _accountsDbContext;
-    
-    public AccountRoleRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
-    {
-        _accountsDbContext = accountsDbContext;
-    }
-
+    private readonly AccountsDbContext _accountsDbContext = accountsDbContext;
 }

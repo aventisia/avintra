@@ -1,13 +1,9 @@
 namespace AccountsAPIs.Services;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(
+    AccountsDbContext accountsDbContext) : IUnitOfWork
 {
-    private readonly AccountsDbContext _accountsDbContext;
-    public UnitOfWork(
-        AccountsDbContext accountsDbContext)
-    {
-        _accountsDbContext = accountsDbContext;
-    }
+    private readonly AccountsDbContext _accountsDbContext = accountsDbContext;
 
     public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext);
     public ITenantRepo TenantRepo => new TenantRepo(_accountsDbContext);
@@ -25,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     public IPlanRepo planRepo => new PlanRepo(_accountsDbContext);
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingAccountRepo BillingAccountRepo => new BillingAccountRepo(_accountsDbContext);
+    public IAddressRepo AddressRepo => new AddressRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false) => checkHasChanges && (!_accountsDbContext.ChangeTracker.HasChanges() || await _accountsDbContext.SaveChangesAsync() > 0) || await _accountsDbContext.SaveChangesAsync() > 0;
 

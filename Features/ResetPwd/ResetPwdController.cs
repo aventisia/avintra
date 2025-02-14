@@ -3,14 +3,9 @@ namespace AccountsAPIs.Controllers;
 [Route("auth")]
 [ApiController]
 [Authorize]
-public class ResetPwdController : BaseApiController
+public class ResetPwdController(IResetPwdService resetPwdService) : BaseApiController
 {
-    private readonly IResetPwdService _resetPwdService;
-
-    public ResetPwdController(IResetPwdService resetPwdService)
-    {
-        _resetPwdService = resetPwdService;
-    }
+    private readonly IResetPwdService _resetPwdService = resetPwdService;
 
     // Resets the password if the user has forgotten it or is setting it for the first time.
 

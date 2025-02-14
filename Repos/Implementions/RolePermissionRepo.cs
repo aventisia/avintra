@@ -1,8 +1,5 @@
 namespace AccountsAPIs.Repos;
 
-public class RolePermissionRepo : RepositoryBase<RolePermission, AccountsDbContext>, IRolePermissionRepo
+public class RolePermissionRepo(AccountsDbContext accountsDbContext) : RepositoryBase<RolePermission, AccountsDbContext>(accountsDbContext), IRolePermissionRepo
 {
-    public RolePermissionRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
-    {
-    }
 }

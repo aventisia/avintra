@@ -1,22 +1,13 @@
 namespace AccountsAPIs.Services;
 
-public class BillingAccountService : IBillingAccountService
+public class BillingAccountService(
+    ILogger<BillingAccountService> logger,
+    IUnitOfWork unitOfWork,
+    IHttpContextAccessor httpContextAccessor) : IBillingAccountService
 {
-    private readonly ILogger<BillingAccountService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly Guid _userId;
-
-    public BillingAccountService(
-        ILogger<BillingAccountService> logger,
-        IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
-    {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-    }
+    private readonly ILogger<BillingAccountService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     //Get a list of billing accounts
     public async Task<ServiceResponse<IEnumerable<BillingAccountDto>>> GetBillingAccountListAsync()

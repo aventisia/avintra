@@ -3,14 +3,9 @@ namespace AccountsAPIs.Controllers;
 [Route("tenant")]
 [ApiController]
 [Authorize(Roles = "SA,GA")]
-public class TenantsTableController : BaseApiController
+public class TenantsTableController(ITenantsTableService tenantsTableService) : BaseApiController
 {
-    private readonly ITenantsTableService _tenantsTableService;
-
-    public TenantsTableController(ITenantsTableService tenantsTableService)
-    {
-        _tenantsTableService = tenantsTableService;
-    }
+    private readonly ITenantsTableService _tenantsTableService = tenantsTableService;
 
     // Retrieves all tenants.
     [HttpGet]

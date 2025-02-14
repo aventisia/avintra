@@ -1,28 +1,17 @@
 namespace AccountsAPIs.Services;
 
-public class TenantsTableService : ITenantsTableService
+public class TenantsTableService(
+    ILogger<TenantsTableService> logger,
+    IUnitOfWork unitOfWork,
+    TenantDefaultConfig tenantDefaultConfig,
+    IHttpContextAccessor httpContextAccessor,
+    ICurrentTenantService currentTenantService) : ITenantsTableService
 {
-    private readonly ILogger<TenantsTableService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly TenantDefaultConfig _tenantDefaultConfig;
-    private readonly ICurrentTenantService _currentTenantService;
-    private readonly Guid _userId;
-
-    public TenantsTableService(
-        ILogger<TenantsTableService> logger,
-        IUnitOfWork unitOfWork,
-        TenantDefaultConfig tenantDefaultConfig,
-        IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
-    {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _tenantDefaultConfig = tenantDefaultConfig;
-        _currentTenantService = currentTenantService;
-    }
+    private readonly ILogger<TenantsTableService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly TenantDefaultConfig _tenantDefaultConfig = tenantDefaultConfig;
+    private readonly ICurrentTenantService _currentTenantService = currentTenantService;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     // Retrieves all tenants.
     public async Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync()

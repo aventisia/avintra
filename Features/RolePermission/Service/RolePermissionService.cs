@@ -1,22 +1,13 @@
 namespace AccountsAPIs.Services;
 
-public class RolePermissionService : IRolePermissionService
+public class RolePermissionService(
+    ILogger<RolePermissionService> logger,
+    IUnitOfWork unitOfWork,
+    IHttpContextAccessor httpContextAccessor) : IRolePermissionService
 {
-    private readonly ILogger<RolePermissionService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly Guid _userId;
-
-    public RolePermissionService(
-        ILogger<RolePermissionService> logger,
-        IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
-    {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-    }
+    private readonly ILogger<RolePermissionService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     //Get list of role permissions
     public async Task<ServiceResponse<IEnumerable<RolePermissionDto>>> GetRolePermissionListAsync()

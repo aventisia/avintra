@@ -1,26 +1,17 @@
 namespace AccountsAPIs.Services;
 
-public class VerificationCodeService : IVerificationCodeService
+public class VerificationCodeService(
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<VerificationCodeService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService,
+    JwtConfig jwtConfig) : IVerificationCodeService
 {
-    private readonly HttpContext _httpContext;
-    private readonly JwtConfig _jwtConfig;
-    private readonly ILogger<VerificationCodeService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthHelperService _authHelperService;
-
-    public VerificationCodeService(
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<VerificationCodeService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService,
-        JwtConfig jwtConfig)
-    {
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _jwtConfig = jwtConfig;
-        _authHelperService = authHelperService;
-    }
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly ILogger<VerificationCodeService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
 
     // Checks the verification code for the provided username and request type.
     public async Task<ServiceResponse<bool>> CheckVerificationCodeAsync(CheckVerificationCodeDto checkVerificationCodeDto)

@@ -1,9 +1,5 @@
 namespace AccountsAPIs.Repos;
 
-public class TenantRepo : RepositoryBase<Tenant, AccountsDbContext>, ITenantRepo
+public class TenantRepo(AccountsDbContext accountsDbContext) : RepositoryBase<Tenant, AccountsDbContext>(accountsDbContext), ITenantRepo
 {
-    public TenantRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
-    {
-        
-    }
 }

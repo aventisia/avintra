@@ -1,27 +1,16 @@
 namespace AccountsAPIs.Services;
 
-public class PlanService : IPlanService
+public class PlanService(ILogger<AuthService> logger,
+  IUnitOfWork unitOfWork,
+  IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
+  JwtConfig jwtConfig) : IPlanService
 {
-    private readonly ILogger<AuthService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly Guid _userId;
-    private readonly string _userName;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
-
-    public PlanService(ILogger<AuthService> logger,
-      IUnitOfWork unitOfWork,
-      IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
-      JwtConfig jwtConfig)
-    {
-        //Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _identityConfig = identityConfig;
-        _jwtConfig = jwtConfig;
-    }
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+    private readonly IdentityConfig _identityConfig = identityConfig;
+    private readonly JwtConfig _jwtConfig = jwtConfig;
 
     // Retrive plan list
     public async Task<ServiceResponse<IEnumerable<PlanListDto>>> GetPlansAsync()

@@ -1,23 +1,13 @@
 namespace AccountsAPIs.Services;
 
-public class SubscriptionService : ISubscriptionService
+public class SubscriptionService(
+    ILogger<SubscriptionService> logger,
+    IUnitOfWork unitOfWork,
+    IHttpContextAccessor httpContextAccessor) : ISubscriptionService
 {
-    private readonly ILogger<SubscriptionService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly Guid _userId;
-
-    public SubscriptionService(
-        ILogger<SubscriptionService> logger,
-        IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
-    {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-    }
-
+    private readonly ILogger<SubscriptionService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     public async Task<ServiceResponse<IEnumerable<SubscriptionDto>>> GetSubscriptionListAsync(Guid planId, Guid userId)
     {

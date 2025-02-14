@@ -33,18 +33,24 @@ public class UserProfileDto
     /// Gets or sets the phone number of the user. Max-20.
     /// </summary>
     [StringLength(20)]
-    public required string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the phone number type of the user. either Home or Office
     /// </summary>
-    public required PhoneNumberType PhoneNumberType { get; set; }
+    public PhoneNumberType? PhoneNumberType { get; set; }
 
     /// <summary>
-    /// Gets or sets the address of the user. Max-50.
+    /// Gets or sets the address of the user. Max-100.
     /// </summary>
-    [StringLength(300)]
-    public required string Address { get; set; }
+    [StringLength(100)]
+    public required string? AddressLine1 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address of the user. Max-100.
+    /// </summary>
+    [StringLength(100)]
+    public string? AddressLine2 { get; set; }
 
     /// <summary>
     /// Gets or sets the gender of the user profile

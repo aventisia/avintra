@@ -1,9 +1,5 @@
 namespace AccountsAPIs.Repos;
 
-public class VerificationCodeRepo : RepositoryBase<VerificationCode, AccountsDbContext>, IVerificationCodeRepo
+public class VerificationCodeRepo(AccountsDbContext accountsDbContext) : RepositoryBase<VerificationCode, AccountsDbContext>(accountsDbContext), IVerificationCodeRepo
 {
-    public VerificationCodeRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
-    {
-    
-    }
 }

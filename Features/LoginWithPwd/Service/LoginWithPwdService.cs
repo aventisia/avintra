@@ -1,29 +1,19 @@
 namespace AccountsAPIs.Services;
 
-public class LoginWithPwdService : ILoginWithPwdService
+public class LoginWithPwdService(
+    SignInManager<AccountUser> signInManager,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<LoginWithPwdService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService,
+    UserManager<AccountUser> userManager) : ILoginWithPwdService
 {
-    private readonly SignInManager<AccountUser> _signInManager;
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly ILogger<LoginWithPwdService> _logger;
-    private readonly HttpContext _httpContext;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthHelperService _authHelperService;
-
-    public LoginWithPwdService(
-        SignInManager<AccountUser> signInManager,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<LoginWithPwdService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService,
-        UserManager<AccountUser> userManager)
-    {
-        _signInManager = signInManager;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _authHelperService = authHelperService;
-        _userManager = userManager;
-    }
+    private readonly SignInManager<AccountUser> _signInManager = signInManager;
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly ILogger<LoginWithPwdService> _logger = logger;
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
 
     // Authenticates an individual or tenant's user using the provided username and password.
     public async Task<ServiceResponse<AccountUser>> AuthenticateUserAsync(PwdLoginDto pwdLoginDto)

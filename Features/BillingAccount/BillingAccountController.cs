@@ -3,14 +3,9 @@ namespace AccountsAPIs.Controllers;
 [Route("billing-account")]
 [ApiController]
 [Authorize]
-public class BillingAccountController : BaseApiController
+public class BillingAccountController(IBillingAccountService billingAccountService) : BaseApiController
 {
-    private readonly IBillingAccountService _billingAccountService;
-
-    public BillingAccountController(IBillingAccountService billingAccountService)
-    {
-        _billingAccountService = billingAccountService;
-    }
+    private readonly IBillingAccountService _billingAccountService = billingAccountService;
 
     // Gets a list of billing accounts
     [HttpGet]

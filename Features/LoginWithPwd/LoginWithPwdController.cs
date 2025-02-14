@@ -2,17 +2,11 @@ namespace AccountsAPIs.Controllers;
 
 [Route("auth")]
 [ApiController]
-public class LoginWithPwdController : BaseApiController
+public class LoginWithPwdController(
+    ILoginWithPwdService loginWithPwdService, IAuthService authService) : BaseApiController
 {
-    private readonly ILoginWithPwdService _loginWithPwdService;
-    private readonly IAuthService _authService;
-
-    public LoginWithPwdController(
-        ILoginWithPwdService loginWithPwdService, IAuthService authService)
-    {
-        _loginWithPwdService = loginWithPwdService;
-        _authService = authService;
-    }
+    private readonly ILoginWithPwdService _loginWithPwdService = loginWithPwdService;
+    private readonly IAuthService _authService = authService;
 
     // Authenticates an individual or tenant's user using the provided username and password.
     [HttpPost("login")]

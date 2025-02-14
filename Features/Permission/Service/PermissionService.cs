@@ -1,27 +1,17 @@
 namespace AccountsAPIs.Services;
 
-public class PermissionService : IPermissionService
+public class PermissionService(
+    ILogger<PermissionService> logger,
+    IUnitOfWork unitOfWork,
+    IHttpContextAccessor httpContextAccessor,
+    UserManager<AccountUser> userManager,
+    RoleManager<AccountRole> roleManager) : IPermissionService
 {
-    private readonly ILogger<PermissionService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly Guid _userId;
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly RoleManager<AccountRole> _roleManager;
-
-    public PermissionService(
-        ILogger<PermissionService> logger,
-        IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        UserManager<AccountUser> userManager,
-        RoleManager<AccountRole> roleManager)
-    {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-    }
+    private readonly ILogger<PermissionService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly RoleManager<AccountRole> _roleManager = roleManager;
 
     //Get list of permissions
     public async Task<ServiceResponse<IEnumerable<PermissionDto>>> GetPermissionListAsync()

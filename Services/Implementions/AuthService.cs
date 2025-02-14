@@ -1,38 +1,25 @@
 namespace AccountsAPIs.Services;
 
-public class AuthService : IAuthService
+public class AuthService(
+    UserManager<AccountUser> userManager,
+    IEmailService emailService,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService,
+    IdentityConfig identityConfig,
+    JwtConfig jwtConfig,
+    VerificationCodeConfig verificationCodeConfig) : IAuthService
 {
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly IEmailService _emailService;
-    private readonly HttpContext _httpContext;
-    private readonly VerificationCodeConfig _verificationCodeConfig;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
-    private readonly ILogger<AuthService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthHelperService _authHelperService;
-
-    public AuthService(
-        UserManager<AccountUser> userManager,
-        IEmailService emailService,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<AuthService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService,
-        IdentityConfig identityConfig,
-        JwtConfig jwtConfig,
-        VerificationCodeConfig verificationCodeConfig)
-    {
-        _userManager = userManager;
-        _emailService = emailService;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _authHelperService = authHelperService;
-        _identityConfig = identityConfig;
-        _jwtConfig = jwtConfig;
-        _verificationCodeConfig = verificationCodeConfig;
-    }
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly IEmailService _emailService = emailService;
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+    private readonly VerificationCodeConfig _verificationCodeConfig = verificationCodeConfig;
+    private readonly IdentityConfig _identityConfig = identityConfig;
+    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
 
     // Checks the availability of a email.
     public async Task<ServiceResponse<TrueFalseResultDto>> IsEmailAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)

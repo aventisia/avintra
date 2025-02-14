@@ -108,6 +108,7 @@ public partial class AccountsDbContext
         builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderType>());
         builder.Entity<AccountUser>().Property(e => e.PhoneNumberType).HasConversion(new EnumToStringConverter<PhoneNumberType>());
+        builder.Entity<Address>().Property(e => e.AddressType).HasConversion(new EnumToStringConverter<AddressType>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         builder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);

@@ -2,14 +2,9 @@ namespace AccountsAPIs.Controllers;
 
 [Route("auth")]
 [ApiController]
-public class VerificationCodeController : BaseApiController
+public class VerificationCodeController(IVerificationCodeService verificationCodeService) : BaseApiController
 {
-    private readonly IVerificationCodeService _verificationCodeService;
-
-    public VerificationCodeController(IVerificationCodeService verificationCodeService)
-    {
-        _verificationCodeService = verificationCodeService;
-    }
+    private readonly IVerificationCodeService _verificationCodeService = verificationCodeService;
 
     // Note: create-code is part of common AuthService and AuthController
 

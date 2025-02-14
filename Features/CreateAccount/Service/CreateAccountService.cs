@@ -1,26 +1,17 @@
 namespace AccountsAPIs.Services;
 
-public class CreateAccountService : ICreateAccountService
+public class CreateAccountService(
+    UserManager<AccountUser> userManager,
+    IEmailService emailService,
+    ILogger<CreateAccountService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService) : ICreateAccountService
 {
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly IEmailService _emailService;
-    private readonly ILogger<CreateAccountService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthHelperService _authHelperService;
-
-    public CreateAccountService(
-        UserManager<AccountUser> userManager,
-        IEmailService emailService,
-        ILogger<CreateAccountService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService)
-    {
-        _userManager = userManager;
-        _emailService = emailService;
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _authHelperService = authHelperService;
-    }
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly IEmailService _emailService = emailService;
+    private readonly ILogger<CreateAccountService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
 
     // Creates a new account for an individual user (IU) or Aventisia employee.
     public async Task<ServiceResponse<AccountUser>> CreateAccountAsync(CreateAccountDto createAccountDto)

@@ -1,18 +1,12 @@
 namespace AccountsAPIs.Controllers;
 
 [Route("me"), ApiController, Authorize]
-public class MyAccountController : BaseApiController
+public class MyAccountController(
+    IAuthService authService,
+    IMyAccountService myAccountService) : BaseApiController
 {
-    private readonly IAuthService _authService;
-    private readonly IMyAccountService _myAccountService;
-
-    public MyAccountController(
-        IAuthService authService,
-        IMyAccountService myAccountService)
-    {
-        _authService = authService;
-        _myAccountService = myAccountService;
-    }
+    private readonly IAuthService _authService = authService;
+    private readonly IMyAccountService _myAccountService = myAccountService;
 
     // Gets user's current session to view latest user's info
     [HttpGet("my-session")]
@@ -107,9 +101,9 @@ public class MyAccountController : BaseApiController
 
     // acccounts-api/me/update-profile/
     [HttpPut("update-profile")]
-    public async Task<ActionResult<ServiceResponse<UserProfileDto>>> UpdateUserProfile(UserProfileDto updateUserProfileDto)
+    public async Task<ActionResult<ServiceResponse<UserProfileDto>>> UpdateUserProfile(UserProfileDto userProfileDto)
     {
-        return ResultHelper(await _myAccountService.UpdateUserProfileAsync(updateUserProfileDto));
+        return ResultHelper(await _myAccountService.UpdateUserProfileAsync(userProfileDto));
     }
 
     // acccounts-api/me/update-profile/

@@ -69,9 +69,9 @@ public interface IMyAccountService
     /// <summary>
     /// Update user's profile details
     /// </summary>
-    /// <param name="updateUserProfileDto">the profile update dto</param>
+    /// <param name="userProfileDto">the profile update dto</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
-    Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto updateUserProfileDto);
+    Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto userProfileDto);
 
     /// <summary>
     /// get user profile information

@@ -2,57 +2,36 @@ using System.Runtime.CompilerServices;
 
 namespace AccountsAPIs.Services;
 
-public class MyAccountService : IMyAccountService
+public class MyAccountService(
+    UserManager<AccountUser> userManager,
+    SignInManager<AccountUser> signInManager,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthService> logger,
+    IUnitOfWork unitOfWork,
+    IAuthHelperService authHelperService,
+    IAuthService authService,
+    JwtConfig jwtConfig,
+    IdentityConfig identityConfig,
+    IEmailService emailService) : IMyAccountService
 {
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly SignInManager<AccountUser> _signInManager;
-    private readonly HttpContext _httpContext;
-    private readonly ILogger<AuthService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthService _authService;
-    private readonly IAuthHelperService _authHelperService;
-    private readonly IEmailService _emailService;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
-    private readonly string _jwt;
-    private readonly string _userName;
-    private readonly Guid _sessionId;
-    private readonly Guid _userId;
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly SignInManager<AccountUser> _signInManager = signInManager;
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IAuthService _authService = authService;
+    private readonly IAuthHelperService _authHelperService = authHelperService;
+    private readonly IEmailService _emailService = emailService;
+    private readonly IdentityConfig _identityConfig = identityConfig;
+    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly string _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
+    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+    private readonly Guid _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     const string invalidcredentials = "Invalid credentials";
     const string userDoesNotExists = "User does not exists";
     const string userNotFoundTemplate = "{methodName}: User not found for username {_userName}";
-
-
-    public MyAccountService(
-        UserManager<AccountUser> userManager,
-        SignInManager<AccountUser> signInManager,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<AuthService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService,
-        IAuthService authService,
-        JwtConfig jwtConfig,
-        IdentityConfig identityConfig,
-        IEmailService emailService)
-    {
-        // Set _userName, _sessionId & _userId
-        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
-        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-        _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, message: "HttpContext cannot be null");
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _authService = authService;
-        _authHelperService = authHelperService;
-        _jwtConfig = jwtConfig;
-        _identityConfig = identityConfig;
-        _emailService = emailService;
-    }
 
     // Gets user's current session without JWT to view latest user's info
     public async Task<ServiceResponse<UserSessionDto>> GetMySessionAsync()
@@ -949,7 +928,7 @@ public class MyAccountService : IMyAccountService
     }
 
     //Update user's profile details updateUserProfileDto
-    public async Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto updateUserProfileDto)
+    public async Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto userProfileDto)
     {
         //Initialize ServiceResponse with Failed response
         var serviceResponse = new ServiceResponse<UserProfileDto>()
@@ -974,22 +953,60 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            user.FirstName = updateUserProfileDto.FirstName;
-            user.LastName = updateUserProfileDto.LastName;
-            user.DateOfBirth = updateUserProfileDto.DateOfBirth;
-            user.PhoneNumber = updateUserProfileDto.PhoneNumber;
-            user.PhoneNumberType = updateUserProfileDto.PhoneNumberType;
-            user.Address = updateUserProfileDto.Address;
-            user.Gender = updateUserProfileDto.Gender;
-            user.Country = updateUserProfileDto.Country;
-            user.City = updateUserProfileDto.City;
-            user.StateOrProvince = updateUserProfileDto.StateOrProvince;
-            user.ZipOrPostalCode = updateUserProfileDto.ZipOrPostalCode;
+            user.FirstName = userProfileDto.FirstName;
+            user.LastName = userProfileDto.LastName;
+            user.DateOfBirth = userProfileDto.DateOfBirth;
+            user.PhoneNumber = userProfileDto.PhoneNumber;
+            user.PhoneNumberType = userProfileDto.PhoneNumberType;
+            user.Gender = userProfileDto.Gender;
+
+            //getting the personal address
+            var address = await _unitOfWork.AddressRepo
+            .GetByConditionAsync(a => a.AddressRefId == user.Id)
+            .FirstOrDefaultAsync();
+
+            if (address is null)
+            {
+                address = new()
+                {
+                    AddressRefId = user.Id,
+                    AddressType = AddressType.Personal,
+                    AddressLine1 = userProfileDto.AddressLine1,
+                    AddressLine2 = userProfileDto.AddressLine2,
+                    Country = userProfileDto.Country,
+                    StateOrProvince = userProfileDto.StateOrProvince,
+                    City = userProfileDto.City,
+                    ZipOrPostalCode = userProfileDto.ZipOrPostalCode,
+                    CreatedByUser = user,
+                    CreatedByUserId = user.Id,
+                    IsDisabled = false,
+                    Id = Guid.NewGuid(),
+                    LastModifiedByUser = user,
+                    LastModifiedByUserId = user.Id,
+                };
+                await _unitOfWork.AddressRepo.InsertAsync(address);
+            }
+            else
+            {
+                address.AddressLine1 = userProfileDto.AddressLine1;
+                address.AddressLine2 = userProfileDto.AddressLine2;
+                address.Country = userProfileDto.Country;
+                address.StateOrProvince = userProfileDto.StateOrProvince;
+                address.City = userProfileDto.City;
+                address.ZipOrPostalCode = userProfileDto.ZipOrPostalCode;
+
+                address.LastModifiedByUser = user;
+                address.LastModifiedByUserId = user.Id;
+
+                _unitOfWork.AddressRepo.Update(address);
+            }
+
+            var addressSaveResult = await _unitOfWork.SaveAsync();
 
             var updateUserResult = await _userManager.UpdateAsync(user);
 
             // User Update-Job failed
-            if (!updateUserResult.Succeeded)
+            if (!updateUserResult.Succeeded || !addressSaveResult)
             {
                 _logger.LogInformation("Failed while updating user's profile");
                 serviceResponse.Message = "User's profile update failed";
@@ -998,7 +1015,7 @@ public class MyAccountService : IMyAccountService
 
             // Task successful
             _logger.LogInformation("{MethodName}: profile has been updated for account {_UserName}", methodName, _userName);
-            serviceResponse.Data = updateUserProfileDto;
+            serviceResponse.Data = userProfileDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your profile has been updated successfully";
         }
@@ -1036,6 +1053,11 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
+            //getting the personal address
+            var address = await _unitOfWork.AddressRepo
+            .GetByConditionAsync(a => a.AddressRefId == user.Id)
+            .FirstOrDefaultAsync();
+
             var userProfileDetails = new UserProfileDto
             {
                 AvatarSrc = user.AvatarSrc,
@@ -1044,12 +1066,13 @@ public class MyAccountService : IMyAccountService
                 DateOfBirth = user.DateOfBirth,
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberType = user.PhoneNumberType,
-                Address = user.Address,
                 Gender = user.Gender,
-                Country = user.Country,
-                City = user.City,
-                StateOrProvince = user.StateOrProvince,
-                ZipOrPostalCode = user.ZipOrPostalCode,
+                AddressLine1 = address?.AddressLine1,
+                AddressLine2 = address?.AddressLine2,
+                Country = address?.Country,
+                City = address?.City,
+                StateOrProvince = address?.StateOrProvince,
+                ZipOrPostalCode = address?.ZipOrPostalCode,
             };
 
             var updateUserResult = await _userManager.UpdateAsync(user);
@@ -1075,7 +1098,6 @@ public class MyAccountService : IMyAccountService
         }
         return serviceResponse;
     }
-
 
 }
 

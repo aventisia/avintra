@@ -5,24 +5,35 @@ public class GetUserTenantInfoDto
     /// <summary>
     /// Gets or sets the is individual user or user of tenant
     /// </summary>
-    public required bool IsIndividual { get; set; }
+    public bool IsIndividual { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of the address like personal or tenant
+    /// </summary>
+    public AddressType? AddressType { get; set; }
 
     /// <summary>
     /// Gets or sets the tenants name Max-100
     /// </summary>
     [StringLength(100)]
-    public required string TenantName { get; set; }
+    public string? TenantName { get; set; }
 
     /// <summary>
     /// Gets or sets the tenants user's role
     /// </summary>
-    public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
+    public string? Designation { get; set; }
 
     /// <summary>
     /// Gets or sets the address for the 
     /// </summary>
     [StringLength(300)]
-    public string? Address { get; set; }
+    public string? AddressLine1 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address for the 
+    /// </summary>
+    [StringLength(300)]
+    public string? AddressLine2 { get; set; }
 
     /// <summary>
     /// Gets or sets the country of the user's tenants. Max-100.

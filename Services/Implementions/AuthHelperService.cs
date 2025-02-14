@@ -1,35 +1,23 @@
 namespace AccountsAPIs.Services;
 
-public class AuthHelperService : IAuthHelperService
+public class AuthHelperService(
+    UserManager<AccountUser> userManager,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthHelperService> logger,
+    IUnitOfWork unitOfWork,
+    IdentityConfig identityConfig,
+    ExternalAPIsConfig externalAPIsConfig,
+    JwtConfig jwtConfig,
+    CookiePolicyConfig cookiePolicyConfig) : IAuthHelperService
 {
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly HttpContext _httpContext;
-    private readonly IdentityConfig _identityConfig;
-    private readonly ExternalAPIsConfig _externalAPIsConfig;
-    private readonly JwtConfig _jwtConfig;
-    private readonly CookiePolicyConfig _cookiePolicyConfig;
-    private readonly ILogger<AuthHelperService> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AuthHelperService(
-        UserManager<AccountUser> userManager,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<AuthHelperService> logger,
-        IUnitOfWork unitOfWork,
-        IdentityConfig identityConfig,
-        ExternalAPIsConfig externalAPIsConfig,
-        JwtConfig jwtConfig,
-        CookiePolicyConfig cookiePolicyConfig)
-    {
-        _userManager = userManager;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _identityConfig = identityConfig;
-        _externalAPIsConfig = externalAPIsConfig;
-        _jwtConfig = jwtConfig;
-        _cookiePolicyConfig = cookiePolicyConfig;
-    }
+    private readonly UserManager<AccountUser> _userManager = userManager;
+    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+    private readonly IdentityConfig _identityConfig = identityConfig;
+    private readonly ExternalAPIsConfig _externalAPIsConfig = externalAPIsConfig;
+    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly CookiePolicyConfig _cookiePolicyConfig = cookiePolicyConfig;
+    private readonly ILogger<AuthHelperService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     // Validates the null, disabled, and expired status of a tenant.
     public bool IsUserTenantValid(Tenant tenant, string userName)
