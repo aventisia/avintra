@@ -42,7 +42,7 @@ public class DataFieldService : IDataFieldService
             // Try to get data fields
             var fields = await _unitOfWork.DataFieldRepo
                         .GetByConditionAsync(w => w.MLModelId == mlModelId).Include(c => c.CreatedByUser)
-                        .OrderByDescending(o => o.CreatedOn).ToListAsync();
+                        .OrderBy(o => o.CreatedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = fields.Adapt<IEnumerable<DataFieldDto>>();
