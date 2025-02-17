@@ -6,21 +6,7 @@ public class FlowExecutionLog : BaseEntity, IMustHaveTenant
     /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
     /// </summary>
     public Guid TenantId { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the action name for the flow execution log
-    /// </summary>
-    public required string ActionName { get; set; }
 
-    /// <summary>
-    /// Gets or sets the input data for the flow execution log
-    /// </summary>
-    public required string InputData { get; set; }
-
-    /// <summary>
-    /// Gets or sets the output data for the flow execution log
-    /// </summary>
-    public required string OutputData { get; set; }
 
     /// <summary>
     /// Gets or sets the duration for the flow execution log
@@ -48,4 +34,9 @@ public class FlowExecutionLog : BaseEntity, IMustHaveTenant
     [ForeignKey("FlowId")]
     public virtual Flow? Flow { get; set; }
 
+
+    /// <summary>
+    /// Gets or sets the list of Action Execution Logs to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<ActionExecutionLog>? ActionExecutionLogs { get; set; }
 }
