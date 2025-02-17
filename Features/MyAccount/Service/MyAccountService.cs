@@ -545,11 +545,23 @@ public class MyAccountService : IMyAccountService
             user.LastName = nameUpdateDto.LastName;
             var updateUserResult = await _userManager.UpdateAsync(user);
 
+            
+
             // User Update-Job failed
             if (!updateUserResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user");
                 serviceResponse.Message = "User's name update failed";
+                return serviceResponse;
+            }
+
+            //Update user in other databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt, false);
+            
+            if(!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's name update failed in other databases";
                 return serviceResponse;
             }
 
