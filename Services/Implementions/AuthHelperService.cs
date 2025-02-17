@@ -300,7 +300,7 @@ public class AuthHelperService : IAuthHelperService
         {
             _logger.LogInformation($"Failed to {crudType} user in ML Model Builder database for {user.UserName}");
             return false;    
-        }
+        } 
 
         // TODO: Till the time IntneralAPIs project is not ready, return true
         return true;
