@@ -32,7 +32,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IFlowExecutionLogRepo FlowExecutionLogRepo => new FlowExecutionLogRepo(_workspaceDbContext);
 
-    public IExecutionLogRepo ExecutionLogRepo => new ExecutionLogRepo(_workspaceDbContext);
+    public IActionExecutionLogRepo ActionExecutionLogRepo => new ActionExecutionLogRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

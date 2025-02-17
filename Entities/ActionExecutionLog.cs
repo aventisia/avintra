@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
-public class ExecutionLog : BaseEntity, IMustHaveTenant
+public class ActionExecutionLog : BaseEntity, IMustHaveTenant
 {
     /// <summary>
     /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
@@ -23,14 +23,13 @@ public class ExecutionLog : BaseEntity, IMustHaveTenant
     public required string OutputData { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the flow to which the execution log belongs.
+    /// Gets or sets the ID of the flow execution log to which the execution log belongs.
     /// </summary>
-    public required Guid FlowId { get; set; }
+    public required Guid FlowExecutionLogId { get; set; }
 
     /// <summary>
-    /// Gets or sets the Flow this Execution log is associated with.
+    /// Gets or sets the FlowExecutionLog this Execution log is associated with.
     /// </summary>
-    [ForeignKey("FlowId")]
-    public virtual Flow? Flow { get; set; }
-
+    [ForeignKey("FlowExecutionLogId")]
+    public virtual FlowExecutionLog? FlowExecutionLog { get; set; }
 }

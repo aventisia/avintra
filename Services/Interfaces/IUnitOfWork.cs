@@ -14,7 +14,7 @@ public interface IUnitOfWork
     IFlowVersionRepo FlowVersionRepo{ get; }
     ISubscriptionRepo SubscriptionRepo{ get; }
     IFlowExecutionLogRepo FlowExecutionLogRepo { get; }
-    IExecutionLogRepo ExecutionLogRepo { get; }
+    IActionExecutionLogRepo ActionExecutionLogRepo { get; }
 
     IFlowTemplateRepo flowTemplateRepo{ get; }
 
