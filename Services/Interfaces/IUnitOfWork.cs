@@ -19,4 +19,5 @@ public interface IUnitOfWork
     IMLModelRepo MLModelRepo { get; }
     IExtractedDataRepo ExtractedDataRepo { get; }
     IUploadedDocRepo UploadedDocRepo { get; }
+    IModelBuilderUserRepo ModelBuilderUserRepo { get; }
 }

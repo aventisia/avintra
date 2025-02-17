@@ -16,6 +16,8 @@ public class UnitOfWork : IUnitOfWork
     public IMLModelRepo MLModelRepo => new MLModelRepo(_mlModelBuilderDbContext);
     public IExtractedDataRepo ExtractedDataRepo => new ExtractedDataRepo(_mlModelBuilderDbContext);
     public IUploadedDocRepo UploadedDocRepo => new UploadedDocRepo(_mlModelBuilderDbContext);
+    public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
+
 
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
