@@ -14,4 +14,9 @@ public class ExternalAPIsConfig
     /// Gets or sets the internal user.
     /// </summary>
     public required string InternalUser { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model builder user.
+    /// </summary>
+    public required string ModelBuilderUser { get; set; }
 }
