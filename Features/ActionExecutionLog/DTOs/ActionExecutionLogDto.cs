@@ -26,19 +26,18 @@ public class ActionExecutionLogDto
     /// </summary>
     public required Guid FlowExecutionLogId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the the user who created the record.
-    /// </summary>
-    public string? CreatedBy { get; set; }
+    /// <summary>    
+    /// Gets or sets the the execution type who created the executed, such as user actions, automated scheduling, or external events
+    /// </remarks>
+    public ExecutionTypesEnum ExecutionType { get; set; }
 
     /// <summary>
-    /// Gets or sets the the username who created the record.
+    /// Gets or sets the the user who created the executed.
     /// </summary>
-    public string? CreatedByUsername { get; set; }
+    public string? ExecutedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the record was created.
+    /// Gets or sets the date and time when the record was executed.
     /// </summary>
-    public DateTimeOffset CreatedOn { get; set; }
-
+    public DateTimeOffset ExecutedOn { get; set; }
 }

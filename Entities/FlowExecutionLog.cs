@@ -54,7 +54,6 @@ public class FlowExecutionLog
     [ForeignKey("FlowId")]
     public virtual Flow? Flow { get; set; }
 
-
     /// <summary>
     /// Gets or sets the list of Action Execution Logs to manage the one-to-many relation.
     /// </summary>

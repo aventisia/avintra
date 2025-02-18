@@ -5,6 +5,7 @@ public class ActionExecutionLogService : IActionExecutionLogService
     private readonly ILogger<ActionExecutionLogService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly string? _username;
 
     public ActionExecutionLogService(
         ILogger<ActionExecutionLogService> logger,
@@ -13,6 +14,9 @@ public class ActionExecutionLogService : IActionExecutionLogService
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        
+        // Set username
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("username") ?? null;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -33,7 +37,7 @@ public class ActionExecutionLogService : IActionExecutionLogService
             //Try to get action execution logs
             var logs = await _unitOfWork.ActionExecutionLogRepo
             .GetByConditionAsync(v => v.FlowExecutionLogId == flowId)
-            .OrderBy(o => o.CreatedOn).ToListAsync();
+            .OrderBy(o => o.ExecutedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = logs.Adapt<IEnumerable<ActionExecutionLogDto>>();
@@ -63,8 +67,8 @@ public class ActionExecutionLogService : IActionExecutionLogService
         {
             // Default mapping
             var newLog = executionLogDto.Adapt<ActionExecutionLog>();
-            newLog.CreatedByUserId = _userId;
-            newLog.LastModifiedByUserId = _userId;
+            newLog.ExecutedBy = _username;
+            newLog.ExecutedOn = DateTimeOffset.UtcNow;
 
             //Insert an action execution log
             await _unitOfWork.ActionExecutionLogRepo.InsertAsync(newLog);
@@ -122,8 +126,6 @@ public class ActionExecutionLogService : IActionExecutionLogService
 
             //create a new action execution log
             _unitOfWork.ActionExecutionLogRepo.Update(newLog);
-            newLog.CreatedByUserId = _userId;
-            newLog.LastModifiedByUserId = _userId;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
