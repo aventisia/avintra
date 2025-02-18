@@ -7,7 +7,11 @@ meta {
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/flow-execution-log/create
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: ***REMOVED***
 }
 
 script:pre-request {
@@ -15,12 +19,10 @@ script:pre-request {
   
   req.setBody({
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    actionName: faker.system.commonFileName(),
-    inputData: faker.lorem.sentence(),
-    outputData: faker.lorem.sentence(),
-    Duration:200,
-    Status:"Succeeded",
-    ErrorMessage:"No error"
+    duration:200,
+    status:"Succeeded",
+    errorMessage:"No error",
+    executionType: "Scheduler"
   })
 }
 

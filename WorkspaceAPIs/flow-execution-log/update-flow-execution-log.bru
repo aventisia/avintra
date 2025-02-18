@@ -16,12 +16,10 @@ script:pre-request {
   req.setBody({
     id: bru.getGlobalEnvVar("EXECUTION_LOG_ID"),
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    actionName: faker.system.commonFileName(),
-    inputData: faker.lorem.sentence(),
-    outputData: faker.lorem.sentence(),
     Duration:200,
     Status:"Succeeded",
-    ErrorMessage:"No error"
+    ErrorMessage:"No error",
+    executionType: "Event"
   })
 }
 
