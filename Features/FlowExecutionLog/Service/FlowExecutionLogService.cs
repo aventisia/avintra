@@ -5,6 +5,7 @@ public class FlowExecutionLogService : IFlowExecutionLogService
     private readonly ILogger<FlowExecutionLogService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly string? _username;
 
     public FlowExecutionLogService(
         ILogger<FlowExecutionLogService> logger,
@@ -13,6 +14,9 @@ public class FlowExecutionLogService : IFlowExecutionLogService
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        // Set username
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("username") ?? null;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -33,7 +37,7 @@ public class FlowExecutionLogService : IFlowExecutionLogService
             //Try to get flow execution logs
             var logs = await _unitOfWork.FlowExecutionLogRepo
             .GetByConditionAsync(v => v.FlowId == flowId)
-            .OrderBy(o => o.CreatedOn).ToListAsync();
+            .OrderBy(o => o.ExecutedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = logs.Adapt<IEnumerable<FlowExecutionLogDto>>();
@@ -63,8 +67,8 @@ public class FlowExecutionLogService : IFlowExecutionLogService
         {
             // Default mapping
             var newLog = flowExecutionLogDto.Adapt<FlowExecutionLog>();
-            newLog.CreatedByUserId = _userId;
-            newLog.LastModifiedByUserId = _userId;
+            newLog.ExecutedBy = _username;
+            newLog.ExecutedOn = DateTimeOffset.UtcNow;
 
             //Insert an execution log
             await _unitOfWork.FlowExecutionLogRepo.InsertAsync(newLog);
@@ -122,8 +126,6 @@ public class FlowExecutionLogService : IFlowExecutionLogService
 
             //create a new flow execution log
             _unitOfWork.FlowExecutionLogRepo.Update(newLog);
-            newLog.CreatedByUserId = _userId;
-            newLog.LastModifiedByUserId = _userId;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())

@@ -30,18 +30,17 @@ public class FlowExecutionLogDto
     /// <summary>
     /// Gets or sets the the user who created the record.
     /// </summary>
-    public string? CreatedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the the username who created the record.
-    /// </summary>
-    public string? CreatedByUsername { get; set; }
+    public string? ExecutedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the record was created.
     /// </summary>
-    public DateTimeOffset CreatedOn { get; set; }
+    public DateTimeOffset ExecutedOn { get; set; }
 
-    public IEnumerable<ActionExecutionLogDTO>? ActionExecutionLogs { get; set; }
+    /// <summary>    
+    /// Gets or sets the the execution type who created the executed, such as user actions, automated scheduling, or external events
+    /// </remarks>
+    public ExecutionTypesEnum ExecutionType { get; set; }
 
+    public IEnumerable<ActionExecutionLogDTO>? ActionExecutionLogs { get; }
 }
