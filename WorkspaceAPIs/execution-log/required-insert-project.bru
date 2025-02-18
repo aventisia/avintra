@@ -11,20 +11,20 @@ post {
 }
 
 script:pre-request {
-  const {faker } = require('@faker-js/faker');
+  const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    type: "ProjectType1",
+    type: "Worcflow",
     name: faker.company.name(),
-    description: faker.lorem.paragraph(), 
+    description: faker.lorem.paragraph(),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
-    bru.setGlobalEnvVar(
-    "PROJECT_ID",
-    res.getBody().data.id
-    );
+      bru.setGlobalEnvVar(
+          "PROJECT_ID",
+          res.getBody().data.id
+      );
   }
 }

@@ -13,7 +13,7 @@ put {
 body:json {
   {
       "id": "{{inserted-project-id}}",
-      "type": "ProjectType2",
+      "type": "MLModel",
       "name": "{{$randomProductName}}",
       "description": "{{$randomLoremParagraph}}",
       "isDisabled": true
@@ -25,7 +25,7 @@ script:pre-request {
   
   req.setBody({
     id: bru.getGlobalEnvVar("PROJECT_ID"),
-    type: "ProjectType2",
+    type: "MLModel",
     name: faker.company.name(),
     description: faker.lorem.paragraph(),
     isDisabled: true

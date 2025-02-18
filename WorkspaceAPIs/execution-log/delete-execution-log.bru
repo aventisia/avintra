@@ -1,11 +1,11 @@
 meta {
   name: Delete execution log
   type: http
-  seq: 6
+  seq: 7
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/execution-log/delete/{{LOG_ID}}
+  url: {{WORKSPACE_APIS_BASE_URL}}/action-execution-log/delete/{{LOG_ID}}
   body: none
   auth: none
 }

@@ -1,11 +1,11 @@
 meta {
-  name: Required - Insert project
+  name: Required - Insert execution log
   type: http
-  seq: 1
+  seq: 3
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/project
+  url: {{WORKSPACE_APIS_BASE_URL}}/execution-log/create
   body: none
   auth: none
 }
@@ -14,16 +14,18 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    type: "ProjectType1",
-    name: faker.company.name(),
-    description: faker.lorem.paragraph(),
+    flowId: bru.getGlobalEnvVar("FLOW_ID"),
+    duration:200,
+    status:"Succeeded",
+    errorMessage:"No error",
+    executionType: "Scheduler"
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "PROJECT_ID",
+          "EXECUTION_LOG_ID",
           res.getBody().data.id
       );
   }
