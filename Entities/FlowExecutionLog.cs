@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
-public class FlowExecutionLog
+public class FlowExecutionLog : IMustHaveTenant
 {
     /// <summary>
     /// Gets or sets the record's primary key in Guid (globally unique identifier) format.
@@ -12,7 +12,7 @@ public class FlowExecutionLog
     /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
     /// </summary>
     public Guid TenantId { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the duration for the flow execution log
     /// </summary>
