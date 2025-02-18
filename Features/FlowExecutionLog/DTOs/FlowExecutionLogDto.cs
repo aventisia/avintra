@@ -42,5 +42,5 @@ public class FlowExecutionLogDto
     /// </remarks>
     public ExecutionTypesEnum ExecutionType { get; set; }
 
-    public IEnumerable<ActionExecutionLogDTO>? ActionExecutionLogs { get; }
+    public IEnumerable<ActionExecutionLogDTO>? ActionExecutionLogs { get; set; }
 }
