@@ -548,9 +548,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("Projects");
                 });
 
