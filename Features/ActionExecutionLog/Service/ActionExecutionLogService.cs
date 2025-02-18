@@ -16,7 +16,7 @@ public class ActionExecutionLogService : IActionExecutionLogService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         
         // Set username
-        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("username") ?? null;
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? null;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
