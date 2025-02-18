@@ -42,7 +42,6 @@ public class WorkspaceDbContext : DbContext
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
-        modelBuilder.Entity<Project>().HasIndex(index => index.Name).IsUnique();
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.ProjectId, index.Name }).IsUnique();
         modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
 
