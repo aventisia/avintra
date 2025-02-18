@@ -5,22 +5,12 @@ public class FlowExecutionLogMappingProfile : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // Mapping of DTO to get list of logs to show on the UI.
-        config.NewConfig<FlowExecutionLog, FlowExecutionLogDto>()
-        .Map(dest => dest.CreatedBy, 
-            src => src.CreatedByUser != null
-            ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-            : null)
-        .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
-            ? src.CreatedByUser.UserName
-            : null);
+        config.NewConfig<FlowExecutionLog, FlowExecutionLogDto>();
 
         //Mapping entity to insert or update the record
         config.NewConfig<FlowExecutionLogDto, FlowExecutionLog>()
             .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.CreatedByUserId)
-            .Ignore(dest => dest.LastModifiedByUserId)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.ExecutedOn)
             .IgnoreNullValues(true);
 
     }

@@ -32,6 +32,7 @@ public static class AppServicesExtension
         config.Apply(new FlowVersionMappingProfile());
         config.Apply(new SubscriptionMappingProfile());
         config.Apply(new FlowExecutionLogMappingProfile());
+        config.Apply(new ActionExecutionLogMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -59,6 +60,7 @@ public static class AppServicesExtension
         services.AddScoped<IFlowVersionService, FlowVersionService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IFlowExecutionLogService, FlowExecutionLogService>();
+        services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();    
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
