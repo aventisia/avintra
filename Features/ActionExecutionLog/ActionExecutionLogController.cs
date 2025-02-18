@@ -14,9 +14,9 @@ public class ActionExecutionLogController : BaseApiController
 
     // Gets list of action execution logs of single flow using flow Id.
     [HttpGet("list/{flowExecutionId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ActionExecutionLogDto>>>> GetActionExecutionLogs(Guid flowId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ActionExecutionLogDto>>>> GetActionExecutionLogs(Guid flowExecutionId)
     {
-        return ResultHelper(await _executionLogService.GetActionExecutionLogsAsync(flowId));
+        return ResultHelper(await _executionLogService.GetActionExecutionLogsAsync(flowExecutionId));
     }
 
     // Creates a new action execution log

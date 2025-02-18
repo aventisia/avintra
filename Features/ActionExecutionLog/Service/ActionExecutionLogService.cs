@@ -23,7 +23,7 @@ public class ActionExecutionLogService : IActionExecutionLogService
     }
 
     // Get a list of action execution logs of a single flow using flow identifier
-    public async Task<ServiceResponse<IEnumerable<ActionExecutionLogDto>>> GetActionExecutionLogsAsync(Guid flowId)
+    public async Task<ServiceResponse<IEnumerable<ActionExecutionLogDto>>> GetActionExecutionLogsAsync(Guid flowExecutionLogId)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<ActionExecutionLogDto>>
@@ -36,7 +36,7 @@ public class ActionExecutionLogService : IActionExecutionLogService
         {
             //Try to get action execution logs
             var logs = await _unitOfWork.ActionExecutionLogRepo
-            .GetByConditionAsync(v => v.FlowExecutionLogId == flowId)
+            .GetByConditionAsync(v => v.FlowExecutionLogId == flowExecutionLogId)
             .OrderBy(o => o.ExecutedOn).ToListAsync();
 
             // Task successful
