@@ -38,8 +38,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ActionExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
-        
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Project>().HasIndex(index => index.Name).IsUnique();
@@ -91,7 +91,7 @@ public class WorkspaceDbContext : DbContext
         //Configure one-to-many relationship between Flow and Flow Execution Log
         modelBuilder.Entity<Flow>().HasMany(f => f.FlowExecutionLogs).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
 
-        //Configure one-to-many relationship between Flow Execution Log and Action Execution Log
+        // Configure one-to-many relationship between Flow Execution Log and Action Execution Log
         modelBuilder.Entity<FlowExecutionLog>().HasMany(f => f.ActionExecutionLogs).WithOne(one => one.FlowExecutionLog).HasForeignKey(fKey => fKey.FlowExecutionLogId).IsRequired();
     }
     // On Save Changes - write tenant Id to table
