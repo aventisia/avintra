@@ -1,7 +1,7 @@
 meta {
   name: Update execution log
   type: http
-  seq: 4
+  seq: 5
 }
 
 put {
@@ -18,7 +18,7 @@ script:pre-request {
     actionName: faker.system.commonFileName(),
     inputData: faker.lorem.sentence(),
     outputData: faker.lorem.sentence(),
-    flowId: bru.getGlobalEnvVar("FLOW_ID")
+    flowExecutionLogId: bru.getGlobalEnvVar("EXECUTION_LOG_ID")
   })
 }
 

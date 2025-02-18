@@ -1,5 +1,5 @@
 meta {
-  name: Insert execution log
+  name: Required - Insert execution log
   type: http
   seq: 3
 }
@@ -15,16 +15,17 @@ script:pre-request {
   
   req.setBody({
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    actionName: faker.system.commonFileName(),
-    inputData: faker.lorem.sentence(),
-    outputData: faker.lorem.sentence()
+    duration:200,
+    status:"Succeeded",
+    errorMessage:"No error",
+    executionType: "Scheduler"
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "LOG_ID",
+          "EXECUTION_LOG_ID",
           res.getBody().data.id
       );
   }
