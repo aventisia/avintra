@@ -112,6 +112,24 @@ public class MyAccountController(
     {
         return ResultHelper(await _myAccountService.GetUserProfileAsync());
     }
+
+    [HttpPut("update-billing-address")]
+    public async Task<ActionResult<ServiceResponse<UserBillingAddressDto>>> UpdateUserBillingAddress(UserBillingAddressDto userTenantInfoDto)
+    {
+        return ResultHelper(await _myAccountService.UpdateUserBillingAddressAsync(userTenantInfoDto));
+    }
+
+    [HttpGet("billing-address")]
+    public async Task<ActionResult<ServiceResponse<UserBillingAddressDto>>> GetUserBillingAddress()
+    {
+        return ResultHelper(await _myAccountService.GetUserBillingAddressAsync());
+    }
+
+    [HttpPost("deactivate")]
+    public async Task<ActionResult<ServiceResponse<EmailUpdateDto>>> DeactivateAccount([FromBody] DeactivateUserAccountDto deactivateUserAccountDto)
+    {
+        return ResultHelper(await _myAccountService.DeactivateAccountAsync(deactivateUserAccountDto));
+    }
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
 }

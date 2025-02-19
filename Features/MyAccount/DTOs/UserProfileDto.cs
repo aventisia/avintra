@@ -27,7 +27,7 @@ public class UserProfileDto
     /// <summary>
     /// Gets or sets the date of birth of the user. 
     /// </summary>
-    public required DateTime DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
 
     /// <summary>
     /// Gets or sets the phone number of the user. Max-20.
@@ -36,15 +36,10 @@ public class UserProfileDto
     public string? PhoneNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets the phone number type of the user. either Home or Office
-    /// </summary>
-    public PhoneNumberType? PhoneNumberType { get; set; }
-
-    /// <summary>
     /// Gets or sets the address of the user. Max-100.
     /// </summary>
     [StringLength(100)]
-    public required string? AddressLine1 { get; set; }
+    public string? AddressLine1 { get; set; }
 
     /// <summary>
     /// Gets or sets the address of the user. Max-100.
@@ -55,30 +50,30 @@ public class UserProfileDto
     /// <summary>
     /// Gets or sets the gender of the user profile
     /// </summary>
-    public required GenderType Gender { get; set; }
+    public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
 
 
     /// <summary>
     /// Gets or sets the country of the user. Max-100.
     /// </summary>
     [StringLength(100)]
-    public required string Country { get; set; }
+    public string? Country { get; set; }
 
     /// <summary>
     /// Gets or sets the state or province of the user. Max-100.
     /// </summary>
     [StringLength(100)]
-    public required string StateOrProvince { get; set; }
+    public string? StateOrProvince { get; set; }
 
     /// <summary>
     /// Gets or sets the city of the user. Max-100.
     /// </summary>
     [StringLength(100)]
-    public required string City { get; set; }
+    public string? City { get; set; }
 
     /// <summary>
     /// Gets or sets the Zip or postal code of the user. Max-10.
     /// </summary>
     [StringLength(10)]
-    public required string ZipOrPostalCode { get; set; }
+    public string? ZipOrPostalCode { get; set; }
 }

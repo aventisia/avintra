@@ -596,8 +596,8 @@ public class MyAccountService(
 
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-                       .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
-                       .SingleOrDefaultAsync();
+            .GetByConditionAsync(w => w.Id == emailUpdateDto.VerificationCodeId)
+            .SingleOrDefaultAsync();
 
             // Verification secret code not found
             if (verificationCode == null)
@@ -851,8 +851,8 @@ public class MyAccountService(
 
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-                       .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
-                       .SingleOrDefaultAsync();
+            .GetByConditionAsync(w => w.Id == deleteUserAccountDto.VerificationCodeId)
+            .SingleOrDefaultAsync();
 
             // Verification secret code not found
             if (verificationCode == null)
@@ -957,7 +957,6 @@ public class MyAccountService(
             user.LastName = userProfileDto.LastName;
             user.DateOfBirth = userProfileDto.DateOfBirth;
             user.PhoneNumber = userProfileDto.PhoneNumber;
-            user.PhoneNumberType = userProfileDto.PhoneNumberType;
             user.Gender = userProfileDto.Gender;
 
             //getting the personal address
@@ -1065,7 +1064,6 @@ public class MyAccountService(
                 LastName = user.LastName,
                 DateOfBirth = user.DateOfBirth,
                 PhoneNumber = user.PhoneNumber,
-                PhoneNumberType = user.PhoneNumberType,
                 Gender = user.Gender,
                 AddressLine1 = address?.AddressLine1,
                 AddressLine2 = address?.AddressLine2,
@@ -1099,8 +1097,327 @@ public class MyAccountService(
         return serviceResponse;
     }
 
+    // acccounts-api/tenant/user/
+    public async Task<ServiceResponse<UserBillingAddressDto>> GetUserBillingAddressAsync()
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserBillingAddressDto>()
+        {
+            Data = null,
+            Message = "Failed to fetch your tenant profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(GetUserBillingAddressAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            // Decide tenant name basis "@aventisia.com"
+            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
+                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
+                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
+
+            // Get default Tenant 
+            var defaultTenant = await _unitOfWork.TenantRepo
+                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .SingleOrDefaultAsync();
+
+            UserBillingAddressDto getUserTenantInfoDto;
+            if (defaultTenant.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)))
+            {
+                _logger.LogInformation("{_UserName} user is individual", _userName);
+
+                //if the use is individual then get the billing address of the user
+                var userBillingAddress = await _unitOfWork.AddressRepo
+                .GetByConditionAsync(a => a.AddressRefId == user.Id)
+                .FirstOrDefaultAsync();
+
+                getUserTenantInfoDto = new()
+                {
+                    IsIndividual = true,
+                    AddressType = AddressType.Official,
+                    AddressLine1 = userBillingAddress?.AddressLine1,
+                    AddressLine2 = userBillingAddress?.AddressLine2,
+                    City = userBillingAddress?.City,
+                    Country = userBillingAddress?.Country,
+                    StateOrProvince = userBillingAddress?.StateOrProvince,
+                    //no designation and tenant for indi user
+                };
+                serviceResponse.Message = userBillingAddress is null ? "Please add the address of billing." : "tenant info fetched succesfully.";
+            }
+            else
+            {
+                var addressOfTenant = await _unitOfWork.AddressRepo
+                .GetByConditionAsync(a => a.AddressRefId == defaultTenant.Id)
+                .FirstOrDefaultAsync();
+                getUserTenantInfoDto = new()
+                {
+                    IsIndividual = false,
+                    AddressType = AddressType.Official,
+                    AddressLine1 = addressOfTenant?.AddressLine1,
+                    AddressLine2 = addressOfTenant?.AddressLine2,
+                    City = addressOfTenant?.City,
+                    Country = addressOfTenant?.Country,
+                    StateOrProvince = addressOfTenant?.StateOrProvince,
+                    //TODO change when the designation when data is availabl
+                    Designation = string.Empty,
+                    TenantName = defaultTenant.Name
+                };
+
+                serviceResponse.Message = addressOfTenant is null ? "Please add the address of tenant." : "tenant info fetched succesfully.";
+            }
+            serviceResponse.Data = getUserTenantInfoDto;
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // acccounts-api/tenant/update-user/
+    public async Task<ServiceResponse<UserBillingAddressDto>> UpdateUserBillingAddressAsync(UserBillingAddressDto userTenantInfoDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<UserBillingAddressDto>()
+        {
+            Data = null,
+            Message = "Failed to update your tenant profile. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(UpdateUserBillingAddressAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            if (userTenantInfoDto is null)
+            {
+                _logger.LogInformation("parameter is null while updating in method {MethodName}", methodName);
+                serviceResponse.Message = "Please provide proper details to update the tenant account";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
+            // Decide tenant name basis "@aventisia.com"
+            var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com"
+                                ? GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia)
+                                : GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers);
+
+            // Get default Tenant 
+            var defaultTenant = await _unitOfWork.TenantRepo
+                                        .GetByConditionAsync(w => w.IsDefault && w.Name == tenantName)
+                                        .SingleOrDefaultAsync();
+
+            var isIndie = defaultTenant?.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers));
+
+            if (isIndie != null && !isIndie.Value)
+            {
+                _logger.LogInformation("billing address of the tenant must updated by authorized user {MethodName}", methodName);
+                serviceResponse.Message = "Billing address of tenant must be update by the authorized user. ";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
+            //TODO - user must be authorized to update the tenant info while indie user can update its billing address
+            var address = await _unitOfWork.AddressRepo
+            .GetByConditionAsync(a => a.AddressRefId == user.Id && a.AddressType == AddressType.Official)
+            .FirstOrDefaultAsync();
+
+            if (address is null)
+            {
+                address = new()
+                {
+                    Id = Guid.NewGuid(),
+                    AddressRefId = (isIndie is null || isIndie.Value) ? user.Id : defaultTenant.Id,
+                    CreatedByUser = user,
+                    LastModifiedByUser = user,
+                    AddressLine1 = userTenantInfoDto?.AddressLine1,
+                    AddressLine2 = userTenantInfoDto?.AddressLine2,
+                    AddressType = AddressType.Official,
+                    City = userTenantInfoDto?.City,
+                    Country = userTenantInfoDto?.Country,
+                    StateOrProvince = userTenantInfoDto?.StateOrProvince,
+                };
+                await _unitOfWork.AddressRepo.InsertAsync(address);
+            }
+            else
+            {
+                //only indie user can update its billin password
+                address.AddressLine1 = userTenantInfoDto?.AddressLine1;
+                address.AddressLine2 = userTenantInfoDto?.AddressLine2;
+                address.City = userTenantInfoDto?.City;
+                address.Country = userTenantInfoDto?.Country;
+                address.StateOrProvince = userTenantInfoDto?.StateOrProvince;
+
+                address.LastModifiedByUser = user;
+                address.LastModifiedByUserId = user.Id;
+
+                _unitOfWork.AddressRepo.Update(address);
+            }
+            // Update-ActiveSession job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating the tenant account by logged in user id {Id}", user.Id);
+                serviceResponse.Message = "Something went wrong while updating the tenant info. Please try again later";
+                return serviceResponse;
+            }
+
+            serviceResponse.Message = address is null ? "Please add the tenant account info." : "tenant info updated succesfully.";
+            serviceResponse.Data = userTenantInfoDto;
+            serviceResponse.StatusCode = 200;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
+    // acccounts-api/tenant/deactivate/
+    public async Task<ServiceResponse<bool>> DeactivateAccountAsync(DeactivateUserAccountDto deactivateUserAccountDto)
+    {
+        //Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<bool>()
+        {
+            Data = false,
+            Message = "Failed to deactivate your account. Please try again later"
+        };
+
+        try
+        {
+            //set method name
+            var methodName = nameof(DeactivateAccountAsync);
+
+            // Get user
+            var user = await _userManager.FindByNameAsync(_userName);
+
+            // User doesn't exist
+            if (user == null)
+            {
+                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                serviceResponse.Message = userDoesNotExists;
+                return serviceResponse;
+            }
+
+            //Check if user is an Aventisia employee
+            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+
+            //if user is an Aventisia employee
+            if (IsAE)
+            {
+                _logger.LogInformation("Failed to deactivate Aventesia employee");
+                serviceResponse.Message = "Unable to deactivate Aventesia employee";
+                return serviceResponse;
+            }
+
+            // check the user password
+            var isCorrectPWD = await _userManager.CheckPasswordAsync(user, deactivateUserAccountDto.Password);
+
+
+            // return if the user password is not correct
+            if (!isCorrectPWD)
+            {
+                _logger.LogInformation($"Incorrect password while deactivation of account of email {user.Email}");
+                serviceResponse.Message = "Password is incorrect. Please try again";
+                return serviceResponse;
+            }
+
+            // Get Verification secret code
+            var verificationCode = await _unitOfWork.VerificationCodeRepo
+            .GetByConditionAsync(w => w.Id == deactivateUserAccountDto.VerificationCodeId)
+            .SingleOrDefaultAsync();
+
+            // Verification secret code not found
+            if (verificationCode == null)
+            {
+                _logger.LogInformation($"Verification code not found for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(deactivateUserAccountDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+
+            // Delete Verification secret Code
+            _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
+            await _unitOfWork.SaveAsync();
+
+            // Secret code did not match
+            if (!verificationCodeMatches)
+            {
+                _logger.LogInformation($"Invalid verification code for email {user.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // Get all ActiveSessions for user
+            var sessionIds = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => w.UserId == user.Id)
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            // Terminate all sessions
+            var terminateSessionsResult = await _authService.TerminateUserSessionsAsync(user.Id, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
+
+            // TerminateSessions job failed
+            if (terminateSessionsResult.StatusCode != 200)
+            {
+                _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
+                return serviceResponse;
+            }
+
+            // Update account User using UserManager
+            user.IsActive = false;
+            user.DeactivatedOn = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToDateTime(TimeOnly.MinValue);
+            var updateUserResult = await _userManager.UpdateAsync(user);
+
+            // User Update-Job failed
+            if (!updateUserResult.Succeeded)
+            {
+                _logger.LogInformation("Failed while deactivation the user {_userName}", _userName);
+                serviceResponse.Message = "User's account deactivation failed";
+                return serviceResponse;
+            }
+
+            // Task successful
+            _logger.LogInformation($"{methodName}: account has been deactivating of {_userName}");
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your account will be deactivated in 10 days.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+
+            return serviceResponse;
+        }
+        return serviceResponse;
+    }
+
 }
-
-
-
-

@@ -110,6 +110,9 @@ namespace AccountsAPIs.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("DeactivatedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -125,6 +128,9 @@ namespace AccountsAPIs.Migrations
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsCreatedInOtherDbs")
                         .HasColumnType("boolean");
@@ -171,9 +177,6 @@ namespace AccountsAPIs.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("PhoneNumberType")
-                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset?>("PwdSetOn")
                         .HasColumnType("timestamp with time zone");

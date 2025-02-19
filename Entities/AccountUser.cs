@@ -118,13 +118,18 @@ public class AccountUser : IdentityUser<Guid>
     public DateTime DateOfBirth { get; set; }
 
     /// <summary>
-    /// Gets or sets the phone number type of the user. either Home or Office
-    /// </summary>
-    public PhoneNumberType? PhoneNumberType { get; set; }
-
-    /// <summary>
     /// Gets or sets the gender of the user profile
     /// </summary>
     public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the account is active or not.
+    /// </summary>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the duration to deactivate the account
+    /// </summary>
+    public DateTime DeactivatedOn { get; set; }
 
 }

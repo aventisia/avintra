@@ -1,6 +1,6 @@
 namespace AccountsAPIs.DTOs;
 
-public class GetUserTenantInfoDto
+public class UserBillingAddressDto
 {
     /// <summary>
     /// Gets or sets the is individual user or user of tenant
@@ -26,7 +26,7 @@ public class GetUserTenantInfoDto
     /// <summary>
     /// Gets or sets the address for the 
     /// </summary>
-    [StringLength(300)]
+    [StringLength(300), Required]
     public string? AddressLine1 { get; set; }
 
     /// <summary>
@@ -38,24 +38,24 @@ public class GetUserTenantInfoDto
     /// <summary>
     /// Gets or sets the country of the user's tenants. Max-100.
     /// </summary>
-    [StringLength(100)]
+    [StringLength(100), Required]
     public string? Country { get; set; }
 
     /// <summary>
     /// Gets or sets the state or province of the user's tenants. Max-100.
     /// </summary>
-    [StringLength(100)]
+    [StringLength(100), Required]
     public string? StateOrProvince { get; set; }
 
     /// <summary>
     /// Gets or sets the city of the user's tenants. Max-100.
     /// </summary>
-    [StringLength(100)]
+    [StringLength(100), Required]
     public string? City { get; set; }
 
     /// <summary>
     /// Gets or sets the Zip or postal code of the user's tenants. Max-10.
     /// </summary>
-    [StringLength(10)]
+    [StringLength(10), Required]
     public string? ZipOrPostalCode { get; set; }
 }

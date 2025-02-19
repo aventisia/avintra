@@ -76,10 +76,28 @@ public interface IMyAccountService
     /// <summary>
     /// get user profile information
     /// </summary>
-    /// <param name="userId">user uniqueid</param>
-    /// <returns></returns>
+    /// <returns> a profile info dto</returns>
     Task<ServiceResponse<UserProfileDto>> GetUserProfileAsync();
 
+    /// <summary>
+    /// get indie user billing address
+    /// </summary>
+    /// <returns> a UserBillingAddressDto</returns>
+    Task<ServiceResponse<UserBillingAddressDto>> GetUserBillingAddressAsync();
+
+    /// <summary>
+    /// Update user's account and make it deactivated
+    /// </summary>
+    /// <param name="deactivateUserAccountDto">the billing address update dto</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<bool>> DeactivateAccountAsync(DeactivateUserAccountDto deactivateUserAccountDto);
+
+    /// <summary>
+    /// Update user's billing address details
+    /// </summary>
+    /// <param name="userTenantInfoDto">the billing address update dto</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<UserBillingAddressDto>> UpdateUserBillingAddressAsync(UserBillingAddressDto userTenantInfoDto);
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
     // acccounts-api/me/terminate-session/
