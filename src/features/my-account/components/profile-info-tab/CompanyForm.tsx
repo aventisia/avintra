@@ -1,39 +1,37 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { FormCheck } from "@/components/Form";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { InputDivElement } from "../InputDivElement";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { useMyAccountCompanyForm } from "../../hooks/useMyAccountCompanyForm";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+
+import { InputDivElement } from "../InputDivElement";
+import { countriesSelectProps } from "../../constants/constants";
+
 import type { z } from "zod";
-import type { CompanyZodSchema } from "../../types/company-zod-schema";
-import type { CompanyDto } from "../../dtos/my-account-company-dto";
-import {
-  SelectField,
-  type SelectFieldProps,
-} from "@/react-toolkit/ui/form/fields/SelectField";
-import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import { updateCompanyInfo } from "../../apis/my-account-apis";
-
-// Select countries props
-const countriesSelectProps: SelectFieldProps = {
-  name: "country",
-  isRequired: true,
-  selectOptions: enumToArray(CountriesEnum),
-};
-
+import type { BillingAddressZodSchema } from "../../types/company-zod-schema";
+import type { UserBillingAddressDto } from "../../dtos/my-account-company-dto";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useShallow } from "zustand/react/shallow";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { useState } from "react";
+import { useDefineComapnyInfoForm } from "../../hooks/useDefineComapnyInfoForm";
+import { useCompanyInfoFormMutation } from "../../hooks/useCompanyInfoFormMutation";
 export const CompanyForm = () => {
-  const { form, refineFormData } = useMyAccountCompanyForm();
+  const { form, isLoading } = useDefineComapnyInfoForm();
 
-  const { mutate } = useOptimisticMutation<CompanyDto, CompanyDto, CompanyDto>(
-    updateCompanyInfo,
-    ["userid"],
-    [form.getValues() as CompanyDto],
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
   );
+
+  //if user has the permission to change the billing address of the company/tenant
+  const [hasSpecialPermission] = useState(false);
+
+  const { mutate, isPending } = useCompanyInfoFormMutation();
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof CompanyZodSchema>) => {
-    mutate(refineFormData(formData) as unknown as CompanyDto);
+  const onSubmit = (formData: z.infer<typeof BillingAddressZodSchema>) => {
+    mutate(formData as unknown as UserBillingAddressDto);
   };
 
   return (
@@ -41,118 +39,134 @@ export const CompanyForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       className="box flex flex-col p-5"
+      disabled={userSession?.tenantName != DefaultTenantsEnum.IndividualUsers}
     >
       <div>
         <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-2xl font-medium">
-          Company Info
+          {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
+            ? "Billing Info"
+            : "Tenant Info"}
         </div>
 
         {/* Form feilds */}
         <div>
+          {userSession?.tenantName != DefaultTenantsEnum.IndividualUsers && (
+            <>
+              <InputDivElement
+                headingForInput="Tenant Name"
+                messageForInput=""
+                aria-disabled="true"
+                showSkelaton={isPending || isLoading}
+              >
+                <InputField
+                  type="text"
+                  name="tenantName"
+                  disabled={!hasSpecialPermission}
+                  placeholder=""
+                  className="border-slate-300/60 shadow-sm"
+                  size={80}
+                />
+              </InputDivElement>
+              <InputDivElement
+                headingForInput="Designation"
+                messageForInput="Your current designation for you tenant."
+                aria-disabled="true"
+                showSkelaton={isPending || isLoading}
+              >
+                <InputField
+                  type="text"
+                  name="role"
+                  className="border-slate-300/60 shadow-sm"
+                  placeholder=""
+                  disabled={!hasSpecialPermission}
+                  size={80}
+                />
+              </InputDivElement>
+            </>
+          )}
+
           <InputDivElement
-            headingForInput="Company Type*"
-            messageForInput="Select your company type from the options."
+            headingForInput="Address"
+            messageForInput=""
+            showSkelaton={isPending || isLoading}
           >
-            <div className="flex flex-col items-center md:flex-row">
-              {/* <CheckboxField label /> */}
-              <div className="dark:bg-darkmode-600 w-full rounded-md border border-slate-300/60 bg-white px-3 py-2 shadow-sm first:rounded-b-none last:-mt-px last:rounded-t-none focus:z-10 first:md:rounded-r-none first:md:rounded-bl-md last:md:-ml-px last:md:mt-0 last:md:rounded-l-none last:md:rounded-tr-md [&:not(:first-child):not(:last-child)]:-mt-px [&:not(:first-child):not(:last-child)]:rounded-none [&:not(:first-child):not(:last-child)]:md:-ml-px [&:not(:first-child):not(:last-child)]:md:mt-0">
-                <FormCheck>
-                  <FormCheck.Input type="radio" name="companyType" value="" />
-                  <FormCheck.Label
-                    className="font-semibold text-slate-400"
-                    htmlFor="checkbox-switch-1"
-                  >
-                    Individual
-                  </FormCheck.Label>
-                </FormCheck>
-              </div>
-              <div className="dark:bg-darkmode-600 w-full rounded-md border border-slate-300/60 bg-white px-3 py-2 shadow-sm first:rounded-b-none last:-mt-px last:rounded-t-none focus:z-10 first:md:rounded-r-none first:md:rounded-bl-md last:md:-ml-px last:md:mt-0 last:md:rounded-l-none last:md:rounded-tr-md [&:not(:first-child):not(:last-child)]:-mt-px [&:not(:first-child):not(:last-child)]:rounded-none [&:not(:first-child):not(:last-child)]:md:-ml-px [&:not(:first-child):not(:last-child)]:md:mt-0">
-                <FormCheck>
-                  <FormCheck.Input type="radio" name="companyType" value="" />
-                  <FormCheck.Label
-                    className="font-semibold text-slate-400"
-                    htmlFor="checkbox-switch-2"
-                  >
-                    Company
-                  </FormCheck.Label>
-                </FormCheck>
-              </div>
-            </div>
-          </InputDivElement>
-
-          <InputDivElement headingForInput="Company Name*" messageForInput="">
-            <InputField
-              type="text"
-              name="comapanyName"
-              placeholder=""
-              className="border-slate-300/60 shadow-sm"
-              size={80}
-            />
-          </InputDivElement>
-
-          <InputDivElement headingForInput="Role*" messageForInput="">
-            <InputField
-              type="text"
-              name="role"
-              className="border-slate-300/60 shadow-sm"
-              placeholder=""
-              size={80}
-            />
-          </InputDivElement>
-
-          <InputDivElement headingForInput="Address Line 1*" messageForInput="">
             <InputField
               name="addressLine1"
               type="text"
-              placeholder=""
+              placeholder="Address Line 1"
+              disabled={
+                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+              }
               className="border-slate-300/60 shadow-sm"
             />
-          </InputDivElement>
-
-          <InputDivElement headingForInput="Address Line 2" messageForInput="">
             <InputField
               name="addressLine2"
-              className="border-slate-300/60 shadow-sm"
               type="text"
-              placeholder=""
-            />
-          </InputDivElement>
-
-          <InputDivElement headingForInput="Country*" messageForInput="">
-            <SelectField
-              {...countriesSelectProps}
-              className="border-slate-300/60 shadow-sm"
+              placeholder="Address Line 2"
+              disabled={
+                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+              }
+              className="mt-3 border-slate-300/60 shadow-sm"
             />
           </InputDivElement>
 
           <InputDivElement
-            headingForInput="State or Province*"
+            headingForInput="Country"
             messageForInput=""
+            showSkelaton={isPending || isLoading}
+          >
+            <SelectField
+              {...countriesSelectProps}
+              className="border-slate-300/60 shadow-sm"
+              disabled={
+                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+              }
+            />
+          </InputDivElement>
+
+          <InputDivElement
+            headingForInput="State or Province"
+            messageForInput=""
+            showSkelaton={isPending || isLoading}
           >
             <InputField
               name="stateOrProvince"
               type="text"
               placeholder=""
+              disabled={
+                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+              }
               className="border-slate-300/60 shadow-sm"
             />
           </InputDivElement>
 
-          <InputDivElement headingForInput="City*" messageForInput="">
+          <InputDivElement
+            headingForInput="City"
+            messageForInput=""
+            showSkelaton={isPending || isLoading}
+          >
             <InputField
               name="city"
               type="text"
+              disabled={
+                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+              }
               placeholder=""
               className="border-slate-300/60 shadow-sm"
             />
           </InputDivElement>
 
           <InputDivElement
-            headingForInput="Zip or Postal Code*"
+            headingForInput="Zip or Postal Code"
             messageForInput=""
+            showSkelaton={isPending || isLoading}
           >
             <InputField
               name="ZipOrPostalCode"
               type="text"
+              disabled={
+                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+              }
               placeholder=""
               className="border-slate-300/60 shadow-sm"
             />
@@ -161,13 +175,16 @@ export const CompanyForm = () => {
 
         {/* Save details button */}
         <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
-          <Button
-            variant="default"
-            type="submit"
-            className="border-primary/50 w-full px-4 md:w-auto"
-          >
-            Save
-          </Button>
+          {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers && (
+            <Button
+              variant="default"
+              disabled={isPending || isLoading}
+              type="submit"
+              className="border-primary/50 w-full px-4 md:w-auto"
+            >
+              Save
+            </Button>
+          )}
         </div>
       </div>
     </Form>

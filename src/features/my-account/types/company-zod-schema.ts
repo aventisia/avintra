@@ -1,15 +1,13 @@
 import { maxLenError } from "@/react-toolkit/utils/error-message-list";
 import { z } from "zod";
 
-export const CompanyZodSchema = z.object({
-    userId: z.string(),
-    companyType: z.string({ required_error: "Company type is required" }),
-    companyName: z.string({ required_error: "company name is required" }).max(200, { message: "" }),
-    role: z.string({ required_error: "role is required" }),
-    addressLine1: z.string().max(500, { message: maxLenError("Address is required", 500) }),
-    addressLine2: z.string(),
-    country: z.string({ required_error: "Country is required" }),
-    stateOrProvince: z.string({ required_error: "State or Province is required" }),
-    city: z.string({ required_error: "City is required" }),
-    ZipOrPostalCode: z.string({ required_error: "Zip is required" }),
+export const BillingAddressZodSchema = z.object({
+    tenantName: z.optional(z.string()),
+    designantion: z.optional(z.string()),
+    addressLine1: z.optional(z.string().max(200, { message: maxLenError("Address is required", 200) })),
+    addressLine2: z.optional(z.string()),
+    country: z.optional(z.string({ required_error: "Please select the country." })),
+    stateOrProvince: z.optional(z.string({ required_error: "Please enter your state." })),
+    city: z.optional(z.string({ required_error: "Please enter your city." })),
+    zipOrPostalCode: z.optional(z.string({ required_error: "Please enter your Zip or Postal Code." })),
 })

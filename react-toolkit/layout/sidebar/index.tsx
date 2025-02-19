@@ -16,8 +16,7 @@ const Sidebar = ({ appConfig, className }: SidebarProps) => {
   return (
     <div
       className={cn(
-        "z-20 after:absolute after:inset-0 after:-mr-4 after:bg-texture-white after:bg-contain after:bg-fixed after:bg-[center_-20rem] after:bg-no-repeat after:content-['']",
-        // "inset-0 bg-texture-white bg-contain bg-fixed bg-[center_-20rem] bg-no-repeat",
+        "inset-0 bg-texture-white bg-contain bg-fixed bg-[center_-20rem] bg-no-repeat",
       )}
     >
       <div
