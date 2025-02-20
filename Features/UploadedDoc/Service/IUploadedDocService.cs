@@ -10,11 +10,11 @@ public interface IUploadedDocService
     Task<ServiceResponse<IEnumerable<FileDetailDto>>> UploadFilesAsync(List<IFormFile> files);
 
     /// <summary>
-    /// Insert uploaded doc record
+    /// Insert uploaded doc records
     /// </summary>
-    /// <param name="uploadedDocDto"> Uploaded Doc Dto</param>
-    /// <returns>Uploaded doc record</returns>
-    Task<ServiceResponse<UploadedDocDto>> InsertUploadedDocAsync(UploadedDocDto uploadedDocDto);
+    /// <param name="uploadedDocList">List of Uploaded Doc Dto</param>
+    /// <returns>Uploaded doc records</returns>
+    Task<ServiceResponse<IList<UploadedDocDto>>> InsertUploadedDocAsync(IList<UploadedDocDto> uploadedDocList);
 
     /// <summary>
     /// Retrieves the list of uploaded docs

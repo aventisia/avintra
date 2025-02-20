@@ -20,9 +20,9 @@ public class UploadedDocController: BaseApiController
     }
     //Inserts uploaded file record
     [HttpPost("insert-file")]
-    public async Task<ActionResult<ServiceResponse<UploadedDocDto>>> InsertUploadedDoc(UploadedDocDto uploadedDocDto)
+    public async Task<ActionResult<ServiceResponse<IList<UploadedDocDto>>>> InsertUploadedDoc(IList<UploadedDocDto> uploadedDocList)
     {
-        return ResultHelper(await _uploadedDocService.InsertUploadedDocAsync(uploadedDocDto));
+        return ResultHelper(await _uploadedDocService.InsertUploadedDocAsync(uploadedDocList));
     }
 
     //Retrieves list of uploaded docs

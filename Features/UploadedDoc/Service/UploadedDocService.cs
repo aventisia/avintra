@@ -113,10 +113,10 @@ public class UploadedDocService : IUploadedDocService
     }
 
     //Inserts an uploaded doc record
-    public async Task<ServiceResponse<UploadedDocDto>> InsertUploadedDocAsync(UploadedDocDto uploadedDocDto)
+    public async Task<ServiceResponse<IList<UploadedDocDto>>> InsertUploadedDocAsync(IList<UploadedDocDto> uploadedDocList)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<UploadedDocDto>
+        var serviceResponse = new ServiceResponse<IList<UploadedDocDto>>
         {
             Data = null,
             StatusCode = 400
@@ -124,13 +124,21 @@ public class UploadedDocService : IUploadedDocService
 
         try
         {
-            // Default mapping
-            var newDoc = uploadedDocDto.Adapt<UploadedDoc>();
-            newDoc.CreatedByUserId = _userId;
-            newDoc.LastModifiedByUserId = _userId;
+            var docList = new List<UploadedDoc>();
 
-            //Insert an uploaded doc 
-            await _unitOfWork.UploadedDocRepo.InsertAsync(newDoc);
+            foreach (var doc in uploadedDocList)
+            {
+                // Default mapping
+                var newDoc = doc.Adapt<UploadedDoc>();
+                newDoc.CreatedByUserId = _userId;
+                newDoc.LastModifiedByUserId = _userId;
+
+                //Add doc to list
+                docList.Add(newDoc);
+            }
+
+            //Insert a list of uploaded doc 
+            await _unitOfWork.UploadedDocRepo.InsertAsync(docList);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -140,9 +148,9 @@ public class UploadedDocService : IUploadedDocService
             }
 
             // Task successful
-            serviceResponse.Data = newDoc.Adapt<UploadedDocDto>();
+            serviceResponse.Data = docList.Adapt<IList<UploadedDocDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Doc added successfully";
+            serviceResponse.Message = "Docs added successfully";
 
         }
         catch (Exception ex)
