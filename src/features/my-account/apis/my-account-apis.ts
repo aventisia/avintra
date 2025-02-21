@@ -7,6 +7,7 @@ import type { MyAccountPasswordDto } from "../dtos/my-account-password-dto";
 import type { EmailUpdateDto } from '../dtos/email-update-dto';
 import type { ActiveSessionDto } from '../dtos/active-session-dto';
 import type { DeactivateUserAccountDto } from '../dtos/deactivate-user-account-dto';
+import type { DeactivationStatusDto } from '../dtos/deactivation-status-user-account-dto';
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
 
@@ -58,4 +59,8 @@ export const getActiveSessions = () => axiosInstance.get<IHttpResponse<ActiveSes
 
 export const deactivateMyAccount = (deactivateUserAccountDto: DeactivateUserAccountDto) => axiosInstance.post<IHttpResponse<boolean>>(
     `${baseAPIURL}/deactivate`, deactivateUserAccountDto
+).then((res) => res.data);
+
+export const getDeactivationStatus = () => axiosInstance.get<IHttpResponse<DeactivationStatusDto>>(
+    `${baseAPIURL}/deactivation-status`,
 ).then((res) => res.data);
