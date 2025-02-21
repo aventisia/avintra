@@ -68,7 +68,7 @@ public class MyAccountService(
             // User session doesn't exist
             if (session == null)
             {
-                _logger.LogInformation("User session not found for session Id {_sessionId}", _sessionId);
+                _logger.LogInformation("User session not found for session Id {_sessionId} and {Id}", _sessionId, user.Id);
                 serviceResponse.Message = "User session does not exist";
                 return serviceResponse;
             }
@@ -1384,8 +1384,8 @@ public class MyAccountService(
                 .Select(s => s.Id)
                 .ToListAsync();
 
-            // if user is active and going to deactivate the account then
-            if (user.DeactivatedOn >= DateTime.MaxValue)
+            //check if the user is asking for deactivation
+            if (deactivateUserAccountDto.Deactivate)
             {
                 // Terminate all sessions
                 var terminateSessionsResult = await _authService.TerminateUserSessionsAsync(user.Id, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
@@ -1398,8 +1398,7 @@ public class MyAccountService(
                 }
             }
 
-            // toggle account deactivation using UserManager
-            user.DeactivatedOn = (user.DeactivatedOn >= DateTime.MaxValue) ? DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToDateTime(TimeOnly.MinValue) : DateTime.MaxValue;
+            user.DeactivatedOn = deactivateUserAccountDto.Deactivate ? DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToDateTime(TimeOnly.MinValue).ToUniversalTime() : DateTime.MaxValue.ToUniversalTime();
             var updateUserResult = await _userManager.UpdateAsync(user);
 
             // User Update-Job failed
@@ -1422,6 +1421,49 @@ public class MyAccountService(
 
             return serviceResponse;
         }
+        return serviceResponse;
+    }
+
+    // Gets user's deactivation-status to view latest user's info
+    public async Task<ServiceResponse<DeactivationStatusDto>> GetDeactivationStatusAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<DeactivationStatusDto>
+        {
+            Data = null,
+            Message = "An error occurred while retrieving deactivation status"
+        };
+
+        try
+        {
+            // Fetch the user from the database using userId
+            var user = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+
+            // If the user is not found, return an error response
+            if (user == null)
+            {
+                serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            // If the user is found, set the Data property to the TwoFactorEnabled value
+            serviceResponse.Data = new DeactivationStatusDto()
+            {
+                TimeRemains = user.DeactivatedOn,
+                Deactivating = user.DeactivatedOn.ToUniversalTime() < DateTime.MaxValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MinValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MaxValue.ToUniversalTime()
+            };
+
+            // Set success message and status code
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "deactivation status retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
+            return serviceResponse;
+        }
+
         return serviceResponse;
     }
 
