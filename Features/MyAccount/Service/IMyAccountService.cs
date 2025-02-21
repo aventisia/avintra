@@ -86,6 +86,13 @@ public interface IMyAccountService
     Task<ServiceResponse<UserBillingAddressDto>> GetUserBillingAddressAsync();
 
     /// <summary>
+    /// Update user's billing address details
+    /// </summary>
+    /// <param name="userTenantInfoDto">the billing address update dto</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<UserBillingAddressDto>> UpdateUserBillingAddressAsync(UserBillingAddressDto userTenantInfoDto);
+
+    /// <summary>
     /// Update user's account and make it deactivated
     /// </summary>
     /// <param name="deactivateUserAccountDto">the billing address update dto</param>
@@ -93,11 +100,11 @@ public interface IMyAccountService
     Task<ServiceResponse<bool>> DeactivateAccountAsync(DeactivateUserAccountDto deactivateUserAccountDto);
 
     /// <summary>
-    /// Update user's billing address details
+    /// get the status of the account deactivation
     /// </summary>
-    /// <param name="userTenantInfoDto">the billing address update dto</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
-    Task<ServiceResponse<UserBillingAddressDto>> UpdateUserBillingAddressAsync(UserBillingAddressDto userTenantInfoDto);
+    Task<ServiceResponse<DeactivationStatusDto>> GetDeactivationStatusAsync();
+
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
     // acccounts-api/me/terminate-session/
