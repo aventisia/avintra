@@ -125,6 +125,6 @@ public class AccountUser : IdentityUser<Guid>
     /// <summary>
     /// Gets or sets the duration to deactivate the account
     /// </summary>
-    public DateTime DeactivatedOn { get; set; } = DateTime.MaxValue;
+    public DateTime DeactivatedOn { get; set; }
 
 }
