@@ -6,7 +6,7 @@ import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { browserImages } from "../constants/browsers";
 
 const getImageSourceOfBrowser = (browserType: string) => {
-    const src = browserImages.find(f => f.name == browserType);
+    const src = browserImages.find(f => browserType.includes(f.name));
     return src?.image;
 };
 

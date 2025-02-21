@@ -73,12 +73,12 @@ export const DeviceHistoryTab = () => {
                       </DeviceHistoryTable.Td>
 
                       <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
-                        <div className="flex items-center whitespace-nowrap">
+                        <div className="flex max-w-md items-center truncate whitespace-nowrap">
                           <Lucide
                             icon="Smartphone"
                             className="mr-2 h-4 w-4 stroke-[1.3]"
                           />
-                          {session.deviceId}
+                          <p className="truncate">{session.deviceId}</p>
                           {session.refreshToken ===
                             currentSession?.refreshToken && (
                             <div className="bg-primary/10 border-primary/10 ml-3 flex items-center rounded-md border px-1.5 py-px text-xs font-medium text-primary">
