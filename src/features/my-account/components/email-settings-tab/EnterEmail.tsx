@@ -6,10 +6,10 @@ import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
-import { useCreateCodeMutation } from "../../hooks/useCreateCodeMutation";
 import type { updateEmailZodSchema } from "../../types/create-account-zod-schema";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 import { useDefineEmailUpdateForm } from "../../hooks/useDefineEmailUpdateForm";
+import { useCreateCodeMutationForEmailUpdate } from "../../hooks/useCreateCodeMutationForEmailUpdate";
 
 export const EnterEmail = () => {
   // Get user session
@@ -31,7 +31,8 @@ export const EnterEmail = () => {
   } = useDefineEmailUpdateForm();
 
   // Get mutation to create verification code
-  const { createCodeMutation, isCodePending } = useCreateCodeMutation();
+  const { createCodeMutation, isCodePending } =
+    useCreateCodeMutationForEmailUpdate();
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof updateEmailZodSchema>) => {

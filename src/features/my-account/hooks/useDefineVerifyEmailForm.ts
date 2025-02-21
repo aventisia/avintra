@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { verifyEmailZodSchema } from "../constants/verify-email-zod-schema";
-import { useProfileEmailUpdateStore } from "../stores/profile-security-tab-store";
+import { useProfileEmailUpdateStore } from "../stores/profile-email-update-store";
 
 export const useDefineVerifyEmailForm = () => {
   // Get update email store state

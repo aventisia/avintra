@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { IupdateProfileEmailData } from "../types/create-account-data";
 import { IVerifyEmailData } from "../types/verify-email-data";
+import { IupdateProfileEmailData } from "../types/create-account-data";
 
 type State = {
   /** The current step number of the form */
   stepNo: number;
 
-  /** Data for creating an account */
+  /** Data for updating an account email */
   updateProfileEmailData: IupdateProfileEmailData | null;
 
   /** Data for verifying an email address */
@@ -17,7 +17,7 @@ type Actions = {
   /** Set the step number of the form */
   setStepNo: (stepNo: number) => void;
 
-  /** Set the form data for creating an account */
+  /** Set the form data for updating an account email */
   setUpdateProfileEmailData: (data: IupdateProfileEmailData | null) => void;
 
   /** Set the form data for verifying an email address */

@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import { useProfileEmailUpdateStore } from "../stores/profile-security-tab-store";
 import { updateMyAccountEmail } from "../apis/my-account-apis";
+import { useProfileEmailUpdateStore } from "../stores/profile-email-update-store";
 
 export const useProfileEmailMutation = () => {
     // Get store state and actions

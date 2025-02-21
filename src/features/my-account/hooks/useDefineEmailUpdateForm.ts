@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { updateEmailZodSchema, emailSchema } from "../types/create-account-zod-schema";
-import { useProfileEmailUpdateStore } from "../stores/profile-security-tab-store";
+import { useProfileEmailUpdateStore } from "../stores/profile-email-update-store";
 
 export const useDefineEmailUpdateForm = () => {
   // Get update email store state

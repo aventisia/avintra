@@ -10,8 +10,8 @@ import { useProfileEmailMutation } from "../../hooks/useProfileEmailMutation";
 import Lucide from "@/react-toolkit/ui/Lucide";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
-import { useResendCodeMutation } from "../../hooks/useResendCodeMutation";
 import { verificationCodeProps } from "../../constants/constants";
+import { useResendCodeMutationForEmailUpdate } from "../../hooks/useResendCodeMutationForEmailUpdate";
 
 export const VerifyEmail = () => {
   // Define form
@@ -27,7 +27,8 @@ export const VerifyEmail = () => {
   const { updateProfileEmailMutation, isUpdatePending } =
     useProfileEmailMutation();
 
-  const { resendCodeHandler, isResendCodePending } = useResendCodeMutation();
+  const { resendCodeHandler, isResendCodePending } =
+    useResendCodeMutationForEmailUpdate();
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof verifyEmailZodSchema>) => {

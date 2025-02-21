@@ -1,7 +1,7 @@
 import { useShallow } from "zustand/react/shallow";
 import { EnterEmail } from "./EnterEmail";
-import { useProfileEmailUpdateStore } from "../../stores/profile-security-tab-store";
 import { VerifyEmail } from "./VerifyEmail";
+import { useProfileEmailUpdateStore } from "../../stores/profile-email-update-store";
 
 export const EmailSettingsTab = () => {
   // Get store state
