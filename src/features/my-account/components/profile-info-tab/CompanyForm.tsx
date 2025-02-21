@@ -11,10 +11,10 @@ import type { UserBillingAddressDto } from "../../dtos/my-account-company-dto";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { useState } from "react";
 import { useDefineComapnyInfoForm } from "../../hooks/useDefineComapnyInfoForm";
 import { useCompanyInfoFormMutation } from "../../hooks/useCompanyInfoFormMutation";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 export const CompanyForm = () => {
   const { form, isLoading } = useDefineComapnyInfoForm();
 
@@ -176,14 +176,13 @@ export const CompanyForm = () => {
         {/* Save details button */}
         <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers && (
-            <Button
+            <SubmitButton
               variant="default"
-              disabled={isPending || isLoading}
-              type="submit"
+              isPending={isPending || isLoading}
               className="border-primary/50 w-full px-4 md:w-auto"
             >
               Save
-            </Button>
+            </SubmitButton>
           )}
         </div>
       </div>

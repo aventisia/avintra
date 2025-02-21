@@ -1,6 +1,5 @@
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
@@ -10,10 +9,11 @@ import { InputDivElement } from "../InputDivElement";
 
 import type { z } from "zod";
 import type { UserProfileZodSchema } from "../../types/profile-zod-schema";
-import CheckboxFeildDiv from "../CheckboxFeildDiv";
 import { useDefineProfileInfoForm } from "../../hooks/useDefineProfileInfoForm";
 import { useProfileInfoFormMutation } from "../../hooks/useProfileInfoFormMutation";
 import type { MyAccountDto } from "../../dtos/my-account-profile-dto";
+import CheckboxFeildDiv from "../CheckboxFeildDiv";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 export const UserForm = () => {
   const { form, isLoading } = useDefineProfileInfoForm();
   const { mutate, isPending } = useProfileInfoFormMutation();
@@ -74,53 +74,34 @@ export const UserForm = () => {
             messageForInput={"Select your gender from the options."}
             showSkelaton={isLoading}
           >
-            <div className="flex flex-col items-center md:flex-row">
-              <div className="dark:bg-darkmode-600 w-full rounded-md border border-slate-300/60 bg-white px-3 py-2 shadow-sm first:rounded-b-none last:-mt-px last:rounded-t-none focus:z-10 first:md:rounded-r-none first:md:rounded-bl-md last:md:-ml-px last:md:mt-0 last:md:rounded-l-none last:md:rounded-tr-md [&:not(:first-child):not(:last-child)]:-mt-px [&:not(:first-child):not(:last-child)]:rounded-none [&:not(:first-child):not(:last-child)]:md:-ml-px [&:not(:first-child):not(:last-child)]:md:mt-0">
-                <CheckboxFeildDiv>
-                  <CheckboxFeildDiv.CheckboxInputFeild
-                    type="radio"
-                    value="Male"
-                    name="gender"
-                  />
-                  <CheckboxFeildDiv.Label
-                    className="font-semibold text-slate-500"
-                    htmlFor="checkbox-switch-1"
-                  >
-                    Male
-                  </CheckboxFeildDiv.Label>
-                </CheckboxFeildDiv>
-              </div>
-              <div className="dark:bg-darkmode-600 w-full rounded-md border border-slate-300/60 bg-white px-3 py-2 shadow-sm first:rounded-b-none last:-mt-px last:rounded-t-none focus:z-10 first:md:rounded-r-none first:md:rounded-bl-md last:md:-ml-px last:md:mt-0 last:md:rounded-l-none last:md:rounded-tr-md [&:not(:first-child):not(:last-child)]:-mt-px [&:not(:first-child):not(:last-child)]:rounded-none [&:not(:first-child):not(:last-child)]:md:-ml-px [&:not(:first-child):not(:last-child)]:md:mt-0">
-                <CheckboxFeildDiv>
-                  <CheckboxFeildDiv.CheckboxInputFeild
-                    type="radio"
-                    value="Female"
-                    name="gender"
-                  />
-                  <CheckboxFeildDiv.Label
-                    className="font-semibold text-slate-500"
-                    htmlFor="checkbox-switch-1"
-                  >
-                    Female
-                  </CheckboxFeildDiv.Label>
-                </CheckboxFeildDiv>
-              </div>
-              <div className="dark:bg-darkmode-600 w-full rounded-md border border-slate-300/60 bg-white px-3 py-2 shadow-sm first:rounded-b-none last:-mt-px last:rounded-t-none focus:z-10 first:md:rounded-r-none first:md:rounded-bl-md last:md:-ml-px last:md:mt-0 last:md:rounded-l-none last:md:rounded-tr-md [&:not(:first-child):not(:last-child)]:-mt-px [&:not(:first-child):not(:last-child)]:rounded-none [&:not(:first-child):not(:last-child)]:md:-ml-px [&:not(:first-child):not(:last-child)]:md:mt-0">
-                <CheckboxFeildDiv>
-                  <CheckboxFeildDiv.CheckboxInputFeild
-                    type="radio"
-                    value="PreferNotToSay"
-                    name="gender"
-                  />
-                  <CheckboxFeildDiv.Label
-                    className="font-semibold text-slate-500"
-                    htmlFor="checkbox-switch-1"
-                  >
-                    Prefer Not To Say
-                  </CheckboxFeildDiv.Label>
-                </CheckboxFeildDiv>
-              </div>
-            </div>
+            <CheckboxFeildDiv>
+              <CheckboxFeildDiv.CheckboxFormField
+                name="gender"
+                type="radio"
+                value={form.getValues("gender")}
+              >
+                <div className="flex flex-col items-center md:flex-row">
+                  <CheckboxFeildDiv.CheckboxInputFeildWrapper>
+                    <CheckboxFeildDiv.CheckboxInputFeild value="Male" />
+                    <CheckboxFeildDiv.Label className="font-semibold text-slate-500">
+                      Male
+                    </CheckboxFeildDiv.Label>
+                  </CheckboxFeildDiv.CheckboxInputFeildWrapper>
+                  <CheckboxFeildDiv.CheckboxInputFeildWrapper>
+                    <CheckboxFeildDiv.CheckboxInputFeild value="Female" />
+                    <CheckboxFeildDiv.Label className="font-semibold text-slate-500">
+                      Female
+                    </CheckboxFeildDiv.Label>
+                  </CheckboxFeildDiv.CheckboxInputFeildWrapper>
+                  <CheckboxFeildDiv.CheckboxInputFeildWrapper>
+                    <CheckboxFeildDiv.CheckboxInputFeild value="PreferNotToSay" />
+                    <CheckboxFeildDiv.Label className="font-semibold text-slate-500">
+                      Prefer Not To Say
+                    </CheckboxFeildDiv.Label>
+                  </CheckboxFeildDiv.CheckboxInputFeildWrapper>
+                </div>
+              </CheckboxFeildDiv.CheckboxFormField>
+            </CheckboxFeildDiv>
           </InputDivElement>
 
           <InputDivElement
@@ -209,14 +190,14 @@ export const UserForm = () => {
         </div>
 
         <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
-          <Button
+          <SubmitButton
             variant="default"
             type="submit"
             className="border-primary/50 w-full px-4 md:w-auto"
-            disabled={isLoading || isPending}
+            isPending={isLoading || isPending}
           >
             Save
-          </Button>
+          </SubmitButton>
         </div>
       </div>
     </Form>
