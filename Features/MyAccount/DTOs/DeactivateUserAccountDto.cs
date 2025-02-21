@@ -6,6 +6,11 @@ public class DeactivateUserAccountDto
 {
 
     /// <summary>
+    /// Gets or sets for the account deactivation
+    /// </summary>
+    [Required]
+    public bool Deactivate { get; set; }
+    /// <summary>
     /// Gets or sets the password while deactivating the account.
     /// </summary>
     [Required]
