@@ -129,9 +129,6 @@ namespace AccountsAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsCreatedInOtherDbs")
                         .HasColumnType("boolean");
 
