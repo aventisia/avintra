@@ -183,15 +183,16 @@ public class AuthService(
             // Create RefreshToken
             var refreshToken = _authHelperService.CreateRefreshToken();
 
+            var data = GetClientBrowserAndOs(_httpContext);
             // Create new ActiveSession instance
             var activeSession = new ActiveSession()
             {
                 Id = sessionId,
                 DeviceId = userAgent,
-                IPAddress = "TODO", // TODO: Get IP address
-                BrowserType = "TODO", // TODO: Get browser type
-                OperatingSystem = "TODO", // TODO: Get OS
-                Location = "TODO", // TODO: Get location
+                IPAddress = data.ipAddress,
+                BrowserType = data.Browser,
+                OperatingSystem = data.OS,
+                Location = "TODO", // TODO: Get location required subscription
                 RefreshToken = refreshToken,
                 SessionExpiresOn = refreshTokenExpiresOn,
                 LoggedInOn = DateTimeOffset.UtcNow,
@@ -385,7 +386,7 @@ public class AuthService(
         {
             Data = new CreatedVerificationCodeDto()
             {
-                VerificationCodeId = new Guid(),
+                VerificationCodeId = Guid.NewGuid(),
                 Email = createVerificationCodeDto.Email,
                 RequestType = createVerificationCodeDto.RequestType
 
@@ -415,26 +416,19 @@ public class AuthService(
                 // Request type is "VerifyEmailAddress"
                 if (requestType == VerificationCodeRequestTypesEnum.VerifyEmailAddress)
                 {
-                    _logger.LogInformation($"Cannot fullfill VerifyEmailAddress request type " +
-                    $"because User account already exits. " +
-                    $"While creating verification code for " +
-                    $"requestType - {requestType}, " +
-                    $"username - {userName} and " +
-                    $"device Id - {userAgent}");
+                    _logger.LogInformation("Cannot fullfill VerifyEmailAddress request type because User account already exits. While creating verification code for  requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+                requestType, userName, userAgent);
                     return serviceResponse;
                 }
 
                 /*Locked account is allowed as user should be able to unlock account 
-                 via creating code and verifing it*/
+                via creating code and verifing it*/
 
                 // Account is disabled
                 if (user.IsDisabled)
                 {
-                    _logger.LogInformation($"User account is disabled. " +
-                        $"While creating verification code for " +
-                        $"requestType - {requestType}, " +
-                        $"username - {userName} and " +
-                        $"device Id - {userAgent}");
+                    _logger.LogInformation("User account is disabled. While creating verification code for requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+                requestType, userName, userAgent);
                     return serviceResponse;
                 }
             }
@@ -442,11 +436,8 @@ public class AuthService(
             // User not found
             if (user == null && requestType != VerificationCodeRequestTypesEnum.VerifyEmailAddress)
             {
-                _logger.LogInformation($"User account not found. " +
-                    $"While creating verification code for " +
-                    $"requestType - {requestType}, " +
-                    $"username - {userName} and " +
-                    $"device Id - {userAgent}");
+                _logger.LogInformation("User account not found. requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+                requestType, userName, userAgent);
                 return serviceResponse;
             }
 
@@ -478,11 +469,8 @@ public class AuthService(
             // Insert-VerificationCode job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while creating " +
-                    $"verification code for " +
-                    $"requestType - {requestType}, " +
-                    $"username - {userName} and " +
-                    $"device Id - {userAgent}");
+                _logger.LogInformation("Context SaveChanges failed while creating verification code for requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+                requestType, userName, userAgent);
                 return serviceResponse;
             }
 
@@ -495,14 +483,12 @@ public class AuthService(
                 createVerificationCodeDto.Email,
                 new Dictionary<string, string>()
                 {
-                    {"{{userFirstName}}", (user == null ? "" : user.FirstName) },
+                    {"{{userFirstName}}", user == null ? "" : user.FirstName },
                     {"{{VerificationCode}}", verificationCode.SecretCode},
                     {"{{VerificationCodeValidityInMinutes}}", _verificationCodeConfig.ValidityInMinutes.ToString() }
                 }))
             {
-                _logger.LogError($"Error occurred while sending verification code " +
-                    $"email to {createVerificationCodeDto.Email} and " +
-                    $"request type {requestType}");
+                _logger.LogError("Error occurred while sending verification code email to {Email} and request type {RequestType}", createVerificationCodeDto.Email, requestType);
                 /*Still moving forward because we are not going to inform user*/
             }
 
@@ -517,5 +503,27 @@ public class AuthService(
         }
 
         return serviceResponse;
+    }
+
+
+    public static (string? ipAddress, string Browser, string OS) GetClientBrowserAndOs(HttpContext context)
+    {
+        var ipAddress = context.Connection.RemoteIpAddress;
+
+        // Handle forwarded headers (e.g., when behind a proxy or load balancer)
+        if (context.Request.Headers.ContainsKey("X-Forwarded-For"))
+        {
+            ipAddress = System.Net.IPAddress.Parse(context.Request.Headers["X-Forwarded-For"].ToString().Split(',')[0]);
+        }
+
+        //TODO - required the UAParser package to be installed
+        // var userAgent = context.Request.Headers["User-Agent"].ToString();
+        // var uaParser = Parser.GetDefault();
+        // var clientInfo = uaParser.Parse(userAgent);
+
+        // string browser = clientInfo.UA.ToString();
+        // string os = clientInfo.OS.ToString();
+
+        return (ipAddress?.ToString(), "Chrome", "Windows 10");
     }
 }
