@@ -123,13 +123,8 @@ public class AccountUser : IdentityUser<Guid>
     public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the account is active or not.
-    /// </summary>
-    public bool IsActive { get; set; } = true;
-
-    /// <summary>
     /// Gets or sets the duration to deactivate the account
     /// </summary>
-    public DateTime DeactivatedOn { get; set; }
+    public DateTime DeactivatedOn { get; set; } = DateTime.MaxValue;
 
 }

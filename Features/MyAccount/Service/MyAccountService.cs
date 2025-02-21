@@ -1,4 +1,6 @@
 using System.Runtime.CompilerServices;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace AccountsAPIs.Services;
 
@@ -1382,19 +1384,22 @@ public class MyAccountService(
                 .Select(s => s.Id)
                 .ToListAsync();
 
-            // Terminate all sessions
-            var terminateSessionsResult = await _authService.TerminateUserSessionsAsync(user.Id, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
-
-            // TerminateSessions job failed
-            if (terminateSessionsResult.StatusCode != 200)
+            // if user is active and going to deactivate the account then
+            if (user.DeactivatedOn >= DateTime.MaxValue)
             {
-                _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
-                return serviceResponse;
+                // Terminate all sessions
+                var terminateSessionsResult = await _authService.TerminateUserSessionsAsync(user.Id, _userName, TerminateSessionReasonsEnum.SessionTerminatedByUser, sessionIds);
+
+                // TerminateSessions job failed
+                if (terminateSessionsResult.StatusCode != 200)
+                {
+                    _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
+                    return serviceResponse;
+                }
             }
 
-            // Update account User using UserManager
-            user.IsActive = false;
-            user.DeactivatedOn = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToDateTime(TimeOnly.MinValue);
+            // toggle account deactivation using UserManager
+            user.DeactivatedOn = (user.DeactivatedOn >= DateTime.MaxValue) ? DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToDateTime(TimeOnly.MinValue) : DateTime.MaxValue;
             var updateUserResult = await _userManager.UpdateAsync(user);
 
             // User Update-Job failed
