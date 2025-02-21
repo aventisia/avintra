@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import Lucide from "@/react-toolkit/ui/Lucide";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
-import { useResendCodeMutation } from "../../hooks/useResendCodeMutation";
 import { verificationCodeProps } from "../../constants/constants";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { useDefineDeactivationVerifyEmailForm } from "../../hooks/useDefineDeactivationVerifyEmailForm";
@@ -15,6 +14,8 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
 import { useAccountDeactivateMutation } from "../../hooks/useAccountDeactivateMutation";
 import type { deactivationVerifyEmailZodSchema } from "../../constants/deactivation-verify-email-zod-schema";
+import { useDefineDeactivationForm } from "../../hooks/useDefineDeactivationForm";
+import { useResendCodeMutationForDeactivation } from "../../hooks/useResendCodeMutationForDeactivation";
 
 export const DeactivationVerifyEmailForm = () => {
   // Get user session
@@ -28,18 +29,21 @@ export const DeactivationVerifyEmailForm = () => {
   const { form, isSubmitting, verifyEmailData, setStepNo } =
     useDefineDeactivationVerifyEmailForm();
 
+  const { deactivationStatusData, isLoading } = useDefineDeactivationForm();
+
   // Get mutation to deactviate account
   const { deactivateMyAccountMutation, isDeactivationPending } =
     useAccountDeactivateMutation();
 
-  const { resendCodeHandler, isResendCodePending } = useResendCodeMutation();
+  const { resendCodeHandler, isResendCodePending } =
+    useResendCodeMutationForDeactivation();
 
   // Define submit handler
   const onSubmit = (
     formData: z.infer<typeof deactivationVerifyEmailZodSchema>,
   ) => {
     // store data is null
-    if (!verifyEmailData) {
+    if (!verifyEmailData || !deactivationStatusData) {
       toast.error("Something went wrong. Please try again.");
       setStepNo(1);
       return;
@@ -47,6 +51,7 @@ export const DeactivationVerifyEmailForm = () => {
 
     // deactviate account
     deactivateMyAccountMutation({
+      deactivate: !deactivationStatusData?.deactivating,
       password: formData.password,
       verificationCodeId: verifyEmailData.codeId,
       secretCode: formData.verificationCode,
@@ -57,7 +62,7 @@ export const DeactivationVerifyEmailForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      disabled={isSubmitting || isDeactivationPending}
+      disabled={isSubmitting || isDeactivationPending || isLoading}
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
@@ -108,10 +113,14 @@ export const DeactivationVerifyEmailForm = () => {
             />
           </div>
           <SubmitButton
-            primaryText="Delete"
+            primaryText={
+              deactivationStatusData?.deactivating
+                ? "Cancel Deletion"
+                : "Delete"
+            }
             variant="destructive"
             className="text-md"
-            isPending={isSubmitting || isDeactivationPending}
+            isPending={isSubmitting || isDeactivationPending || isLoading}
           />
         </div>
       </div>

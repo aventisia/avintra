@@ -14,7 +14,7 @@ export const AccountDeactivationTab = () => {
   // Return component
   return (
     <>
-      {/* Step 1 - update email step */}
+      {/* Step 1 - self declaration to deactivation step */}
       {stepNo === 1 && <AccountDeactivation />}
 
       {/* Step 2 - Verify email address step */}

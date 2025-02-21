@@ -23,6 +23,9 @@ export const useDefineDeactivationVerifyEmailForm = () => {
     },
   });
 
+
+
+  console.log(verifyEmailData);
   // Destructor form values and methods
   const {
     formState: { isSubmitting, isDirty },
