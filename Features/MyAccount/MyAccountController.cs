@@ -126,9 +126,15 @@ public class MyAccountController(
     }
 
     [HttpPost("deactivate")]
-    public async Task<ActionResult<ServiceResponse<EmailUpdateDto>>> DeactivateAccount([FromBody] DeactivateUserAccountDto deactivateUserAccountDto)
+    public async Task<ActionResult<ServiceResponse<bool>>> DeactivateAccount([FromBody] DeactivateUserAccountDto deactivateUserAccountDto)
     {
         return ResultHelper(await _myAccountService.DeactivateAccountAsync(deactivateUserAccountDto));
+    }
+
+    [HttpGet("deactivation-status")]
+    public async Task<ActionResult<ServiceResponse<DeactivationStatusDto>>> GetDeactivationStatus()
+    {
+        return ResultHelper(await _myAccountService.GetDeactivationStatusAsync());
     }
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
