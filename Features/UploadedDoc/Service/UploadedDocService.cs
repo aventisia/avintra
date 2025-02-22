@@ -450,7 +450,7 @@ public class UploadedDocService : IUploadedDocService
 
             var fileName = pathParts.Last();   // The file name
 
-            var filePath = GetFilePathFromWwwRoot(fileName);
+            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, fileName);
 
             if (File.Exists(filePath))
             {
@@ -484,14 +484,4 @@ public class UploadedDocService : IUploadedDocService
 
         return serviceResponse;
     }
-
-    // Helper method to resolve the file path
-    private string GetFilePathFromWwwRoot(string fileName)
-    {
-        var wwwRootPath = _webHostEnvironment.WebRootPath;
-        var filePath = Path.Combine(wwwRootPath, "files", fileName);
-        _logger.LogInformation("Resolved file path: {FilePath}.", filePath);
-        return filePath;
-    }
-
 }
