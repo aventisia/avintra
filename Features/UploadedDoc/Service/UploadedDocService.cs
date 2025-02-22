@@ -460,7 +460,7 @@ public class UploadedDocService : IUploadedDocService
                 // Prepare the file details for response
                 var fileDetail = new FileDetailDto
                 {
-                    Path = fileUrl,
+                    Path = filePath,
                     Type = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
                     Name = fileName,
                     Size = new FileInfo(filePath).Length,

@@ -41,7 +41,7 @@ public class UploadedDocController: BaseApiController
 
     // Endpoint to download a file based on the file URL.
     [HttpGet]
-    public async Task<IActionResult> DownloadFile([FromQuery] string fileUrl)
+    public IActionResult DownloadFile([FromQuery] string fileUrl)
     {
         if (string.IsNullOrEmpty(fileUrl))
         {
