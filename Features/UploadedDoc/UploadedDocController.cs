@@ -49,17 +49,14 @@ public class UploadedDocController: BaseApiController
         }
 
         // Call the service to get file details
-        var response = _uploadedDocService.DownloadFileAsync(fileUrl);
+        var fileDetailsResponse = _uploadedDocService.DownloadFileAsync(fileUrl);
 
-        if (response.Data == null)
+        if (fileDetailsResponse.Data == null)
         {
-            return NotFound(response.Message);
+            return NotFound(fileDetailsResponse.Message);
         }
 
-        var fileDetail = response.Data;
-
-        // Resolve the full file path using the file details
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileDetail.Path.TrimStart('/'));
+        var filePath = fileDetailsResponse.Data.Path;
 
         // Check if the file exists before serving
         if (System.IO.File.Exists(filePath))
@@ -69,7 +66,7 @@ public class UploadedDocController: BaseApiController
             var fileBytes = System.IO.File.ReadAllBytes(filePath);
 
             // Return the file with the appropriate content type and file name
-            return File(fileBytes, contentType, fileDetail.Name);
+            return File(fileBytes, contentType, fileDetailsResponse.Data.Name);
         }
 
         return NotFound("File not found.");
