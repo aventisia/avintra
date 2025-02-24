@@ -30,7 +30,7 @@ export const LoginMain = () => {
       ) : (
         <PageContainer>
           <LeftContainer>
-            {/* Logog + Help link */}
+            {/* Logo + Help link */}
             <LoginHeader />
 
             {/* Step 1 - Get tenant info step */}

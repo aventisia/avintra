@@ -14,13 +14,14 @@ const NotFoundPage = () => {
           href="/help?id=help-on-error"
           className={cn(
             buttonVariants({ variant: "link" }),
-            "text-md text-right",
+            "text-right text-md",
+            "hidden", // TODO: Hide the help link till we have a docs app
           )}
         >
           Help?
         </a>
       </div>
-      <div className="text-md -mt-4 flex grow flex-col items-center justify-center gap-3 mlg:flex-row">
+      <div className="-mt-4 flex grow flex-col items-center justify-center gap-3 text-md mlg:flex-row">
         <DocumentMagnifyingGlassIcon className="h-[25%] stroke-1 text-slate-100 opacity-40 mlg:h-[40%]" />
         <h2 className="text-4xl text-primary">404</h2>
         <Separator

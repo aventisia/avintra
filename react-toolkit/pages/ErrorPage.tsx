@@ -20,7 +20,11 @@ const ErrorPage = () => {
         <AppLogo doNotShowAppName={true} />
         <a
           href="/help?id=help-on-error"
-          className={cn(buttonVariants({ variant: "link" }), "text-right")}
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "text-right",
+            "hidden", // TODO: Hide the help link till we have a docs app
+          )}
         >
           Help?
         </a>
