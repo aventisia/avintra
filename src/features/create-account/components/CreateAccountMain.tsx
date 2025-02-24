@@ -29,7 +29,8 @@ export const CreateAccountMain = () => {
             href="/help?id=create-account"
             className={cn(
               buttonVariants({ variant: "link" }),
-              "text-md text-right",
+              "text-right text-md",
+              "hidden", // TODO: Hide the help link till we have a docs app
             )}
           >
             Help?

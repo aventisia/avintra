@@ -11,7 +11,8 @@ export const LoginHeader = () => {
         href="/help?id=login"
         className={cn(
           buttonVariants({ variant: "link" }),
-          "text-md text-right",
+          "text-right text-md",
+          "hidden", // TODO: Hide the help link till we have a docs app
         )}
       >
         Help?

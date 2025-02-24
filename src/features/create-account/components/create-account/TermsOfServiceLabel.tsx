@@ -1,15 +1,15 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
-export const TermsAndConditionsLabel = () => {
+export const TermsOfServiceLabel = () => {
   return (
-    <p className="text-md mt-[0.5px] font-normal">
-      I agree to the{" "}
+    <p className="text-md -mt-[0.16rem] font-normal">
+      I acknowledge and accept the {" "}
       <a
-        href="/help?id=create-account"
+        href={`${import.meta.env.VITE_MARKETING_URL}/terms-of-service`}
         className={cn(buttonVariants({ variant: "link" }))}
       >
-        Terms & Conditions
+        Terms of Service
       </a>
     </p>
   );

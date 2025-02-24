@@ -36,6 +36,7 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
           className={cn(
             buttonVariants({ variant: "link" }),
             "text-right text-md",
+            "hidden", // TODO: Hide the help link till we have a docs app
           )}
         >
           Help?
@@ -51,4 +52,3 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
 };
 
 export { RedirectPage };
-
