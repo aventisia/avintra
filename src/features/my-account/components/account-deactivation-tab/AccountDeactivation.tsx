@@ -1,4 +1,3 @@
-import { FormCheck } from "@/components/Form";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useShallow } from "zustand/react/shallow";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
@@ -7,6 +6,7 @@ import { z } from "zod";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { useDefineDeactivationForm } from "../../hooks/useDefineDeactivationForm";
 import { useCreateCodeMutationForDeactivation } from "../../hooks/useCreateCodeMutationForDeactivation";
+import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
 
 export const AccountDeactivationZodSchema = z.object({
   confirmDelete: z.boolean({
@@ -62,19 +62,15 @@ export const AccountDeactivation = () => {
               deletion if needed.
             </div>
           )}
-          <FormCheck className="mt-5">
-            <FormCheck.Input
-              id="confirm-delete-account"
-              type="checkbox"
-              name="confirmDelete"
-              required
-            />
-            <FormCheck.Label htmlFor="checkbox-switch-1">
-              {deactivationStatusData?.deactivating
+          <CheckboxField
+            name="confirmDelete"
+            className="my-2"
+            label={
+              deactivationStatusData?.deactivating
                 ? "Confirm that I want to stop deletion process of my account."
-                : "Confirm that I want to delete my account."}
-            </FormCheck.Label>
-          </FormCheck>
+                : "Confirm that I want to delete my account."
+            }
+          />
         </div>
         <div className="mt-6 flex flex-col-reverse gap-3 border-t border-dashed border-slate-300/70 pt-5 md:flex-row md:justify-end">
           <SubmitButton

@@ -6,7 +6,7 @@ import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { toast } from "sonner";
 import Lucide from "@/react-toolkit/ui/Lucide";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
+import { ResendCodeButton } from "@/react-toolkit/ui/buttons/ResendCodeButton";
 import { verificationCodeProps } from "../../constants/constants";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { useDefineDeactivationVerifyEmailForm } from "../../hooks/useDefineDeactivationVerifyEmailForm";

@@ -9,9 +9,9 @@ import { useDefineVerifyEmailForm } from "../../hooks/useDefineVerifyEmailForm";
 import { useProfileEmailMutation } from "../../hooks/useProfileEmailMutation";
 import Lucide from "@/react-toolkit/ui/Lucide";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
 import { verificationCodeProps } from "../../constants/constants";
 import { useResendCodeMutationForEmailUpdate } from "../../hooks/useResendCodeMutationForEmailUpdate";
+import { ResendCodeButton } from "@/react-toolkit/ui/buttons/ResendCodeButton";
 
 export const VerifyEmail = () => {
   // Define form
