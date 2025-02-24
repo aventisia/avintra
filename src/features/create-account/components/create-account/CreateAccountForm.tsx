@@ -14,7 +14,7 @@ import {
 } from "../../constants/form-field-props";
 import { useCreateCodeMutation } from "../../hooks/useCreateCodeMutation";
 import { useDefineCreateAccountForm } from "../../hooks/useDefineCreateAccountForm";
-import { TermsAndConditionsLabel } from "./TermsAndConditionsLabel";
+import { TermsOfServiceLabel } from "./TermsOfServiceLabel";
 
 /**
  * Component for the create account form.
@@ -88,7 +88,7 @@ export const CreateAccountForm = () => {
       {/* Terms and Conditions */}
       <CheckboxField
         name="termsAgreement"
-        label={<TermsAndConditionsLabel />}
+        label={<TermsOfServiceLabel />}
       />
 
       {/* Submit form */}
