@@ -1,16 +1,27 @@
 namespace AccountsAPIs.Services;
 
-public class PlanService(ILogger<AuthService> logger,
-  IUnitOfWork unitOfWork,
-  IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
-  JwtConfig jwtConfig) : IPlanService
+public class PlanService : IPlanService
 {
-    private readonly ILogger<AuthService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-    private readonly IdentityConfig _identityConfig = identityConfig;
-    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly ILogger<AuthService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+    private readonly string _userName;
+    private readonly IdentityConfig _identityConfig;
+    private readonly JwtConfig _jwtConfig;
+
+    public PlanService(ILogger<AuthService> logger,
+      IUnitOfWork unitOfWork,
+      IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
+      JwtConfig jwtConfig)
+    {
+        //Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _identityConfig = identityConfig;
+        _jwtConfig = jwtConfig;
+    }
 
     // Retrive plan list
     public async Task<ServiceResponse<IEnumerable<PlanListDto>>> GetPlansAsync()
@@ -40,16 +51,15 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retrive plan list";
             return serviceResponse;
         }
         return serviceResponse;
     }
-
+    
     // Retrive plan by Id
-    public async Task<ServiceResponse<PlanListDto>> GetPlanAsync(Guid id)
+    public async Task<ServiceResponse<PlanListDto>> GetPlanAsync (Guid id)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<PlanListDto>
@@ -76,8 +86,7 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retrive plan by id";
             return serviceResponse;
         }
@@ -114,8 +123,7 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retrive plan status list";
             return serviceResponse;
         }
@@ -158,12 +166,11 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
-
+        
     }
     // Update plan
     public async Task<ServiceResponse<PlanDto>> UpdatePlanAsync(PlanDto planDto)
@@ -188,7 +195,7 @@ public class PlanService(ILogger<AuthService> logger,
                 serviceResponse.Message = "plan not exist";
                 return serviceResponse;
             }
-            // Default mapping 
+             // Default mapping 
             var newPlan = planDto.Adapt(plan);
 
             // Update plan
@@ -210,15 +217,14 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while updating plan";
             return serviceResponse;
         }
         return serviceResponse;
-
+        
     }
-
+   
 
     public async Task<ServiceResponse<PlanFeaturesDto>> UpdatePlanFeatureAsync(PlanFeaturesDto PlanFeatureDto)
     {
@@ -267,8 +273,7 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while updating plan";
             return serviceResponse;
         }
@@ -315,8 +320,7 @@ public class PlanService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while deteting plan";
             return serviceResponse;
         }

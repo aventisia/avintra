@@ -1,13 +1,23 @@
 namespace AccountsAPIs.Services;
 
-public class SubscriptionService(
-    ILogger<SubscriptionService> logger,
-    IUnitOfWork unitOfWork,
-    IHttpContextAccessor httpContextAccessor) : ISubscriptionService
+public class SubscriptionService : ISubscriptionService
 {
-    private readonly ILogger<SubscriptionService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly ILogger<SubscriptionService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+
+    public SubscriptionService(
+        ILogger<SubscriptionService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+    }
+
 
     public async Task<ServiceResponse<IEnumerable<SubscriptionDto>>> GetSubscriptionListAsync(Guid planId, Guid userId)
     {
@@ -32,8 +42,7 @@ public class SubscriptionService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -76,8 +85,7 @@ public class SubscriptionService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -133,8 +141,7 @@ public class SubscriptionService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -182,10 +189,9 @@ public class SubscriptionService(
             serviceResponse.Message = "Subscription deleted successfully";
 
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;

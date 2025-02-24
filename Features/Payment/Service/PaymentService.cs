@@ -1,30 +1,49 @@
 
 namespace AccountsAPIs.Services;
 
-public class PaymentService(UserManager<AccountUser> userManager,
-    SignInManager<AccountUser> signInManager,
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<AuthService> logger,
-    IUnitOfWork unitOfWork,
-    IAuthHelperService authHelperService,
-    IAuthService authService,
-    JwtConfig jwtConfig,
-    IdentityConfig identityConfig,
-    IEmailService emailService) : IPaymentService
+public class PaymentService : IPaymentService
 {
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly SignInManager<AccountUser> _signInManager = signInManager;
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-    private readonly ILogger<AuthService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IAuthService _authService = authService;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
-    private readonly IEmailService _emailService = emailService;
-    private readonly IdentityConfig _identityConfig = identityConfig;
-    private readonly JwtConfig _jwtConfig = jwtConfig;
-    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-    private readonly Guid _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly SignInManager<AccountUser> _signInManager;
+    private readonly HttpContext _httpContext;
+    private readonly ILogger<AuthService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
+    private readonly IAuthHelperService _authHelperService;
+    private readonly IEmailService _emailService;
+    private readonly IdentityConfig _identityConfig;
+    private readonly JwtConfig _jwtConfig;
+    private readonly string _userName;
+    private readonly Guid _sessionId;
+    private readonly Guid _userId;
+
+    public PaymentService(UserManager<AccountUser> userManager,
+        SignInManager<AccountUser> signInManager,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<AuthService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        IAuthService authService,
+        JwtConfig jwtConfig,
+        IdentityConfig identityConfig,
+        IEmailService emailService)
+    {
+        // Set _userName, _sessionId & _userId
+        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _authService = authService;
+        _authHelperService = authHelperService;
+        _jwtConfig = jwtConfig;
+        _identityConfig = identityConfig;
+        _emailService = emailService;
+    }
 
     // retrive payment by Id
     public async Task<ServiceResponse<PaymentDto>> GetPaymentAsync(Guid id)
@@ -57,8 +76,7 @@ public class PaymentService(UserManager<AccountUser> userManager,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retriving payment";
             return serviceResponse;
         }
@@ -95,8 +113,7 @@ public class PaymentService(UserManager<AccountUser> userManager,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while retriving payment list by invoiceId";
             return serviceResponse;
         }
@@ -113,7 +130,7 @@ public class PaymentService(UserManager<AccountUser> userManager,
             Message = "Failed to insert payment, please try again"
         };
         try
-        {
+        {  
             // Trim dto' string props
             paymentDto = TrimDtoStringPropsUtil.TrimDtoStringProps(paymentDto);
 
@@ -139,8 +156,7 @@ public class PaymentService(UserManager<AccountUser> userManager,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while inserting payment";
             return serviceResponse;
         }
@@ -148,7 +164,7 @@ public class PaymentService(UserManager<AccountUser> userManager,
     }
 
     // Update payment status
-    public async Task<ServiceResponse<PaymentStatusDto>> UpdatePaymentStatusAsync(PaymentStatusDto paymentStatusDto)
+    public async Task<ServiceResponse<PaymentStatusDto>> UpdatePaymentStatusAsync (PaymentStatusDto paymentStatusDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<PaymentStatusDto>
@@ -163,11 +179,11 @@ public class PaymentService(UserManager<AccountUser> userManager,
 
             // Validate existence payment
             var payment = await _unitOfWork.PaymentRepo
-            .GetByConditionAsync(w => w.Id == paymentStatusDto.Id)
+            .GetByConditionAsync(w => w.Id == paymentStatusDto.Id )
             .FirstOrDefaultAsync();
 
             // if payment does not exist
-            if (payment == null)
+            if(payment == null)
             {
                 _logger.LogInformation($"payment does not exist");
                 serviceResponse.Message = "payment not exist";
@@ -195,10 +211,9 @@ public class PaymentService(UserManager<AccountUser> userManager,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+           _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while updating payment status";
-            return serviceResponse;
+            return serviceResponse; 
         }
         return serviceResponse;
     }

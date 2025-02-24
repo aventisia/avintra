@@ -1,19 +1,29 @@
 namespace AccountsAPIs.Services;
 
-public class LoginWithPwdService(
-    SignInManager<AccountUser> signInManager,
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<LoginWithPwdService> logger,
-    IUnitOfWork unitOfWork,
-    IAuthHelperService authHelperService,
-    UserManager<AccountUser> userManager) : ILoginWithPwdService
+public class LoginWithPwdService : ILoginWithPwdService
 {
-    private readonly SignInManager<AccountUser> _signInManager = signInManager;
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly ILogger<LoginWithPwdService> _logger = logger;
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
+    private readonly SignInManager<AccountUser> _signInManager;
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly ILogger<LoginWithPwdService> _logger;
+    private readonly HttpContext _httpContext;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthHelperService _authHelperService;
+
+    public LoginWithPwdService(
+        SignInManager<AccountUser> signInManager,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<LoginWithPwdService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        UserManager<AccountUser> userManager)
+    {
+        _signInManager = signInManager;
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _authHelperService = authHelperService;
+        _userManager = userManager;
+    }
 
     // Authenticates an individual or tenant's user using the provided username and password.
     public async Task<ServiceResponse<AccountUser>> AuthenticateUserAsync(PwdLoginDto pwdLoginDto)
@@ -132,8 +142,7 @@ public class LoginWithPwdService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -248,8 +257,7 @@ public class LoginWithPwdService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

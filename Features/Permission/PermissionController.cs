@@ -3,9 +3,14 @@ namespace AccountsAPIs.Controllers;
 [Route("permission")]
 [ApiController]
 [Authorize]
-public class PermissionController(IPermissionService permissionService) : BaseApiController
+public class PermissionController : BaseApiController
 {
-    private readonly IPermissionService _permissionService = permissionService;
+    private readonly IPermissionService _permissionService;
+
+    public PermissionController(IPermissionService permissionService)
+    {
+        _permissionService = permissionService;
+    }
 
     // Gets a list of permissions
     [HttpGet]

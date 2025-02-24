@@ -3,9 +3,14 @@ namespace AccountsAPIs.Controllers;
 [Route("contact-us")]
 [ApiController]
 [Authorize]
-public class ContactUsController(IContactUsService contactUsService) : BaseApiController
+public class ContactUsController : BaseApiController
 {
-    private readonly IContactUsService _contactUsService = contactUsService;
+    private readonly IContactUsService _contactUsService;
+
+    public ContactUsController(IContactUsService contactUsService)
+    {
+        _contactUsService = contactUsService;
+    }
 
     // Retrieves a specific contact us record by its ID.
     [HttpGet("{id}")]

@@ -4,9 +4,13 @@ namespace AccountsAPIs.Controllers;
 [ApiController]
 [Authorize]
 
-public class AuditLogController(IAuditLogService auditLogService) : BaseApiController
+public class AuditLogController : BaseApiController
 {
-    private readonly IAuditLogService _auditLogService = auditLogService;
+    private readonly IAuditLogService _auditLogService;
+    public AuditLogController(IAuditLogService auditLogService)
+    {
+        _auditLogService = auditLogService;
+    }
 
     // Insert a plan
     [HttpPost("insert-log")]

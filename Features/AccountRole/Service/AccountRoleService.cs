@@ -1,13 +1,23 @@
 namespace AccountsAPIs.Services;
 
-public class AccountRoleService(
-    ILogger<AccountRoleService> logger,
-    IUnitOfWork unitOfWork,
-    IHttpContextAccessor httpContextAccessor) : IAccountRoleService
+public class AccountRoleService : IAccountRoleService
 {
-    private readonly ILogger<AccountRoleService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly ILogger<AccountRoleService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+
+
+    public AccountRoleService(
+        ILogger<AccountRoleService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+    }
 
     //Get list of roles
     public async Task<ServiceResponse<IEnumerable<AccountRoleDto>>> GetAccountRoleListAsync()
@@ -33,8 +43,7 @@ public class AccountRoleService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -88,8 +97,7 @@ public class AccountRoleService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -156,8 +164,7 @@ public class AccountRoleService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -207,8 +214,7 @@ public class AccountRoleService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;

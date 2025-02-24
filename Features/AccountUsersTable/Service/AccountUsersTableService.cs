@@ -1,22 +1,36 @@
 namespace AccountsAPIs.Services;
 
-public class AccountUsersTableService(
-    UserManager<AccountUser> userManager,
-    RoleManager<AccountRole> roleManager,
-    ILogger<AccountUsersTableService> logger,
-    IAuthHelperService authHelperService,
-    ICurrentTenantService currentTenantService,
-    IUserManagementGuardService userManagementGuardService,
-    IHttpContextAccessor httpContextAccessor) : IAccountUsersTableService
+public class AccountUsersTableService : IAccountUsersTableService
 {
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly RoleManager<AccountRole> _roleManager = roleManager;
-    private readonly ILogger<AccountUsersTableService> _logger = logger;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
-    private readonly ICurrentTenantService _currentTenantService = currentTenantService;
-    private readonly IUserManagementGuardService _userManagementGuardService = userManagementGuardService;
-    private readonly string _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly RoleManager<AccountRole> _roleManager;
+    private readonly ILogger<AccountUsersTableService> _logger;
+    private readonly IAuthHelperService _authHelperService;
+    private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
+    private readonly string _jwt;
+    private readonly Guid _userId;
+
+    public AccountUsersTableService(
+        UserManager<AccountUser> userManager,
+        RoleManager<AccountRole> roleManager,
+        ILogger<AccountUsersTableService> logger,
+        IAuthHelperService authHelperService,
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _jwt, _userId and _userRoles
+        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _logger = logger;
+        _authHelperService = authHelperService;
+        _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
+    }
 
     // Retrieves a list of account users.
     public async Task<ServiceResponse<IEnumerable<AccountUsersTableDto>>> GetAccountUsersAsync()
@@ -53,8 +67,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -158,8 +171,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -298,8 +310,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -367,8 +378,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -400,8 +410,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -447,8 +456,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return false;
         }
     }
@@ -510,7 +518,7 @@ public class AccountUsersTableService(
             // Update-Job failed
             if (!isUpdateSuccessful)
                 return serviceResponse;
-
+            
             // Task successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -518,8 +526,7 @@ public class AccountUsersTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

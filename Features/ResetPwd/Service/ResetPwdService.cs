@@ -1,23 +1,35 @@
 namespace AccountsAPIs.Services;
 
-public class ResetPwdService(
-    UserManager<AccountUser> userManager,
-    IEmailService emailService,
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<ResetPwdService> logger,
-    IUnitOfWork unitOfWork,
-    IAuthHelperService authHelperService,
-    JwtConfig jwtConfig,
-    IAuthService authService) : IResetPwdService
+public class ResetPwdService : IResetPwdService
 {
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly IEmailService _emailService = emailService;
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-    private readonly JwtConfig _jwtConfig = jwtConfig;
-    private readonly ILogger<ResetPwdService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IAuthService _authService = authService;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly IEmailService _emailService;
+    private readonly HttpContext _httpContext;
+    private readonly JwtConfig _jwtConfig;
+    private readonly ILogger<ResetPwdService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
+    private readonly IAuthHelperService _authHelperService;
+
+    public ResetPwdService(
+        UserManager<AccountUser> userManager,
+        IEmailService emailService,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<ResetPwdService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        JwtConfig jwtConfig,
+        IAuthService authService)
+    {
+        _userManager = userManager;
+        _emailService = emailService;
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _authHelperService = authHelperService;
+        _jwtConfig = jwtConfig;
+        _authService = authService;
+    }
 
     // Resets the password if the user has forgotten it or is setting it for the first time.
     public async Task<ServiceResponse<bool>> ResetPwdAsync(PwdResetDto pwdResetDto)
@@ -138,8 +150,7 @@ public class ResetPwdService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

@@ -1,17 +1,27 @@
 namespace AccountsAPIs.Services;
 
-public class PermissionService(
-    ILogger<PermissionService> logger,
-    IUnitOfWork unitOfWork,
-    IHttpContextAccessor httpContextAccessor,
-    UserManager<AccountUser> userManager,
-    RoleManager<AccountRole> roleManager) : IPermissionService
+public class PermissionService : IPermissionService
 {
-    private readonly ILogger<PermissionService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly RoleManager<AccountRole> _roleManager = roleManager;
+    private readonly ILogger<PermissionService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly RoleManager<AccountRole> _roleManager;
+
+    public PermissionService(
+        ILogger<PermissionService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor,
+        UserManager<AccountUser> userManager,
+        RoleManager<AccountRole> roleManager)
+    {
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+    }
 
     //Get list of permissions
     public async Task<ServiceResponse<IEnumerable<PermissionDto>>> GetPermissionListAsync()
@@ -37,7 +47,7 @@ public class PermissionService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -79,8 +89,7 @@ public class PermissionService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -135,8 +144,7 @@ public class PermissionService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -184,10 +192,9 @@ public class PermissionService(
             serviceResponse.Message = "Permission deleted successfully";
 
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -200,15 +207,15 @@ public class PermissionService(
         .ThenInclude(x => x.Role)
         .ThenInclude(x => x.RolePermissions)
         .ThenInclude(x => x.Permission)
-        .Where(x => x.Id == userId)
+        .Where(x =>x.Id == userId)
         .Select(x => x.UserRoles)
         .ToArrayAsync();
 
         return roles
         .SelectMany(x => x)
-        .SelectMany(x => x.Role.RolePermissions)
+        .SelectMany(x =>x.Role.RolePermissions)
         .Select(x => x.Permission.Name)
         .ToHashSet();
-
+        
     }
 }

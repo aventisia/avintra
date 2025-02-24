@@ -3,9 +3,14 @@ namespace AccountsAPIs.Controllers;
 [Route("user")]
 [ApiController]
 [Authorize(Roles = "SA,GA,GSA,TA,TSA")]
-public class AccountUsersTableController(IAccountUsersTableService accountUsersTableService) : BaseApiController
+public class AccountUsersTableController : BaseApiController
 {
-    private readonly IAccountUsersTableService _accountUsersTableService = accountUsersTableService;
+    private readonly IAccountUsersTableService _accountUsersTableService;
+
+    public AccountUsersTableController(IAccountUsersTableService accountUsersTableService)
+    {
+        _accountUsersTableService = accountUsersTableService;
+    }
 
     // Retrieves a list of account users.
     [HttpGet]

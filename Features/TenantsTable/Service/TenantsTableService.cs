@@ -1,17 +1,28 @@
 namespace AccountsAPIs.Services;
 
-public class TenantsTableService(
-    ILogger<TenantsTableService> logger,
-    IUnitOfWork unitOfWork,
-    TenantDefaultConfig tenantDefaultConfig,
-    IHttpContextAccessor httpContextAccessor,
-    ICurrentTenantService currentTenantService) : ITenantsTableService
+public class TenantsTableService : ITenantsTableService
 {
-    private readonly ILogger<TenantsTableService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly TenantDefaultConfig _tenantDefaultConfig = tenantDefaultConfig;
-    private readonly ICurrentTenantService _currentTenantService = currentTenantService;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly ILogger<TenantsTableService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly TenantDefaultConfig _tenantDefaultConfig;
+    private readonly ICurrentTenantService _currentTenantService;
+    private readonly Guid _userId;
+
+    public TenantsTableService(
+        ILogger<TenantsTableService> logger,
+        IUnitOfWork unitOfWork,
+        TenantDefaultConfig tenantDefaultConfig,
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
+    {
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _tenantDefaultConfig = tenantDefaultConfig;
+        _currentTenantService = currentTenantService;
+    }
 
     // Retrieves all tenants.
     public async Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync()
@@ -72,8 +83,7 @@ public class TenantsTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -113,8 +123,7 @@ public class TenantsTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -182,8 +191,7 @@ public class TenantsTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -268,8 +276,7 @@ public class TenantsTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -342,8 +349,7 @@ public class TenantsTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -402,8 +408,7 @@ public class TenantsTableService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

@@ -1,17 +1,26 @@
 namespace AccountsAPIs.Services;
 
-public class VerificationCodeService(
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<VerificationCodeService> logger,
-    IUnitOfWork unitOfWork,
-    IAuthHelperService authHelperService,
-    JwtConfig jwtConfig) : IVerificationCodeService
+public class VerificationCodeService : IVerificationCodeService
 {
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-    private readonly JwtConfig _jwtConfig = jwtConfig;
-    private readonly ILogger<VerificationCodeService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IAuthHelperService _authHelperService = authHelperService;
+    private readonly HttpContext _httpContext;
+    private readonly JwtConfig _jwtConfig;
+    private readonly ILogger<VerificationCodeService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthHelperService _authHelperService;
+
+    public VerificationCodeService(
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<VerificationCodeService> logger,
+        IUnitOfWork unitOfWork,
+        IAuthHelperService authHelperService,
+        JwtConfig jwtConfig)
+    {
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _jwtConfig = jwtConfig;
+        _authHelperService = authHelperService;
+    }
 
     // Checks the verification code for the provided username and request type.
     public async Task<ServiceResponse<bool>> CheckVerificationCodeAsync(CheckVerificationCodeDto checkVerificationCodeDto)
@@ -98,7 +107,7 @@ public class VerificationCodeService(
                         .GetByConditionAsync(w => w.UserName == checkVerificationCodeDto.Email)
                         .AsNoTracking()
                         .SingleOrDefaultAsync();
-
+                
                 // Get Jwt validity config
                 var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
                     _jwtConfig.PwdResetJwtValidityInMinutes);
@@ -125,8 +134,7 @@ public class VerificationCodeService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

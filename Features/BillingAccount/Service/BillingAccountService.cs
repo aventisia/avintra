@@ -1,13 +1,22 @@
 namespace AccountsAPIs.Services;
 
-public class BillingAccountService(
-    ILogger<BillingAccountService> logger,
-    IUnitOfWork unitOfWork,
-    IHttpContextAccessor httpContextAccessor) : IBillingAccountService
+public class BillingAccountService : IBillingAccountService
 {
-    private readonly ILogger<BillingAccountService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    private readonly ILogger<BillingAccountService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+
+    public BillingAccountService(
+        ILogger<BillingAccountService> logger,
+        IUnitOfWork unitOfWork,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+    }
 
     //Get a list of billing accounts
     public async Task<ServiceResponse<IEnumerable<BillingAccountDto>>> GetBillingAccountListAsync()
@@ -32,8 +41,7 @@ public class BillingAccountService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -75,8 +83,7 @@ public class BillingAccountService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -131,8 +138,7 @@ public class BillingAccountService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -182,8 +188,7 @@ public class BillingAccountService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;

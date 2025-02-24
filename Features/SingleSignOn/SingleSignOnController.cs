@@ -2,9 +2,14 @@ namespace AccountsAPIs.Controllers;
 
 [Route("auth")]
 [ApiController]
-public class SingleSignOnController(ISingleSignOnService singleSignOnService) : BaseApiController
+public class SingleSignOnController : BaseApiController
 {
-    private readonly ISingleSignOnService _singleSignOnService = singleSignOnService;
+    private readonly ISingleSignOnService _singleSignOnService;
+
+    public SingleSignOnController(ISingleSignOnService singleSignOnService)
+    {
+        _singleSignOnService = singleSignOnService;
+    }
 
     // Authenticates tenant's user via validating SSO's access_token 
     [HttpPost("tenant-sso")]

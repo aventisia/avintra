@@ -3,9 +3,14 @@ namespace AccountsAPIs.Controllers;
 [Route("role-permission")]
 [ApiController]
 [Authorize]
-public class RolePermissionController(IRolePermissionService rolePermissionService) : BaseApiController
+public class RolePermissionController : BaseApiController
 {
-    private readonly IRolePermissionService _rolePermissionService = rolePermissionService;
+    private readonly IRolePermissionService _rolePermissionService;
+
+    public RolePermissionController(IRolePermissionService rolePermissionService)
+    {
+        _rolePermissionService = rolePermissionService;
+    }
 
     // Gets a list of role permissions
     [HttpGet]

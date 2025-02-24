@@ -1,17 +1,28 @@
 namespace AccountsAPIs.Services;
 
-public class ContactUsService(
-    ILogger<ContactUsService> logger,
-    IUnitOfWork unitOfWork,
-    IEmailService emailService,
-    GeneralConfig generalConfig,
-    IHttpContextAccessor httpContextAccessor) : IContactUsService
+public class ContactUsService : IContactUsService
 {
-    private readonly ILogger<ContactUsService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IEmailService _emailService = emailService;
-    private readonly GeneralConfig _generalConfig = generalConfig;
-    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+    private readonly ILogger<ContactUsService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
+    private readonly GeneralConfig _generalConfig;
+    private readonly string _userName;
+
+    public ContactUsService(
+        ILogger<ContactUsService> logger,
+        IUnitOfWork unitOfWork,
+        IEmailService emailService,
+        GeneralConfig generalConfig,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        // Set _userName
+        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _emailService = emailService;
+        _generalConfig = generalConfig;
+    }
 
     // Retrieves a specific contact us record by its ID.
     public async Task<ServiceResponse<ContactUsDto>> GetContactUsAsync(Guid id)
@@ -45,8 +56,7 @@ public class ContactUsService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -77,8 +87,7 @@ public class ContactUsService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -136,8 +145,7 @@ public class ContactUsService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -195,8 +203,7 @@ public class ContactUsService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -245,8 +252,7 @@ public class ContactUsService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

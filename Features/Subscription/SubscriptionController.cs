@@ -3,9 +3,14 @@ namespace AccountsAPIs.Controllers;
 [Route("subscription")]
 [ApiController]
 [Authorize]
-public class SubscriptionController(ISubscriptionService subscriptionService) : BaseApiController
+public class SubscriptionController : BaseApiController
 {
-    private readonly ISubscriptionService _subscriptionService = subscriptionService;
+    private readonly ISubscriptionService _subscriptionService;
+
+    public SubscriptionController(ISubscriptionService subscriptionService)
+    {
+        _subscriptionService = subscriptionService;
+    }
 
     // Gets a list of subscriptions of single Plan using Plan Id and UserId
     [HttpGet]

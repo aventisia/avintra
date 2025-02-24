@@ -4,12 +4,16 @@ namespace AccountsAPIs.Controllers;
 [ApiController]
 [Authorize]
 
-public class InvoiceController(IInvoiceService invoiceService) : BaseApiController
+public class InvoiceController : BaseApiController
 {
-  private readonly IInvoiceService _invoiceService = invoiceService;
+  private readonly IInvoiceService _invoiceService;
+  public InvoiceController(IInvoiceService invoiceService)
+  {
+    _invoiceService = invoiceService;
+  }
 
-    // Retrive all Invoices list.
-    [HttpGet("invoice-list")]
+  // Retrive all Invoices list.
+  [HttpGet("invoice-list")]
   public async Task<ActionResult<ServiceResponse<IEnumerable<InvoiceDto>>>> GetAllInvoice()
   {
     return ResultHelper(await _invoiceService.GetAllInvoiceAsync());

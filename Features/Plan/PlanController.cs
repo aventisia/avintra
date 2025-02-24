@@ -4,12 +4,16 @@ namespace AccountsAPIs.Controllers;
 [ApiController]
 [Authorize]
 
-public class PlanController(IPlanService planService) : BaseApiController
+public class PlanController : BaseApiController
 {
-  private readonly IPlanService _planService = planService;
+  private readonly IPlanService _planService;
+   public PlanController(IPlanService planService)
+   {
+    _planService = planService;
+   }
 
-    // Retrive plan list
-    [HttpGet]
+  // Retrive plan list
+  [HttpGet]
   public async Task<ActionResult<ServiceResponse<IEnumerable<PlanListDto>>>> GetPlan()
   {
     return ResultHelper(await _planService.GetPlansAsync());

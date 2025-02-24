@@ -1,18 +1,31 @@
 namespace AccountsAPIs.Services;
 
-public class AuditLogService(ILogger<AuthService> logger,
-  IUnitOfWork unitOfWork, UserManager<AccountUser> userManager, SignInManager<AccountUser> signInManager,
-  IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
-  JwtConfig jwtConfig) : IAuditLogService
+public class AuditLogService : IAuditLogService
 {
-    private readonly ILogger<AuthService> _logger = logger;
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly SignInManager<AccountUser> _signInManager = signInManager;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-    private readonly string _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-    private readonly IdentityConfig _identityConfig = identityConfig;
-    private readonly JwtConfig _jwtConfig = jwtConfig;
+    private readonly ILogger<AuthService> _logger;
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly SignInManager<AccountUser> _signInManager;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly Guid _userId;
+    private readonly string _userName;
+    private readonly IdentityConfig _identityConfig;
+    private readonly JwtConfig _jwtConfig;
+
+    public AuditLogService(ILogger<AuthService> logger,
+      IUnitOfWork unitOfWork, UserManager<AccountUser> userManager, SignInManager<AccountUser> signInManager,
+      IHttpContextAccessor httpContextAccessor, IdentityConfig identityConfig,
+      JwtConfig jwtConfig)
+    {
+        //Set _userId
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _identityConfig = identityConfig;
+        _jwtConfig = jwtConfig;
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
 
     // Insert new audit log
     public async Task<ServiceResponse<AuditLogDto>> InsertLogAsync(AuditLogDto auditLogDto)
@@ -60,8 +73,7 @@ public class AuditLogService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -106,8 +118,7 @@ public class AuditLogService(ILogger<AuthService> logger,
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while deteting audit log";
             return serviceResponse;
         }
