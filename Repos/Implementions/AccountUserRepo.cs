@@ -1,8 +1,13 @@
 namespace AccountsAPIs.Repos;
 
-public class AccountUserRepo(AccountsDbContext accountsDbContext) : RepositoryBase<AccountUser, AccountsDbContext>(accountsDbContext), IAccountUserRepo
+public class AccountUserRepo : RepositoryBase<AccountUser, AccountsDbContext>, IAccountUserRepo
 {
-    private readonly AccountsDbContext _accountsDbContext = accountsDbContext;
+    private readonly AccountsDbContext _accountsDbContext;
+    
+    public AccountUserRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+        _accountsDbContext = accountsDbContext;
+    }
 
     public override IQueryable<AccountUser> GetByConditionAsync(Expression<Func<AccountUser, bool>> expression)
     {

@@ -1,5 +1,9 @@
 namespace AccountsAPIs.Repos;
 
-public class ContactUsRepo(AccountsDbContext accountsDbContext) : RepositoryBase<ContactUs, AccountsDbContext>(accountsDbContext), IContactUsRepo
+public class ContactUsRepo : RepositoryBase<ContactUs, AccountsDbContext>, IContactUsRepo
 {
+    public ContactUsRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+
+    }
 }

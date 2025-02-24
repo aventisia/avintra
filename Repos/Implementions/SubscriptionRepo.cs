@@ -1,5 +1,9 @@
 namespace AccountsAPIs.Repos;
 
-public class SubscriptionRepo(AccountsDbContext accountsDbContext) : RepositoryBase<Subscription, AccountsDbContext>(accountsDbContext), ISubscriptionRepo
+public class SubscriptionRepo : RepositoryBase<Subscription, AccountsDbContext>, ISubscriptionRepo
 {
+    public SubscriptionRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+        
+    }
 }

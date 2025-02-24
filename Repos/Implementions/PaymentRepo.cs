@@ -1,5 +1,9 @@
 namespace AccountsAPIs.Repos;
 
-public class PaymentRepo(AccountsDbContext accountsDbContext) : RepositoryBase<Payment,AccountsDbContext>(accountsDbContext),IPaymentRepo
+public class PaymentRepo: RepositoryBase<Payment,AccountsDbContext>,IPaymentRepo
 {
+public PaymentRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+{
+    
+}
 }

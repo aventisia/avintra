@@ -1,9 +1,13 @@
 namespace AccountsAPIs.Services;
 
-public class UnitOfWork(
-    AccountsDbContext accountsDbContext) : IUnitOfWork
+public class UnitOfWork : IUnitOfWork
 {
-    private readonly AccountsDbContext _accountsDbContext = accountsDbContext;
+    private readonly AccountsDbContext _accountsDbContext;
+    public UnitOfWork(
+        AccountsDbContext accountsDbContext)
+    {
+        _accountsDbContext = accountsDbContext;
+    }
 
     public IAccountUserRepo AccountUserRepo => new AccountUserRepo(_accountsDbContext);
     public ITenantRepo TenantRepo => new TenantRepo(_accountsDbContext);

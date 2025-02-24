@@ -1,23 +1,35 @@
 namespace AccountsAPIs.Services;
 
-public class AuthHelperService(
-    UserManager<AccountUser> userManager,
-    IHttpContextAccessor httpContextAccessor,
-    ILogger<AuthHelperService> logger,
-    IUnitOfWork unitOfWork,
-    IdentityConfig identityConfig,
-    ExternalAPIsConfig externalAPIsConfig,
-    JwtConfig jwtConfig,
-    CookiePolicyConfig cookiePolicyConfig) : IAuthHelperService
+public class AuthHelperService : IAuthHelperService
 {
-    private readonly UserManager<AccountUser> _userManager = userManager;
-    private readonly HttpContext _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
-    private readonly IdentityConfig _identityConfig = identityConfig;
-    private readonly ExternalAPIsConfig _externalAPIsConfig = externalAPIsConfig;
-    private readonly JwtConfig _jwtConfig = jwtConfig;
-    private readonly CookiePolicyConfig _cookiePolicyConfig = cookiePolicyConfig;
-    private readonly ILogger<AuthHelperService> _logger = logger;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly UserManager<AccountUser> _userManager;
+    private readonly HttpContext _httpContext;
+    private readonly IdentityConfig _identityConfig;
+    private readonly ExternalAPIsConfig _externalAPIsConfig;
+    private readonly JwtConfig _jwtConfig;
+    private readonly CookiePolicyConfig _cookiePolicyConfig;
+    private readonly ILogger<AuthHelperService> _logger;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public AuthHelperService(
+        UserManager<AccountUser> userManager,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<AuthHelperService> logger,
+        IUnitOfWork unitOfWork,
+        IdentityConfig identityConfig,
+        ExternalAPIsConfig externalAPIsConfig,
+        JwtConfig jwtConfig,
+        CookiePolicyConfig cookiePolicyConfig)
+    {
+        _userManager = userManager;
+        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
+        _logger = logger;
+        _unitOfWork = unitOfWork;
+        _identityConfig = identityConfig;
+        _externalAPIsConfig = externalAPIsConfig;
+        _jwtConfig = jwtConfig;
+        _cookiePolicyConfig = cookiePolicyConfig;
+    }
 
     // Validates the null, disabled, and expired status of a tenant.
     public bool IsUserTenantValid(Tenant tenant, string userName)
@@ -79,8 +91,7 @@ public class AuthHelperService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return false;
         }
 
@@ -161,8 +172,7 @@ public class AuthHelperService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
+            _logger.LogError(ex.ToString());
             return false;
         }
 
@@ -283,6 +293,15 @@ public class AuthHelperService(
             return false;
         }
 
+        // Create or Update user in MLModelBuilder database
+        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.ModelBuilderUser, jwt, user);
+
+        if (!response2.IsSuccessStatusCode)
+        {
+            _logger.LogInformation($"Failed to {crudType} user in ML Model Builder database for {user.UserName}");
+            return false;
+        }
+
         // TODO: Till the time IntneralAPIs project is not ready, return true
         return true;
 
@@ -309,10 +328,18 @@ public class AuthHelperService(
         // Delete user in WorkspaceDb database
         HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.WorkspaceUser}/{userId}", jwt);
 
+        // Delete user in MLModelBuilderDb database
+        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.ModelBuilderUser}/{userId}", jwt);
+
         // Failed to Delete user in Workspace database
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Failed to delete user in Workspace database for user Id: {userId}");
+            return false;
+        }
+        else if (!response2.IsSuccessStatusCode)
+        {
+            _logger.LogInformation($"Failed to delete user in ML Model Builder Db database for user Id: {userId}");
             return false;
         }
 

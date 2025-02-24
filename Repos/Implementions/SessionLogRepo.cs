@@ -1,5 +1,9 @@
 namespace AccountsAPIs.Repos;
 
-public class SessionLogRepo(AccountsDbContext accountsDbContext) : RepositoryBase<SessionLog, AccountsDbContext>(accountsDbContext), ISessionLogRepo
+public class SessionLogRepo : RepositoryBase<SessionLog, AccountsDbContext>, ISessionLogRepo
 {
+    public SessionLogRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+        
+    }
 }

@@ -1,5 +1,8 @@
 namespace AccountsAPIs.Repos;
 
-public class BillingAccountRepo(AccountsDbContext accountsDbContext) : RepositoryBase<BillingAccount, AccountsDbContext>(accountsDbContext), IBillingAccountRepo
+public class BillingAccountRepo : RepositoryBase<BillingAccount, AccountsDbContext>, IBillingAccountRepo
 {
+    public BillingAccountRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+    }
 }

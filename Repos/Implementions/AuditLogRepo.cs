@@ -1,5 +1,9 @@
 namespace AccountsAPIs.Repos;
 
-public class AuditLogRepo(AccountsDbContext accountsDbContext) : RepositoryBase<AuditLog, AccountsDbContext>(accountsDbContext), IAuditLogRepo
+public class AuditLogRepo : RepositoryBase<AuditLog,AccountsDbContext>, IAuditLogRepo
 {
+    public AuditLogRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+        
+    }
 }

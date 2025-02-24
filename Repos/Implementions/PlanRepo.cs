@@ -1,5 +1,9 @@
 namespace AccountsAPIs.Repos;
 
-public class PlanRepo(AccountsDbContext accountsDbContext) : RepositoryBase<Plan,AccountsDbContext>(accountsDbContext), IPlanRepo
+public class PlanRepo : RepositoryBase<Plan,AccountsDbContext>, IPlanRepo
 {
+    public PlanRepo(AccountsDbContext accountsDbContext) : base(accountsDbContext)
+    {
+        
+    }
 }
