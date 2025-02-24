@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace AccountsAPIs.Migrations
+namespace AccountsAPIs.Data.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    [Migration("20250221043033_RemovedIsActiveColumn")]
-    partial class RemovedIsActiveColumn
+    [Migration("20250224103728_MyAccount")]
+    partial class MyAccount
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

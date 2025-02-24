@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace AccountsAPIs.Migrations
+namespace AccountsAPIs.Data.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
     partial class AccountsDbContextModelSnapshot : ModelSnapshot

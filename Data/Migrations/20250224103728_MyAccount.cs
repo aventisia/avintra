@@ -3,14 +3,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace AccountsAPIs.Migrations
+namespace AccountsAPIs.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddressMenualRelationNew : Migration
+    public partial class MyAccount : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Address",
+                table: "BillingAccounts");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateOfBirth",
+                table: "AspNetUsers",
+                type: "timestamp with time zone",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DeactivatedOn",
+                table: "AspNetUsers",
+                type: "timestamp with time zone",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
+            migrationBuilder.AddColumn<string>(
+                name: "Gender",
+                table: "AspNetUsers",
+                type: "text",
+                nullable: false,
+                defaultValue: "");
+
             migrationBuilder.CreateTable(
                 name: "Addresses",
                 columns: table => new
@@ -64,6 +89,25 @@ namespace AccountsAPIs.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Addresses");
+
+            migrationBuilder.DropColumn(
+                name: "DateOfBirth",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "DeactivatedOn",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "Gender",
+                table: "AspNetUsers");
+
+            migrationBuilder.AddColumn<string>(
+                name: "Address",
+                table: "BillingAccounts",
+                type: "text",
+                nullable: false,
+                defaultValue: "");
         }
     }
 }
