@@ -19,21 +19,28 @@ export const WorkspaceUILayout = () => {
       {isPending ? (
         <RedirectPage />
       ) : (
-        <div className="relative min-h-screen overflow-hidden">
-          <Header appConfig={workspaceAppConfig} />
-          <ScrollArea className="h-[calc(100vh-var(--header-height)-1px)]">
-            <main
-              className={cn(
-                "px-7 py-0 transition-[margin] duration-500",
-                sidebarExpand
-                  ? "md:ml-[--sidebar-max-width]"
-                  : "md:ml-[--sidebar-min-width]",
-              )}
-            >
-              <Outlet />
-            </main>
-          </ScrollArea>
-          {/* <ChatAssistant /> */}
+        <div className={cn("bg-gradient-to-b from-slate-100 to-slate-50")}>
+          <div
+            className={cn(
+              "relative min-h-screen overflow-hidden",
+              "bg-[radial-gradient(rgb(0_0_0_/_10%)_1px,_transparent_0)] bg-[length:25px_25px]",
+            )}
+          >
+            <Header appConfig={workspaceAppConfig} className="bg-white" />
+            <ScrollArea className="h-[calc(100vh-var(--header-height)-1px)]">
+              <main
+                className={cn(
+                  "m-2 px-7 py-0 transition-[margin] duration-300",
+                  sidebarExpand
+                    ? "md:ml-[--sidebar-max-width]"
+                    : "md:ml-[--sidebar-min-width]",
+                )}
+              >
+                <Outlet />
+              </main>
+            </ScrollArea>
+            {/* <ChatAssistant /> */}
+          </div>
         </div>
       )}
     </>

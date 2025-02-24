@@ -16,19 +16,27 @@ const Sidebar = ({ appConfig, className }: SidebarProps) => {
   return (
     <div
       className={cn(
-        "fixed left-0 top-[--header-height] z-10 h-[calc(100vh-var(--header-height))] border-r py-1 transition-[width] duration-500",
-        className,
-        sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
+        "inset-0 bg-texture-white bg-contain bg-fixed bg-[center_-20rem] bg-no-repeat",
       )}
     >
-      <PerfectScrollbar>
-        <nav className="h-auto">
-          <SidebarMenuItems
-            sideNavMenuSections={appConfig?.navData.sideNavMenuSections}
-          />
-          {appConfig.showUpgradeCard && <UpgradeCard />}
-        </nav>
-      </PerfectScrollbar>
+      <div
+        className={cn(
+          // "bg-gradient-to-b from-theme-1 to-theme-2",
+          "fixed left-0 top-[--header-height] z-10 h-[calc(100vh-var(--header-height))] border-r py-1 transition-[width] duration-500",
+          className,
+          sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
+          "",
+        )}
+      >
+        <PerfectScrollbar>
+          <nav className="h-auto">
+            <SidebarMenuItems
+              sideNavMenuSections={appConfig?.navData.sideNavMenuSections}
+            />
+            {appConfig.showUpgradeCard && <UpgradeCard />}
+          </nav>
+        </PerfectScrollbar>
+      </div>
     </div>
   );
 };

@@ -54,7 +54,10 @@ const Header = ({
           {appConfig.navData.navLocation === NavLocation.sidebar ? (
             <>
               <SidebarToggle className="hidden md:flex" />
-              <Sidebar className="hidden md:block" appConfig={appConfig} />
+              <Sidebar
+                className={cn(["hidden md:block"])}
+                appConfig={appConfig}
+              />
             </>
           ) : null}
           <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />

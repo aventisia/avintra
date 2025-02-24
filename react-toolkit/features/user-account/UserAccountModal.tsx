@@ -26,7 +26,10 @@ interface UserAccountModalProps {
   sizeClassName?: string;
 }
 
-const UserAccountModal = ({ className, sizeClassName ="h-9 w-9" }: UserAccountModalProps) => {
+const UserAccountModal = ({
+  className,
+  sizeClassName = "h-9 w-9",
+}: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
 
@@ -56,7 +59,7 @@ const UserAccountModal = ({ className, sizeClassName ="h-9 w-9" }: UserAccountMo
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon9" }),
           "rounded-full",
-          sizeClassName
+          sizeClassName,
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>

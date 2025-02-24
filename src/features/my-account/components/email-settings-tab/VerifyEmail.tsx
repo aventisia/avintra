@@ -1,0 +1,99 @@
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { InputDivElement } from "../InputDivElement";
+import type { z } from "zod";
+import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { toast } from "sonner";
+import { verifyEmailZodSchema } from "../../constants/verify-email-zod-schema";
+import { useDefineVerifyEmailForm } from "../../hooks/useDefineVerifyEmailForm";
+import { useProfileEmailMutation } from "../../hooks/useProfileEmailMutation";
+import Lucide from "@/react-toolkit/ui/Lucide";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { verificationCodeProps } from "../../constants/constants";
+import { useResendCodeMutationForEmailUpdate } from "../../hooks/useResendCodeMutationForEmailUpdate";
+import { ResendCodeButton } from "@/react-toolkit/ui/buttons/ResendCodeButton";
+
+export const VerifyEmail = () => {
+  // Define form
+  const {
+    form,
+    isSubmitting,
+    updateProfileEmailData,
+    verifyEmailData,
+    setStepNo,
+  } = useDefineVerifyEmailForm();
+
+  // Get mutation to update email
+  const { updateProfileEmailMutation, isUpdatePending } =
+    useProfileEmailMutation();
+
+  const { resendCodeHandler, isResendCodePending } =
+    useResendCodeMutationForEmailUpdate();
+
+  // Define submit handler
+  const onSubmit = (formData: z.infer<typeof verifyEmailZodSchema>) => {
+    // store data is null
+    if (!updateProfileEmailData || !verifyEmailData) {
+      toast.error("Something went wrong. Please try again.");
+      setStepNo(1);
+      return;
+    }
+
+    // update email
+    updateProfileEmailMutation({
+      email: updateProfileEmailData.email,
+      verificationCodeId: verifyEmailData.codeId,
+      secretCode: formData.verificationCode,
+    });
+  };
+
+  return (
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isUpdatePending}
+      checkDirtyForm={false}
+    >
+      <div className="box flex flex-col p-5">
+        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-[0.94rem] font-medium">
+          Email Settings
+        </div>
+        <div>
+          <InputDivElement
+            headingForInput="Verify Your Email"
+            isRequired={true}
+            messageForInput="Please enter the verification code sent to your email."
+          >
+            <InputOtpField
+              containerClassName="!justify-center"
+              {...verificationCodeProps}
+            />
+          </InputDivElement>
+        </div>
+        <div className="mt-6 flex flex-wrap border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+          <Button
+            className="text-md me-auto font-normal"
+            variant={"link"}
+            onClick={() => setStepNo(1)}
+          >
+            <Lucide icon="ArrowLeft" className="h-6 w-6" />
+            <span className="ml-1">Incorrect Email</span>
+          </Button>
+          <div className="text-md me-2 flex flex-row flex-wrap items-center gap-2">
+            <p>Did not receive the code?</p>
+            <ResendCodeButton
+              isPending={isResendCodePending}
+              disabled={isResendCodePending}
+              resendCodeFn={resendCodeHandler}
+            />
+          </div>
+          <SubmitButton
+            primaryText="Submit"
+            className="text-md"
+            isPending={isSubmitting || isUpdatePending}
+          />
+        </div>
+      </div>
+    </Form>
+  );
+};

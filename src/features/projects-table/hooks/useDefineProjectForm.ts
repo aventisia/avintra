@@ -91,7 +91,7 @@ export const useDefineProjectForm = () => {
       // Read (view) only fields
       flowCount: projectData?.flowCount ?? 0,
       createdBy:
-        projectData?.createdBy ??
+        projectData?.createdBy ?? 
         userSession?.firstName + " " + userSession?.lastName,
       createdOn: projectData?.createdOn
         ? new Date(projectData?.createdOn)
