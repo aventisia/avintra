@@ -544,6 +544,16 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
+            //Update user in other databases
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt, false);
+
+            if (!response)
+            {
+                _logger.LogInformation("Failed while updating user in other databases");
+                serviceResponse.Message = "User's name update failed in other databases";
+                return serviceResponse;
+            }
+
             // Task successful
             _logger.LogInformation($"{methodName}: Name has been updated for account {_userName}");
             serviceResponse.Data = nameUpdateDto;
