@@ -1,20 +1,12 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("me")]
-[ApiController]
-[Authorize]
-public class MyAccountController : BaseApiController
+[Route("me"), ApiController, Authorize]
+public class MyAccountController(
+    IAuthService authService,
+    IMyAccountService myAccountService) : BaseApiController
 {
-    private readonly IAuthService _authService;
-    private readonly IMyAccountService _myAccountService;
-
-    public MyAccountController(
-        IAuthService authService,
-        IMyAccountService myAccountService)
-    {
-        _authService = authService;
-        _myAccountService = myAccountService;
-    }
+    private readonly IAuthService _authService = authService;
+    private readonly IMyAccountService _myAccountService = myAccountService;
 
     // Gets user's current session to view latest user's info
     [HttpGet("my-session")]
@@ -65,7 +57,7 @@ public class MyAccountController : BaseApiController
         // Return
         return ResultHelper(result);
     }
-    
+
     //Update first and last name of the user (request is from MyAcccount)    
     [HttpPost("update-name")]
     public async Task<ActionResult<ServiceResponse<NameUpdateDto>>> UpdateName([FromBody] NameUpdateDto nameUpdateDto)
@@ -92,7 +84,7 @@ public class MyAccountController : BaseApiController
     {
         return ResultHelper(await _myAccountService.GetAllActiveSessionsAsync());
     }
-    
+
     // Gets user's 2fa-status to view latest user's info
     [HttpGet("2fa-status")]
     public async Task<ActionResult<ServiceResponse<bool>>> GetCurrent2FAStatus()
@@ -104,12 +96,46 @@ public class MyAccountController : BaseApiController
     [HttpDelete("delete-account")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteUserAccount(DeleteUserAccountDto deleteUserAccountDto)
     {
-        return ResultHelper(await _myAccountService.DeleteUserAccountAsync( deleteUserAccountDto));
+        return ResultHelper(await _myAccountService.DeleteUserAccountAsync(deleteUserAccountDto));
     }
 
+    // acccounts-api/me/update-profile/
+    [HttpPut("update-profile")]
+    public async Task<ActionResult<ServiceResponse<UserProfileDto>>> UpdateUserProfile(UserProfileDto userProfileDto)
+    {
+        return ResultHelper(await _myAccountService.UpdateUserProfileAsync(userProfileDto));
+    }
 
     // acccounts-api/me/update-profile/
+    [HttpGet("profile")]
+    public async Task<ActionResult<ServiceResponse<UserProfileDto>>> GetUserProfile()
+    {
+        return ResultHelper(await _myAccountService.GetUserProfileAsync());
+    }
+
+    [HttpPut("update-billing-address")]
+    public async Task<ActionResult<ServiceResponse<UserBillingAddressDto>>> UpdateUserBillingAddress(UserBillingAddressDto userTenantInfoDto)
+    {
+        return ResultHelper(await _myAccountService.UpdateUserBillingAddressAsync(userTenantInfoDto));
+    }
+
+    [HttpGet("billing-address")]
+    public async Task<ActionResult<ServiceResponse<UserBillingAddressDto>>> GetUserBillingAddress()
+    {
+        return ResultHelper(await _myAccountService.GetUserBillingAddressAsync());
+    }
+
+    [HttpPost("deactivate")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeactivateAccount([FromBody] DeactivateUserAccountDto deactivateUserAccountDto)
+    {
+        return ResultHelper(await _myAccountService.DeactivateAccountAsync(deactivateUserAccountDto));
+    }
+
+    [HttpGet("deactivation-status")]
+    public async Task<ActionResult<ServiceResponse<DeactivationStatusDto>>> GetDeactivationStatus()
+    {
+        return ResultHelper(await _myAccountService.GetDeactivationStatusAsync());
+    }
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
-    // acccounts-api/me/terminate-sessions/
 }

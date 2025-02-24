@@ -30,12 +30,12 @@ public interface IMyAccountService
     /// Gets user's active sessions to view latest user's info
     /// </summary>
     /// <returns>User's active session info without JWT</returns>
-     Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync();
+    Task<ServiceResponse<IEnumerable<ActiveSessionDto>>> GetAllActiveSessionsAsync();
 
     /// <summary>
     /// Gets user's 2fa-status to view latest user's info
     /// </summary>
-     Task<ServiceResponse<bool>> GetCurrent2FAStatusAsync();
+    Task<ServiceResponse<bool>> GetCurrent2FAStatusAsync();
 
     // <summary>
     /// Deletes an user account.
@@ -58,7 +58,7 @@ public interface IMyAccountService
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the email update was successful or not.</returns>
     Task<ServiceResponse<EmailUpdateDto>> UpdateEmailAsync(EmailUpdateDto emailUpdateDto);
 
-    
+
     /// <summary>
     /// Update user's two factor authentication
     /// </summary>
@@ -66,10 +66,48 @@ public interface IMyAccountService
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether user's two factor authentication update was successful or not.</returns>
     Task<ServiceResponse<Toggle2FADto>> Toggle2FAAsync(Toggle2FADto toggle2FADto);
 
-    // acccounts-api/me/update-profile/
+    /// <summary>
+    /// Update user's profile details
+    /// </summary>
+    /// <param name="userProfileDto">the profile update dto</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<UserProfileDto>> UpdateUserProfileAsync(UserProfileDto userProfileDto);
+
+    /// <summary>
+    /// get user profile information
+    /// </summary>
+    /// <returns> a profile info dto</returns>
+    Task<ServiceResponse<UserProfileDto>> GetUserProfileAsync();
+
+    /// <summary>
+    /// get indie user billing address
+    /// </summary>
+    /// <returns> a UserBillingAddressDto</returns>
+    Task<ServiceResponse<UserBillingAddressDto>> GetUserBillingAddressAsync();
+
+    /// <summary>
+    /// Update user's billing address details
+    /// </summary>
+    /// <param name="userTenantInfoDto">the billing address update dto</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<UserBillingAddressDto>> UpdateUserBillingAddressAsync(UserBillingAddressDto userTenantInfoDto);
+
+    /// <summary>
+    /// Update user's account and make it deactivated
+    /// </summary>
+    /// <param name="deactivateUserAccountDto">the billing address update dto</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<bool>> DeactivateAccountAsync(DeactivateUserAccountDto deactivateUserAccountDto);
+
+    /// <summary>
+    /// get the status of the account deactivation
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response indicating whether the profile details update was successful or not.</returns>
+    Task<ServiceResponse<DeactivationStatusDto>> GetDeactivationStatusAsync();
+
     // acccounts-api/me/update-2fa/
     // acccounts-api/me/update-notification-settings/
     // acccounts-api/me/terminate-session/
 
-   
+
 }

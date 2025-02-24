@@ -96,6 +96,14 @@ public class LoginWithPwdService : ILoginWithPwdService
                 return serviceResponse;
             }
 
+            // Account is disabled
+            if (user.DeactivatedOn.ToUniversalTime() < DateTime.MaxValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MinValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MaxValue.ToUniversalTime())
+            {
+                _logger.LogInformation($"{pwdLoginDto.Email} account is deleted");
+                serviceResponse.Message = "Your account is deleted. Please contact support adminstrator";
+                return serviceResponse;
+            }
+
             // Password has expired
             if (user.Tenant.IsPwdNeverExpiresEnabled == false && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
             {

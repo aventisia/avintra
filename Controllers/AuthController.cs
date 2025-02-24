@@ -2,14 +2,9 @@ namespace AccountsAPIs.Controllers;
 
 [Route("auth")]
 [ApiController]
-public class AuthController : BaseApiController
+public class AuthController(IAuthService authService) : BaseApiController
 {
-    private readonly IAuthService _authService;
-
-    public AuthController(IAuthService authService)
-    {
-        _authService = authService;
-    }
+    private readonly IAuthService _authService = authService;
 
     // Checks the availability of a email.
     [HttpPost("is-email-available")]

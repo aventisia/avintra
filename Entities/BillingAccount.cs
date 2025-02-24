@@ -9,11 +9,6 @@ public class BillingAccount : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the address for the billing account
-    /// </summary>
-    public required string Address { get; set; }
-
-    /// <summary>
     /// Gets or sets the email for the billing account
     /// </summary>
     public required string BillingEmail { get; set; }

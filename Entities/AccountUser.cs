@@ -112,4 +112,19 @@ public class AccountUser : IdentityUser<Guid>
     /// </summary>
     public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
 
+    /// <summary>
+    /// Gets or sets the date of birth of the user.
+    /// </summary>
+    public DateTime DateOfBirth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the gender of the user profile
+    /// </summary>
+    public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
+
+    /// <summary>
+    /// Gets or sets the duration to deactivate the account
+    /// </summary>
+    public DateTime DeactivatedOn { get; set; }
+
 }

@@ -295,12 +295,12 @@ public class AuthHelperService : IAuthHelperService
 
         // Create or Update user in MLModelBuilder database
         HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.ModelBuilderUser, jwt, user);
-        
-        if(!response2.IsSuccessStatusCode)
+
+        if (!response2.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Failed to {crudType} user in ML Model Builder database for {user.UserName}");
-            return false;    
-        } 
+            return false;
+        }
 
         // TODO: Till the time IntneralAPIs project is not ready, return true
         return true;
@@ -327,20 +327,20 @@ public class AuthHelperService : IAuthHelperService
     {
         // Delete user in WorkspaceDb database
         HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.WorkspaceUser}/{userId}", jwt);
-
-        // Delete user in MLModelBuilderDb database
-        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.ModelBuilderUser}/{userId}", jwt);
-
         // Failed to Delete user in Workspace database
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Failed to delete user in Workspace database for user Id: {userId}");
             return false;
         }
-        else if(!response2.IsSuccessStatusCode)
+
+        // Delete user in MLModelBuilderDb database
+        HttpResponseMessage response2 = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.ModelBuilderUser}/{userId}", jwt);
+
+        if (!response2.IsSuccessStatusCode)
         {
             _logger.LogInformation($"Failed to delete user in ML Model Builder Db database for user Id: {userId}");
-            return false;   
+            return false;
         }
 
         // TODO: Till the time IntneralAPIs project is not ready, return true

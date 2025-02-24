@@ -119,4 +119,5 @@ public class Tenant : BaseEntity
     /// This property will only be updated at the time of tenant creation and should not be modified later.
     /// </summary>
     public string? DbNamePrefix { get; set; }
+
 }

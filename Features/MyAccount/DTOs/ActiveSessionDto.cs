@@ -4,7 +4,7 @@ namespace AccountsAPIs.DTOs;
 /// </summary>
 public class ActiveSessionDto
 {
-   
+
     /// <summary>
     /// Gets or sets the ID of the device/client using which the session was created.
     /// </summary>

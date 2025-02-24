@@ -13,7 +13,7 @@ public interface IUnitOfWork
     IObsoletePwdRepo ObsoletePwdRepo { get; }
 
     IVerificationCodeRepo VerificationCodeRepo { get; }
-    
+
     IContactUsRepo ContactUsRepo { get; }
 
     ISubscriptionRepo SubscriptionRepo { get; }
@@ -23,16 +23,18 @@ public interface IUnitOfWork
     IAccountRoleRepo AccountRoleRepo { get; }
 
     IRolePermissionRepo RolePermissionRepo { get; }
-    
+
     IAuditLogRepo AuditLogRepo { get; }
 
     IInvoiceRepo InvoiceRepo { get; }
 
-    IPaymentRepo PaymentRepo {get;}
+    IPaymentRepo PaymentRepo { get; }
 
-    IPlanRepo planRepo{ get; }
+    IPlanRepo planRepo { get; }
 
     IBillingAccountRepo BillingAccountRepo { get; }
+
+    IAddressRepo AddressRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
