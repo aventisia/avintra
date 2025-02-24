@@ -160,7 +160,6 @@ coverage*.info
 # Visual Studio code settings files
 .vscode/
 
-
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
