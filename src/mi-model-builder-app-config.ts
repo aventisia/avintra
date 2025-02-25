@@ -4,7 +4,7 @@ import {
   Cog6ToothIcon,
   QuestionMarkCircleIcon,
   Squares2X2Icon,
-  Square3Stack3DIcon,
+  // Square3Stack3DIcon,
   DocumentTextIcon,
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
@@ -32,18 +32,18 @@ const mlModelBuilderAppConfig: IAppConfig = {
       },
       {
         showSection: true, // TODO: Remove this once we have a way to handle this using user roles
-        sectionName: "Extraction builder",
+        sectionName: "Extraction ",
         menuItems: [
           {
             Icon: DocumentTextIcon,
             name: "Label data",
             route: "/label-data",
           },
-          {
-            Icon: Square3Stack3DIcon,
-            name: "Model",
-            route: "/model",
-          },
+          // {
+          //   Icon: Square3Stack3DIcon,
+          //   name: "Model",
+          //   route: "/model",
+          // },
           {
             Icon: ClipboardDocumentCheckIcon,
             name: "Test",
@@ -52,7 +52,7 @@ const mlModelBuilderAppConfig: IAppConfig = {
         ],
       },
       {
-        showSection: true, // TODO: Remove this once we have a way to handle this using user roles
+        showSection: false, // TODO: Remove this once we have a way to handle this using user roles
         sectionName: "Help",
         menuItems: [
           {
