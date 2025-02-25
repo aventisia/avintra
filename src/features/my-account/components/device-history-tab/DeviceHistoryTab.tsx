@@ -96,14 +96,9 @@ export const DeviceHistoryTab = () => {
 
                       <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
                         <div className="whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div
-                              className={`me-2 h-2.5 w-2.5 rounded-full bg-${session.sessionExpiresOn < new Date() ? "red" : "green"}-500`}
-                            ></div>
-                            {session.sessionExpiresOn < new Date()
-                              ? "Ended"
-                              : "Active"}
-                          </div>
+                          {session.sessionExpiresOn < new Date()
+                            ? "Ended"
+                            : "Active"}
                         </div>
                       </DeviceHistoryTable.Td>
                     </DeviceHistoryTable.Tr>
