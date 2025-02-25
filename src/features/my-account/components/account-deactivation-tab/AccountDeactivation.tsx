@@ -31,7 +31,7 @@ export const AccountDeactivation = () => {
     // Create verification code
     createCodeMutation({
       email: userSession!.email,
-      requestType: VerificationCodeRequestTypesEnum.TwoFA,
+      requestType: VerificationCodeRequestTypesEnum.SendOtpToEmail,
     });
   };
 
@@ -70,6 +70,7 @@ export const AccountDeactivation = () => {
                 ? "Confirm that I want to stop deletion process of my account."
                 : "Confirm that I want to delete my account."
             }
+            required={true}
           />
         </div>
         <div className="mt-6 flex flex-col-reverse gap-3 border-t border-dashed border-slate-300/70 pt-5 md:flex-row md:justify-end">

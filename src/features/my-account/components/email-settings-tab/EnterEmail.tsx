@@ -44,7 +44,7 @@ export const EnterEmail = () => {
     // Create verification code
     createCodeMutation({
       email: formData.email,
-      requestType: VerificationCodeRequestTypesEnum.VerifyEmailAddress,
+      requestType: VerificationCodeRequestTypesEnum.SendOtpToEmail,
     });
 
     // Reset the availability message

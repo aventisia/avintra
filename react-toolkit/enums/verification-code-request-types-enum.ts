@@ -27,4 +27,9 @@ export enum VerificationCodeRequestTypesEnum {
    * Request type to create verification code for unlocking an account.
    */
   UnlockAccount = "UnlockAccount",
+
+  /**
+   * Request type to create verification code for unlocking an account.
+   */
+  SendOtpToEmail = "SendOtpToEmail"
 }
