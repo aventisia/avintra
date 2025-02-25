@@ -31,14 +31,14 @@ public class FlowLogService : IFlowLogService
         try
         {
             // Fetch the flows from the repository using both flowId and flowName for filtering
-            var flows = await _unitOfWork.flowLogRepo.GetByConditionAsync(w => w.FlowId == flowId)
+            var flows = await _unitOfWork.FlowLogRepo.GetByConditionAsync(w => w.FlowId == flowId)
             .Include(f => f.Flow).ToListAsync();
 
             // Task successful          
             serviceResponse.Data = flows.Adapt<IEnumerable<FlowLogDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow log retrieved successfully";
-           
+
         }
         catch (Exception ex)
         {
@@ -67,7 +67,7 @@ public class FlowLogService : IFlowLogService
             var newFlowLog = flowLogDto.Adapt<FlowLog>();
 
             // Insert flow
-            await _unitOfWork.flowLogRepo.InsertAsync(newFlowLog);
+            await _unitOfWork.FlowLogRepo.InsertAsync(newFlowLog);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -103,7 +103,7 @@ public class FlowLogService : IFlowLogService
         try
         {
             //Validate flow lo existence
-            var flowLog = await _unitOfWork.flowLogRepo.GetByConditionAsync(w => w.Id == flowLogDto.Id).SingleOrDefaultAsync();
+            var flowLog = await _unitOfWork.FlowLogRepo.GetByConditionAsync(w => w.Id == flowLogDto.Id).SingleOrDefaultAsync();
             //GetByConditionAsync(w => w.Id == flowLogDto.Id).SingleOrDefaultAsync();
 
             // flow log does not exist
@@ -120,7 +120,7 @@ public class FlowLogService : IFlowLogService
             flowLogDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowLogDto);
 
             //Update flow log
-            _unitOfWork.flowLogRepo.Update(flowLog);
+            _unitOfWork.FlowLogRepo.Update(flowLog);
 
             //  Update-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -156,7 +156,7 @@ public class FlowLogService : IFlowLogService
         try
         {
             // Validate flow log existence
-            var flowLog = await _unitOfWork.flowLogRepo
+            var flowLog = await _unitOfWork.FlowLogRepo
                 .GetByConditionAsync(w => w.Id == id)
                 .SingleOrDefaultAsync();
 
@@ -169,7 +169,7 @@ public class FlowLogService : IFlowLogService
             }
 
             // Delete flow log
-            _unitOfWork.flowLogRepo.Delete(flowLog);
+            _unitOfWork.FlowLogRepo.Delete(flowLog);
 
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
