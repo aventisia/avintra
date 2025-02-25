@@ -981,7 +981,7 @@ public class MyAccountService(
                 address = new()
                 {
                     AddressRefId = user.Id,
-                    AddressType = AddressType.Personal,
+                    AddressType = AddressTypeEnum.Personal,
                     AddressLine1 = userProfileDto.AddressLine1,
                     AddressLine2 = userProfileDto.AddressLine2,
                     Country = userProfileDto.Country,
@@ -1158,7 +1158,7 @@ public class MyAccountService(
                 getUserTenantInfoDto = new()
                 {
                     IsIndividual = true,
-                    AddressType = AddressType.Official,
+                    AddressType = AddressTypeEnum.Official,
                     AddressLine1 = userBillingAddress?.AddressLine1,
                     AddressLine2 = userBillingAddress?.AddressLine2,
                     City = userBillingAddress?.City,
@@ -1176,7 +1176,7 @@ public class MyAccountService(
                 getUserTenantInfoDto = new()
                 {
                     IsIndividual = false,
-                    AddressType = AddressType.Official,
+                    AddressType = AddressTypeEnum.Official,
                     AddressLine1 = addressOfTenant?.AddressLine1,
                     AddressLine2 = addressOfTenant?.AddressLine2,
                     City = addressOfTenant?.City,
@@ -1256,7 +1256,7 @@ public class MyAccountService(
 
             //TODO - user must be authorized to update the tenant info while indie user can update its billing address
             var address = await _unitOfWork.AddressRepo
-            .GetByConditionAsync(a => a.AddressRefId == user.Id && a.AddressType == AddressType.Official)
+            .GetByConditionAsync(a => a.AddressRefId == user.Id && a.AddressType == AddressTypeEnum.Official)
             .FirstOrDefaultAsync();
 
             if (address is null)
@@ -1269,7 +1269,7 @@ public class MyAccountService(
                     LastModifiedByUser = user,
                     AddressLine1 = userTenantInfoDto?.AddressLine1,
                     AddressLine2 = userTenantInfoDto?.AddressLine2,
-                    AddressType = AddressType.Official,
+                    AddressType = AddressTypeEnum.Official,
                     City = userTenantInfoDto?.City,
                     Country = userTenantInfoDto?.Country,
                     StateOrProvince = userTenantInfoDto?.StateOrProvince,

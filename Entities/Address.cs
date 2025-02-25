@@ -12,7 +12,7 @@ public class Address : BaseEntity
     /// Gets or sets the referance for the record like tenant Id or
     /// userid for personal address 
     /// </summary>
-    public AddressType? AddressType { get; set; }
+    public AddressTypeEnum? AddressType { get; set; }
 
     /// <summary>
     /// Gets or sets the address of the user. Max-100.
