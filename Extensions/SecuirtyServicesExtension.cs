@@ -7,7 +7,7 @@ public static class SecurityServicesExtension
 {
     public static void CorsPolicyConfig(this IServiceCollection services, IConfiguration config)
     {
-        var corsOrigins = Guard.Against.Null(config.GetSection("CorsOrigins").Get<List<string>>(), "CorsOrigins cannot be null");
+        var corsOrigins = Guard.Against.Null(config.GetSection("CorsOrigins").Get<List<string>>(), message: "CorsOrigins cannot be null");
 
         services.AddCors(options =>
         {

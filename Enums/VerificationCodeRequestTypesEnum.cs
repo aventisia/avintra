@@ -32,4 +32,9 @@ public enum VerificationCodeRequestTypesEnum
     /// Request type to create verification code for unlocking an account.
     /// </summary>
     UnlockAccount,
+
+    /// <summary>
+    /// Request type to create verification code to verify email address.
+    /// </summary>
+    SendOtpToEmail,
 }
