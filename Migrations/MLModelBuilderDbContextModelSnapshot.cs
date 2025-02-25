@@ -22,6 +22,59 @@ namespace MLModelBuilderAPIs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AnnotationData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AnnotationObject")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("MLModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UploadedDocId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("MLModelId");
+
+                    b.HasIndex("UploadedDocId")
+                        .IsUnique();
+
+                    b.ToTable("AnnotationData");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.DataField", b =>
                 {
                     b.Property<Guid>("Id")
@@ -283,6 +336,41 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("UploadedDocs");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AnnotationData", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
+                        .WithMany("AnnotationData")
+                        .HasForeignKey("MLModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.UploadedDoc", "UploadedDoc")
+                        .WithOne("AnnotationData")
+                        .HasForeignKey("MLModelBuilderAPIs.Entities.AnnotationData", "UploadedDocId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("MLModel");
+
+                    b.Navigation("UploadedDoc");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.DataField", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -385,11 +473,18 @@ namespace MLModelBuilderAPIs.Migrations
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
                 {
+                    b.Navigation("AnnotationData");
+
                     b.Navigation("DataFields");
 
                     b.Navigation("ExtractedData");
 
                     b.Navigation("UploadedDocs");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
+                {
+                    b.Navigation("AnnotationData");
                 });
 #pragma warning restore 612, 618
         }

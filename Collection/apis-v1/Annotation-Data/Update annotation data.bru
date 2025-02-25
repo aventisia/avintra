@@ -1,0 +1,22 @@
+meta {
+  name: Update annotation data
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/annotation-data/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("DATA_ID"),
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    uploadedDocId: "01953b89-5b33-70c8-a170-ad274cd88b36",
+    annotationData: faker.lorem.sentence(),
+  })
+}

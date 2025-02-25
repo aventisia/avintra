@@ -22,6 +22,7 @@ public static class AppServicesExtension
         config.Apply(new DataFieldMappingProfile());
         config.Apply(new UploadedDocMappingProfile());
         config.Apply(new ModelBuilderUserMappingProfile());
+        config.Apply(new AnnotationDataMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -37,6 +38,7 @@ public static class AppServicesExtension
         services.AddScoped<IDataFieldService, DataFieldService>();
         services.AddScoped<IUploadedDocService, UploadedDocService>();
         services.AddScoped<IModelBuilderUserService, ModelBuilderUserService>();
+        services.AddScoped<IAnnotationDataService, AnnotationDataService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
