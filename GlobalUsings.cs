@@ -19,7 +19,6 @@ global using AccountsAPIs.Repos;
 global using AccountsAPIs.MappingProfiles;
 global using AccountsAPIs.DTOs;
 global using AccountsAPIs.Global;
-global using AccountsAPIs.AccountApiEnum;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;

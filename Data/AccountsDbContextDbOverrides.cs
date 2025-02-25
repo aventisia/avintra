@@ -1,6 +1,3 @@
-using AccountsAPIs.AccountApiEnum;
-
-
 namespace AccountsAPIs.Data;
 
 public partial class AccountsDbContext
@@ -106,8 +103,8 @@ public partial class AccountsDbContext
         builder.Entity<Plan>().Property(e => e.Status).HasConversion(new EnumToStringConverter<PlanStatusEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
-        builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderType>());
-        builder.Entity<Address>().Property(e => e.AddressType).HasConversion(new EnumToStringConverter<AddressType>());
+        builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
+        builder.Entity<Address>().Property(e => e.AddressType).HasConversion(new EnumToStringConverter<AddressTypeEnum>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         builder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);

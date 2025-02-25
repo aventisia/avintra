@@ -1,5 +1,3 @@
-using AccountsAPIs.AccountApiEnum;
-
 namespace AccountsAPIs.DTOs;
 
 /// <summary>
@@ -50,7 +48,7 @@ public class UserProfileDto
     /// <summary>
     /// Gets or sets the gender of the user profile
     /// </summary>
-    public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
+    public GenderTypeEnum Gender { get; set; } = GenderTypeEnum.PreferNotToSay;
 
 
     /// <summary>

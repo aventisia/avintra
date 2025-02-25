@@ -120,7 +120,7 @@ public class AccountUser : IdentityUser<Guid>
     /// <summary>
     /// Gets or sets the gender of the user profile
     /// </summary>
-    public GenderType Gender { get; set; } = GenderType.PreferNotToSay;
+    public GenderTypeEnum Gender { get; set; } = GenderTypeEnum.PreferNotToSay;
 
     /// <summary>
     /// Gets or sets the duration to deactivate the account

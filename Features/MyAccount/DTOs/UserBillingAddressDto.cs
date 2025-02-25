@@ -10,7 +10,7 @@ public class UserBillingAddressDto
     /// <summary>
     /// Gets or sets the type of the address like personal or tenant
     /// </summary>
-    public AddressType? AddressType { get; set; }
+    public AddressTypeEnum? AddressType { get; set; }
 
     /// <summary>
     /// Gets or sets the tenants name Max-100
