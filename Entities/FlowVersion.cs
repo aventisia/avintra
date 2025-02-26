@@ -10,12 +10,12 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets a value indicating whether the version is in locked state.
     /// </summary>
-    public bool IsLocked{ get; set; }
+    public bool IsLocked { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the version is in draft state.
     /// </summary>
-    public bool IsDraft{ get; set; }
+    public bool IsDraft { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the version has been published.
@@ -42,4 +42,9 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// Gets or sets the version number of a flow version record
     /// </summary>
     public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Configure Many-to-Many relationship between Machine and flow
+    /// </summary>
+    public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
 }

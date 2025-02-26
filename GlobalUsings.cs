@@ -10,6 +10,7 @@ global using AspNetToolkit.Repos;
 global using AspNetToolkit.Services;
 global using AspNetToolkit.Utils;
 global using AspNetToolkit.Attributes;
+global using Microsoft.AspNetCore.SignalR;
 
 global using WorkspaceAPIs.Entities;
 global using WorkspaceAPIs.Data;

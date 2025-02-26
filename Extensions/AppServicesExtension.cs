@@ -26,7 +26,7 @@ public static class AppServicesExtension
         config.Apply(new FlowBuilderMappingProfile());
         config.Apply(new SupportTicketsTableMappingProfile());
         config.Apply(new SupportTicketRemarksMappingProfile());
-        config.Apply(new FlowLogMappingProfile());  
+        config.Apply(new FlowLogMappingProfile());
 
         config.Apply(new FlowTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
@@ -42,7 +42,7 @@ public static class AppServicesExtension
 
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
-        
+
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<IProjectsTableService, ProjectsTableService>();
@@ -60,7 +60,8 @@ public static class AppServicesExtension
         services.AddScoped<IFlowVersionService, FlowVersionService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IFlowExecutionLogService, FlowExecutionLogService>();
-        services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();    
+        services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();
+        services.AddScoped<IMachineService, MachineService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

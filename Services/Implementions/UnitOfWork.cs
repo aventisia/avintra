@@ -24,15 +24,19 @@ public class UnitOfWork : IUnitOfWork
 
     public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
 
-    public IFlowLogRepo flowLogRepo=> new FlowLogRepo(_workspaceDbContext);
+    public IFlowLogRepo FlowLogRepo => new FlowLogRepo(_workspaceDbContext);
 
-    public  IFlowTemplateRepo flowTemplateRepo=> new FlowTemplateRepo(_workspaceDbContext);
+    public IFlowTemplateRepo FlowTemplateRepo => new FlowTemplateRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
 
     public IFlowExecutionLogRepo FlowExecutionLogRepo => new FlowExecutionLogRepo(_workspaceDbContext);
 
     public IActionExecutionLogRepo ActionExecutionLogRepo => new ActionExecutionLogRepo(_workspaceDbContext);
+
+    public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
+
+    public IMachineFlowRepo MachineFlowRepo => new MachineFlowRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
