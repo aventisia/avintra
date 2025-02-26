@@ -229,8 +229,6 @@ export const PdfPreviewer: React.FC = () => {
   const { mutate: updateAnnotation } = useUpdateAnnotation();
 
   const assignTypeToAnnotation = async (field: DataFieldsDto) => {
-    // eslint-disable-next-line no-debugger
-    debugger;
     if (pendingAnnotation && field.id && canvasRef.current) {
       // const confidence = calculateConfidence(pendingAnnotation.content, typeId);
       const newAnnotation: Annotation = {
