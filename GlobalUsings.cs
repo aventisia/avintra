@@ -7,6 +7,7 @@ global using AspNetToolkit.Other;
 global using AspNetToolkit.Config;
 global using AspNetToolkit.Services;
 global using AspNetToolkit.Utils;
+global using AspNetToolkit.Converters;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
