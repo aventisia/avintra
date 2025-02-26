@@ -27,6 +27,8 @@ export const useOpenModelLabelData = () => {
 
     //Add model is to localstorage
     localStorage.setItem("model_id", rowId);
+    localStorage.setItem("model_name", modelData?.name || "Model");
+
     // Navigate to model flows page
     navigate(`/label-data?m=${rowId}&mn=${modelData?.name}`);
   };
