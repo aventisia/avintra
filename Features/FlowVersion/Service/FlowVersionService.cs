@@ -72,6 +72,10 @@ public class FlowVersionService : IFlowVersionService
             newFlowVersion.LastModifiedByUserId = _userId;
             newFlowVersion.VersionNumber = versionCount + 1;
 
+            // Add initial nodes and edges
+            newFlowVersion.ReactFlowObject = Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
+
+
             //Insert a flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
 
@@ -132,7 +136,7 @@ public class FlowVersionService : IFlowVersionService
             updatedFlowVersion.IsDraft = false;
             updatedFlowVersion.CreatedByUserId = _userId;
             updatedFlowVersion.LastModifiedByUserId = _userId;
-            updatedFlowVersion.VersionNumber = versionCount +1;
+            updatedFlowVersion.VersionNumber = versionCount + 1;
             //create a new flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(updatedFlowVersion);
 

@@ -135,10 +135,7 @@ public class FlowsTableService : IFlowsTableService
             var newFlow = flowsTableDto.Adapt<Flow>();
             newFlow.CreatedByUserId = _userId;
             newFlow.LastModifiedByUserId = _userId;
-
-            // Add intial nodes and edges
-            newFlow.ReactFlowObject = Features.FlowsTable.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
-             
+ 
             // Insert flow
             await _unitOfWork.FlowRepo.InsertAsync(newFlow);
 
