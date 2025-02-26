@@ -1,0 +1,51 @@
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
+import { useShallow } from "zustand/react/shallow";
+import { getAnnotationList } from "../apis/annotation-apis";
+import { useAnnotationDataStore } from "../stores/annotation-data-store";
+import { usePdfListStore } from "@/features/pdf-previewer/stores/pdf-list-store";
+/**
+ * Custom hook to fetch data fields using react query.
+ * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
+ */
+export const useFetchAnnotationData = () => {
+  // Get model data store state and actions
+  const { modelId } = useModelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
+
+  // Get model data store state and actions
+  const { setAnnotationObject } = useAnnotationDataStore(
+    useShallow((state) => ({
+      setAnnotationObject: state.setAnnotationObject,
+    })),
+  );
+  const { selectedPdf } = usePdfListStore(
+    useShallow((state) => ({
+      selectedPdf: state.selectedPdf,
+    })),
+  );
+  // Get models using react query
+  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["annotation", modelId],
+    queryFn: () => getAnnotationList(modelId),
+  });
+
+  useEffect(() => {
+    const currObj =
+      data?.data.find((item) => item.uploadedDocId == selectedPdf?.id)
+        ?.annotationObject || "";
+    setAnnotationObject(currObj);
+  }, [data, selectedPdf?.id, setAnnotationObject]);
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error.toString());
+  }, [error, isError]);
+
+  // Return isFetching and isLoading flag
+  return { data, isFetching, isLoading, refetch };
+};
