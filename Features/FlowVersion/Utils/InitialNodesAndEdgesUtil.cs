@@ -1,4 +1,4 @@
-namespace WorkspaceAPIs.Features.FlowsTable.Utils;
+namespace WorkspaceAPIs.Features.FlowVersion.Utils;
 
 public static class InitialNodesAndEdgesUtil
 {
