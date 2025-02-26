@@ -33,7 +33,7 @@ import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
 import { toast } from "sonner";
 import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnotation";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "public/assets/pdf.worker.min.mjs";
+pdfjs.GlobalWorkerOptions.workerSrc = "public/assets/pdf.worker.min.js";
 
 export interface DocumentLoadSuccess {
   numPages: number;
@@ -279,7 +279,7 @@ export const PdfPreviewer: React.FC = () => {
 
         if (response) {
           const currImg = response?.data[0]?.path || "";
-          console.log(response.data);
+
           updateAnnotation({
             id: currData?.id,
             uploadedDocId: selectedPdf?.id || "",
