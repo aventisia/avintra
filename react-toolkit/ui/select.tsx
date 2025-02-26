@@ -128,8 +128,9 @@ const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> & {
     size?: FormFieldSizeType;
+    showCheck?: boolean;
   }
->(({ className, children, size = "base", ...props }, ref) => (
+>(({ className, children, size = "base", showCheck = true, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
@@ -146,13 +147,15 @@ const SelectItem = React.forwardRef<
     </SelectPrimitive.ItemText>
 
     <SelectPrimitive.ItemIndicator>
-      <Check
-        className={cn(
-          size === "xs" && "h-3 w-3",
-          size === "sm" && "h-3.5 w-3.5",
-          size === "base" && "h-4 w-4",
-        )}
-      />
+      {showCheck && (
+        <Check
+          className={cn(
+            size === "xs" && "h-3 w-3",
+            size === "sm" && "h-3.5 w-3.5",
+            size === "base" && "h-4 w-4",
+          )}
+        />
+      )}
     </SelectPrimitive.ItemIndicator>
   </SelectPrimitive.Item>
 ));
