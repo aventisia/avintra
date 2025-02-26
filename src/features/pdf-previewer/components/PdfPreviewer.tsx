@@ -33,6 +33,8 @@ import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
 import { toast } from "sonner";
 import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnotation";
 
+pdfjs.GlobalWorkerOptions.workerSrc = "public/assets/pdf.worker.min.mjs";
+
 export interface DocumentLoadSuccess {
   numPages: number;
 }
@@ -54,11 +56,6 @@ export interface ExtractedData {
 }
 
 export const PdfPreviewer: React.FC = () => {
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs",
-    import.meta.url,
-  ).toString();
-
   //Feild select popover state
   const [isOpen, setIsOpen] = useState(false);
 
@@ -279,21 +276,24 @@ export const PdfPreviewer: React.FC = () => {
         const currData = currAnnotationData?.find(
           (item) => item.uploadedDocId === selectedPdf?.id,
         );
-        const currImg = (await response?.data[0]?.path) || "";
 
-        updateAnnotation({
-          id: currData?.id,
-          uploadedDocId: selectedPdf?.id || "",
-          mlModelId: selectedPdf?.mlModelId,
-          annotationObject: JSON.stringify({
-            ...JSON.parse(currData?.annotationObject || "{}"),
-            [field.id]: {
-              ...newAnnotation,
-              imgPath: currImg,
-            },
-          }),
-        });
-        refetch();
+        if (response) {
+          const currImg = response?.data[0]?.path || "";
+          console.log(response.data);
+          updateAnnotation({
+            id: currData?.id,
+            uploadedDocId: selectedPdf?.id || "",
+            mlModelId: selectedPdf?.mlModelId,
+            annotationObject: JSON.stringify({
+              ...JSON.parse(currData?.annotationObject || "{}"),
+              [field.id]: {
+                ...newAnnotation,
+                imgPath: currImg,
+              },
+            }),
+          });
+          refetch();
+        }
       } catch (error) {
         toast.error(error?.toString());
         throw error;
