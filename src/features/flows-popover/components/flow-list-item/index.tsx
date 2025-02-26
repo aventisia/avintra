@@ -3,7 +3,7 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { FlowListItemActions } from "../flow-list-item-actions";
 import { FLILastModifiedOn } from "./FLILastModifiedOn";
 import { FLIName } from "./FLIName";
-import { FLIThumbnail } from "./FLIThumbnail";
+// import { FLIThumbnail } from "./FLIThumbnail";
 
 interface FlowListItemProps {
   flowData: FlowsTableDto;
@@ -15,9 +15,9 @@ interface FlowListItemProps {
 export const FlowListItem = ({ flowData }: FlowListItemProps) => {
   // Return the component
   return (
-    <div className={cn("flex w-full items-center gap-3 px-0.5 py-0.5")}>
+    <div className={cn("flex w-full items-center gap-3 px-0.5 py-0.5 pl-2")}>
       {/* Flow thumbnail */}
-      <FLIThumbnail />
+      {/* <FLIThumbnail /> */}
 
       {/* Content container */}
       <div className="flex grow flex-col gap-0">

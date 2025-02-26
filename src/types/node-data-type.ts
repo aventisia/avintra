@@ -14,6 +14,8 @@ type NodeDataType = {
   icon?: string;
   img?: string;
   fieldValues?: { [key: string]: any };
+  disabled?: boolean;
+  hidden?: boolean;
 };
 
 export type { NodeTypeAndCategory, NodeDataType };
