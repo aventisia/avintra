@@ -24,6 +24,11 @@ public class FlowVersionDto
     public bool IsDraft{ get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the version has been published.
+    /// </summary>
+    public bool IsPublished { get; set; }
+
+    /// <summary>
     /// Gets or sets the the user who created the record.
     /// </summary>
     public string? CreatedBy { get; set; }
