@@ -36,11 +36,6 @@ public class Flow : BaseEntity, IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the flow's nodes, edges, and viewport JSON data in string format. The default value will be an empty object.
-    /// </summary>
-    public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
-
-    /// <summary>
     /// Gets or sets the ID of the project to which the flow record belongs.
     /// </summary>
     public Guid ProjectId { get; set; }
