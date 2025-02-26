@@ -67,7 +67,7 @@ interface PageRotateProps {
 
 const PageRotate = (props: PageRotateProps) => {
   return (
-    <RotateCcw className="h-5 w-5 cursor-pointer" onClick={props.rotatePage} />
+    <RotateCcw className="h-5 w-5 cursor-pointer hidden" onClick={props.rotatePage} />
   );
 };
 
