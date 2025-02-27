@@ -63,6 +63,8 @@ public static class AppServicesExtension
         services.AddScoped<IFlowExecutionLogService, FlowExecutionLogService>();
         services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();
         services.AddScoped<IMachineService, MachineService>();
+        services.AddScoped<IMachineFlowService, MachineFlowService>();
+
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
