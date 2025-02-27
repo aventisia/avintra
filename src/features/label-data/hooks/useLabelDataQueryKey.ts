@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useModelDataStore } from "../stores/model-data-store";
+import { useLabelDataStore } from "../stores/label-data-store";
 
 /**
  * Custom hook to set the query key for LabelData.
@@ -15,7 +15,7 @@ export const useLabelDataQueryKey = () => {
   let modelName = queryParams.get("mn");
 
   // Get store setModelDataState action
-  const { setModelDataState } = useModelDataStore(
+  const { setModelDataState } = useLabelDataStore(
     useShallow((state) => ({
       setModelDataState: state.setModelDataState,
     })),

@@ -8,7 +8,7 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { modelZodSchema } from "../constants/data-field-zod-schema";
 import { DataFieldsDto } from "../dtos/data-fields-dtos";
-import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 /**
  * Custom hook for defining a model form.
@@ -21,7 +21,7 @@ export const useDefineDataFieldForm = () => {
     })),
   );
   // Get model data store state and actions
-  const { modelId, labelDataQueryKey } = useModelDataStore(
+  const { modelId, labelDataQueryKey } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
       labelDataQueryKey: state.labelDataQueryKey,

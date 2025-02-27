@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { getAnnotationList } from "../apis/annotation-apis";
 import { useAnnotationDataStore } from "../stores/annotation-data-store";
@@ -12,7 +12,7 @@ import { usePdfListStore } from "@/features/pdf-previewer/stores/pdf-list-store"
  */
 export const useFetchAnnotationData = () => {
   // Get model data store state and actions
-  const { modelId } = useModelDataStore(
+  const { modelId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
     })),

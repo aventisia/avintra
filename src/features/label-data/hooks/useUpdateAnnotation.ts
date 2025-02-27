@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { updateAnnotationData } from "../apis/annotation-apis";
-import { useModelDataStore } from "../stores/model-data-store";
+import { useLabelDataStore } from "../stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 
 export const useUpdateAnnotation = () => {
   // Get query client
   const queryClient = useQueryClient();
 
-  const { modelId } = useModelDataStore(
+  const { modelId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
     })),

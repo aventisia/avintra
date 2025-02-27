@@ -1,5 +1,5 @@
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
-import { useModelDataStore } from "../stores/model-data-store";
+import { useLabelDataStore } from "../stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import Nav from "./Header/Nav";
 import { PdfPreviewer } from "@/features/pdf-previewer/components/PdfPreviewer";
@@ -12,7 +12,7 @@ const LabelDataContainer = () => {
   useLabelDataQueryKey();
 
   // Get model data store state and actions
-  const { step, setStepState } = useModelDataStore(
+  const { step, setStepState } = useLabelDataStore(
     useShallow((state) => ({
       step: state.step,
       setStepState: state.setStepState,

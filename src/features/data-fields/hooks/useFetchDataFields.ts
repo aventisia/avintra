@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { getDataFields } from "../apis/add-fields-apis";
-import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 /**
  * Custom hook to fetch data fields using react query.
@@ -10,7 +10,7 @@ import { useShallow } from "zustand/react/shallow";
  */
 export const useFetchDataFields = () => {
   // Get model data store state and actions
-  const { modelId, labelDataQueryKey } = useModelDataStore(
+  const { modelId, labelDataQueryKey } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
       labelDataQueryKey: state.labelDataQueryKey,

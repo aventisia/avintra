@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { getUploadedFiles } from "@/features/file-uploader/apis/file-upload-apis";
 import { usePdfListStore } from "../stores/pdf-list-store";
 import { useLocation } from "react-router-dom";
-import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 /**
  * Custom hook to fetch data fields using react query.
@@ -16,11 +16,11 @@ export const useFetchUploadedFiles = () => {
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("m") || "";
   const { setSelectedPdf } = usePdfListStore();
-  const { step } = useModelDataStore(
+  const { step } = useLabelDataStore(
     useShallow((state) => ({ step: state.step })),
   );
   // Get models using react query
-  const { data, isFetching, isLoading, isError, error,refetch } = useQuery({
+  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["UploadedFiles", modelId],
     queryFn: () => getUploadedFiles(modelId),
     refetchOnMount: true,
@@ -36,5 +36,5 @@ export const useFetchUploadedFiles = () => {
   }, [error, isError]);
 
   // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading,refetch };
+  return { data, isFetching, isLoading, refetch };
 };

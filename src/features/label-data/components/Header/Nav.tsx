@@ -1,6 +1,5 @@
-// import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { useModelDataStore } from "../../stores/model-data-store";
+import { useLabelDataStore } from "../../stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -11,6 +10,7 @@ import { useState } from "react";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { AnnotationDataDto } from "../../dtos/annotation-data-dtos";
 import { annotationOptimisticMutationFn } from "../../apis/annotation-apis";
+
 const Nav = ({
   isPdfAvailable,
   refetchList,
@@ -22,7 +22,7 @@ const Nav = ({
   const [isLoading, setIsLoading] = useState(false);
 
   // Get model data store state and actions
-  const { modelId, step, modelName, setStepState } = useModelDataStore(
+  const { modelId, step, modelName, setStepState } = useLabelDataStore(
     useShallow((state) => ({
       step: state.step,
       modelName: state.modelName,
@@ -46,8 +46,6 @@ const Nav = ({
     if (filesToUpload.length > 0) {
       setIsLoading(true);
       submitFiles(filesToUpload).then((data) => {
-
-    
         insertAnnotation({
           crudAction: "create",
           payload: {
@@ -65,6 +63,7 @@ const Nav = ({
       });
     } else setStepState(1);
   };
+
   return (
     <div className="my-5 flex items-center justify-between gap-3">
       <div className="flex items-center gap-3">
