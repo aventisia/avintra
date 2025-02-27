@@ -4,10 +4,9 @@ import { useShallow } from "zustand/react/shallow";
 import Nav from "./Header/Nav";
 import { PdfPreviewer } from "@/features/pdf-previewer/components/PdfPreviewer";
 import AddFields from "@/features/data-fields/components/DataFields";
-import FileDropzone from "@/features/file-uploader/components/FileDropzone";
-import FileUploadList from "@/features/file-uploader/components/FileUploadList";
 import { useEffect } from "react";
 import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
+import FileUploader from "@/features/file-uploader/components/FileUploader";
 
 const LabelDataContainer = () => {
   useLabelDataQueryKey();
@@ -31,12 +30,7 @@ const LabelDataContainer = () => {
   return (
     <>
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
-      {step == 0 && (
-        <div className="flex gap-12 rounded-lg border bg-white p-12 shadow">
-          <FileDropzone />
-          <FileUploadList />
-        </div>
-      )}
+      {step == 0 && <FileUploader />}
       {step == 1 && (
         <div className="flex justify-between gap-7">
           <PdfPreviewer />

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { cn } from "@/react-toolkit/lib/utils";
 import { CloudUploadIcon } from "lucide-react";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
@@ -6,16 +6,8 @@ import { useFileUpload } from "../hooks/useFileUpload";
 import { useDropzone } from "react-dropzone";
 import { useFileStore } from "../stores/file-uploader-store";
 import { useShallow } from "zustand/react/shallow";
+import OrSeparator from "./ORSeperator";
 
-const OrSeparator: React.FC = () => {
-  return (
-    <div className="my-4 flex flex-grow items-center">
-      <div className="flex-grow border border-t"></div>
-      <span className="mx-0.5 text-sm text-muted-foreground">OR</span>
-      <div className="flex-grow border border-t"></div>
-    </div>
-  );
-};
 const FileDropzone = () => {
   const { mutate: uploadFile } = useFileUpload();
 

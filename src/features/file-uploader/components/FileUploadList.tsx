@@ -5,6 +5,7 @@ import { Progress } from "@/react-toolkit/ui/progress";
 import { useFileStore } from "../stores/file-uploader-store";
 import { useFileDelete } from "../hooks/useFileDelete";
 import { useShallow } from "zustand/react/shallow";
+import { formatFileSize } from "../utils";
 
 const FileUploadList = () => {
   const { files, clearFiles } = useFileStore(
@@ -14,13 +15,6 @@ const FileUploadList = () => {
     })),
   );
   const { mutate: deleteFile } = useFileDelete();
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
 
   return (
     <>
