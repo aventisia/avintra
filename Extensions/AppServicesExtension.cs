@@ -33,6 +33,7 @@ public static class AppServicesExtension
         config.Apply(new SubscriptionMappingProfile());
         config.Apply(new FlowExecutionLogMappingProfile());
         config.Apply(new ActionExecutionLogMappingProfile());
+        config.Apply(new MachinesMappingProfile());
 
         services.AddSingleton(config);
     }
