@@ -96,6 +96,8 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
+            flowSilentUpdateDto.VersionId = flowVersion.Id;
+
             // Map the updated properties from the DTO to the flow version
             flowSilentUpdateDto.Adapt(flowVersion);
             flowVersion.LastModifiedByUserId = _userId;
