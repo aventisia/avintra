@@ -29,22 +29,22 @@ public class Machine : BaseEntity, IMustHaveTenant
     public required MachineTypeEnum Type { get; set; }
 
     /// <summary>
-    /// Represents the status of the machine. Possible values are: Online, Offline, Running, Stopped
+    /// Represents the status of the machine. Possible values are: Idle, Online, Offline, Running, Stopped
     /// </summary>
-    [Required, MaxLength(50)]
-    public required string Status { get; set; }
+    [Required]
+    public required MachineStatusTypeEnum Status { get; set; }
 
     /// <summary>
     /// Represents the environment of the machine, e.g., Development, UAT, Production
     /// </summary>
-    [Required, MaxLength(50)]
-    public required string Environment { get; set; }
+    [Required]
+    public required EnvironmentTypesEnum Environment { get; set; }
 
     /// <summary>
     /// Represents the running agent/flow activity on the machine, if any
     /// </summary>
-    [Required, MaxLength(256)]
-    public required string CurrentTask { get; set; }
+    [Required]
+    public required TaskTypesEnum CurrentTask { get; set; }
 
     /// <summary>
     /// Represents the availability of the machine for another task. True if available, False if not.
