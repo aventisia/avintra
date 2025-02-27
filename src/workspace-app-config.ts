@@ -10,7 +10,13 @@ import {
   QuestionMarkCircleIcon,
   UserGroupIcon,
   UsersIcon,
+  PlayIcon,
+  BellIcon,
+  QueueListIcon,
+  CogIcon, 
+  ChartPieIcon
 } from "@heroicons/react/24/outline";
+import { DesktopIcon } from "@radix-ui/react-icons";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -45,6 +51,42 @@ const workspaceAppConfig: IAppConfig = {
             Icon: QuestionMarkCircleIcon,
             name: "support",
             route: "/supportticket",
+          },
+        ],
+      },
+      {
+        showSection: true, // TODO: Remove this once we have a way to handle this using user roles
+        sectionName: "Orchestrator",
+        menuItems: [
+          {
+            Icon: ChartPieIcon,
+            name: "dashboard",
+            route: "/dashboard",
+          },
+          {
+            Icon: DesktopIcon,
+            name: "machines",
+            route: "/machines",
+          },
+          {
+            Icon: BellIcon,
+            name: "Flows/Agents",
+            route: "/flows",
+          },
+          {
+            Icon: QueueListIcon,
+            name: "queue",
+            route: "/queue",
+          },
+          {
+            Icon: PlayIcon,
+            name: "execution",
+            route: "/execution",
+          },
+          {
+            Icon: CogIcon,
+            name: "config hub",
+            route: "/config-hub",
           },
         ],
       },
