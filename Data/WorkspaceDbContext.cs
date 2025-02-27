@@ -54,7 +54,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<FlowLogStatusEnum>());
         modelBuilder.Entity<FlowTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<CategoryTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Type).HasConversion(new EnumToStringConverter<MachineTypeEnum>());
-        modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusTypeEnum>());
 
         // Configure One-to-One relationship between Project and WorkspaceUser
         modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
