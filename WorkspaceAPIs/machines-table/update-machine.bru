@@ -1,0 +1,28 @@
+meta {
+  name: Update machine
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/machine
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MACHINE_ID"),
+    name: faker.lorem.lines(),
+    ipAddress: faker.internet.ip(),
+    hostname: faker.internet.displayName(),
+    type: "Linux",
+    status: "Idle",
+    environment: "Development",
+    currentTask: faker.lorem.lines(),
+    lastCheckedIn: faker.date.anytime(), 
+    isAvailable: false,
+  })
+}
