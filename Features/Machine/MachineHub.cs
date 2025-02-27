@@ -19,11 +19,11 @@ public class MachineHub : Hub
         await Clients.Caller.SendAsync("connection", "Connected to the machine hub.");
     }
 
-    public async Task MachineStatus(Guid machineId)
-    {
-        var status = await _machineService.GetMachineStatusAsync(machineId);
-        await Clients.Caller.SendAsync("machineStatus", status);
-    }
+    // public async Task MachineStatus(Guid machineId)
+    // {
+    //     var status = await _machineService.GetMachineStatusAsync(machineId);
+    //     await Clients.Caller.SendAsync("machineStatus", status);
+    // }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {

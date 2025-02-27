@@ -11,49 +11,56 @@ public class MachineController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> CreateNewMachine(CreateMachineDto createMachineDto)
+    public async Task<ActionResult<ServiceResponse<MachineDto>>> CreateNewMachine(MachineDto machineDto)
     {
-        return ResultHelper(await _machineService.CreateNewMachineAsync(createMachineDto));
+        return ResultHelper(await _machineService.CreateNewMachineAsync(machineDto));
     }
 
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> UpdateMachine(UpdateMachineDto updateMachineDto)
+    public async Task<ActionResult<ServiceResponse<MachineDto>>> UpdateMachine(MachineDto machineDto)
     {
-        return ResultHelper(await _machineService.UpdateMachineAsync(updateMachineDto));
+        return ResultHelper(await _machineService.UpdateMachineAsync(machineDto));
     }
 
     // Retrieves list of machines.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineDto>>>> GetMachineList(Guid tenantId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineDto>>>> GetMachineList()
     {
-        return ResultHelper(await _machineService.GetMachineListAsync(tenantId));
+        return ResultHelper(await _machineService.GetMachineListAsync());
     }
 
     // Deletes a machine by its ID.
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ServiceResponse<MachineDto>>> GetMachine(Guid id)
+    [HttpGet("{machineId}")]
+    public async Task<ActionResult<ServiceResponse<MachineDto>>> GetMachine(Guid machineId)
     {
-        return ResultHelper(await _machineService.GetMachineAsync(id));
-    }
-
-    // assign or remove a flow of the machine.
-    [HttpPost("operation")]
-    public async Task<ActionResult<ServiceResponse<bool>>> AssignOperationToMachine(MachineOperationDto machineFlowOperationDto)
-    {
-        return ResultHelper(await _machineService.AssignOperationToMachineAsync(machineFlowOperationDto));
+        return ResultHelper(await _machineService.GetMachineAsync(machineId));
     }
 
     // Deletes a machine by its ID.
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachine(Guid id)
+    [HttpDelete("{machineId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachine(Guid machineId)
     {
-        return ResultHelper(await _machineService.DeleteMachineAsync(id));
+        return ResultHelper(await _machineService.DeleteMachineAsync(machineId));
     }
 
-    // removes all the task assigned to the machine
-    [HttpDelete("remove-all-operations/{id}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> RemoveAllOperations(Guid id)
+    // Delete multiple machines by their IDs.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFlows([FromBody] IEnumerable<Guid> machineIds)
     {
-        return ResultHelper(await _machineService.RemoveAllOperationsAsync(id));
+        return ResultHelper(await _machineService.DeleteMachinesAsync(machineIds));
     }
+
+    // // assign or remove a flow of the machine.
+    // [HttpPost("operation")]
+    // public async Task<ActionResult<ServiceResponse<bool>>> AssignOperationToMachine(MachineOperationDto machineFlowOperationDto)
+    // {
+    //     return ResultHelper(await _machineService.AssignOperationToMachineAsync(machineFlowOperationDto));
+    // }
+
+    // // removes all the task assigned to the machine
+    // [HttpDelete("remove-all-operations/{id}")]
+    // public async Task<ActionResult<ServiceResponse<bool>>> RemoveAllOperations(Guid id)
+    // {
+    //     return ResultHelper(await _machineService.RemoveAllOperationsAsync(id));
+    // }
 }
