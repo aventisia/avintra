@@ -58,18 +58,4 @@ public class MachineController : BaseApiController
     {
         return ResultHelper(await _machineService.DeleteMachinesAsync(machineIds));
     }
-
-    // // assign or remove a flow of the machine.
-    // [HttpPost("operation")]
-    // public async Task<ActionResult<ServiceResponse<bool>>> AssignOperationToMachine(MachineOperationDto machineFlowOperationDto)
-    // {
-    //     return ResultHelper(await _machineService.AssignOperationToMachineAsync(machineFlowOperationDto));
-    // }
-
-    // // removes all the task assigned to the machine
-    // [HttpDelete("remove-all-operations/{id}")]
-    // public async Task<ActionResult<ServiceResponse<bool>>> RemoveAllOperations(Guid id)
-    // {
-    //     return ResultHelper(await _machineService.RemoveAllOperationsAsync(id));
-    // }
 }
