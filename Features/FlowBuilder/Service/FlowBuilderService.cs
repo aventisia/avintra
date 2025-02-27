@@ -18,8 +18,8 @@ public class FlowBuilderService : IFlowBuilderService
         _unitOfWork = unitOfWork;
     }
 
-    // Retrieves the flow record to load when the user opens it in the studio.
-    public async Task<ServiceResponse<LoadFlowDto>> GetFlowToLoadAsync(Guid id)
+    // Retrieves the flow version record to load when the user opens it in the studio.
+    public async Task<ServiceResponse<LoadFlowDto>> GetFlowToLoadAsync(Guid flowId, Guid? versionId)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<LoadFlowDto>
@@ -30,74 +30,91 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
-            // Try to get flow
-            var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.Id == id && w.CreatedByUserId == _userId)
-                                        .SingleOrDefaultAsync();
+            // Attempt to retrieve the latest flow version based on provided conditions
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w =>
+                    w.FlowId == flowId &&
+                    w.CreatedByUserId == _userId &&
+                    !w.IsPublished &&
+                    (versionId == null || w.Id == versionId)
+                )
+                .Include(f => f.Flow)
+                .OrderByDescending(a => a.CreatedOn) // Ensure the latest version is retrieved
+                .FirstOrDefaultAsync();
 
-            // Flow doesn't exist
-            if (flow == null)
+            // No flow version found, log and return response
+            if (flowVersion == null)
             {
-                _logger.LogInformation($"Flow not found for Id {id}");
-                serviceResponse.Message = "Flow does not exist";
+                _logger.LogInformation($"No unpublished flow version found for FlowId {flowId}. VersionId: {versionId?.ToString() ?? "N/A"}.");
+                serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
 
-            // Task successful
-            serviceResponse.Data = flow.Adapt<LoadFlowDto>();
+            // Successfully retrieved the flow version, log and return response
+            _logger.LogInformation($"Successfully retrieved flow version for FlowId {flowId}. VersionId: {flowVersion.Id}.");
+            serviceResponse.Data = flowVersion.Adapt<LoadFlowDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow retrieved successfully";
+            serviceResponse.Message = "Flow version retrieved successfully.";
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
             return serviceResponse;
         }
+
         return serviceResponse;
     }
 
-    // Updates the flow's nodes, edges, viewport silently in the background whenever the user makes any changes
+    // Updates the flow version nodes, edges, and viewport in the background when the user makes changes
     public async Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to update flow. Please try again"
+            Message = "Failed to update the flow version. Please try again."
         };
 
         try
         {
-            // Validate flow existence
-            var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w => w.Id == flowSilentUpdateDto.Id && w.CreatedByUserId == _userId)
+            // Validate that the flow version exists and is owned by the current user
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                                        .GetByConditionAsync(w =>
+                                            (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
+                                            w.FlowId == flowSilentUpdateDto.Id &&
+                                            w.CreatedByUserId == _userId &&
+                                            !w.IsPublished
+                                        )
+                                        .OrderByDescending(a => a.CreatedOn)
                                         .SingleOrDefaultAsync();
 
-            // Flow does not exist
-            if (flow == null)
+            // Flow version does not exist, log and return failure
+            if (flowVersion == null)
             {
-                _logger.LogInformation($"Flow does not exist");
-                serviceResponse.Message = "Flow does not exist";
+                _logger.LogInformation($"No flow version found for Id {flowSilentUpdateDto.Id}. The flow version could not be updated.");
+                serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
 
-            // Update flow
-            flowSilentUpdateDto.Adapt(flow);
-            flow.LastModifiedByUserId = _userId;
-            flow.LastModifiedOn = DateTimeOffset.UtcNow;
-            _unitOfWork.FlowRepo.Update(flow);
+            // Map the updated properties from the DTO to the flow version
+            flowSilentUpdateDto.Adapt(flowVersion);
+            flowVersion.LastModifiedByUserId = _userId;
+            flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
 
-            // Update-Job failed
+            // Attempt to update the flow version
+            _unitOfWork.FlowVersionRepo.Update(flowVersion);
+
+            // Save changes to the database, log failure if saving fails
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while silently updating flow");
+                _logger.LogInformation("Failed to save changes while updating flow version silently.");
                 return serviceResponse;
             }
 
-            // Task successful
+            // Successful update, log and return success
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow updated successfully";
+            serviceResponse.Message = "Flow version updated successfully.";
         }
         catch (Exception ex)
         {

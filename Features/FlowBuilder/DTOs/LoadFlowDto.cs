@@ -10,6 +10,11 @@ public class LoadFlowDto
     /// </summary>
     public Guid Id { get; set; }
 
+    // <summary>
+    /// Gets or sets the version ID of the flow.
+    /// </summary>
+    public Guid? VersionId { get; set; }
+
     /// <summary>
     /// Gets or sets the name of the flow.
     /// </summary>

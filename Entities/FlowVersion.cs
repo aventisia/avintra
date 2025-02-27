@@ -18,6 +18,16 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public bool IsDraft{ get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the version has been published.
+    /// </summary>
+    public bool IsPublished { get; set; }
+
+    /// <summary>
+    /// Gets or sets the flow's nodes, edges, and viewport JSON data in string format. The default value will be an empty object.
+    /// </summary>
+    public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
+
+    /// <summary>
     /// Gets or sets the ID of the flow to which the flow version belongs.
     /// </summary>
     public required Guid FlowId { get; set; }

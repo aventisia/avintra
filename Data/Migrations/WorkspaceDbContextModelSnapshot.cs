@@ -95,9 +95,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ReactFlowObject")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -338,11 +335,17 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsLocked")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReactFlowObject")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
