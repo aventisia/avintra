@@ -12,6 +12,11 @@ public class FlowSilentUpdateDto
     [RequiredGuid]
     public Guid Id { get; set; }
 
+    // <summary>
+    /// Gets or sets the version ID of the flow.
+    /// </summary>
+    public Guid? VersionId { get; set; }
+
     /// <summary>
     /// Gets or sets the thumbnail of the flow.
     /// </summary>
