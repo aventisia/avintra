@@ -11,7 +11,7 @@ export const useModelTestQueryKey = () => {
   // Get modelId (m) and modelName (pn)
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  let modelId = queryParams.get("m");
+  let modelId = queryParams.get("mid");
   let modelName = queryParams.get("mn");
 
   // Get store setModelDataState action
@@ -23,8 +23,10 @@ export const useModelTestQueryKey = () => {
 
   // Throw error if model id or name are not provided
   if (!modelId || !modelName) {
-    modelId = localStorage.getItem("model_id");
-    modelName = localStorage.getItem("model_name");
+    const test = localStorage.getItem("label_data") || "{}";
+    const testObj = JSON.parse(test);
+    modelId = testObj?.model_id;
+    modelName = testObj?.model_name;
     if (!modelId || !modelName) {
       throw new Error("Model Id and name are required");
     }

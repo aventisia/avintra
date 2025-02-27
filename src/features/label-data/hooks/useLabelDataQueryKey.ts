@@ -11,7 +11,7 @@ export const useLabelDataQueryKey = () => {
   // Get modelId (m) and modelName (pn)
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  let modelId = queryParams.get("m");
+  let modelId = queryParams.get("mid");
   let modelName = queryParams.get("mn");
 
   // Get store setModelDataState action
@@ -23,8 +23,10 @@ export const useLabelDataQueryKey = () => {
 
   // Throw error if model id or name are not provided
   if (!modelId || !modelName) {
-    modelId = localStorage.getItem("model_id");
-    modelName = localStorage.getItem("model_name");
+    const labelData = localStorage.getItem("label_data") || "{}";
+    const labelDataObj = JSON.parse(labelData);
+    modelId = labelDataObj?.model_id;
+    modelName = labelDataObj?.model_name;
     if (!modelId || !modelName) {
       throw new Error("Model Id and name are required");
     }

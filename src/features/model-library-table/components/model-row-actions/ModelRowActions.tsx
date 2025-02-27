@@ -2,7 +2,8 @@ import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/D
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 import { ModelRowDeleteAction } from "./ModelRowDeleteAction";
-import { ModelRowOpenAction } from "./ModelRowOpenAction";
+import { ModelLabelDataAction } from "./ModelLabelDataAction";
+import { ModelTestAction } from "./ModelTestAction";
 
 interface ModelRowActionsProps {
   rowId: string;
@@ -11,9 +12,15 @@ interface ModelRowActionsProps {
 export const ModelRowActions = ({ rowId }: ModelRowActionsProps) => {
   return (
     // Dropdown menu for model table row action */}
-    <DataTableRowActions>
-      {/* To open model */}
-      <ModelRowOpenAction rowId={rowId} />
+    <DataTableRowActions className="w-32">
+      {/* To Label data model */}
+      <ModelLabelDataAction rowId={rowId} />
+
+      {/* To Test model */}
+      <ModelTestAction rowId={rowId} />
+
+      {/* DropdownMenuSeparator component */}
+      <DropdownMenuSeparator />
 
       {/* View the model details */}
       <DTRowAction rowId={rowId} crudAction="read" />

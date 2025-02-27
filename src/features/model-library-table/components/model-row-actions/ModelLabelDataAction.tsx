@@ -1,21 +1,21 @@
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useOpenModelLabelData } from "../../hooks/useOpenModel";
+import { useOpenModelLabelData } from "../../hooks/useOpenModelLabelData";
 
-interface ModelRowOpenActionProps {
+interface ModelLabelDataActionProps {
   rowId: string;
 }
 
-export const ModelRowOpenAction = ({ rowId }: ModelRowOpenActionProps) => {
+export const ModelLabelDataAction = ({ rowId }: ModelLabelDataActionProps) => {
   // Get handle function to open Model
-  const handleOpenModelAction = useOpenModelLabelData();
+  const handleLabelDataAction = useOpenModelLabelData();
 
   // Return the component
   return (
     <SimpleDDMenuItem
-      content="Open"
+      content="Label data"
       Icon={ArrowTopRightOnSquareIcon}
-      onClick={() => handleOpenModelAction(rowId)}
+      onClick={() => handleLabelDataAction(rowId)}
     />
   );
 };
