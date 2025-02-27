@@ -33,7 +33,6 @@ public class MachineService : IMachineService
             // Validate machine uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.CreatedByUserId == _userId &&
                                                         w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                                                      .FirstOrDefaultAsync();
 
@@ -75,10 +74,10 @@ public class MachineService : IMachineService
 
             // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == machineDto.Name.ToLower() &&
-                                                        w.CreatedByUserId == _userId)
-                                                     .FirstOrDefaultAsync();
+                                                    .GetByConditionAsync(w =>
+                                                        w.Name.ToLower() == machineDto.Name.ToLower()
+                                                    )
+                                                    .FirstOrDefaultAsync();
 
             // Machine already exists
             if (machineAlreadyExists != null)
@@ -190,11 +189,10 @@ public class MachineService : IMachineService
             var machines = await _unitOfWork.MachineRepo
                                             .GetByConditionAsync(m => m.CreatedByUserId == _userId)
                                             .OrderByDescending(o => o.CreatedOn)
-                                            .ProjectToType<MachineDto>()
                                             .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = machines;
+            serviceResponse.Data = machines.Adapt<IEnumerable<MachineDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "machines retrieved successfully";
             _logger.LogInformation("machines retrieved successfully.");
@@ -279,8 +277,7 @@ public class MachineService : IMachineService
             var machineAlreadyExists = await _unitOfWork.MachineRepo
                             .GetByConditionAsync(m =>
                                 m.Name.ToLower() == machineDto.Name.ToLower() &&
-                                m.Id != machineDto.Id &&
-                                m.CreatedByUserId == _userId
+                                m.Id != machineDto.Id
                             )
                             .FirstOrDefaultAsync();
 
