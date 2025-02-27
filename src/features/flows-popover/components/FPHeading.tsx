@@ -16,9 +16,7 @@ export const FPHeading = () => {
   return (
     <div className="flex items-center gap-2">
       Flows
-      <Badge variant={"secondary"} className="text-2xs">
-        {flowsCount}
-      </Badge>
+      <Badge className="text-2xs">{flowsCount}</Badge>
     </div>
   );
 };

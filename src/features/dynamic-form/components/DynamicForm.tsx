@@ -14,7 +14,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/react-toolkit/ui/accordion";
-import OnErrorTabs from "./OnErrorTabs";
+import { PopoverClose } from "@radix-ui/react-popover";
+// import OnErrorTabs from "./OnErrorTabs";
 
 interface DynamicFormProps {
   /** An array of objects defining the form categories and fields. */
@@ -53,6 +54,8 @@ const DynamicForm = ({
 
   // Submit handler
   function submitHandler(formData: any) {
+    console.log("inside submit");
+
     // Return if form is only for view information
     if (viewOnly) return;
 
@@ -149,7 +152,10 @@ const DynamicForm = ({
                   </Accordion>
                 </>
               ))}
-              <Accordion
+              {/* To Do
+                To Be Implemented Later
+              */}
+              {/* <Accordion
                 type="single"
                 collapsible
                 className="w-full rounded-lg bg-slate-100 px-2.5"
@@ -162,21 +168,26 @@ const DynamicForm = ({
                     <OnErrorTabs />
                   </AccordionContent>
                 </AccordionItem>
-              </Accordion>
+              </Accordion> */}
             </div>
           )}
         </FormProvider>
       </ScrollArea>
       <Separator className="my-0 h-[0.5px] w-full" />
       <div className="flex w-full items-center justify-end gap-2 px-4 pb-4">
-        <Button size="xs" variant={"outline"}>
-          Cancel
-        </Button>
+        <PopoverClose>
+          <Button size="xs" type="button" variant={"outline"}>
+            Cancel
+          </Button>
+        </PopoverClose>
         {!viewOnly && (
-          <SubmitButton
-            size="xs"
-            isPending={isMutationPending || isSubmitting}
-          />
+          <PopoverClose>
+            <SubmitButton
+              size="xs"
+              isPending={isMutationPending || isSubmitting}
+              primaryText="Save"
+            />
+          </PopoverClose>
         )}
       </div>
     </Form>

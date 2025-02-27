@@ -75,46 +75,48 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
 
   return (
     <StopPropagationWrapper className="flex">
-      <Popover>
-        <PopoverTrigger
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon6" }),
-            "group z-10",
-            "aria-[expanded=true]:bg-accent",
-            "nodrag nopan",
-          )}
-        >
-          <Cog6ToothIcon
+      {activityConfig && (
+        <Popover>
+          <PopoverTrigger
             className={cn(
-              "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
+              buttonVariants({ variant: "ghost", size: "icon6" }),
+              "group z-10",
+              "aria-[expanded=true]:bg-accent",
+              "nodrag nopan",
             )}
-          />
-        </PopoverTrigger>
-        {/* Popover content */}
-        <PopoverContent
-          collisionPadding={10}
-          align="start"
-          side="right"
-          variant={"responsive"}
-          className="max-h-fit min-w-[30vw]"
-        >
-          <PopoverDefaultHeader heading={data.label} />
-          {activityConfig && (
-            <DynamicForm
-              className="flex h-full flex-col"
-              formFieldCategories={getFormFields(
-                "insert",
-                activityConfig?.fieldList,
-                activityConfig?.fieldCategories,
-                [],
+          >
+            <Cog6ToothIcon
+              className={cn(
+                "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
               )}
-              formFieldsToWatch={activityConfig?.fieldsToWatch}
-              onSubmit={formSubmitHandler}
-              formFieldValuesToFill={data.fieldValues}
             />
-          )}
-        </PopoverContent>
-      </Popover>
+          </PopoverTrigger>
+          {/* Popover content */}
+          <PopoverContent
+            collisionPadding={10}
+            align="start"
+            side="right"
+            variant={"responsive"}
+            className="max-h-fit min-w-[30vw]"
+          >
+            <PopoverDefaultHeader heading={data.label} />
+            {activityConfig && (
+              <DynamicForm
+                className="flex h-full flex-col"
+                formFieldCategories={getFormFields(
+                  "insert",
+                  activityConfig?.fieldList,
+                  activityConfig?.fieldCategories,
+                  [],
+                )}
+                formFieldsToWatch={activityConfig?.fieldsToWatch}
+                onSubmit={formSubmitHandler}
+                formFieldValuesToFill={data.fieldValues}
+              />
+            )}
+          </PopoverContent>
+        </Popover>
+      )}
     </StopPropagationWrapper>
   );
 };

@@ -1,6 +1,7 @@
 import { iconMapper } from "@/components/icon-mapper";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 import { NodeDataType } from "@/types/node-data-type";
+import { Badge } from "@/react-toolkit/ui/badge";
 
 interface ActionToSelectProps {
   data: NodeDataType;
@@ -20,7 +21,10 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
         {/* Category heading */}
         <div className="flex gap-2">
           <h2 className="flex items-center text-xs font-medium text-foreground">
-            {data.label}
+            {data.label}{" "}
+            {data.disabled && (
+              <Badge className="ml-1 text-3xs">Coming soon</Badge>
+            )}
           </h2>
         </div>
 
