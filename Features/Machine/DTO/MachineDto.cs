@@ -5,55 +5,69 @@ namespace WorkspaceAPIs.DTOs;
 /// </summary>
 public class MachineDto
 {
+    /// <summary>
+    /// Gets or sets the flow record's primary key.
+    /// </summary>
+    /// <remarks>
+    /// Note: Not making it required because the same DTO is used for insert and update.
+    /// </remarks>
+    public Guid Id { get; set; }
+
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// get or set the Name of the machine max(200)
+    /// Get or set the Name of the machine (max length 200)
     /// </summary>
-    public string? Name { get; set; }
+    [Required, MaxLength(256)]
+    public required string Name { get; set; }
 
     /// <summary>
-    /// IP address of the machine IPv4 or 6
+    /// IP address of the machine (supports IPv4 or IPv6)
     /// </summary>
-    public string? IPAddress { get; set; }
+    [Required, MaxLength(50)]
+    public required string IPAddress { get; set; }
 
     /// <summary>
-    /// represents the host name of the machine
+    /// Represents the host name of the machine
     /// </summary>
-    public string? Hostname { get; set; }
+    [Required, MaxLength(100)]
+    public required string Hostname { get; set; }
 
     /// <summary>
-    ///  represents the operating system of the machine like Windows, Linux
+    /// Represents the operating system of the machine, e.g., Windows, Linux
     /// </summary>
-    public MachineTypeEnum Type { get; set; }
+    [Required, MaxLength(50)]
+    public required string Type { get; set; }
 
     /// <summary>
-    /// represenets the status of the machine one of from Online, Offline, Running, Stopped
+    /// Represents the status of the machine. Possible values are: Online, Offline, Running, Stopped
     /// </summary>
-    public MachineStatusTypeEnum Status { get; set; }
+    [Required, MaxLength(50)]
+    public required string Status { get; set; }
 
     /// <summary>
-    /// represents the environment of the machine Development, UAT, Production
+    /// Represents the environment of the machine, e.g., Development, UAT, Production
     /// </summary>
-    public MachineEnvironmentTypeEnum Environment { get; set; }
+    [Required, MaxLength(50)]
+    public required string Environment { get; set; }
 
     /// <summary>
-    /// represents the Running agent/flow activity
+    /// Represents the running agent/flow activity on the machine, if any
     /// </summary>
     public string? CurrentTask { get; set; }
 
     /// <summary>
-    /// represents the avaibility of the machine for another task.
+    /// Represents the availability of the machine for another task. True if available, False if not.
     /// </summary>
     public bool IsAvailable { get; set; }
 
     /// <summary>
-    /// Running agent/flow's activity/action, if any
+    /// Represents the timestamp of when the machine was last checked in
     /// </summary>
     public DateTime LastCheckedIn { get; set; }
 
     /// <summary>
-    /// Gets or sets a flag indicating whether the machine is disabled.
+    /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>
     /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
@@ -61,25 +75,25 @@ public class MachineDto
     public bool? IsDisabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who created the machine.
+    /// Gets or sets the username of the user who created the user record. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
-    public Guid? CreatedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the machine was created.
+    /// Gets or sets the date and time when the user record was created. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? CreatedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who last modified the machine. 
+    /// Gets or sets the username of the user who last modified the user record.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
-    public Guid? LastModifiedBy { get; set; }
+    public string? LastModifiedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the machine was last modified. 
+    /// Gets or sets the date and time when the user record was last modified. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
