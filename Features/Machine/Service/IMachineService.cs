@@ -6,6 +6,13 @@ namespace WorkspaceAPIs.Services;
 public interface IMachineService
 {
     /// <summary>
+    /// Checks the availability of a machine name.
+    /// </summary>
+    /// <param name="checkAvailabilityDto">The DTO containing the machine name to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the machine name is available or not.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsMachineNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
     /// Creates a new machine.
     /// </summary>
     /// <param name="machineDto">The machine details.</param>

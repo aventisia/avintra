@@ -18,6 +18,48 @@ public class MachineService : IMachineService
         _unitOfWork = unitOfWork;
     }
 
+    // Checks the availability of a machine name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsMachineNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check machine name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate machine uniqueness
+            var machineAlreadyExists = await _unitOfWork.MachineRepo
+                                                     .GetByConditionAsync(w =>
+                                                        w.CreatedByUserId == _userId &&
+                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                     .FirstOrDefaultAsync();
+
+            // Machine already exists
+            if (machineAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A machine with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Machine name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Insert new machine
     public async Task<ServiceResponse<MachineDto>> CreateNewMachineAsync(MachineDto machineDto)
     {
@@ -32,13 +74,13 @@ public class MachineService : IMachineService
         {
 
             // Validate machine name uniqueness
-            var machineAlreadyExists = await _unitOfWork.FlowRepo
+            var machineAlreadyExists = await _unitOfWork.MachineRepo
                                                      .GetByConditionAsync(w =>
                                                         w.Name.ToLower() == machineDto.Name.ToLower() &&
                                                         w.CreatedByUserId == _userId)
                                                      .FirstOrDefaultAsync();
 
-            // Flow already exists
+            // Machine already exists
             if (machineAlreadyExists != null)
             {
                 _logger.LogInformation($"Machine already exists");
@@ -54,13 +96,13 @@ public class MachineService : IMachineService
             newMachine.CreatedByUserId = _userId;
             newMachine.LastModifiedByUserId = _userId;
 
-            // Insert flow
+            // Insert machine
             await _unitOfWork.MachineRepo.InsertAsync(newMachine);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new flow");
+                _logger.LogInformation("Context SaveChanges failed while inserting new machine");
                 return serviceResponse;
             }
             // Task successful
@@ -233,7 +275,7 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Validate flow name uniqueness
+            // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
                             .GetByConditionAsync(m =>
                                 m.Name.ToLower() == machineDto.Name.ToLower() &&
@@ -284,7 +326,7 @@ public class MachineService : IMachineService
         return serviceResponse;
     }
 
-    // Deletes multiple flows by their IDs.
+    // Deletes multiple machines by their IDs.
     public async Task<ServiceResponse<bool>> DeleteMachinesAsync(IEnumerable<Guid> machineIds)
     {
         // Initialize ServiceResponse with failed response
@@ -312,7 +354,7 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // TODO: Check flow relationship with other entities
+            // TODO: Check machine relationship with other entities
 
             // Delete machines
             _unitOfWork.MachineRepo.Delete(machines);

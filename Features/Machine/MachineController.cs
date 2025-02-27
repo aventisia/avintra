@@ -10,12 +10,21 @@ public class MachineController : BaseApiController
         _machineService = machineService;
     }
 
+    // Checks the availability of a machine name.
+    [HttpPost("is-available")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsFlowNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    {
+        return ResultHelper(await _machineService.IsMachineNameAvailableAsync(checkAvailabilityDto));
+    }
+
+    // Insert new machine
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<MachineDto>>> CreateNewMachine(MachineDto machineDto)
     {
         return ResultHelper(await _machineService.CreateNewMachineAsync(machineDto));
     }
 
+    // Update an exiting machine
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<MachineDto>>> UpdateMachine(MachineDto machineDto)
     {
@@ -45,7 +54,7 @@ public class MachineController : BaseApiController
 
     // Delete multiple machines by their IDs.
     [HttpPost("delete-multiple")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFlows([FromBody] IEnumerable<Guid> machineIds)
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachinesAsync([FromBody] IEnumerable<Guid> machineIds)
     {
         return ResultHelper(await _machineService.DeleteMachinesAsync(machineIds));
     }
