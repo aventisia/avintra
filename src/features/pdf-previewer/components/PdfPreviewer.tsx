@@ -33,7 +33,7 @@ import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
 import { toast } from "sonner";
 import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnotation";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "public/assets/pdf.worker.min.js";
+pdfjs.GlobalWorkerOptions.workerSrc = "assets/pdf.worker.min.js";
 
 export interface DocumentLoadSuccess {
   numPages: number;
