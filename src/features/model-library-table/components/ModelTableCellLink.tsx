@@ -1,6 +1,6 @@
 import { cn } from "@/react-toolkit/lib/utils";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { useOpenModelLabelData } from "../hooks/useOpenModel";
+import { useOpenModelLabelData } from "../hooks/useOpenModelLabelData";
 
 interface ModelTableCellLinkProps {
   /** The ID of the model to open. */

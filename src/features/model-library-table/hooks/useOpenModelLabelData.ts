@@ -16,7 +16,7 @@ export const useOpenModelLabelData = () => {
   const queryClient = useQueryClient();
 
   // Handle open model action
-  const handleOpenModelAction = (rowId: string) => {
+  const handleLabelDataAction = (rowId: string) => {
     // Get models data from query client
     const modelsData = queryClient.getQueryData<{
       data: ModelLibraryTableDto[];
@@ -25,14 +25,15 @@ export const useOpenModelLabelData = () => {
     // Get model data by id
     const modelData = modelsData?.data.find((item) => item.id === rowId);
 
+    const labelDataObj = { model_id: rowId, model_name: modelData?.name };
+
     //Add model is to localstorage
-    localStorage.setItem("model_id", rowId);
-    localStorage.setItem("model_name", modelData?.name || "Model");
+    localStorage.setItem("label_data", JSON.stringify(labelDataObj));
 
     // Navigate to model flows page
-    navigate(`/label-data?m=${rowId}&mn=${modelData?.name}`);
+    navigate(`/label-data?mid=${rowId}&mn=${modelData?.name}`);
   };
 
   // Return the handle open model action function
-  return handleOpenModelAction;
+  return handleLabelDataAction;
 };

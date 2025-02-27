@@ -20,7 +20,7 @@ type Actions = {
   setStepState: (step: number) => void;
 };
 
-export const useModelDataStore = create<State & Actions>((set) => ({
+export const useLabelDataStore = create<State & Actions>((set) => ({
   modelId: "",
   modelName: "",
   labelDataQueryKey: [],

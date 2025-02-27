@@ -1,28 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useFileStore } from "../stores/file-uploader-store";
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
 import { uploadFile } from "../apis/file-upload-apis";
 import { toast } from "sonner";
 import { FileUploadDto } from "../dtos/file-upload-dto";
-import { useShallow } from "zustand/react/shallow";
-import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
+interface FileUploadParams {
+  modelId: string;
+  addFileToUpload: (file: FileUploadDto) => void;
+  updateProgress: (name: string, progress: number) => void;
+}
 
-export const useFileUpload = () => {
+export const useFileUpload = ({
+  modelId,
+  addFileToUpload,
+  updateProgress,
+}: FileUploadParams) => {
   // Get QueryClient instance
   const queryClient = useQueryClient();
-
-  const { addFileToUpload, updateProgress } = useFileStore(
-    useShallow((state) => ({
-      addFileToUpload: state.addFileToUpload,
-      updateProgress: state.updateProgress,
-    })),
-  );
-
-  const { modelId } = useModelDataStore(
-    useShallow((state) => ({
-      modelId: state.modelId,
-    })),
-  );
 
   return useMutation({
     mutationFn: async (file: File) => {

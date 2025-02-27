@@ -2,25 +2,29 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { Progress } from "@/react-toolkit/ui/progress";
-import { useFileStore } from "../stores/file-uploader-store";
+import { FileState } from "../stores/file-uploader-store";
 import { useFileDelete } from "../hooks/useFileDelete";
-import { useShallow } from "zustand/react/shallow";
-
-const FileUploadList = () => {
-  const { files, clearFiles } = useFileStore(
-    useShallow((state) => ({
-      files: state.files,
-      clearFiles: state.clearFiles,
-    })),
-  );
-  const { mutate: deleteFile } = useFileDelete();
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
+import { formatFileSize } from "../utils";
+import { FileUploadDto } from "../dtos/file-upload-dto";
+interface FileUploadListProps {
+  files: FileState[];
+  clearFiles: () => void;
+  modelId: string;
+  filesToUpload: FileUploadDto[];
+  removeFile: (name: string | undefined) => void;
+}
+const FileUploadList = ({
+  files,
+  clearFiles,
+  filesToUpload,
+  modelId,
+  removeFile,
+}: FileUploadListProps) => {
+  const { mutate: deleteFile } = useFileDelete({
+    filesToUpload,
+    modelId,
+    removeFile,
+  });
 
   return (
     <>

@@ -10,6 +10,7 @@ import {
 import { MLModelBuilderLayout } from "./components/layout/Layout";
 import { ModelLibraryPage } from "./pages/ModelLibraryPage";
 import { LabelDataPage } from "./pages/LabelDataPage";
+import { ModelTestPage } from "./pages/ModelTestPage";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -43,7 +44,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/test",
-          element: <h1>Test</h1>,
+          element: <ModelTestPage />,
         },
         {
           path: "/settings",
