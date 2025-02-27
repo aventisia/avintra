@@ -1,0 +1,15 @@
+const USER_PREFERENCES_LS_KEY = "userPreferences";
+const USER_SESSION_LS_KEY = "userSession";
+const DEV_JWT_LS_KEY = "dev_jwt";
+const USER_NAME_LS_KEY = "userName";
+const REQUEST_TIMEOUT = 30000;
+const ARTIFICIAL_DELAY = 500;
+
+export {
+  USER_PREFERENCES_LS_KEY,
+  USER_SESSION_LS_KEY,
+  DEV_JWT_LS_KEY,
+  USER_NAME_LS_KEY,
+  REQUEST_TIMEOUT,
+  ARTIFICIAL_DELAY,
+};
