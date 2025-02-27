@@ -13,7 +13,7 @@ import {
   PlayIcon,
   BellIcon,
   QueueListIcon,
-  CogIcon, 
+  CogIcon,
   ChartPieIcon
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
@@ -66,27 +66,27 @@ const workspaceAppConfig: IAppConfig = {
           {
             Icon: DesktopIcon,
             name: "machines",
-            route: "/machines",
+            route: "/orchestrator/machines",
           },
           {
             Icon: BellIcon,
             name: "Flows/Agents",
-            route: "/flows",
+            route: "/orchestrator/flows",
           },
           {
             Icon: QueueListIcon,
             name: "queue",
-            route: "/queue",
+            route: "/orchestrator/queue",
           },
           {
             Icon: PlayIcon,
             name: "execution",
-            route: "/execution",
+            route: "/orchestrator/execution",
           },
           {
             Icon: CogIcon,
             name: "config hub",
-            route: "/config-hub",
+            route: "/orchestrator/config-hub",
           },
         ],
       },
