@@ -13,8 +13,8 @@ public class Machine : BaseEntity, IMustHaveTenant
     /// <summary>
     /// IP address of the machine (supports IPv4 or IPv6)
     /// </summary>
-    [Required, MaxLength(100)]
-    public required string IPAddress { get; set; }
+    [MaxLength(100)]
+    public string? IPAddress { get; set; }
 
     /// <summary>
     /// Represents the host name of the machine
@@ -25,8 +25,8 @@ public class Machine : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Represents the operating system of the machine, e.g., Windows, Linux
     /// </summary>
-    [Required, MaxLength(50)]
-    public required string Type { get; set; }
+    [Required]
+    public required MachineTypeEnum Type { get; set; }
 
     /// <summary>
     /// Represents the status of the machine. Possible values are: Online, Offline, Running, Stopped
@@ -43,7 +43,8 @@ public class Machine : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Represents the running agent/flow activity on the machine, if any
     /// </summary>
-    public string? CurrentTask { get; set; }
+    [Required, MaxLength(256)]
+    public required string CurrentTask { get; set; }
 
     /// <summary>
     /// Represents the availability of the machine for another task. True if available, False if not.
