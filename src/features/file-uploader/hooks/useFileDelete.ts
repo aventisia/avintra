@@ -1,23 +1,19 @@
 // src/features/file-management/hooks/use-file-delete.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileState, useFileStore } from "../stores/file-uploader-store";
+import { FileState } from "../stores/file-uploader-store";
 import { toast } from "sonner";
 import { deleteFile } from "../apis/file-upload-apis";
-import { useShallow } from "zustand/react/shallow";
-import { useModelDataStore } from "@/features/label-data/stores/model-data-store";
-
-export const useFileDelete = () => {
-  const { filesToUpload, removeFile } = useFileStore(
-    useShallow((state) => ({
-      removeFile: state.removeFile,
-      filesToUpload: state.filesToUpload,
-    })),
-  );
-  const { modelId } = useModelDataStore(
-    useShallow((state) => ({
-      modelId: state.modelId,
-    })),
-  );
+import { FileUploadDto } from "../dtos/file-upload-dto";
+interface FileDeleteParams {
+  modelId: string;
+  filesToUpload: FileUploadDto[];
+  removeFile: (name: string | undefined) => void;
+}
+export const useFileDelete = ({
+  modelId,
+  filesToUpload,
+  removeFile,
+}: FileDeleteParams) => {
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -4,19 +4,30 @@ import { CloudUploadIcon } from "lucide-react";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { useFileUpload } from "../hooks/useFileUpload";
 import { useDropzone } from "react-dropzone";
-import { useFileStore } from "../stores/file-uploader-store";
-import { useShallow } from "zustand/react/shallow";
+import { FileState } from "../stores/file-uploader-store";
 import OrSeparator from "./ORSeperator";
+import { FileUploadDto } from "../dtos/file-upload-dto";
 
-const FileDropzone = () => {
-  const { mutate: uploadFile } = useFileUpload();
+interface FileDropzoneProps {
+  modelId: string;
+  files: FileState[];
+  addFile: (file: FileState) => void;
+  addFileToUpload: (file: FileUploadDto) => void;
+  updateProgress: (name: string, progress: number) => void;
+}
 
-  const { files, addFile } = useFileStore(
-    useShallow((state) => ({
-      files: state.files,
-      addFile: state.addFile,
-    })),
-  );
+const FileDropzone = ({
+  files,
+  addFile,
+  addFileToUpload,
+  updateProgress,
+  modelId,
+}: FileDropzoneProps) => {
+  const { mutate: uploadFile } = useFileUpload({
+    addFileToUpload,
+    updateProgress,
+    modelId,
+  });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
