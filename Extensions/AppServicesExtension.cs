@@ -34,6 +34,8 @@ public static class AppServicesExtension
         config.Apply(new FlowExecutionLogMappingProfile());
         config.Apply(new ActionExecutionLogMappingProfile());
         config.Apply(new MachinesMappingProfile());
+        config.Apply(new MachineFlowMappingProfile());
+
 
         services.AddSingleton(config);
     }
