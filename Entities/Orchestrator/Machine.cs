@@ -5,55 +5,58 @@ public class Machine : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// get or set the Name of the machine max(200)
+    /// Get or set the Name of the machine (max length 256)
     /// </summary>
-    [Required, MaxLength(200)]
-    public string? Name { get; set; }
+    [Required, MaxLength(256)]
+    public required string Name { get; set; }
 
     /// <summary>
-    /// IP address of the machine IPv4 or 6
-    /// </summary>
-    [Required, MaxLength(100)]
-    public string? IPAddress { get; set; }
-
-    /// <summary>
-    /// represents the host name of the machine
+    /// IP address of the machine (supports IPv4 or IPv6)
     /// </summary>
     [Required, MaxLength(100)]
-    public string? Hostname { get; set; }
+    public required string IPAddress { get; set; }
 
     /// <summary>
-    ///  represents the operating system of the machine like Windows, Linux
-    /// </summary>
-    [Required]
-    public MachineTypeEnum Type { get; set; }
-
-    /// <summary>
-    /// represenets the status of the machine one of from Online, Offline, Running, Stopped
-    /// </summary>
-    public MachineStatusTypeEnum Status { get; set; }
-
-    /// <summary>
-    /// represents the environment of the machine Development, UAT, Production
+    /// Represents the host name of the machine
     /// </summary>
     [Required, MaxLength(100)]
-    public string? Environment { get; set; }
+    public required string Hostname { get; set; }
 
     /// <summary>
-    /// represents the Running agent/flow activity
+    /// Represents the operating system of the machine, e.g., Windows, Linux
+    /// </summary>
+    [Required, MaxLength(50)]
+    public required string Type { get; set; }
+
+    /// <summary>
+    /// Represents the status of the machine. Possible values are: Online, Offline, Running, Stopped
+    /// </summary>
+    [Required, MaxLength(50)]
+    public required string Status { get; set; }
+
+    /// <summary>
+    /// Represents the environment of the machine, e.g., Development, UAT, Production
+    /// </summary>
+    [Required, MaxLength(50)]
+    public required string Environment { get; set; }
+
+    /// <summary>
+    /// Represents the running agent/flow activity on the machine, if any
     /// </summary>
     public string? CurrentTask { get; set; }
 
     /// <summary>
-    /// represents the avaibility of the machine for another task.
+    /// Represents the availability of the machine for another task. True if available, False if not.
     /// </summary>
     public bool IsAvailable { get; set; }
 
     /// <summary>
-    /// Running agent/flow's activity/action, if any
+    /// Represents the timestamp of when the machine was last checked in
     /// </summary>
     public DateTime LastCheckedIn { get; set; }
 
-    // Many-to-Many Relationship with Flows
+    /// <summary>
+    /// Many-to-Many relationship with Flows, representing the machine's associated flow activities
+    /// </summary>
     public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
 }
