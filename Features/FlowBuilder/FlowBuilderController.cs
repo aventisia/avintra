@@ -13,10 +13,10 @@ public class FlowBuilderController : BaseApiController
     }
 
     // Retrieves the flow record to load when the user opens it in the studio.
-    [HttpGet("load/{id}")]
-    public async Task<ActionResult<ServiceResponse<LoadFlowDto>>> GetFlowToLoad(Guid id)
+    [HttpGet("load/{flowId}")]
+    public async Task<ActionResult<ServiceResponse<LoadFlowDto>>> GetFlowToLoad(Guid flowId, Guid? versionId)
     {
-        return ResultHelper(await _flowBuilderService.GetFlowToLoadAsync(id));
+        return ResultHelper(await _flowBuilderService.GetFlowToLoadAsync(flowId, versionId));
     }
 
     // Updates the flow's nodes, edges, etc. silently in the background whenever the user makes any changes
