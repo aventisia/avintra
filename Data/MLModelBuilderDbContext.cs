@@ -65,6 +65,9 @@ public class MLModelBuilderDbContext : DbContext
         // Configure One-to-One relationship between Uploaded doc and Annotation data
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.AnnotationData).WithOne(one => one.UploadedDoc).HasForeignKey<AnnotationData>(fKey => fKey.UploadedDocId).OnDelete(DeleteBehavior.Restrict);
         
+        // Configure One-to-One relationship between Uploaded doc and extracted data
+        modelBuilder.Entity<UploadedDoc>().HasOne(one => one.ExtractedData).WithOne(one => one.UploadedDoc).HasForeignKey<ExtractedData>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
+        
         base.OnModelCreating(modelBuilder);
     }
 

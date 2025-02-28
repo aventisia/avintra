@@ -144,6 +144,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal?>("Accuracy")
+                        .HasColumnType("numeric");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -152,6 +155,9 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<string>("DataObject")
                         .HasColumnType("text");
+
+                    b.Property<Guid>("DocId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -177,6 +183,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("DocId")
+                        .IsUnique();
 
                     b.HasIndex("LastModifiedByUserId");
 
@@ -413,6 +422,12 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MLModelBuilderAPIs.Entities.UploadedDoc", "UploadedDoc")
+                        .WithOne("ExtractedData")
+                        .HasForeignKey("MLModelBuilderAPIs.Entities.ExtractedData", "DocId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
                         .WithMany()
                         .HasForeignKey("LastModifiedByUserId")
@@ -430,6 +445,8 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("MLModel");
+
+                    b.Navigation("UploadedDoc");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
@@ -492,6 +509,8 @@ namespace MLModelBuilderAPIs.Migrations
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
                 {
                     b.Navigation("AnnotationData");
+
+                    b.Navigation("ExtractedData");
                 });
 #pragma warning restore 612, 618
         }

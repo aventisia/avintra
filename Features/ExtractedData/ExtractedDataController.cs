@@ -20,7 +20,7 @@ public class ExtractedDataController : BaseApiController
 
     #region Methods
 
-    [HttpGet("list")]
+    [HttpGet("list/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedDataDto>>>> GetExtractedDataList(Guid mlModelId)
     {
         return ResultHelper(await _extractedDataService.GetExtractedDataListAsync(mlModelId));

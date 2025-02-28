@@ -16,6 +16,17 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public string? DataObject { get; set; }
 
     /// <summary>
+    /// Gets or sets the uploaded doc record's primary key to which this record is associated.
+    /// </summary>/
+    public Guid DocId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accuracy for the record
+    /// </summary>
+    [Range(1, 100)]
+    public decimal? Accuracy { get; set; }
+
+    /// <summary>
     /// Gets or sets the model library to which this data model is associated with.
     /// </summary>
     [ForeignKey("MLModelId")]
@@ -25,4 +36,10 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
     /// </summary>
     public Guid TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the uploaded doc to which this data model is associated with.
+    /// </summary>
+    [ForeignKey("DocId")]
+    public virtual UploadedDoc? UploadedDoc { get; set; }
 }

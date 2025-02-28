@@ -15,6 +15,8 @@ script:pre-request {
   
   req.setBody({
     MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    docId: "01954c52-e2b3-7816-a9d2-0aed2c644419",
+    accuracy: 99.5,
     DataObject: faker.lorem.sentence()
   })
 }
