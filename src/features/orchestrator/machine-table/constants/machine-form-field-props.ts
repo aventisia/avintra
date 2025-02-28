@@ -24,13 +24,15 @@ export const typeProps: SelectFieldProps = {
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Unique Name",
+  placeholder: "my-unique-machine",
   isRequired: true,
 };
 
 // Host Name
-export const hostNameProps: InputFieldProps = {
-  name: "hostName",
+export const hostnameProps: InputFieldProps = {
+  name: "hostname",
   label: "Host Name",
+  placeholder: "example.com",
   isRequired: true,
 };
 
@@ -39,12 +41,13 @@ export const ipAddressProps: InputFieldProps = {
   name: "ipAddress",
   label: "IP Address",
   isRequired: true,
+  placeholder: "123.2.12.123"
 };
 
 // Type of Environmnet
 export const typeEnvironmentProps: SelectFieldProps = {
   name: "environment",
-  label: "Environment",
+  label: "Environment Type",
   isRequired: true,
   selectOptions: enumToArray(MachineEnvironmentTypesEnum),
 };
