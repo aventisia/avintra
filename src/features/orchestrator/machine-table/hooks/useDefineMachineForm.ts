@@ -13,7 +13,10 @@ import {
   machineZodSchema,
 } from "../constants/machine-zod-schema";
 import { MachineDto } from "../dtos/machine-dto";
-import { isMachineNameAvailable } from "../apis/machine-table-apis";
+import { isMachineNameAvailable } from "../apis/machine-apis";
+import { MachineTaskTypesEnum } from "@/react-toolkit/enums/machine-task-types-enum";
+import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 
 /**
  * Custom hook for defining a machine form.
@@ -51,11 +54,17 @@ export const useDefineMachineForm = () => {
     resolver: zodResolver(machineZodSchema),
     defaultValues: {
       id: "",
+      tenantId: "",
       type: "",
       name: "",
-      description: "",
+      environment: "",
+      ipAddress: "",
+      hostname: "",
+      isAvailable: true,
+      status: "",
+      currentTask: "",
+      lastCheckedIn: new Date(),
       isDisabled: false,
-      flowCount: 0,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -84,10 +93,20 @@ export const useDefineMachineForm = () => {
     // Set machine data to form
     form.reset({
       id: rowId,
-      type: machineData?.type ?? "",
+      tenantId: userSession?.tenantId,
       name: machineData?.name ?? "",
+      type: machineData?.type ?? "",
+      ipAddress: machineData?.ipAddress ?? "",
+      isAvailable: machineData?.isAvailable ?? false,
+      lastCheckedIn: new Date(),
+      hostname: machineData?.hostname ?? "",
       isDisabled: machineData?.isDisabled ?? false,
+
       // Read (view) only fields
+      currentTask: machineData?.currentTask ?? MachineTaskTypesEnum.Flow,
+      status: machineData?.status ?? MachineStatusTypesEnum.Ideal,
+      environment: machineData?.environment ?? MachineEnvironmentTypesEnum.Development,
+
       createdBy:
         machineData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
