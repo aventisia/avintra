@@ -17,7 +17,7 @@ import {
   typeProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
-import { MachineTableDto } from "../../dtos/machine-table-dto";
+import { MachineFlowDto } from "../../dtos/machine-flow-dto";
 import { useDefineMachineFlowForm } from "../../hooks/useDefineMachineFlowForm";
 
 export const MachineFlowCrudForm = () => {
@@ -38,16 +38,16 @@ export const MachineFlowCrudForm = () => {
 
   // Define optimistic mutation to crete or update the machine
   const { mutate: mutateMachine } = useListOptimisticMutation<
-    MachineTableDto,
-    MachineTableDto | boolean,
-    MachineTableDto
+    MachineFlowDto,
+    MachineFlowDto | boolean,
+    MachineFlowDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
     // Create or update the machine
     mutateMachine({
-      payload: refineFormData(formData) as unknown as MachineTableDto,
+      payload: refineFormData(formData) as unknown as MachineFlowDto,
       crudAction: crudAction,
     });
 

@@ -18,7 +18,7 @@ import {
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
-import type { MachineTableDto } from "../../dtos/machine-table-dto";
+import type { MachineDto } from "../../dtos/machine-dto";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -38,16 +38,16 @@ export const MachineCrudForm = () => {
 
   // Define optimistic mutation to crete or update the machine
   const { mutate: mutateMachine } = useListOptimisticMutation<
-    MachineTableDto,
-    MachineTableDto | boolean,
-    MachineTableDto
+    MachineDto,
+    MachineDto | boolean,
+    MachineDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
     // Create or update the machine
     mutateMachine({
-      payload: refineFormData(formData) as unknown as MachineTableDto,
+      payload: refineFormData(formData) as unknown as MachineDto,
       crudAction: crudAction,
     });
 
@@ -72,7 +72,6 @@ export const MachineCrudForm = () => {
       {/* Machine Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
       {crudAction === "create" ? (
         <SelectField {...typeProps} />
       ) : (

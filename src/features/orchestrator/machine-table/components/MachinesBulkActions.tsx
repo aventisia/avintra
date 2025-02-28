@@ -7,10 +7,10 @@ import { Separator } from "@/react-toolkit/ui/separator";
 import { Table } from "@tanstack/react-table";
 import { machineOptimisticMutationFn } from "../apis/machine-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import { MachineTableDto } from "../dtos/machine-table-dto";
+import { MachineDto } from "../dtos/machine-dto";
 
 interface MachineBulkActionsProps {
-  table: Table<MachineTableDto>;
+  table: Table<MachineDto>;
 }
 
 export function MachinesBulkActions({
@@ -28,8 +28,8 @@ export function MachinesBulkActions({
   // Get mutation function to delete the machine
   const { mutate: deleteMachine } = useListOptimisticMutation<
     string[],
-    MachineTableDto | boolean,
-    MachineTableDto
+    MachineDto | boolean,
+    MachineDto
   >(selectedRowIds, machineOptimisticMutationFn, DATA_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error

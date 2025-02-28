@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { DATA_QUERY_KEY } from "../constants";
-import { MachineTableDto } from "../dtos/machine-table-dto";
+import { MachineDto } from "../dtos/machine-dto";
 
 /**
  * Custom hook to handle opening a machine.
@@ -19,7 +19,7 @@ export const useOpenMachine = () => {
   const handleOpenMachineAction = (rowId: string) => {
     // Get machines data from query client
     const machinesData = queryClient.getQueryData<{
-      data: MachineTableDto[];
+      data: MachineDto[];
     }>(DATA_QUERY_KEY);
 
     // Get machines data by id

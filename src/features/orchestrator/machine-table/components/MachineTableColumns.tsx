@@ -3,7 +3,7 @@ import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
-import { MachineTableDto } from "../dtos/machine-table-dto";
+import { MachineDto } from "../dtos/machine-dto";
 import { MachineTableCellLink } from "./MachineTableCellLink";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
@@ -11,7 +11,7 @@ import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
  * Array of table columns for the machine table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const MachineTableColumns: ColumnDef<MachineTableDto>[] = [
+export const MachineTableColumns: ColumnDef<MachineDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (

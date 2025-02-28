@@ -3,7 +3,7 @@ import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
 import { machineOptimisticMutationFn } from "../../apis/machine-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import type { MachineTableDto } from "../../dtos/machine-table-dto";
+import type { MachineDto } from "../../dtos/machine-dto";
 
 interface MachineRowDeleteActionProps {
   rowId: string;
@@ -18,8 +18,8 @@ export const MachineRowDeleteAction = ({
   // Get mutation function to delete the machine
   const { mutate: deleteMachine } = useListOptimisticMutation<
     string,
-    MachineTableDto | boolean,
-    MachineTableDto
+    MachineDto | boolean,
+    MachineDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger

@@ -12,7 +12,7 @@ import {
   machineNameSchema,
   machineZodSchema,
 } from "../constants/machine-zod-schema";
-import { MachineTableDto } from "../dtos/machine-table-dto";
+import { MachineDto } from "../dtos/machine-dto";
 import { isMachineNameAvailable } from "../apis/machine-table-apis";
 
 /**
@@ -72,7 +72,7 @@ export const useDefineMachineForm = () => {
   useEffect(() => {
     // Get machines data from query client
     const machinesData = queryClient.getQueryData<{
-      data: MachineTableDto[];
+      data: MachineDto[];
     }>(DATA_QUERY_KEY);
 
     // Get machine data by id
@@ -86,10 +86,8 @@ export const useDefineMachineForm = () => {
       id: rowId,
       type: machineData?.type ?? "",
       name: machineData?.name ?? "",
-      description: machineData?.description ?? "",
       isDisabled: machineData?.isDisabled ?? false,
       // Read (view) only fields
-      flowCount: machineData?.flowCount ?? 0,
       createdBy:
         machineData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
