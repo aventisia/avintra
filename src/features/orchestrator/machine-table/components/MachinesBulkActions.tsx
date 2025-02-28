@@ -5,7 +5,7 @@ import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/D
 import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Table } from "@tanstack/react-table";
-import { machineOptimisticMutationFn } from "../apis/machine-table-apis";
+import { machineOptimisticMutationFn } from "../apis/machine-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { MachineDto } from "../dtos/machine-dto";
 
