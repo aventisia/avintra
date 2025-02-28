@@ -1,7 +1,7 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
-import { machineOptimisticMutationFn } from "../../apis/machine-table-apis";
+import { machineOptimisticMutationFn } from "../../apis/machine-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import type { MachineDto } from "../../dtos/machine-dto";
 
