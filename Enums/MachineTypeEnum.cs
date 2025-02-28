@@ -6,12 +6,12 @@ namespace AspNetToolkit.Enums;
 public enum MachineTypeEnum
 {
     /// <summary>
-    /// descibes the machine flow runiing machine is the windows based
+    /// describes the machine flow running machine is the windows based
     /// </summary>
     Windows,
 
     /// <summary>
-    /// descibes the machine flow runiing machine is the windows based
+    /// describes the machine flow running machine is the linux based
     /// </summary>
     Linux,
 }

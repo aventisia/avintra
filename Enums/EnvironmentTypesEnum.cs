@@ -1,9 +1,9 @@
 namespace AspNetToolkit.Enums;
 
-public enum MachineEnvironmentTypeEnum
+public enum EnvironmentTypesEnum
 {
     /// <summary>
-    /// represents the develpoment environment for the machine
+    /// represents the development environment for the machine
     /// </summary>
     Development,
 
