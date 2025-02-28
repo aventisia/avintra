@@ -150,7 +150,13 @@ public class MachineFlowService : IMachineFlowService
                                                 (machineId == null || m.MachineId == machineId) &&
                                                 m.CreatedByUserId == _userId
                                             )
+                                            .Include(fv => fv.FlowVersion)
+                                            .ThenInclude(f => f.Flow)
+                                            .Include(m => m.Machine)
+                                            .Include(c => c.CreatedByUser)
+                                            .Include(lm => lm.LastModifiedByUser)
                                             .OrderByDescending(o => o.CreatedOn)
+                                            .AsNoTracking()
                                             .ToListAsync();
 
             // Task successful
@@ -185,6 +191,12 @@ public class MachineFlowService : IMachineFlowService
                                             .GetByConditionAsync(m =>
                                                 m.Id == machineFlowId && m.CreatedByUserId == _userId
                                             )
+                                            .Include(fv => fv.FlowVersion)
+                                            .ThenInclude(f => f.Flow)
+                                            .Include(m => m.Machine)
+                                            .Include(c => c.CreatedByUser)
+                                            .Include(lm => lm.LastModifiedByUser)
+                                            .AsNoTracking()
                                             .FirstOrDefaultAsync();
 
             if (machineFlow == null)
