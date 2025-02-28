@@ -4,9 +4,12 @@ import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type"
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
+  { key: "ipAddress", value: "IP Address" },
+  { key: "hostname", value: "Host Name" },
   { key: "type", value: "OS Type" },
+  { key: "environment", value: "Environment" },
   { key: "status", value: "Status" },
-  { key: "flowCount", value: "Flows/Agents" },
+  { key: "isAvailable", value: "Is Available" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
 ];
