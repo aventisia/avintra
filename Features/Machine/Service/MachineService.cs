@@ -189,6 +189,10 @@ public class MachineService : IMachineService
             var machines = await _unitOfWork.MachineRepo
                                             .GetByConditionAsync(m => m.CreatedByUserId == _userId)
                                             .OrderByDescending(o => o.CreatedOn)
+                                            .Include(a => a.CreatedByUser)
+                                            .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.MachineFlows)
+                                            .AsNoTracking()
                                             .ToListAsync();
 
             // Task successful
@@ -223,6 +227,10 @@ public class MachineService : IMachineService
                                             .GetByConditionAsync(m =>
                                                 m.Id == machineId && m.CreatedByUserId == _userId
                                             )
+                                            .Include(a => a.CreatedByUser)
+                                            .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.MachineFlows)
+                                            .AsNoTracking()
                                             .FirstOrDefaultAsync();
 
             if (machine == null)
