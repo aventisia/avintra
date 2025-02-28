@@ -32,7 +32,7 @@ export interface MachineDto {
   /**
  * Gets or sets the name of the machine. Max-100
  */
-  hostName?: string;
+  hostname?: string;
 
   /**
    * Gets or sets the type of machine os.
