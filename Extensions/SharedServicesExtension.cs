@@ -13,7 +13,6 @@ public static class SharedServicesExtension
         }).AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            // options.JsonSerializerOptions.Converters.Add(new JsonSrtingToGuidConverter());
         });
     }
 
