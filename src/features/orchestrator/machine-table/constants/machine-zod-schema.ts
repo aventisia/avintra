@@ -22,16 +22,21 @@ export const machineNameSchema = z
  */
 export const machineZodSchema = z.object({
   id: z.string(),
-  type: z.string().min(1, { message: reqError("Machine type") }),
-  name: machineNameSchema,
-  description: z
-    .string()
-    .max(500, { message: maxLenError("Machine description", 500) }),
-  isDisabled: z.boolean().default(false),
-  // Read (view) only fields
-  flowCount: z.number().default(0),
+  tenantId: z.optional(z.string()),
+  type: z.optional(z.string({ message: reqError("Machine type") })),
+  name: z.string({ message: reqError("Machine unique name") }),
+  environment: z.string(),
+  ipAddress: z.string().min(1, { message: reqError("IP Address") }),
+  hostname: z.string().min(1, { message: reqError("Host Name") }),
+  isDisabled: z.boolean(),
+  isAvailable: z.boolean(),
+  status: z.string(),
+  currentTask: z.string(),
+
+  // Read (view) only fields  
   createdBy: z.string(),
   createdOn: z.date(),
+  lastCheckedIn: z.date(),
   lastModifiedBy: z.string(),
   lastModifiedOn: z.date(),
 });
