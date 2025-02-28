@@ -10,13 +10,14 @@ public interface IUnitOfWork
     IFlowCommentRepo FlowCommentRepo { get; }
     ISupportTicketRepo SupportTicketRepo { get; }
     ISupportTicketRemarkRepo SupportTicketRemarkRepo { get; }
-    IFlowLogRepo flowLogRepo{ get; }
-    IFlowVersionRepo FlowVersionRepo{ get; }
-    ISubscriptionRepo SubscriptionRepo{ get; }
+    IFlowLogRepo FlowLogRepo { get; }
+    IFlowVersionRepo FlowVersionRepo { get; }
+    ISubscriptionRepo SubscriptionRepo { get; }
     IFlowExecutionLogRepo FlowExecutionLogRepo { get; }
     IActionExecutionLogRepo ActionExecutionLogRepo { get; }
-
-    IFlowTemplateRepo flowTemplateRepo{ get; }
+    IMachineRepo MachineRepo { get; }
+    IMachineFlowRepo MachineFlowRepo { get; }
+    IFlowTemplateRepo FlowTemplateRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

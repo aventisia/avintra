@@ -39,7 +39,7 @@ public class FlowTemplateService : IFlowTemplateService
 
             // Insert flow template into the database
 
-            await _unitOfWork.flowTemplateRepo.InsertAsync(newFlowTemplate);
+            await _unitOfWork.FlowTemplateRepo.InsertAsync(newFlowTemplate);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -91,7 +91,7 @@ public class FlowTemplateService : IFlowTemplateService
             newFlowTemplate.LastModifiedByUserId = _userId;
 
             // Insert flow template into the database
-            await _unitOfWork.flowTemplateRepo.InsertAsync(newFlowTemplate);
+            await _unitOfWork.FlowTemplateRepo.InsertAsync(newFlowTemplate);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -127,7 +127,7 @@ public class FlowTemplateService : IFlowTemplateService
         try
         {
             // Try to get flow-template
-            var flowTemplate = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(w => w.Id == TemplateId).FirstOrDefaultAsync();
+            var flowTemplate = await _unitOfWork.FlowTemplateRepo.GetByConditionAsync(w => w.Id == TemplateId).FirstOrDefaultAsync();
 
             if (flowTemplate == null)
             {
@@ -164,7 +164,7 @@ public class FlowTemplateService : IFlowTemplateService
         try
         {
             // Try to get trending templates list 
-            var trendingTemplates = await _unitOfWork.flowTemplateRepo
+            var trendingTemplates = await _unitOfWork.FlowTemplateRepo
               .GetAllAsync()
               .OrderByDescending(o => o.UsagesCount)
               .ToListAsync();
@@ -205,7 +205,7 @@ public class FlowTemplateService : IFlowTemplateService
         try
         {
             // Fetch all templates and filter based on category and search query
-            var templates = await _unitOfWork.flowTemplateRepo.GetByConditionAsync(t => t.Type == Type && t.Name == Name)
+            var templates = await _unitOfWork.FlowTemplateRepo.GetByConditionAsync(t => t.Type == Type && t.Name == Name)
                 .Select(t => new FlowTemplateCategoryBySearchQueryDto
                 {
                     Type = t.Type,

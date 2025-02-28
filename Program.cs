@@ -1,4 +1,5 @@
 using Serilog;
+using WorkspaceAPIs.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,7 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 /*--Configure the HTTP request pipeline.--*/
 
@@ -103,4 +105,6 @@ app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
-app.Run();
+app.MapHub<MachineHub>("/api/machine-hub");
+
+await app.RunAsync();
