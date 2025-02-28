@@ -4,8 +4,9 @@ import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type"
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
-  { key: "type", value: "Type" },
-  { key: "flowCount", value: "Flows" },
+  { key: "type", value: "OS Type" },
+  { key: "status", value: "Status" },
+  { key: "flowCount", value: "Flows/Agents" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
 ];
@@ -14,4 +15,4 @@ export const columnDisplayNames: KeyValueLookupType[] = [
 export const getColumnName = (key: string): string => {
   const column = columnDisplayNames.find((column) => column.key === key);
   return column?.value ?? key;
-};
+}; 
