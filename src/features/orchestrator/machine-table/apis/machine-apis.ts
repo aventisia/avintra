@@ -8,18 +8,18 @@ import { MachineDto } from "../dtos/machine-dto";
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/machine`;
 
 /**
- * Retrieves list of projects.
+ * Retrieves list of machines.
  */
-const getMachines = () => {
+export const getMachines = () => {
   return axiosInstance
     .get<IHttpResponse<MachineDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
 /**
- * Checks the availability of a project name.
+ * Checks the availability of a machine name.
  */
-const isMachineNameAvailable = (postObj: CheckAvailabilityDto) => {
+export const isMachineNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
@@ -28,49 +28,49 @@ const isMachineNameAvailable = (postObj: CheckAvailabilityDto) => {
 };
 
 /**
- * Inserts a new project.
+ * Inserts a new machine.
  */
-const insertMachine = (newProject: MachineDto) => {
+export const insertMachine = (newMachine: MachineDto) => {
   return axiosInstance
-    .post<IHttpResponse<MachineDto>>(`${baseAPIURL}`, newProject)
+    .post<IHttpResponse<MachineDto>>(`${baseAPIURL}`, newMachine)
     .then((res) => res.data);
 };
 
 /**
- * Updates an existing project.
+ * Updates an existing machine.
  */
-const updateMachine = (updatedProject: MachineDto) => {
+export const updateMachine = (updatedMachine: MachineDto) => {
   return axiosInstance
-    .put<IHttpResponse<MachineDto>>(`${baseAPIURL}`, updatedProject)
+    .put<IHttpResponse<MachineDto>>(`${baseAPIURL}`, updatedMachine)
     .then((res) => res.data);
 };
 
 /**
- * Deletes a project by its ID.
+ * Deletes a machine by its ID.
  */
-const deleteMachine = (id: string) => {
+export const deleteMachine = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
 /**
- * Deletes multiple projects by their IDs.
+ * Deletes multiple machines by their IDs.
  */
-const removeMachines = (ids: string[]) => {
+export const deleteMachines = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 
 /**
- * Performs an optimistic mutation on a project based on the provided CRUD action.
+ * Performs an optimistic mutation on a machine based on the provided CRUD action.
  *
  * @param {IOptimisticMutation<MachineDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-const machineOptimisticMutationFn = ({
+export const machineOptimisticMutationFn = ({
   payload,
   crudAction,
 }: IOptimisticMutation<MachineDto | string | string[]>) => {
@@ -82,18 +82,9 @@ const machineOptimisticMutationFn = ({
     case "delete":
       return deleteMachine(payload as string);
     case "delete-multiple":
-      return removeMachines(payload as string[]);
+      return deleteMachines(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
 };
 
-export {
-  getMachines,
-  isMachineNameAvailable,
-  insertMachine,
-  updateMachine,
-  deleteMachine,
-  removeMachines,
-  machineOptimisticMutationFn,
-};
