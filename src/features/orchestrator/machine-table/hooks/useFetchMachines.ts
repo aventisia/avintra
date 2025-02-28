@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { getProjects } from "../apis/machine-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
+import { getMachines } from "../apis/machine-apis";
 
 /**
  * Custom hook to fetch machines using react query.
@@ -12,7 +12,7 @@ export const useFetchMachines = () => {
   // Get machines using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
-    queryFn: () => getProjects(),
+    queryFn: () => getMachines(),
   });
 
   // Show toast on fetch error
