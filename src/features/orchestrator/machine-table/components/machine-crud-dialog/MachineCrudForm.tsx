@@ -1,24 +1,25 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
-import { machineOptimisticMutationFn } from "../../apis/machine-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  descriptionProps,
+  hostnameProps as hosthnameProps,
   idProps,
+  ipAddressProps,
   isDisabledProps,
   nameProps,
+  typeEnvironmentProps,
   typeProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
-import type { MachineDto } from "../../dtos/machine-dto";
+import { MachineDto } from "../../dtos/machine-dto";
+import { machineOptimisticMutationFn } from "../../apis/machine-apis";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -28,6 +29,7 @@ export const MachineCrudForm = () => {
     rowId,
     crudAction,
     isAvailable,
+
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
@@ -75,8 +77,11 @@ export const MachineCrudForm = () => {
       {crudAction === "create" ? (
         <SelectField {...typeProps} />
       ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
+        <SelectField disabled={!form.getValues("type")} {...typeProps} />
       )}
+
+      {/* environment */}
+      <SelectField {...typeEnvironmentProps} />
 
       {/* Name */}
       <InputField
@@ -85,8 +90,11 @@ export const MachineCrudForm = () => {
         nonErrorMessage={availabilityMessage}
       />
 
-      {/* Description */}
-      <TextareaField {...descriptionProps} />
+      {/* Host Name */}
+      <InputField {...hosthnameProps} />
+
+      {/* Host Name */}
+      <InputField {...ipAddressProps} />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
