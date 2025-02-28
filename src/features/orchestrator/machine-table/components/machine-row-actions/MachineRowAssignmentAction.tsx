@@ -1,12 +1,7 @@
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { useOpenMachine } from "../../hooks/useOpenMachine";
-import { cn } from "@/react-toolkit/lib/utils";
-import {
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import Lucide from "@/react-toolkit/ui/Lucide";
+import { useMachineFlowStore } from "../../store/machine-flow-store";
+import { useShallow } from "zustand/react/shallow";
+import { MachineTaskTypesEnum } from "@/react-toolkit/enums/machine-task-types-enum";
 
 interface MachineRowAssignmentActionProps {
   rowId: string;
@@ -15,35 +10,26 @@ interface MachineRowAssignmentActionProps {
 export const MachineRowAssignmentAction = ({
   rowId,
 }: MachineRowAssignmentActionProps) => {
-  // Get handle function to open machine
-  const handleOpenMachineAction = useOpenMachine();
+  const { setMachineId, setTypeOfAssignment, setIsDialogOpen } =
+    useMachineFlowStore(
+      useShallow((state) => ({
+        setMachineId: state.setMachineId,
+        setTypeOfAssignment: state.setTypeOfAssignment,
+        setIsDialogOpen: state.setIsDialogOpen,
+      })),
+    );
+
+  setMachineId(rowId);
 
   // Return the component
   return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger content="Assign">
-        <span className="relative flex cursor-default select-none items-center gap-2">
-          <Lucide
-            icon="Command"
-            className={cn("text-[--icon-color]", "h-4 w-4")}
-          />
-          Assign
-        </span>
-      </DropdownMenuSubTrigger>
-      <DropdownMenuSubContent
-        className={cn("flex w-[7rem] min-w-[7rem] flex-col")}
-      >
-        <SimpleDDMenuItem
-          content="Flow"
-          lucidIconName="Workflow"
-          onClick={() => handleOpenMachineAction(rowId)}
-        />
-        <SimpleDDMenuItem
-          content="Agent"
-          lucidIconName="BrainCircuit"
-          onClick={() => handleOpenMachineAction(rowId)}
-        />
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>
+    <SimpleDDMenuItem
+      onClick={() => {
+        setTypeOfAssignment(MachineTaskTypesEnum.Agent);
+        setIsDialogOpen(true);
+      }}
+    >
+      <p>Assign Agent</p>
+    </SimpleDDMenuItem>
   );
 };
