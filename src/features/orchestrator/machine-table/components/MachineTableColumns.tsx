@@ -48,6 +48,34 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     ),
   },
   {
+    accessorKey: "ipAddress",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("ipAddress")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        <MachineTableCellLink
+          rowId={row.original.id ?? "rowId"}
+          cellValue={row.getValue("ipAddress")}
+        />
+      </div>
+    ),
+  },
+  {
+    accessorKey: "hostname",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("hostname")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        <MachineTableCellLink
+          rowId={row.original.id ?? "rowId"}
+          cellValue={row.getValue("hostname")}
+        />
+      </div>
+    ),
+  },
+  {
     accessorKey: "type",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("type")} />
@@ -57,13 +85,48 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     ),
   },
   {
-    accessorKey: "flowCount",
+    accessorKey: "environment",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("flowCount")} />
+      <DTColumnHeader column={column} title={getColumnName("environment")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("flowCount")}
+        {row.getValue("environment")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("status")} />
+    ),
+    cell: ({ row }) => row.getValue("status"),
+  },
+  {
+    accessorKey: "isAvailable",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("isAvailable")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("isAvailable")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "lastCheckedIn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("Last Checked In")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {formatDistanceToNow(row.getValue("lastCheckedIn"), {
+          addSuffix: true,
+        })}
       </div>
     ),
   },
