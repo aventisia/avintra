@@ -5,6 +5,6 @@
  * also we need to update existing machines in the database.
  */
 export enum MachineTaskTypesEnum {
-  Flow = "Flow",
-  Agent = "Agent",
+  Flow = "FlowActivity",
+  Agent = "AgentActivity",
 }
