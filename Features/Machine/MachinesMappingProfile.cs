@@ -5,12 +5,13 @@ public class MachinesMappingProfile : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // Mapping to get machine list of machine records
-        config.NewConfig<Machine, ProjectsTableDto>()
-            .Map(dest => dest.CreatedBy, 
+        config.NewConfig<Machine, MachineDto>()
+            .Map(dest => dest.AgentCount, src => src.MachineFlows != null ? src.MachineFlows.Count : 0)
+            .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
                     : null)
-            .Map(dest => dest.LastModifiedBy, 
+            .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
