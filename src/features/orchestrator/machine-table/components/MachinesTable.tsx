@@ -16,6 +16,7 @@ import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachineTableColumns } from "./MachineTableColumns";
 import { useFetchMachines } from "../hooks/useFetchMachines";
 import { MachinesBulkActions } from "./MachinesBulkActions";
+import { MachineFlowCrudDialog } from "./machine-flow-crud-dialog/MachineFlowCrudDialog";
 
 /**
  * Renders a table of machines.
@@ -42,32 +43,35 @@ export const MachineTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <MachineCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* machine flow or agent assignemt ops dialog */}
+          <MachineFlowCrudDialog>
+            {/* Crud ops dialog */}
+            <MachineCrudDialog>
+              {/* Table toolbar */}
+              <div className="flex items-center justify-between">
+                <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumn={SEARCH_COLUMN}
-                  placeholder="Search machines..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
-                <Separator orientation="vertical" className="mx-2 h-6" />
-                <DTCreateButton />
+                <div className="flex items-center gap-2">
+                  <DTSearchBox
+                    table={table}
+                    searchColumn={SEARCH_COLUMN}
+                    placeholder="Search machines..."
+                  />
+                  <DTViewOptions {...{ table, columnDisplayNames }} />
+                  <Separator orientation="vertical" className="mx-2 h-6" />
+                  <DTCreateButton />
+                </div>
               </div>
-            </div>
 
-            {/* Data table to render data */}
-            <div className="rounded-md border bg-slate-50">
-              <DataTable
-                table={table}
-                columnsLength={MachineTableColumns.length}
-              />
-            </div>
-          </MachineCrudDialog>
+              {/* Data table to render data */}
+              <div className="rounded-md border bg-slate-50">
+                <DataTable
+                  table={table}
+                  columnsLength={MachineTableColumns.length}
+                />
+              </div>
+            </MachineCrudDialog>
+          </MachineFlowCrudDialog>
 
           {/* Data table Pagination component */}
           <div className="rounded-md border bg-slate-50 py-3">
