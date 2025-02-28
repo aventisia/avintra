@@ -29,6 +29,13 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AnnotationData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
+        // Enum to string conversion
+        modelBuilder.Entity<MLModel>().Property(e =>e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
+        modelBuilder.Entity<MLModel>().Property(e =>e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());
+        modelBuilder.Entity<DataField>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FieldTypesEnum>());
+        modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<PurposeTypesEnum>());
+
+
         // Configure One-to-One relationship between Model Library and ModelBuilder User
         modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MLModel>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);

@@ -302,7 +302,7 @@ public class UploadedDocService : IUploadedDocService
                 uploadedFiles.Add(new FileDetailDto
                 {
                     Path = fileUrl,
-                    Type = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
+                    Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
                     Name = fileName,
                     Size = stream.Length,
                 });
@@ -461,7 +461,7 @@ public class UploadedDocService : IUploadedDocService
                 var fileDetail = new FileDetailDto
                 {
                     Path = filePath,
-                    Type = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
+                    Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
                     Name = fileName,
                     Size = new FileInfo(filePath).Length,
                 };

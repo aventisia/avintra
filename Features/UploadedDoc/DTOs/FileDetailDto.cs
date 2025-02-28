@@ -11,7 +11,7 @@ public class FileDetailDto
     /// <summary>
     /// Gets or sets the type of uploaded file. 
     /// </summary>
-    public string? Type { get; set; }
+    public string? Extension { get; set; }
 
     /// <summary>
     /// Gets or sets the size of uploaded file. 

@@ -14,9 +14,9 @@ public class UploadedDoc : BaseEntity, IMustHaveTenant
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of uploaded file. 
+    /// Gets or sets the extension type of uploaded file. 
     /// </summary>
-    public required string Type { get; set; }
+    public required string Extension { get; set; }
 
     /// <summary>
     /// Gets or sets the size of uploaded file. 
@@ -27,6 +27,11 @@ public class UploadedDoc : BaseEntity, IMustHaveTenant
     /// Gets or sets the path of uploaded file. 
     /// </summary>
     public required string Path { get; set; }
+
+    /// <summary>
+    /// Gets or sets the purpose type of uploaded file. 
+    /// </summary>
+    public PurposeTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.
