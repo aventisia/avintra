@@ -3,7 +3,12 @@ export const columnVisibilityState = {
   id: false,
   name: true,
   type: true,
-  flowCount: true,
+  environment: true,
+  hostname: false,
+  ipAddress: true,
+  status: true,
+  isAvailable: false,
+  lastCheckedIn: false,
   createdBy: true,
   createdOn: true,
 };
