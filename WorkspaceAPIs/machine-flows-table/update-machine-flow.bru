@@ -1,0 +1,21 @@
+meta {
+  name: Update machine flow
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/machine-flow
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MACHINE_FLOW_ID"),
+    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
+    machineId: bru.getGlobalEnvVar("MACHINE_ID"),
+  })
+}

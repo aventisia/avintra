@@ -19,9 +19,9 @@ script:pre-request {
     ipAddress: faker.internet.ip(),
     hostname: faker.internet.displayName(),
     type: "Linux",
-    status: "Idle",
+    status: "Running",
     environment: "Development",
-    currentTask: faker.lorem.lines(),
+    currentTask: "FlowActivity",
     lastCheckedIn: faker.date.anytime(), 
     isAvailable: false,
   })
