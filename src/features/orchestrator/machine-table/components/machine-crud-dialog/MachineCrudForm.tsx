@@ -29,7 +29,6 @@ export const MachineCrudForm = () => {
     rowId,
     crudAction,
     isAvailable,
-
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
