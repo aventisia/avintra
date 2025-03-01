@@ -8,6 +8,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "hostname", value: "Host Name" },
   { key: "type", value: "OS Type" },
   { key: "environment", value: "Environment" },
+  { key: "agentCount", value: "Agent Count" },
   { key: "status", value: "Status" },
   { key: "isAvailable", value: "Is Available" },
   { key: "createdBy", value: "Created By" },
