@@ -15,6 +15,9 @@ public class MLModelMappingProfile : IRegister
         .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
             ? src.CreatedByUser.UserName
             : null);
+        // .Map(dest => dest.Accuracy, src => src.Accuracy != null 
+        //         ? Math.Round(src.Accuracy.Value, 2) : 0);
+
 
         //Mapping entity to insert or update the record
         config.NewConfig<MLModelDto, MLModel>()
@@ -24,6 +27,8 @@ public class MLModelMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
+            // .Map(dest => dest.Accuracy, src => src.Accuracy != null 
+            //     ? Math.Round(src.Accuracy.Value, 2) : 0);
 
     }
 }

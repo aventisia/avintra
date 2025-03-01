@@ -129,13 +129,21 @@ public class MLModelService : IMLModelService
             // Trim dto' string props
             mlModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelDto);
 
+            
+
             // Default mapping
             var newMLModel = mlModelDto.Adapt<MLModel>();
-            newMLModel.CreatedByUserId = _userId;
-            newMLModel.LastModifiedByUserId = _userId;
 
             //Insert a ML model
             await _unitOfWork.MLModelRepo.InsertAsync(newMLModel);
+            
+            //Get processed docs count
+            var docCount = await _unitOfWork.UploadedDocRepo.GetUploadDocsCountAsync(newMLModel.Id);
+
+            newMLModel.Accuracy = (decimal?)90.00;
+            newMLModel.DocsProcessed = docCount;
+            newMLModel.CreatedByUserId = _userId;
+            newMLModel.LastModifiedByUserId = _userId;
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -206,12 +214,18 @@ public class MLModelService : IMLModelService
 
             // Auto mapping 
             var newMLModel = mlModelDto.Adapt(mlModel);
+            newMLModel.Accuracy = (decimal?)90.00;
             newMLModel.CreatedByUserId = _userId;
             newMLModel.LastModifiedByUserId = _userId;
 
             //update a ML model
             _unitOfWork.MLModelRepo.Update(newMLModel);
 
+            //Get processed docs count
+            var docCount = await _unitOfWork.UploadedDocRepo.GetUploadDocsCountAsync(newMLModel.Id);
+
+            //Map processed docs count
+            newMLModel.DocsProcessed = docCount;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())

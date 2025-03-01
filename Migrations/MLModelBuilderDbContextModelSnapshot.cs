@@ -200,6 +200,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal?>("Accuracy")
+                        .HasColumnType("numeric");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -209,11 +212,15 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<int?>("DocsProcessed")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("LLM")
-                        .HasColumnType("integer");
+                    b.Property<string>("LLM")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");

@@ -21,7 +21,18 @@ public class MLModelDto
     /// <summary>
     /// Gets or sets the type of LLM.
     /// </summary>/
-    public LLMEnum LLM { get; set; }
+    public required string LLM { get; set; }
+
+    /// <summary>
+    /// Gets or sets the documents processed for this record
+    /// </summary>
+    public int? DocsProcessed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accuracy for the record
+    /// </summary>
+    [Range(1, 100)]
+    public decimal? Accuracy { get; set; }
 
     /// <summary>
     /// Gets or sets the description of ML model
