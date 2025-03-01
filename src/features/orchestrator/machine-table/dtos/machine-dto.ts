@@ -89,4 +89,9 @@ export interface MachineDto {
    * Gets or sets the date and time when the machine record was last modified.
    */
   lastModifiedOn?: Date;
+
+  /**
+ * Gets the count of the agents assigned to the machine.
+ */
+  agentCount?: number;
 }
