@@ -103,6 +103,13 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     cell: ({ row }) => row.getValue("status"),
   },
   {
+    accessorKey: "agentCount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("agentCount")} />
+    ),
+    cell: ({ row }) => row.getValue("agentCount"),
+  },
+  {
     accessorKey: "isAvailable",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("isAvailable")} />
