@@ -70,8 +70,8 @@ const workspaceAppConfig: IAppConfig = {
           },
           {
             Icon: BellIcon,
-            name: "Flows/Agents",
-            route: "/orchestrator/flows",
+            name: "Agents",
+            route: "/orchestrator/agents",
           },
           {
             Icon: QueueListIcon,
