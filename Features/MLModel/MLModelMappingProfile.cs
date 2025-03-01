@@ -8,6 +8,8 @@ public class MLModelMappingProfile : IRegister
     {
         // Mapping of DTO to get list of ML model to show on the UI.
         config.NewConfig<MLModel, MLModelDto>()
+        .Map(dest => dest.DocsProcessed,
+        src => src.ExtractedData != null ? src.ExtractedData.Count : 0 )
         .Map(dest => dest.CreatedBy, 
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

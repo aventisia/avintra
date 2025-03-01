@@ -41,7 +41,9 @@ public class MLModelService : IMLModelService
             //Try to get ML model 
             var mlModels = await _unitOfWork.MLModelRepo
                 .GetAllAsync().Include(c => c.CreatedByUser)
-                .OrderByDescending(ml => ml.CreatedOn).ToListAsync();
+                .OrderByDescending(ml => ml.CreatedOn)
+                .ProjectToType<ExtractedData>()
+                .ToListAsync();
 
             // Task successful
             serviceResponse.Data = mlModels.Adapt<IEnumerable<MLModelDto>>();
@@ -129,21 +131,15 @@ public class MLModelService : IMLModelService
             // Trim dto' string props
             mlModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelDto);
 
-            
-
             // Default mapping
             var newMLModel = mlModelDto.Adapt<MLModel>();
+            
+            newMLModel.Accuracy = (decimal?)90.00;
+            newMLModel.CreatedByUserId = _userId;
+            newMLModel.LastModifiedByUserId = _userId;
 
             //Insert a ML model
             await _unitOfWork.MLModelRepo.InsertAsync(newMLModel);
-            
-            //Get processed docs count
-            var docCount = await _unitOfWork.UploadedDocRepo.GetUploadDocsCountAsync(newMLModel.Id);
-
-            newMLModel.Accuracy = (decimal?)90.00;
-            newMLModel.DocsProcessed = docCount;
-            newMLModel.CreatedByUserId = _userId;
-            newMLModel.LastModifiedByUserId = _userId;
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -220,12 +216,6 @@ public class MLModelService : IMLModelService
 
             //update a ML model
             _unitOfWork.MLModelRepo.Update(newMLModel);
-
-            //Get processed docs count
-            var docCount = await _unitOfWork.UploadedDocRepo.GetUploadDocsCountAsync(newMLModel.Id);
-
-            //Map processed docs count
-            newMLModel.DocsProcessed = docCount;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -312,6 +302,7 @@ public class MLModelService : IMLModelService
             //Try to get a ML model using identifier
             var mlModel = await _unitOfWork.MLModelRepo
             .GetByConditionAsync(v => v.Id == id).Include(c => c.CreatedByUser)
+            .ProjectToType<ExtractedData>()
             .SingleOrDefaultAsync();
 
             //Check if ML Model not exists
