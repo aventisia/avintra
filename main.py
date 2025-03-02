@@ -8,7 +8,7 @@ def read_root():
 
 @app.get("/hello/{name}")
 def hello_user(name: str):
-    return {"Hello": name}
+    return {"message": f"Hello, {name}!"}
 
 @app.post("/process/")
 def process_data(payload: dict):
