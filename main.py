@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 
-@app.get("/api/")
+@app.get("/")
 def read_root():
     return {"message": "Hello, FastAPI!"}
 
-@app.get("/api/hello/{name}")
+@app.get("/hello/{name}")
 def hello_user(name: str):
     return {"Hello": name}
 
-@app.post("/api/process/")
+@app.post("/process/")
 def process_data(payload: dict):
     return {"received_data": payload}
