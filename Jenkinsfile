@@ -1,4 +1,3 @@
-```groovy
 // Define a function to get the target server based on the branch name
 def getTargetServer(branchName) {
     switch(branchName) {
