@@ -328,7 +328,7 @@ public class FlowVersionService : IFlowVersionService
             var agent = await _unitOfWork.FlowVersionRepo
                                           .GetByConditionAsync(w =>
                                               w.Id == agentId &&
-                                            //   w.IsPublished &&
+                                              //   w.IsPublished &&
                                               w.CreatedByUserId == _userId)
                                           .FirstOrDefaultAsync();
 
@@ -462,4 +462,35 @@ public class FlowVersionService : IFlowVersionService
         return serviceResponse;
     }
 
+    // Retrieve agent select-option
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAgentToSelectOptionAsync()
+    {
+        // Initialize serviceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve agents, please try again."
+        };
+
+        try
+        {
+            // Retrieve the agents and map them to SelectOptionDto
+            var agentsToSelect = await _unitOfWork.FlowVersionRepo.GetAllAsync()
+                .Include(a => a.Flow)
+                .ProjectToType<SelectOptionDto>()
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Set the serviceResponse
+            serviceResponse.Data = agentsToSelect;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Agents retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving the agent list.");
+        }
+
+        return serviceResponse;
+    }
 }

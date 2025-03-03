@@ -42,5 +42,12 @@ public class FlowVersionMappingProfile : IRegister
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
                     : null);
+
+        // New Mapping for Agents to SelectOptionDto (For dropdowns or select lists)
+        config.NewConfig<FlowVersion, SelectOptionDto>()
+            .Map(dest => dest.Value, src => src.Id)
+            .Map(dest => dest.Label, src => src.Flow != null ? src.Flow.Name : string.Empty)
+            .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : string.Empty)
+            .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }
