@@ -1,0 +1,11 @@
+meta {
+  name: Get machines
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/{{FLOW_VERSION_ID}}/machines
+  body: none
+  auth: none
+}
