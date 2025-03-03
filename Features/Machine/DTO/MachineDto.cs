@@ -63,6 +63,11 @@ public class MachineDto
     public bool IsAvailable { get; set; }
 
     /// <summary>
+    /// Gets or sets the agents count which are associated with the machine.
+    /// </summary>
+    public int? AgentCount { get; set; }
+
+    /// <summary>
     /// Represents the timestamp of when the machine was last checked in
     /// </summary>
     public DateTime LastCheckedIn { get; set; }
