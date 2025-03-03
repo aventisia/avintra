@@ -14,5 +14,5 @@ public enum ModelStatusEnum
     InTesting,
     Active,
     Executing,
-    Inactive
+    Inactive,
 }
