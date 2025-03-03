@@ -6,9 +6,9 @@ app = FastAPI(root_path="/api")
 def read_root():
     return {"message": "Hello, FastAPI!"}
 
-@app.get("/hello/{name}")
-def hello_user(name: str):
-    return {"message": f"Hello, {name}!"}
+@app.get("/hello/")
+def hello_user():
+    return {"message": f"Hello world!"}
 
 @app.post("/process/")
 def process_data(payload: dict):
