@@ -18,7 +18,9 @@ import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { Navigate, type RouteObject } from "react-router-dom";
-import { MachinesPage } from "./pages/MachinesPage";
+import { MachinesPage } from "./pages/orchestrator/MachinesPage";
+import { AgentsPage } from "./pages/orchestrator/AgentsPage";
+import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 export const routerConfig: RouteObject[] = [
   {
     path: "/",
@@ -83,13 +85,17 @@ export const routerConfig: RouteObject[] = [
       },
       {
         path: "/orchestrator",
-        element: <MachinesPage />,
+        element: <Orchestrator />,
         errorElement: import.meta.env.DEV && <ErrorPage />,
         children: [
           {
             index: true,
             path: "/orchestrator/machines",
             element: <MachinesPage />,
+          },
+          {
+            path: "/orchestrator/agents",
+            element: <AgentsPage />,
           },
         ],
       },
