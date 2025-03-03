@@ -34,7 +34,7 @@ pipeline {
                         sh "ssh admin@${targetServer} 'cd ${DEPLOY_PATH} && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'"
 
                         echo "Restarting the service..."
-                        sh "ssh admin@${targetServer} 'sudo systemctl restart accounts_apis.service'"
+                        sh "ssh admin@${targetServer} 'sudo systemctl restart llmpipeline_apis.service'"
                     }
                 }
             }
