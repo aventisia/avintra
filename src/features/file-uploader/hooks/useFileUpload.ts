@@ -3,6 +3,7 @@ import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
 import { uploadFile } from "../apis/file-upload-apis";
 import { toast } from "sonner";
 import { FileUploadDto } from "../dtos/file-upload-dto";
+import { useState } from "react";
 interface FileUploadParams {
   modelId: string;
   addFileToUpload: (file: FileUploadDto) => void;
@@ -17,7 +18,11 @@ export const useFileUpload = ({
   // Get QueryClient instance
   const queryClient = useQueryClient();
 
-  return useMutation({
+  // Store the controller reference
+  const [currentController, setCurrentController] =
+    useState<AbortController | null>(null);
+
+  const mutation = useMutation({
     mutationFn: async (file: File) => {
       if (file.size > MAX_FILE_SIZE) {
         throw new Error(
@@ -30,7 +35,10 @@ export const useFileUpload = ({
 
       try {
         const response = await uploadFile(file, updateProgress);
-        return response;
+
+        setCurrentController(response.controller);
+
+        return response.data;
       } catch (error) {
         toast.error(error?.toString());
         throw error;
@@ -42,14 +50,13 @@ export const useFileUpload = ({
         ...(data.data[0] as FileUploadDto),
         mlModelId: modelId,
       });
-      // Success message
-      toast.success("File uploaded successfully", {
-        className: "sonner-toaster-sm",
-      });
+      setCurrentController(null);
     },
 
     onError: (error) => {
       toast.error(error.message);
     },
   });
+
+  return { ...mutation, currentController };
 };

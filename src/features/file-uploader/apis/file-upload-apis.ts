@@ -1,11 +1,13 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import {
-  DeleteFileResponseDto,
-  FileUploadDto,
-  
-} from "../dtos/file-upload-dto";
+import { DeleteFileResponseDto, FileUploadDto } from "../dtos/file-upload-dto";
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { PdfViewerDto } from "@/features/pdf-previewer/dtos/file-list-dtos";
+
+// Wrapper type for DataResponseWithController
+interface DataResponseWithController {
+  data: FileUploadDto;
+  controller: AbortController;
+}
 
 const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/upload-doc`;
 
@@ -24,14 +26,16 @@ const getUploadedFile = (path: string) => {
 const uploadFile = async (
   file: File,
   onProgress?: (name: string, progress: number) => void,
-): Promise<FileUploadDto> => {
+): Promise<DataResponseWithController> => {
   const formData = new FormData();
   formData.append("files", file);
+  const controller = new AbortController();
   const { data } = await axiosInstance.post<FileUploadDto>(
     `${baseAPIURL}`,
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
+      signal: controller.signal,
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total && onProgress) {
           const progress = Math.round(
@@ -43,7 +47,7 @@ const uploadFile = async (
     },
   );
 
-  return data;
+  return { data, controller };
 };
 
 const deleteFile = async (

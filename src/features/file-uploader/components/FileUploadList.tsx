@@ -6,6 +6,7 @@ import { FileState } from "../stores/file-uploader-store";
 import { useFileDelete } from "../hooks/useFileDelete";
 import { formatFileSize } from "../utils";
 import { FileUploadDto } from "../dtos/file-upload-dto";
+import { TrashIcon } from "@heroicons/react/24/outline";
 interface FileUploadListProps {
   files: FileState[];
   clearFiles: () => void;
@@ -15,7 +16,6 @@ interface FileUploadListProps {
 }
 const FileUploadList = ({
   files,
-  clearFiles,
   filesToUpload,
   modelId,
   removeFile,
@@ -26,6 +26,18 @@ const FileUploadList = ({
     removeFile,
   });
 
+  const cancelUpload = (
+    currentController: AbortController | null | undefined,
+  ) => {
+    if (currentController) {
+      currentController.abort();
+    }
+  };
+
+  const removeFiles = async () => {
+    await Promise.all(files.map((file: FileUploadDto) => deleteFile(file)));
+  };
+
   return (
     <>
       {!!files.length && (
@@ -35,18 +47,20 @@ const FileUploadList = ({
             <h2 className="text-md font-medium">
               Uploaded Files ({files.length})
             </h2>
-            <Button variant="ghost" size="xs" onClick={() => clearFiles()}>
-              Cancel
+            <Button variant="ghost" size="xs" onClick={() => removeFiles()}>
+              {files.length === filesToUpload.length && files.length != 0
+                ? "Delete all"
+                : "Cancel"}
             </Button>
           </div>
 
           {/* List of Files */}
-          <ScrollArea className="h-[calc(75vh-8rem)]">
+          <ScrollArea className="h-[calc(75vh-8.6rem)] py-0.5">
             {files.map((file) => {
               const progress = file.progress;
               return (
                 <>
-                  <div key={file.name} className="border-b p-3">
+                  <div key={file.name} className="border-b p-3 last:border-b-0">
                     <div className="flex items-center justify-between pb-3">
                       <div>
                         <p className="text-sm font-medium"> {file.name}</p>
@@ -56,11 +70,21 @@ const FileUploadList = ({
                             : `Uploading... ${progress}%`}
                         </p>
                       </div>
-                      <XCircleIcon
-                        className="h-5 w-5 cursor-pointer text-muted-foreground opacity-40 hover:opacity-60"
-                        onClick={() => deleteFile(file)}
-                      />
-                      {/* )} */}
+                      <Button variant={"ghost"} size={"icon8"}>
+                        {(progress as number) < 100 ? (
+                          <XCircleIcon
+                            className="h-5 w-5 cursor-pointer text-muted-foreground opacity-40 hover:opacity-60"
+                            onClick={() =>
+                              cancelUpload(file?.currentController)
+                            }
+                          />
+                        ) : (
+                          <TrashIcon
+                            className="h-4 w-4 cursor-pointer text-muted-foreground opacity-40 hover:opacity-60"
+                            onClick={() => deleteFile(file)}
+                          />
+                        )}
+                      </Button>
                     </div>
                     <Progress
                       value={progress}
