@@ -24,4 +24,10 @@ public class LoadFlowDto
     /// Gets or sets the flow's nodes, edges, and viewport JSON data in string format
     /// </summary>
     public string? ReactFlowObject { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the ReactFlowVariables.
+    /// This property contains a JSON string that includes the name, value, and datatype of each variable.
+    /// </summary>
+    public string? ReactFlowVariables { get; set; }
 }
