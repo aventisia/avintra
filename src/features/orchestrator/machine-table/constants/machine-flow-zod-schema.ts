@@ -4,7 +4,7 @@ import { z } from "zod";
  */
 export const machineFlowZodSchema = z.object({
   id: z.string(),
-  flowVersionId: z.string(),
+  agentIds: z.array(z.string()),
   machineId: z.string(),
 
   // Read (view) only fields  
