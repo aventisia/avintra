@@ -16,17 +16,22 @@ public class FlowVersionDto
     /// <summary>
     /// Gets or sets a value indicating whether the version is in locked state.
     /// </summary>
-    public bool IsLocked{ get; set; }
+    public bool IsLocked { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the version is in draft state.
     /// </summary>
-    public bool IsDraft{ get; set; }
+    public bool IsDraft { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the version has been published.
     /// </summary>
     public bool IsPublished { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the version has been archived.
+    /// </summary>
+    public bool IsArchived { get; set; }
 
     /// <summary>
     /// Gets or sets the the user who created the record.
@@ -46,7 +51,7 @@ public class FlowVersionDto
     /// <summary>
     /// Gets or sets initials of the user who created the record
     /// </summary>
-    public string? CreatedByUserInitials{ get; set; }
+    public string? CreatedByUserInitials { get; set; }
 
     /// <summary>
     /// Gets or sets the version number of a flow version record

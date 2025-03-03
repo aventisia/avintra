@@ -27,7 +27,7 @@ public class MachinesMappingProfile : IRegister
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null)
-            .Map(dest => dest.CreatedByUserInitials, 
+            .Map(dest => dest.CreatedByUserInitials,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
                     : null);
@@ -39,5 +39,13 @@ public class MachinesMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .Ignore(dest => dest.TenantId)
             .IgnoreNullValues(true);
+
+
+        // New Mapping for Machine to SelectOptionDto(For dropdowns or select lists)
+        config.NewConfig<Machine, SelectOptionDto>()
+            .Map(dest => dest.Value, src => src.Id)
+            .Map(dest => dest.Label, src => src.Name)
+            .Map(dest => dest.Description, src => src.Hostname)
+            .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }

@@ -326,6 +326,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("FlowId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 

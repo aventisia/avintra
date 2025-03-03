@@ -23,6 +23,11 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the version has been archived.
+    /// </summary>
+    public bool IsArchived { get; set; }
+
+    /// <summary>
     /// Gets or sets the flow's nodes, edges, and viewport JSON data in string format. The default value will be an empty object.
     /// </summary>
     public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";

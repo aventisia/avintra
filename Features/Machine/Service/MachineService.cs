@@ -639,4 +639,35 @@ public class MachineService : IMachineService
 
         return serviceResponse;
     }
+
+    // Retrieve machine select-option
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetMachineToSelectOptionAsync()
+    {
+        // Initialize serviceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve machines, please try again."
+        };
+
+        try
+        {
+            // Retrieve the machines and map them to SelectOptionDto
+            var machinesToSelect = await _unitOfWork.MachineRepo.GetAllAsync()
+                .ProjectToType<SelectOptionDto>()
+                .AsNoTracking()
+                .ToListAsync();
+                
+            // Set the serviceResponse
+            serviceResponse.Data = machinesToSelect;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Machines retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving the machine list.");
+        }
+
+        return serviceResponse;
+    }
 }

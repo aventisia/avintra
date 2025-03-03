@@ -79,4 +79,11 @@ public class MachineController : BaseApiController
     {
         return ResultHelper(await _machineService.GetAgentsByMachineAsync(machineId));
     }
+
+    // Retrieve the select-option list of machines
+    [HttpGet("select-option")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetAgentToSelectOptionAsync()
+    {
+        return ResultHelper(await _machineService.GetMachineToSelectOptionAsync());
+    }
 }
