@@ -1,58 +1,62 @@
-
 /**
- * Represents a data transfer object (DTO) for a model.
+ * Represents a data transfer object (DTO) for a PdfViewerDto.
  */
 
 export interface PdfViewerDto {
-    /**
-     * Gets or sets the primary key of the model record.
-     *
-     * Not making it required because same DTO is used for insert and update.
-     */
-    id?: string;
-  
-    /**
-     * Gets or sets the type of the model.
-     */
-    type?: string; // TODO: Update enum values
-  
-    /**
-     * Gets or sets the llm of the model.
-     */
-    mlModelId?: string; // TODO: Update enum values
-  
-    /**
-     * Gets or sets the name of the model. Max-255
-     */
-    name: string;
-  
-    /**
-     * Gets or sets the description of the model. Max-500
-     */
-    path?: string;
-    /**
-     * Gets or sets the description of the model. Max-500
-     */
-    size?: number;
-  
-    /**
-     * Gets or sets the date and time when the model record was created.
-     */
-    createdOn?: Date;
-  
-    /**
-     * Gets or sets the last modified by user id.
-     */
-    lastModifiedByUserId?: string;
-  
-    /**
-     * Gets or sets the created by.
-     */
-    createdBy?: string;
-  
-    /**
-     * Gets or sets the created by username.
-     */
-    createdByUsername?: string;
-  }
-  
+  /**
+   * Gets or sets the primary key of the pdf record.
+   *
+   * Not making it required because same DTO is used for insert and update.
+   */
+  id?: string;
+
+  /**
+   * Gets or sets the type based on the stage at which doc is uploaded.
+   */
+  type?: "Testing" | "Training" | "RealData";
+
+  /**
+   * Gets or sets the model id.
+   */
+  mlModelId?: string;
+
+  /**
+   * Gets or sets the name of the file.
+   */
+  name: string;
+
+  /**
+   * Gets or sets the extension of the file.
+   */
+  extension?: string;
+
+  /**
+   * Gets or sets the path of the file.
+   */
+  path?: string;
+
+  /**
+   * Gets or sets the size of the file.
+   */
+  size?: number;
+
+  /**
+   * Gets or sets the date and time when the file was uploaded.
+   */
+  createdOn?: Date;
+
+  /**
+   * Gets or sets the last modified by user id.
+   */
+  lastModifiedByUserId?: string;
+
+  /**
+   * Gets or sets the created by.
+   */
+  createdBy?: string;
+
+  /**
+   * Gets or sets the created by username.
+   */
+  createdByUsername?: string;
+}
