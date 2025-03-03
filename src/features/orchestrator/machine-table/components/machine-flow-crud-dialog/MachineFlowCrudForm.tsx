@@ -4,10 +4,8 @@ import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
-import { machineFlowOptimisticMutationFn } from "../../apis/machine-flow-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import {
-  agentProps,
+  agentsProps,
   hostnameProps,
   idProps,
   ipAddressProps,
@@ -16,32 +14,44 @@ import {
   typeProps,
   typeStatusProps,
 } from "../../constants/machine-form-field-props";
-import { MachineFlowDto } from "../../dtos/machine-flow-dto";
-import { useDefineMachineFlowForm } from "../../hooks/useDefineMachineFlowForm";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { machineFlowZodSchema } from "../../constants/machine-flow-zod-schema";
+import { useFetchAgents } from "../../hooks/useFetchAgents";
+import { MultiSelectField } from "@/react-toolkit/ui/form/fields/MultiSelectField";
+import { useMutation } from "@tanstack/react-query";
+import { useDefineMachineAssignAgentForm } from "../../hooks/useDefineMachineAssignAgentForm";
+import { assignAgents } from "../../apis/machine-apis";
+import { toast } from "sonner";
+import type { AssignAgentDto } from "../../dtos/assign-agent-dto";
 
 export const MachineFlowCrudForm = () => {
   // Define machine form
-  const { form, isDirty, machineId, setShowDialog, refineFormData } =
-    useDefineMachineFlowForm();
+  const { form, isDirty, setShowDialog, refineFormData } =
+    useDefineMachineAssignAgentForm();
 
-  // const { data: agents } = useFetchAgents();
+  const { data: agents } = useFetchAgents();
 
-  // Define optimistic mutation to crete or update the machine
-  const { mutate: mutateMachine } = useListOptimisticMutation<
-    MachineFlowDto,
-    MachineFlowDto | boolean,
-    MachineFlowDto
-  >([machineId], machineFlowOptimisticMutationFn, DATA_QUERY_KEY);
+  // Define mutation to update email of account
+  const { mutate: mutateMachine, isPending } = useMutation({
+    mutationFn: assignAgents,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      setShowDialog(false);
+    },
+    onError: (error) => {
+      toast.error(error.toString());
+      setShowDialog(true);
+    },
+    onSettled: () => {
+      setShowDialog(false);
+    },
+  });
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineFlowZodSchema>) => {
     // Create or update the machine
-    mutateMachine({
-      payload: refineFormData(formData) as unknown as MachineFlowDto,
-      crudAction: "update",
-    });
+    console.log(formData);
+
+    mutateMachine(refineFormData(formData) as unknown as AssignAgentDto);
 
     // Close the dialog
     setShowDialog(false);
@@ -54,10 +64,8 @@ export const MachineFlowCrudForm = () => {
       onSubmit={form.handleSubmit(onSubmit)}
       className="px-2.5 pb-5"
     >
-      {/* <MultiSelectField {...agentsProps} selectOptions={agents?.data || []} /> */}
-
       {/* Agents */}
-      <SelectField {...agentProps} />
+      <MultiSelectField {...agentsProps} selectOptions={agents?.data || []} />
 
       <InputField {...idProps} />
 
@@ -81,7 +89,11 @@ export const MachineFlowCrudForm = () => {
       />
 
       <div className="!mt-5 flex w-full justify-end">
-        <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+        <Button
+          type="submit"
+          disabled={!isDirty || isPending}
+          className="min-w-[5rem]"
+        >
           Assign
         </Button>
       </div>
