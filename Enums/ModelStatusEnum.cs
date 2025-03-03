@@ -8,6 +8,11 @@ namespace AspNetToolkit.Enums;
 /// </remarks>
 public enum ModelStatusEnum
 {
+    Annotation,
+    InTraining,
+    Trained,
+    InTesting,
     Active,
-    InActive
+    Executing,
+    Inactive
 }
