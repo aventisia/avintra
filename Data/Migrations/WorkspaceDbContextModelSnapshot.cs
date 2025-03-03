@@ -347,6 +347,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("ReactFlowObject")
                         .HasColumnType("text");
 
+                    b.Property<string>("ReactFlowVariables")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
