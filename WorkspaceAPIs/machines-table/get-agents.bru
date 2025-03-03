@@ -1,0 +1,11 @@
+meta {
+  name: Get agents
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/machine/{{MACHINE_ID}}/agents
+  body: none
+  auth: none
+}
