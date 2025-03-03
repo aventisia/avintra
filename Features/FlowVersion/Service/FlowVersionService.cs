@@ -326,11 +326,12 @@ public class FlowVersionService : IFlowVersionService
 
             // Check if the agent exists and belongs to the current user
             var agent = await _unitOfWork.FlowVersionRepo
-                                          .GetByConditionAsync(w =>
+                                            .GetByConditionAsync(w =>
                                               w.Id == agentId &&
                                               //   w.IsPublished &&
                                               w.CreatedByUserId == _userId)
-                                          .FirstOrDefaultAsync();
+                                            .Include(m => m.MachineFlows)
+                                            .FirstOrDefaultAsync();
 
             // Return an error if the agent doesn't exist
             if (agent == null)
@@ -341,14 +342,15 @@ public class FlowVersionService : IFlowVersionService
             }
 
             // Validate that all provided machine IDs are valid and belong to the current user
-            var machines = await _unitOfWork.MachineRepo
+            var machineFlows = await _unitOfWork.MachineFlowRepo
                                             .GetByConditionAsync(w =>
-                                                machineIds.Contains(w.Id) &&
+                                                machineIds.Contains(w.MachineId) &&
+                                                w.FlowVersionId == agentId &&
                                                 w.CreatedByUserId == _userId)
                                             .ToListAsync();
 
             // Identify and return a message for any invalid machine IDs
-            var invalidMachineIds = machineIds.Except(machines.Select(m => m.Id)).ToList();
+            var invalidMachineIds = machineIds.Except(machineFlows.Select(m => m.MachineId)).ToList();
             if (invalidMachineIds.Any())
             {
                 _logger.LogInformation("Invalid machine IDs found: {InvalidMachineIds}", string.Join(", ", invalidMachineIds));
