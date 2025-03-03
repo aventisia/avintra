@@ -63,22 +63,8 @@ export const typeStatusProps: SelectFieldProps = {
 };
 
 // Agent multi
-export const agentProps: SelectFieldProps = {
-  name: "flowVersionId",
-  label: "Agent",
-  isRequired: true,
-  selectOptions: [{
-    label: "Car",
-    value: "ccf866e7-51e5-49f2-a547-b94e5b9cb84e"
-  }, {
-    label: "Agent 2",
-    value: "b1567d4c-5bf0-4fbc-a849-4a92d5b35227"
-  }],
-};
-
-// Agent multi
 export const agentsProps: MultiSelectFieldProps = {
-  name: "flowVersionId",
+  name: "agentIds",
   label: "Agents",
   isRequired: true,
   placeholder: "Select Agent(s)",
