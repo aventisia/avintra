@@ -8,7 +8,7 @@ import FileUploader from "@/features/file-uploader/components/FileUploader";
 import { useModelTestStore } from "../stores/model-test-store";
 import { useModelTestQueryKey } from "../hooks/useModelTestQueryKey";
 
-const ModelTestContainer = () => {
+export const ModelTestContainer = () => {
   useModelTestQueryKey();
 
   // Get model data store state and actions
@@ -40,5 +40,3 @@ const ModelTestContainer = () => {
     </>
   );
 };
-
-export default ModelTestContainer;

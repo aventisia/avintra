@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
 import FileUploader from "@/features/file-uploader/components/FileUploader";
 
-const LabelDataContainer = () => {
+export const LabelDataContainer = () => {
   useLabelDataQueryKey();
 
   // Get model data store state and actions
@@ -20,6 +20,7 @@ const LabelDataContainer = () => {
   );
 
   const { data: pdfList, refetch } = useFetchUploadedFiles();
+
   useEffect(() => {
     if (pdfList?.data.length) {
       setStepState(1);
@@ -27,6 +28,7 @@ const LabelDataContainer = () => {
       setStepState(0);
     }
   }, [pdfList]);
+
   return (
     <>
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
@@ -40,5 +42,3 @@ const LabelDataContainer = () => {
     </>
   );
 };
-
-export default LabelDataContainer;
