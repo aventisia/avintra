@@ -28,4 +28,9 @@ public interface IFlowVersionService
     /// <param name="id">Version Id</param>
     /// <returns>True, if delete job successful, else false</returns>
     Task<ServiceResponse<bool>> DeleteFlowVersionAsync(Guid id);
+
+
+   Task<ServiceResponse<bool>> AssignMachinesToAgentAsync(Guid agentId, IEnumerable<Guid> machineIds);
+    Task<ServiceResponse<bool>> RemoveMachinesFromAgentAsync(Guid agentId, IEnumerable<Guid> machineIds);
+    Task<ServiceResponse<IEnumerable<AssignMachineDto>>> GetMachinesByAgentAsync(Guid agentId);
 }

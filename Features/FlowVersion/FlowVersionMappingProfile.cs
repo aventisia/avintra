@@ -6,7 +6,7 @@ public class FlowVersionMappingProfile : IRegister
     {
         // Mapping of DTO to get list of versions to show on the UI.
         config.NewConfig<FlowVersion, FlowVersionDto>()
-        .Map(dest => dest.CreatedBy, 
+        .Map(dest => dest.CreatedBy,
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
             : null)
@@ -28,5 +28,19 @@ public class FlowVersionMappingProfile : IRegister
             .Ignore(dest => dest.VersionNumber)
             .IgnoreNullValues(true);
 
+        // Mapping to get agent list
+        config.NewConfig<Machine, AssignMachineDto>()
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null)
+            .Map(dest => dest.CreatedByUserInitials,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
+                    : null);
     }
 }
