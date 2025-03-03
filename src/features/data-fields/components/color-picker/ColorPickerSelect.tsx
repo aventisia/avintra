@@ -44,9 +44,12 @@ const ColorPickerField = ({
   ...props
 }: ColorPickerFieldProps) => {
   const { data } = useFetchDataFields();
-  const text=data?.data.map(item=>item.color?.toLowerCase())
+
+  const text = data?.data.map((item) => item.color?.toLowerCase());
+
   // Get the form context
   const { control } = useFormContext<FieldValues>();
+
   const colors = [
     { name: "Red", value: "red", bg: "bg-red-500" },
     { name: "Blue", value: "blue", bg: "bg-blue-500" },
@@ -87,21 +90,29 @@ const ColorPickerField = ({
               <SelectContent>
                 <SelectGroup>
                   <div className="grid grid-cols-6 gap-1 p-1">
-                    {colors.filter(color=>!text?.includes(color.name.toLowerCase())).map((color) => (
-                      <>
-                        <SelectItem
-                          showCheck={false}
-                          size={size}
-                          key={color.value}
-                          value={color.value}
-                          className="m-0 flex h-10 cursor-pointer items-center justify-center p-0 hover:bg-slate-300 focus:border data-[state=checked]:border"
-                        >
-                          <div className={`h-6 w-6 rounded-full ${color.bg} `}>
-                            <span className="sr-only">{color.name}</span>
-                          </div>
-                        </SelectItem>
-                      </>
-                    ))}
+                    {colors.map((color) => {
+                      const isUsedColor = text?.includes(
+                        color.name.toLowerCase(),
+                      );
+                      return (
+                        <>
+                          <SelectItem
+                            disabled={isUsedColor}
+                            showCheck={false}
+                            size={size}
+                            key={color.value}
+                            value={color.value}
+                            className={`m-0 flex h-10 items-center justify-center p-0 hover:bg-slate-300 focus:border data-[state=checked]:border ${isUsedColor ? "cursor-not-allowed" : "cursor-pointer"}`}
+                          >
+                            <div
+                              className={`h-6 w-6 rounded-full ${color.bg} `}
+                            >
+                              <span className="sr-only">{color.name}</span>
+                            </div>
+                          </SelectItem>
+                        </>
+                      );
+                    })}
                   </div>
                 </SelectGroup>
               </SelectContent>
