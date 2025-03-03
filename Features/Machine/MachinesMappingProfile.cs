@@ -16,6 +16,22 @@ public class MachinesMappingProfile : IRegister
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
 
+        // Mapping to get agent list
+        config.NewConfig<FlowVersion, AssignAgentDto>()
+            .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null)
+            .Map(dest => dest.CreatedByUserInitials, 
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
+                    : null);
+
         // Mapping for inserting or updating project record
         config.NewConfig<MachineDto, Machine>()
             .Ignore(dest => dest.Id)
