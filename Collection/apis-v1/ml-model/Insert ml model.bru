@@ -14,12 +14,12 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    Name: faker.person.jobType(),
-    Type: "Extraction",
-    LLM: "LLM1",
-    Description: faker.lorem.sentence(),
-    Status:"Active",
-    TrainedOn: faker.date.anytime()
+    name: faker.person.jobType(),
+    type: "Extraction",
+    lLM: "LLM1",
+    description: faker.lorem.sentence(),
+    status:"Annotation",
+    trainedOn: faker.date.anytime()
   })
 }
 
