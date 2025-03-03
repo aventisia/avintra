@@ -212,9 +212,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int?>("DocsProcessed")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 

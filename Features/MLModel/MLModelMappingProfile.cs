@@ -9,7 +9,7 @@ public class MLModelMappingProfile : IRegister
         // Mapping of DTO to get list of ML model to show on the UI.
         config.NewConfig<MLModel, MLModelDto>()
         .Map(dest => dest.DocsProcessed,
-        src => src.ExtractedData != null ? src.ExtractedData.Count : 0 )
+            src => src.ExtractedData != null ? src.ExtractedData.Count : 0 )
         .Map(dest => dest.CreatedBy, 
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -17,9 +17,6 @@ public class MLModelMappingProfile : IRegister
         .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
             ? src.CreatedByUser.UserName
             : null);
-        // .Map(dest => dest.Accuracy, src => src.Accuracy != null 
-        //         ? Math.Round(src.Accuracy.Value, 2) : 0);
-
 
         //Mapping entity to insert or update the record
         config.NewConfig<MLModelDto, MLModel>()
@@ -29,8 +26,6 @@ public class MLModelMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
-            // .Map(dest => dest.Accuracy, src => src.Accuracy != null 
-            //     ? Math.Round(src.Accuracy.Value, 2) : 0);
 
     }
 }

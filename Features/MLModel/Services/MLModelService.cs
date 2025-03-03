@@ -40,9 +40,10 @@ public class MLModelService : IMLModelService
         {
             //Try to get ML model 
             var mlModels = await _unitOfWork.MLModelRepo
-                .GetAllAsync().Include(c => c.CreatedByUser)
+                .GetByConditionAsync(c =>c.CreatedByUserId == _userId)
+                .Include(c => c.CreatedByUser)
                 .OrderByDescending(ml => ml.CreatedOn)
-                .ProjectToType<ExtractedData>()
+                .ProjectToType<MLModelDto>()
                 .ToListAsync();
 
             // Task successful

@@ -6,8 +6,4 @@ public class UploadedDocRepo : RepositoryBase<UploadedDoc, MLModelBuilderDbConte
     {
 
     }
-    public async Task<int> GetUploadDocsCountAsync(Guid mlModelId)
-    {
-        return await _tDbContext.UploadedDocs.Where(ud => ud.MLModelId ==mlModelId).CountAsync();
-    }
 }

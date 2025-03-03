@@ -39,11 +39,6 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public required string LLM { get; set; }
 
     /// <summary>
-    /// Gets or sets the documents processed for this record
-    /// </summary>
-    public int? DocsProcessed { get; set; }
-
-    /// <summary>
     /// Gets or sets the accuracy for the record
     /// </summary>
     [Range(1, 100)]
