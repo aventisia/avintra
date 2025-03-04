@@ -70,9 +70,7 @@ export const ProjectsTable = () => {
           </ProjectCrudDialog>
 
           {/* Data table Pagination component */}
-          <div className="rounded-md border bg-slate-50 py-3">
-            <DTPagination table={table} />
-          </div>
+          <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
           <ProjectsBulkActions table={table} />
