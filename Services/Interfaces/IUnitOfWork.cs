@@ -18,6 +18,7 @@ public interface IUnitOfWork
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
     IFlowTemplateRepo FlowTemplateRepo { get; }
+    IQueueRepo QueueRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
