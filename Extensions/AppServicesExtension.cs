@@ -67,7 +67,7 @@ public static class AppServicesExtension
         services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();
         services.AddScoped<IMachineService, MachineService>();
         services.AddScoped<IMachineFlowService, MachineFlowService>();
-
+        services.AddScoped<IAgentTableService, AgentTableService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
