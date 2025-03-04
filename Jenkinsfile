@@ -28,7 +28,7 @@ pipeline {
                         def targetServer = getTargetServer(env.BRANCH_NAME)
                         
                         echo "Transfering to ${targetServer}..."
-                        sh "rsync -avz --delete . admin@${targetServer}:${DEPLOY_PATH}"
+                        sh "rsync -avz --exclude 'venv' --exclude '.git' --delete . admin@${targetServer}:${DEPLOY_PATH}"
 
                         echo "Installing required packages..."
                         sh "ssh admin@${targetServer} 'cd ${DEPLOY_PATH} && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'"
