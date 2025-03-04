@@ -10,6 +10,13 @@ public interface IDataFieldService
     Task<ServiceResponse<IEnumerable<DataFieldDto>>> GetDataFieldsAsync(Guid mlModelId);
 
     /// <summary>
+    /// check if Data Field Name is Available or not
+    /// </summary>
+    /// <param name="checkFieldNameAvailabilityDto">CheckFieldNameAvailabilityDto</param>
+    /// <returns>True if Field name is unique, else false</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsDataFieldNameAvailableAsync(CheckFieldNameAvailabilityDto checkFieldNameAvailabilityDto);
+
+    /// <summary>
     /// Creates a data field
     /// </summary>
     /// <param name="dataFieldDto">DataFieldDto</param>

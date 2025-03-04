@@ -133,7 +133,8 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("MLModelId");
+                    b.HasIndex("MLModelId", "Name")
+                        .IsUnique();
 
                     b.ToTable("DataFields");
                 });
@@ -255,6 +256,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("Name", "CreatedByUserId")
+                        .IsUnique();
 
                     b.ToTable("MLModels");
                 });

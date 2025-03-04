@@ -1,7 +1,7 @@
 meta {
   name: Update data field
   type: http
-  seq: 3
+  seq: 4
 }
 
 put {
@@ -16,7 +16,7 @@ script:pre-request {
   req.setBody({
     Id: bru.getGlobalEnvVar("DATA_FIELD_ID"),
     MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    Name: faker.person.fullName(),
+    Name: "Name",
     Type: "Text",
     Color: faker.color.human(),
     Description: faker.lorem.sentence(),

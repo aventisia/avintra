@@ -29,6 +29,10 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AnnotationData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
+        // Unique property
+        modelBuilder.Entity<MLModel>().HasIndex(index => new {index.Name, index.CreatedByUserId}).IsUnique();
+        modelBuilder.Entity<DataField>().HasIndex(index => new { index.MLModelId, index.Name }).IsUnique();
+
         // Enum to string conversion
         modelBuilder.Entity<MLModel>().Property(e =>e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
         modelBuilder.Entity<MLModel>().Property(e =>e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());

@@ -16,6 +16,7 @@ script:pre-request {
   req.setBody({
     Name: faker.person.jobType(),
     Type: "Extraction",
+    llm: "gemma",
     Description: faker.lorem.sentence(),
     Status:"Active",
     TrainedOn: faker.date.anytime()

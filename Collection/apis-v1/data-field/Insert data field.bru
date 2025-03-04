@@ -1,7 +1,7 @@
 meta {
   name: Insert data field
   type: http
-  seq: 2
+  seq: 3
 }
 
 post {
@@ -15,7 +15,7 @@ script:pre-request {
   
   req.setBody({
     MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    Name: faker.person.fullName(),
+    Name: "Invoice No.",
     Type: "Text",
     Color: faker.color.human(),
     Description: faker.lorem.sentence(),

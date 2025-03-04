@@ -57,6 +57,48 @@ public class DataFieldService : IDataFieldService
         return serviceResponse;
     }
 
+    // Checks the availability of a ml model name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsDataFieldNameAvailableAsync(CheckFieldNameAvailabilityDto checkFieldNameAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check data field name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate field uniqueness
+            var fieldAlreadyExists = await _unitOfWork.DataFieldRepo
+                                                        .GetByConditionAsync(w =>
+                                                            w.MLModelId == checkFieldNameAvailabilityDto.MLModelId &&
+                                                            w.Name.ToLower() == checkFieldNameAvailabilityDto.UserInput.Trim().ToLower())
+                                                        .FirstOrDefaultAsync();
+
+            // Data field already exists
+            if (fieldAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A data field with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Field name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     //Creates a new data field
     public async Task<ServiceResponse<DataFieldDto>> InsertDataFieldAsync(DataFieldDto dataFieldDto)
     {
@@ -69,6 +111,25 @@ public class DataFieldService : IDataFieldService
 
         try
         {
+            // Validate field uniqueness
+            var fieldAlreadyExists = await _unitOfWork.DataFieldRepo
+                                                        .GetByConditionAsync(w =>
+                                                            w.MLModelId == dataFieldDto.MLModelId &&
+                                                            w.Name.ToLower() == dataFieldDto.Name.Trim().ToLower())
+                                                        .FirstOrDefaultAsync();
+
+            // field already exists
+            if (fieldAlreadyExists != null)
+            {
+                _logger.LogInformation($"Field already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A Field with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Trim dto' string props
+            dataFieldDto = TrimDtoStringPropsUtil.TrimDtoStringProps(dataFieldDto);
+
             // Default mapping
             var newField = dataFieldDto.Adapt<DataField>();
             newField.CreatedByUserId = _userId;
@@ -109,6 +170,26 @@ public class DataFieldService : IDataFieldService
 
         try
         {
+            // Validate field uniqueness
+            var fieldAlreadyExists = await _unitOfWork.DataFieldRepo
+                                                        .GetByConditionAsync(w =>
+                                                            w.MLModelId == dataFieldDto.MLModelId &&
+                                                            w.Name.ToLower() == dataFieldDto.Name.Trim().ToLower()
+                                                            && w.Id != dataFieldDto.Id)
+                                                        .FirstOrDefaultAsync();
+
+            // field already exists
+            if (fieldAlreadyExists != null)
+            {
+                _logger.LogInformation($"Field already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A Field with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Trim dto' string props
+            dataFieldDto = TrimDtoStringPropsUtil.TrimDtoStringProps(dataFieldDto);
+
             // Validate data field existence
             var field = await _unitOfWork.DataFieldRepo
                 .GetByConditionAsync(v => v.Id == dataFieldDto.Id)

@@ -27,6 +27,12 @@ public class DataFieldController : BaseApiController
         return ResultHelper(await _dataFieldService.GetDataFieldsAsync(mlModelId));
     }
 
+    [HttpPost("IsDataFieldNameAvailable")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsDataFieldNameAvailable(CheckFieldNameAvailabilityDto checkFieldNameAvailabilityDto)
+    {
+        return ResultHelper(await _dataFieldService.IsDataFieldNameAvailableAsync(checkFieldNameAvailabilityDto));
+    }
+
     //Creates a new data field
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<DataFieldDto>>> InsertDataField([FromBody] DataFieldDto dataFieldDto)
