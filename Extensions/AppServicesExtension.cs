@@ -36,6 +36,7 @@ public static class AppServicesExtension
         config.Apply(new MachinesMappingProfile());
         config.Apply(new MachineFlowMappingProfile());
         config.Apply(new AgentTableMappingProfile());
+        config.Apply(new QueueTableMappingProfile());
 
 
         services.AddSingleton(config);
