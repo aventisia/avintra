@@ -6,6 +6,7 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import Lucide from "@/react-toolkit/ui/Lucide";
 import {
   Popover,
   PopoverContent,
@@ -108,10 +109,44 @@ const UserAccountModal = ({
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="User" className="h-4 w-4" />
+          My Account
+        </Button>
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account/email-settings");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="MailCheck" className="h-4 w-4" />
+          Email settings
+        </Button>
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account/device-history");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="Smartphone" className="h-4 w-4" />
+          Device history
+        </Button>
+        <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
           variant={"ghost"}
-          className="h-9 justify-start gap-2 rounded-sm font-normal"
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
           onClick={() => mutate()}
         >
           {isPending ? (
