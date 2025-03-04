@@ -6,21 +6,21 @@ public interface IAgentTableService
     /// </summary>
     /// <param name="flowId">Flow Id</param>
     /// <returns>A list of published flow versions</returns>
-    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid flowId);
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
     /// Fetch the list of archived versions for a specific flow.
     /// </summary>
     /// <param name="flowId">Flow Id</param>
     /// <returns>A list of archived flow versions</returns>
-    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid flowId);
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
     /// Fetch the list of executable versions for a specific flow.
     /// </summary>
     /// <param name="flowId">Flow Id</param>
     /// <returns>A list of executable flow versions</returns>
-    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetExecuteFlowVersionsAsync(Guid flowId);
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetExecuteFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
     /// Assign a set of machines to a specified agent.

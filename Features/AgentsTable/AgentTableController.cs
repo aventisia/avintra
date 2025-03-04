@@ -13,22 +13,22 @@ public class AgentTableController : BaseApiController
     }
 
     // Retrieves a list of published flow versions for a specific flow identified by its flowId.
-    [HttpGet("publish-flows/{flowId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetPublishFlowVersionsAsync(Guid flowId)
+    [HttpGet("publish-flows")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetPublishFlowVersionsAsync(Guid? flowId)
     {
         return ResultHelper(await _agentTableService.GetPublishFlowVersionsAsync(flowId));
     }
 
     // Retrieves a list of archived flow versions for a specific flow identified by its flowId.
-    [HttpGet("archive-flow-version/{flowId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetArchiveFlowVersionsAsync(Guid flowId)
+    [HttpGet("archive-flow-version")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetArchiveFlowVersionsAsync(Guid? flowId)
     {
         return ResultHelper(await _agentTableService.GetArchiveFlowVersionsAsync(flowId));
     }
 
     // Retrieves a list of draft (executing) flow versions for a specific flow identified by its flowId.
-    [HttpGet("execute-flow-version/{flowId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetExecuteFlowVersionsAsync(Guid flowId)
+    [HttpGet("execute-flow-version")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetExecuteFlowVersionsAsync(Guid? flowId)
     {
         return ResultHelper(await _agentTableService.GetExecuteFlowVersionsAsync(flowId));
     }

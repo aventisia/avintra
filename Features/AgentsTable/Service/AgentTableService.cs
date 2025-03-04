@@ -19,7 +19,7 @@ public class AgentTableService : IAgentTableService
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
-    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid flowId)
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId)
     {
         // Initialize ServiceResponse to indicate failure by default.
         var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
@@ -32,7 +32,11 @@ public class AgentTableService : IAgentTableService
         {
             // Try to retrieve the flow versions from the repository.
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v => v.FlowId == flowId && v.IsPublished)
+                .GetByConditionAsync(v =>
+                    (flowId == null || v.FlowId == flowId) &&
+                    v.IsPublished
+                )
+                .Include(f => f.Flow)
                 .Include(c => c.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
@@ -54,7 +58,7 @@ public class AgentTableService : IAgentTableService
     }
 
     // Retrieves a list of archived flow versions for a specific flow by its identifier.
-    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid flowId)
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
         {
@@ -66,7 +70,10 @@ public class AgentTableService : IAgentTableService
         {
             // Try to retrieve the archived flow versions from the repository.
             var archivedFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v => v.FlowId == flowId && v.IsArchived)
+                .GetByConditionAsync(v =>
+                    (flowId == null || v.FlowId == flowId) &&
+                    v.IsArchived
+                )
                 .Include(f => f.Flow)
                 .Include(c => c.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
@@ -89,7 +96,7 @@ public class AgentTableService : IAgentTableService
     }
 
     // Retrieves a list of draft flow versions for a specific flow by its identifier.
-    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetExecuteFlowVersionsAsync(Guid flowId)
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetExecuteFlowVersionsAsync(Guid? flowId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
         {
@@ -101,7 +108,11 @@ public class AgentTableService : IAgentTableService
         {
             // Try to retrieve the draft flow versions from the repository.
             var draftFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v => v.FlowId == flowId && v.IsDraft)
+                .GetByConditionAsync(v =>
+                    (flowId == null || v.FlowId == flowId) &&
+                    !v.IsPublished &&
+                    !v.IsArchived
+                )
                 .Include(f => f.Flow)
                 .Include(c => c.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
