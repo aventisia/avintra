@@ -10,5 +10,5 @@ namespace AspNetToolkit.Enums;
 public enum ProjectTypesEnum
 {
     Worcflow,
-    MLModel,
+    AIModel,
 }
