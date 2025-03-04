@@ -8,7 +8,6 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
-
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -61,7 +60,7 @@ export const ProjectsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border bg-slate-50">
+            <div className="rounded-md border">
               <DataTable
                 table={table}
                 columnsLength={projectsTableColumns.length}
@@ -70,9 +69,7 @@ export const ProjectsTable = () => {
           </ProjectCrudDialog>
 
           {/* Data table Pagination component */}
-          <div className="rounded-md border bg-slate-50 py-3">
-            <DTPagination table={table} />
-          </div>
+          <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
           <ProjectsBulkActions table={table} />
