@@ -42,6 +42,8 @@ export interface DocumentLoadSuccess {
 export interface Annotation {
   fieldId: string;
   pageNumber: number;
+  fieldName?: string;
+  value?: string;
   position: {
     x: number;
     y: number;
@@ -234,6 +236,7 @@ export const PdfPreviewer: React.FC = () => {
       const newAnnotation: Annotation = {
         ...pendingAnnotation,
         fieldId: field.id,
+        fieldName: field.name,
         // confidence
       };
 
@@ -284,9 +287,10 @@ export const PdfPreviewer: React.FC = () => {
             mlModelId: selectedPdf?.mlModelId,
             annotationObject: JSON.stringify({
               ...JSON.parse(currData?.annotationObject || "{}"),
-              [field.id]: {
+              [field.name]: {
                 ...newAnnotation,
                 imgPath: currImg,
+                value: currImg,
               },
             }),
           });

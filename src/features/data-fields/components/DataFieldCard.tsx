@@ -50,7 +50,8 @@ const DataFieldCard = () => {
               <div className="flex items-center justify-between p-2">
                 <ImageDisplay
                   imagePath={
-                    JSON.parse(currAnnotationObj || "{}")[item.id || 0]?.imgPath
+                    JSON.parse(currAnnotationObj || "{}")[item.name || 0]
+                      ?.imgPath
                   }
                 />
                 <DeleteDataField id={item.id || ""} />
