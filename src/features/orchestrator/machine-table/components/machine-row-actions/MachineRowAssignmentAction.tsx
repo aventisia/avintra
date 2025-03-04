@@ -1,7 +1,7 @@
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { useMachineFlowStore } from "../../store/machine-flow-store";
 import { useShallow } from "zustand/react/shallow";
 import { MachineTaskTypesEnum } from "@/react-toolkit/enums/machine-task-types-enum";
+import { useMachineAgentStore } from "../../store/machine-agent-store";
 
 interface MachineRowAssignmentActionProps {
   rowId: string;
@@ -11,7 +11,7 @@ export const MachineRowAssignmentAction = ({
   rowId,
 }: MachineRowAssignmentActionProps) => {
   const { setMachineId, setTypeOfAssignment, setIsDialogOpen } =
-    useMachineFlowStore(
+    useMachineAgentStore(
       useShallow((state) => ({
         setMachineId: state.setMachineId,
         setTypeOfAssignment: state.setTypeOfAssignment,

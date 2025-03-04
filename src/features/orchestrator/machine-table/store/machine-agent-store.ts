@@ -15,7 +15,7 @@ type Actions = {
     toggleFormDirty: (isFormDirty: boolean) => void;
 };
 
-export const useMachineFlowStore = create<State & Actions>((set) => ({
+export const useMachineAgentStore = create<State & Actions>((set) => ({
     typeOfAssignment: undefined,
     isDialogOpen: false,
     isFormDirty: false,

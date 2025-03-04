@@ -16,7 +16,7 @@ import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachineTableColumns } from "./MachineTableColumns";
 import { useFetchMachines } from "../hooks/useFetchMachines";
 import { MachinesBulkActions } from "./MachinesBulkActions";
-import { MachineFlowCrudDialog } from "./machine-flow-crud-dialog/MachineFlowCrudDialog";
+import { MachineAssignAgentDialog } from "./machine-assign-agent-dialog/MachineAssignAgentDialog";
 
 /**
  * Renders a table of machines.
@@ -44,7 +44,7 @@ export const MachineTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* machine flow or agent assignemt ops dialog */}
-          <MachineFlowCrudDialog>
+          <MachineAssignAgentDialog>
             {/* Crud ops dialog */}
             <MachineCrudDialog>
               {/* Table toolbar */}
@@ -71,7 +71,7 @@ export const MachineTable = () => {
                 />
               </div>
             </MachineCrudDialog>
-          </MachineFlowCrudDialog>
+          </MachineAssignAgentDialog>
 
           {/* Data table Pagination component */}
           <div className="rounded-md border bg-slate-50 py-3">
