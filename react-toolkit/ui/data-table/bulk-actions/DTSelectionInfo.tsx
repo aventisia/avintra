@@ -18,7 +18,7 @@ export function DTSelectionInfo<TData>({ table }: DTSelectionInfoProps<TData>) {
   return (
     <div className="flex items-center gap-2">
       {/* Selected row count */}
-      <Badge variant={"secondary"} className="text-2xs">
+      <Badge variant={"secondary"} className="text-2xs text-slate-50">
         {table.getFilteredSelectedRowModel().rows.length}
       </Badge>
       selected
