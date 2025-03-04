@@ -69,7 +69,7 @@ async def extract_pdf_text(payload: PDFRequest):
     if payload.download:
         pdf_path = download_pdf(payload.pdf_url)
     else:
-        pdf_path = payload.pdf_url
+        pdf_path = get_pdf_path(payload.pdf_url)
 
     try:
         # Identify PDF type
