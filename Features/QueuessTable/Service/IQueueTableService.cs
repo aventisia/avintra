@@ -1,0 +1,58 @@
+namespace WorkspaceAPIs.Services;
+
+/// <summary>
+/// Defines a service for managing queue operations.
+/// </summary>
+public interface IQueueTableService
+{
+
+    /// Checks the availability of a queue name.
+    /// </summary>
+    /// <param name="checkAvailabilityDto">The DTO containing the queue name to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the queue name is available or not.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsQueueNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
+    /// Retrieves all queues.
+    /// </summary>
+    /// <returns>The task result containing the service response with a list of queue details.</returns>
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync();
+
+    /// <summary>
+    /// Retrieves the details of a specific queue by its unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the queue to fetch.</param>
+    /// <returns>The task result containing the service response with the details of the requested queue.</returns>
+    Task<ServiceResponse<QueuesTableDto>> GetQueueByIdAsync(Guid id);
+
+    /// <summary>
+    /// Creates a new queue with the specified details.
+    /// </summary>
+    /// <param name="queuesTableDto">The data used to create the new queue.</param>
+    /// <returns>The task result containing the service response with the details of the created queue.</returns>
+    Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(QueuesTableDto queuesTableDto);
+
+    /// <summary>
+    /// Updates an existing queue with the provided details.
+    /// </summary>
+    /// <param name="queuesTableDto">The data used to update the queue.</param>
+    /// <returns>The task result containing the service response with the updated queue details.</returns>
+    Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(QueuesTableDto queuesTableDto);
+
+    /// <summary>
+    /// Deletes a queue by its unique identifier.
+    /// </summary>
+    /// <param name="queueId">The ID of the queue to delete.</param>
+    /// <returns>The task result containing the service response indicating whether the queue was successfully deleted.</returns>
+    Task<ServiceResponse<bool>> DeleteQueueAsync(Guid queueId);
+
+    /// <summary>
+    /// Deletes multiple queues by their IDs.
+    /// </summary>
+    /// <param name="queueIds">The IDs of the queues to delete.</param>
+    /// <returns>The task result contains the service response indicating whether the queues were successfully deleted.</returns>
+    /// <remarks>
+    /// It is recommended to use this method to delete multiple queues at once to reduce the number of requests to the server.
+    /// </remarks>
+    Task<ServiceResponse<bool>> DeleteQueuesAsync(List<Guid> queueIds);
+}
