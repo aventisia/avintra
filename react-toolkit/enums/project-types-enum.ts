@@ -6,5 +6,5 @@
  */
 export enum ProjectTypesEnum {
   Worcflow = "Worcflow",
-  MLModel = "AI Model",
+  AIModel = "AI Model",
 }
