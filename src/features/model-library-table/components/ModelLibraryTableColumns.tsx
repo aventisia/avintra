@@ -6,9 +6,8 @@ import { getColumnName } from "../constants/column-display-names";
 import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { Badge } from "@/react-toolkit/ui/badge";
-import { ModelStatusEnum } from "../enums/model-status-enum";
 import { ModelTableCellLink } from "./ModelTableCellLink";
-import { dateRangeFilter } from "../utils";
+import { dateRangeFilter, getModelStatusColor } from "../utils";
 
 /**
  * Array of table columns for the model table.
@@ -146,10 +145,8 @@ export const modelLibraryTableColumns: ColumnDef<ModelLibraryTableDto>[] = [
       />
     ),
     cell: ({ row }) => {
-      const status =
-        row.getValue("status") == ModelStatusEnum.Active
-          ? "success-foreground"
-          : "destructive";
+      const status = getModelStatusColor(row.getValue("status"));
+
       return (
         <Badge
           variant={"outline"}
