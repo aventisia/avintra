@@ -28,26 +28,5 @@ public class FlowVersionMappingProfile : IRegister
             .Ignore(dest => dest.VersionNumber)
             .IgnoreNullValues(true);
 
-        // Mapping to get agent list
-        config.NewConfig<Machine, AssignMachineDto>()
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null)
-            .Map(dest => dest.CreatedByUserInitials,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
-                    : null);
-
-        // New Mapping for Agents to SelectOptionDto (For dropdowns or select lists)
-        config.NewConfig<FlowVersion, SelectOptionDto>()
-            .Map(dest => dest.Value, src => src.Id)
-            .Map(dest => dest.Label, src => src.Flow != null ? src.Flow.Name : string.Empty)
-            .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : string.Empty)
-            .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }
