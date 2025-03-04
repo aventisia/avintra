@@ -30,7 +30,7 @@ export const useOpenModelTest = () => {
     localStorage.setItem("model_test", JSON.stringify(testObj));
 
     // Navigate to model flows page
-    navigate(`/test?mid=${rowId}&mn=${modelData?.name}`);
+    navigate(`/test?mid=${rowId}&mn=${modelData?.name || "Model"}`);
   };
 
   // Return the handle open model action function

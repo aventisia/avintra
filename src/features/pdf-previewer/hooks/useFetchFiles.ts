@@ -5,14 +5,30 @@ import { getUploadedFiles } from "@/features/file-uploader/apis/file-upload-apis
 import { usePdfListStore } from "../stores/pdf-list-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
+import { useLocation } from "react-router-dom";
 /**
  * Custom hook to fetch data fields using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchUploadedFiles = () => {
   const { setSelectedPdf } = usePdfListStore();
+  // Get modelId (m) and modelName (pn)
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
-  const { modelId, step } = useLabelDataStore(
+  let modelId = queryParams.get("mid");
+
+  // Throw error if model id or name are not provided
+  if (!modelId) {
+    const labelData = localStorage.getItem("label_data") || "{}";
+    const labelDataObj = JSON.parse(labelData);
+    modelId = labelDataObj?.model_id;
+    if (!modelId) {
+      throw new Error("Model Id and name are required");
+    }
+  }
+
+  const { step } = useLabelDataStore(
     useShallow((state) => ({ step: state.step, modelId: state.modelId })),
   );
 

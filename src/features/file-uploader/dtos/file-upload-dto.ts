@@ -21,6 +21,11 @@ export interface FileUploadDto {
    * Gets or sets the file.
    */
   file: File;
+
+  extension?: string;
+
+  type?: "Testing" | "Training" | "RealData";
+
   mlModelId?: string;
 }
 

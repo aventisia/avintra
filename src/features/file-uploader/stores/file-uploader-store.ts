@@ -3,6 +3,7 @@ import { FileUploadDto } from "../dtos/file-upload-dto";
 
 export interface FileState extends FileUploadDto {
   progress?: number;
+  currentController?: AbortController | null;
 }
 
 interface FileStoreState {
@@ -24,7 +25,7 @@ export const useFileStore = create<FileStoreState>((set) => ({
     })),
   addFileToUpload: (file) =>
     set((state) => ({
-      filesToUpload: [...state.filesToUpload, file],
+      filesToUpload: [...state.filesToUpload, { ...file, type: "Training" }],
     })),
   updateProgress: (name, progress) =>
     set((state) => ({

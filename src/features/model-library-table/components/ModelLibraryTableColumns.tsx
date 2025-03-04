@@ -4,11 +4,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
-// import { ProjectsTableCellLink } from "./ProjectsTableCellLink";
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { Badge } from "@/react-toolkit/ui/badge";
 import { ModelStatusEnum } from "../enums/model-status-enum";
 import { ModelTableCellLink } from "./ModelTableCellLink";
+import { dateRangeFilter } from "../utils";
 
 /**
  * Array of table columns for the model table.
@@ -70,6 +70,42 @@ export const modelLibraryTableColumns: ColumnDef<ModelLibraryTableDto>[] = [
     ),
   },
   {
+    accessorKey: "llm",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("llm")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("llm")}</div>
+    ),
+  },
+  {
+    accessorKey: "docsProcessed",
+    header: ({ column }) => (
+      <DTColumnHeader
+        className="w-16"
+        column={column}
+        title={getColumnName("docsProcessed")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("docsProcessed")}</div>
+    ),
+  },
+
+  {
+    accessorKey: "accuracy",
+    header: ({ column }) => (
+      <DTColumnHeader
+        className="w-12"
+        column={column}
+        title={getColumnName("accuracy")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("accuracy")}</div>
+    ),
+  },
+  {
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
@@ -83,6 +119,7 @@ export const modelLibraryTableColumns: ColumnDef<ModelLibraryTableDto>[] = [
         {format(row.getValue("createdOn"), "dd MMM, yyyy")}
       </div>
     ),
+    filterFn: dateRangeFilter, // Apply the filter function to this column
   },
   {
     accessorKey: "trainedOn",

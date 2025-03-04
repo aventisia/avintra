@@ -276,7 +276,7 @@ export const PdfPreviewer: React.FC = () => {
         );
 
         if (response) {
-          const currImg = response?.data[0]?.path || "";
+          const currImg = response.data?.data[0]?.path || "";
 
           updateAnnotation({
             id: currData?.id,

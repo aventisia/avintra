@@ -3,7 +3,9 @@
  *
  * IMPORTANT NOTE: Any changes to this file should be manually synced with back-end enum file.
  */
+//Extraction, Summarization, Classification
 export enum ModelTypesEnum {
   Extraction = "Extraction",
-  Other = "Other",
+  Summarization = "Summarization",
+  Classification = "Classification",
 }
