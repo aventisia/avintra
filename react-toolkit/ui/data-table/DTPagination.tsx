@@ -22,9 +22,9 @@ interface DTPaginationProps<TData> {
 export function DTPagination<TData>({
   table,
   isRowSelectionEnabled = false,
-}: DTPaginationProps<TData>) {
+}: Readonly<DTPaginationProps<TData>>) {
   return (
-    <div className="flex items-center justify-end px-2 sm:justify-between">
+    <div className="flex items-center justify-end rounded-md border bg-slate-50 px-2 py-3 sm:justify-between">
       <div className="hidden flex-1 text-sm text-muted-foreground sm:flex">
         {isRowSelectionEnabled ? (
           <>

@@ -16,10 +16,10 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({
   table,
   columnsLength,
-}: DataTableProps<TData>) {
+}: Readonly<DataTableProps<TData>>) {
   // Return the rendered DataTable component.
   return (
-    <TableExt>
+    <TableExt className="rounded-md bg-slate-50">
       {/* Render the table header. */}
       <TableExtHeader>
         {table.getHeaderGroups().map((headerGroup) => (
