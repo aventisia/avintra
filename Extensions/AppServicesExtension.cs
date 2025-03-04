@@ -35,6 +35,7 @@ public static class AppServicesExtension
         config.Apply(new ActionExecutionLogMappingProfile());
         config.Apply(new MachinesMappingProfile());
         config.Apply(new MachineFlowMappingProfile());
+        config.Apply(new AgentTableMappingProfile());
 
 
         services.AddSingleton(config);
@@ -66,7 +67,7 @@ public static class AppServicesExtension
         services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();
         services.AddScoped<IMachineService, MachineService>();
         services.AddScoped<IMachineFlowService, MachineFlowService>();
-
+        services.AddScoped<IAgentTableService, AgentTableService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
