@@ -1,6 +1,7 @@
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { cn } from "@/react-toolkit/lib/utils";
+import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
@@ -15,8 +16,9 @@ import { removeUserSessionLocally } from "@/react-toolkit/utils/user-session-uti
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -32,6 +34,14 @@ const UserAccountModal = ({
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
+
+  //state to close the popover
+  const { isPopOverOpen, setisPopOverOpen } = useBaseLayoutStore(
+    useShallow((state) => ({
+      isPopOverOpen: state.isPopOverOpen,
+      setisPopOverOpen: state.setIsPopOverOpen,
+    })),
+  );
 
   // Get navigate function
   const navigate = useNavigate();
@@ -54,7 +64,7 @@ const UserAccountModal = ({
   });
 
   return (
-    <Popover>
+    <Popover open={isPopOverOpen} onOpenChange={setisPopOverOpen}>
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon9" }),
@@ -78,11 +88,15 @@ const UserAccountModal = ({
             "flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5",
           )}
         >
-          <span className="truncate whitespace-nowrap text-base font-medium uppercase leading-4">
+          <Link
+            to="/account"
+            onClick={() => setisPopOverOpen(false)}
+            className="truncate whitespace-nowrap text-base font-medium uppercase leading-4 hover:text-primary"
+          >
             {userSession
               ? userSession?.firstName + " " + userSession?.lastName
               : "User Name"}
-          </span>
+          </Link>
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}
           </span>
