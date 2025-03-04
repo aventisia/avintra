@@ -15,7 +15,7 @@ script:pre-request {
   
   req.setBody({
     MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    Name: "Invoice No.",
+    Name: faker.person.jobType(),
     Type: "Text",
     Color: faker.color.human(),
     Description: faker.lorem.sentence(),
