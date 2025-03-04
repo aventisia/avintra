@@ -1,7 +1,7 @@
 meta {
-  name: Get select option of agents
+  name: Get flow versions
   type: http
-  seq: 14
+  seq: 3
 }
 
 get {
@@ -16,4 +16,13 @@ script:pre-request {
   req.setBody({
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
   })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "FLOW_VERSION_ID",
+          res.getBody().data[0].id
+      );
+  }
 }

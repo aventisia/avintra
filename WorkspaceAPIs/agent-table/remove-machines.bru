@@ -1,11 +1,11 @@
 meta {
   name: Remove machines
   type: http
-  seq: 9
+  seq: 10
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/machine/{{MACHINE_ID}}/remove-machines
+  url: {{WORKSPACE_APIS_BASE_URL}}/agent/{{FLOW_VERSION_ID}}/remove-machines
   body: none
   auth: none
 }
