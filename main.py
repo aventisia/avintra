@@ -20,6 +20,8 @@ class PDFRequest(BaseModel):
 # Pass full PDF path based on OS. For Windows developers, the path will be the same as the URL so send full path in payload.
 def get_pdf_path(pdf_url: str):
     """Constructs full PDF path based on OS"""
+    logger.info("THE OS NAME IS: %s", platform.system())
+    
     if platform.system() == "Linux":
         return Path("/var/www/aventisia.com/files") / pdf_url
     else:
@@ -72,7 +74,7 @@ async def extract_pdf_text(payload: PDFRequest):
     else:
         pdf_path = get_pdf_path(payload.pdf_url)
     
-    logger.info("pdf_path: %s", pdf_path)
+    logger.info("THE FULL PATH OF PDF: %s", pdf_path)
 
     try:
         # Identify PDF type
