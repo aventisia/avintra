@@ -3,7 +3,7 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { AnnotationDataDto } from "../dtos/annotation-data-dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/annotation-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/annotation-data`;
 
 /**
  * Retrieves list of annotations.

@@ -5,7 +5,7 @@ import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/ml-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/ml-model`;
 
 /**
  * Retrieves list of models.

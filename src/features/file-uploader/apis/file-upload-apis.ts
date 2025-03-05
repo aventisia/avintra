@@ -9,7 +9,7 @@ interface DataResponseWithController {
   controller: AbortController;
 }
 
-const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/upload-doc`;
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc`;
 
 const getUploadedFiles = (modelId: string) => {
   return axiosInstance

@@ -5,7 +5,7 @@ import { DataFieldsDto } from "../dtos/data-fields-dtos";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/data-field`;
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/data-field`;
 
 /**
  * Retrieves list of models.

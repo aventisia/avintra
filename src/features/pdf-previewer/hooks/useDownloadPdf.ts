@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 // Custom hook for downloading PDF
 export const useDownloadPdf = () => {
   const setPdfUrl = usePdfListStore((state) => state.setPdfUrl);
-  const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/upload-doc`;
+  const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc`;
 
   return useMutation({
     mutationFn: async (path: string) => {

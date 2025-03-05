@@ -9,7 +9,7 @@ interface ImageDisplayProps {
 }
 
 const ImageDisplay: React.FC<ImageDisplayProps> = ({ imagePath }) => {
-  const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/upload-doc`;
+  const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc`;
 
   // Function to fetch the image using axios
   const fetchImage = async (): Promise<string> => {
