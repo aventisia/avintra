@@ -75,7 +75,7 @@ async def extract_pdf_text(payload: PDFRequest):
         pdf_path = get_pdf_path(payload.pdf_url)
 
     # TODO: Not able to get the pdf full path so adding it manually
-    pdf_path = "/var/www/aventisia.com" + pdf_path
+    pdf_path = "/var/www/aventisia.com" + str(pdf_path)
     
     logger.info("THE FULL PATH OF PDF: %s", pdf_path)
 
