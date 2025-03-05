@@ -121,8 +121,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
                     var requestDto = new
                     {
-                        //pdf_url = file.Path,
-                        pdf_url = @"C:\My Space\PLAYGROUND\test.pdf",
+                        pdf_url = file.Path,
                         download = false
                     };
 
