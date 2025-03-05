@@ -7,7 +7,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { MLModelBuilderLayout } from "./components/layout/Layout";
+import { MLModelBuilderLayout } from "./components/layout/MLModelBuilderLayout";
 import { ModelLibraryPage } from "./pages/ModelLibraryPage";
 import { LabelDataPage } from "./pages/LabelDataPage";
 import { ModelTestPage } from "./pages/ModelTestPage";
