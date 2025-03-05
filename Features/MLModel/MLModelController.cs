@@ -7,31 +7,23 @@ namespace MLModelBuilderAPIs.Controllers;
 [Authorize]   
 public class MLModelController : BaseApiController
 {
-  #region Fields
   private readonly IMLModelService _mlModelService;
 
-  #endregion
-
-  #region  Constructors
   public MLModelController(IMLModelService mlModelService)
   {
     _mlModelService = mlModelService;
   }
 
-  #endregion
-
-  #region Methods
-
-  [HttpGet("list")]
-  public async Task<ActionResult<ServiceResponse<IEnumerable<MLModelDto>>>> GetMLModelList()
+  [HttpGet("list/{projectId}")]
+  public async Task<ActionResult<ServiceResponse<IEnumerable<MLModelDto>>>> GetMLModelList(Guid projectId)
   {
-    return ResultHelper(await _mlModelService.GetMLModelListAsync());
+    return ResultHelper(await _mlModelService.GetMLModelListAsync(projectId));
   }
 
-  [HttpPost("IsMLModelNameAvailable")]
-  public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMLModelNameAvailable(CheckAvailabilityDto checkAvailabilityDto)
+  [HttpPost("is-available/{projectId}")]
+  public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMLModelNameAvailable(Guid projectId, CheckAvailabilityDto checkAvailabilityDto)
   {
-    return ResultHelper(await _mlModelService.IsMLModelNameAvailableAsync(checkAvailabilityDto));
+    return ResultHelper(await _mlModelService.IsMLModelNameAvailableAsync(projectId, checkAvailabilityDto));
   }
 
   //Inserts a new ML model
@@ -61,7 +53,5 @@ public class MLModelController : BaseApiController
   {
     return ResultHelper(await _mlModelService.GetMLModelByIdAsync(id));
   }
-
-  #endregion
 
 }
