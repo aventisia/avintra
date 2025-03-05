@@ -9,10 +9,10 @@ import { getModel } from "@/features/model-library-table/apis/model-library-tabl
  * @returns An object containing the fetched data, and refetch method.
  */
 export const useFetchModel = () => {
-  // Get modelId (m)
+  // Get modelId (mid) from query params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = queryParams.get("m") || "";
+  const modelId = queryParams.get("mid") || "";
 
   // Get models using react query
   const { data, isError, error, refetch } = useQuery({
