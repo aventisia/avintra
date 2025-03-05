@@ -1,18 +1,21 @@
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ModelsTableDto } from "../dtos/models-table-dto";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { ModelsTableDto } from "../dtos/models-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_MODEL_STUDIO_API_URL}/ml-model`;
 
 /**
- * Retrieves list of models.
+ * Retrieves all models associated with a project.
  */
-const getModels = () => {
+const getProjectModels = (projectId?: string) => {
+  // Return if projectId is not provided (projectId can be null if not passed in query params)
+  if (!projectId) return Promise.resolve(null);
+
   return axiosInstance
-    .get<IHttpResponse<ModelsTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<ModelsTableDto[]>>(`${baseAPIURL}/list/${projectId}`)
     .then((res) => res.data);
 };
 
@@ -64,11 +67,14 @@ const deleteModels = (ids: string[]) => {
 /**
  * Checks the availability of a model name.
  */
-const isModelNameAvailable = (postObj: CheckAvailabilityDto) => {
+const isModelNameAvailable = (
+  projectId: string,
+  postObj: CheckAvailabilityDto,
+) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/IsMLModelNameAvailable`, postObj)
+    >(`${baseAPIURL}/is-available/${projectId}`, postObj)
     .then((res) => res.data);
 };
 
@@ -98,12 +104,10 @@ const modelOptimisticMutationFn = ({
 };
 
 export {
-  getModel,
-  getModels,
-  insertModel,
-  updateModel,
   deleteModel,
-  deleteModels,
-  isModelNameAvailable,
-  modelOptimisticMutationFn,
+  deleteModels, getModel,
+  getProjectModels,
+  insertModel, isModelNameAvailable,
+  modelOptimisticMutationFn, updateModel
 };
+

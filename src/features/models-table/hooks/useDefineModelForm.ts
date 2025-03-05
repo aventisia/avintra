@@ -1,3 +1,4 @@
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -24,8 +25,9 @@ export const useDefineModelForm = () => {
   const [modelName, setModelName] = useState("");
 
   // Get models store state and actions
-  const { modelsQueryKey } = useModelsTableStore(
+  const { projectId, modelsQueryKey } = useModelsTableStore(
     useShallow((state) => ({
+      projectId: state.projectId,
       modelsQueryKey: state.modelsQueryKey,
     })),
   );
@@ -64,6 +66,7 @@ export const useDefineModelForm = () => {
       llm: "",
       description: "",
       status: "Active",
+      projectId: projectId,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       trainedOn: new Date(),
@@ -97,6 +100,7 @@ export const useDefineModelForm = () => {
       llm: modelData?.llm ?? "",
       // Read (view) only fields
       status: "Active",
+      projectId: projectId,
       createdBy:
         modelData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
@@ -107,7 +111,12 @@ export const useDefineModelForm = () => {
         ? new Date(modelData?.trainedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession, modelsQueryKey]);
+  }, [rowId, projectId, form, queryClient, userSession, modelsQueryKey]);
+
+  // Model name availability check API extension
+  const isModelNameAvailableExt = (postObj: CheckAvailabilityDto) => {
+    return isModelNameAvailable(projectId, postObj);
+  };
 
   // Get check availability state and methods
   const {
@@ -121,15 +130,15 @@ export const useDefineModelForm = () => {
     fieldName: "name",
     form,
     fieldSchema: modelNameSchema,
-    checkAvailabilityAPIFn: isModelNameAvailable,
+    checkAvailabilityAPIFn: isModelNameAvailableExt,
   });
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof modelZodSchema>) => {
     return {
       ...formData,
-      // lastModifiedBy: userSession?.email ?? "",
-      // lastModifiedOn: new Date().toISOString(),
+      lastModifiedBy: userSession?.email ?? "",
+      lastModifiedOn: new Date().toISOString(),
     };
   };
 

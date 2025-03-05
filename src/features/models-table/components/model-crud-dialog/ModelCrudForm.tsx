@@ -7,18 +7,19 @@ import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 // import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
+import { modelOptimisticMutationFn } from "../../apis/models-table-apis";
 import {
   descriptionProps,
   idProps,
   isDisabledProps,
   llmProps,
   nameProps,
-  typeProps,
+  projectIdProps,
+  typeProps
 } from "../../constants/model-form-field-props";
+import { modelZodSchema } from "../../constants/model-zod-schema";
 import { ModelsTableDto } from "../../dtos/models-table-dto";
 import { useDefineModelForm } from "../../hooks/useDefineModelForm";
-import { modelOptimisticMutationFn } from "../../apis/models-table-apis";
-import { modelZodSchema } from "../../constants/model-zod-schema";
 
 export const ModelCrudForm = () => {
   // Define model form
@@ -70,6 +71,9 @@ export const ModelCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
+      {/* Project Id */}
+      {isReadMode && <InputField {...projectIdProps} />}
+
       {/* Model Id */}
       {isReadMode && <InputField {...idProps} />}
 
