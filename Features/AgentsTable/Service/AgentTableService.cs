@@ -277,7 +277,7 @@ public class AgentTableService : IAgentTableService
             }
 
             // Identify machines to remove that are currently assigned to the agent.
-            var machinesToRemove = machineIds.Intersect(agent.MachineFlows?.Select(mf => mf.MachineId)).ToList();
+            var machinesToRemove = machineIds.Intersect(agent.MachineFlows?.Select(mf => mf.MachineId) ?? Enumerable.Empty<Guid>()).ToList();
 
             if (!machinesToRemove.Any())
             {
