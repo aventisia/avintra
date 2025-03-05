@@ -20,7 +20,7 @@ export const dataFieldNameSchema = z
 /**
  * Represents the Zod schema for a model.
  */
-export const modelZodSchema = z.object({
+export const dataFieldSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("Data type") }),
   name: dataFieldNameSchema,

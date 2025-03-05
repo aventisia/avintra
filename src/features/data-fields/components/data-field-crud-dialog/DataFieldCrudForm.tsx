@@ -14,7 +14,7 @@ import {
   nameProps,
   typeProps,
 } from "../../constants/data-field-props";
-import { modelZodSchema } from "../../constants/data-field-zod-schema";
+import { dataFieldSchema } from "../../constants/data-field-zod-schema";
 import { DataFieldsDto } from "../../dtos/data-fields-dtos";
 import { dataFieldOptimisticMutationFn } from "../../apis/add-fields-apis";
 import { useDefineDataFieldForm } from "../../hooks/useDefineDataFieldForm";
@@ -27,9 +27,13 @@ export const DataFieldCrudForm = () => {
     isDirty,
     rowId,
     crudAction,
-
     setShowDialog,
     refineFormData,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
   } = useDefineDataFieldForm();
 
   // Define optimistic mutation to crete or update the model
@@ -40,7 +44,7 @@ export const DataFieldCrudForm = () => {
   >([rowId], dataFieldOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof modelZodSchema>) => {
+  const onSubmit = (formData: z.infer<typeof dataFieldSchema>) => {
     // Create or update the model
     mutateModel({
       payload: refineFormData(formData) as unknown as DataFieldsDto,
@@ -48,7 +52,7 @@ export const DataFieldCrudForm = () => {
     });
 
     // Reset the availability message
-    // setAvailabilityMessage(null);
+    setAvailabilityMessage(null);
 
     // Close the dialog
     setShowDialog(false);
@@ -68,7 +72,11 @@ export const DataFieldCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
-      <InputField {...nameProps} />
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
 
       {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
       {crudAction === "create" ? (
@@ -90,7 +98,11 @@ export const DataFieldCrudForm = () => {
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+          <Button
+            type="submit"
+            disabled={!isDirty || !isAvailable || isCheckPending}
+            className="min-w-[5rem]"
+          >
             {crudAction === "create" ? "Save" : "Save changes"}
           </Button>
         </div>

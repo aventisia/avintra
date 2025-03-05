@@ -15,6 +15,9 @@ import { useFetchModels } from "../hooks/useFetchModels";
 import { ModelCrudDialog } from "./model-crud-dialog/ModelCrudDialog";
 import { modelLibraryTableColumns } from "./ModelLibraryTableColumns";
 import { ModelsBulkActions } from "./ModelsBulkActions";
+import { DatePickerWithRange } from "@/react-toolkit/ui/date-range-picker";
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 
 /**
  * Renders a table of models.
@@ -24,6 +27,14 @@ import { ModelsBulkActions } from "./ModelsBulkActions";
 export const ModelLibraryTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
+
+  // State for date range
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  // Function to be passed to the DateRangePicker
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+  };
 
   // Fetch models data
   const { data } = useFetchModels();
@@ -35,11 +46,17 @@ export const ModelLibraryTable = () => {
     true,
   );
 
+  // Set the filter value whenever dateRange changes
+  useEffect(() => {
+    // Apply the filter to the date column
+    table.getColumn("createdOn")?.setFilterValue(dateRange);
+  }, [dateRange, table]);
+
   // Return the rendered DataTable component.
   return (
     <>
-      {data?.data.length ? (
-        <div className="mt-7 space-y-4 rounded-lg border bg-white p-4 shadow-xs">
+      {data?.data ? (
+        <div className="shadow-xs mt-7 space-y-4 rounded-lg border bg-white p-4">
           {/* Crud ops dialog */}
           <ModelCrudDialog>
             {/* Table toolbar */}
@@ -51,6 +68,10 @@ export const ModelLibraryTable = () => {
                   table={table}
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search model..."
+                />
+                <DatePickerWithRange
+                  selectedDate={dateRange}
+                  onDateRangeChange={handleDateRangeChange}
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />

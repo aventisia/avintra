@@ -3,10 +3,12 @@ import { toast } from "sonner";
 import { updateAnnotationData } from "../apis/annotation-apis";
 import { useLabelDataStore } from "../stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
+import { useFetchAnnotationData } from "./useFetchAnnotationData";
 
 export const useUpdateAnnotation = () => {
   // Get query client
   const queryClient = useQueryClient();
+  const { refetch } = useFetchAnnotationData();
 
   const { modelId } = useLabelDataStore(
     useShallow((state) => ({
@@ -16,6 +18,7 @@ export const useUpdateAnnotation = () => {
   return useMutation({
     mutationFn: updateAnnotationData,
     onSuccess: async () => {
+      refetch();
       queryClient.invalidateQueries({
         queryKey: [["annotation", modelId], ["image"]],
       });

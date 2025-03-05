@@ -56,7 +56,7 @@ export const useDefineModelForm = () => {
       name: "",
       llm: "",
       description: "",
-      status: "Active",
+      status: "Annotation",
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       trainedOn: new Date(),
@@ -89,7 +89,7 @@ export const useDefineModelForm = () => {
       description: modelData?.description ?? "",
       llm: modelData?.llm ?? "",
       // Read (view) only fields
-      status: "Active",
+      status: "Annotation",
       createdBy:
         modelData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,

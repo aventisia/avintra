@@ -7,9 +7,10 @@ import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useFileStore } from "@/features/file-uploader/stores/file-uploader-store";
 import { submitFiles } from "@/features/file-uploader/apis/file-upload-apis";
 import { useState } from "react";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { AnnotationDataDto } from "../../dtos/annotation-data-dtos";
-import { annotationOptimisticMutationFn } from "../../apis/annotation-apis";
+import { FileUploadDto } from "@/features/file-uploader/dtos/file-upload-dto";
+import TrainingDialog from "../TrainingDialog";
+import TrainingDialogTrigger from "../TrainingDialogTrigger";
+import { useInsertAnnotation } from "../../hooks/useInsertAnnotation";
 
 const Nav = ({
   isPdfAvailable,
@@ -36,31 +37,32 @@ const Nav = ({
       clearFiles: state.clearFiles,
     })),
   );
-  const { mutate: insertAnnotation } = useListOptimisticMutation<
-    AnnotationDataDto,
-    AnnotationDataDto | boolean,
-    AnnotationDataDto
-  >([], annotationOptimisticMutationFn, ["annotations", modelId]);
+  const { mutate: insertAnnotation } = useInsertAnnotation();
 
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     if (filesToUpload.length > 0) {
       setIsLoading(true);
-      submitFiles(filesToUpload).then((data) => {
-        insertAnnotation({
-          crudAction: "create",
-          payload: {
-            uploadedDocId: data.data[0].id || "",
-            mlModelId: modelId,
-            annotationObject: "",
-          },
-        });
+      try {
+        const res = await submitFiles(filesToUpload);
+        const items = res.data;
 
-        clearFiles();
-        refetchList();
-        setIsLoading(false);
+        await Promise.all(
+          items.map((file: FileUploadDto) =>
+            insertAnnotation({
+              uploadedDocId: file.id || "",
+              mlModelId: modelId,
+              annotationObject: "",
+            }),
+          ),
+        );
+      } catch (error) {
+        console.error("Error fetching data or mutating:", error);
+      }
+      clearFiles();
+      refetchList();
+      setIsLoading(false);
 
-        setStepState(1);
-      });
+      setStepState(1);
     } else setStepState(1);
   };
 
@@ -80,18 +82,20 @@ const Nav = ({
         <p>{modelName || "Model"}</p>
       </div>
       <div className="flex justify-end gap-3">
-        <Button
-          disabled={!step}
-          size={"xs"}
-          variant="outline"
-          onClick={() => setStepState(0)}
-        >
-          Back
-        </Button>
-        {step == 1 ? (
-          <Button disabled={!isPdfAvailable} size={"xs"}>
-            Train
+        {!!step && (
+          <Button
+            disabled={!step}
+            size={"xs"}
+            variant="outline"
+            onClick={() => setStepState(0)}
+          >
+            Back
           </Button>
+        )}
+        {step == 1 ? (
+          <TrainingDialog>
+            <TrainingDialogTrigger isPdfAvailable={isPdfAvailable} />
+          </TrainingDialog>
         ) : (
           <Tooltip
             content={
@@ -110,7 +114,8 @@ const Nav = ({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin px-2" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Please wait
                   </>
                 ) : (
                   " Next"

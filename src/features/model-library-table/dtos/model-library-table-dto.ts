@@ -25,13 +25,24 @@ export interface ModelLibraryTableDto {
   name: string;
 
   /**
-   * Gets or sets the description of the model. Max-500
+   * Gets or sets the description of the model.
    */
   description?: string;
+
+  /**
+   * Gets or sets the status of the model.
+   */
+  status?: string;
+
+  /**
+   * Gets or sets the accuracy of the model.
+   */
+  accuracy?: string;
+
   /**
    * Gets or sets the description of the model. Max-500
    */
-  status?: string;
+  docsProcessed?: number;
 
   /**
    * Gets or sets the date and time when the model record was created.

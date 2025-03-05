@@ -31,7 +31,7 @@ export const useOpenModelLabelData = () => {
     localStorage.setItem("label_data", JSON.stringify(labelDataObj));
 
     // Navigate to model flows page
-    navigate(`/label-data?mid=${rowId}&mn=${modelData?.name}`);
+    navigate(`/label-data?mid=${rowId}&mn=${modelData?.name || "Model"}`);
   };
 
   // Return the handle open model action function

@@ -5,14 +5,35 @@ import { getUploadedFiles } from "@/features/file-uploader/apis/file-upload-apis
 import { usePdfListStore } from "../stores/pdf-list-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
+import { useLocation } from "react-router-dom";
 /**
  * Custom hook to fetch data fields using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchUploadedFiles = () => {
-  const { setSelectedPdf } = usePdfListStore();
+  const { selectedPdf, setSelectedPdf } = usePdfListStore(
+    useShallow((state) => ({
+      selectedPdf: state.selectedPdf,
+      setSelectedPdf: state.setSelectedPdf,
+    })),
+  );
+  // Get modelId (m) and modelName (pn)
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
-  const { modelId, step } = useLabelDataStore(
+  let modelId = queryParams.get("mid");
+
+  // Throw error if model id or name are not provided
+  if (!modelId) {
+    const labelData = localStorage.getItem("label_data") || "{}";
+    const labelDataObj = JSON.parse(labelData);
+    modelId = labelDataObj?.model_id;
+    if (!modelId) {
+      throw new Error("Model Id and name are required");
+    }
+  }
+
+  const { step, modelId: mid } = useLabelDataStore(
     useShallow((state) => ({ step: state.step, modelId: state.modelId })),
   );
 
@@ -26,8 +47,9 @@ export const useFetchUploadedFiles = () => {
   useEffect(() => {}, [step]);
 
   useEffect(() => {
-    if (data?.data) setSelectedPdf(data?.data[0]);
-  }, [data, setSelectedPdf]);
+    if (data?.data && (!selectedPdf || selectedPdf?.mlModelId != modelId))
+      setSelectedPdf(data?.data[0]);
+  }, [data, selectedPdf, setSelectedPdf, mid, modelId]);
 
   // Show toast on fetch error
   useEffect(() => {
