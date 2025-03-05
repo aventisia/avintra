@@ -1,16 +1,16 @@
-import { useEffect } from "react";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Input } from "@/react-toolkit/ui/input";
 import {
-  ChevronsLeft,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsRight,
-  ZoomIn,
-  ZoomOut,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
   RotateCcw,
+  ZoomInIcon,
+  ZoomOutIcon,
 } from "lucide-react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
-import { Input } from "@/react-toolkit/ui/input";
 
 interface PageControlProps {
   numPages: number | null;
@@ -26,16 +26,19 @@ interface PageControlProps {
 
 const PageControl = (props: PageControlProps) => {
   return (
-    <div className="flex items-center space-x-2">
-      <ChevronsLeft
-        className={`cursor-pointer ${props.firstPageClass} h-6 w-6`}
-        onClick={props.goToFirstPage}
-      />
-      <ChevronLeft
-        className={`cursor-pointer ${props.firstPageClass} h-6 w-6`}
-        onClick={props.goToPreviousPage}
-      />
-      <span className="flex items-center gap-1 space-x-1 text-sm">
+    <div className="flex items-center">
+      <Button variant="ghost" size="icon7" onClick={props.goToFirstPage}>
+        <ChevronsLeftIcon
+          className={`cursor-pointer ${props.firstPageClass} h-5 w-5 stroke-[1.5]`}
+          onClick={props.goToFirstPage}
+        />
+      </Button>
+      <Button variant="ghost" size="icon7" onClick={props.goToPreviousPage}>
+        <ChevronLeftIcon
+          className={`cursor-pointer ${props.firstPageClass} h-5 w-5 stroke-[1.5]`}
+        />
+      </Button>
+      <span className="mx-1 flex items-center gap-1 space-x-1 text-sm">
         Page
         <Input
           name="pageNumber"
@@ -49,14 +52,16 @@ const PageControl = (props: PageControlProps) => {
         />
         of {props.numPages}
       </span>
-      <ChevronRight
-        className={`cursor-pointer ${props.lastPageClass} h-6 w-6`}
-        onClick={props.goToNextPage}
-      />
-      <ChevronsRight
-        className={`cursor-pointer ${props.lastPageClass} h-6 w-6`}
-        onClick={props.goToLastPage}
-      />
+      <Button variant="ghost" size="icon7" onClick={props.goToNextPage}>
+        <ChevronRightIcon
+          className={`cursor-pointer ${props.lastPageClass} h-5 w-5 stroke-[1.5]`}
+        />
+      </Button>
+      <Button variant="ghost" size="icon7" onClick={props.goToLastPage}>
+        <ChevronRightIcon
+          className={`cursor-pointer ${props.lastPageClass} h-5 w-5 stroke-[1.5]`}
+        />
+      </Button>
     </div>
   );
 };
@@ -67,7 +72,10 @@ interface PageRotateProps {
 
 const PageRotate = (props: PageRotateProps) => {
   return (
-    <RotateCcw className="h-5 w-5 cursor-pointer hidden" onClick={props.rotatePage} />
+    <RotateCcw
+      className="hidden h-5 w-5 cursor-pointer"
+      onClick={props.rotatePage}
+    />
   );
 };
 
@@ -82,15 +90,17 @@ interface ZoomControlProps {
 const ZoomControl = (props: ZoomControlProps) => {
   return (
     <div className="flex items-center space-x-2">
-      <ZoomOut
-        className={`h-5 w-5 cursor-pointer ${props.zoomOutClass}`}
-        onClick={props.zoomOut}
-      />
+      <Button variant="ghost" size="icon7" onClick={props.zoomOut}>
+        <ZoomOutIcon
+          className={`h-5 w-5 cursor-pointer stroke-[1.5] ${props.zoomOutClass}`}
+        />
+      </Button>
       <span className="text-sm">{props.toFixed}%</span>
-      <ZoomIn
-        className={`h-5 w-5 cursor-pointer ${props.zoomInClass}`}
-        onClick={props.zoomIn}
-      />
+      <Button variant="ghost" size="icon7" onClick={props.zoomIn}>
+        <ZoomInIcon
+          className={`h-5 w-5 cursor-pointer stroke-[1.5] ${props.zoomOutClass}`}
+        />
+      </Button>
     </div>
   );
 };
