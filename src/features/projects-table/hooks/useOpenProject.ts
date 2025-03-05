@@ -1,3 +1,5 @@
+import { ProjectTypesEnum } from "@/react-toolkit/enums/project-types-enum";
+import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { DATA_QUERY_KEY } from "../constants";
@@ -26,7 +28,14 @@ export const useOpenProject = () => {
     const projectData = projectsData?.data.find((item) => item.id === rowId);
 
     // Navigate to project agents page
-    navigate(`/projects/agents?p=${rowId}&pn=${projectData?.name}`);
+    switch (getEnumValueByKey(ProjectTypesEnum,projectData?.type || "")) {
+      case ProjectTypesEnum.Agents.toString():
+        navigate(`/projects/agents?p=${rowId}&pn=${projectData?.name}`);
+        break;
+      case ProjectTypesEnum.AIModel.toString():
+        navigate(`/projects/models?p=${rowId}&pn=${projectData?.name}`);
+        break;
+    }
   };
 
   // Return the handle open project action function
