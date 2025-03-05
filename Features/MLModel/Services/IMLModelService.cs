@@ -43,5 +43,5 @@ public interface IMLModelService
     /// </summary>
     /// <param name="id">Id</param>
     /// <returns>A ML model with specific identifier</returns>
-    Task<ServiceResponse<MLModelDto>> GetMLModelByIdAsync(Guid id);
+    Task<ServiceResponse<MLModelDto>> GetMLModelByIdAsync(Guid modelId);
 }

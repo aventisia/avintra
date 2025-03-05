@@ -290,7 +290,7 @@ public class MLModelService : IMLModelService
     }
 
     // Get a Model by identifier
-    public async Task<ServiceResponse<MLModelDto>> GetMLModelByIdAsync(Guid id)
+    public async Task<ServiceResponse<MLModelDto>> GetMLModelByIdAsync(Guid modelId)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<MLModelDto>
@@ -303,9 +303,9 @@ public class MLModelService : IMLModelService
         {
             // Try to get a Model using identifier
             var mlModel = await _unitOfWork.MLModelRepo
-            .GetByConditionAsync(v => v.Id == id).Include(c => c.CreatedByUser)
-            .ProjectToType<ExtractedData>()
-            .SingleOrDefaultAsync();
+                .GetByConditionAsync(w => w.Id == modelId).Include(i => i.CreatedByUser)
+                .ProjectToType<MLModelDto>()
+                .SingleOrDefaultAsync();
 
             // Check if Model not exists
             if (mlModel == null)
