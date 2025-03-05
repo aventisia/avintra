@@ -4,8 +4,8 @@ import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availab
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { MachineDto } from "../dtos/machine-dto";
-import { SelectOptionDto } from "@/react-toolkit/dtos/response/select-option-dto";
-import { AssignAgentDto } from '../dtos/assign-agent-dto';
+import { MachineAssignAgentDto } from '../dtos/machine-assign-agent-dto';
+import type { AssignAgentDto } from "../dtos/assign-agent-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/machine`;
 
@@ -68,16 +68,16 @@ export const deleteMachines = (ids: string[]) => {
 /**
  * Retrieves list of select options to assign a agent to machine.
  */
-export const getAssignableAgents = () => {
+export const getAssignableAgents = (machineId: string) => {
   return axiosInstance
-    .get<IHttpResponse<SelectOptionDto[]>>(`${baseAPIURL}/select-option`)
+    .get<IHttpResponse<AssignAgentDto[]>>(`${baseAPIURL}/${machineId}/agents`)
     .then((res) => res.data);
 };
 
 /**
  * assign agents to the machine.
  */
-export const assignAgents = (assignAgentDto: AssignAgentDto) => {
+export const assignAgents = (assignAgentDto: MachineAssignAgentDto) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/${assignAgentDto.machineId}/assign-agent`, assignAgentDto.agentIds)
     .then((res) => res.data);
