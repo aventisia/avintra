@@ -54,10 +54,7 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        <MachineTableCellLink
-          rowId={row.original.id ?? "rowId"}
-          cellValue={row.getValue("ipAddress")}
-        />
+        {row.getValue("ipAddress")}
       </div>
     ),
   },
@@ -68,10 +65,7 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        <MachineTableCellLink
-          rowId={row.original.id ?? "rowId"}
-          cellValue={row.getValue("hostname")}
-        />
+        {row.getValue("hostname")}
       </div>
     ),
   },
