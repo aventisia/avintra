@@ -8,6 +8,7 @@ import os
 import tempfile
 import platform
 from pathlib import Path
+from logger import logger
 
 app = FastAPI(root_path="/api")
 
@@ -70,6 +71,8 @@ async def extract_pdf_text(payload: PDFRequest):
         pdf_path = download_pdf(payload.pdf_url)
     else:
         pdf_path = get_pdf_path(payload.pdf_url)
+    
+    logger.info("pdf_path: %s", pdf_path)
 
     try:
         # Identify PDF type
@@ -82,7 +85,7 @@ async def extract_pdf_text(payload: PDFRequest):
         if payload.download and os.path.exists(pdf_path):
             os.remove(pdf_path)
 
-    return {"extracted_text": extracted_text}
+    return extracted_text
 
 @app.get("/")
 def read_root():
