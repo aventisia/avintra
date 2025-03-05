@@ -24,11 +24,11 @@ public class QueueTransaction : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the identifier for the queue to which this transaction belongs.
     /// </summary>
-    public required Guid QueueID { get; set; }
+    public required Guid QueueId { get; set; }
 
     /// <summary>
     /// Gets or sets the queue that this transaction is associated with.
     /// </summary>
-    [ForeignKey("QueueID")]
+    [ForeignKey("QueueId")]
     public virtual Queue? Queue { get; set; }
 }

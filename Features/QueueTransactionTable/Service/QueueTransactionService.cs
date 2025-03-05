@@ -33,7 +33,7 @@ public class QueueTransactionService : IQueueTransactionService
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(t =>
                     t.CreatedByUserId == _userId &&
-                    (queueId != null || t.QueueID == queueId)
+                    (queueId != null || t.QueueId == queueId)
                 )
                 .Include(q => q.Queue)
                 .Include(c => c.CreatedByUser)
@@ -103,11 +103,11 @@ public class QueueTransactionService : IQueueTransactionService
             response.Data = newTransaction.Adapt<QueueTransactionDto>();
             response.StatusCode = 200;
             response.Message = "Queue transaction successfully added.";
-            _logger.LogInformation($"Successfully added a new transaction to queue {queueTransactionDto.QueueID} by user {_userId}.");
+            _logger.LogInformation($"Successfully added a new transaction to queue {queueTransactionDto.QueueId} by user {_userId}.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while adding a transaction to queue {QueueId}.", queueTransactionDto.QueueID);
+            _logger.LogError(ex, "An error occurred while adding a transaction to queue {QueueId}.", queueTransactionDto.QueueId);
         }
 
         return response;

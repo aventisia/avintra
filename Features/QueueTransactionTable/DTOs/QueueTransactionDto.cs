@@ -26,7 +26,7 @@ public class QueueTransactionDto
     /// <summary>
     /// Gets or sets the identifier for the queue to which this transaction belongs.
     /// </summary>
-    public required Guid QueueID { get; set; }
+    public required Guid QueueId { get; set; }
 
     /// <summary>
     /// Gets or sets the the user who created the record.
