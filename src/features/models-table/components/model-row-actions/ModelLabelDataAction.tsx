@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { TagIcon } from "lucide-react";
 import { useOpenModel } from "../../hooks/useOpenModel";
 
 interface ModelLabelDataActionProps {
@@ -14,7 +14,7 @@ export const ModelLabelDataAction = ({ rowId }: ModelLabelDataActionProps) => {
   return (
     <SimpleDDMenuItem
       content="Label data"
-      Icon={ArrowTopRightOnSquareIcon}
+      Icon={TagIcon}
       onClick={() => handleOpenModelAction(rowId, "Label")}
     />
   );

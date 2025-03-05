@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { ArrowPathRoundedSquareIcon } from "@heroicons/react/24/outline";
+import { CheckCheckIcon } from "lucide-react";
 import { useOpenModel } from "../../hooks/useOpenModel";
 
 interface ModelTestActionProps {
@@ -13,8 +13,8 @@ export const ModelTestAction = ({ rowId }: ModelTestActionProps) => {
   // Return the component
   return (
     <SimpleDDMenuItem
-      content="Test"
-      Icon={ArrowPathRoundedSquareIcon}
+      content="Run tests"
+      Icon={CheckCheckIcon}
       onClick={() => handleOpenModelAction(rowId,"Test")}
     />
   );
