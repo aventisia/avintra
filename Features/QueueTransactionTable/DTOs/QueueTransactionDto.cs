@@ -42,4 +42,10 @@ public class QueueTransactionDto
     /// Gets or sets the date and time when the record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the user record was last modified. 
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public DateTimeOffset? LastModifiedOn { get; set; }
 }
