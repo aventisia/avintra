@@ -20,6 +20,7 @@ import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { useMachineAgentStore } from "../../store/machine-agent-store";
 import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
 
 type AgentsCheckListProps = {
   machineName: string;
@@ -151,7 +152,7 @@ export const AgentsCheckList = ({
                       <span className="ms-auto text-primary">{`v ${agent.versionNumber}`}</span>
                     </span>
                     <span className="text-xs font-normal leading-snug text-muted-foreground">
-                      {agent.createdBy}
+                      {`created by ${agent.createdBy} ${formatDistanceToNow(agent.createdOn)} ago`}
                     </span>
                   </Label>
                 </div>
