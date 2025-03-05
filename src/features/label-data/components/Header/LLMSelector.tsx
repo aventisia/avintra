@@ -1,0 +1,77 @@
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useFetchModel } from "../../hooks/useFetchModel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/react-toolkit/ui/select";
+import { updateModel } from "@/features/model-library-table/apis/model-library-table-apis";
+import { toast } from "sonner";
+import { ModelLibraryTableDto } from "@/features/model-library-table/dtos/model-library-table-dto";
+import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+
+export function LLMSelector() {
+  //Get set model data
+  const [modelData, setModelData] = useState<ModelLibraryTableDto>();
+
+  //To disable Selection on llm update
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  //Fetch model data
+  const { data, refetch } = useFetchModel();
+
+  //Create array for llm list
+  const llmList = enumToArray(ModelLLMEnum);
+
+  //Set model data
+  useEffect(() => {
+    if (data?.data) setModelData(data?.data);
+  }, [data?.data]);
+
+  // Mutation for lmm update using PUT
+  const llmMutation = useMutation({
+    mutationFn: updateModel,
+    onSuccess: (httpResponse) => {
+      refetch();
+      setIsUpdating(false);
+      // Success message
+      toast.success(httpResponse?.message, {
+        className: "sonner-toaster-sm",
+      });
+    },
+    onError: (error) => {
+      // Show error toast
+      toast.error(error.toString());
+    },
+  });
+
+  return (
+    <>
+      <Select
+        disabled={isUpdating}
+        value={modelData?.llm}
+        onValueChange={(val) => {
+          setIsUpdating(true);
+          if (val)
+            llmMutation.mutate({
+              ...modelData,
+              llm: val,
+            } as ModelLibraryTableDto);
+        }}
+      >
+        <SelectTrigger className="w-32" size="xs">
+          <SelectValue placeholder="Select LLM" />
+        </SelectTrigger>
+        <SelectContent>
+          {llmList.map((item) => (
+            <SelectItem value={item.label}>{item.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </>
+  );
+}

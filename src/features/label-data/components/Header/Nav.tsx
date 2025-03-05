@@ -11,6 +11,7 @@ import { FileUploadDto } from "@/features/file-uploader/dtos/file-upload-dto";
 import TrainingDialog from "../TrainingDialog";
 import TrainingDialogTrigger from "../TrainingDialogTrigger";
 import { useInsertAnnotation } from "../../hooks/useInsertAnnotation";
+import { LLMSelector } from "./LLMSelector";
 
 const Nav = ({
   isPdfAvailable,
@@ -68,18 +69,20 @@ const Nav = ({
 
   return (
     <div className="my-5 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 w-fit">
         <Button
           variant="outline"
           size="icon8"
+          className="px-1.5"
           onClick={() => {
             navigate("/model-library");
           }}
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-5 w-5 " />
         </Button>
 
-        <p>{modelName || "Model"}</p>
+        <p className="text-nowrap">{modelName || "Model"}</p>
+        {step == 1 && <LLMSelector />}
       </div>
       <div className="flex justify-end gap-3">
         {!!step && (
