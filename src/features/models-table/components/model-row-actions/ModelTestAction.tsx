@@ -15,7 +15,7 @@ export const ModelTestAction = ({ rowId }: ModelTestActionProps) => {
     <SimpleDDMenuItem
       content="Test"
       Icon={ArrowPathRoundedSquareIcon}
-      onClick={() => handleOpenModelAction(rowId,"test")}
+      onClick={() => handleOpenModelAction(rowId,"Test")}
     />
   );
 };

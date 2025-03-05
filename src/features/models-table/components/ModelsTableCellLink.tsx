@@ -20,7 +20,7 @@ export const ModelsTableCellLink = ({
   // Return the component
   return (
     <Button
-      onClick={() => handleOpenModelAction(rowId,"view")}
+      onClick={() => handleOpenModelAction(rowId,"View")}
       variant={"link"}
       className={cn(
         "!h-6 w-auto justify-start truncate font-medium text-foreground hover:text-primary",

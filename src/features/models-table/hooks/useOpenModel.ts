@@ -1,5 +1,6 @@
 import { useShallow } from "zustand/react/shallow";
 import { useModelsTableStore } from "../stores/models-table-store";
+import { ModelStagesType } from "../types/model-stages-type";
 
 /**
  * Custom hook to handle opening a model.
@@ -15,17 +16,17 @@ export const useOpenModel = () => {
   );
 
   // Handle open model action
-  const handleOpenModelAction = (rowId: string, action: string) => {
+  const handleOpenModelAction = (rowId: string, stage: ModelStagesType) => {
     // Open model in studio
-    switch (action) {
-      case "label":
+    switch (stage) {
+      case "Label":
         window.location.href = `${import.meta.env.VITE_MODEL_STUDIO_URL}/label?p=${projectId}&m=${rowId}`;
         break;
-      case "test":
+      case "Test":
         window.location.href = `${import.meta.env.VITE_MODEL_STUDIO_URL}/test?p=${projectId}&m=${rowId}`;
         break;
-      case "view":
-        window.location.href = `${import.meta.env.VITE_MODEL_STUDIO_URL}/test?p=${projectId}&m=${rowId}`;
+      case "View":
+        window.location.href = `${import.meta.env.VITE_MODEL_STUDIO_URL}/view?p=${projectId}&m=${rowId}`;
         break;
     }
   };

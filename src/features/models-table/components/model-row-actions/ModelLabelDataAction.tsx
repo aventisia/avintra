@@ -15,7 +15,7 @@ export const ModelLabelDataAction = ({ rowId }: ModelLabelDataActionProps) => {
     <SimpleDDMenuItem
       content="Label data"
       Icon={ArrowTopRightOnSquareIcon}
-      onClick={() => handleOpenModelAction(rowId, "label")}
+      onClick={() => handleOpenModelAction(rowId, "Label")}
     />
   );
 };
