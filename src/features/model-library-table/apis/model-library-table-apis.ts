@@ -21,7 +21,7 @@ const getModels = () => {
  */
 const getModel = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<ModelLibraryTableDto[]>>(`${baseAPIURL}/${id}`)
+    .get<IHttpResponse<ModelLibraryTableDto>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
@@ -61,7 +61,6 @@ const deleteModels = (ids: string[]) => {
     .then((res) => res.data);
 };
 
-
 /**
  * Checks the availability of a model name.
  */
@@ -72,7 +71,6 @@ const isModelNameAvailable = (postObj: CheckAvailabilityDto) => {
     >(`${baseAPIURL}/IsMLModelNameAvailable`, postObj)
     .then((res) => res.data);
 };
-
 
 /**
  * Performs an optimistic mutation on a model based on the provided CRUD action.
