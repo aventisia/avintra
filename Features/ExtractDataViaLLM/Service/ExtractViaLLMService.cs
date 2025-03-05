@@ -78,9 +78,9 @@ public class ExtractViaLLMService : IExtractViaLLMService
             string context = "";
 
             // TODO: We'll have to have an entity to store the instructions for the extraction process which we should be able to update from admin panel for various types of files and extraction purposes.
-            string instructions = "Please extract the following information from the PDF.";
+            string instructions = "Extract the following fields from the file text:";
             string fieldNames = string.Join(", ", dataFields);
-            string format = "Return the data in JSON format, with each field name as a key and the extracted value as the corresponding value.";
+            string format = "Please provide the final output strictly in JSON format. Use the structure: [{\"fieldName\": \"field_name\", \"fieldValue\": \"field_value\"}]. Do not include any additional text or information beyond the JSON data.";
 
             // Create a object for extracted data
             var extractedDataList = new List<FileExtractedData>();
@@ -92,7 +92,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                 var extractedData = new FileExtractedData
                 {
                     FileId = fileId,
-                    ExtractedData = "",
+                    ExtractedData = new List<FieldValueSchema>(),
                     Remarks = $"Failed to extract data for file id: {fileId}."
                 };
 
@@ -149,7 +149,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                     var requestDto = new
                     {
                         stream = false,
-                        prompt = $"{context}\n{instructions}\nFields: {fieldNames}\nFormat: {format}\n\nPDF Text:\n{fileText}",
+                        prompt = $"{instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}",
                         model = llmModelMapper.GetValueOrDefault(model.LLM) // TODO: Change this LLMName
                     };
 
@@ -167,9 +167,62 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
                     var ollamaResponse = await response.Content.ReadAsStringAsync();
 
+                    // ollamaResponse does not contain "response"
+                    if (!ollamaResponse.Contains("response"))
+                    {
+                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        extractedDataList.Add(extractedData);
+                        continue;
+                    }
+
                     // Deserialize JSON and extract "response"
                     using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
-                    extractedData.ExtractedData = doc.RootElement.GetProperty("response").GetString() ?? "";
+                    var llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
+
+                    // llmResponse contains <think> tag then remove the full tag content
+                    if (llmResponse.Contains("</think>"))
+                    {
+                        // Remove the full tag content
+                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
+                    }
+
+                    // llmResponse contains ```json then remove it
+                    if (llmResponse.Contains("```json"))
+                    {
+                        // Remove the full tag content
+                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
+                    }
+
+                    // llmResponse contains ``` then remove it
+                    if (llmResponse.Contains("```"))
+                    {
+                        // Remove the full tag content
+                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
+                    }
+
+                    // Trim the response
+                    llmResponse = llmResponse.Trim();
+
+                    // llmResponse is does not contain [
+                    if (!llmResponse.Contains("["))
+                    {
+                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        extractedDataList.Add(extractedData);
+                        continue;
+                    }
+                    
+                    // Deserialize JSON and extract "response"
+                    var extractedDataListTemp = JsonSerializer.Deserialize<List<FieldValueSchema>>(llmResponse) ?? new List<FieldValueSchema>();
+
+                    // Check if extractedDataListTemp is empty
+                    if (extractedDataListTemp.Count == 0)
+                    {
+                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        extractedDataList.Add(extractedData);
+                        continue;
+                    }
+
+                    extractedData.ExtractedData = extractedDataListTemp;
                 }
 
                 // Add extracted data to the list
@@ -188,7 +241,6 @@ public class ExtractViaLLMService : IExtractViaLLMService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed")) ? "Failed to extract data for one or more files" : "Data extracted successfully";
             _logger.LogInformation(serviceResponse.Message);
-
         }
         catch (Exception ex)
         {
