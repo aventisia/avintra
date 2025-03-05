@@ -7,13 +7,13 @@ import {
   SelectValue,
 } from "@/react-toolkit/ui/select";
 import {
-  ChevronsLeft,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsRight,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
 } from "lucide-react";
-import pdfIcon from "/pdf-svgrepo-com.svg";
 import { PdfViewerDto } from "../dtos/file-list-dtos";
+import pdfIcon from "/pdf-svgrepo-com.svg";
 
 interface PdfPaginatedSelectProps {
   pdfList: PdfViewerDto[];
@@ -34,15 +34,15 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
   const handleNext = () => onPdfSelect(pdfList[currentIndex + 1]);
 
   return (
-    <div className="flex w-full flex-col gap-4 rounded-b-lg border-t bg-white px-2 py-1">
-      <div className="flex items-center justify-between gap-2">
+    <div className="flex w-full flex-col items-center gap-4 rounded-b-lg border-t bg-white px-2 py-2">
+      <div className="flex items-center justify-between gap-1.5">
         <Button
           variant="outline"
           size="icon7"
           onClick={handleFirst}
           disabled={currentIndex === 0}
         >
-          <ChevronsLeft />
+          <ChevronsLeftIcon className="h-5 w-5 stroke-[1.5]" />
         </Button>
 
         <Button
@@ -51,7 +51,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
           onClick={handlePrev}
           disabled={currentIndex === 0}
         >
-          <ChevronLeft />
+          <ChevronLeftIcon className="h-5 w-5 stroke-[1.5]" />
         </Button>
 
         <Select
@@ -61,7 +61,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
             if (pdf) onPdfSelect(pdf);
           }}
         >
-          <SelectTrigger size="sm" className="max-w-sm">
+          <SelectTrigger size="sm" className="w-96 gap-2">
             <SelectValue placeholder="Select File" />
           </SelectTrigger>
           <SelectContent>
@@ -82,7 +82,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
           onClick={handleNext}
           disabled={currentIndex === pdfList.length - 1}
         >
-          <ChevronRight />
+          <ChevronRightIcon className="h-5 w-5 stroke-[1.5]" />
         </Button>
 
         <Button
@@ -91,7 +91,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
           onClick={handleLast}
           disabled={currentIndex === pdfList.length - 1}
         >
-          <ChevronsRight />
+          <ChevronsRightIcon className="h-5 w-5 stroke-[1.5]" />
         </Button>
       </div>
 
