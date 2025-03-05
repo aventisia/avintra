@@ -1,46 +1,47 @@
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-
 import { useFetchAgents } from "../../hooks/useFetchAgents";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { AssignAgentTableColumns } from "./AssignAgentTableColumns";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { AssignAgentAction } from "./AssignAgentAction";
+import { useQueryClient } from "@tanstack/react-query";
+import { DATA_QUERY_KEY } from "../../constants";
+import type { MachineDto } from "../../dtos/machine-dto";
+import { useMachineAgentStore } from "../../store/machine-agent-store";
+import { useShallow } from "zustand/react/shallow";
+import { useEffect } from "react";
+import { MachineDetails } from "./MachineDetails";
+import { AgentsCheckList } from "./AgentsCheckList";
+import { Separator } from "@/react-toolkit/ui/separator";
 
 export const MachineAssignAgent = () => {
   const { data } = useFetchAgents();
+  // Get query client
+  const queryClient = useQueryClient();
 
-  // Create a React table for machines data
-  const table = useDataTable(
-    AssignAgentTableColumns,
-    data?.data || [],
-    {},
-    true,
+  const { machineId } = useMachineAgentStore(
+    useShallow((state) => ({
+      machineId: state.machineId,
+    })),
   );
+  console.log(data);
+
+  // Get machines data from query client
+  const machinesData = queryClient.getQueryData<{
+    data: MachineDto[];
+  }>(DATA_QUERY_KEY);
+
+  // Get machine data by id
+  const machineData = machinesData?.data.find((item) => item.id === machineId);
+
+  useEffect(() => {
+    console.log(machineData);
+  }, [machineId, machineData, machinesData?.data]);
 
   // Return the form
   return (
-    <div className="relative mb-3">
-      {/* Table toolbar */}
-      <div className="flex items-center justify-between pb-2">
-        <DTHeading heading="Agents" />
-
-        <DTSearchBox
-          table={table}
-          searchColumn="label"
-          placeholder="Search agents..."
-        />
-      </div>
-
-      {/* Data table to render data */}
-      <div className="rounded-md border bg-slate-50">
-        <DataTable table={table} columnsLength={1} />
-      </div>
-      <div className="rounded-md border bg-slate-50 py-3">
-        <DTPagination table={table} />
-      </div>
-      <AssignAgentAction table={table} />
-    </div>
+    <>
+      <MachineDetails {...machineData} />
+      <Separator className="my-2" />
+      <AgentsCheckList
+        assignedCount={machineData?.agentCount ?? 0}
+        machineName={machineData?.name ?? ""}
+      />
+    </>
   );
 };
