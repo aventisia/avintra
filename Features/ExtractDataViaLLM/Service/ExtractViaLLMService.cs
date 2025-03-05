@@ -93,7 +93,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                 {
                     FileId = fileId,
                     ExtractedData = new List<FieldValueSchema>(),
-                    Remarks = $"Failed to extract data for file id: {fileId}."
+                    Remarks = $"001: Failed to extract data for file id: {fileId}."
                 };
 
                 // Get the file
@@ -106,7 +106,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                 if (file == null)
                 {
                     _logger.LogInformation("File not found for file id: {fileId}.", fileId);
-                    extractedData.Remarks = $"Failed, file not found for file id: {fileId}.";
+                    extractedData.Remarks = $"002: Failed, file not found for file id: {fileId}.";
                     extractedDataList.Add(extractedData);
                     continue;
                 }
@@ -133,7 +133,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        _logger.LogError("003: Failed to extract data for file id: {fileId}.", fileId);
                         extractedDataList.Add(extractedData);
                         continue;
                     }
@@ -160,7 +160,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        _logger.LogError("004: Failed to extract data for file id: {fileId}.", fileId);
                         extractedDataList.Add(extractedData);
                         continue;
                     }
@@ -170,7 +170,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                     // ollamaResponse does not contain "response"
                     if (!ollamaResponse.Contains("response"))
                     {
-                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        _logger.LogError("005: Failed to extract data for file id: {fileId}.", fileId);
                         extractedDataList.Add(extractedData);
                         continue;
                     }
@@ -206,7 +206,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                     // llmResponse is does not contain [
                     if (!llmResponse.Contains("["))
                     {
-                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        _logger.LogError("005: Failed to extract data for file id: {fileId}.", fileId);
                         extractedDataList.Add(extractedData);
                         continue;
                     }
@@ -217,7 +217,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                     // Check if extractedDataListTemp is empty
                     if (extractedDataListTemp.Count == 0)
                     {
-                        _logger.LogError("Failed to extract data for file id: {fileId}.", fileId);
+                        _logger.LogError("006: Failed to extract data for file id: {fileId}.", fileId);
                         extractedDataList.Add(extractedData);
                         continue;
                     }
