@@ -14,6 +14,7 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
+  typeOnCreateProps,
   typeProps,
 } from "../../constants/project-form-field-props";
 import { projectZodSchema } from "../../constants/project-zod-schema";
@@ -74,7 +75,7 @@ export const ProjectCrudForm = () => {
 
       {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
       {crudAction === "create" ? (
-        <SelectField {...typeProps} />
+        <SelectField {...typeOnCreateProps} />
       ) : (
         form.getValues("type") !== "" && <SelectField {...typeProps} />
       )}
