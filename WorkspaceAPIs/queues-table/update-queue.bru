@@ -1,0 +1,21 @@
+meta {
+  name: Update queue
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("QUEUE_ID"),
+    name: faker.commerce.product(),
+    isDisabled: false
+  })
+}
