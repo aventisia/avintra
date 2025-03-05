@@ -35,7 +35,7 @@ const router = createBrowserRouter(
           element: <ModelLibraryPage />,
         },
         {
-          path: "/label-data",
+          path: "/label",
           element: <LabelDataPage />,
         },
         {
