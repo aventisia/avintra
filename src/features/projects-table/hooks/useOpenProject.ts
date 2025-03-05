@@ -25,8 +25,8 @@ export const useOpenProject = () => {
     // Get project data by id
     const projectData = projectsData?.data.find((item) => item.id === rowId);
 
-    // Navigate to project flows page
-    navigate(`/project/flows?p=${rowId}&pn=${projectData?.name}`);
+    // Navigate to project agents page
+    navigate(`/projects/agents?p=${rowId}&pn=${projectData?.name}`);
   };
 
   // Return the handle open project action function

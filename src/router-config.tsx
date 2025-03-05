@@ -18,6 +18,7 @@ import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { Navigate, type RouteObject } from "react-router-dom";
+
 export const routerConfig: RouteObject[] = [
   {
     path: "/",
@@ -33,7 +34,7 @@ export const routerConfig: RouteObject[] = [
         element: <ProjectsPage />,
       },
       {
-        path: "/project/flows",
+        path: "/projects/agents",
         element: <FlowsPage />,
       },
       {
