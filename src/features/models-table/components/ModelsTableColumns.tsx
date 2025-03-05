@@ -48,15 +48,8 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
 
     cell: ({ row }) => {
-      const { id, name, description } = row.original;
-      return (
-        <div className="flex w-fit flex-col justify-start">
-          <ModelsTableCellLink rowId={id || "rowId"} cellValue={name} />
-          <span className="w-48 truncate text-xs text-gray-600">
-            {description}
-          </span>
-        </div>
-      );
+      const { id, name } = row.original;
+      return <ModelsTableCellLink rowId={id || "rowId"} cellValue={name} />;
     },
   },
   {
