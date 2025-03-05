@@ -21,9 +21,9 @@ class PDFRequest(BaseModel):
 def get_pdf_path(pdf_url: str):
     """Constructs full PDF path based on OS"""
     logger.info("THE OS NAME IS: %s", platform.system())
-    
+
     if platform.system() == "Linux":
-        return Path("/var/www/aventisia.com/files") / pdf_url
+        return Path("/var/www/aventisia.com") / pdf_url
     else:
         return pdf_url
 
@@ -73,6 +73,9 @@ async def extract_pdf_text(payload: PDFRequest):
         pdf_path = download_pdf(payload.pdf_url)
     else:
         pdf_path = get_pdf_path(payload.pdf_url)
+
+    # TODO: Not able to get the pdf full path so adding it manually
+    pdf_path = "/var/www/aventisia.com" + pdf_path
     
     logger.info("THE FULL PATH OF PDF: %s", pdf_path)
 
