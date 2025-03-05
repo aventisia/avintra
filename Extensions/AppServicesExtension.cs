@@ -31,6 +31,7 @@ public static class AppServicesExtension
     {
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("ExtractViaLLMConfig").Get<ExtractViaLLMConfig>(), "ExtractViaLLMConfig cannot be null"));
         
         //Feature Services
         services.AddScoped<IMLModelService, MLModelService>();
@@ -39,6 +40,7 @@ public static class AppServicesExtension
         services.AddScoped<IUploadedDocService, UploadedDocService>();
         services.AddScoped<IModelBuilderUserService, ModelBuilderUserService>();
         services.AddScoped<IAnnotationDataService, AnnotationDataService>();
+        services.AddScoped<IExtractViaLLMService, ExtractViaLLMService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
