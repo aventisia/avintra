@@ -425,7 +425,9 @@ public class MachineService : IMachineService
             var agents = await _unitOfWork.FlowVersionRepo
                                           .GetByConditionAsync(w =>
                                               agentIds.Contains(w.Id) &&
-                                              w.CreatedByUserId == _userId)
+                                              w.IsPublished &&
+                                              w.CreatedByUserId == _userId
+                                            )
                                           .ToListAsync();
 
             // Identify and return a message for any invalid agent IDs
@@ -519,6 +521,7 @@ public class MachineService : IMachineService
             var agents = await _unitOfWork.FlowVersionRepo
                                           .GetByConditionAsync(w =>
                                               agentIds.Contains(w.Id) &&
+                                              w.IsPublished &&
                                               w.CreatedByUserId == _userId)
                                           .ToListAsync();
 
@@ -613,6 +616,7 @@ public class MachineService : IMachineService
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.FlowVersionRepo
                                             .GetByConditionAsync(w =>
+                                                w.IsPublished &&
                                                 w.CreatedByUserId == _userId)
                                             .Include(f => f.Flow)
                                             .ProjectToType<AssignAgentDto>()
@@ -657,7 +661,7 @@ public class MachineService : IMachineService
                 .ProjectToType<SelectOptionDto>()
                 .AsNoTracking()
                 .ToListAsync();
-                
+
             // Set the serviceResponse
             serviceResponse.Data = machinesToSelect;
             serviceResponse.StatusCode = 200;
