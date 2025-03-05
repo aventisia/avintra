@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useFetchModel } from "../../hooks/useFetchModel";
+import { updateModel } from "@/features/model-library-table/apis/model-library-table-apis";
+import { ModelLibraryTableDto } from "@/features/model-library-table/dtos/model-library-table-dto";
+import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
 import {
   Select,
   SelectContent,
@@ -8,11 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/react-toolkit/ui/select";
-import { updateModel } from "@/features/model-library-table/apis/model-library-table-apis";
-import { toast } from "sonner";
-import { ModelLibraryTableDto } from "@/features/model-library-table/dtos/model-library-table-dto";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
-import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useFetchModel } from "../../features/label-data/hooks/useFetchModel";
 
 export function LLMSelector() {
   //Get set model data
@@ -35,13 +35,9 @@ export function LLMSelector() {
   // Mutation for lmm update using PUT
   const llmMutation = useMutation({
     mutationFn: updateModel,
-    onSuccess: (httpResponse) => {
+    onSuccess: () => {
       refetch();
       setIsUpdating(false);
-      // Success message
-      toast.success(httpResponse?.message, {
-        className: "sonner-toaster-sm",
-      });
     },
     onError: (error) => {
       // Show error toast
@@ -63,7 +59,10 @@ export function LLMSelector() {
             } as ModelLibraryTableDto);
         }}
       >
-        <SelectTrigger className="w-32" size="xs">
+        <SelectTrigger
+          className="h-6 w-auto gap-1 rounded-xl px-2 py-1 font-medium"
+          size="sm"
+        >
           <SelectValue placeholder="Select LLM" />
         </SelectTrigger>
         <SelectContent>
