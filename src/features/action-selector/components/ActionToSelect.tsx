@@ -14,7 +14,7 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
       {data.icon ? (
         <div>{iconMapper[data.icon]}</div>
       ) : (
-        <FallbackImageIcon src={data.img} />
+        <FallbackImageIcon className="object-cover" src={data.img} />
       )}
 
       <div className="grow space-y-0.5">

@@ -15,12 +15,16 @@ type State = {
   actionCategory: string;
 
   /** Current step/Level of category */
+
+  /** Serch query */
+  query: string,
 };
 
 type Actions = {
   setOrigin: (origin: ActionSelectorOriginType, originId: string) => void;
   setPrimaryCategoryLabel: (primaryCategoryLabel: string | null) => void;
   setActionCategory: (actionCategory: string) => void;
+  setQuery: (query: string) => void;
 };
 
 export const useNodeSelectorStore = create<State & Actions>((set) => ({
@@ -28,6 +32,7 @@ export const useNodeSelectorStore = create<State & Actions>((set) => ({
   originId: "",
   primaryCategoryLabel: null,
   actionCategory: "",
+  query: "",
 
   setOrigin: (origin, originId) =>
     set(() => ({
@@ -44,4 +49,6 @@ export const useNodeSelectorStore = create<State & Actions>((set) => ({
     set(() => ({
       actionCategory,
     })),
+
+    setQuery:(query) => set(() => ({query}))
 }));
