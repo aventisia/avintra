@@ -108,9 +108,7 @@ public class WorkspaceDbContext : DbContext
 
         // Configure Many-to-Many relationship between Queue and QueueTransaction
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueID).IsRequired();
-        // Configure Many-to-Many relationship between FlowVersion and QueueTransaction
-        modelBuilder.Entity<FlowVersion>().HasMany(many => many.QueueTransactions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
-
+        
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()

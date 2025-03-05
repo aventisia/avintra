@@ -18,17 +18,6 @@ public class Queue : BaseEntity, IMustHaveTenant
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the queue.
-    /// </summary>
-    [MaxLength(500)]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total count of items within the queue's transactions.
-    /// </summary>
-    public int TotalItems { get; set; }
-
-    /// <summary>
     /// Configures the many-to-many relationship between queue transactions and queues.
     /// </summary>
     public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }

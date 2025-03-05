@@ -20,15 +20,9 @@ public class QueuesTableDto
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the flow. Max 500 characters.
+    /// Gets or sets the count of pending items associated with the queue.
     /// </summary>
-    [StringLength(500)]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets or sets the flow comments count which are associated with the flow.
-    /// </summary>
-    public int? TotalItems { get; set; }
+    public int? TotalPendingItems { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.

@@ -31,15 +31,4 @@ public class QueueTransaction : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("QueueID")]
     public virtual Queue? Queue { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier for the flow version associated with this transaction.
-    /// </summary>
-    public required Guid FlowVersionId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the flow version related to this queue transaction.
-    /// </summary>
-    [ForeignKey("FlowVersionId")]
-    public virtual FlowVersion? FlowVersion { get; set; }
 }
