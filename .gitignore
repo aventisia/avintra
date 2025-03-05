@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 
 # Ignore Published folder
 [Pp]ublished/
+
+# Ignore wwwroot folder
+wwwroot/
