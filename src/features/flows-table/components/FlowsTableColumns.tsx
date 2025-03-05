@@ -1,5 +1,7 @@
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
@@ -53,7 +55,9 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("type")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+      <div className="w-auto truncate font-medium">
+        {getEnumValueByKey(FlowTypesEnum, row.getValue("type"))}
+      </div>
     ),
   },
   {
