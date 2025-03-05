@@ -37,7 +37,7 @@ const mlModelBuilderAppConfig: IAppConfig = {
           {
             Icon: DocumentTextIcon,
             name: "Label data",
-            route: "/label-data",
+            route: "/label",
           },
           // {
           //   Icon: Square3Stack3DIcon,
