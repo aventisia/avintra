@@ -11,7 +11,7 @@ public class UploadedDocDto
     /// <summary>
     /// Gets or sets the name of Uploaded file. Max character is 50.
     /// </summary>
-    [MaxLength(50)]
+    [StringLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
