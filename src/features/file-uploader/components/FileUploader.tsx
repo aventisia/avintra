@@ -1,8 +1,8 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFileStore } from "../stores/file-uploader-store";
 import FileDropzone from "./FileDropzone";
 import FileUploadList from "./FileUploadList";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 const FileUploader = () => {
   const {
@@ -32,7 +32,7 @@ const FileUploader = () => {
   );
 
   return (
-    <div className="flex gap-12 rounded-lg border bg-white p-12 shadow">
+    <div className="flex h-full gap-6 rounded-lg border bg-white px-[1.4rem] py-6 shadow">
       <FileDropzone
         files={files}
         addFile={addFile}
