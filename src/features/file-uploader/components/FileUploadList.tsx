@@ -1,12 +1,12 @@
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { XCircleIcon } from "@heroicons/react/24/solid";
 import { Progress } from "@/react-toolkit/ui/progress";
-import { FileState } from "../stores/file-uploader-store";
-import { useFileDelete } from "../hooks/useFileDelete";
-import { formatFileSize } from "../utils";
-import { FileUploadDto } from "../dtos/file-upload-dto";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import { FileUploadDto } from "../dtos/file-upload-dto";
+import { useFileDelete } from "../hooks/useFileDelete";
+import { FileState } from "../stores/file-uploader-store";
+import { formatFileSize } from "../utils";
 interface FileUploadListProps {
   files: FileState[];
   clearFiles: () => void;
@@ -41,7 +41,7 @@ const FileUploadList = ({
   return (
     <>
       {!!files.length && (
-        <div className="h-[calc(75vh-5.5rem)] w-1/2 rounded-lg border">
+        <div className="h-full w-1/2 rounded-lg border">
           {/* Title Section */}
           <div className="flex items-center justify-between border-b p-2">
             <h2 className="text-md font-medium">
