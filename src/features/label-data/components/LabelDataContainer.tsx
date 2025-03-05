@@ -1,13 +1,13 @@
-import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
-import { useLabelDataStore } from "../stores/label-data-store";
-import { useShallow } from "zustand/react/shallow";
-import Nav from "./Header/Nav";
-import { PdfPreviewer } from "@/features/pdf-previewer/components/PdfPreviewer";
 import AddFields from "@/features/data-fields/components";
-import { useEffect } from "react";
-import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
 import FileUploader from "@/features/file-uploader/components/FileUploader";
+import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
+import { PdfPreviewer } from "@/features/pdf-previewer/components/PdfPreviewer";
+import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useLabelDataStore } from "../stores/label-data-store";
+import Nav from "./Header/Nav";
 
 export const LabelDataContainer = () => {
   useLabelDataQueryKey();
@@ -44,7 +44,7 @@ export const LabelDataContainer = () => {
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
 
       {step == 1 ? (
-        <div className="flex justify-between gap-7">
+        <div className="flex justify-between gap-0">
           <PdfPreviewer />
           <AddFields />
         </div>
