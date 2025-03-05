@@ -310,7 +310,7 @@ export const PdfPreviewer: React.FC = () => {
               {
                 ...newAnnotation,
                 imgPath: currImg,
-                value: currImg,
+                value: "",
               },
             ),
           });
