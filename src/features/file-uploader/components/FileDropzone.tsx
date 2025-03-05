@@ -29,18 +29,21 @@ const FileDropzone = ({
     modelId,
   });
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file) => {
-      addFile({
-        name: file.name,
-        progress: 0,
-        size: file.size,
-        file,
-        currentController,
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      acceptedFiles.forEach((file) => {
+        addFile({
+          name: file.name,
+          progress: 0,
+          size: file.size,
+          file,
+          currentController,
+        });
+        uploadFile(file);
       });
-      uploadFile(file);
-    });
-  }, []);
+    },
+    [addFile, currentController, uploadFile],
+  );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,

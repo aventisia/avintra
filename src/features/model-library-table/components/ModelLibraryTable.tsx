@@ -55,7 +55,7 @@ export const ModelLibraryTable = () => {
   // Return the rendered DataTable component.
   return (
     <>
-      {data?.data.length ? (
+      {data?.data ? (
         <div className="shadow-xs mt-7 space-y-4 rounded-lg border bg-white p-4">
           {/* Crud ops dialog */}
           <ModelCrudDialog>

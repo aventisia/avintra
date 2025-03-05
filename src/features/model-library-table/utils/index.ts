@@ -27,5 +27,30 @@ const dateRangeFilter: FilterFn<ModelLibraryTableDto> = (row, _, value) => {
     return true;
   }
 };
+type ModelStatus =
+  | "Annotation"
+  | "InTraining"
+  | "Trained"
+  | "InTesting"
+  | "Active"
+  | "Executing"
+  | "Inactive";
 
-export { dateRangeFilter };
+type StatusColorMap = {
+  [key in ModelStatus]: string;
+};
+function getModelStatusColor(status: ModelStatus) {
+  const statusColors: StatusColorMap = {
+    Annotation: "amber-400",
+    InTraining: "indigo-500",
+    Trained: "green-500",
+    InTesting: "cyan-500",
+    Active: "emerald-600",
+    Executing: "blue-600",
+    Inactive: "gray-400",
+  };
+
+  return statusColors[status] || "gray-200"; // Default fallback color
+}
+
+export { dateRangeFilter, getModelStatusColor };

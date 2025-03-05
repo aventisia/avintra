@@ -7,12 +7,10 @@ import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useFileStore } from "@/features/file-uploader/stores/file-uploader-store";
 import { submitFiles } from "@/features/file-uploader/apis/file-upload-apis";
 import { useState } from "react";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { AnnotationDataDto } from "../../dtos/annotation-data-dtos";
-import { annotationOptimisticMutationFn } from "../../apis/annotation-apis";
 import { FileUploadDto } from "@/features/file-uploader/dtos/file-upload-dto";
 import TrainingDialog from "../TrainingDialog";
 import TrainingDialogTrigger from "../TrainingDialogTrigger";
+import { useInsertAnnotation } from "../../hooks/useInsertAnnotation";
 
 const Nav = ({
   isPdfAvailable,
@@ -39,11 +37,7 @@ const Nav = ({
       clearFiles: state.clearFiles,
     })),
   );
-  const { mutate: insertAnnotation } = useListOptimisticMutation<
-    AnnotationDataDto,
-    AnnotationDataDto | boolean,
-    AnnotationDataDto
-  >([], annotationOptimisticMutationFn, ["annotations", modelId]);
+  const { mutate: insertAnnotation } = useInsertAnnotation();
 
   const handleFileUpload = async () => {
     if (filesToUpload.length > 0) {
@@ -55,12 +49,9 @@ const Nav = ({
         await Promise.all(
           items.map((file: FileUploadDto) =>
             insertAnnotation({
-              crudAction: "create",
-              payload: {
-                uploadedDocId: file.id || "",
-                mlModelId: modelId,
-                annotationObject: "",
-              },
+              uploadedDocId: file.id || "",
+              mlModelId: modelId,
+              annotationObject: "",
             }),
           ),
         );

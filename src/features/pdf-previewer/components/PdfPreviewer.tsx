@@ -6,18 +6,6 @@ import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import { useShallow } from "zustand/react/shallow";
 import ControlPanel from "./ControlPannel";
 import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/react-toolkit/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
 import { useFetchDataFields } from "@/features/data-fields/hooks/useFetchDataFields";
 import { DataFieldsDto } from "@/features/data-fields/dtos/data-fields-dtos";
 import { useFetchUploadedFiles } from "../hooks/useFetchFiles";
@@ -25,14 +13,19 @@ import { useDownloadPdf } from "../hooks/useDownloadPdf";
 import { usePdfListStore } from "../stores/pdf-list-store";
 import { PdfViewerDto } from "../dtos/file-list-dtos";
 import PdfLoaderTemplate from "./PdfLoaderTemplate";
-import { getTailwindColor } from "../utils";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { AnnotationDataDto } from "@/features/label-data/dtos/annotation-data-dtos";
 import { useFetchAnnotationData } from "@/features/label-data/hooks/useFetchAnnotationData";
 import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
 import { toast } from "sonner";
 import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnotation";
+import FieldSelectionPopover from "./FieldSelectionPopover";
+import AnnotationBox from "./AnnotationBox";
+import { usePdfWidth } from "../hooks/usePdfWidth";
+import { addUpdateInString } from "../utils";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
+//Define pdfjs worker file path
 pdfjs.GlobalWorkerOptions.workerSrc = "assets/pdf.worker.min.js";
 
 export interface DocumentLoadSuccess {
@@ -42,6 +35,8 @@ export interface DocumentLoadSuccess {
 export interface Annotation {
   fieldId: string;
   pageNumber: number;
+  fieldName?: string;
+  value?: string;
   position: {
     x: number;
     y: number;
@@ -51,17 +46,13 @@ export interface Annotation {
   imgPath?: string | undefined;
 }
 
-export interface ExtractedData {
-  [key: string]: { value: string };
-}
-
 export const PdfPreviewer: React.FC = () => {
-  //Feild select popover state
+  //Field selection popover state
   const [isOpen, setIsOpen] = useState(false);
 
+  const [isPdfLoading, setIsPdfLoading] = useState(true);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const { data } = useFetchDataFields();
 
   const [fieldTypes, setFieldTypes] = useState<DataFieldsDto[]>([]);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -71,6 +62,21 @@ export const PdfPreviewer: React.FC = () => {
   const [currentAnnotation, setCurrentAnnotation] = useState<Annotation | null>(
     null,
   );
+
+  const { data } = useFetchDataFields();
+
+  const { data: pdfList, isLoading: isLoadingList } = useFetchUploadedFiles();
+
+  const { data: annotationData } = useFetchAnnotationData();
+
+  const currAnnotationData = annotationData?.data as
+    | AnnotationDataDto[]
+    | undefined;
+
+  const { mutate: downloadPdf } = useDownloadPdf();
+
+  const { mutate: updateAnnotation } = useUpdateAnnotation();
+
   const { currAnnotationObj } = useAnnotationDataStore(
     useShallow((state) => ({
       currAnnotationObj: state.currAnnotationObj,
@@ -81,44 +87,14 @@ export const PdfPreviewer: React.FC = () => {
       currImg: state.currImg,
     })),
   );
-  const { data: pdfList, isLoading: isLoadingList } = useFetchUploadedFiles();
 
-  const { data: annotationData, refetch } = useFetchAnnotationData();
-  const currAnnotationData = annotationData?.data as
-    | AnnotationDataDto[]
-    | undefined;
-
-  const { mutate: downloadPdf } = useDownloadPdf();
-  const { selectedPdf, pdfUrl, setSelectedPdf } = usePdfListStore();
-
-  const handlePdfSelect = (newPdf: PdfViewerDto) => {
-    setSelectedPdf(newPdf);
-    downloadPdf(newPdf.path || "");
-    setAnnotations([]);
-    setPageNumber(1); // Reset page number when switching PDFs
-  };
-
-  // Load initial PDF
-  useEffect(() => {
-    if (selectedPdf && !pdfUrl) {
-      downloadPdf(selectedPdf.path || "");
-    }
-  }, [selectedPdf, pdfUrl, downloadPdf]);
-  useEffect(() => {
-    if (data?.data) setFieldTypes(data?.data);
-  }, [data?.data]);
-
-  const [, setExtractedData] = useState<ExtractedData>({});
-  useEffect(() => {
-    const obj = JSON.parse(currAnnotationObj || "{}");
-    const ann = Object.values(obj) as unknown as Annotation[];
-    setAnnotations(ann);
-  }, [currAnnotationObj]);
-
-  const canvasRef = useRef<HTMLDivElement>(null);
-
-  // Create a ref for the invisible trigger button
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const { selectedPdf, pdfUrl, setSelectedPdf } = usePdfListStore(
+    useShallow((state) => ({
+      selectedPdf: state.selectedPdf,
+      pdfUrl: state.pdfUrl,
+      setSelectedPdf: state.setSelectedPdf,
+    })),
+  );
 
   const { pageNumber, scale, rotate, setPageNumber, setNumPages, numPages } =
     usePdfViewerStore(
@@ -132,10 +108,58 @@ export const PdfPreviewer: React.FC = () => {
       })),
     );
 
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Create a ref for the invisible trigger button
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+
+  const { width } = usePdfWidth(canvasRef);
+
+  const handlePdfSelect = (newPdf: PdfViewerDto) => {
+    setSelectedPdf(newPdf);
+    downloadPdf(newPdf.path || "");
+    setAnnotations([]);
+    setPageNumber(1); // Reset page number when switching PDFs
+  };
+
+  // Get model data store state and actions
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
+
+  //Update UI on model id change
+  useEffect(() => {
+    let load = true;
+
+    return () => {
+      if (load) load = false;
+    };
+  }, [modelId]);
+
+  // Load initial PDF
+  useEffect(() => {
+    if (selectedPdf) {
+      downloadPdf(selectedPdf.path || "");
+    }
+  }, [selectedPdf, downloadPdf, modelId]);
+
+  useEffect(() => {
+    if (data?.data) setFieldTypes(data?.data);
+  }, [data?.data]);
+
+  useEffect(() => {
+    if (currAnnotationObj) {
+      const ann: Annotation[] = JSON.parse(currAnnotationObj);
+      setAnnotations(ann);
+    }
+  }, [currAnnotationObj]);
+
   const onDocumentLoadSuccess = ({ numPages }: DocumentLoadSuccess) => {
     setNumPages(numPages);
     setPageNumber(1);
-    //   setIsLoading(false);
+    setIsPdfLoading(false);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -226,14 +250,13 @@ export const PdfPreviewer: React.FC = () => {
     );
   };
 
-  const { mutate: updateAnnotation } = useUpdateAnnotation();
-
   const assignTypeToAnnotation = async (field: DataFieldsDto) => {
     if (pendingAnnotation && field.id && canvasRef.current) {
       // const confidence = calculateConfidence(pendingAnnotation.content, typeId);
       const newAnnotation: Annotation = {
         ...pendingAnnotation,
         fieldId: field.id,
+        fieldName: field.name,
         // confidence
       };
 
@@ -282,15 +305,15 @@ export const PdfPreviewer: React.FC = () => {
             id: currData?.id,
             uploadedDocId: selectedPdf?.id || "",
             mlModelId: selectedPdf?.mlModelId,
-            annotationObject: JSON.stringify({
-              ...JSON.parse(currData?.annotationObject || "{}"),
-              [field.id]: {
+            annotationObject: addUpdateInString(
+              currData?.annotationObject || "",
+              {
                 ...newAnnotation,
                 imgPath: currImg,
+                value: currImg,
               },
-            }),
+            ),
           });
-          refetch();
         }
       } catch (error) {
         toast.error(error?.toString());
@@ -299,65 +322,9 @@ export const PdfPreviewer: React.FC = () => {
       // Add the new annotation
       const newAnnotations = [...filteredAnnotations, newAnnotation];
       setAnnotations(newAnnotations);
-      updateExtractedData(newAnnotations);
       setPendingAnnotation(null);
     }
   };
-
-  const updateExtractedData = (newAnnotations: Annotation[]) => {
-    const data: ExtractedData = {};
-    // Since we're filtering annotations when adding new ones,
-    // we can simply use forEach here as there won't be duplicates
-    newAnnotations.forEach((annotation) => {
-      if (annotation.fieldId) {
-        data[annotation.fieldId] = {
-          value: annotation.imgPath || "",
-        };
-      }
-    });
-    setExtractedData(data);
-  };
-
-  const renderAnnotation = (annotation: Annotation) => {
-    if (annotation.pageNumber !== pageNumber) return;
-    const fieldType = annotation.fieldId
-      ? fieldTypes.find((f) => f.id === annotation.fieldId)
-      : null;
-
-    const colors = fieldType?.color || "gray";
-    return (
-      <div
-        key={annotation.fieldId}
-        className="!bg-opacity-10"
-        style={{
-          position: "absolute",
-          left: annotation.position.x * scale,
-          top: annotation.position.y * scale,
-          width: annotation.position.width * scale,
-          height: annotation.position.height * scale,
-          border: `1px solid ${getTailwindColor(colors, 500)}`,
-          backgroundColor:
-            colors == "gray" ? "none" : getTailwindColor(colors, 500),
-          opacity: 0.2,
-          pointerEvents: "none",
-        }}
-      />
-    );
-  };
-  const [width, setWidth] = useState(600); // initial width
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (canvasRef.current) {
-        setWidth(canvasRef.current.getBoundingClientRect().width);
-      }
-    };
-
-    updateWidth(); // set initial width
-    window.addEventListener("resize", updateWidth);
-
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
 
   if (isLoadingList) {
     return <PdfLoaderTemplate />;
@@ -401,43 +368,31 @@ export const PdfPreviewer: React.FC = () => {
               renderAnnotationLayer={false}
             />
           </Document>
-          {annotations.map((annotation) => renderAnnotation(annotation))}
-          {currentAnnotation && renderAnnotation(currentAnnotation)}
-          {pendingAnnotation && renderAnnotation(pendingAnnotation)}
-          <Popover
-            open={isOpen}
-            onOpenChange={(open) => {
-              setIsOpen(open);
-              setCurrentAnnotation(null);
-            }}
-          >
-            <PopoverTrigger
-              ref={triggerRef}
-              className="m-0 h-0 w-0 border-none p-0"
+          {!isPdfLoading &&
+            annotations.map((annotation) => (
+              <AnnotationBox annotation={annotation} fieldTypes={fieldTypes} />
+            ))}
+          {currentAnnotation && (
+            <AnnotationBox
+              annotation={currentAnnotation}
+              fieldTypes={fieldTypes}
             />
-            <PopoverContent className="w-[200px] p-0" sideOffset={5}>
-              <Command className="rounded-lg border shadow-md">
-                <CommandInput placeholder="Type a command..." />
-                <CommandList>
-                  <CommandEmpty>No results found.</CommandEmpty>
-                  {fieldTypes.map((field) => {
-                    return (
-                      <CommandItem
-                        key={field.id}
-                        value={field.id + field.name}
-                        onSelect={() => {
-                          if (field) assignTypeToAnnotation(field);
-                          setIsOpen(false);
-                        }}
-                      >
-                        {field.name}
-                      </CommandItem>
-                    );
-                  })}
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          )}
+          {pendingAnnotation && (
+            <AnnotationBox
+              annotation={pendingAnnotation}
+              fieldTypes={fieldTypes}
+            />
+          )}
+          <FieldSelectionPopover
+            isOpen={isOpen}
+            assignTypeToAnnotation={assignTypeToAnnotation}
+            fieldTypes={fieldTypes}
+            setCurrentAnnotation={setCurrentAnnotation}
+            setIsOpen={setIsOpen}
+            triggerRef={triggerRef}
+          />
+
           <ScrollBar orientation="horizontal" />
         </div>
       </ScrollArea>

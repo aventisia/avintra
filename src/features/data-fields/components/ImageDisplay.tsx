@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
@@ -42,28 +42,15 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({ imagePath }) => {
     enabled: !!imagePath,
   });
 
-  // Cleanup function to revoke object URL when component unmounts or when URL changes
-  useEffect(() => {
-    return () => {
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
-      }
-    };
-  }, [imageUrl]);
-
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center rounded">
+      <div className="flex items-center justify-center rounded text-xs text-muted-foreground">
         Updating annotation...
       </div>
     );
   }
 
-  return (
-    <div >
-      {imageUrl && <img src={imageUrl} alt={""} />}
-    </div>
-  );
+  return <div>{imageUrl && <img src={imageUrl} alt={""} />}</div>;
 };
 
 export default ImageDisplay;

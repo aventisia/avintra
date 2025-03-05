@@ -2,6 +2,8 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { DataFieldsDto } from "../dtos/data-fields-dtos";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ML_MODELBUILDER_API_URL}/data-field`;
 
@@ -60,6 +62,20 @@ const deleteDataFields = (ids: string[]) => {
 };
 
 /**
+ * Checks the availability of a data field name.
+ */
+const isFieldNameAvailable = (
+  modelId: string,
+  postObj: CheckAvailabilityDto,
+) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<TrueFalseResultDto>
+    >(`${baseAPIURL}/IsDataFieldNameAvailable`, { mlModelId: modelId, ...postObj })
+    .then((res) => res.data);
+};
+
+/**
  * Performs an optimistic mutation on a model based on the provided CRUD action.
  *
  * @param {IOptimisticMutation<DataFieldsDto | string | string[]>} options - The options for the optimistic mutation.
@@ -91,5 +107,6 @@ export {
   updateDataField,
   deleteDataField,
   deleteDataFields,
+  isFieldNameAvailable,
   dataFieldOptimisticMutationFn,
 };

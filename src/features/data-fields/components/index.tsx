@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 // import { AddFieldOptions } from "./add-field-dropdown/AddFieldDropdown";
 import { ModelCrudDialog } from "./data-field-crud-dialog/DataFieldCrudDialog";
-import DataFieldCard from "./DataFieldCard";
+import DataFieldList from "./DataFieldList";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
@@ -41,7 +41,7 @@ const AddFields = () => {
       </div>
 
       <ScrollArea className="h-[calc(75vh)] p-4">
-        <DataFieldCard />
+        <DataFieldList />
       </ScrollArea>
     </div>
   );
