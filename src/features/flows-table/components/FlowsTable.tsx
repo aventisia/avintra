@@ -55,7 +55,7 @@ export const FlowsTable = () => {
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
-                <DTCreateButton buttonText="Create Flow" />
+                <DTCreateButton buttonText="Create Agent" />
               </div>
             </div>
 
