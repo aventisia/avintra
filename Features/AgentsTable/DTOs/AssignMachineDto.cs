@@ -59,11 +59,6 @@ public class AssignMachineDto
     public DateTimeOffset? LastModifiedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets initials of the user who created the record
-    /// </summary>
-    public string? CreatedByUserInitials { get; set; }
-
-    /// <summary>
     /// Gets or sets a value indicating whether the flow version is assigned.
     /// </summary>
     public bool IsAssigned { get; set; }
