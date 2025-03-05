@@ -30,7 +30,7 @@ const typeProps: SelectFieldProps = {
 // Name
 const nameProps: InputFieldProps = {
   name: "name",
-  label: "Field",
+  label: "Name",
   isRequired: true,
 };
 
