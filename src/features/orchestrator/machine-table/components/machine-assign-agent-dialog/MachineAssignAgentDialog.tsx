@@ -1,6 +1,6 @@
 import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { MachineFlowDialogWrapper } from "./MachineFlowDialogWrapper";
+import { MachineAgentDialogWrapper } from "./MachineAgentDialogWrapper";
 import { MachineAssignAgent } from "./MachineAssignAgent";
 
 export const MachineAssignAgentDialog = ({
@@ -8,7 +8,7 @@ export const MachineAssignAgentDialog = ({
 }: React.PropsWithChildren) => {
   // Return dialog
   return (
-    <MachineFlowDialogWrapper>
+    <MachineAgentDialogWrapper>
       {children}
       <DialogContent side={"right"} className="!max-w-[40rem]">
         <DialogDefaultHeader
@@ -20,6 +20,6 @@ export const MachineAssignAgentDialog = ({
           <MachineAssignAgent />
         </ScrollArea>
       </DialogContent>
-    </MachineFlowDialogWrapper>
+    </MachineAgentDialogWrapper>
   );
 };
