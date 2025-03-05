@@ -21,6 +21,7 @@ import { useMachineAgentStore } from "../../store/machine-agent-store";
 import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { useFetchMachines } from "../../hooks/useFetchMachines";
 
 type AgentsCheckListProps = {
   machineName: string;
@@ -32,6 +33,8 @@ export const AgentsCheckList = ({
   assignedCount,
 }: AgentsCheckListProps) => {
   const { data } = useFetchAgents();
+  const { refetch: refetchMachines } = useFetchMachines();
+
   const [agents, setAgents] = useState<AssignAgentDto[]>();
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
@@ -79,6 +82,7 @@ export const AgentsCheckList = ({
     onSuccess: (data) => {
       toast.success(data.message);
       setIsDialogOpen(false);
+      refetchMachines();
     },
     onError: (error) => {
       toast.error(error.toString());
@@ -147,13 +151,18 @@ export const AgentsCheckList = ({
                     id={agent.id}
                   />
                   <Label htmlFor={agent.id} className="flex flex-col space-y-1">
-                    <span className="flex">
-                      {agent.name}
-                      <span className="ms-auto text-primary">{`v ${agent.versionNumber}`}</span>
-                    </span>
-                    <span className="text-xs font-normal leading-snug text-muted-foreground">
-                      {`created by ${agent.createdBy} ${formatDistanceToNow(agent.createdOn)} ago`}
-                    </span>
+                    <div className="flex flex-col space-y-1">
+                      <div className="grid w-60 grid-cols-2 gap-4">
+                        <p className="text-md self-start">{agent.name}</p>
+                        <p className="ms-auto self-end text-primary">{`v ${agent.versionNumber}`}</p>
+                      </div>
+                      <div className="text-xs font-normal leading-snug text-muted-foreground">
+                        {`created by ${agent.createdBy} ${formatDistanceToNow(agent.createdOn)} ago`}
+                      </div>
+                      <div className="text-xs font-normal leading-snug text-muted-foreground">
+                        {`last modified by ${agent.lastModifiedBy} ${formatDistanceToNow(agent.lastModifiedOn)} ago`}
+                      </div>
+                    </div>
                   </Label>
                 </div>
               </div>
