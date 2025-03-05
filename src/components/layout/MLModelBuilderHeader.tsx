@@ -1,3 +1,4 @@
+import { LLMSelector } from "@/components/layout/LLMSelector";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
@@ -14,7 +15,10 @@ const MLModelBuilderHeader = () => {
       <div className="flex h-10 items-center rounded-lg pl-2">
         <AppLogo className="h-6 text-lg font-bold" />
         <DotSeparator className="ml-[0.9rem] mr-[0.6rem]" />
-        <span className="truncate text-sm font-medium">{modelName}</span>
+        <span className="mr-[0.6rem] truncate text-sm font-medium">
+          {modelName}
+        </span>
+        <LLMSelector />
       </div>
       <div className="flex h-10 items-center gap-2 rounded-lg px-1.5">
         <UnreadNotifications className="mt-0 mlg:mt-1.5" triggerSize="icon8" />
