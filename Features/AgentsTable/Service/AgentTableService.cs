@@ -37,6 +37,7 @@ public class AgentTableService : IAgentTableService
                     v.IsPublished
                 )
                 .Include(f => f.Flow)
+                .Include(mf => mf.MachineFlows)
                 .Include(c => c.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
@@ -75,6 +76,7 @@ public class AgentTableService : IAgentTableService
                     v.IsArchived
                 )
                 .Include(f => f.Flow)
+                .Include(mf => mf.MachineFlows)
                 .Include(c => c.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
@@ -114,6 +116,7 @@ public class AgentTableService : IAgentTableService
                     !v.IsArchived
                 )
                 .Include(f => f.Flow)
+                .Include(mf => mf.MachineFlows)
                 .Include(c => c.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
