@@ -10,7 +10,7 @@ import { getMachines } from "../apis/machine-apis";
  */
 export const useFetchMachines = () => {
   // Get machines using react query
-  const { data, isFetching, isLoading, isError, error } = useQuery({
+  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: DATA_QUERY_KEY,
     queryFn: () => getMachines(),
   });
@@ -21,5 +21,5 @@ export const useFetchMachines = () => {
   }, [error, isError]);
 
   // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading };
+  return { data, isFetching, isLoading, refetch };
 };
