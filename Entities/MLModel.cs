@@ -45,6 +45,11 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public decimal? Accuracy { get; set; }
 
     /// <summary>
+    /// Gets or sets the project id to which this ML model is associated with. It will making relationship with WorkspaceDb's Project table.
+    /// </summary>
+    public Guid ProjectId { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.
     /// </summary>
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }
