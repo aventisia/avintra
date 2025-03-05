@@ -19,6 +19,11 @@ public class AgentTableDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the machines count which are associated with the version flow (agent).
+    /// </summary>
+    public int? MachineCount { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the version is in locked state.
     /// </summary>
     public bool IsLocked { get; set; }
@@ -54,12 +59,19 @@ public class AgentTableDto
     public DateTimeOffset CreatedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets initials of the user who created the record
-    /// </summary>
-    public string? CreatedByUserInitials { get; set; }
-
-    /// <summary>
     /// Gets or sets the version number of a flow version record
     /// </summary>
     public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user who last modified the user record.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public string? LastModifiedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the user record was last modified. 
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public DateTimeOffset? LastModifiedOn { get; set; }
 }
