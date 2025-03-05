@@ -1,20 +1,15 @@
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
-  //ArchiveBoxIcon,
-  Cog6ToothIcon,
-  CreditCardIcon,
-  FolderIcon,
-  //HomeIcon,
-  IdentificationIcon,
-  QuestionMarkCircleIcon,
-  UserGroupIcon,
-  UsersIcon,
-  PlayIcon,
   BellIcon,
+  ChartPieIcon,
+  CogIcon,
+  FolderIcon,
+  IdentificationIcon,
+  PlayIcon,
+  QuestionMarkCircleIcon,
   QueueListIcon,
-  CogIcon, 
-  ChartPieIcon
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
 
@@ -32,21 +27,11 @@ const workspaceAppConfig: IAppConfig = {
         showSection: true, // TODO: Remove this once we have a way to handle this using user roles
         sectionName: "main menu",
         menuItems: [
-          // {
-          //   Icon: HomeIcon,
-          //   name: "home",
-          //   route: "/home",
-          // },
           {
             Icon: FolderIcon,
             name: "projects",
             route: "/projects",
           },
-          // {
-          //   Icon: ArchiveBoxIcon,
-          //   name: "marketplace",
-          //   route: "/marketplace",
-          // },
           {
             Icon: QuestionMarkCircleIcon,
             name: "support",
@@ -60,8 +45,8 @@ const workspaceAppConfig: IAppConfig = {
         menuItems: [
           {
             Icon: ChartPieIcon,
-            name: "dashboard",
-            route: "/dashboard",
+            name: "overview",
+            route: "/overview",
           },
           {
             Icon: DesktopIcon,
@@ -70,18 +55,18 @@ const workspaceAppConfig: IAppConfig = {
           },
           {
             Icon: BellIcon,
-            name: "Flows/Agents",
-            route: "/flows",
+            name: "Agents",
+            route: "/agents",
           },
           {
             Icon: QueueListIcon,
-            name: "queue",
-            route: "/queue",
+            name: "queues",
+            route: "/queues",
           },
           {
             Icon: PlayIcon,
-            name: "execution",
-            route: "/execution",
+            name: "executions",
+            route: "/executions",
           },
           {
             Icon: CogIcon,
@@ -104,26 +89,6 @@ const workspaceAppConfig: IAppConfig = {
             name: "users",
             route: "/users",
           },
-          {
-            Icon: UserGroupIcon,
-            name: "groups",
-            route: "/groups",
-          },
-          {
-            Icon: CreditCardIcon,
-            name: "billing",
-            route: "/billing",
-          },
-          {
-            Icon: Cog6ToothIcon,
-            name: "settings",
-            route: "/settings",
-          },
-          {
-            Icon: QuestionMarkCircleIcon,
-            name: "support",
-            route: "/supportticket-reviewer",
-          },
         ],
       },
     ],
@@ -131,3 +96,4 @@ const workspaceAppConfig: IAppConfig = {
 };
 
 export { workspaceAppConfig };
+
