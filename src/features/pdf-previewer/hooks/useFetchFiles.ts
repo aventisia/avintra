@@ -11,7 +11,12 @@ import { useLocation } from "react-router-dom";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchUploadedFiles = () => {
-  const { setSelectedPdf } = usePdfListStore();
+  const { selectedPdf, setSelectedPdf } = usePdfListStore(
+    useShallow((state) => ({
+      selectedPdf: state.selectedPdf,
+      setSelectedPdf: state.setSelectedPdf,
+    })),
+  );
   // Get modelId (m) and modelName (pn)
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -28,7 +33,7 @@ export const useFetchUploadedFiles = () => {
     }
   }
 
-  const { step } = useLabelDataStore(
+  const { step, modelId: mid } = useLabelDataStore(
     useShallow((state) => ({ step: state.step, modelId: state.modelId })),
   );
 
@@ -42,8 +47,9 @@ export const useFetchUploadedFiles = () => {
   useEffect(() => {}, [step]);
 
   useEffect(() => {
-    if (data?.data) setSelectedPdf(data?.data[0]);
-  }, [data, setSelectedPdf]);
+    if (data?.data && (!selectedPdf || selectedPdf?.mlModelId != modelId))
+      setSelectedPdf(data?.data[0]);
+  }, [data, selectedPdf, setSelectedPdf, mid, modelId]);
 
   // Show toast on fetch error
   useEffect(() => {
