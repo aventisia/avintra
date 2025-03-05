@@ -685,6 +685,106 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Queue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("Queues");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.QueueTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("FlowVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PayloadData")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("QueueId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlowVersionId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("QueueId");
+
+                    b.ToTable("QueueTransactions");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Subscription", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1172,6 +1272,56 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Queue", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.QueueTransaction", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", null)
+                        .WithMany("QueueTransactions")
+                        .HasForeignKey("FlowVersionId");
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.Queue", "Queue")
+                        .WithMany("QueueTransactions")
+                        .HasForeignKey("QueueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("Queue");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Subscription", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -1264,6 +1414,8 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion", b =>
                 {
                     b.Navigation("MachineFlows");
+
+                    b.Navigation("QueueTransactions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
@@ -1284,6 +1436,11 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.Project", b =>
                 {
                     b.Navigation("Flows");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Queue", b =>
+                {
+                    b.Navigation("QueueTransactions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.SupportTicket", b =>

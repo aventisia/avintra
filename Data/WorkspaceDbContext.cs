@@ -41,6 +41,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ActionExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -59,6 +61,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusTypeEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.CurrentTask).HasConversion(new EnumToStringConverter<TaskTypesEnum>());
+        modelBuilder.Entity<QueueTransaction>().Property(e => e.Status).HasConversion(new EnumToStringConverter<QueueTransactionStatusTypesEnum>());
 
         // Configure One-to-One relationship between Project and WorkspaceUser
         modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -102,6 +105,10 @@ public class WorkspaceDbContext : DbContext
 
         // Configure one-to-many relationship between Flow Execution Log and Action Execution Log
         modelBuilder.Entity<FlowExecutionLog>().HasMany(f => f.ActionExecutionLogs).WithOne(one => one.FlowExecutionLog).HasForeignKey(fKey => fKey.FlowExecutionLogId).IsRequired();
+
+        // Configure Many-to-Many relationship between Queue and QueueTransaction
+        modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
+        
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
@@ -152,4 +159,6 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<FlowExecutionLog> FlowExecutionLogs { get; set; }
     public DbSet<ActionExecutionLog> ActionExecutionLogs { get; set; }
+    public DbSet<Queue> Queues { get; set; }
+    public DbSet<QueueTransaction> QueueTransactions { get; set; }
 }
