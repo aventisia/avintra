@@ -1,29 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
-import html2canvas from "html2canvas";
-import { ScrollArea, ScrollBar } from "@/react-toolkit/ui/scroll-area";
-import { usePdfViewerStore } from "../stores/pdf-previewer-store";
-import { useShallow } from "zustand/react/shallow";
-import ControlPanel from "./ControlPannel";
-import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
-import { useFetchDataFields } from "@/features/data-fields/hooks/useFetchDataFields";
 import { DataFieldsDto } from "@/features/data-fields/dtos/data-fields-dtos";
-import { useFetchUploadedFiles } from "../hooks/useFetchFiles";
-import { useDownloadPdf } from "../hooks/useDownloadPdf";
-import { usePdfListStore } from "../stores/pdf-list-store";
-import { PdfViewerDto } from "../dtos/file-list-dtos";
-import PdfLoaderTemplate from "./PdfLoaderTemplate";
-import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
+import { useFetchDataFields } from "@/features/data-fields/hooks/useFetchDataFields";
+import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
 import { AnnotationDataDto } from "@/features/label-data/dtos/annotation-data-dtos";
 import { useFetchAnnotationData } from "@/features/label-data/hooks/useFetchAnnotationData";
-import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
-import { toast } from "sonner";
 import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnotation";
-import FieldSelectionPopover from "./FieldSelectionPopover";
-import AnnotationBox from "./AnnotationBox";
-import { usePdfWidth } from "../hooks/usePdfWidth";
-import { addUpdateInString } from "../utils";
+import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
+import { ScrollArea, ScrollBar } from "@/react-toolkit/ui/scroll-area";
+import html2canvas from "html2canvas";
+import React, { useEffect, useRef, useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
+import { PdfViewerDto } from "../dtos/file-list-dtos";
+import { useDownloadPdf } from "../hooks/useDownloadPdf";
+import { useFetchUploadedFiles } from "../hooks/useFetchFiles";
+import { usePdfWidth } from "../hooks/usePdfWidth";
+import { usePdfListStore } from "../stores/pdf-list-store";
+import { usePdfViewerStore } from "../stores/pdf-previewer-store";
+import { addUpdateInString } from "../utils";
+import AnnotationBox from "./AnnotationBox";
+import ControlPanel from "./ControlPannel";
+import FieldSelectionPopover from "./FieldSelectionPopover";
+import PdfLoaderTemplate from "./PdfLoaderTemplate";
 
 //Define pdfjs worker file path
 pdfjs.GlobalWorkerOptions.workerSrc = "assets/pdf.worker.min.js";
@@ -343,7 +343,7 @@ export const PdfPreviewer: React.FC = () => {
         rotate={rotate}
       />
       <ScrollArea
-        className={`h-[calc(75vh-3rem)] w-[calc(${width / scale}px)] rounded-lg`}
+        className={`h-[calc(100vh-11.2rem)] w-[calc(${width / scale}px)] rounded-lg`}
       >
         <div
           ref={canvasRef}
