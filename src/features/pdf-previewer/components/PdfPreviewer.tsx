@@ -121,7 +121,7 @@ export const PdfPreviewer: React.FC = () => {
     setAnnotations([]);
     setPageNumber(1); // Reset page number when switching PDFs
   };
- 
+
   // Get model data store state and actions
   const { modelId } = useLabelDataStore(
     useShallow((state) => ({
@@ -141,7 +141,6 @@ export const PdfPreviewer: React.FC = () => {
   // Load initial PDF
   useEffect(() => {
     if (selectedPdf) {
-      console.log("inner 2");
       downloadPdf(selectedPdf.path || "");
     }
   }, [selectedPdf, downloadPdf, modelId]);
