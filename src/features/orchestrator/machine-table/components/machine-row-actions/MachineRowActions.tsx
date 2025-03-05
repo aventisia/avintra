@@ -2,7 +2,6 @@ import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/D
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 import { MachineRowDeleteAction } from "./MachineRowDeleteAction";
-import { MachineRowOpenAction } from "./MachineRowOpenAction";
 import { MachineRowAssignmentAction } from "./MachineRowAssignmentAction";
 
 interface MachineRowActionsProps {
@@ -13,9 +12,6 @@ export const MachineRowActions = ({ rowId }: MachineRowActionsProps) => {
   return (
     // Dropdown menu for machine table row action */}
     <DataTableRowActions>
-      {/* To open machine */}
-      <MachineRowOpenAction rowId={rowId} />
-
       {/* View the machine details */}
       <DTRowAction rowId={rowId} crudAction="read" />
 
