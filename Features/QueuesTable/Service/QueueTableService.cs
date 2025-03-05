@@ -160,6 +160,7 @@ public class QueueTableService : IQueueTableService
             // Default mapping
             var newQueue = queuesTableDto.Adapt<Queue>();
             newQueue.CreatedByUserId = _userId;
+            newQueue.LastModifiedByUserId = _userId;
 
             // Insert queue
             await _unitOfWork.QueueRepo.InsertAsync(newQueue);
