@@ -8,6 +8,12 @@ public class MLModelDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the Id of the project to which the flow record belongs.
+    /// </summary>
+    [RequiredGuid]
+    public Guid ProjectId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of ML model. Max character is 50.
     /// </summary>
     [MaxLength(50)]
