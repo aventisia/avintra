@@ -1,0 +1,31 @@
+meta {
+  name: Delete queue
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/{{QUEUE_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set queueIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("QUEUE_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "QUEUE_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+docs {
+  > TODO: Implement functionality to delete multiple projects only if the user provides an OTP or password, especially when the projects are linked to other sub-content.
+}
