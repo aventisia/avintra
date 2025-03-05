@@ -1,12 +1,12 @@
-import { useCallback } from "react";
 import { cn } from "@/react-toolkit/lib/utils";
-import { CloudUploadIcon } from "lucide-react";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { useFileUpload } from "../hooks/useFileUpload";
+import { CloudUploadIcon } from "lucide-react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { FileUploadDto } from "../dtos/file-upload-dto";
+import { useFileUpload } from "../hooks/useFileUpload";
 import { FileState } from "../stores/file-uploader-store";
 import OrSeparator from "./ORSeperator";
-import { FileUploadDto } from "../dtos/file-upload-dto";
 
 interface FileDropzoneProps {
   modelId: string;
@@ -57,7 +57,7 @@ const FileDropzone = ({
     <div
       {...getRootProps()}
       className={cn(
-        "flex h-[calc(75vh-5.5rem)] flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors",
+        "flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors",
         isDragActive
           ? "border-primary bg-primary-foreground"
           : "border-gray-300 bg-slate-50",
