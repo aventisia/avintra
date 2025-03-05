@@ -35,10 +35,12 @@ export const AgentsCheckList = ({
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
 
-  const { setShowDialog, machineId } = useMachineAgentStore(
+  const { toggleFormDirty, setIsDialogOpen, machineId } = useMachineAgentStore(
     useShallow((state) => ({
-      setShowDialog: state.setIsDialogOpen,
+      isFormDirty: state.isFormDirty,
       machineId: state.machineId,
+      setIsDialogOpen: state.setIsDialogOpen,
+      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
@@ -52,6 +54,7 @@ export const AgentsCheckList = ({
       item.id === id ? { ...item, isAssigned } : item,
     );
     setAgents(updatedChecklist);
+    toggleFormDirty(true);
   };
 
   // Handle "Select All" checkbox
@@ -62,6 +65,7 @@ export const AgentsCheckList = ({
       isAssigned,
     }));
     setAgents(updatedChecklist);
+    toggleFormDirty(true);
   };
 
   const isAllSelected = agents?.every((item) => item.isAssigned);
@@ -73,11 +77,11 @@ export const AgentsCheckList = ({
     mutationFn: assignAgents,
     onSuccess: (data) => {
       toast.success(data.message);
-      setShowDialog(false);
+      setIsDialogOpen(false);
     },
     onError: (error) => {
       toast.error(error.toString());
-      setShowDialog(true);
+      setIsDialogOpen(true);
     },
   });
 
