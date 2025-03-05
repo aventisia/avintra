@@ -7,15 +7,14 @@ public interface IQueueTransactionService
     /// </summary>
     /// <param name="queueId">The unique identifier of the queue</param>
     /// <returns>A collection of transactions related to the specified queue</returns>
-    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid queueId);
+    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid? queueId);
 
     /// <summary>
     /// Create a new work item within the queue.
     /// </summary>
-    /// <param name="queueId">The unique identifier of the queue</param>
     /// <param name="queueTransactionDto">Details of the transaction to be added</param>
     /// <returns>The transaction that was successfully added to the queue</returns>
-    Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(Guid queueId, QueueTransactionDto queueTransactionDto);
+    Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(QueueTransactionDto queueTransactionDto);
 
     /// <summary>
     /// Modify the status of an existing transaction (e.g., Pending → In Progress → Completed/Failed).

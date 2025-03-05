@@ -19,7 +19,7 @@ public class QueueTransactionService : IQueueTransactionService
     }
 
     // Retrieve all transactions for a specific queue
-    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid queueId)
+    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid? queueId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<QueueTransactionDto>>
         {
@@ -31,8 +31,13 @@ public class QueueTransactionService : IQueueTransactionService
         {
             // Query the transactions for the specified queue
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(t => t.QueueID == queueId)
+                .GetByConditionAsync(t =>
+                    t.CreatedByUserId == _userId &&
+                    (queueId != null || t.QueueID == queueId)
+                )
                 .Include(q => q.Queue)
+                .Include(c => c.CreatedByUser)
+                .Include(lm => lm.LastModifiedByUser)
                 .OrderBy(o => o.CreatedOn)
                 .AsNoTracking()
                 .ToListAsync();
@@ -52,7 +57,7 @@ public class QueueTransactionService : IQueueTransactionService
     }
 
     // Add a new transaction (work item) to the queue
-    public async Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(Guid queueId, QueueTransactionDto queueTransactionDto)
+    public async Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(QueueTransactionDto queueTransactionDto)
     {
         var response = new ServiceResponse<QueueTransactionDto>
         {
@@ -63,11 +68,12 @@ public class QueueTransactionService : IQueueTransactionService
         try
         {
             _logger.LogInformation("Attempting to add a new transaction to the queue.");
-
+            
+            //TODO: Add here validation to check uniqueness
             // Check if a transaction with the specified queue I exists
             // var existingTransaction = await _unitOfWork.QueueTransactionRepo
             //     .GetByConditionAsync(t =>
-            //         t.QueueID == queueId
+            //         t.QueueID == queueTransactionDto.QueueId
             //     )
             //     .SingleOrDefaultAsync();
 
@@ -97,11 +103,11 @@ public class QueueTransactionService : IQueueTransactionService
             response.Data = newTransaction.Adapt<QueueTransactionDto>();
             response.StatusCode = 200;
             response.Message = "Queue transaction successfully added.";
-            _logger.LogInformation($"Successfully added a new transaction to queue {queueId} by user {_userId}.");
+            _logger.LogInformation($"Successfully added a new transaction to queue {queueTransactionDto.QueueID} by user {_userId}.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while adding a transaction to queue {QueueId}.", queueId);
+            _logger.LogError(ex, "An error occurred while adding a transaction to queue {QueueId}.", queueTransactionDto.QueueID);
         }
 
         return response;
@@ -123,6 +129,9 @@ public class QueueTransactionService : IQueueTransactionService
             // Retrieve the transaction by ID
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(t => t.Id == queueTransactionDto.Id)
+                .Include(q => q.Queue)
+                .Include(c => c.CreatedByUser)
+                .Include(l => l.LastModifiedByUser)
                 .SingleOrDefaultAsync();
 
             if (queueTransaction == null)
@@ -135,6 +144,8 @@ public class QueueTransactionService : IQueueTransactionService
             // Update the queue transaction
             queueTransactionDto.Adapt(queueTransaction);
             queueTransaction.LastModifiedByUserId = _userId;
+
+            _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
 
             // Commit the changes to the database
             if (!await _unitOfWork.SaveAsync())
