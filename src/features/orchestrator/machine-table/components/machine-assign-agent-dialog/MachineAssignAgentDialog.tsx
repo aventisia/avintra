@@ -14,7 +14,7 @@ export const MachineAssignAgentDialog = ({
         <DialogDefaultHeader
           className="px-3.5 py-3 text-lg tracking-wide"
           heading="Assign Agent"
-          description="Select Agent(s) From the list"
+          description="Machine details and agents"
         />
         <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
           <MachineAssignAgent />
