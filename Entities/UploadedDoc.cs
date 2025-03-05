@@ -8,9 +8,9 @@ public class UploadedDoc : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of Uploaded file. Max character is 50.
+    /// Gets or sets the name of Uploaded file. Max character is 255.
     /// </summary>
-    [MaxLength(50)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
