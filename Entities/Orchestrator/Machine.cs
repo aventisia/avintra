@@ -60,4 +60,9 @@ public class Machine : BaseEntity, IMustHaveTenant
     /// Many-to-Many relationship with Flows, representing the machine's associated flow activities
     /// </summary>
     public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between Jobs and Machines.
+    /// </summary>
+    public virtual ICollection<Job>? Jobs { get; set; }
 }
