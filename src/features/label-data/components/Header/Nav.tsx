@@ -1,17 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { useLabelDataStore } from "../../stores/label-data-store";
-import { useShallow } from "zustand/react/shallow";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
-import { useFileStore } from "@/features/file-uploader/stores/file-uploader-store";
 import { submitFiles } from "@/features/file-uploader/apis/file-upload-apis";
-import { useState } from "react";
 import { FileUploadDto } from "@/features/file-uploader/dtos/file-upload-dto";
+import { useFileStore } from "@/features/file-uploader/stores/file-uploader-store";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useInsertAnnotation } from "../../hooks/useInsertAnnotation";
+import { useLabelDataStore } from "../../stores/label-data-store";
 import TrainingDialog from "../TrainingDialog";
 import TrainingDialogTrigger from "../TrainingDialogTrigger";
-import { useInsertAnnotation } from "../../hooks/useInsertAnnotation";
-import { LLMSelector } from "./LLMSelector";
 
 const Nav = ({
   isPdfAvailable,
@@ -20,11 +19,10 @@ const Nav = ({
   isPdfAvailable: boolean;
   refetchList: () => void;
 }) => {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   // Get model data store state and actions
-  const { modelId, step, modelName, setStepState } = useLabelDataStore(
+  const { modelId, step, setStepState } = useLabelDataStore(
     useShallow((state) => ({
       step: state.step,
       modelName: state.modelName,
@@ -68,66 +66,50 @@ const Nav = ({
   };
 
   return (
-    <div className="my-5 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-3 w-fit">
-        <Button
-          variant="outline"
-          size="icon8"
-          className="px-1.5"
-          onClick={() => {
-            navigate("/model-library");
-          }}
-        >
-          <ArrowLeft className="h-5 w-5 " />
-        </Button>
-
-        <p className="text-nowrap">{modelName || "Model"}</p>
-        {step == 1 && <LLMSelector />}
-      </div>
-      <div className="flex justify-end gap-3">
-        {!!step && (
+    <div className="fixed left-0 right-0 top-1/2 z-10 flex -translate-y-1/2 justify-between gap-3 p-2">
+      {!!step && (
+        <Tooltip content="Back" side="right">
           <Button
             disabled={!step}
             size={"xs"}
-            variant="outline"
+            variant="secondary"
             onClick={() => setStepState(0)}
+            className="group -ml-[4rem] h-[5rem] w-[5rem] justify-end rounded-full opacity-40 hover:-ml-[3.2rem] hover:opacity-100"
           >
-            Back
+            <ArrowLeftIcon className="-mr-1.5 flex h-4 w-4 items-center group-hover:-mr-1 group-hover:h-6 group-hover:w-6" />
           </Button>
-        )}
-        {step == 1 ? (
-          <TrainingDialog>
-            <TrainingDialogTrigger isPdfAvailable={isPdfAvailable} />
-          </TrainingDialog>
-        ) : (
+        </Tooltip>
+      )}
+      {step == 1 ? (
+        <TrainingDialog>
+          <TrainingDialogTrigger isPdfAvailable={isPdfAvailable} />
+        </TrainingDialog>
+      ) : (
+        <>
+          <div></div>
           <Tooltip
             content={
               isPdfAvailable || filesToUpload.length
-                ? "Preview"
+                ? "Next"
                 : "Please upload a file to proceed"
             }
+            side="left"
           >
-            <div>
-              <Button
-                disabled={
-                  isLoading || (!isPdfAvailable && !filesToUpload.length)
-                }
-                size={"xs"}
-                onClick={handleFileUpload}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Please wait
-                  </>
-                ) : (
-                  " Next"
-                )}
-              </Button>
-            </div>
+            <Button
+              disabled={isLoading || (!isPdfAvailable && !filesToUpload.length)}
+              size={"xs"}
+              onClick={handleFileUpload}
+              className="group -mr-[4rem] h-[5rem] w-[5rem] justify-start rounded-full opacity-40 shadow hover:-mr-[3.2rem] hover:opacity-100"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ArrowRightIcon className="-ml-1.5 flex h-4 w-4 items-center group-hover:-ml-1 group-hover:h-6 group-hover:w-6" />
+              )}
+            </Button>
           </Tooltip>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };
