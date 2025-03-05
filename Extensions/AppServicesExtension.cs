@@ -37,7 +37,7 @@ public static class AppServicesExtension
         config.Apply(new MachineFlowMappingProfile());
         config.Apply(new AgentTableMappingProfile());
         config.Apply(new QueueTableMappingProfile());
-
+        config.Apply(new QueueTransactionMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -70,6 +70,7 @@ public static class AppServicesExtension
         services.AddScoped<IMachineFlowService, MachineFlowService>();
         services.AddScoped<IAgentTableService, AgentTableService>();
         services.AddScoped<IQueueTableService, QueueTableService>();
+        services.AddScoped<IQueueTransactionService, QueueTransactionService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
