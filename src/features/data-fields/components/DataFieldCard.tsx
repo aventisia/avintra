@@ -4,6 +4,8 @@ import { DataFiledEditAction } from "./data-field-actions/DataFieldEditAction";
 import ImageDisplay from "./ImageDisplay";
 import { DeleteDataField } from "./data-field-actions/DeleteDataField";
 import { DataFieldsDto } from "../dtos/data-fields-dtos";
+import { Input } from "@/react-toolkit/ui/input";
+import { useEffect, useState } from "react";
 
 interface DataFieldCardProps {
   currAnnotationObj: string;
@@ -11,8 +13,17 @@ interface DataFieldCardProps {
 }
 
 const DataFieldCard = ({ item, currAnnotationObj }: DataFieldCardProps) => {
-  //Get image path for data field
+  //Get image path and value for data field
   const imgPath = getObjectByName(currAnnotationObj, item.name)?.imgPath || "";
+  const inputVal = getObjectByName(currAnnotationObj, item.name)?.value || "";
+
+  //Get set value for input field
+  const [value, setValue] = useState("");
+
+  //Update input value from annotation obj
+  useEffect(() => {
+    setValue(inputVal);
+  }, [inputVal]);
 
   return (
     <div key={item.id} className="mb-4 rounded-lg border last:mb-0">
@@ -31,11 +42,18 @@ const DataFieldCard = ({ item, currAnnotationObj }: DataFieldCardProps) => {
             <p className="text-sm">{item.type}</p>
           </Badge>
         </div>
-        <DataFiledEditAction id={item.id || ""} />
+        <div className="flex items-center">
+          <DataFiledEditAction id={item.id || ""} />
+          <DeleteDataField id={item.id || ""} />
+        </div>
       </div>
-      <div className="flex items-center justify-between p-2">
-        <ImageDisplay imagePath={imgPath} />
-        <DeleteDataField id={item.id || ""} />
+      <div className="flex flex-col gap-2 p-2">
+        {imgPath && <ImageDisplay imagePath={imgPath} />}
+        <Input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          fieldSize="sm"
+        />
       </div>
     </div>
   );
