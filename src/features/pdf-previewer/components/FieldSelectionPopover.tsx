@@ -1,3 +1,4 @@
+import { DataFieldsDto } from "@/features/data-fields/dtos/data-fields-dtos";
 import {
   Command,
   CommandEmpty,
@@ -11,7 +12,6 @@ import {
   PopoverTrigger,
 } from "@/react-toolkit/ui/popover";
 import { Annotation } from "./PdfPreviewer";
-import { DataFieldsDto } from "@/features/data-fields/dtos/data-fields-dtos";
 
 interface FieldSelectionPopoverProps {
   isOpen: boolean;
@@ -46,7 +46,7 @@ const FieldSelectionPopover = ({
       />
       <PopoverContent className="w-[200px] p-0" sideOffset={5}>
         <Command className="rounded-lg border shadow-md">
-          <CommandInput placeholder="Type a command..." />
+          <CommandInput placeholder="Search field..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             {fieldTypes.map((field) => {
