@@ -137,7 +137,7 @@ export const ActionCategoryList = () => {
             <>
               <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
                 <Accordion
-                  value={query ? item.name : ""}
+                  value={query ? item.name : undefined}
                   type="single"
                   collapsible
                   className="w-full"
