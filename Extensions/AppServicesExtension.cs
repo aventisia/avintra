@@ -39,6 +39,7 @@ public static class AppServicesExtension
         config.Apply(new QueueTableMappingProfile());
         config.Apply(new QueueTransactionMappingProfile());
         config.Apply(new JobTableMappingProfile());
+        config.Apply(new ConfigItemMappingProfile());
 
         services.AddSingleton(config);
     }
