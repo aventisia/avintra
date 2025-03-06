@@ -24,6 +24,7 @@ import AnnotationBox from "./AnnotationBox";
 import ControlPanel from "./ControlPannel";
 import FieldSelectionPopover from "./FieldSelectionPopover";
 import PdfLoaderTemplate from "./PdfLoaderTemplate";
+import { useUpdateAnnotationSilently } from "@/features/label-data/hooks/useUpdateAnnotationSilently";
 
 //Define pdfjs worker file path
 pdfjs.GlobalWorkerOptions.workerSrc = "assets/pdf.worker.min.js";
@@ -95,6 +96,7 @@ export const PdfPreviewer: React.FC = () => {
       setSelectedPdf: state.setSelectedPdf,
     })),
   );
+  useUpdateAnnotationSilently();
 
   const { pageNumber, scale, rotate, setPageNumber, setNumPages, numPages } =
     usePdfViewerStore(
@@ -310,7 +312,6 @@ export const PdfPreviewer: React.FC = () => {
               {
                 ...newAnnotation,
                 imgPath: currImg,
-                value: "",
               },
             ),
           });
