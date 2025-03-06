@@ -74,6 +74,7 @@ public static class AppServicesExtension
         services.AddScoped<IQueueTableService, QueueTableService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
         services.AddScoped<IJobTableService, JobTableService>();
+        services.AddScoped<IConfigItemService, ConfigItemService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
