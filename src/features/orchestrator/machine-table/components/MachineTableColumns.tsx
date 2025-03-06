@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { MachineDto } from "../dtos/machine-dto";
-import { MachineTableCellLink } from "./MachineTableCellLink";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
 /**
@@ -41,10 +40,9 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <MachineTableCellLink
-        rowId={row.original.id ?? "rowId"}
+      <div className="w-auto max-w-60 truncate font-medium">
         cellValue={row.getValue("name")}
-      />
+      </div>
     ),
   },
   {
