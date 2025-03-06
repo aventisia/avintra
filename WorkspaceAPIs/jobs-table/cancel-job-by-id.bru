@@ -1,0 +1,11 @@
+meta {
+  name: Cancel job by id
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/job/{{JOB_ID}}/cancel
+  body: none
+  auth: none
+}

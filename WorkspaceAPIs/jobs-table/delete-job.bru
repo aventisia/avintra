@@ -1,0 +1,28 @@
+meta {
+  name: Delete job
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/job/{{JOB_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "JOB_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

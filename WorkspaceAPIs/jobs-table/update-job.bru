@@ -1,0 +1,22 @@
+meta {
+  name: Update job
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/job
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("JOB_ID"),
+    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
+    status: "Failed",
+    startTime: faker.date.soon(),
+  })
+}
