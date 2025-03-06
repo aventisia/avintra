@@ -12,6 +12,7 @@ import { useAgentsQueryKey } from "../hooks/useAgentsQueryKey";
 import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
+import { AssignMachineDialog } from "./assign-machine-dialog/AssignMachineDialog";
 
 /**
  * Renders a table of agents.
@@ -39,29 +40,31 @@ export const AgentsTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
-          <AgentCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              {/* <AgentsTableHeading /> */}
-              <DTHeading heading="Agents" />
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumn={SEARCH_COLUMN}
-                  placeholder="Search agents..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
+          <AssignMachineDialog>
+            <AgentCrudDialog>
+              {/* Table toolbar */}
+              <div className="flex items-center justify-between">
+                {/* <AgentsTableHeading /> */}
+                <DTHeading heading="Agents" />
+                <div className="flex items-center gap-2">
+                  <DTSearchBox
+                    table={table}
+                    searchColumn={SEARCH_COLUMN}
+                    placeholder="Search agents..."
+                  />
+                  <DTViewOptions {...{ table, columnDisplayNames }} />
+                </div>
               </div>
-            </div>
 
-            {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={agentsTableColumns.length}
-              />
-            </div>
-          </AgentCrudDialog>
+              {/* Data table to render data */}
+              <div className="rounded-md border">
+                <DataTable
+                  table={table}
+                  columnsLength={agentsTableColumns.length}
+                />
+              </div>
+            </AgentCrudDialog>
+          </AssignMachineDialog>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
