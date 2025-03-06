@@ -29,8 +29,8 @@ public class FlowSilentUpdateDto
     public required string ReactFlowObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the ReactFlowVariables.
+    /// Gets or sets the FlowVariablesObject.
     /// This property contains a JSON string that includes the name, value, and datatype of each variable.
     /// </summary>
-    public string? ReactFlowVariables { get; set; }
+    public string? FlowVariablesObject { get; set; }
 }
