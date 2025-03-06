@@ -24,6 +24,7 @@ export const MachineRowAssignmentAction = ({
   // Return the component
   return (
     <SimpleDDMenuItem
+      lucidIconName="BrainCircuit"
       onClick={() => {
         setTypeOfAssignment(MachineTaskTypesEnum.Agent);
         setIsDialogOpen(true);
