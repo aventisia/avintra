@@ -8,7 +8,6 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { MLModelBuilderLayout } from "./components/layout/MLModelBuilderLayout";
-import { ModelLibraryPage } from "./pages/ModelLibraryPage";
 import { LabelDataPage } from "./pages/LabelDataPage";
 import { ModelTestPage } from "./pages/ModelTestPage";
 const queryClient = new QueryClient({
@@ -28,11 +27,7 @@ const router = createBrowserRouter(
       children: [
         {
           path: "/",
-          element: <Navigate to="/model-library" />,
-        },
-        {
-          path: "/model-library",
-          element: <ModelLibraryPage />,
+          element: <Navigate to="/label" />,
         },
         {
           path: "/label",
@@ -45,14 +40,6 @@ const router = createBrowserRouter(
         {
           path: "/test",
           element: <ModelTestPage />,
-        },
-        {
-          path: "/settings",
-          element: <h1>Settings</h1>,
-        },
-        {
-          path: "/support",
-          element: <h1>Support</h1>,
         },
         {
           path: "/*",
