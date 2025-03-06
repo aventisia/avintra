@@ -6,7 +6,7 @@ namespace AspNetToolkit.Enums;
 public enum MachineStatusTypeEnum
 {
     /// <summary>
-    /// represents the online status of the machine
+    /// represents the free status of the machine
     /// </summary>
     Idle,
 
