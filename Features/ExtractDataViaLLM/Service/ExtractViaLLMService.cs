@@ -178,6 +178,10 @@ public class ExtractViaLLMService : IExtractViaLLMService
                     using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
                     var llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
 
+                    _logger.LogInformation($"Prompt was: {instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}");
+                    _logger.LogInformation($"Model was: {llmModelMapper.GetValueOrDefault(model.LLM)}");
+                    _logger.LogInformation($"LLM Response was: {llmResponse}");
+
                     // llmResponse contains <think> tag then remove the full tag content
                     if (llmResponse.Contains("</think>"))
                     {
