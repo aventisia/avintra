@@ -231,7 +231,9 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         continue;
                     }
 
+                    // Successfully extracted the data
                     extractedData.ExtractedData = extractedDataListTemp;
+                    extractedData.Remarks = "";
                 }
 
                 // Add extracted data to the list
