@@ -142,7 +142,7 @@ export const MachineCheckList = ({
             {machines?.map((agent) => (
               <div
                 key={agent.id}
-                className="my-2 flex items-center justify-between space-x-4 space-y-4 rounded-sm border py-1"
+                className="my-2 flex w-fit items-center justify-between space-x-4 space-y-4 rounded-sm border py-1 hover:bg-slate-100"
               >
                 <div className="ms-2 flex items-center justify-between space-x-4">
                   <Checkbox
@@ -153,16 +153,16 @@ export const MachineCheckList = ({
                     id={agent.id}
                   />
                   <Label htmlFor={agent.id} className="flex flex-col space-y-1">
-                    <div className="flex flex-col space-y-1">
+                    <div className="flex flex-col space-y-2 p-2">
                       <div className="grid w-60 grid-cols-2 gap-4">
                         <p className="text-md self-start">{agent.name}</p>
                         <p className="ms-auto self-end text-primary">{`Linux`}</p>
                       </div>
                       <div className="text-xs font-normal leading-snug text-muted-foreground">
                         {`created by ${agent.createdBy} ${formatDistanceToNow(agent.createdOn)} ago`}
-                      </div>
-                      <div className="text-xs font-normal leading-snug text-muted-foreground">
-                        {`last modified by ${agent.lastModifiedBy} ${formatDistanceToNow(agent.lastModifiedOn)} ago`}
+                        <div className="text-xs font-normal leading-snug text-muted-foreground">
+                          {`last modified by ${agent.lastModifiedBy} ${formatDistanceToNow(agent.lastModifiedOn)} ago`}
+                        </div>
                       </div>
                     </div>
                   </Label>
