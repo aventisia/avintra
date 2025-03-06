@@ -450,7 +450,7 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
-            if (user != null && requestType != VerificationCodeRequestTypesEnum.SendOtpToEmail)
+            if (user != null && requestType == VerificationCodeRequestTypesEnum.SendOtpToEmail)
             {
                 _logger.LogInformation("Sending a verification code to email {Email}. requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
                 createVerificationCodeDto.Email, requestType, userName, userAgent);
