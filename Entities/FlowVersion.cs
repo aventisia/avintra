@@ -33,10 +33,10 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
 
     /// <summary>
-    /// Gets or sets the ReactFlowVariables.
+    /// Gets or sets the FlowVariablesObject.
     /// This property contains a JSON string that includes the name, value, and datatype of each variable.
     /// </summary>
-    public string? ReactFlowVariables { get; set; } = "{\"variables\":[]}";
+    public string? FlowVariablesObject { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the flow to which the flow version belongs.
