@@ -57,7 +57,12 @@ public class JobTableDto
     /// Gets or sets the execution logs associated with the job. These logs can provide information on job execution,
     /// errors, or any other relevant details. It can hold log data in various formats (such as string or JSON).
     /// </summary>
-    public string? ExecutionLogs { get; set; } // Can hold the log data
+    public string? ExecutionLogs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
