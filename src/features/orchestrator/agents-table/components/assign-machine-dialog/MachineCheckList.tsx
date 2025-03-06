@@ -104,7 +104,7 @@ export const MachineCheckList = ({
       },
       isDestructive: false,
       title: "Are you sure to assign selected machine(s)?",
-      description: `selected ${machines.filter((agent) => agent.isAssigned).length} machien(s) will be assigned to agent`,
+      description: `selected ${machines.filter((agent) => agent.isAssigned).length} machien(s) will be assigned to agent ${agentName}`,
       confirmBtnText: "Assign",
     });
   };
@@ -115,7 +115,7 @@ export const MachineCheckList = ({
         <CardHeader>
           <CardTitle>
             <span className="flex">
-              {"Agents "}
+              {"Machines "}
               <span className="text-md ms-auto text-muted-foreground">
                 {"assigned: "}
                 <Badge>{assignedCount}</Badge>
@@ -124,7 +124,7 @@ export const MachineCheckList = ({
           </CardTitle>
           <CardDescription>
             <span className="flex">
-              Select Machines's from list to assign to machine{" "}
+              Select Machines's from list to assign to agent{" "}
               <span className="ms-1 font-semibold">{agentName} </span>
             </span>
           </CardDescription>
