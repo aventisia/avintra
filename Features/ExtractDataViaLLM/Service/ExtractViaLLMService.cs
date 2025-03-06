@@ -213,9 +213,15 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         extractedDataList.Add(extractedData);
                         continue;
                     }
+
+                    // Deserialize options
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true // Allows camelCase to PascalCase mapping
+                    };
                     
                     // Deserialize JSON and extract "response"
-                    var extractedDataListTemp = JsonSerializer.Deserialize<List<FieldValueSchema>>(llmResponse) ?? new List<FieldValueSchema>();
+                    var extractedDataListTemp = JsonSerializer.Deserialize<List<FieldValueSchema>>(llmResponse, options) ?? new List<FieldValueSchema>();
 
                     // Check if extractedDataListTemp is empty
                     if (extractedDataListTemp.Count == 0)
