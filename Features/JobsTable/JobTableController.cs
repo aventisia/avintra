@@ -56,6 +56,6 @@ public class JobController : BaseApiController
     [HttpPost("{jobId}/cancel")]
     public async Task<ActionResult<ServiceResponse<bool>>> CancelJob(Guid jobId)
     {
-        return ResultHelper(await _jobTableService.RetryJobAsync(jobId));
+        return ResultHelper(await _jobTableService.CancelJobAsync(jobId));
     }
 }
