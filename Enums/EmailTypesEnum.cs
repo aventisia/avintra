@@ -39,4 +39,9 @@ public enum EmailTypesEnum
     /// Email type to send email when user submits a contact us form.
     /// </summary>
     ContactUsRequest,
+
+    /// <summary>
+    /// Request type to create verification code to verify email address.
+    /// </summary>
+    SendOtpToEmail,
 }
