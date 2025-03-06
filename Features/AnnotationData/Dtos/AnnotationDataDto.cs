@@ -1,4 +1,4 @@
-namespace MLModelBuilderAPIs.Dtos;
+namespace MLModelBuilderAPIs.DTOs;
 
 /// <summary>
 /// Represents an Annotation data dto model 

@@ -1,4 +1,4 @@
-namespace MLModelBuilderAPIs.Entities;
+namespace MLModelBuilderAPIs.DTOs;
 
 /// <summary>
 /// Represents an extracted data entity 
@@ -19,6 +19,11 @@ public class ExtractedDataDto
     /// Gets or sets the uploaded doc record's primary key to which this record is associated.
     /// </summary>/
     public Guid DocId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of a document associated with this record
+    /// </summary>
+    public string? DocName { get; set; }
 
     /// <summary>
     /// Gets or sets the extracted fields JSON data in string format. The default value will be an empty object.
@@ -55,5 +60,15 @@ public class ExtractedDataDto
     /// Gets or sets the the username who created the record.
     /// </summary>
     public string? CreatedByUsername { get; set; }
+
+    /// <summary>
+    /// Gets or sets dynamic properties of data object
+    /// </summary>
+    public IList<ExtractedFieldDto>? ExtractedFieldList { get; set; } = new List<ExtractedFieldDto>();
+
+    /// <summary>
+    /// Gets or sets the dynamic fields from data object
+    /// </summary>
+    public Dictionary<string, string> DynamicFields { get; set; } = new Dictionary<string, string>();
 
 }

@@ -5,7 +5,7 @@ public interface IExtractedDataService
     /// <summary>
     /// Get a list of extracted data
     /// </summary>
-    /// <param name="mlModelId">ML Model Identifier</param>
+    /// <param name="extractedDataDto">Extracted Data Dto</param>
     /// <returns>A list of extracted data of a specific ML Model</returns>
     Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId);
 

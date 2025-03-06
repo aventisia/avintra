@@ -1,3 +1,5 @@
+using MLModelBuilderAPIs.DTOs;
+
 namespace MLModelBuilderAPIs.MappingProfiles;
 
 public class ExtractedDataMappingProfile : IRegister
@@ -14,7 +16,8 @@ public class ExtractedDataMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null)
             .Map(dest => dest.Accuracy, src => src.Accuracy != null 
-                ? Math.Round(src.Accuracy.Value, 2) : 0);
+                ? Math.Round(src.Accuracy.Value, 2) : 0)
+            .Map(dest => dest.DocName, src => src.UploadedDoc != null ? src.UploadedDoc.Name : null);
 
 
         //Mapping entity to insert or update the record

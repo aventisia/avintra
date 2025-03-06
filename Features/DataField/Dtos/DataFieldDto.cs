@@ -1,4 +1,4 @@
-namespace MLModelBuilderAPIs.Dtos;
+namespace MLModelBuilderAPIs.DTOs;
 
 /// <summary>
 /// Represents a dto model for Data field entity
@@ -18,7 +18,7 @@ public class DataFieldDto
     /// <summary>
     /// Gets or sets the name of the field. Max 100 character
     /// </summary>
-    [MaxLength(100)]
+    [StringLength(100, MinimumLength = 3)]
     public required string Name { get; set;}
 
     /// <summary>
@@ -29,7 +29,7 @@ public class DataFieldDto
     /// <summary>
     /// Gets or sets the color of the field. Max 100 Character
     /// </summary>
-    [MaxLength(100)]
+    [StringLength(100, MinimumLength = 3)]
     public required string Color{ get; set; }
 
     /// <summary>

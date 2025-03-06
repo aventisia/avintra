@@ -1,6 +1,3 @@
-using MLModelBuilderAPIs.Dtos;
-using MLModelBuilderAPIs.Entities;
-
 namespace MLModelBuilderAPIs.MappingProfiles;
 
 public class AnnotationDataMappingProfile : IRegister

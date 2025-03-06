@@ -16,7 +16,7 @@ global using MLModelBuilderAPIs.Data;
 global using MLModelBuilderAPIs.Services;
 global using MLModelBuilderAPIs.Extensions;
 global using MLModelBuilderAPIs.Repos;
-global using MLModelBuilderAPIs.Dtos;
+global using MLModelBuilderAPIs.DTOs;
 global using MLModelBuilderAPIs.Entities;
 global using MLModelBuilderAPIs.MappingProfiles;
 
@@ -34,3 +34,4 @@ global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Serilog;
 global using Mapster;
 global using Ardalis.GuardClauses;
+//global using Newtonsoft.Json;

@@ -1,5 +1,8 @@
-namespace MLModelBuilderAPIs.Dtos;
+namespace MLModelBuilderAPIs.DTOs;
 
+/// <summary>
+/// Represents a file name availability check dto
+/// </summary>
 public class CheckFieldNameAvailabilityDto
 {
     /// <summary>

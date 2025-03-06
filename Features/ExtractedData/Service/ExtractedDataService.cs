@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace MLModelBuilderAPIs.Services;
 
 public class ExtractedDataService : IExtractedDataService
@@ -40,14 +42,57 @@ public class ExtractedDataService : IExtractedDataService
         try
         {
             //Try to get extracted data
-            var data = await _unitOfWork.ExtractedDataRepo
+            var extractedData = await _unitOfWork.ExtractedDataRepo
                 .GetByConditionAsync(d => d.MLModelId == mlModelId).Include(c => c.CreatedByUser)
-                .OrderByDescending(ml => ml.CreatedOn).ToListAsync();
+                .OrderByDescending(ml => ml.CreatedOn)
+                .ProjectToType<ExtractedDataDto>()
+                .ToListAsync();
+
+            var extractedDataList = extractedData.Select(data =>
+            {
+                // Deserialize DataObject into a list of dynamic objects
+                var deserializedData = JsonConvert.DeserializeObject<List<ExtractedFieldDto>>(data.DataObject);
+
+                // Default mapping
+                var finalData = data.Adapt<ExtractedDataDto>();
+
+                // Initialize DynamicFields if it is null
+                finalData.DynamicFields = finalData.DynamicFields ?? new Dictionary<string, string>();
+
+                // Assuming each item in deserializedData contains key-value pairs
+                if (deserializedData != null && deserializedData.Any())
+                {
+                    foreach (var item in deserializedData)
+                    {
+                        // Check the FieldName and Value directly, no need for Fields collection
+                        if (!string.IsNullOrEmpty(item.FieldName) && item.Value != null)
+                        {
+                            // Adding dynamic fields to root-level DynamicFields
+                            finalData.DynamicFields[item.FieldName] = item.Value.ToString();
+                        }
+
+                        // Add item to the ExtractedFieldList to maintain the original structure
+                        finalData.ExtractedFieldList.Add(item.Adapt<ExtractedFieldDto>());
+                    }
+                     
+                }
+                foreach (var dynamicField in finalData.DynamicFields)
+                {
+                    var propertyName = dynamicField.Key;
+                    var propertyValue = dynamicField.Value;
+
+                    // Dynamically add properties at the root level
+                    finalData.GetType().GetProperty(propertyName)?.SetValue(finalData, propertyValue);
+                }
+                return finalData;
+
+            }).ToList();
 
             // Task successful
-            serviceResponse.Data = data.Adapt<IEnumerable<ExtractedDataDto>>();
+            serviceResponse.Data = extractedDataList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Extracted data retrieved successfully";
+
         }
         catch (Exception ex)
         {

@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/annotation-data/list/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/annotation-data/list
   body: none
   auth: none
 }
@@ -14,6 +14,6 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    MLModelId: "0195601e-0573-7a27-a7a8-f488e2997fe4",
   })
 }

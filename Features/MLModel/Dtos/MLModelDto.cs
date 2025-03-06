@@ -1,4 +1,4 @@
-namespace MLModelBuilderAPIs.Dtos;
+namespace MLModelBuilderAPIs.DTOs;
 
 public class MLModelDto
 {
