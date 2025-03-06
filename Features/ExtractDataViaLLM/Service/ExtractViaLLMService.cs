@@ -147,7 +147,6 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
                     var requestDto = new
                     {
-                        context = 16000,
                         stream = false,
                         prompt = $"{instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}",
                         model = llmModelMapper.GetValueOrDefault(model.LLM) // TODO: Change this LLMName
