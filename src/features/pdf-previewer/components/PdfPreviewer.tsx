@@ -16,7 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 import { PdfViewerDto } from "../dtos/file-list-dtos";
 import { useDownloadPdf } from "../hooks/useDownloadPdf";
 import { useFetchUploadedFiles } from "../hooks/useFetchFiles";
-import { usePdfWidth } from "../hooks/usePdfWidth";
+import { useParentWidth } from "../hooks/usePdfWidth";
 import { usePdfListStore } from "../stores/pdf-list-store";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import { addUpdateInString } from "../utils";
@@ -113,7 +113,7 @@ export const PdfPreviewer: React.FC = () => {
   // Create a ref for the invisible trigger button
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  const { width } = usePdfWidth(canvasRef);
+  const { width } = useParentWidth(canvasRef);
 
   const handlePdfSelect = (newPdf: PdfViewerDto) => {
     setSelectedPdf(newPdf);
