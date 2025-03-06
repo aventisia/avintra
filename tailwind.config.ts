@@ -66,6 +66,7 @@ const config = {
         secondary: {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
+          light: "var(--secondary-light)",
         },
         destructive: {
           DEFAULT: "var(--destructive)",

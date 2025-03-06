@@ -56,6 +56,7 @@ import { FormControl } from "@/react-toolkit/ui/form/FormControl";
 import { FormDescription } from "@/react-toolkit/ui/form/FormDescription";
 import { FormItem } from "@/react-toolkit/ui/form/FormItem";
 import { CodeEditor } from "./code-editor/CodeEditor";
+import { useRef, useState } from "react";
 
 interface DynamicControlProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -64,6 +65,20 @@ interface DynamicControlProps {
 }
 
 const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+  };
+
+  const handleClick = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
   switch (fData.type) {
     case "text":
     case "number":
@@ -317,7 +332,30 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           )}
         >
           <div className="space-y-1">
-            <DynamicFieldLabel className="ml-0 text-xs" fData={fData} />
+            <FormControl>
+              <div
+                className="w-fit rounded-lg hover:ring-1"
+                onClick={handleClick}
+              >
+                {isEditing ? (
+                  <Input
+                    fieldSize="xs"
+                    name="output"
+                    ref={inputRef}
+                    onChange={() => {}}
+                    readOnly={fData.readonly}
+                    onBlur={handleBlur}
+                    className="bg-secondary-light h-6 max-w-36 rounded-lg px-2 py-1 font-semibold text-secondary placeholder:text-white focus-visible:border-none focus-visible:ring-0"
+                    value={fData.label}
+                  />
+                ) : (
+                  <DynamicFieldLabel
+                    className="bg-secondary-light ml-0 h-6 max-w-36 cursor-pointer truncate rounded-lg px-2 py-1 text-xs text-secondary"
+                    fData={fData}
+                  />
+                )}
+              </div>
+            </FormControl>
             {fData.description && (
               <FormDescription className="text-xs">
                 {fData.description}
