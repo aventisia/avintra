@@ -30,13 +30,17 @@ public class JobTableService : IJobTableService
 
         try
         {
+
             // Fetch jobs created by the current user
             var jobs = await _unitOfWork.JobRepo
-                                         .GetByConditionAsync(w =>
-                                            w.CreatedByUserId == _userId) // TODO: Update condition
-                                         .OrderByDescending(w => w.CreatedOn)
-                                         .ProjectToType<JobTableDto>()
-                                         .ToListAsync();
+                                        .GetByConditionAsync(w =>
+                                            w.CreatedByUserId == _userId)
+                                        .Include(fv => fv.FlowVersion)
+                                            .ThenInclude(f => f.Flow)
+                                        .OrderByDescending(w => w.CreatedOn)
+                                        .ProjectToType<JobTableDto>()
+                                        .ToListAsync();
+
 
             // Success - set the response with retrieved jobs
             serviceResponse.Data = jobs;
@@ -66,12 +70,13 @@ public class JobTableService : IJobTableService
         {
             // Fetch a specific job created by the current user
             var job = await _unitOfWork.JobRepo
-                                         .GetByConditionAsync(w =>
+                                        .GetByConditionAsync(w =>
                                             w.Id == jobId &&
-                                            w.CreatedByUserId == _userId)
-                                         .OrderByDescending(w => w.CreatedOn)
-                                         .ProjectToType<JobTableDto>()
-                                         .FirstOrDefaultAsync();
+                                            w.CreatedByUserId == _userId
+                                        )
+                                        .OrderByDescending(w => w.CreatedOn)
+                                        .ProjectToType<JobTableDto>()
+                                        .FirstOrDefaultAsync();
 
             // Success - set the response with retrieved job
             serviceResponse.Data = job;
@@ -99,20 +104,22 @@ public class JobTableService : IJobTableService
 
         try
         {
-            // Check if a job with the same name already exists
-            var jobAlreadyExists = await _unitOfWork.JobRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.CreatedByUserId == _userId)
-                                                     .FirstOrDefaultAsync();
+            // TODO: Uncomment this code if we need to check and enforce uniqueness for jobs created by the current user with the same flow version ID to prevent duplicate job entries in the system.            // // Check if a job with the same name already exists
+            // var jobAlreadyExists = await _unitOfWork.JobRepo
+            //                                         .GetByConditionAsync(w =>
+            //                                             w.CreatedByUserId == _userId && 
+            //                                             w.FlowVersionId == jobTableDto.FlowVersionId
+            //                                         )
+            //                                         .FirstOrDefaultAsync();
 
-            // If a job exists, return conflict status
-            if (jobAlreadyExists != null)
-            {
-                _logger.LogInformation("Job already exists.");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A job with the same name already exists. Please provide a unique name.";
-                return serviceResponse;
-            }
+            // // If a job exists, return conflict status
+            // if (jobAlreadyExists != null)
+            // {
+            //     _logger.LogInformation("Job already exists.");
+            //     serviceResponse.StatusCode = 409;
+            //     serviceResponse.Message = "A job with the same name already exists. Please provide a unique name.";
+            //     return serviceResponse;
+            // }
 
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
@@ -158,11 +165,22 @@ public class JobTableService : IJobTableService
 
         try
         {
+            // Ensure the job status can only be updated to 'Completed' or 'Failed'
+            if (jobTableDto.Status != JobStatusTypesEnum.Completed && jobTableDto.Status != JobStatusTypesEnum.Failed)
+            {
+                // If the current status is not 'Completed' or 'Failed', reject the update
+                _logger.LogInformation($"Job with ID {jobTableDto.Id} cannot be updated because its status must be either 'Completed' or 'Failed'. Current status: {jobTableDto.Status}.");
+                serviceResponse.Message = "Job can only be updated to 'Completed' or 'Failed'.";
+                return serviceResponse;
+            }
+
             // Fetch the job that needs to be updated
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == jobTableDto.Id &&
-                                            w.CreatedByUserId == _userId)
+                                            w.FlowVersionId == jobTableDto.FlowVersionId &&
+                                            w.CreatedByUserId == _userId
+                                        )
                                         .SingleOrDefaultAsync();
 
             // If the job does not exist, return error message
@@ -173,21 +191,22 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
-            // Check if another job with the same name exists
-            var jobAlreadyExists = await _unitOfWork.JobRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.CreatedByUserId == _userId &&
-                                                        w.Id != jobTableDto.Id)
-                                                     .FirstOrDefaultAsync();
+            // TODO: Uncomment this code if we need to check and enforce uniqueness for jobs created by the current user with the same flow version ID to prevent duplicate job entries in the system.
+            // // Check if another job with the same name exists
+            // var jobAlreadyExists = await _unitOfWork.JobRepo
+            //                                          .GetByConditionAsync(w =>
+            //                                             w.CreatedByUserId == _userId &&
+            //                                             w.Id != jobTableDto.Id)
+            //                                          .FirstOrDefaultAsync();
 
-            // If the job with the same name exists, return conflict status
-            if (jobAlreadyExists != null)
-            {
-                _logger.LogInformation("Job with the same name already exists.");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A job with the same name already exists. Please provide a unique name.";
-                return serviceResponse;
-            }
+            // // If the job with the same name exists, return conflict status
+            // if (jobAlreadyExists != null)
+            // {
+            //     _logger.LogInformation("Job with the same name already exists.");
+            //     serviceResponse.StatusCode = 409;
+            //     serviceResponse.Message = "A job with the same name already exists. Please provide a unique name.";
+            //     return serviceResponse;
+            // }
 
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
