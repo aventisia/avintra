@@ -61,7 +61,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
             if (pdf) onPdfSelect(pdf);
           }}
         >
-          <SelectTrigger size="sm" className="w-96 gap-2">
+          <SelectTrigger size="sm" className="w-96 gap-2 truncate">
             <SelectValue placeholder="Select File" />
           </SelectTrigger>
           <SelectContent>
