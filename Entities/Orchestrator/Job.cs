@@ -18,15 +18,16 @@ public class Job : BaseEntity, IMustHaveTenant
     public Guid FlowVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier of the machine where the job was executed.
-    /// </summary>
-    public Guid MachineId { get; set; }
-
-    /// <summary>
     /// Gets or sets the current status of the job, which can be one of the following values: 
     /// Running, Completed, Failed, or Canceled.
     /// </summary>
-    public JobStatus Status { get; set; }
+    public JobStatusTypesEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of retries attempted for the job. 
+    /// This value will increment if the job is retried due to failure or other reasons.
+    /// </summary>
+    public int RetryCount { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp indicating when the job execution started.
@@ -55,9 +56,4 @@ public class Job : BaseEntity, IMustHaveTenant
     /// Navigation property for the associated flow. Represents the flow/agent that triggered this job.
     /// </summary>
     public virtual FlowVersion? FlowVersion { get; set; }
-
-    /// <summary>
-    /// Navigation property for the associated machine. Represents the machine where the job was executed.
-    /// </summary>
-    public virtual Machine? Machine { get; set; }
 }

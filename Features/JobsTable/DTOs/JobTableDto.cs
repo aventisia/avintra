@@ -23,25 +23,20 @@ public class JobTableDto
     public required Guid FlowVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets Id of the machine
+    /// Gets or sets the number of retries attempted for the job. 
+    /// This value will increment if the job is retried due to failure or other reasons.
     /// </summary>
-    [RequiredGuid]
-    public required Guid MachineId { get; set; }
+    public int RetryCount { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the flow/agent associated with the job.
     /// </summary>
-    public required string AgentName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the machine on which the job was executed.
-    /// </summary>
-    public required string MachineName { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the current status of the job, such as Running, Completed, Failed, or Canceled.
     /// </summary>
-    public JobStatus Status { get; set; }
+    public JobStatusTypesEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the start time of the job execution.
