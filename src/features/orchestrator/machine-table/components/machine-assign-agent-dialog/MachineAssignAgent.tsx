@@ -7,7 +7,6 @@ import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
 import { MachineDetails } from "./MachineDetails";
 import { AgentsCheckList } from "./AgentsCheckList";
-import { Separator } from "@/react-toolkit/ui/separator";
 
 export const MachineAssignAgent = () => {
   const { data } = useFetchAgents();
@@ -37,7 +36,6 @@ export const MachineAssignAgent = () => {
   return (
     <>
       <MachineDetails {...machineData} />
-      <Separator className="my-2" />
       <AgentsCheckList
         assignedCount={machineData?.agentCount ?? 0}
         machineName={machineData?.name ?? ""}
