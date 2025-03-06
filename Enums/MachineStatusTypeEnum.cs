@@ -8,7 +8,7 @@ public enum MachineStatusTypeEnum
     /// <summary>
     /// represents the online status of the machine
     /// </summary>
-    Ideal,
+    Idle,
 
     /// <summary>
     /// represents the online status of the machine
