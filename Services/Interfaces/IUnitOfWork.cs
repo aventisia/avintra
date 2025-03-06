@@ -20,6 +20,7 @@ public interface IUnitOfWork
     IFlowTemplateRepo FlowTemplateRepo { get; }
     IQueueRepo QueueRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }
+    IJobRepo JobRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

@@ -376,6 +376,68 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("FlowVersions");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan?>("Duration")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExecutionLogs")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("FlowVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlowVersionId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("Jobs");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1142,6 +1204,33 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
+                        .WithMany("Jobs")
+                        .HasForeignKey("FlowVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("FlowVersion");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -1413,6 +1502,8 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion", b =>
                 {
+                    b.Navigation("Jobs");
+
                     b.Navigation("MachineFlows");
 
                     b.Navigation("QueueTransactions");

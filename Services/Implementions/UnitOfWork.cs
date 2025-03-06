@@ -39,7 +39,8 @@ public class UnitOfWork : IUnitOfWork
     public IMachineFlowRepo MachineFlowRepo => new MachineFlowRepo(_workspaceDbContext);
     public IQueueRepo QueueRepo => new QueueRepo(_workspaceDbContext);
     public IQueueTransactionRepo QueueTransactionRepo => new QueueTransactionRepo(_workspaceDbContext);
-    
+    public IJobRepo JobRepo => new JobRepo(_workspaceDbContext);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 

@@ -43,6 +43,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ActionExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -108,7 +109,10 @@ public class WorkspaceDbContext : DbContext
 
         // Configure Many-to-Many relationship between Queue and QueueTransaction
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
-        
+
+        // Configure Many-to-Many relationship between Job and Flow Version
+        modelBuilder.Entity<FlowVersion>().HasMany(many => many.Jobs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
+
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()
@@ -161,4 +165,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<ActionExecutionLog> ActionExecutionLogs { get; set; }
     public DbSet<Queue> Queues { get; set; }
     public DbSet<QueueTransaction> QueueTransactions { get; set; }
+    public DbSet<Job> Jobs { get; set; }
 }

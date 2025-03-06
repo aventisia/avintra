@@ -38,6 +38,7 @@ public static class AppServicesExtension
         config.Apply(new AgentTableMappingProfile());
         config.Apply(new QueueTableMappingProfile());
         config.Apply(new QueueTransactionMappingProfile());
+        config.Apply(new JobTableMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -71,6 +72,7 @@ public static class AppServicesExtension
         services.AddScoped<IAgentTableService, AgentTableService>();
         services.AddScoped<IQueueTableService, QueueTableService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
+        services.AddScoped<IJobTableService, JobTableService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
