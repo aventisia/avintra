@@ -12,6 +12,7 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
 } from "@xyflow/react";
+import { FlowVariablesObjectDTO } from "@/types/flow-variables-object-type";
 
 type State = {
   /** Nodes of currently opened flow */
@@ -22,6 +23,9 @@ type State = {
 
   /** Flag to track if Reactflow is locked */
   isLocked: boolean;
+
+  /** Output flow variables */
+  flowVariablesObject: FlowVariablesObjectDTO[] | null,
 
   /** Flag to track pending flow save */
   isSavePending: boolean;
@@ -46,6 +50,9 @@ type Actions = {
   /** Set edges of currently opened flow */
   setEdges: (edges: Edge[]) => void;
 
+  /** Set Flow Vairables */
+  setFlowVariablesObject: (variabels: FlowVariablesObjectDTO[]) => void;
+
   /** To toggle ReactFlow lock/unlock state */
   toggleIsLocked: (isLocked: boolean) => void;
 
@@ -61,6 +68,7 @@ type Actions = {
 export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   nodes: [],
   edges: [],
+  flowVariablesObject: [],
   isLocked: false,
   isSavePending: false,
   contextMenuOrigin: null,
@@ -92,6 +100,10 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setEdges: (edges: Edge[]) => {
     set({ isSavePending: true, edges });
+  },
+
+  setFlowVariablesObject: (variables: FlowVariablesObjectDTO[]) => {
+    set({flowVariablesObject: variables})
   },
 
   toggleIsLocked: (value) => {

@@ -8,4 +8,7 @@ export interface LoadFlowDto {
 
   /** Flow's nodes, edges, and viewport JSON data in string format */
   reactFlowObject: string;
+
+  /** Output Variables object, i..e the Flow Variables */
+  flowVariablesObject: string[] | null;
 }
