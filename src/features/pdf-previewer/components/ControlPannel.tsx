@@ -11,6 +11,7 @@ import {
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
+import ExtractViaLLMButton from "./ExtractViaLLMButton";
 
 interface PageControlProps {
   numPages: number | null;
@@ -193,13 +194,16 @@ const ControlPanel = ({
         onPageChange={onPageChange}
       />
       <PageRotate rotatePage={rotatePage} />
-      <ZoomControl
-        toFixed={(scale * 100).toFixed()}
-        zoomOutClass={zoomOutClass}
-        zoomInClass={zoomInClass}
-        zoomOut={zoomOut}
-        zoomIn={zoomIn}
-      />
+      <div className="flex items-center gap-5">
+        <ZoomControl
+          toFixed={(scale * 100).toFixed()}
+          zoomOutClass={zoomOutClass}
+          zoomInClass={zoomInClass}
+          zoomOut={zoomOut}
+          zoomIn={zoomIn}
+        />
+        <ExtractViaLLMButton />
+      </div>
     </div>
   );
 };
