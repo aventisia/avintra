@@ -104,7 +104,7 @@ export const useDefineMachineForm = () => {
 
       // Read (view) only fields
       currentTask: machineData?.currentTask ?? MachineTaskTypesEnum.Flow,
-      status: machineData?.status ?? MachineStatusTypesEnum.Ideal,
+      status: machineData?.status ?? MachineStatusTypesEnum.Idle,
       environment: machineData?.environment ?? MachineEnvironmentTypesEnum.Development,
 
       createdBy:
