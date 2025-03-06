@@ -136,104 +136,107 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         extractedDataList.Add(extractedData);
                         continue;
                     }
-                    
+
                     fileText = await response.Content.ReadAsStringAsync();
                 }
 
-                // Send request to LLM model
-                using (HttpClient client = new HttpClient())
+                // Try 3 times to to call the ollama if we don't get the response
+                for (int i = 1; i <= 3; i++)
                 {
-                    client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
-
-                    var requestDto = new
+                    // Send request to LLM model
+                    using (HttpClient client = new HttpClient())
                     {
-                        stream = false,
-                        prompt = $"{instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}",
-                        model = llmModelMapper.GetValueOrDefault(model.LLM) // TODO: Change this LLMName
-                    };
+                        client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
 
-                    var jsonRequest = JsonSerializer.Serialize(requestDto);
-                    var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                        var requestDto = new
+                        {
+                            stream = false,
+                            prompt = $"{instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}",
+                            model = llmModelMapper.GetValueOrDefault(model.LLM) // TODO: Change this LLMName
+                        };
 
-                    HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.OllamaAPI, content);
+                        var jsonRequest = JsonSerializer.Serialize(requestDto);
+                        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        _logger.LogError("004: Failed to extract data for file id: {fileId}.", fileId);
-                        extractedDataList.Add(extractedData);
-                        continue;
+                        HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.OllamaAPI, content);
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            _logger.LogError("004: Failed to extract data for file id: {fileId}.", fileId);
+                            continue;
+                        }
+
+                        var ollamaResponse = await response.Content.ReadAsStringAsync();
+
+                        // ollamaResponse does not contain "response"
+                        if (!ollamaResponse.Contains("response"))
+                        {
+                            _logger.LogError("005: Failed to extract data for file id: {fileId}.", fileId);
+                            continue;
+                        }
+
+                        // Deserialize JSON and extract "response"
+                        using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
+                        var llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
+
+                        _logger.LogInformation($"Prompt was: {instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}");
+                        _logger.LogInformation($"Model was: {llmModelMapper.GetValueOrDefault(model.LLM)}");
+                        _logger.LogInformation($"LLM Response was: {llmResponse}");
+
+                        // llmResponse contains <think> tag then remove the full tag content
+                        if (llmResponse.Contains("</think>"))
+                        {
+                            // Remove the full tag content
+                            llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
+                        }
+
+                        // llmResponse contains ```json then remove it
+                        if (llmResponse.Contains("```json"))
+                        {
+                            // Remove the full tag content
+                            llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
+                        }
+
+                        // llmResponse contains ``` then remove it
+                        if (llmResponse.Contains("```"))
+                        {
+                            // Remove the full tag content
+                            llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
+                        }
+
+                        // Trim the response
+                        llmResponse = llmResponse.Trim();
+
+                        // llmResponse is does not contain [
+                        if (!llmResponse.Contains("["))
+                        {
+                            _logger.LogError("005: Failed to extract data for file id: {fileId}.", fileId);
+                            continue;
+                        }
+
+                        // Deserialize options
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true // Allows camelCase to PascalCase mapping
+                        };
+
+                        // Deserialize JSON and extract "response"
+                        var extractedDataListTemp = JsonSerializer.Deserialize<List<FieldValueSchema>>(llmResponse, options) ?? new List<FieldValueSchema>();
+
+                        // Check if extractedDataListTemp is empty
+                        if (extractedDataListTemp.Count == 0)
+                        {
+                            _logger.LogError("006: Failed to extract data for file id: {fileId}.", fileId);
+                            continue;
+                        }
+
+                        // Successfully extracted the data
+                        extractedData.ExtractedData = extractedDataListTemp;
+                        extractedData.Remarks = "";
                     }
 
-                    var ollamaResponse = await response.Content.ReadAsStringAsync();
-
-                    // ollamaResponse does not contain "response"
-                    if (!ollamaResponse.Contains("response"))
-                    {
-                        _logger.LogError("005: Failed to extract data for file id: {fileId}.", fileId);
-                        extractedDataList.Add(extractedData);
-                        continue;
-                    }
-
-                    // Deserialize JSON and extract "response"
-                    using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
-                    var llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
-
-                    _logger.LogInformation($"Prompt was: {instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}");
-                    _logger.LogInformation($"Model was: {llmModelMapper.GetValueOrDefault(model.LLM)}");
-                    _logger.LogInformation($"LLM Response was: {llmResponse}");
-
-                    // llmResponse contains <think> tag then remove the full tag content
-                    if (llmResponse.Contains("</think>"))
-                    {
-                        // Remove the full tag content
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
-                    }
-
-                    // llmResponse contains ```json then remove it
-                    if (llmResponse.Contains("```json"))
-                    {
-                        // Remove the full tag content
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
-                    }
-
-                    // llmResponse contains ``` then remove it
-                    if (llmResponse.Contains("```"))
-                    {
-                        // Remove the full tag content
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
-                    }
-
-                    // Trim the response
-                    llmResponse = llmResponse.Trim();
-
-                    // llmResponse is does not contain [
-                    if (!llmResponse.Contains("["))
-                    {
-                        _logger.LogError("005: Failed to extract data for file id: {fileId}.", fileId);
-                        extractedDataList.Add(extractedData);
-                        continue;
-                    }
-
-                    // Deserialize options
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true // Allows camelCase to PascalCase mapping
-                    };
-                    
-                    // Deserialize JSON and extract "response"
-                    var extractedDataListTemp = JsonSerializer.Deserialize<List<FieldValueSchema>>(llmResponse, options) ?? new List<FieldValueSchema>();
-
-                    // Check if extractedDataListTemp is empty
-                    if (extractedDataListTemp.Count == 0)
-                    {
-                        _logger.LogError("006: Failed to extract data for file id: {fileId}.", fileId);
-                        extractedDataList.Add(extractedData);
-                        continue;
-                    }
-
-                    // Successfully extracted the data
-                    extractedData.ExtractedData = extractedDataListTemp;
-                    extractedData.Remarks = "";
+                    // Break the loop
+                    break;
                 }
 
                 // Add extracted data to the list
