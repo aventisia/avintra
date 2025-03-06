@@ -109,7 +109,7 @@ export const AgentsCheckList = ({
 
   return (
     <div className="flex flex-col">
-      <Card>
+      <Card className="border-none shadow-none">
         <CardHeader>
           <CardTitle>
             <span className="flex">
@@ -150,8 +150,8 @@ export const AgentsCheckList = ({
                     }
                     id={agent.id}
                   />
-                  <Label htmlFor={agent.id} className="flex flex-col space-y-1">
-                    <div className="flex flex-col space-y-1">
+                  <Label htmlFor={agent.id}>
+                    <div className="grid grid-rows-3">
                       <div className="grid w-60 grid-cols-2 gap-4">
                         <p className="text-md self-start">{agent.name}</p>
                         <p className="ms-auto self-end text-primary">{`v ${agent.versionNumber}`}</p>
