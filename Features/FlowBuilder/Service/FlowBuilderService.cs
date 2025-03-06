@@ -38,7 +38,10 @@ public class FlowBuilderService : IFlowBuilderService
                     !w.IsPublished &&
                     (versionId == null || w.Id == versionId)
                 )
+                .Include(u => u.CreatedByUser)
+                .Include(lm => lm.LastModifiedByUser)
                 .Include(f => f.Flow)
+                    .ThenInclude(p => p.Project)
                 .OrderByDescending(a => a.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
