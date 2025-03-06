@@ -6,6 +6,10 @@ public class JobTableMappingProfile : IRegister
     {
         // Mapping for job record or records.
         config.NewConfig<Job, JobTableDto>()
+            .Map(dest => dest.VersionNumber,
+                src => src.FlowVersion != null
+                    ? src.FlowVersion.VersionNumber
+                    : 0)
             .Map(dest => dest.Name,
                 src => src.FlowVersion != null
                     ? src.FlowVersion.Flow.Name
@@ -24,6 +28,8 @@ public class JobTableMappingProfile : IRegister
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.TenantId)
+            .Ignore(dest => dest.RetryCount)
             .IgnoreNullValues(true);
     }
 }
