@@ -18,7 +18,6 @@ const AppLogo = ({
 }: AppLogoProps) => {
   return (
     <a
-      href={import.meta.env.BASE_URL}
       className={cn(
         "flex items-center justify-center gap-2 font-medium",
         className,
