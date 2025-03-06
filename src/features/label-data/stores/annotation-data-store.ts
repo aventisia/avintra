@@ -10,6 +10,8 @@ type State = {
   currAnnotationObj: string;
 
   currImg: string;
+
+  isSavePending: boolean;
 };
 
 type Actions = {
@@ -20,6 +22,8 @@ type Actions = {
   setAnnotationObject: (obj: string) => void;
 
   clearCurrAnnotation: () => void;
+
+  setIsSavePending: (isSavePending: boolean) => void;
 };
 
 export const useAnnotationDataStore = create<State & Actions>((set) => ({
@@ -28,6 +32,7 @@ export const useAnnotationDataStore = create<State & Actions>((set) => ({
   annotationDataQueryKey: [],
   currImg: "",
   currAnnotationObj: "",
+  isSavePending: false,
 
   setAnnotationDataDoc: (uploadedDocId) =>
     set(() => ({
@@ -47,4 +52,7 @@ export const useAnnotationDataStore = create<State & Actions>((set) => ({
     set({
       currAnnotationObj: "",
     }),
+  setIsSavePending: (isSavePending: boolean) => {
+    set({ isSavePending });
+  },
 }));
