@@ -350,16 +350,16 @@ public class JobTableService : IJobTableService
             }
 
             // // Check if job is already running or completed
-            // if (job.Status != JobStatus.Failed)
-            // {
-            //     _logger.LogInformation($"Job with ID {jobId} cannot be retried because it is not in a failed state.");
-            //     serviceResponse.Message = "Job cannot be retried because it is not in a failed state.";
-            //     return serviceResponse;
-            // }
+            if (job.Status != JobStatusTypesEnum.Failed)
+            {
+                _logger.LogInformation($"Job with ID {jobId} cannot be retried because it is not in a failed state.");
+                serviceResponse.Message = "Job cannot be retried because it is not in a failed state.";
+                return serviceResponse;
+            }
 
             // Reset the job status and set other necessary properties for retry
-            job.Status = JobStatus.Running;
-            // job.RetryCount++;
+            job.Status = JobStatusTypesEnum.Running;
+            job.RetryCount++;
             job.LastModifiedByUserId = _userId;
             job.LastModifiedOn = DateTimeOffset.UtcNow;
 
@@ -412,7 +412,7 @@ public class JobTableService : IJobTableService
             }
 
             // Check if job is already completed or canceled
-            if (job.Status == JobStatus.Completed || job.Status == JobStatus.Canceled)
+            if (job.Status == JobStatusTypesEnum.Completed || job.Status == JobStatusTypesEnum.Canceled)
             {
                 _logger.LogInformation($"Job with ID {jobId} cannot be canceled because it is already completed or canceled.");
                 serviceResponse.Message = "Job cannot be canceled because it is already completed or canceled.";
@@ -420,7 +420,7 @@ public class JobTableService : IJobTableService
             }
 
             // Set job status to canceled
-            job.Status = JobStatus.Canceled;
+            job.Status = JobStatusTypesEnum.Canceled;
             job.LastModifiedByUserId = _userId;
             job.LastModifiedOn = DateTimeOffset.UtcNow;
 
