@@ -22,7 +22,9 @@ const addUpdateInString = (str: string, newItem: Annotation): string => {
   const dataArray: Annotation[] = str ? JSON.parse(str) : [];
 
   // Find index of the object with the same id
-  const index = dataArray.findIndex((item) => item.fieldId === newItem.fieldId);
+  const index = dataArray.findIndex(
+    (item) => item.fieldName === newItem.fieldName,
+  );
 
   if (index !== -1) {
     // Update existing object
