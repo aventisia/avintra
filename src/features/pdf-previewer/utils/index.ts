@@ -1,5 +1,6 @@
 import { Annotation } from "../components/PdfPreviewer";
 import { tailwindColors } from "../constants";
+import { IFieldValueSchema } from "../dtos/extract-response-dto";
 
 type ColorShade = 50 | 500;
 
@@ -43,4 +44,50 @@ const getObjectByName = (str: string, name: string): Annotation | null => {
   // Find the object with the given name
   return dataArray.find((item) => item.fieldName === name) || null;
 };
-export { getTailwindColor, addUpdateInString, getObjectByName };
+
+// Function to set field values by mapping the field name
+const updateFieldValueByFieldName = (
+  annotationObj: string,
+  extractedData: IFieldValueSchema[],
+): string => {
+  // Parse the annotation string into an array
+  const fieldsArray: Annotation[] = annotationObj
+    ? JSON.parse(annotationObj)
+    : [];
+
+  extractedData.forEach((item) => {
+    // Find the extracted field with the same field name
+    const dataFiled = fieldsArray.find(
+      (field) => field.fieldName === item.fieldName,
+    );
+
+    // If the field is found, update the value
+    if (dataFiled) {
+      dataFiled.value = item.fieldValue;
+    } else {
+      // If the field is not found, add a new field
+      fieldsArray.push({
+        fieldId: "",
+        pageNumber: 0,
+        fieldName: item.fieldName,
+        value: item.fieldValue,
+        position: {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+        },
+        imgPath: "",
+      });
+    }
+  });
+
+  // Convert back to string and return
+  return JSON.stringify(fieldsArray);
+};
+export {
+  addUpdateInString,
+  getObjectByName,
+  getTailwindColor,
+  updateFieldValueByFieldName,
+};
