@@ -7,5 +7,5 @@
 export enum MachineStatusTypesEnum {
   Active = "Active",
   Inactive = "Inactive",
-  Ideal = "Ideal",
+  Idle = "Idle",
 }
