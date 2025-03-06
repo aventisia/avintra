@@ -27,10 +27,7 @@ export const DataTableRowActions: React.FC<DataTableRowActionsProps> = ({
         <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
         <span className="sr-only">Open menu</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className={cn("w-[7rem] min-w-[7rem]", className)}
-      >
+      <DropdownMenuContent align="end" className={cn("w-fit", className)}>
         {children}
       </DropdownMenuContent>
     </DropdownMenu>
