@@ -6,6 +6,7 @@ import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
 import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { getColumnName } from "../constants/column-display-names";
+import { AgentRowMachineAssignmentAction } from "./MachineRowAssignmentAction";
 
 /**
  * Array of table columns for the agents table.
@@ -138,6 +139,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       // Render the agents row actions component
       <DataTableRowActions>
         <DTRowAction rowId={row.original.id || "rowId"} crudAction="read" />
+        <DTRowAction rowId={row.original.id || "rowId"} crudAction="update" />
+        <AgentRowMachineAssignmentAction rowId={row.original.id || "rowId"} />
       </DataTableRowActions>
     ),
   },
