@@ -1,4 +1,7 @@
-import { getObjectByName } from "@/features/pdf-previewer/utils";
+import {
+  addUpdateInString,
+  getObjectByName,
+} from "@/features/pdf-previewer/utils";
 import { Badge } from "@/react-toolkit/ui/badge";
 import { Input } from "@/react-toolkit/ui/input";
 import { useEffect, useState } from "react";
@@ -6,23 +9,50 @@ import { DataFieldsDto } from "../dtos/data-fields-dtos";
 import { DataFiledEditAction } from "./data-field-actions/DataFieldEditAction";
 import { DeleteDataField } from "./data-field-actions/DeleteDataField";
 import ImageDisplay from "./ImageDisplay";
+import { Annotation } from "@/features/pdf-previewer/components/PdfPreviewer";
+import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
+import { useShallow } from "zustand/react/shallow";
 
 interface DataFieldCardProps {
-  currAnnotationObj: string;
   item: DataFieldsDto;
 }
 
-const DataFieldCard = ({ item, currAnnotationObj }: DataFieldCardProps) => {
+const DataFieldCard = ({ item }: DataFieldCardProps) => {
+  const { currAnnotationObj, setAnnotationObject, setIsSavePending } =
+    useAnnotationDataStore(
+      useShallow((state) => ({
+        currAnnotationObj: state.currAnnotationObj,
+        setAnnotationObject: state.setAnnotationObject,
+        setIsSavePending: state.setIsSavePending,
+      })),
+    );
+
   //Get image path and value for data field
   const imgPath = getObjectByName(currAnnotationObj, item.name)?.imgPath || "";
   const inputVal = getObjectByName(currAnnotationObj, item.name)?.value || "";
 
   //Get set value for input field
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(inputVal);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    // Update local state
+    setValue(newValue);
+    const newAnnotation: Annotation = {
+      fieldId: item.id || "",
+      fieldName: item.name,
+      value: newValue,
+      pageNumber: 0,
+      position: { x: 0, y: 0, width: 0, height: 0 },
+    };
+    setAnnotationObject(
+      addUpdateInString(currAnnotationObj || "", newAnnotation),
+    );
+  };
   //Update input value from annotation obj
   useEffect(() => {
     setValue(inputVal);
+    setIsSavePending(true);
   }, [inputVal]);
 
   return (
@@ -49,11 +79,7 @@ const DataFieldCard = ({ item, currAnnotationObj }: DataFieldCardProps) => {
       </div>
       <div className="flex flex-col gap-2 p-2">
         {imgPath && <ImageDisplay imagePath={imgPath} />}
-        <Input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          fieldSize="sm"
-        />
+        <Input value={value} onChange={handleInputChange} fieldSize="sm" />
       </div>
     </div>
   );
