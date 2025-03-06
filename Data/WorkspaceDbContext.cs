@@ -110,9 +110,6 @@ public class WorkspaceDbContext : DbContext
         // Configure Many-to-Many relationship between Queue and QueueTransaction
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
 
-        // Configure Many-to-Many relationship between Job and Machine
-        modelBuilder.Entity<Machine>().HasMany(many => many.Jobs).WithOne(one => one.Machine).HasForeignKey(fKey => fKey.MachineId).IsRequired();
-
         // Configure Many-to-Many relationship between Job and Flow Version
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.Jobs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
 

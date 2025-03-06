@@ -6,14 +6,10 @@ public class JobTableMappingProfile : IRegister
     {
         // Mapping for job record or records.
         config.NewConfig<Job, JobTableDto>()
-            .Map(dest => dest.AgentName,
+            .Map(dest => dest.Name,
                 src => src.FlowVersion != null
                     ? src.FlowVersion.Flow.Name
-                    : string.Empty)
-            .Map(dest => dest.MachineName,
-                src => src.Machine != null
-                    ? src.Machine.Name
-                    : string.Empty)
+                    : null)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
