@@ -40,7 +40,7 @@ const AddFields = () => {
         </ModelCrudDialog>
       </div>
 
-      <ScrollArea className="h-[calc(75vh)] p-4">
+      <ScrollArea className="h-[calc(100vh-7.6rem)] p-4">
         <DataFieldList />
       </ScrollArea>
     </div>
