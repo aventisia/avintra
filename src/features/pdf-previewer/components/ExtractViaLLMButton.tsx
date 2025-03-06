@@ -33,6 +33,7 @@ function ExtractViaLLMButton() {
       size="xs"
       className="gap-2 pl-2 pr-3.5 text-sm"
       onClick={handleExtract}
+      disabled={isExtractionPending}
     >
       {isExtractionPending ? (
         <>
