@@ -5,7 +5,7 @@ meta {
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/{{FLOW_ID}}
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow/{{FLOW_ID}}
   body: none
   auth: none
 }
@@ -21,7 +21,7 @@ script:pre-request {
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-        "FLOW_VERSION_ID", 
+        "FLOW_ID", 
         "00000000-0000-0000-0000-000000000000"
       );
   }
