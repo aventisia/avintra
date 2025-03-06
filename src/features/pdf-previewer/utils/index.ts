@@ -85,9 +85,26 @@ const updateFieldValueByFieldName = (
   // Convert back to string and return
   return JSON.stringify(fieldsArray);
 };
+
+const removeFieldById = (annotationObj: string, fieldId: string): string => {
+  // Parse the annotation string into an array
+  const fieldsArray: Annotation[] = annotationObj
+    ? JSON.parse(annotationObj)
+    : [];
+
+  // Filter out the field with the given fieldId
+  const updatedFieldsArray = fieldsArray.filter(
+    (field) => field.fieldId !== fieldId,
+  );
+
+  // Convert back to string and return
+  return JSON.stringify(updatedFieldsArray);
+};
+
 export {
   addUpdateInString,
   getObjectByName,
   getTailwindColor,
   updateFieldValueByFieldName,
+  removeFieldById,
 };
