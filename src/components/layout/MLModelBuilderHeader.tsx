@@ -4,6 +4,7 @@ import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAcco
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
 import { useLocation } from "react-router-dom";
+import { NavigationTabs } from "./NavigationTabs";
 
 const MLModelBuilderHeader = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ const MLModelBuilderHeader = () => {
         <LLMSelector />
       </div>
       <div className="flex h-10 items-center gap-2 rounded-lg px-1.5">
+        <NavigationTabs />
         <UnreadNotifications className="mt-0 mlg:mt-1.5" triggerSize="icon8" />
         <UserAccountModal sizeClassName="h-8 w-8" />
       </div>

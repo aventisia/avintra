@@ -7,6 +7,7 @@ import Nav from "./Header/Nav";
 import FileUploader from "@/features/file-uploader/components/FileUploader";
 import { useModelTestStore } from "../stores/model-test-store";
 import { useModelTestQueryKey } from "../hooks/useModelTestQueryKey";
+import { ExtractedDataTable } from "./ExtractedDataTable/ExtractedDataTable";
 
 export const ModelTestContainer = () => {
   useModelTestQueryKey();
@@ -31,12 +32,7 @@ export const ModelTestContainer = () => {
     <>
       <Nav isPdfAvailable />
       {step == 0 && <FileUploader />}
-      {step == 1 && (
-        <div className="flex justify-between gap-7">
-          {/* <PdfPreviewer />
-          <AddFields /> */}
-        </div>
-      )}
+      {step == 1 && <ExtractedDataTable />}
     </>
   );
 };
