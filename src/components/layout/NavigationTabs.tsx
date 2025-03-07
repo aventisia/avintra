@@ -1,16 +1,21 @@
 import { useNavigatePreserveQuery } from "@/hooks/useNavigatePreserveQuery";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const tabs = [
+  { id: "label", label: "Label" },
+  { id: "test", label: "Test" },
+  { id: "train", label: "Train" },
+  { id: "view", label: "View" },
+];
 
 export const NavigationTabs = () => {
   const [activeTab, setActiveTab] = useState("label");
 
-  const tabs = [
-    { id: "label", label: "Label" },
-    { id: "test", label: "Test" },
-    { id: "train", label: "Train" },
-    { id: "view", label: "View" },
-  ];
+  useEffect(() => {
+    const currentPath = window.location.pathname.split("/")[1];
+    setActiveTab(currentPath);
+  }, []);
 
   const navigateWithQueryParams = useNavigatePreserveQuery();
 
