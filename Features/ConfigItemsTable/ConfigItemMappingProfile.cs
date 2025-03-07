@@ -6,7 +6,6 @@ public class ConfigItemMappingProfile : IRegister
     {
         // Mapping for ConfigItem record or records.
         config.NewConfig<ConfigItem, ConfigItemDto>()
-            .Map(dest => dest.Value, src => src.Type == ConfigItemTypesEnum.CREDENTIAL ? src.Value.EncryptStringUsingAes() : src.Value)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
