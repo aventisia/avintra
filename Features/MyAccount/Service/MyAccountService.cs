@@ -1347,18 +1347,6 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            // check the user password
-            var isCorrectPWD = await _userManager.CheckPasswordAsync(user, deactivateUserAccountDto.Password);
-
-
-            // return if the user password is not correct
-            if (!isCorrectPWD)
-            {
-                _logger.LogInformation($"Incorrect password while deactivation of account of email {user.Email}");
-                serviceResponse.Message = "Password is incorrect. Please try again";
-                return serviceResponse;
-            }
-
             // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
             .GetByConditionAsync(w => w.Id == deactivateUserAccountDto.VerificationCodeId)
@@ -1369,6 +1357,18 @@ public class MyAccountService(
             {
                 _logger.LogInformation($"Verification code not found for email {user.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
+                return serviceResponse;
+            }
+
+            // check the user password
+            var isCorrectPWD = await _userManager.CheckPasswordAsync(user, deactivateUserAccountDto.Password);
+
+
+            // return if the user password is not correct
+            if (!isCorrectPWD)
+            {
+                _logger.LogInformation($"Incorrect password while deactivation of account of email {user.Email}");
+                serviceResponse.Message = "Password is incorrect. Please try again";
                 return serviceResponse;
             }
 
