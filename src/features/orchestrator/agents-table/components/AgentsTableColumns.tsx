@@ -7,6 +7,8 @@ import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowActi
 import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentRowMachineAssignmentAction } from "./MachineRowAssignmentAction";
+import { AgentRowDeleteAction } from "./AgentRowDeleteAction";
+import { Separator } from "@/react-toolkit/ui/separator";
 
 /**
  * Array of table columns for the agents table.
@@ -101,7 +103,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("versionNumber")}
+        {"v" + row.getValue("versionNumber")}
       </div>
     ),
   },
@@ -141,6 +143,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         <DTRowAction rowId={row.original.id || "rowId"} crudAction="read" />
         <DTRowAction rowId={row.original.id || "rowId"} crudAction="update" />
         <AgentRowMachineAssignmentAction rowId={row.original.id || "rowId"} />
+        <Separator />
+        <AgentRowDeleteAction rowId={row.original.id || "rowId"} />
       </DataTableRowActions>
     ),
   },
