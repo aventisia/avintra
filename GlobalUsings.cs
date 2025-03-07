@@ -23,6 +23,7 @@ global using System.Reflection;
 global using System.Net.Http.Headers;
 global using System.Threading.RateLimiting;
 global using System.Text.Json.Serialization;
+global using System.Security.Cryptography;
 
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
