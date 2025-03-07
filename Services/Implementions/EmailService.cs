@@ -148,12 +148,20 @@ public class EmailService : IEmailService
                                 "VerifyEmailAddressEmailTemplate.html",
                                 placeholderValues)
                             );
-            case EmailTypesEnum.SendOtpToEmail:
+            case EmailTypesEnum.AccountDeactivation:
                 return await SendEmail(
                             toEmailAddress,
                             "Verify your email address",
                             LoadAndRenderEmailTemplate(
-                                "VerifyEmailAddressEmailTemplate.html",
+                                "VerifyEmailToDeactivateAccountEmailTemplate.html",
+                                placeholderValues)
+                            );
+            case EmailTypesEnum.UpdateEmail:
+                return await SendEmail(
+                            toEmailAddress,
+                            "Verify your email address",
+                            LoadAndRenderEmailTemplate(
+                                "UpdateEmailRequestCodeEmailTemplate.html",
                                 placeholderValues)
                             );
             case EmailTypesEnum.AccountCreated:
