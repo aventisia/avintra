@@ -29,7 +29,7 @@ export const generateDynamicColumns = (
       ),
       cell: ({ row }) => (
         <ExtractedDataTableCellLink
-          rowId={row.original.docName}
+          rowId={row.original.docId}
           cellValue={row.getValue("docName")}
         />
       ),

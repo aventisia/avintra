@@ -27,6 +27,7 @@ const generateVisibility = (
 const refactorData = (data: ExtractedDataDto[] | undefined) => {
   if (!data) return [];
   return data.map((item) => ({
+    docId: item.docId, // Doc id for link
     docName: item.docName, // Static field
     accuracy: item.accuracy, // Static field
     ...item.dynamicFields, // Spread dynamic fields into the row
