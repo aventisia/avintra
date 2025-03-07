@@ -22,7 +22,7 @@ export const AgentRowMachineAssignmentAction = ({
   // Return the component
   return (
     <SimpleDDMenuItem
-      lucidIconName="Computer"
+      lucidIconName="PcCase"
       onClick={() => {
         setIsDialogOpen(true);
       }}
