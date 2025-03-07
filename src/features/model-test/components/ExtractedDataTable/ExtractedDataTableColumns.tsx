@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ModelTableCellLink } from "@/features/model-library-table/components/ModelTableCellLink";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { ExtractedDataDto } from "../../dtos/ extracted-data-dto";
+import { ExtractedDataTableCellLink } from "./DataTableCellLink";
 
 // Function to generate dynamic columns
 export const generateDynamicColumns = (
@@ -28,7 +28,7 @@ export const generateDynamicColumns = (
         />
       ),
       cell: ({ row }) => (
-        <ModelTableCellLink
+        <ExtractedDataTableCellLink
           rowId={row.original.docName}
           cellValue={row.getValue("docName")}
         />
