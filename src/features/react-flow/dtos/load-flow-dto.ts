@@ -1,5 +1,22 @@
+export interface IProjectInfoDTO {
+  /** Version id */
+  versionId?: string;
+
+  /** Version no */
+  versionNumber?: number | null;
+
+  /** Flow Name */
+  name?: string;
+
+  /** Flow Type */
+  type?: string;
+
+  /** Project Name */
+  projectName?: string;
+}
+
 /** To get flow props to load when user opens a flow in studio */
-export interface LoadFlowDto {
+export interface LoadFlowDto extends IProjectInfoDTO {
   /** Flow record's primary key (Guid) */
   id: string;
 

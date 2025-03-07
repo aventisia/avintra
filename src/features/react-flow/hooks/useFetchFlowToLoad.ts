@@ -12,10 +12,11 @@ export const useFetchFlowToLoad = () => {
   const location = useLocation();
 
   // Get global store state & actions
-  const { setCurrentFlow, setIsFlowLoading } = useCurrentFlowStore(
+  const { setCurrentFlow, setIsFlowLoading, setProjectInfo } = useCurrentFlowStore(
     useShallow((state) => ({
       setCurrentFlow: state.setCurrentFlow,
       setIsFlowLoading: state.setIsFlowLoading,
+      setProjectInfo: state.setProjectInfo
     })),
   );
 
@@ -57,11 +58,20 @@ export const useFetchFlowToLoad = () => {
         // Parse react flow object
         const flow = JSON.parse(data.data.reactFlowObject);
 
+        const projectInfo = {
+          versionId: data.data.versionId,
+          versionNumber: data.data.versionNumber,
+          name: data.data.name,
+          type: data.data.type,
+          projectName: data.data.projectName,
+        }
+
         if (flow) {
           // Set nodes and edges
           setNodes(flow.nodes);
           setEdges(flow.edges);
           setFlowVariablesObject(flow.flowVariablesObject)
+          setProjectInfo(projectInfo)
 
           // If flow has more than 2 nodes then set the saved viewport
           if (flow.nodes.length > 2) {

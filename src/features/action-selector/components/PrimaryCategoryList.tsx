@@ -8,12 +8,19 @@ import { PrimaryCategory } from "./PrimaryCategory";
 import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const PrimaryCategoryList = () => {
   // Get the setPrimaryCategory function from the store
   const { setPrimaryCategoryLabel } = useNodeSelectorStore(
     useShallow((state) => ({
       setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
+    })),
+  );
+
+  const { projectInfo } = useCurrentFlowStore(
+    useShallow((state) => ({
+      projectInfo: state.projectInfo,
     })),
   );
 
@@ -27,7 +34,12 @@ export const PrimaryCategoryList = () => {
               value={item.label}
               className="rounded-lg p-1"
               onSelect={() => setPrimaryCategoryLabel(item.label)}
-              disabled={!item.actionCategories.length}
+              // disabled={!item.actionCategories.length}
+              disabled={
+                projectInfo?.type === "AutomationAgent" &&
+                item.name === "aiIntegrations" &&
+                true
+              }
             >
               {/* Primary category item */}
               <PrimaryCategory data={item} />
