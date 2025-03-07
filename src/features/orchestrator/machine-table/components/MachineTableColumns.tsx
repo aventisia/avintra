@@ -41,7 +41,7 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto max-w-60 truncate font-medium">
-        cellValue={row.getValue("name")}
+        {row.getValue("name")}
       </div>
     ),
   },
