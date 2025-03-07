@@ -138,7 +138,7 @@ export const MachineCheckList = ({
             />
             <Label htmlFor="select-all-agents">Select All</Label>
           </div>
-          <ScrollArea className="h-60 rounded-sm border p-1">
+          <ScrollArea className="h-80 rounded-sm border p-2">
             {machines?.map((machine) => (
               <MachineCheckListItem
                 {...{
