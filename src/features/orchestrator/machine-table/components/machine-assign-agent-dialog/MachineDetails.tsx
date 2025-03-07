@@ -12,10 +12,12 @@ import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-typ
 
 export const MachineDetails = (details: Partial<MachineDto>) => {
   const statusColor: { [key in MachineStatusTypesEnum]: string } = {
-    [MachineStatusTypesEnum.Active]: "red",
-    [MachineStatusTypesEnum.Inactive]: "green",
-    [MachineStatusTypesEnum.Idle]: "blue",
+    [MachineStatusTypesEnum.Active]: "bg-red-500",
+    [MachineStatusTypesEnum.Inactive]: "bg-green-500",
+    [MachineStatusTypesEnum.Idle]: "bg-primary",
   };
+
+  console.log(details);
 
   return (
     <div className="mb-2 flex flex-col">
@@ -24,10 +26,10 @@ export const MachineDetails = (details: Partial<MachineDto>) => {
           <CardTitle>
             <span className="flex">
               {`${details.name} (${details.type})`}
-              <span className="text-md ms-auto text-muted-foreground">
+              <span className="ms-auto text-muted-foreground">
                 <Badge
                   className={
-                    `bg-${statusColor[details.status ?? MachineStatusTypesEnum.Idle]}-500`
+                    statusColor[details.status ?? MachineStatusTypesEnum.Idle]
                   }
                 >
                   {details.status}
