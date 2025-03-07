@@ -17,11 +17,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 import { AssignMachineDto } from "../../dtos/assign-machine-dto";
 import { useFetchMachines } from "../../hooks/useFetchMachines";
 import { assignMachines } from "../../apis/agents-table-apis";
+import { MachineCheckListItem } from "./MachineCheckListItem";
 
 type MachineCheckListProps = {
   agentName: string;
@@ -139,35 +139,14 @@ export const MachineCheckList = ({
             <Label htmlFor="select-all-agents">Select All</Label>
           </div>
           <ScrollArea className="h-60 rounded-sm border p-1">
-            {machines?.map((agent) => (
-              <div
-                key={agent.id}
-                className="my-2 flex w-fit items-center justify-between space-x-4 space-y-4 rounded-sm border py-1 hover:bg-slate-100"
-              >
-                <div className="ms-2 flex items-center justify-between space-x-4">
-                  <Checkbox
-                    checked={agent.isAssigned}
-                    onCheckedChange={(isChecked: boolean) =>
-                      handleAgentChange(isChecked, agent.id)
-                    }
-                    id={agent.id}
-                  />
-                  <Label htmlFor={agent.id} className="flex flex-col space-y-1">
-                    <div className="flex flex-col space-y-2 p-2">
-                      <div className="grid w-60 grid-cols-2 gap-4">
-                        <p className="text-md self-start">{agent.name}</p>
-                        <p className="ms-auto self-end text-primary">{`Linux`}</p>
-                      </div>
-                      <div className="text-xs font-normal leading-snug text-muted-foreground">
-                        {`created by ${agent.createdBy} ${formatDistanceToNow(agent.createdOn)} ago`}
-                        <div className="text-xs font-normal leading-snug text-muted-foreground">
-                          {`last modified by ${agent.lastModifiedBy} ${formatDistanceToNow(agent.lastModifiedOn)} ago`}
-                        </div>
-                      </div>
-                    </div>
-                  </Label>
-                </div>
-              </div>
+            {machines?.map((machine) => (
+              <MachineCheckListItem
+                {...{
+                  ...machine,
+                  onCheckedChange: (isAssigned) =>
+                    handleAgentChange(isAssigned, machine.id),
+                }}
+              />
             ))}
           </ScrollArea>
         </CardContent>
