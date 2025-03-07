@@ -41,7 +41,12 @@ public enum EmailTypesEnum
     ContactUsRequest,
 
     /// <summary>
-    /// Request type to create verification code to verify email address.
+    /// Request type to create verification code to verify new email address.
     /// </summary>
-    SendOtpToEmail,
+    UpdateEmail,
+
+    /// <summary>
+    /// Request type to create verification code to verify email address for account deactivation.
+    /// </summary>
+    AccountDeactivation,
 }
