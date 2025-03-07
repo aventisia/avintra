@@ -56,6 +56,12 @@
     <None Update="StaticFiles\EmailTemplates\VerifyEmailAddressEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="StaticFiles\EmailTemplates\VerifyEmailToDeactivateAccountEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="StaticFiles\EmailTemplates\UpdateEmailRequestCodeEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
