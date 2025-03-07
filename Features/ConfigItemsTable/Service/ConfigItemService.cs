@@ -5,17 +5,20 @@ public class ConfigItemService : IConfigItemService
     private readonly ILogger<ConfigItemService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly IStringEncryptionService _stringEncryptionService;
 
     public ConfigItemService(
         ILogger<ConfigItemService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringEncryptionService stringEncryptionService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _stringEncryptionService = stringEncryptionService;
     }
 
     // Method to check if the config item name is available for the current user
@@ -154,6 +157,13 @@ public class ConfigItemService : IConfigItemService
             var newConfigItem = configItemDto.Adapt<ConfigItem>();
             newConfigItem.CreatedByUserId = _userId;
             newConfigItem.LastModifiedByUserId = _userId;
+
+            // If the ConfigItem type is "CREDENTIAL", encrypt the Value property
+            if (newConfigItem.Type == ConfigItemTypesEnum.CREDENTIAL)
+            {
+                // Encrypt the value of the credential before storing it
+                newConfigItem.Value = _stringEncryptionService.EncryptString(newConfigItem.Value);
+            }
 
             // Insert the new config item into the repository
             await _unitOfWork.ConfigItemRepo.InsertAsync(newConfigItem);
