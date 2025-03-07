@@ -10,22 +10,26 @@ import { useFetchAnnotationData } from "./useFetchAnnotationData";
 
 export const useUpdateAnnotationSilently = () => {
   // Get current annotation object and set annotation object
-  const { currAnnotationObj, isSavePending, setIsSavePending } =
-    useAnnotationDataStore(
-      useShallow((state) => ({
-        currAnnotationObj: state.currAnnotationObj,
-        setAnnotationObject: state.setAnnotationObject,
-        isSavePending: state.isSavePending,
-        setIsSavePending: state.setIsSavePending,
-      })),
-    );
+  const {
+    currAnnotationObj,
+    isSavePending,
+    setIsSavePending,
+    setIsDataSaving,
+  } = useAnnotationDataStore(
+    useShallow((state) => ({
+      currAnnotationObj: state.currAnnotationObj,
+      isSavePending: state.isSavePending,
+      setIsSavePending: state.setIsSavePending,
+      setIsDataSaving: state.setIsDataSaving,
+    })),
+  );
   const { selectedPdf } = usePdfListStore(
     useShallow((state) => ({
       selectedPdf: state.selectedPdf,
     })),
   );
 
-  const { data: annotationData ,refetch} = useFetchAnnotationData();
+  const { data: annotationData, refetch } = useFetchAnnotationData();
 
   const currAnnotationData = annotationData?.data as
     | AnnotationDataDto[]
@@ -40,20 +44,27 @@ export const useUpdateAnnotationSilently = () => {
     onSuccess: () => {
       // Set isSavePending to false
       setIsSavePending(false);
-      refetch()
+      refetch();
     },
     onError: () => {
       setIsSavePending(false);
+    },
+    onSettled: () => {
+      // Set isFlowSaving to false
+      setIsDataSaving(false);
     },
   });
 
   // Function to perform save logic
   const saveData = useCallback(
     (data: AnnotationDataDto) => {
+      // Set isFlowSaving to true
+      setIsDataSaving(true);
+
       // Save flow silently
       updateAnnotationObj(data);
     },
-    [updateAnnotationObj],
+    [setIsDataSaving, updateAnnotationObj],
   );
 
   //

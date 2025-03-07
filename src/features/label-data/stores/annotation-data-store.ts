@@ -12,6 +12,9 @@ type State = {
   currImg: string;
 
   isSavePending: boolean;
+
+  /** Flag to indicate if data field object is saving in the background */
+  isDataSaving: boolean;
 };
 
 type Actions = {
@@ -24,6 +27,9 @@ type Actions = {
   clearCurrAnnotation: () => void;
 
   setIsSavePending: (isSavePending: boolean) => void;
+
+  /** Sets the saving state of the data field object */
+  setIsDataSaving: (isSaving: boolean) => void;
 };
 
 export const useAnnotationDataStore = create<State & Actions>((set) => ({
@@ -33,6 +39,7 @@ export const useAnnotationDataStore = create<State & Actions>((set) => ({
   currImg: "",
   currAnnotationObj: "",
   isSavePending: false,
+  isDataSaving: false,
 
   setAnnotationDataDoc: (uploadedDocId) =>
     set(() => ({
@@ -55,4 +62,5 @@ export const useAnnotationDataStore = create<State & Actions>((set) => ({
   setIsSavePending: (isSavePending: boolean) => {
     set({ isSavePending });
   },
+  setIsDataSaving: (isSaving) => set({ isDataSaving: isSaving }),
 }));
