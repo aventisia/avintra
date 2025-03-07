@@ -395,10 +395,9 @@ public class AuthService : IAuthService
         {
             Data = new CreatedVerificationCodeDto()
             {
-                VerificationCodeId = new Guid(),
+                VerificationCodeId = Guid.Empty,
                 Email = createVerificationCodeDto.Email,
                 RequestType = createVerificationCodeDto.RequestType
-
             },
             StatusCode = 200,
             Message = "Verification code has been sent to your email",
@@ -406,8 +405,6 @@ public class AuthService : IAuthService
 
         try
         {
-            /*Possible RequestTypes: VerifyEmailAddress, TwoFA, ResetPwd, UnlockAccount*/
-
             // Gather required data to create verification code
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
             var userName = createVerificationCodeDto.Email;
@@ -419,109 +416,111 @@ public class AuthService : IAuthService
                     .AsNoTracking()
                     .SingleOrDefaultAsync();
 
-            // User account exists
-            if (user != null)
+            switch (requestType)
             {
-                // Request type is "VerifyEmailAddress"
-                if (requestType == VerificationCodeRequestTypesEnum.VerifyEmailAddress)
-                {
-                    _logger.LogInformation("Cannot fullfill VerifyEmailAddress request type because User account already exits. While creating verification code for  requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
-                requestType, userName, userAgent);
-                    return serviceResponse;
-                }
-
-                /*Locked account is allowed as user should be able to unlock account 
-                via creating code and verifing it*/
-
-                // Account is disabled
-                if (user.IsDisabled)
-                {
-                    _logger.LogInformation("User account is disabled. While creating verification code for requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
-                requestType, userName, userAgent);
-                    return serviceResponse;
-                }
+                //create account verify email
+                case VerificationCodeRequestTypesEnum.VerifyEmailAddress:
+                    {
+                        // Request type is "VerifyEmailAddress" while creating the account
+                        if (user != null)
+                        {
+                            _logger.LogInformation("Cannot fullfill VerifyEmailAddress request type because User account already exits. While creating verification code for  requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+                        requestType, userName, userAgent);
+                            return serviceResponse;
+                        }
+                        var id = await SendEmail(createVerificationCodeDto, user?.FirstName, userAgent);
+                        serviceResponse.Data.VerificationCodeId = id;
+                        return serviceResponse;
+                    }
+                // user must have account
+                case VerificationCodeRequestTypesEnum.ResetPwd:
+                case VerificationCodeRequestTypesEnum.UnlockAccount:
+                case VerificationCodeRequestTypesEnum.AccountDeactivation:
+                case VerificationCodeRequestTypesEnum.UpdateEmail:
+                    {
+                        if (user == null)
+                        {
+                            _logger.LogInformation(user.IsDisabled ?
+                            "User account is disabled. While creating verification code for requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}" :
+                            "User account not found. requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+                            requestType, userName, userAgent);
+                            return serviceResponse;
+                        }
+                        var id = await SendEmail(createVerificationCodeDto, user?.FirstName, userAgent);
+                        serviceResponse.Data.VerificationCodeId = id;
+                        return serviceResponse;
+                    }
+                //not implemented
+                case VerificationCodeRequestTypesEnum.TwoFA:
+                case VerificationCodeRequestTypesEnum.UpdatePwd:
+                default:
+                    {
+                        serviceResponse.StatusCode = 403;
+                        serviceResponse.Message = "Request type is not allowed";
+                        return serviceResponse;
+                    }
             }
-
-            // User not found
-            if (user == null && requestType != VerificationCodeRequestTypesEnum.VerifyEmailAddress)
-            {
-                _logger.LogInformation("User account not found. requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
-                requestType, userName, userAgent);
-                return serviceResponse;
-            }
-
-            if (user != null && requestType != VerificationCodeRequestTypesEnum.SendOtpToEmail)
-            {
-                _logger.LogInformation("Sending a verification code to email {Email}. requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
-                createVerificationCodeDto.Email, requestType, userName, userAgent);
-            }
-
-            /*NOTE: We are not validating tenantId here since it is not required */
-
-            // Create 6 secret code
-            string secretCode = new Random().Next(100000, 999999).ToString();
-
-            // Delete VerificationCodes (all expired + active for current userName and userAgent)
-            await _authHelperService.DeleteVerificationCodes(userName, userAgent);
-
-            // Create code's ExpiresOn
-            var codeExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
-                _verificationCodeConfig.ValidityInMinutes);
-
-            // Create VerificationCode instance
-            var verificationCode = new VerificationCode()
-            {
-                SecretCode = secretCode,
-                RequestType = requestType,
-                DeviceId = userAgent,
-                ExpiresOn = codeExpiresOn,
-                Email = userName,
-            };
-
-            // Insert VerificationCode
-            await _unitOfWork.VerificationCodeRepo.InsertAsync(verificationCode);
-
-            // Insert-VerificationCode job failed
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Context SaveChanges failed while creating verification code for requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
-                requestType, userName, userAgent);
-                return serviceResponse;
-            }
-
-            // Convert requestType to EmailTypesEnum
-            var emailType = Enum.Parse<EmailTypesEnum>(requestType.ToString());
-
-            // Failed to send VerificationCode email
-            if (!await _emailService.SendEmailUsingTemplate(
-                emailType,
-                createVerificationCodeDto.Email,
-                new Dictionary<string, string>()
-                {
-                    {"{{userFirstName}}", user == null ? "" : user.FirstName },
-                    {"{{VerificationCode}}", verificationCode.SecretCode},
-                    {"{{VerificationCodeValidityInMinutes}}", _verificationCodeConfig.ValidityInMinutes.ToString() }
-                }))
-            {
-                _logger.LogError("Error occurred while sending verification code email to {Email} and request type {RequestType}", createVerificationCodeDto.Email, requestType);
-                /*Still moving forward because we are not going to inform user*/
-            }
-
-            // Task successful
-            serviceResponse.Data.VerificationCodeId = verificationCode.Id;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
             return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
+    async Task<Guid> SendEmail(CreateVerificationCodeDto createdVerificationCodeDto, string userFirstName, string userAgent)
+    {
+        // Create 6 secret code
+        string secretCode = new Random().Next(100000, 999999).ToString();
 
-    public static (string? ipAddress, string Browser, string OS) GetClientBrowserAndOs(HttpContext context)
+        // Delete VerificationCodes (all expired + active for current userName and userAgent)
+        await _authHelperService.DeleteVerificationCodes(createdVerificationCodeDto.Email, userAgent);
+
+        // Create code's ExpiresOn
+        var codeExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_verificationCodeConfig.ValidityInMinutes);
+
+        // Create VerificationCode instance
+        var verificationCode = new VerificationCode()
+        {
+            SecretCode = secretCode,
+            RequestType = createdVerificationCodeDto.RequestType,
+            DeviceId = userAgent,
+            ExpiresOn = codeExpiresOn,
+            Email = createdVerificationCodeDto.Email,
+        };
+
+        // Insert VerificationCode
+        await _unitOfWork.VerificationCodeRepo.InsertAsync(verificationCode);
+
+        // Insert-VerificationCode job failed
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogInformation("Context SaveChanges failed while creating verification code for requestType - {RequestType}, username - {UserName} and device Id - {UserAgent}",
+            createdVerificationCodeDto.RequestType, createdVerificationCodeDto.Email, userAgent);
+            return Guid.Empty;
+        }
+
+        // Convert requestType to EmailTypesEnum
+        var emailType = Enum.Parse<EmailTypesEnum>(createdVerificationCodeDto.RequestType.ToString());
+
+        // Failed to send VerificationCode email
+        if (!await _emailService.SendEmailUsingTemplate(
+            emailType,
+            createdVerificationCodeDto.Email,
+            new Dictionary<string, string>()
+            {
+                    {"{{userFirstName}}", userFirstName },
+                    {"{{VerificationCode}}", verificationCode.SecretCode},
+                    {"{{VerificationCodeValidityInMinutes}}", _verificationCodeConfig.ValidityInMinutes.ToString() }
+            }))
+        {
+            _logger.LogError("Error occurred while sending verification code email to {Email} and request type {RequestType}", createdVerificationCodeDto.Email, createdVerificationCodeDto.RequestType);
+            /*Still moving forward because we are not going to inform user*/
+        }
+        return verificationCode.Id;
+    }
+
+    static (string? ipAddress, string Browser, string OS) GetClientBrowserAndOs(HttpContext context)
     {
         var ipAddress = context.Connection.RemoteIpAddress;
 
