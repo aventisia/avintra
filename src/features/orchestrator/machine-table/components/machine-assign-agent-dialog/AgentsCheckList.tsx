@@ -20,8 +20,8 @@ import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { useMachineAgentStore } from "../../store/machine-agent-store";
 import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
 import { useFetchMachines } from "../../hooks/useFetchMachines";
+import { AgentCheckListItem } from "./AgentCheckListItem";
 
 type AgentsCheckListProps = {
   machineName: string;
@@ -138,34 +138,13 @@ export const AgentsCheckList = ({
           </div>
           <ScrollArea className="h-60 rounded-sm border p-1">
             {agents?.map((agent) => (
-              <div
-                key={agent.id}
-                className="my-2 flex items-center justify-between space-x-4 space-y-4 rounded-sm border py-1"
-              >
-                <div className="ms-2 flex items-center justify-between space-x-4">
-                  <Checkbox
-                    checked={agent.isAssigned}
-                    onCheckedChange={(isChecked: boolean) =>
-                      handleAgentChange(isChecked, agent.id)
-                    }
-                    id={agent.id}
-                  />
-                  <Label htmlFor={agent.id}>
-                    <div className="grid grid-rows-3">
-                      <div className="grid w-60 grid-cols-2 gap-4">
-                        <p className="text-md self-start">{agent.name}</p>
-                        <p className="ms-auto self-end text-primary">{`v ${agent.versionNumber}`}</p>
-                      </div>
-                      <div className="text-xs font-normal leading-snug text-muted-foreground">
-                        {`created by ${agent.createdBy} ${formatDistanceToNow(agent.createdOn)} ago`}
-                      </div>
-                      <div className="text-xs font-normal leading-snug text-muted-foreground">
-                        {`last modified by ${agent.lastModifiedBy} ${formatDistanceToNow(agent.lastModifiedOn)} ago`}
-                      </div>
-                    </div>
-                  </Label>
-                </div>
-              </div>
+              <AgentCheckListItem
+                {...{
+                  ...agent,
+                  onCheckedChange: (isAssigned) =>
+                    handleAgentChange(isAssigned, agent.id),
+                }}
+              />
             ))}
           </ScrollArea>
         </CardContent>
