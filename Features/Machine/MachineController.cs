@@ -12,7 +12,7 @@ public class MachineController : BaseApiController
 
     // Checks the availability of a machine name.
     [HttpPost("is-available")]
-    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsFlowNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMachineNameAvailableAsync([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
         return ResultHelper(await _machineService.IsMachineNameAvailableAsync(checkAvailabilityDto));
     }
