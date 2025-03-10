@@ -158,11 +158,13 @@ public class ConfigItemService : IConfigItemService
             newConfigItem.CreatedByUserId = _userId;
             newConfigItem.LastModifiedByUserId = _userId;
 
-            // If the ConfigItem type is "CREDENTIAL", encrypt the Value property
+            // If the ConfigItem type is "CREDENTIAL", encrypt the Value property to protect sensitive information.
+            // This ensures that credentials are not stored in plain text and remain secure.
             if (newConfigItem.Type == ConfigItemTypesEnum.CREDENTIAL)
             {
-                // Encrypt the value of the credential before storing it
+                // Encrypt the credential value before saving it
                 newConfigItem.Value = _stringEncryptionService.EncryptString(newConfigItem.Value);
+                newConfigItem.IsEncrypted = true;
             }
 
             // Insert the new config item into the repository
@@ -234,10 +236,15 @@ public class ConfigItemService : IConfigItemService
             // Trim string properties in the DTO for consistency
             configItemDto = TrimDtoStringPropsUtil.TrimDtoStringProps(configItemDto);
 
-            // Map the updated values from DTO to the existing entity
-            configItemDto.Adapt(configItem);
-            configItem.LastModifiedByUserId = _userId;
-            configItem.LastModifiedOn = DateTimeOffset.UtcNow;
+            // If the ConfigItem type is "CREDENTIAL" and it is not already encrypted,
+            // encrypt the Value property to safeguard sensitive information.
+            // This ensures that credentials are not stored in plain text.
+            if (configItem.Type == ConfigItemTypesEnum.CREDENTIAL && !configItem.IsEncrypted)
+            {
+                // Encrypt the credential value prior to saving it
+                configItem.Value = _stringEncryptionService.EncryptString(configItem.Value);
+                configItem.IsEncrypted = true;
+            }
 
             // Update the config item in the repository
             _unitOfWork.ConfigItemRepo.Update(configItem);
