@@ -39,6 +39,7 @@ public static class AppServicesExtension
         config.Apply(new QueueTableMappingProfile());
         config.Apply(new QueueTransactionMappingProfile());
         config.Apply(new JobTableMappingProfile());
+        config.Apply(new ConfigItemMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -48,6 +49,7 @@ public static class AppServicesExtension
 
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("AesEncryptionConfig").Get<AesEncryptionConfig>(), "AesEncryptionConfig cannot be null"));
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
@@ -73,6 +75,7 @@ public static class AppServicesExtension
         services.AddScoped<IQueueTableService, QueueTableService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
         services.AddScoped<IJobTableService, JobTableService>();
+        services.AddScoped<IConfigItemService, ConfigItemService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

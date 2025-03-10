@@ -44,6 +44,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ConfigItem>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -63,6 +64,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.CurrentTask).HasConversion(new EnumToStringConverter<TaskTypesEnum>());
         modelBuilder.Entity<QueueTransaction>().Property(e => e.Status).HasConversion(new EnumToStringConverter<QueueTransactionStatusTypesEnum>());
+        modelBuilder.Entity<ConfigItem>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ConfigItemTypesEnum>());
+        modelBuilder.Entity<ConfigItem>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
 
         // Configure One-to-One relationship between Project and WorkspaceUser
         modelBuilder.Entity<Project>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -166,4 +169,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Queue> Queues { get; set; }
     public DbSet<QueueTransaction> QueueTransactions { get; set; }
     public DbSet<Job> Jobs { get; set; }
+    public DbSet<ConfigItem> ConfigItems { get; set; }
 }
