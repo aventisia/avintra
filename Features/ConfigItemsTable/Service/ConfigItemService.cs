@@ -68,7 +68,7 @@ public class ConfigItemService : IConfigItemService
         var serviceResponse = new ServiceResponse<IEnumerable<ConfigItemDto>>
         {
             Data = null,
-            Message = "Failed to retrieve configuration items. Please try again."
+            Message = "Failed to retrieve config items. Please try again."
         };
 
         try
@@ -82,7 +82,7 @@ public class ConfigItemService : IConfigItemService
 
             serviceResponse.Data = configItems;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Configuration items retrieved successfully.";
+            serviceResponse.Message = "Config items retrieved successfully.";
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public class ConfigItemService : IConfigItemService
         var serviceResponse = new ServiceResponse<ConfigItemDto>
         {
             Data = null,
-            Message = "Failed to retrieve the configuration item. Please try again."
+            Message = "Failed to retrieve the config item. Please try again."
         };
 
         try
@@ -112,7 +112,7 @@ public class ConfigItemService : IConfigItemService
 
             serviceResponse.Data = configItem;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Configuration item retrieved successfully.";
+            serviceResponse.Message = "Config item retrieved successfully.";
         }
         catch (Exception ex)
         {
@@ -129,7 +129,7 @@ public class ConfigItemService : IConfigItemService
         var serviceResponse = new ServiceResponse<ConfigItemDto>
         {
             Data = null,
-            Message = "Failed to add the configuration item. Please try again."
+            Message = "Failed to add the config item. Please try again."
         };
 
         try
@@ -173,14 +173,14 @@ public class ConfigItemService : IConfigItemService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while inserting new configuration item.");
+                _logger.LogInformation("Failed to save changes while inserting new config item.");
                 return serviceResponse;
             }
 
             // Return the created config item in the response
             serviceResponse.Data = newConfigItem.Adapt<ConfigItemDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Configuration item created successfully.";
+            serviceResponse.Message = "Config item created successfully.";
         }
         catch (Exception ex)
         {
@@ -197,7 +197,7 @@ public class ConfigItemService : IConfigItemService
         var serviceResponse = new ServiceResponse<ConfigItemDto>
         {
             Data = null,
-            Message = "Failed to update the configuration item. Please try again."
+            Message = "Failed to update the config item. Please try again."
         };
 
         try
@@ -211,8 +211,8 @@ public class ConfigItemService : IConfigItemService
             // If the item doesn't exist, return an error message
             if (configItem == null)
             {
-                _logger.LogInformation("Configuration item does not exist.");
-                serviceResponse.Message = "Configuration item does not exist.";
+                _logger.LogInformation("Config item does not exist.");
+                serviceResponse.Message = "Config item does not exist.";
                 return serviceResponse;
             }
 
@@ -252,14 +252,14 @@ public class ConfigItemService : IConfigItemService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while updating configuration item.");
+                _logger.LogInformation("Failed to save changes while updating config item.");
                 return serviceResponse;
             }
 
             // Return the updated config item in the response
             serviceResponse.Data = configItem.Adapt<ConfigItemDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Configuration item updated successfully.";
+            serviceResponse.Message = "Config item updated successfully.";
         }
         catch (Exception ex)
         {
@@ -276,7 +276,7 @@ public class ConfigItemService : IConfigItemService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete the configuration item. Please try again."
+            Message = "Failed to delete the config item. Please try again."
         };
 
         try
@@ -289,8 +289,8 @@ public class ConfigItemService : IConfigItemService
             // If the item doesn't exist, return an error message
             if (configItem == null)
             {
-                _logger.LogInformation("Configuration item does not exist.");
-                serviceResponse.Message = "Configuration item does not exist.";
+                _logger.LogInformation("Config item does not exist.");
+                serviceResponse.Message = "Config item does not exist.";
                 return serviceResponse;
             }
 
@@ -300,14 +300,14 @@ public class ConfigItemService : IConfigItemService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting configuration item.");
+                _logger.LogInformation("Failed to save changes while deleting config item.");
                 return serviceResponse;
             }
 
             // Return a success message
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Configuration item deleted successfully.";
+            serviceResponse.Message = "Config item deleted successfully.";
         }
         catch (Exception ex)
         {
@@ -324,7 +324,7 @@ public class ConfigItemService : IConfigItemService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete the configuration items. Please try again."
+            Message = "Failed to delete the config items. Please try again."
         };
 
         try
@@ -337,8 +337,8 @@ public class ConfigItemService : IConfigItemService
             // If no items are found, return an error message
             if (configItems.Count == 0)
             {
-                _logger.LogInformation("Configuration items do not exist.");
-                serviceResponse.Message = "Configuration items do not exist.";
+                _logger.LogInformation("Config items do not exist.");
+                serviceResponse.Message = "Config items do not exist.";
                 return serviceResponse;
             }
 
@@ -348,19 +348,66 @@ public class ConfigItemService : IConfigItemService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting configuration items.");
+                _logger.LogInformation("Failed to save changes while deleting config items.");
                 return serviceResponse;
             }
 
             // Return a success message with the count of deleted items
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{configItemIds.Count()} configuration items deleted successfully.";
+            serviceResponse.Message = $"{configItemIds.Count()} Config items deleted successfully.";
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
             return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Method to decrypt the value of an encrypted config item
+    public async Task<ServiceResponse<string>> DecryptConfigItemValueAsync(Guid configItemId)
+    {
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Unable to decrypt the config item. Please try again later."
+        };
+
+        try
+        {
+            // Retrieve the encrypted config item by its ID
+            var configItem = await _unitOfWork.ConfigItemRepo
+                .GetByConditionAsync(w =>
+                    w.Id == configItemId && w.CreatedByUserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // If the config item doesn't exist, return an error response
+            if (configItem == null)
+            {
+                _logger.LogInformation("Config item not found.");
+                serviceResponse.Message = "Config item not found.";
+                return serviceResponse;
+            }
+
+            // If the value is not encrypted, notify the user
+            if (!configItem.IsEncrypted)
+            {
+                serviceResponse.Message = "The config item value is not encrypted.";
+                return serviceResponse;
+            }
+
+            // Decrypt the config item value
+            var decryptedValue = _stringEncryptionService.DecryptString(configItem.Value);
+            serviceResponse.Data = decryptedValue;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Config item decrypted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurred while decrypting the config item.";
         }
 
         return serviceResponse;

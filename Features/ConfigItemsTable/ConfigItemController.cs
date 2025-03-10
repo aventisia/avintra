@@ -60,4 +60,11 @@ public class ConfigItemController : BaseApiController
     {
         return ResultHelper(await _configItemService.DeleteConfigItemsAsync(configItemIds));
     }
+
+    // Decrypts the value of a config item by its ID.
+    [HttpGet("decrypt/{configItemId}")]
+    public async Task<IActionResult> DecryptConfigItemValue(Guid configItemId)
+    {
+        return ResultHelper(await _configItemService.DecryptConfigItemValueAsync(configItemId));
+    }
 }

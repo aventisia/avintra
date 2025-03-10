@@ -55,4 +55,11 @@ public interface IConfigItemService
     /// This method is recommended for deleting multiple configuration items at once, reducing the number of server requests.
     /// </remarks>
     Task<ServiceResponse<bool>> DeleteConfigItemsAsync(IEnumerable<Guid> configItemIds);
+    
+    /// <summary>
+    /// Decrypts the value of an encrypted config item based on its ID.
+    /// </summary>
+    /// <param name="configItemId">The unique identifier of the config item.</param>
+    /// <returns>A response containing the decrypted value, or an error message if decryption fails.</returns>
+    Task<ServiceResponse<string>> DecryptConfigItemValueAsync(Guid configItemId);
 }
