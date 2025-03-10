@@ -158,8 +158,11 @@ public class AgentTableService : IAgentTableService
 
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Id == agentId && w.CreatedByUserId == _userId)
-                .FirstOrDefaultAsync();
+                        .GetByConditionAsync(w => 
+                            w.Id == agentId && w.CreatedByUserId == _userId
+                        )
+                        .Include(a => a.MachineFlows)
+                        .FirstOrDefaultAsync();
 
             if (agent == null)
             {
@@ -171,8 +174,10 @@ public class AgentTableService : IAgentTableService
 
             // Check if all provided machine IDs are valid and belong to the current user.
             var machines = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => machineIds.Contains(w.Id) && w.CreatedByUserId == _userId)
-                .ToListAsync();
+                        .GetByConditionAsync(w => 
+                            machineIds.Contains(w.Id) && w.CreatedByUserId == _userId
+                        )
+                        .ToListAsync();
 
             var invalidMachineIds = machineIds.Except(machines.Select(m => m.Id)).ToList();
 
@@ -185,17 +190,25 @@ public class AgentTableService : IAgentTableService
             }
 
             // Identify machines that are already assigned to the agent.
-            var alreadyAssignedMachineIds = agent?.MachineFlows?.Select(mf => mf.MachineId).ToList() ?? new List<Guid>();
-            var newMachineIds = machineIds.Except(alreadyAssignedMachineIds).ToList();
+            var existingMachineFlows = agent?.MachineFlows?.ToList() ?? new List<MachineFlow>();
+            var existingMachineIds = existingMachineFlows.Select(mf => mf.MachineId).ToList();
 
-            // If all machines are already assigned, inform the user.
-            if (!newMachineIds.Any())
+            // Identify new machine IDs that are not yet assigned to the agent.
+            var newMachineIds = machineIds.Except(existingMachineIds).ToList();
+
+            // Identify machine IDs that are no longer assigned and need to be removed.
+            var removedMachineIds = existingMachineIds.Except(machineIds).ToList();
+
+            // If no changes are made (no new machines, no machines to remove), inform the user.
+            if (!newMachineIds.Any() && !removedMachineIds.Any())
             {
-                _logger.LogInformation("All provided machines are already assigned to the agent.");
+                _logger.LogInformation("No changes made; all provided machines are already assigned to the agent.");
+                serviceResponse.Message = "No changes made to the machine assignments.";
+                return serviceResponse;
             }
 
-            // Prepare new machine flows to be assigned.
-            var machineFlows = newMachineIds.Select(id => new MachineFlow()
+            // Create new MachineFlow entries for machines not already assigned.
+            var machineFlowsToAdd = newMachineIds.Select(id => new MachineFlow()
             {
                 MachineId = id,
                 FlowVersionId = agentId,
@@ -203,22 +216,35 @@ public class AgentTableService : IAgentTableService
                 LastModifiedByUserId = _userId
             }).ToList();
 
-            // Insert new machine flows into the repository.
-            await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlows);
+            // Remove existing MachineFlow entries for machines that are no longer assigned.
+            var machineFlowsToRemove = existingMachineFlows
+                .Where(mf => removedMachineIds.Contains(mf.MachineId))
+                .ToList();
+
+            // Begin the transaction to insert and remove data.
+            if (machineFlowsToAdd.Any())
+            {
+                await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlowsToAdd);
+            }
+
+            if (machineFlowsToRemove.Any())
+            {
+                _unitOfWork.MachineFlowRepo.Delete(machineFlowsToRemove);
+            }
 
             // Attempt to save the changes to the database.
             if (!await _unitOfWork.SaveAsync())
             {
                 // If saving fails, log and return failure.
-                _logger.LogInformation("Database save operation failed while assigning machines.");
-                serviceResponse.Message = "Failed to assign machines to the agent.";
+                _logger.LogInformation("Database save operation failed while assigning or updating machines.");
+                serviceResponse.Message = "Failed to update machine assignments for the agent.";
                 return serviceResponse;
             }
 
-            // Return success with the count of newly assigned machines.
+            // Return success with the count of newly assigned and removed machines.
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{newMachineIds.Count} machines successfully assigned to the agent.";
+            serviceResponse.Message = $"{newMachineIds.Count} machines assigned and {removedMachineIds.Count} machines removed from the agent.";
         }
         catch (Exception ex)
         {
