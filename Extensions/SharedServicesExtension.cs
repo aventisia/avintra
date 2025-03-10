@@ -65,7 +65,6 @@ public static class SharedServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), "TenantResolverConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), "FileUploadConfig cannot be null"));
 
-
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
         services.AddScoped<IUserManagementGuardService, UserManagementGuardService>();
@@ -74,5 +73,6 @@ public static class SharedServicesExtension
     public static void AddEmailService(this IServiceCollection services)
     {
         services.AddSingleton<IEmailService, EmailService>();
+        services.AddSingleton<IStringEncryptionService, StringEncryptionService>();
     }
 }
