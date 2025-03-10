@@ -22,6 +22,7 @@ import { useShallow } from "zustand/react/shallow";
 import { toast } from "sonner";
 import { useFetchMachines } from "../../hooks/useFetchMachines";
 import { AgentCheckListItem } from "./AgentCheckListItem";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
 
 type AgentsCheckListProps = {
   machineName: string;
@@ -32,7 +33,7 @@ export const AgentsCheckList = ({
   machineName,
   assignedCount,
 }: AgentsCheckListProps) => {
-  const { data } = useFetchAgents();
+  const { data, isFetching, isLoading } = useFetchAgents();
   const { refetch: refetchMachines } = useFetchMachines();
 
   const [agents, setAgents] = useState<AssignAgentDto[]>();
@@ -50,7 +51,7 @@ export const AgentsCheckList = ({
 
   useEffect(() => {
     setAgents(data?.data);
-  }, [data?.data]);
+  }, [data?.data, machineId]);
 
   const handleAgentChange = (isAssigned: boolean, id: string) => {
     if (!agents) return;
@@ -137,20 +138,27 @@ export const AgentsCheckList = ({
             <Label htmlFor="select-all-agents">Select All</Label>
           </div>
           <ScrollArea className="h-80 rounded-sm border p-2">
-            {agents?.map((agent) => (
-              <AgentCheckListItem
-                {...{
-                  ...agent,
-                  onCheckedChange: (isAssigned) =>
-                    handleAgentChange(isAssigned, agent.id),
-                }}
-              />
-            ))}
+            {isFetching || isLoading ? (
+              <Skeleton className="my-2 me-1 flex h-20 rounded-sm border py-1" />
+            ) : (
+              agents?.map((agent) => (
+                <AgentCheckListItem
+                  {...{
+                    ...agent,
+                    onCheckedChange: (isAssigned) =>
+                      handleAgentChange(isAssigned, agent.id),
+                  }}
+                />
+              ))
+            )}
           </ScrollArea>
         </CardContent>
         <CardFooter className="flex items-end justify-end">
-          <Button onClick={handleAssignClick}>
-            Assign {` (${selectedCount})`}
+          <Button
+            onClick={handleAssignClick}
+            disabled={isFetching || isLoading}
+          >
+            {`Assign (${selectedCount})`}
           </Button>
         </CardFooter>
       </Card>

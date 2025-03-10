@@ -16,7 +16,7 @@ export const useFetchAgents = () => {
 
     // Get agents using react query
     const { data, isFetching, isLoading, isError, error } = useQuery({
-        queryKey: ["agents-to-select"],
+        queryKey: ["agents-to-select", machineId],
         queryFn: () => getAssignableAgents(machineId),
     });
 
