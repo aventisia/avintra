@@ -88,7 +88,6 @@ export const DeactivationVerifyEmailForm = () => {
             <InputField
               name="password"
               type="password"
-              placeholder="p*******d"
               className="border-slate-300/60 shadow-sm"
               size={80}
             />

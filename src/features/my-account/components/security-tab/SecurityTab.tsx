@@ -37,7 +37,6 @@ export const SecurityTab = () => {
           <InputField
             name="oldPwd"
             type="password"
-            placeholder="p*******d"
             className="border-slate-300/60 shadow-sm"
             size={80}
           />
@@ -51,7 +50,6 @@ export const SecurityTab = () => {
           <InputField
             name="newPwd"
             type="password"
-            placeholder="p*******d"
             className="border-slate-300/60 shadow-sm"
             size={80}
           />
@@ -65,7 +63,6 @@ export const SecurityTab = () => {
           <InputField
             type="password"
             name="confirmNewPwd"
-            placeholder="p*******d"
             className="border-slate-300/60 shadow-sm"
             size={80}
           />
