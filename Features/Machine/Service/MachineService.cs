@@ -425,6 +425,7 @@ public class MachineService : IMachineService
             var agents = await _unitOfWork.FlowVersionRepo
                                           .GetByConditionAsync(w =>
                                               agentIds.Contains(w.Id) &&
+                                               w.IsPublished &&
                                               w.CreatedByUserId == _userId)
                                           .ToListAsync();
 
@@ -437,39 +438,60 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Check for agents that are already assigned to the machine
-            var alreadyAssignedAgentIds = machine?.MachineFlows?.Select(mf => mf.FlowVersionId).ToList() ?? new List<Guid>();
-            var newAgentIds = agentIds.Except(alreadyAssignedAgentIds).ToList();
+            // Get the currently assigned machine flows (agent flows)
+            var existingMachineFlows = machine.MachineFlows?.ToList() ?? new List<MachineFlow>();
+            var existingAgentIds = existingMachineFlows.Select(mf => mf.FlowVersionId).ToList();
 
-            // If all agents are already assigned, inform the user
-            if (!newAgentIds.Any())
+            // Identify new agent IDs that are not yet assigned to the machine
+            var newAgentIds = agentIds.Except(existingAgentIds).ToList();
+            // Identify agent IDs that are no longer assigned and need to be removed
+            var removedAgentIds = existingAgentIds.Except(agentIds).ToList();
+
+            // If no changes are made (no new agents, no agents to remove), inform the user
+            if (!newAgentIds.Any() && !removedAgentIds.Any())
             {
-                _logger.LogInformation("All provided agents are already assigned to the machine.");
+                _logger.LogInformation("No changes made; all provided agents are already assigned to the machine.");
+                serviceResponse.Message = "No changes made to the agent assignments.";
+                return serviceResponse;
             }
 
-            // Assign the new agents to the machine
-            var machineFlows = newAgentIds.Select(i => new MachineFlow()
+            // Create new MachineFlow entries for agents not already assigned
+            var machineFlowsToAdd = newAgentIds.Select(agentId => new MachineFlow()
             {
                 MachineId = machineId,
-                FlowVersionId = i,
+                FlowVersionId = agentId,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
             }).ToList();
 
-            await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlows);
+            // Remove existing MachineFlow entries for agents that are no longer assigned
+            var machineFlowsToRemove = existingMachineFlows
+                .Where(mf => removedAgentIds.Contains(mf.FlowVersionId))
+                .ToList();
+
+            // Begin the transaction to insert and remove data
+            if (machineFlowsToAdd.Any())
+            {
+                await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlowsToAdd);
+            }
+
+            if (machineFlowsToRemove.Any())
+            {
+                _unitOfWork.MachineFlowRepo.Delete(machineFlowsToRemove);
+            }
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Database save operation failed while assigning agents.");
-                serviceResponse.Message = "Failed to assign agents to the machine.";
+                _logger.LogInformation("Database save operation failed while assigning or updating agents.");
+                serviceResponse.Message = "Failed to update agent assignments for the machine.";
                 return serviceResponse;
             }
 
-            // Return a successful result with the count of newly assigned agents
+            // Return a successful result with the count of newly assigned and removed agents
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{newAgentIds.Count} agents successfully assigned to the machine.";
+            serviceResponse.Message = $"{newAgentIds.Count} agents assigned and {removedAgentIds.Count} agents removed from the machine.";
         }
         catch (Exception ex)
         {
@@ -519,6 +541,7 @@ public class MachineService : IMachineService
             var agents = await _unitOfWork.FlowVersionRepo
                                           .GetByConditionAsync(w =>
                                               agentIds.Contains(w.Id) &&
+                                              w.IsPublished &&
                                               w.CreatedByUserId == _userId)
                                           .ToListAsync();
 
@@ -613,6 +636,7 @@ public class MachineService : IMachineService
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.FlowVersionRepo
                                             .GetByConditionAsync(w =>
+                                                w.IsPublished &&
                                                 w.CreatedByUserId == _userId)
                                             .Include(f => f.Flow)
                                             .ProjectToType<AssignAgentDto>()
@@ -657,7 +681,7 @@ public class MachineService : IMachineService
                 .ProjectToType<SelectOptionDto>()
                 .AsNoTracking()
                 .ToListAsync();
-                
+
             // Set the serviceResponse
             serviceResponse.Data = machinesToSelect;
             serviceResponse.StatusCode = 200;
