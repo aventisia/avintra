@@ -8,7 +8,7 @@ public class StringEncryptionService : IStringEncryptionService
     public StringEncryptionService(AesEncryptionConfig aesConfig)
     {
         // Ensure the configuration is not null
-        _config = aesConfig;
+        _config = aesConfig ?? throw new ArgumentNullException(nameof(aesConfig), "AES config cannot be null.");
     }
 
     // Encrypts a plain text string using AES encryption.
@@ -23,8 +23,8 @@ public class StringEncryptionService : IStringEncryptionService
         using (Aes aesAlg = Aes.Create())
         {
             // Set the encryption key and IV from the configuration
-            aesAlg.Key = Encoding.UTF8.GetBytes(_config.Key);
-            aesAlg.IV = Encoding.UTF8.GetBytes(_config.IV);
+            aesAlg.Key = Encoding.UTF8.GetBytes(_config.AES_ENCRYPTION_KEY);
+            aesAlg.IV = Encoding.UTF8.GetBytes(_config.AES_INITIALIZATION_VECTOR);
 
             using (ICryptoTransform encrypt = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV))
             using (MemoryStream ms = new MemoryStream())
@@ -34,7 +34,8 @@ public class StringEncryptionService : IStringEncryptionService
                 // Write the plain text to the stream to encrypt it
                 sw.Write(plainText);
                 sw.Close(); // Ensure all data is flushed to the stream
-                            // Return the encrypted string as Base64
+
+                // Return the encrypted string as Base64
                 return Convert.ToBase64String(ms.ToArray());
             }
         }
@@ -52,8 +53,8 @@ public class StringEncryptionService : IStringEncryptionService
         using (Aes aesAlg = Aes.Create())
         {
             // Set the decryption key and IV from the configuration
-            aesAlg.Key = Encoding.UTF8.GetBytes(_config.Key);
-            aesAlg.IV = Encoding.UTF8.GetBytes(_config.IV);
+            aesAlg.Key = Encoding.UTF8.GetBytes(_config.AES_ENCRYPTION_KEY);
+            aesAlg.IV = Encoding.UTF8.GetBytes(_config.AES_INITIALIZATION_VECTOR);
 
             using (ICryptoTransform decrypt = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV))
             using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(encryptedText)))
