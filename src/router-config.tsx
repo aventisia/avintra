@@ -21,6 +21,7 @@ import { Navigate, type RouteObject } from "react-router-dom";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { AgentsPage } from "./pages/orchestrator/AgentsPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
+import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 export const routerConfig: RouteObject[] = [
   {
     path: "/",
@@ -96,6 +97,10 @@ export const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/agents",
             element: <AgentsPage />,
+          },
+          {
+            path: "/orchestrator/queues",
+            element: <QueuesPage />,
           },
         ],
       },
