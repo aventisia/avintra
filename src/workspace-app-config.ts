@@ -75,8 +75,8 @@ const workspaceAppConfig: IAppConfig = {
           },
           {
             Icon: QueueListIcon,
-            name: "queue",
-            route: "/orchestrator/queue",
+            name: "queues",
+            route: "/orchestrator/queues",
           },
           {
             Icon: PlayIcon,
