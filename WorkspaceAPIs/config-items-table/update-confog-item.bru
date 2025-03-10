@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue
+  url: {{WORKSPACE_APIS_BASE_URL}}/config-item
   body: none
   auth: none
 }
@@ -19,7 +19,7 @@ script:pre-request {
     isDisabled: false,
     type: "TEXT",
     value: faker.lorem.paragraph(),
-    isEncrypted: true,
+    isEncrypted: false,
     accessLevel: "PUBLIC"
   })
 }

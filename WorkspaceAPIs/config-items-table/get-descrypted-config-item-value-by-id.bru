@@ -1,0 +1,11 @@
+meta {
+  name: Get descrypted config item value by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/config-item/{{CONFIG_ITEM_ID}}
+  body: none
+  auth: none
+}
