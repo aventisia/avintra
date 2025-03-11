@@ -1,11 +1,11 @@
 meta {
-  name: Required - Delete project
+  name: Insert job
   type: http
-  seq: 15
+  seq: 5
 }
 
-delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/project/{{PROJECT_ID}}
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/job
   body: none
   auth: none
 }
@@ -14,15 +14,17 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    id: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
+    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
+    status: "Running",
+    startTime: faker.date.soon(),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-        "PROJECT_ID", 
-        "00000000-0000-0000-0000-000000000000"
+          "JOB_ID",
+          res.getBody().data.id
       );
   }
 }
