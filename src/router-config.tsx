@@ -22,6 +22,7 @@ import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { AgentsPage } from "./pages/orchestrator/AgentsPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
+import { JobsPage } from "./pages/orchestrator/JobsPage";
 export const routerConfig: RouteObject[] = [
   {
     path: "/",
@@ -101,6 +102,10 @@ export const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/queues",
             element: <QueuesPage />,
+          },
+          {
+            path: "/orchestrator/execution",
+            element: <JobsPage />,
           },
         ],
       },
