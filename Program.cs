@@ -69,6 +69,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+builder.Services.AddStringEncryptionService();
 
 /*--Configure the HTTP request pipeline.--*/
 
