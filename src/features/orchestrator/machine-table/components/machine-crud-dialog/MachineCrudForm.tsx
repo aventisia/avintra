@@ -72,32 +72,29 @@ export const MachineCrudForm = () => {
     >
       {/* Machine Id */}
       {isReadMode && <InputField {...idProps} />}
-
       {crudAction === "create" ? (
         <SelectField {...typeProps} />
       ) : (
-        <SelectField disabled={!form.getValues("type")} {...typeProps} />
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
       )}
-
       {/* environment */}
-      <SelectField {...typeEnvironmentProps} />
 
+      {form.getValues("environment") !== "" && (
+        <SelectField {...typeEnvironmentProps} />
+      )}
+      
       {/* Name */}
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
-
       {/* Host Name */}
       <InputField {...hosthnameProps} />
-
       {/* Host Name */}
       <InputField {...ipAddressProps} />
-
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
       {/* AutherCard */}
       {isReadMode && (
         <AutherCard
@@ -107,7 +104,6 @@ export const MachineCrudForm = () => {
           lastModifiedOn={form.getValues("lastModifiedOn")}
         />
       )}
-
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
