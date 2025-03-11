@@ -16,7 +16,7 @@ public class MLModelDto
     /// <summary>
     /// Gets or sets the name of ML model. Max character is 50.
     /// </summary>
-    [MaxLength(50)]
+    [StringLength(50)]
     public required string Name { get; set; }
 
     /// <summary>

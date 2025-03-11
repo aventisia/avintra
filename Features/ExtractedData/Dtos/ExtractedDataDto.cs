@@ -23,6 +23,7 @@ public class ExtractedDataDto
     /// <summary>
     /// Gets or sets the name of a document associated with this record
     /// </summary>
+    [StringLength(255)]
     public string? DocName { get; set; }
 
     /// <summary>
