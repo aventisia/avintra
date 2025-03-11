@@ -22,7 +22,6 @@ export const machineNameSchema = z
  */
 export const machineZodSchema = z.object({
   id: z.string(),
-  tenantId: z.optional(z.string()),
   type: z.optional(z.string({ message: reqError("Machine type") })),
   name: z.string({ message: reqError("Machine unique name") }),
   environment: z.string(),
