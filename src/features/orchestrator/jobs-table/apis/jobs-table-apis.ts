@@ -46,6 +46,15 @@ export const retryJob = (id: string) => {
 };
 
 /**
+ * retry the failed job
+ */
+export const retryJobs = (ids: string[]) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/retry`, ids)
+    .then((res) => res.data);
+};
+
+/**
  * cancel the running job
  */
 export const cancelJob = (id: string) => {
