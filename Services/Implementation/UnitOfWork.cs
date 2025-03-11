@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     public IUploadedDocRepo UploadedDocRepo => new UploadedDocRepo(_mlModelBuilderDbContext);
     public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
     public IAnnotationDataRepo AnnotationDataRepo => new AnnotationDataRepo(_mlModelBuilderDbContext);
+    public ILLMRepo LLMRepo => new LLMRepo(_mlModelBuilderDbContext);
 
 
 

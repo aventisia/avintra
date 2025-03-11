@@ -21,4 +21,5 @@ public interface IUnitOfWork
     IUploadedDocRepo UploadedDocRepo { get; }
     IModelBuilderUserRepo ModelBuilderUserRepo { get; }
     IAnnotationDataRepo AnnotationDataRepo { get; }
+    ILLMRepo LLMRepo { get; }
 }
