@@ -1,11 +1,11 @@
 meta {
-  name: Insert project
+  name: Required - Delete project
   type: http
-  seq: 1
+  seq: 15
 }
 
-post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/project
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project/{{PROJECT_ID}}
   body: none
   auth: none
 }
@@ -14,17 +14,15 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    type: "Agents",
-    name: faker.company.name(),
-    description: faker.lorem.paragraph(),
+    id: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "PROJECT_ID",
-          res.getBody().data.id
+        "PROJECT_ID", 
+        "00000000-0000-0000-0000-000000000000"
       );
   }
 }

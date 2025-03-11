@@ -1,11 +1,11 @@
 meta {
-  name: Insert flow version
+  name: Required - Insert flow
   type: http
-  seq: 7
+  seq: 2
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/create
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow
   body: none
   auth: none
 }
@@ -14,16 +14,17 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    isLocked: faker.datatype.boolean(),
-    isDraft: faker.datatype.boolean(),
+    projectId: bru.getGlobalEnvVar("PROJECT_ID"),
+    type: "AutomationAgent",
+    name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "FLOW_VERSION_ID",
+          "FLOW_ID",
           res.getBody().data.id
       );
   }

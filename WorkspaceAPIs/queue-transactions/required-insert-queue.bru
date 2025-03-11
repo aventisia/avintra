@@ -1,11 +1,11 @@
 meta {
-  name: Delete flow
+  name: Required - Insert queue
   type: http
-  seq: 13
+  seq: 1
 }
 
-delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow/{{FLOW_ID}}
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue
   body: none
   auth: none
 }
@@ -14,15 +14,15 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    id: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
+    name: faker.commerce.product(),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-        "FLOW_VERSION_ID", 
-        "00000000-0000-0000-0000-000000000000"
+          "QUEUE_ID",
+          res.getBody().data.id
       );
   }
 }

@@ -1,11 +1,11 @@
 meta {
-  name: Delete flow version
+  name: Required - Delete project
   type: http
-  seq: 12
+  seq: 14
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/delete/{{FLOW_VERSION_ID}}
+  url: {{WORKSPACE_APIS_BASE_URL}}/project/{{PROJECT_ID}}
   body: none
   auth: none
 }

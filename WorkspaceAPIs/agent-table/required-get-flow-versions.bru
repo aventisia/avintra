@@ -1,11 +1,11 @@
 meta {
-  name: Insert flow version
+  name: Required - Get flow versions
   type: http
   seq: 3
 }
 
-post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/create
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version/list/{{FLOW_ID}}
   body: none
   auth: none
 }
@@ -15,8 +15,6 @@ script:pre-request {
   
   req.setBody({
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    isLocked: faker.datatype.boolean(),
-    isDraft: faker.datatype.boolean(),
   })
 }
 
@@ -24,7 +22,7 @@ script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
           "FLOW_VERSION_ID",
-          res.getBody().data.id
+          res.getBody().data[0].id
       );
   }
 }

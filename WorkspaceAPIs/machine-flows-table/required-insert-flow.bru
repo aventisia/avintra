@@ -1,11 +1,11 @@
 meta {
-  name: Insert project
+  name: Required - Insert flow
   type: http
-  seq: 5
+  seq: 2
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/project
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow
   body: none
   auth: none
 }
@@ -14,8 +14,9 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    type: "Agents",
-    name: faker.company.name(),
+    projectId: bru.getGlobalEnvVar("PROJECT_ID"),
+    type: "AutomationAgent",
+    name: faker.commerce.product(),
     description: faker.lorem.paragraph(),
   })
 }
@@ -23,7 +24,7 @@ script:pre-request {
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(
-          "PROJECT_ID",
+          "FLOW_ID",
           res.getBody().data.id
       );
   }
