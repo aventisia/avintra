@@ -45,6 +45,36 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
       </div>
     ),
   },
+
+  {
+    accessorKey: "agentCount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("agentCount")} />
+    ),
+    cell: ({ row }) => row.getValue("agentCount"),
+  },
+
+  {
+    accessorKey: "type",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("type")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+    ),
+  },
+  {
+    accessorKey: "environment",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("environment")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("environment")}
+      </div>
+    ),
+  },
+
   {
     accessorKey: "ipAddress",
     header: ({ column }) => (
@@ -67,26 +97,7 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
-  },
-  {
-    accessorKey: "environment",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("environment")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("environment")}
-      </div>
-    ),
-  },
+
   {
     accessorKey: "status",
     header: ({ column }) => (
@@ -94,24 +105,19 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
     ),
     cell: ({ row }) => row.getValue("status"),
   },
+
   {
-    accessorKey: "agentCount",
+    accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("agentCount")} />
-    ),
-    cell: ({ row }) => row.getValue("agentCount"),
-  },
-  {
-    accessorKey: "isAvailable",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isAvailable")} />
+      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("isAvailable")}
+        {row.getValue("createdBy")}
       </div>
     ),
   },
+
   {
     accessorKey: "lastCheckedIn",
     header: ({ column }) => (
@@ -129,17 +135,7 @@ export const MachineTableColumns: ColumnDef<MachineDto>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("createdBy")}
-      </div>
-    ),
-  },
+
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
