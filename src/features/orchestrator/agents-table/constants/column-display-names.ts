@@ -10,11 +10,11 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "isPublished", value: "Published" },
   { key: "isArchived", value: "Archived" },
   { key: "createdBy", value: "Created By" },
-  { key: "createdOn", value: "createdOn" },
-  { key: "versionNumber", value: "version Number" },
+  { key: "createdOn", value: "created On" },
+  { key: "versionNumber", value: "Version" },
   { key: "lastModifiedBy", value: "Last Modified By" },
   { key: "lastModifiedOn", value: "Last Modified On" },
-  { key: "machineCount", value: "Machines Using" },
+  { key: "machineCount", value: "Machines" },
 ];
 
 // Get the column display name for the given column key.
