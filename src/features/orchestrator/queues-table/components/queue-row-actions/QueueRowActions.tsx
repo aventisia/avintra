@@ -2,7 +2,6 @@ import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/D
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
-import { QueueRowRetryAction } from "./QueueRowRetryAction";
 
 interface QueueRowActionsProps {
   rowId: string;
@@ -17,9 +16,6 @@ export const QueueRowActions = ({ rowId }: QueueRowActionsProps) => {
 
       {/* Edit Queue details */}
       <DTRowAction rowId={rowId} crudAction="update" />
-
-      {/* retry the failed transaction */}
-      <QueueRowRetryAction rowId={rowId} />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
