@@ -73,6 +73,10 @@ public static class SharedServicesExtension
     public static void AddEmailService(this IServiceCollection services)
     {
         services.AddSingleton<IEmailService, EmailService>();
+    }
+
+    public static void AddStringEncryptionService(this IServiceCollection services)
+    {
         services.AddSingleton<IStringEncryptionService, StringEncryptionService>();
     }
 }
