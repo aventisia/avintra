@@ -62,10 +62,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "pendingCount",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("pendingCount")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("pendingCount")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -77,7 +74,10 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "completedCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("completedCount") ?? 0} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("completedCount") ?? 0}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -89,7 +89,10 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "failedCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("failedCount") ?? 0} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("failedCount") ?? 0}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -101,7 +104,10 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "totalCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("totalCount") ?? 0} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("totalCount") ?? 0}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">

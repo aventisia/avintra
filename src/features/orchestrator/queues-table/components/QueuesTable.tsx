@@ -14,7 +14,7 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
-import { QueueBulkActions } from "./QueueBulkActions";
+import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import { queuesTableColumns } from "./QueuesTableColumns";
 
 /**
