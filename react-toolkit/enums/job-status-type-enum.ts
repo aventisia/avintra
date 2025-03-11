@@ -8,5 +8,5 @@ export enum JobStatusTypesEnum {
   Running = "Running",
   Completed = "Completed",
   Failed = "Failed",
-  Canceled = "Cancele"
+  Canceled = "Canceled"
 }
