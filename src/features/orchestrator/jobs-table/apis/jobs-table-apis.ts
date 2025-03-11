@@ -5,7 +5,7 @@ import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-res
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { JobsTableDto } from "../dtos/jobs-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/Job`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/job`;
 
 /**
  * Retrieves list of Jobs.
@@ -33,6 +33,24 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 export const insertJob = (newJob: JobsTableDto) => {
   return axiosInstance
     .post<IHttpResponse<JobsTableDto>>(`${baseAPIURL}`, newJob)
+    .then((res) => res.data);
+};
+
+/**
+ * retry the failed job
+ */
+export const retryJob = (id: string) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/${id}/retry`)
+    .then((res) => res.data);
+};
+
+/**
+ * cancel the running job
+ */
+export const cancelJob = (id: string) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/${id}/cancel`)
     .then((res) => res.data);
 };
 
