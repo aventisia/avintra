@@ -1,7 +1,6 @@
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { MachineStatusTypesEnum } from '../../../../../react-toolkit/enums/machine-status-types-enum';
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { MachineTaskTypesEnum } from "@/react-toolkit/enums/machine-task-types-enum";
 
 /**
  * Represents a data transfer object (DTO) for a machine.
@@ -52,7 +51,7 @@ export interface MachineDto {
   /**
 * Gets or sets the environment of the machine. Max-100
 */
-  currentTask: MachineTaskTypesEnum;
+  currentTask: string;
 
   /**
    * Represents the availability of the machine for another task. True if available, False if not.

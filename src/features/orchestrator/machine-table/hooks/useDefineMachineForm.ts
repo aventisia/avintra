@@ -14,7 +14,6 @@ import {
 } from "../constants/machine-zod-schema";
 import { MachineDto } from "../dtos/machine-dto";
 import { isMachineNameAvailable } from "../apis/machine-apis";
-import { MachineTaskTypesEnum } from "@/react-toolkit/enums/machine-task-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 
@@ -54,7 +53,6 @@ export const useDefineMachineForm = () => {
     resolver: zodResolver(machineZodSchema),
     defaultValues: {
       id: "",
-      tenantId: "",
       type: "",
       name: "",
       environment: "",
@@ -93,7 +91,6 @@ export const useDefineMachineForm = () => {
     // Set machine data to form
     form.reset({
       id: rowId,
-      tenantId: userSession?.tenantId,
       name: machineData?.name ?? "",
       type: machineData?.type ?? "",
       ipAddress: machineData?.ipAddress ?? "",
@@ -103,7 +100,7 @@ export const useDefineMachineForm = () => {
       isDisabled: machineData?.isDisabled ?? false,
 
       // Read (view) only fields
-      currentTask: machineData?.currentTask ?? MachineTaskTypesEnum.Flow,
+      currentTask: machineData?.currentTask,
       status: machineData?.status ?? MachineStatusTypesEnum.Idle,
       environment: machineData?.environment ?? MachineEnvironmentTypesEnum.Development,
 
