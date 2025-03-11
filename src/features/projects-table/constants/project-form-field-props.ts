@@ -12,10 +12,18 @@ const idProps: InputFieldProps = {
   disabled: true,
 };
 
-// Type
+// What are you building today? - Only create mode
+const typeOnCreateProps: SelectFieldProps = {
+  name: "type",
+  label: "What are you building today?",
+  isRequired: true,
+  selectOptions: enumToArray(ProjectTypesEnum),
+};
+
+// Project Type - Only view/edit mode
 const typeProps: SelectFieldProps = {
   name: "type",
-  label: "Type",
+  label: "Project Type",
   isRequired: true,
   selectOptions: enumToArray(ProjectTypesEnum),
 };
@@ -42,4 +50,11 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
-export { descriptionProps, idProps, isDisabledProps, nameProps, typeProps };
+export {
+  descriptionProps,
+  idProps,
+  isDisabledProps,
+  nameProps,
+  typeProps,
+  typeOnCreateProps,
+};

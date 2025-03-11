@@ -1,0 +1,170 @@
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+import { isModelNameAvailable } from "../apis/models-table-apis";
+import {
+  modelNameSchema,
+  // modelNameSchema,
+  modelZodSchema,
+} from "../constants/model-zod-schema";
+import { ModelsTableDto } from "../dtos/models-table-dto";
+import { useModelsTableStore } from "../stores/models-table-store";
+
+/**
+ * Custom hook for defining a model form.
+ */
+export const useDefineModelForm = () => {
+  // Set model name state (required for avaialbility check)
+  const [modelName, setModelName] = useState("");
+
+  // Get models store state and actions
+  const { projectId, modelsQueryKey } = useModelsTableStore(
+    useShallow((state) => ({
+      projectId: state.projectId,
+      modelsQueryKey: state.modelsQueryKey,
+    })),
+  );
+
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  // Get data-table crud dialog store state and actions
+  const {
+    crudDialogOptions: { showDialog, rowId, crudAction },
+    toggleFormDirty,
+    setShowDialog,
+  } = useDTCrudDialogStore(
+    useShallow((state) => ({
+      crudDialogOptions: state.crudDialogOptions,
+      setShowDialog: state.setShowDialog,
+      toggleFormDirty: state.toggleFormDirty,
+    })),
+  );
+
+  // Get query client
+  const queryClient = useQueryClient();
+
+  // Define form with zod schema
+  /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
+  const form = useForm<z.infer<typeof modelZodSchema>>({
+    resolver: zodResolver(modelZodSchema),
+    defaultValues: {
+      id: "",
+      type: "",
+      name: "",
+      llm: "",
+      description: "",
+      status: "Active",
+      projectId: projectId,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      trainedOn: new Date(),
+    },
+  });
+
+  // Destructor form values and methods
+  const {
+    formState: { isDirty },
+  } = form;
+
+  // Fetch model data when rowId changes
+  useEffect(() => {
+    // Get models data from query client
+    const modelsData = queryClient.getQueryData<{
+      data: ModelsTableDto[];
+    }>(modelsQueryKey);
+
+    // Get model data by id
+    const modelData = modelsData?.data.find((item) => item.id === rowId);
+
+    // Set model name
+    setModelName(modelData?.name ?? "");
+
+    // Set model data to form
+    form.reset({
+      id: rowId,
+      type: modelData?.type ?? "",
+      name: modelData?.name ?? "",
+      description: modelData?.description ?? "",
+      llm: modelData?.llm ?? "",
+      // Read (view) only fields
+      status: "Active",
+      projectId: projectId,
+      createdBy:
+        modelData?.createdBy ??
+        userSession?.firstName + " " + userSession?.lastName,
+      createdOn: modelData?.createdOn
+        ? new Date(modelData?.createdOn)
+        : new Date(),
+      trainedOn: modelData?.trainedOn
+        ? new Date(modelData?.trainedOn)
+        : new Date(),
+    });
+  }, [rowId, projectId, form, queryClient, userSession, modelsQueryKey]);
+
+  // Model name availability check API extension
+  const isModelNameAvailableExt = (postObj: CheckAvailabilityDto) => {
+    return isModelNameAvailable(projectId, postObj);
+  };
+
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof modelZodSchema>, z.ZodString>({
+    defaultInputValue: modelName,
+    fieldName: "name",
+    form,
+    fieldSchema: modelNameSchema,
+    checkAvailabilityAPIFn: isModelNameAvailableExt,
+  });
+
+  // Refine form data based on crud action
+  const refineFormData = (formData: z.infer<typeof modelZodSchema>) => {
+    return {
+      ...formData,
+      lastModifiedBy: userSession?.email ?? "",
+      lastModifiedOn: new Date().toISOString(),
+    };
+  };
+
+  // Save the form dirty state
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  // Reset availability message when dialog closes
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
+
+  // Return form and methods
+  return {
+    form,
+    isDirty,
+    rowId,
+    crudAction,
+    modelsQueryKey,
+    setShowDialog,
+    refineFormData,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
+  };
+};

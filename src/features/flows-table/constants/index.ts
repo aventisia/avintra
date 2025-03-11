@@ -8,7 +8,7 @@ const SEARCH_COLUMN = "name";
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Flow", description: "" };
+      return { heading: "Create Agent", description: "" };
     case "read":
       return { heading: "Flow", description: "" };
     case "update":

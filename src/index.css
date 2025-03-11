@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TODO: For now --secondary color is set as primary. we'll have to decide on the secondary color */
+
 @layer base {
   :root {
     --background: hsl(0 0% 100%);
@@ -14,8 +16,8 @@
     --popover-foreground: hsl(222.2 84% 4.9%);
     --primary: rgb(79, 70, 229);
     --primary-foreground: hsl(210 40% 98%);
-    --secondary: rgb(30, 27, 75);
-    --secondary-foreground: hsl(222.2 47.4% 11.2%);
+    --secondary: rgb(79, 70, 229);
+    --secondary-foreground: hsl(210 40% 98%);
     --muted: hsl(210 40% 96.1%);
     --muted-foreground: hsl(215.4 16.3% 46.9%);
     --accent: hsl(210 40% 96.1%);

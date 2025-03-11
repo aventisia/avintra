@@ -8,3 +8,10 @@ export const enumToArray = <T extends { [key: string]: string }>(
       value: key,
     }));
 };
+
+export const getEnumValueByKey = <T extends { [key: string]: string }>(
+  enumObj: T,
+  key: string,
+): string => {
+  return enumObj[key];
+}

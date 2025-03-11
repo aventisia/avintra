@@ -5,6 +5,6 @@
  * also we need to update existing projects in the database.
  */
 export enum ProjectTypesEnum {
-  Worcflow = "Worcflow",
-  MLModel = "AI Model",
+  Agents = "Agents",
+  AIModel = "AI Model",
 }
