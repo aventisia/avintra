@@ -142,11 +142,13 @@ export const UserForm = () => {
             messageForInput="Please Specify the country you are currently residing in."
             showSkelaton={isLoading}
           >
-            <SelectField
-              name="country"
-              selectOptions={enumToArray(CountriesEnum)}
-              className="border-slate-300/60 shadow-sm"
-            />
+            {form.getValues("country") !== "" && (
+              <SelectField
+                name="country"
+                selectOptions={enumToArray(CountriesEnum)}
+                className="border-slate-300/60 shadow-sm"
+              />
+            )}
           </InputDivElement>
 
           <InputDivElement
