@@ -1,11 +1,9 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import {
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
+
+import { cn } from '@/react-toolkit/lib/utils'
+import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
+import { DropdownMenuContent, DropdownMenuTrigger } from '@/react-toolkit/ui/dropdown-menu'
+import { DropdownMenu } from '@/react-toolkit/ui/dropdown-menu/DropdownMenu'
 
 interface DataTableRowActionsProps extends React.PropsWithChildren {
   className?: string;
