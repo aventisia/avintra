@@ -26,7 +26,7 @@ export const typeProps: SelectFieldProps = {
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Unique Name",
-  placeholder: "my-unique-machine",
+  placeholder: "exampleMachine",
   isRequired: true,
 };
 

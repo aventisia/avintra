@@ -1,10 +1,13 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+
 import { DATA_QUERY_KEY } from "../../constants";
 import {
   hostnameProps as hosthnameProps,
@@ -19,7 +22,6 @@ import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 import { MachineDto } from "../../dtos/machine-dto";
 import { machineOptimisticMutationFn } from "../../apis/machine-apis";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -72,17 +74,7 @@ export const MachineCrudForm = () => {
     >
       {/* Machine Id */}
       {isReadMode && <InputField {...idProps} />}
-      {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
-      {/* environment */}
 
-      {form.getValues("environment") !== "" && (
-        <SelectField {...typeEnvironmentProps} />
-      )}
-      
       {/* Name */}
       <InputField
         {...nameProps}
@@ -93,8 +85,22 @@ export const MachineCrudForm = () => {
       <InputField {...hosthnameProps} />
       {/* Host Name */}
       <InputField {...ipAddressProps} />
+
+      {/* os type */}
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
+      
+      {/* environment */}
+      {form.getValues("environment") !== "" && (
+        <SelectField {...typeEnvironmentProps} />
+      )}
+
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+      
       {/* AutherCard */}
       {isReadMode && (
         <AutherCard
