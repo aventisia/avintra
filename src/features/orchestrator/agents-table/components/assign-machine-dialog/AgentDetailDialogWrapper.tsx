@@ -5,7 +5,9 @@ import { useShallow } from "zustand/react/shallow";
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
 interface AgentMachineDialogWrapperProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root> {}
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root> {
+  rowId?: string;
+}
 
 const AgentDetailDialogWrapper = ({
   ...props
