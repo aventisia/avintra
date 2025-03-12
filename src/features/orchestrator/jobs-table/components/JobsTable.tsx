@@ -14,7 +14,7 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { jobsTableColumns } from "./JobsTableColumns";
 import { useFetchJobs } from "../hooks/useFetchJobs";
-import { JobCrudDialog } from "../job-crud-dialog/JobCrudDialog";
+import { JobCrudDialog } from "./job-crud-dialog/JobCrudDialog";
 import { JobBulkActions } from "./job-row-actions/JobBulkActions";
 
 /**

@@ -4,7 +4,7 @@ import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { useShallow } from "zustand/react/shallow";
 import { JobCrudForm } from "./JobCrudForm";
-import { getDialogHeadingDescription } from "../constants";
+import { getDialogHeadingDescription } from "../../constants";
 
 export const JobCrudDialog = ({ children }: React.PropsWithChildren) => {
   // Get crud dialog store state

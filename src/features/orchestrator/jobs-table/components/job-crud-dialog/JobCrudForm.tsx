@@ -5,16 +5,16 @@ import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
-import { DATA_QUERY_KEY } from "../constants";
+import { DATA_QUERY_KEY } from "../../constants";
 import {
   idProps,
   isDisabledProps,
   nameProps,
-} from "../constants/job-form-field-props";
-import { jobZodSchema } from "../constants/job-zod-schema";
-import { JobsTableDto } from "../dtos/jobs-table-dto";
-import { useDefineJobForm } from "../hooks/useDefineJobForm";
-import { JobOptimisticMutationFn } from "../apis/jobs-table-apis";
+} from "../../constants/job-form-field-props";
+import { jobZodSchema } from "../../constants/job-zod-schema";
+import { JobsTableDto } from "../../dtos/jobs-table-dto";
+import { useDefineJobForm } from "../../hooks/useDefineJobForm";
+import { JobOptimisticMutationFn } from "../../apis/jobs-table-apis";
 
 export const JobCrudForm = () => {
   // Define job form
@@ -24,10 +24,10 @@ export const JobCrudForm = () => {
     rowId,
     crudAction,
     isAvailable,
-    availabilityMessage,
-    setAvailabilityMessage,
+    // availabilityMessage,
+    // setAvailabilityMessage,
     isCheckPending,
-    handleInputChange,
+    // handleInputChange,
     setShowDialog,
     refineFormData,
   } = useDefineJobForm();
@@ -48,7 +48,7 @@ export const JobCrudForm = () => {
     });
 
     // Reset the availability message
-    setAvailabilityMessage(null);
+    // setAvailabilityMessage(null);
 
     // Close the dialog
     setShowDialog(false);
@@ -71,8 +71,8 @@ export const JobCrudForm = () => {
       {/* Name */}
       <InputField
         {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
+        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        // nonErrorMessage={availabilityMessage}
       />
 
       {/* Is Disabled */}
