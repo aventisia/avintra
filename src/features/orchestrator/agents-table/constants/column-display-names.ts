@@ -6,8 +6,6 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "flowId", value: "Flow Id" },
   { key: "name", value: "Name" },
   { key: "isLocked", value: "Locked" },
-  { key: "isDraft", value: "Drafted" },
-  { key: "isPublished", value: "Published" },
   { key: "isArchived", value: "Archived" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "created On" },

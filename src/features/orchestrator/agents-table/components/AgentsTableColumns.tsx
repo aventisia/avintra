@@ -71,31 +71,6 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       </div>
     ),
   },
-
-  {
-    accessorKey: "isDraft",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isDraft")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("isDraft") ? "Yes" : "No"}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "isPublished",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isPublished")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("isPublished") ? "Yes" : "No"}
-      </div>
-    ),
-  },
-
   {
     accessorKey: "versionNumber",
     header: ({ column }) => (

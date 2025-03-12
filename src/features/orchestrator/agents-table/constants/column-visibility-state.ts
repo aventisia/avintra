@@ -4,8 +4,6 @@ export const columnVisibilityState = {
   flowId: false,
   name: true,
   isLocked: true,
-  isDraft: true,
-  isPublished: false,
   isArchived: true,
   createdBy: true,
   createdOn: true,
