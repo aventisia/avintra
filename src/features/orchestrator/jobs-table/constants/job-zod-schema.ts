@@ -22,7 +22,7 @@ export const jobNameSchema = z
  */
 export const jobZodSchema = z.object({
   id: z.string(),
-  name: jobNameSchema,
+  name: z.string(),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
   createdBy: z.string(),
