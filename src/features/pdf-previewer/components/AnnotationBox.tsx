@@ -6,10 +6,10 @@ import { useShallow } from "zustand/react/shallow";
 
 interface AnnotationBoxProps {
   annotation: Annotation;
-  fieldTypes: DataFieldsDto[];
+  dataFields: DataFieldsDto[];
 }
 
-const AnnotationBox = ({ annotation, fieldTypes }: AnnotationBoxProps) => {
+const AnnotationBox = ({ annotation, dataFields }: AnnotationBoxProps) => {
   const { pageNumber, scale } = usePdfViewerStore(
     useShallow((state) => ({
       pageNumber: state.pageNumber,
@@ -19,11 +19,11 @@ const AnnotationBox = ({ annotation, fieldTypes }: AnnotationBoxProps) => {
 
   if (annotation.pageNumber !== pageNumber) return;
 
-  const fieldType = annotation.fieldId
-    ? fieldTypes.find((f) => f.id === annotation.fieldId)
+  const dataField = annotation.fieldId
+    ? dataFields.find((f) => f.id === annotation.fieldId)
     : null;
 
-  const colors = fieldType?.color || "gray";
+  const colors = dataField?.color || "gray";
   return (
     <div
       key={annotation.fieldId}

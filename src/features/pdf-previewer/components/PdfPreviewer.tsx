@@ -55,7 +55,7 @@ export const PdfPreviewer: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
-  const [fieldTypes, setFieldTypes] = useState<DataFieldsDto[]>([]);
+  const [dataFields, setDataFields] = useState<DataFieldsDto[]>([]);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [pendingAnnotation, setPendingAnnotation] = useState<Annotation | null>(
     null,
@@ -148,7 +148,7 @@ export const PdfPreviewer: React.FC = () => {
   }, [selectedPdf, downloadPdf, modelId]);
 
   useEffect(() => {
-    if (data?.data) setFieldTypes(data?.data);
+    if (data?.data) setDataFields(data?.data);
   }, [data?.data]);
 
   useEffect(() => {
@@ -219,7 +219,7 @@ export const PdfPreviewer: React.FC = () => {
       });
 
       // Clear any existing annotations to prevent visual overlap
-      const fieldToUpdate = fieldTypes.find((field) =>
+      const fieldToUpdate = dataFields.find((field) =>
         annotations.some(
           (ann) =>
             ann.fieldId === field?.id &&
@@ -371,24 +371,24 @@ export const PdfPreviewer: React.FC = () => {
           </Document>
           {!isPdfLoading &&
             annotations.map((annotation) => (
-              <AnnotationBox annotation={annotation} fieldTypes={fieldTypes} />
+              <AnnotationBox annotation={annotation} dataFields={dataFields} />
             ))}
           {currentAnnotation && (
             <AnnotationBox
               annotation={currentAnnotation}
-              fieldTypes={fieldTypes}
+              dataFields={dataFields}
             />
           )}
           {pendingAnnotation && (
             <AnnotationBox
               annotation={pendingAnnotation}
-              fieldTypes={fieldTypes}
+              dataFields={dataFields}
             />
           )}
           <FieldSelectionPopover
             isOpen={isOpen}
             assignTypeToAnnotation={assignTypeToAnnotation}
-            fieldTypes={fieldTypes}
+            dataFields={dataFields}
             setCurrentAnnotation={setCurrentAnnotation}
             setIsOpen={setIsOpen}
             triggerRef={triggerRef}
