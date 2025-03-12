@@ -1,9 +1,11 @@
-import { IconProps } from "@/react-toolkit/types/icon-props";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
-import { cn } from "@/react-toolkit/lib/utils";
-import React from "react";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import Lucide, { LucidIconName } from "../Lucide";
+import React from 'react'
+
+import { IconProps } from '@/react-toolkit/types/icon-props'
+import { DropdownMenuItem } from '@/react-toolkit/ui/dropdown-menu'
+import { cn } from '@/react-toolkit/lib/utils'
+import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
+
+import Lucide, { LucidIconName } from '../Lucide'
 
 export const SimpleDDMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,

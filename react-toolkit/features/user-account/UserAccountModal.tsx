@@ -1,25 +1,22 @@
-import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { cn } from "@/react-toolkit/lib/utils";
-import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import Lucide from "@/react-toolkit/ui/Lucide";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { removeUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
-import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
-import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useShallow } from "zustand/react/shallow";
+import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline'
+import { useMutation } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useShallow } from 'zustand/react/shallow'
+
+import Lucide from '@/react-toolkit/ui/Lucide'
+import { logOffFromCurrentSession } from '@/react-toolkit/apis/accounts-me-apis'
+import { DefaultTenantsEnum } from '@/react-toolkit/enums/default-tenants-enum'
+import { cn } from '@/react-toolkit/lib/utils'
+import { useBaseLayoutStore } from '@/react-toolkit/stores/base-layout-store'
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store'
+import { Avatar, AvatarFallback } from '@/react-toolkit/ui/avatar'
+import { Button } from '@/react-toolkit/ui/buttons/Button'
+import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
+import { Popover, PopoverContent, PopoverTrigger } from '@/react-toolkit/ui/popover'
+import { Separator } from '@/react-toolkit/ui/separator'
+import { removeUserSessionLocally } from '@/react-toolkit/utils/user-session-utils'
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */

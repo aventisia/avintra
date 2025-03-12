@@ -1,5 +1,5 @@
-import * as lucideIcons from "lucide-react";
-import { twMerge } from "tailwind-merge";
+import * as lucideIcons from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 export type LucidIconName = keyof typeof lucideIcons.icons;
 

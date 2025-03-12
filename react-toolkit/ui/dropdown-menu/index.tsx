@@ -1,8 +1,8 @@
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { Check, ChevronRight, Circle } from "lucide-react";
-import * as React from "react";
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
+import * as React from 'react'
+import { Check, ChevronRight, Circle } from 'lucide-react'
 
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from '@/react-toolkit/lib/utils'
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
