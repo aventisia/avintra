@@ -51,6 +51,14 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
+// Is Disabled
+const isEncrypterProps: SwitchFieldProps = {
+  name: "isEncrypted",
+  label: "Add Encrypted",
+  description:
+    "No one can access this key, without the adder's credentials",
+};
+
 export {
   valueOptionProps,
   idProps,
@@ -58,4 +66,5 @@ export {
   nameProps,
   typeProps,
   accessLevelProps,
+  isEncrypterProps
 };

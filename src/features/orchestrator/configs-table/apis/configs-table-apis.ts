@@ -21,7 +21,7 @@ const getConfigs = () => {
  */
 const getDecryptedConfig = (rowId: string) => {
   return axiosInstance
-    .get<IHttpResponse<ConfigsTableDto>>(`${baseAPIURL}/decrypt/${rowId}`)
+    .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`)
     .then((res) => res.data);
 };
 

@@ -12,6 +12,7 @@ import {
   accessLevelProps,
   idProps,
   isDisabledProps,
+  isEncrypterProps,
   nameProps,
   typeProps,
   valueOptionProps,
@@ -96,6 +97,9 @@ export const ConfigCrudForm = () => {
 
       {/* value  */}
       <TextareaField {...valueOptionProps} />
+
+      {/* Is encrtypted */}
+      <SwitchField {...isEncrypterProps} />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}

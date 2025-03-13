@@ -42,6 +42,7 @@ export const useDefineConfigForm = () => {
     })),
   );
 
+
   // Get query client
   const queryClient = useQueryClient();
 
@@ -55,6 +56,7 @@ export const useDefineConfigForm = () => {
       name: "",
       value: "",
       accessLevel: "",
+      isEncrypted: false,
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -86,8 +88,9 @@ export const useDefineConfigForm = () => {
       id: rowId,
       type: configData?.type ?? "",
       name: configData?.name ?? "",
-      value: configData?.value ?? "",
+      value: "",
       accessLevel: configData?.accessLevel ?? "",
+      isEncrypted: configData?.isEncrypted ?? false,
 
       isDisabled: configData?.isDisabled ?? false,
       // Read (view) only fields

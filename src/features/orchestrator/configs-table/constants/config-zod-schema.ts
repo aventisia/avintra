@@ -28,6 +28,7 @@ export const configZodSchema = z.object({
     .string()
     .max(500, { message: maxLenError("Config value", 500) }),
   isDisabled: z.boolean().default(false),
+  isEncrypted: z.optional(z.boolean().default(false)),
   // Read (view) only fields
   accessLevel: z.string().min(1, { message: reqError("Access level") }),
   createdBy: z.string(),
