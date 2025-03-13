@@ -3,16 +3,16 @@ import { lazy, Suspense } from "react";
 
 // Lazy load the MachineTable component.
 const MachinesTable = lazy(() =>
-  import("@/features/orchestrator/machine-table/components/MachinesTable").then(
-    (module) => ({
-      default: module.MachineTable,
-    }),
-  ),
+  import(
+    "@/features/orchestrator/machines-table/components/MachinesTable"
+  ).then((module) => ({
+    default: module.MachinesTable,
+  })),
 );
 
 /**
  * Renders the machine Page component.
- * @returns JSX element representing the ProjectsPage component.
+ * @returns JSX element representing the MachinesPage component.
  */
 export const MachinesPage = () => {
   return (
