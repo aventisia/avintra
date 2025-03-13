@@ -8,7 +8,7 @@ const DATA_QUERY_KEY = ["configs"];
 /**
  * The heading for the configs table.
  */
-const TABLE_HEADING = "Configs";
+const TABLE_HEADING = "Config Hub";
 
 /**
  * The column used for searching in the configs.
