@@ -5,7 +5,28 @@
  * also we need to update existing machines in the database.
  */
 export enum MachineStatusTypesEnum {
-  Active = "Active",
-  Inactive = "Inactive",
+  /// <summary>
+  /// represents the free status of the machine
+  /// </summary>
   Idle = "Idle",
+
+  /// <summary>
+  /// represents the online status of the machine
+  /// </summary>
+  Online = "Online",
+
+  /// <summary>
+  /// represents the offline status of the machine
+  /// </summary>
+  Offline = "Offline",
+
+  /// <summary>
+  /// represents the flow/agent running status of the machine
+  /// </summary>
+  Running = "Running",
+
+  /// <summary>
+  /// represents the flow/agent stopped status of the machine
+  /// </summary>
+  Stopped = "Stopped"
 }
