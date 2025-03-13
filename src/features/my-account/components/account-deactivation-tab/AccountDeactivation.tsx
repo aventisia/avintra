@@ -31,7 +31,7 @@ export const AccountDeactivation = () => {
     // Create verification code
     createCodeMutation({
       email: userSession!.email,
-      requestType: VerificationCodeRequestTypesEnum.SendOtpToEmail,
+      requestType: VerificationCodeRequestTypesEnum.AccountDeactivation,
     });
   };
 

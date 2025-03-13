@@ -1,22 +1,22 @@
-import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { cn } from "@/react-toolkit/lib/utils";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { removeUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
-import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
-import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline'
+import { useMutation } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useShallow } from 'zustand/react/shallow'
+
+import Lucide from '@/react-toolkit/ui/Lucide'
+import { logOffFromCurrentSession } from '@/react-toolkit/apis/accounts-me-apis'
+import { DefaultTenantsEnum } from '@/react-toolkit/enums/default-tenants-enum'
+import { cn } from '@/react-toolkit/lib/utils'
+import { useBaseLayoutStore } from '@/react-toolkit/stores/base-layout-store'
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store'
+import { Avatar, AvatarFallback } from '@/react-toolkit/ui/avatar'
+import { Button } from '@/react-toolkit/ui/buttons/Button'
+import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
+import { Popover, PopoverContent, PopoverTrigger } from '@/react-toolkit/ui/popover'
+import { Separator } from '@/react-toolkit/ui/separator'
+import { removeUserSessionLocally } from '@/react-toolkit/utils/user-session-utils'
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -32,6 +32,14 @@ const UserAccountModal = ({
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
+
+  //state to close the popover
+  const { isPopOverOpen, setisPopOverOpen } = useBaseLayoutStore(
+    useShallow((state) => ({
+      isPopOverOpen: state.isPopOverOpen,
+      setisPopOverOpen: state.setIsPopOverOpen,
+    })),
+  );
 
   // Get navigate function
   const navigate = useNavigate();
@@ -54,7 +62,7 @@ const UserAccountModal = ({
   });
 
   return (
-    <Popover>
+    <Popover open={isPopOverOpen} onOpenChange={setisPopOverOpen}>
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon9" }),
@@ -78,11 +86,15 @@ const UserAccountModal = ({
             "flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5",
           )}
         >
-          <span className="truncate whitespace-nowrap text-base font-medium uppercase leading-4">
+          <Link
+            to="/account"
+            onClick={() => setisPopOverOpen(false)}
+            className="truncate whitespace-nowrap text-base font-medium uppercase leading-4 hover:text-primary"
+          >
             {userSession
               ? userSession?.firstName + " " + userSession?.lastName
               : "User Name"}
-          </span>
+          </Link>
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}
           </span>
@@ -94,10 +106,44 @@ const UserAccountModal = ({
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="User" className="h-4 w-4" />
+          My Account
+        </Button>
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account/email-settings");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="MailCheck" className="h-4 w-4" />
+          Email settings
+        </Button>
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account/device-history");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="Smartphone" className="h-4 w-4" />
+          Device history
+        </Button>
+        <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
           variant={"ghost"}
-          className="h-9 justify-start gap-2 rounded-sm font-normal"
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
           onClick={() => mutate()}
         >
           {isPending ? (

@@ -1,4 +1,4 @@
-import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
+import { useBaseLayoutStore } from '@/react-toolkit/stores/base-layout-store'
 
 interface SectionHeaderProps {
   index: number;

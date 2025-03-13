@@ -20,6 +20,12 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
 
+import { MachinesPage } from "./pages/orchestrator/MachinesPage";
+import { AgentsPage } from "./pages/orchestrator/AgentsPage";
+import { Orchestrator } from "./pages/orchestrator/Orchestrator";
+import { QueuesPage } from "./pages/orchestrator/QueuesPage";
+import { JobsPage } from "./pages/orchestrator/JobsPage";
+import { ConfigsPage } from "./pages/orchestrator/ConfigsPage";
 export const routerConfig: RouteObject[] = [
   {
     path: "/",
@@ -85,6 +91,34 @@ export const routerConfig: RouteObject[] = [
       {
         path: "/tenants",
         element: <TenantsPage />,
+      },
+      {
+        path: "/orchestrator",
+        element: <Orchestrator />,
+        errorElement: import.meta.env.DEV && <ErrorPage />,
+        children: [
+          {
+            index: true,
+            path: "/orchestrator/machines",
+            element: <MachinesPage />,
+          },
+          {
+            path: "/orchestrator/agents",
+            element: <AgentsPage />,
+          },
+          {
+            path: "/orchestrator/queues",
+            element: <QueuesPage />,
+          },
+          {
+            path: "/orchestrator/execution",
+            element: <JobsPage />,
+          },
+          {
+            path: "/orchestrator/config-hub",
+            element: <ConfigsPage />,
+          },
+        ],
       },
       {
         path: "/supportticket",

@@ -1,0 +1,150 @@
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+import { isNameAvailable } from "../apis/queues-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
+import {
+  queueNameSchema,
+  queueZodSchema,
+} from "../constants/queue-zod-schema";
+import { QueuesTableDto } from "../dtos/queues-table-dto";
+
+/**
+ * Custom hook for defining a queue form.
+ */
+export const useDefineQueueForm = () => {
+  // Set queue name state (required for avaialbility check)
+  const [queueName, setqueueName] = useState("");
+
+  // Get user session
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  // Get data-table crud dialog store state and actions
+  const {
+    crudDialogOptions: { showDialog, rowId, crudAction },
+    toggleFormDirty,
+    setShowDialog,
+  } = useDTCrudDialogStore(
+    useShallow((state) => ({
+      crudDialogOptions: state.crudDialogOptions,
+      setShowDialog: state.setShowDialog,
+      toggleFormDirty: state.toggleFormDirty,
+    })),
+  );
+
+  // Get query client
+  const queryClient = useQueryClient();
+
+  // Define form with zod schema
+  /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
+  const form = useForm<z.infer<typeof queueZodSchema>>({
+    resolver: zodResolver(queueZodSchema),
+    defaultValues: {
+      id: "",
+      name: "",
+      isDisabled: false,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: new Date(),
+    },
+  });
+
+  // Destructor form values and methods
+  const {
+    formState: { isDirty },
+  } = form;
+
+  // Fetch queue data when rowId changes
+  useEffect(() => {
+    // Get queues data from query client
+    const queuesData = queryClient.getQueryData<{
+      data: QueuesTableDto[];
+    }>(DATA_QUERY_KEY);
+
+    // Get queue data by id
+    const queueData = queuesData?.data.find((item) => item.id === rowId);
+
+    // Set queue name
+    setqueueName(queueData?.name ?? "");
+
+    // Set queue data to form
+    form.reset({
+      id: rowId,
+      name: queueData?.name ?? "",
+      isDisabled: queueData?.isDisabled ?? false,
+      // Read (view) only fields
+      createdBy:
+        queueData?.createdBy ??
+        userSession?.firstName + " " + userSession?.lastName,
+      createdOn: queueData?.createdOn
+        ? new Date(queueData?.createdOn)
+        : new Date(),
+      lastModifiedBy:
+        queueData?.lastModifiedBy ??
+        userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: queueData?.lastModifiedOn
+        ? new Date(queueData?.lastModifiedOn)
+        : new Date(),
+    });
+  }, [rowId, form, queryClient, userSession]);
+
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+  } = useCheckAvailability<z.infer<typeof queueZodSchema>, z.ZodString>({
+    defaultInputValue: queueName,
+    fieldName: "name",
+    form,
+    fieldSchema: queueNameSchema,
+    checkAvailabilityAPIFn: isNameAvailable,
+  });
+
+  // Refine form data based on crud action
+  const refineFormData = (formData: z.infer<typeof queueZodSchema>) => {
+    return {
+      ...formData,
+      lastModifiedBy: userSession?.email ?? "",
+      lastModifiedOn: new Date().toISOString(),
+    };
+  };
+
+  // Save the form dirty state
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  // Reset availability message when dialog closes
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
+
+  // Return form and methods
+  return {
+    form,
+    isDirty,
+    rowId,
+    crudAction,
+    setShowDialog,
+    refineFormData,
+    isAvailable,
+    availabilityMessage,
+    setAvailabilityMessage,
+    isCheckPending,
+    handleInputChange,
+  };
+};

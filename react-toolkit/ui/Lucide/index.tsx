@@ -1,5 +1,5 @@
-import * as lucideIcons from "lucide-react";
-import { twMerge } from "tailwind-merge";
+import * as lucideIcons from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 export type LucidIconName = keyof typeof lucideIcons.icons;
 
@@ -14,7 +14,7 @@ function Lucide(props: Readonly<LucideProps>) {
   return (
     <Component
       {...computedProps}
-      className={twMerge(["h-5 w-5 stroke-[1]", className])}
+      className={twMerge(["h-5 w-5 stroke-2", className])}
     />
   );
 }

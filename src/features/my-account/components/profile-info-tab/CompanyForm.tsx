@@ -115,13 +115,15 @@ export const CompanyForm = () => {
             messageForInput=""
             showSkelaton={isPending || isLoading}
           >
-            <SelectField
-              {...countriesSelectProps}
-              className="border-slate-300/60 shadow-sm"
-              disabled={
-                userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
-              }
-            />
+            {form.getValues("country") !== "" && (
+              <SelectField
+                {...countriesSelectProps}
+                className="border-slate-300/60 shadow-sm"
+                disabled={
+                  userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
+                }
+              />
+            )}
           </InputDivElement>
 
           <InputDivElement

@@ -2,13 +2,13 @@ import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
   BellIcon,
-  ChartPieIcon,
-  CogIcon,
   FolderIcon,
   IdentificationIcon,
   PlayIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
+  CogIcon,
+  ChartPieIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
@@ -51,27 +51,27 @@ const workspaceAppConfig: IAppConfig = {
           {
             Icon: DesktopIcon,
             name: "machines",
-            route: "/machines",
+            route: "/orchestrator/machines",
           },
           {
             Icon: BellIcon,
             name: "Agents",
-            route: "/agents",
+            route: "/orchestrator/agents",
           },
           {
             Icon: QueueListIcon,
             name: "queues",
-            route: "/queues",
+            route: "/orchestrator/queues",
           },
           {
             Icon: PlayIcon,
-            name: "executions",
-            route: "/executions",
+            name: "execution",
+            route: "/orchestrator/execution",
           },
           {
             Icon: CogIcon,
             name: "config hub",
-            route: "/config-hub",
+            route: "/orchestrator/config-hub",
           },
         ],
       },

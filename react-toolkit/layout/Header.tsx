@@ -1,16 +1,16 @@
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { Navbar } from "@/react-toolkit/layout/navbar";
-import { NavbarOnSheet } from "@/react-toolkit/layout/NavbarOnSheet";
-import { Sidebar } from "@/react-toolkit/layout/sidebar";
-import { SidebarToggle } from "@/react-toolkit/layout/SidebarToggle";
-import { cn } from "@/react-toolkit/lib/utils";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { IAppConfig } from "@/react-toolkit/types/app-config";
-import { NavLocation } from "@/react-toolkit/types/nav-data-types";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { SearchBox } from "@/react-toolkit/ui/custom/SearchBox";
+import { UnreadNotifications } from '@/react-toolkit/features/unread-notifications/components/unread-notifications'
+import { UserAccountModal } from '@/react-toolkit/features/user-account/UserAccountModal'
+import { AppLogo } from '@/react-toolkit/layout/AppLogo'
+import { Navbar } from '@/react-toolkit/layout/navbar'
+import { NavbarOnSheet } from '@/react-toolkit/layout/NavbarOnSheet'
+import { Sidebar } from '@/react-toolkit/layout/sidebar'
+import { SidebarToggle } from '@/react-toolkit/layout/SidebarToggle'
+import { cn } from '@/react-toolkit/lib/utils'
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store'
+import { IAppConfig } from '@/react-toolkit/types/app-config'
+import { NavLocation } from '@/react-toolkit/types/nav-data-types'
+import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
+import { SearchBox } from '@/react-toolkit/ui/custom/SearchBox'
 
 interface HeaderProps {
   appConfig: IAppConfig;
@@ -54,7 +54,10 @@ const Header = ({
           {appConfig.navData.navLocation === NavLocation.sidebar ? (
             <>
               <SidebarToggle className="hidden md:flex" />
-              <Sidebar className="hidden md:block" appConfig={appConfig} />
+              <Sidebar
+                className={cn(["hidden md:block"])}
+                appConfig={appConfig}
+              />
             </>
           ) : null}
           <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />

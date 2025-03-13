@@ -1,14 +1,22 @@
-import { create } from "zustand";
+import { create } from 'zustand'
 
 interface BaseLayoutStore {
   sidebarExpand: boolean;
   navbarOnSheetOpen: boolean;
   notificationOpen: boolean;
   confirmActionOpen: boolean;
+
+  //*
+  // store to set for user heading popover to the right corner */
+  isPopOverOpen: boolean;
   setSidebarExpand: (sidebarExpand: boolean) => void;
   setNavbarOnSheetOpen: (navbarOnSheetOpen: boolean) => void;
   setNotificationOpen: (notificationOpen: boolean) => void;
   setConfirmActionOpen: (confirmActionOpen: boolean) => void;
+
+  //*
+  // store to set for user heading popover to the right corner */
+  setIsPopOverOpen: (isOpen: boolean) => void;
 }
 
 const useBaseLayoutStore = create<BaseLayoutStore>((set) => ({
@@ -17,6 +25,7 @@ const useBaseLayoutStore = create<BaseLayoutStore>((set) => ({
   navbarOnSheetOpen: false,
   notificationOpen: false,
   confirmActionOpen: false,
+  isPopOverOpen: false,
 
   // Methods for manipulating state
   setSidebarExpand: (newValue: boolean) =>
@@ -27,6 +36,8 @@ const useBaseLayoutStore = create<BaseLayoutStore>((set) => ({
     set((state) => ({ ...state, notificationOpen: newValue })),
   setConfirmActionOpen: (newValue: boolean) =>
     set((state) => ({ ...state, confirmActionOpen: newValue })),
+  setIsPopOverOpen: (newValue: boolean) =>
+    set((state) => ({ ...state, isPopOverOpen: newValue })),
 }));
 
 export { useBaseLayoutStore };
