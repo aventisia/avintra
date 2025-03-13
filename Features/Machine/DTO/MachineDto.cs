@@ -25,7 +25,7 @@ public class MachineDto
     /// IP address of the machine (supports IPv4 or IPv6)
     /// </summary>
     [Required, MaxLength(100)]
-    public string? IPAddress { get; set; }
+    public required string IPAddress { get; set; }
 
     /// <summary>
     /// Represents the host name of the machine
@@ -42,8 +42,7 @@ public class MachineDto
     /// <summary>
     /// Represents the status of the machine. Possible values are: Idle, Online, Offline, Running, Stopped
     /// </summary>
-    [Required]
-    public required MachineStatusTypeEnum Status { get; set; }
+    public MachineStatusTypeEnum Status { get; set; } = MachineStatusTypeEnum.Idle;
 
     /// <summary>
     /// Represents the environment of the machine, e.g., Development, UAT, Production
@@ -54,8 +53,7 @@ public class MachineDto
     /// <summary>
     /// Represents the running agent/flow activity on the machine, if any
     /// </summary>
-    [Required]
-    public required TaskTypesEnum CurrentTask { get; set; }
+    public TaskTypesEnum CurrentTask { get; set; } = TaskTypesEnum.FlowActivity;
 
     /// <summary>
     /// Represents the availability of the machine for another task. True if available, False if not.
