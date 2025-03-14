@@ -206,6 +206,8 @@ public class MachineService : IMachineService
                                             .Include(a => a.CreatedByUser)
                                             .Include(a => a.LastModifiedByUser)
                                             .Include(a => a.MachineFlows)
+                                                .ThenInclude(fv => fv.FlowVersion)
+                                                .ThenInclude(f => f.Flow)
                                             .AsNoTracking()
                                             .ToListAsync();
 
@@ -244,6 +246,8 @@ public class MachineService : IMachineService
                                             .Include(a => a.CreatedByUser)
                                             .Include(a => a.LastModifiedByUser)
                                             .Include(a => a.MachineFlows)
+                                                .ThenInclude(fv => fv.FlowVersion)
+                                                .ThenInclude(f => f.Flow)
                                             .AsNoTracking()
                                             .FirstOrDefaultAsync();
 
@@ -521,7 +525,8 @@ public class MachineService : IMachineService
 
             // Validate agents and fetch valid agent entries
             var agents = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+                .AsNoTracking()
                 .ToListAsync();
 
             var invalidAgentIds = agentIds.Except(agents.Select(a => a.Id)).ToList();
@@ -532,21 +537,12 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Get the machine and its existing flows
-            var machine = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => w.Id == machineId && w.CreatedByUserId == _userId)
-                .Include(a => a.MachineFlows)
-                .FirstOrDefaultAsync();
-
-            if (machine == null)
-            {
-                _logger.LogInformation("Machine not found.");
-                serviceResponse.Message = "The machine does not exist.";
-                return serviceResponse;
-            }
-
             // Get existing machine flows and determine changes
-            var existingMachineFlows = machine.MachineFlows?.ToList() ?? new List<MachineFlow>();
+            var existingMachineFlows = await _unitOfWork.MachineFlowRepo
+                        .GetByConditionAsync(mf => mf.MachineId == machineId)
+                        .AsNoTracking()
+                        .ToListAsync();
+
             var existingAgentIds = existingMachineFlows.Select(mf => mf.FlowVersionId).ToList();
 
             var newAgentIds = agentIds.Except(existingAgentIds).ToList();
@@ -570,23 +566,28 @@ public class MachineService : IMachineService
             if (machineFlowsToAdd.Any())
             {
                 await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlowsToAdd);
+
+                // Attempt to save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Database save operation failed while assigning or inserting agents.");
+                    serviceResponse.Message = "Failed to insert agent assignments for the machine.";
+                    return serviceResponse;
+                }
             }
 
             if (machineFlowsToRemove.Any())
             {
                 _unitOfWork.MachineFlowRepo.Delete(machineFlowsToRemove);
-            }
 
-            // Attempt to save changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Database save operation failed while assigning or updating agents.");
-                serviceResponse.Message = "Failed to update agent assignments for the machine.";
-                return serviceResponse;
+                // Attempt to save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Database save operation failed while assigning or deleting agents.");
+                    serviceResponse.Message = "Failed to insert agent assignments for the machine.";
+                    return serviceResponse;
+                }
             }
-
-            // Return successful response
-            serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"{newAgentIds.Count} agents assigned and {removedAgentIds.Count} agents removed from the machine.";
         }
