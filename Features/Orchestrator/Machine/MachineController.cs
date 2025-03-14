@@ -59,20 +59,6 @@ public class MachineController : BaseApiController
         return ResultHelper(await _machineService.DeleteMachinesAsync(machineIds));
     }
 
-    // Assign multiple agent to machine by their IDs.
-    [HttpPost("{machineId}/assign-agent")]
-    public async Task<ActionResult<ServiceResponse<bool>>> AssignAgentsToMachineAsync(Guid machineId,[FromBody] IEnumerable<Guid> agentIds)
-    {
-        return ResultHelper(await _machineService.AssignAgentsToMachineAsync(machineId, agentIds));
-    }
-
-    // Delete multiple agent from machine by their IDs.
-    [HttpPost("{machineId}/remove-agent")]
-    public async Task<ActionResult<ServiceResponse<bool>>> RemoveAgentsFromMachineAsync(Guid machineId ,[FromBody] IEnumerable<Guid> agentIds)
-    {
-        return ResultHelper(await _machineService.RemoveAgentsFromMachineAsync(machineId, agentIds));
-    }
-
     // Retrieve agent list by machine ID.
     [HttpGet("{machineId}/agents")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AssignAgentDto>>>> GetAgentsByMachineAsync(Guid machineId)

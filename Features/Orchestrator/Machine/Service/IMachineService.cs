@@ -54,22 +54,6 @@ public interface IMachineService
     Task<ServiceResponse<bool>> DeleteMachinesAsync(IEnumerable<Guid> machineIds);
 
     /// <summary>
-    /// Assigns multiple agents to a machine asynchronously.
-    /// </summary>
-    /// <param name="machineId">The ID of the machine to which agents will be assigned.</param>
-    /// <param name="agentIds">A collection of IDs representing the agents to be assigned.</param>
-    /// <returns>A service response indicating whether the agent assignment was successful or not.</returns>
-    Task<ServiceResponse<bool>> AssignAgentsToMachineAsync(Guid machineId, IEnumerable<Guid> agentIds);
-
-    /// <summary>
-    /// Removes multiple agents from a machine asynchronously.
-    /// </summary>
-    /// <param name="machineId">The ID of the machine from which agents will be removed.</param>
-    /// <param name="agentIds">A collection of IDs representing the agents to be removed.</param>
-    /// <returns>A service response indicating whether the agent removal was successful or not.</returns>
-    Task<ServiceResponse<bool>> RemoveAgentsFromMachineAsync(Guid machineId, IEnumerable<Guid> agentIds);
-
-    /// <summary>
     /// Retrieves a list of agents assigned to a machine asynchronously.
     /// </summary>
     /// <param name="machineId">The ID of the machine for which assigned agents will be retrieved.</param>
