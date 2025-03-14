@@ -45,11 +45,6 @@ public class UploadedDoc : BaseEntity, IMustHaveTenant
     public virtual MLModel? MLModel { get; set; }
 
     /// <summary>
-    /// Gets or sets the annotation data to which this data model is associated with.
-    /// </summary>
-    public virtual AnnotationData? AnnotationData { get; set; }
-    
-    /// <summary>
     /// Gets or sets the extracted data to which this data model is associated with.
     /// </summary>
     public virtual ExtractedData? ExtractedData { get; set; }

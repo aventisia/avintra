@@ -27,7 +27,6 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ExtractedData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<DataField>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<AnnotationData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<MLModel>().HasIndex(index => new {index.Name, index.CreatedByUserId}).IsUnique();
@@ -38,7 +37,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().Property(e =>e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());
         modelBuilder.Entity<DataField>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FieldTypesEnum>());
         modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<PurposeTypesEnum>());
-
+        modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User
         modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -64,15 +63,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().HasMany(many => many.ExtractedData).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.DataFields).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasMany(many => many.AnnotationData).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
 
-        // Configure One-to-One relationship between Data Model and ModelBuilder User
-        modelBuilder.Entity<AnnotationData>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<AnnotationData>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
-        // Configure One-to-One relationship between Uploaded doc and Annotation data
-        modelBuilder.Entity<UploadedDoc>().HasOne(one => one.AnnotationData).WithOne(one => one.UploadedDoc).HasForeignKey<AnnotationData>(fKey => fKey.UploadedDocId).OnDelete(DeleteBehavior.Restrict);
-        
         // Configure One-to-One relationship between Uploaded doc and extracted data
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.ExtractedData).WithOne(one => one.UploadedDoc).HasForeignKey<ExtractedData>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
         
@@ -117,7 +108,6 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<ExtractedData> ExtractedData { get; set; }
     public DbSet<DataField> DataFields { get; set; }
     public DbSet<UploadedDoc> UploadedDocs { get; set; }
-    public DbSet<AnnotationData> AnnotationData { get; set; }
     public DbSet<LLM> LLMs { get; set; }
 
 }

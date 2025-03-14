@@ -20,6 +20,5 @@ public interface IUnitOfWork
     IExtractedDataRepo ExtractedDataRepo { get; }
     IUploadedDocRepo UploadedDocRepo { get; }
     IModelBuilderUserRepo ModelBuilderUserRepo { get; }
-    IAnnotationDataRepo AnnotationDataRepo { get; }
     ILLMRepo LLMRepo { get; }
 }

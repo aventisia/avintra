@@ -1,11 +1,11 @@
 meta {
-  name: Insert annotation data
+  name: Insert a LLM
   type: http
-  seq: 3
+  seq: 2
 }
 
 post {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/annotation-data/
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/llm/
   body: none
   auth: none
 }
@@ -14,16 +14,14 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    uploadedDocId: "01953be3-43e6-77ab-a4bb-2431853302a9",
-    annotationData: faker.lorem.sentence(),
+    Name: faker.person.jobType(),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
     bru.setGlobalEnvVar(
-    "DATA_ID",
+    "LLM_ID",
     res.getBody().data.id
     );
   }

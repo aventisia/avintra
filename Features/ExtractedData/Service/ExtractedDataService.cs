@@ -30,7 +30,7 @@ public class ExtractedDataService : IExtractedDataService
     #region Methods
 
     // Get the list extracted data of a specific ML model
-    public async Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId)
+    public async Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId, ExtractedDataType type)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<ExtractedDataDto>>
@@ -43,7 +43,7 @@ public class ExtractedDataService : IExtractedDataService
         {
             //Try to get extracted data
             var extractedData = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(d => d.MLModelId == mlModelId).Include(c => c.CreatedByUser)
+                .GetByConditionAsync(d => d.MLModelId == mlModelId && d.Type == type).Include(c => c.CreatedByUser)
                 .OrderByDescending(ml => ml.CreatedOn)
                 .ProjectToType<ExtractedDataDto>()
                 .ToListAsync();

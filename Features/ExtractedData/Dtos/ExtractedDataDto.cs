@@ -38,6 +38,11 @@ public class ExtractedDataDto
     public decimal? Accuracy { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of extra
+    /// </summary>
+    public ExtractedDataType? Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of creation of extracted data.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

@@ -3,11 +3,12 @@ namespace MLModelBuilderAPIs.Services;
 public interface IExtractedDataService
 {
     /// <summary>
-    /// Get a list of extracted data
+    /// Get list of extracted data
     /// </summary>
-    /// <param name="extractedDataDto">Extracted Data Dto</param>
-    /// <returns>A list of extracted data of a specific ML Model</returns>
-    Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId);
+    /// <param name="mlModelId">Model Library identifier</param>
+    /// <param name="type">Extracted data type</param>
+    /// <returns>A list og extracted data with specific model identifier and extracted data type</returns>
+    Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId, ExtractedDataType type);
 
     /// <summary>
     /// Inserts an extracted data

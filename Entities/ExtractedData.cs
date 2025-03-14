@@ -27,6 +27,11 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public decimal? Accuracy { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of extra
+    /// </summary>
+    public ExtractedDataType? Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the model library to which this data model is associated with.
     /// </summary>
     [ForeignKey("MLModelId")]
