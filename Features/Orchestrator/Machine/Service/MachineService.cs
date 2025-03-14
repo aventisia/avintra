@@ -59,10 +59,10 @@ public class MachineService : IMachineService
         return serviceResponse;
     }
 
-    // Insert new machine
+    // Insert new machine and assign agents
     public async Task<ServiceResponse<MachineDto>> CreateNewMachineAsync(MachineDto machineDto)
     {
-        // Initialize ServiceResponse with failed response
+        // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<MachineDto>
         {
             Data = null,
@@ -71,23 +71,21 @@ public class MachineService : IMachineService
 
         try
         {
-
             // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
-                                                    .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == machineDto.Name.ToLower()
-                                                    )
-                                                    .FirstOrDefaultAsync();
+                .GetByConditionAsync(w => w.Name.ToLower() == machineDto.Name.ToLower())
+                .FirstOrDefaultAsync();
 
             // Machine already exists
             if (machineAlreadyExists != null)
             {
-                _logger.LogInformation($"Machine already exists");
+                _logger.LogInformation("Machine already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine with same name already exists. Please enter a unique name";
+                serviceResponse.Message = "A machine with the same name already exists. Please enter a unique name";
                 return serviceResponse;
             }
-            // Trim dto' string props
+
+            // Trim dto's string properties
             machineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineDto);
 
             // Default mapping
@@ -98,17 +96,33 @@ public class MachineService : IMachineService
             // Insert machine
             await _unitOfWork.MachineRepo.InsertAsync(newMachine);
 
-            // Insert-Job failed
+            // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while inserting new machine");
                 return serviceResponse;
             }
+
+            // Attempt to assign or update agents for the newly created machine, if any agent IDs exist
+            if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
+            {
+                var agentResponse = await AssignOrUpdateAgentsAsync(newMachine.Id, machineDto.AgentIds);
+                if (!agentResponse.Data)
+                {
+                    // If agent assignment fails, roll back the machine creation
+                    _unitOfWork.MachineRepo.Delete(newMachine);
+
+                    // The delete will be saved in the next save operation
+                    serviceResponse.Message = agentResponse.Message;
+                    return serviceResponse;
+                }
+            }
+
             // Task successful
             serviceResponse.Data = newMachine.Adapt<MachineDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine created successfully";
-            _logger.LogInformation("Machine created successfully with id {Id}", newMachine.Id);
+            _logger.LogInformation("Machine created successfully with id {Id} and agents assigned", newMachine.Id);
         }
         catch (Exception ex)
         {
@@ -199,7 +213,7 @@ public class MachineService : IMachineService
             serviceResponse.Data = machines.Adapt<IEnumerable<MachineDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machines retrieved successfully";
-            _logger.LogInformation("Machines retrieved successfully.");
+            _logger.LogInformation("Machines retrieved successfully");
         }
         catch (Exception ex)
         {
@@ -257,7 +271,7 @@ public class MachineService : IMachineService
     // Update an existence machine
     public async Task<ServiceResponse<MachineDto>> UpdateMachineAsync(MachineDto machineDto)
     {
-        // Initialize ServiceResponse with failed response
+        // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<MachineDto>
         {
             Data = null,
@@ -276,29 +290,29 @@ public class MachineService : IMachineService
             // Machine does not exist
             if (machine == null)
             {
-                _logger.LogInformation($"Machine does not exist");
+                _logger.LogInformation("Machine does not exist");
                 serviceResponse.Message = "Machine does not exist";
                 return serviceResponse;
             }
 
             // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
-                            .GetByConditionAsync(m =>
-                                m.Name.ToLower() == machineDto.Name.ToLower() &&
-                                m.Id != machineDto.Id
-                            )
-                            .FirstOrDefaultAsync();
+                .GetByConditionAsync(m =>
+                    m.Name.ToLower() == machineDto.Name.ToLower() &&
+                    m.Id != machineDto.Id
+                )
+                .FirstOrDefaultAsync();
 
             // Machine already exists
             if (machineAlreadyExists != null)
             {
-                _logger.LogInformation($"Machine name already exists");
+                _logger.LogInformation("Machine name already exists");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine with same name already exists. Please enter a unique name";
+                serviceResponse.Message = "A machine with the same name already exists. Please enter a unique name";
                 return serviceResponse;
             }
 
-            // Trim dto' string props
+            // Trim dto's string properties
             machineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineDto);
 
             // Default mapping 
@@ -309,17 +323,29 @@ public class MachineService : IMachineService
             // Update machine
             _unitOfWork.MachineRepo.Update(machine);
 
-            // Update-Job failed
+            // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while updating machine");
                 return serviceResponse;
             }
 
+            // Attempt to assign or update agents for the machine, if any agent IDs exist
+            if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
+            {
+                var agentResponse = await AssignOrUpdateAgentsAsync(machine.Id, machineDto.AgentIds);
+                if (!agentResponse.Data)
+                {
+                    // If agent assignment fails, roll back the machine update
+                    serviceResponse.Message = agentResponse.Message;
+                    return serviceResponse;
+                }
+            }
+
             // Task successful
             serviceResponse.Data = machine.Adapt<MachineDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Machine updated successfully.";
+            serviceResponse.Message = "Machine updated successfully";
             _logger.LogInformation("Machine updated successfully with Id {Id}", machineDto.Id);
         }
         catch (Exception ex)
@@ -652,7 +678,7 @@ public class MachineService : IMachineService
             // Return the agents along with their assignment status
             serviceResponse.Data = agents;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Agents retrieved successfully.";
+            serviceResponse.Message = "Agents retrieved successfully";
         }
         catch (Exception ex)
         {
@@ -685,11 +711,109 @@ public class MachineService : IMachineService
             // Set the serviceResponse
             serviceResponse.Data = machinesToSelect;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Machines retrieved successfully.";
+            serviceResponse.Message = "Machines retrieved successfully";
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving the machine list.");
+        }
+
+        return serviceResponse;
+    }
+
+    private async Task<ServiceResponse<bool>> AssignOrUpdateAgentsAsync(Guid machineId, IEnumerable<Guid> agentIds)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to assign agents. Please try again."
+        };
+
+        try
+        {
+            // Validate that agent IDs are unique (no duplicates)
+            if (agentIds.Count() != agentIds.Distinct().Count())
+            {
+                _logger.LogInformation("Duplicate agent IDs detected.");
+                serviceResponse.Message = "Agent IDs cannot contain duplicates.";
+                return serviceResponse;
+            }
+
+            // Validate agents and fetch valid agent entries
+            var agents = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished && w.CreatedByUserId == _userId)
+                .ToListAsync();
+
+            var invalidAgentIds = agentIds.Except(agents.Select(a => a.Id)).ToList();
+            if (invalidAgentIds.Any())
+            {
+                _logger.LogInformation("Invalid agent IDs found: {InvalidAgentIds}", string.Join(", ", invalidAgentIds));
+                serviceResponse.Message = $"The following agent IDs are invalid or do not belong to the user: {string.Join(", ", invalidAgentIds)}";
+                return serviceResponse;
+            }
+
+            // Get the machine and its existing flows
+            var machine = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w => w.Id == machineId && w.CreatedByUserId == _userId)
+                .Include(a => a.MachineFlows)
+                .FirstOrDefaultAsync();
+
+            if (machine == null)
+            {
+                _logger.LogInformation("Machine not found.");
+                serviceResponse.Message = "The machine does not exist.";
+                return serviceResponse;
+            }
+
+            // Get existing machine flows and determine changes
+            var existingMachineFlows = machine.MachineFlows?.ToList() ?? new List<MachineFlow>();
+            var existingAgentIds = existingMachineFlows.Select(mf => mf.FlowVersionId).ToList();
+
+            var newAgentIds = agentIds.Except(existingAgentIds).ToList();
+            var removedAgentIds = existingAgentIds.Except(agentIds).ToList();
+
+            // Create new MachineFlow entries for agents not already assigned
+            var machineFlowsToAdd = newAgentIds.Select(agentId => new MachineFlow
+            {
+                MachineId = machineId,
+                FlowVersionId = agentId,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            }).ToList();
+
+            // Remove existing MachineFlow entries for agents that are no longer assigned
+            var machineFlowsToRemove = existingMachineFlows
+                .Where(mf => removedAgentIds.Contains(mf.FlowVersionId))
+                .ToList();
+
+            // Begin the transaction to insert and remove data
+            if (machineFlowsToAdd.Any())
+            {
+                await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlowsToAdd);
+            }
+
+            if (machineFlowsToRemove.Any())
+            {
+                _unitOfWork.MachineFlowRepo.Delete(machineFlowsToRemove);
+            }
+
+            // Attempt to save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Database save operation failed while assigning or updating agents.");
+                serviceResponse.Message = "Failed to update agent assignments for the machine.";
+                return serviceResponse;
+            }
+
+            // Return successful response
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{newAgentIds.Count} agents assigned and {removedAgentIds.Count} agents removed from the machine.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while assigning agents.");
+            return serviceResponse;
         }
 
         return serviceResponse;

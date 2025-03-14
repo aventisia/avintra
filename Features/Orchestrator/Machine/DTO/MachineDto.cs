@@ -53,7 +53,7 @@ public class MachineDto
     /// <summary>
     /// Represents the running agent/flow activity on the machine, if any
     /// </summary>
-    public TaskTypesEnum CurrentTask { get; set; } = TaskTypesEnum.FlowActivity;
+    public string? CurrentTask { get; set; }
 
     /// <summary>
     /// Represents the availability of the machine for another task. True if available, False if not.
@@ -101,4 +101,10 @@ public class MachineDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of unique identifiers for agents(flow version) associated with the user.
+    /// This property may be included in requests and responses.
+    /// </summary>
+    public IEnumerable<Guid>? AgentIds { get; set; }
 }
