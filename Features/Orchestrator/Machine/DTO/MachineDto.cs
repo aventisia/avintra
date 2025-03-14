@@ -56,11 +56,6 @@ public class MachineDto
     public string? CurrentTask { get; set; }
 
     /// <summary>
-    /// Represents the availability of the machine for another task. True if available, False if not.
-    /// </summary>
-    public bool IsAvailable { get; set; }
-
-    /// <summary>
     /// Gets or sets the agents count which are associated with the machine.
     /// </summary>
     public int? AgentCount { get; set; }

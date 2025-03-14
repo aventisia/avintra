@@ -41,17 +41,6 @@ public class Machine : BaseEntity, IMustHaveTenant
     public required EnvironmentTypesEnum Environment { get; set; }
 
     /// <summary>
-    /// Represents the running agent/flow activity on the machine, if any
-    /// </summary>
-    [Required]
-    public required TaskTypesEnum CurrentTask { get; set; }
-
-    /// <summary>
-    /// Represents the availability of the machine for another task. True if available, False if not.
-    /// </summary>
-    public bool IsAvailable { get; set; }
-
-    /// <summary>
     /// Represents the timestamp of when the machine was last checked in
     /// </summary>
     public DateTime LastCheckedIn { get; set; }
@@ -59,5 +48,5 @@ public class Machine : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Many-to-Many relationship with Flows, representing the machine's associated flow activities
     /// </summary>
-    public virtual ICollection<MachineFlow>? MachineFlows { get; set; }
+    public virtual ICollection<MachineFlow> MachineFlows { get; set; } = new List<MachineFlow>();
 }
