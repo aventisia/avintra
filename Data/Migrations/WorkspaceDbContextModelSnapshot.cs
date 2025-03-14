@@ -509,10 +509,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CurrentTask")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Environment")
                         .IsRequired()
                         .HasColumnType("text");
@@ -525,9 +521,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("IPAddress")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");

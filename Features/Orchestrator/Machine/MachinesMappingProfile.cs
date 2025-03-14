@@ -14,7 +14,14 @@ public class MachinesMappingProfile : IRegister
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null);
+                    : null)
+            .Map(dest => dest.CurrentTask,
+                src =>
+                    src.MachineFlows.Count != 0
+                        ? src.MachineFlows
+                            .OrderByDescending(o => o.CreatedOn)
+                            .First().FlowVersion.Flow.Name
+                        : null);
 
         // Mapping to get agent list
         config.NewConfig<FlowVersion, AssignAgentDto>()
@@ -34,18 +41,18 @@ public class MachinesMappingProfile : IRegister
 
         // Mapping for inserting or updating project record
         config.NewConfig<MachineDto, Machine>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.LastModifiedOn)
-            .Ignore(dest => dest.TenantId)
-            .IgnoreNullValues(true);
+                .Ignore(dest => dest.Id)
+                .Ignore(dest => dest.CreatedOn)
+                .Ignore(dest => dest.LastModifiedOn)
+                .Ignore(dest => dest.TenantId)
+                .IgnoreNullValues(true);
 
 
         // New Mapping for Machine to SelectOptionDto(For dropdowns or select lists)
         config.NewConfig<Machine, SelectOptionDto>()
-            .Map(dest => dest.Value, src => src.Id)
-            .Map(dest => dest.Label, src => src.Name)
-            .Map(dest => dest.Description, src => src.Hostname)
-            .Map(dest => dest.Disabled, src => src.IsDisabled);
+                .Map(dest => dest.Value, src => src.Id)
+                .Map(dest => dest.Label, src => src.Name)
+                .Map(dest => dest.Description, src => src.Hostname)
+                .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }
