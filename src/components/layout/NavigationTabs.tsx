@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const tabs = [
   { id: "label", label: "Label" },
-  { id: "train", label: "Train" },
+  { id: "fineTune", label: "Fine-tune" },
   { id: "test", label: "Test" },
   { id: "view", label: "View" },
 ];
@@ -28,7 +28,7 @@ export const NavigationTabs = () => {
   return (
     <>
       {/* Tabs Container */}
-      <div className="flex rounded-lg bg-gray-100 p-1">
+      <div className="mr-2 flex rounded-lg bg-gray-100 p-1">
         {tabs.map((tab) => (
           <Button
             disabled={["train", "view"].includes(tab.id)} //temporary disable view and train tabs
