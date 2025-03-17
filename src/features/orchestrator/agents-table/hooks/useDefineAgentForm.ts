@@ -89,6 +89,7 @@ export const useDefineAgentForm = () => {
       isPublished: agentData?.isPublished,
       isArchived: agentData?.isArchived,
       versionNumber: agentData?.versionNumber,
+      machineCount: agentData?.machineCount,
 
       createdBy:
         agentData?.createdBy ??
