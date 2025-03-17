@@ -112,10 +112,12 @@ export const PdfPreviewer: React.FC = () => {
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  const parentRef = useRef<HTMLDivElement>(null);
+
   // Create a ref for the invisible trigger button
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  const { width } = useParentWidth(canvasRef);
+  const { width } = useParentWidth(parentRef, 32);
 
   const handlePdfSelect = (newPdf: PdfViewerDto) => {
     setSelectedPdf(newPdf);
@@ -336,16 +338,17 @@ export const PdfPreviewer: React.FC = () => {
   }
 
   return (
-    <div className="w-2/3 max-w-[65vw] rounded-lg border bg-white shadow">
+    <div
+      ref={parentRef}
+      className="col-span-2 overflow-hidden rounded-lg border bg-white shadow"
+    >
       <ControlPanel
         scale={scale}
         numPages={numPages ?? 0}
         pageNumber={pageNumber}
         rotate={rotate}
       />
-      <ScrollArea
-        className={`h-[calc(100vh-11.2rem)] w-[calc(${width / scale}px)] rounded-lg`}
-      >
+      <ScrollArea className={`h-[calc(100vh-11.2rem)] w-full p-2`}>
         <div
           ref={canvasRef}
           style={{ position: "relative", width: "100%" }}
@@ -393,9 +396,8 @@ export const PdfPreviewer: React.FC = () => {
             setIsOpen={setIsOpen}
             triggerRef={triggerRef}
           />
-
-          <ScrollBar orientation="horizontal" />
         </div>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
       <PaginatedSelect
         pdfList={pdfList?.data}

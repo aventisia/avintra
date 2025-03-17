@@ -44,7 +44,7 @@ export const LabelDataContainer = () => {
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
 
       {step == 1 ? (
-        <div className="flex justify-between gap-0">
+        <div className="grid w-full grid-cols-3">
           <PdfPreviewer />
           <AddFields />
         </div>
