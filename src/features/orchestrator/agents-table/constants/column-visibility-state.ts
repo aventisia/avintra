@@ -10,3 +10,11 @@ export const columnVisibilityState = {
   versionNumber: true,
   machineCount: true,
 };
+
+
+export const machineSelectTableColumnVisibilityState = {
+  id: true,
+  name: false,
+  versionNumber: true,
+  isAssigned: false
+}
