@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
-import { useAgentsTableStore } from "../stores/agents-table-store";
 import { agentZodSchema } from "../constants/agent-zod-schema";
+import { DATA_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook for defining a agent form.
@@ -16,14 +16,6 @@ import { agentZodSchema } from "../constants/agent-zod-schema";
 export const useDefineAgentForm = () => {
   // Set agent name state (required for avaialbility check)
   const [agentName, setAgentName] = useState("");
-
-  // Get agents store state and actions
-  const { machineId: projectId, agentsQueryKey } = useAgentsTableStore(
-    useShallow((state) => ({
-      machineId: state.machineId,
-      agentsQueryKey: state.agentsQueryKey,
-    })),
-  );
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -78,7 +70,7 @@ export const useDefineAgentForm = () => {
     // Get agents data from query client
     const agentsData = queryClient.getQueryData<{
       data: AgentsTableDto[];
-    }>(agentsQueryKey);
+    }>(DATA_QUERY_KEY);
 
     // Get agent data by id
     const agentData = agentsData?.data.find((item) => item.id === rowId);
@@ -105,7 +97,7 @@ export const useDefineAgentForm = () => {
         ? new Date(agentData?.createdOn)
         : new Date(),
     });
-  }, [rowId, projectId, form, queryClient, agentsQueryKey, userSession]);
+  }, [rowId, form, queryClient, userSession]);
 
 
   // Refine form data based on crud action
@@ -127,11 +119,11 @@ export const useDefineAgentForm = () => {
   return {
     form,
     isDirty,
-    agentsQueryKey,
     agentName,
     rowId,
     crudAction,
     setShowDialog,
     refineFormData,
+    toggleFormDirty
   };
 };
