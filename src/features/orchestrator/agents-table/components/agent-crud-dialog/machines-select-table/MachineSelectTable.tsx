@@ -2,18 +2,38 @@ import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { machineSelectTableColumns } from "./MachineSelectTableColumns";
 import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
-import { Table } from "@tanstack/react-table";
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
+import { useAgentsTableStore } from "../../../stores/agents-table-store";
+import { useShallow } from "zustand/react/shallow";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 
-interface MachineSelectTableProps<TData> {
+interface MachineSelectTableProps {
   isRowSelectionEnabled?: boolean;
-  table: Table<TData>;
 }
 
-export function MachineSelectTable<TData>({
-  table,
+export function MachineSelectTable({
   isRowSelectionEnabled = true,
-}: Readonly<MachineSelectTableProps<TData>>) {
-  return (
+}: Readonly<MachineSelectTableProps>) {
+  // Get store state and actions
+  const { currentAgentMachines, isFetchinCurrentAgentMachines } =
+    useAgentsTableStore(
+      useShallow((state) => ({
+        currentAgentMachines: state.currentAgentMachines,
+        isFetchinCurrentAgentMachines: state.isFetchinCurrentAgentMachines,
+      })),
+    );
+
+  // Create a React table for agents data
+  const table = useDataTable(
+    machineSelectTableColumns,
+    currentAgentMachines ?? [],
+    machineSelectTableColumnVisibilityState,
+    true,
+  );
+  return isFetchinCurrentAgentMachines ? (
+    <DataTableSkeleton />
+  ) : (
     <>
       <div className="my-2 flex items-center justify-between">
         <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
