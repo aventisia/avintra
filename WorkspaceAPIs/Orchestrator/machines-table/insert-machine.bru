@@ -23,6 +23,7 @@ script:pre-request {
     currentTask: "FlowActivity",
     lastCheckedIn: faker.date.anytime(), 
     isAvailable: false,
+    agentIds: JSON.parse(`["${bru.getGlobalEnvVar("FLOW_VERSION_ID")}"]`)
   })
 }
 
