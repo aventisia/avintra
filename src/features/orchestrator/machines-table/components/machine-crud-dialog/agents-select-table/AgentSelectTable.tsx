@@ -5,19 +5,19 @@ import { AgentSelectTablePagination } from "./AgentSelectTablePagination";
 import { Table } from "@tanstack/react-table";
 
 interface AgentSelectTableProps<TData> {
-  isRowSelectionEnabled?: boolean;
+  isReadMode?: boolean;
   table: Table<TData>;
 }
 
 export function AgentSelectTable<TData>({
   table,
-  isRowSelectionEnabled = true,
+  isReadMode,
 }: Readonly<AgentSelectTableProps<TData>>) {
   return (
     <>
       <div className="my-2 flex items-center justify-between">
         <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
-          Select agents
+          {isReadMode ? "Assigned agents" : "Select agents..."}
         </h4>
 
         <div className="flex items-center gap-2">
@@ -37,10 +37,7 @@ export function AgentSelectTable<TData>({
         />
       </div>
       <div className="mt-2">
-        <AgentSelectTablePagination
-          isRowSelectionEnabled={isRowSelectionEnabled}
-          table={table}
-        />
+        <AgentSelectTablePagination table={table} />
       </div>
     </>
   );
