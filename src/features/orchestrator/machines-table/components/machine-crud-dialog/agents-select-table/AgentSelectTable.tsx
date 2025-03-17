@@ -17,7 +17,7 @@ export function AgentSelectTable<TData>({
     <>
       <div className="my-2 flex items-center justify-between">
         <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
-          Select agent
+          Select agents
         </h4>
 
         <div className="flex items-center gap-2">

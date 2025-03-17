@@ -22,7 +22,7 @@ export function AgentSelectTablePagination<TData>({
         {isRowSelectionEnabled ? (
           <>
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} agents(s) selected.
+            {table.getFilteredRowModel().rows.length} agents(s) assigned.
           </>
         ) : (
           <>{table.getFilteredRowModel().rows.length} agents(s)</>
