@@ -1,4 +1,5 @@
-import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum"
+import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 
 /**
  * data transfer object for getting the machine data to select and assign to agent.
@@ -21,7 +22,8 @@ export interface AssignMachineDto {
     createdBy: string
     createdOn: Date
     lastModifiedBy: string
-    machineType?: MachineOsTypesEnum
+    type?: MachineOsTypesEnum
+    environment?: MachineEnvironmentTypesEnum
     lastModifiedOn: Date
     isAssigned: boolean
 }
