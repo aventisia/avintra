@@ -23,9 +23,9 @@ export const getColumnName = (key: string): string => {
 };
 
 export const statusColor: { [key in MachineStatusTypesEnum]: string } = {
-  [MachineStatusTypesEnum.Online]: "bg-green-300 text-current",
-  [MachineStatusTypesEnum.Offline]: "bg-slate-300 text-current",
-  [MachineStatusTypesEnum.Idle]: "bg-yellow-300 text-current",
+  [MachineStatusTypesEnum.Online]: "bg-green-200 text-current",
+  [MachineStatusTypesEnum.Offline]: "bg-slate-200 text-current",
+  [MachineStatusTypesEnum.Idle]: "bg-orange-200 text-current",
   [MachineStatusTypesEnum.Running]: "bg-primary",
-  [MachineStatusTypesEnum.Stopped]: "bg-red-300 text-current",
+  [MachineStatusTypesEnum.Stopped]: "bg-red-200 text-current",
 };
