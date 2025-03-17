@@ -4,7 +4,6 @@ import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -26,6 +25,7 @@ import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { agentSelectTableColumnVisibilityState } from "../../constants/column-visibility-state";
 import { agentSelectTableColumns } from "./agents-select-table/AgentSelectTableColumns";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { AddedByAutherCard } from "./AddedByAutherCard";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -92,61 +92,62 @@ export const MachineCrudForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       className="px-2.5 pb-5"
-      disabled={isReadMode}
     >
       {/* Machine Id */}
-      {isReadMode && <InputField {...idProps} />}
+      {isReadMode && <InputField {...idProps} disabled={isReadMode} />}
 
       {/* Name */}
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
+        disabled={isReadMode}
       />
 
       <div className="grid grid-cols-2 gap-2">
         {/* os type */}
         {crudAction === "create" ? (
-          <SelectField {...osTypeProps} />
+          <SelectField {...osTypeProps} disabled={isReadMode} />
         ) : (
-          form.getValues("type") !== "" && <SelectField {...osTypeProps} />
+          form.getValues("type") !== "" && (
+            <SelectField {...osTypeProps} disabled={isReadMode} />
+          )
         )}
 
         {/* Ip Address */}
-        <InputField {...ipAddressProps} />
+        <InputField {...ipAddressProps} disabled={isReadMode} />
       </div>
 
       {/* Host Name */}
-      <InputField {...hostnameProps} />
+      <InputField {...hostnameProps} disabled={isReadMode} />
 
       {/* environment */}
       {form.getValues("environment") !== "" && (
-        <SelectField {...environmentTypeProps} />
+        <SelectField {...environmentTypeProps} disabled={isReadMode} />
       )}
 
       {/* Is Disabled */}
-      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-      {/* AutherCard */}
-      {isReadMode && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
-        />
+      {crudAction !== "create" && (
+        <SwitchField {...isDisabledProps} disabled={isReadMode} />
       )}
 
       <div className="mt-2 h-fit">
         {isFetching ? (
           <DataTableSkeleton />
         ) : (
-          <AgentSelectTable
-            table={table}
-            isRowSelectionEnabled={crudAction !== "read"}
-          />
+          <AgentSelectTable isReadMode={isReadMode} table={table} />
         )}
       </div>
+
+      {/* AutherCard */}
+      {isReadMode && (
+        <AddedByAutherCard
+          addedBy={form.getValues("createdBy")}
+          addedOn={form.getValues("createdOn")}
+          lastModifiedBy={form.getValues("lastModifiedBy")}
+          lastModifiedOn={form.getValues("lastModifiedOn")}
+        />
+      )}
 
       {/* Submit button */}
       {!isReadMode && (
