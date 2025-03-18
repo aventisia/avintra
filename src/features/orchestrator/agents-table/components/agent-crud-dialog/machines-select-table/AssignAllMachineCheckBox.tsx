@@ -1,18 +1,18 @@
-import { useAgentsTableStore } from "../../../stores/agents-table-store";
+import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 import { useShallow } from "zustand/react/shallow";
 import type { Column, Table } from "@tanstack/react-table";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 
-interface AssignAllAgentCheckBoxProps<TData, TValue> {
+interface AssignAllMachineCheckBoxProps<TData, TValue> {
   table: Table<TData>;
   column: Column<TData, TValue>;
 }
-export function AssignAllAgentCheckBox<TData, TValue>({
+export function AssignAllMachineCheckBox<TData, TValue>({
   table,
   column,
-}: Readonly<AssignAllAgentCheckBoxProps<TData, TValue>>) {
-  const { setAllAssigned, allAssigned } = useAgentsTableStore(
+}: Readonly<AssignAllMachineCheckBoxProps<TData, TValue>>) {
+  const { setAllAssigned, allAssigned } = useMachinesSelectTableStore(
     useShallow((state) => ({
       setAllAssigned: state.setAllAssigned,
       allAssigned: state.allAssigned,
