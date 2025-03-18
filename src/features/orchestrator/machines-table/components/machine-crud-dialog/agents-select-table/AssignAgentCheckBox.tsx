@@ -9,13 +9,14 @@ interface AssignAgentCheckBoxProps<TData> {
 export function AssignAgentCheckBox<TData>({
   row,
 }: Readonly<AssignAgentCheckBoxProps<TData>>) {
-  const { currentAgents,isReadOnly, setIsAssigned } = useAgentsSelectTableStore(
-    useShallow((state) => ({
-      setIsAssigned: state.setIsAssigned,
-      currentAgents: state.currentAgents,
-      isReadOnly: state.isReadOnly,
-    })),
-  );
+  const { currentAgents, isReadOnly, setIsAssigned } =
+    useAgentsSelectTableStore(
+      useShallow((state) => ({
+        setIsAssigned: state.setIsAssigned,
+        currentAgents: state.currentAgents,
+        isReadOnly: state.isReadOnly,
+      })),
+    );
 
   row.toggleSelected(
     !!currentAgents.find(
