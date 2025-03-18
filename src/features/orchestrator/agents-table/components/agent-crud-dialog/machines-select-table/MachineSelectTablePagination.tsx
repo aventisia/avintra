@@ -6,7 +6,7 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
-import { useAgentsTableStore } from "../../../stores/agents-table-store";
+import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 import { useShallow } from "zustand/react/shallow";
 
 interface MachineSelectTablePaginationProps<TData> {
@@ -18,9 +18,9 @@ export function MachineSelectTablePagination<TData>({
   table,
   isRowSelectionEnabled = true,
 }: Readonly<MachineSelectTablePaginationProps<TData>>) {
-  const { currentAgentMachines } = useAgentsTableStore(
+  const { currentAgentMachines } = useMachinesSelectTableStore(
     useShallow((state) => ({
-      currentAgentMachines: state.currentAgentMachines,
+      currentAgentMachines: state.currentMachines,
     })),
   );
 
