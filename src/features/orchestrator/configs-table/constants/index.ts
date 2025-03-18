@@ -8,7 +8,7 @@ const DATA_QUERY_KEY = ["configs"];
 /**
  * The heading for the configs table.
  */
-const TABLE_HEADING = "Config Hub";
+const TABLE_HEADING = "Keystore";
 
 /**
  * The column used for searching in the configs.
@@ -18,11 +18,11 @@ const SEARCH_COLUMN = "name";
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Config", description: "" };
+      return { heading: "Create key", description: "" };
     case "read":
-      return { heading: "Config", description: "" };
+      return { heading: "Key", description: "" };
     case "update":
-      return { heading: "Edit Config", description: "" };
+      return { heading: "Edit key", description: "" };
     default:
       return { heading: "", description: "" };
   }
