@@ -14,6 +14,8 @@ import {
   machineZodSchema,
 } from "../constants/machine-zod-schema";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
+import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
+import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
 
 /**
  * Custom hook for defining a machine form.
@@ -41,6 +43,29 @@ export const useDefineMachineForm = () => {
       toggleFormDirty: state.toggleFormDirty,
     })),
   );
+
+  const { data: currentAgentsDataResponse, isFetching, isLoading } = useFetchSelectTableAgents(rowId);
+
+  // Get store state and actions
+  const { setCurrentAgents, setAllAssigned, setIsReadOnly } =
+    useAgentsSelectTableStore(
+      useShallow((state) => ({
+        setCurrentAgents: state.setCurrentAgents,
+        setAllAssigned: state.setAllAssigned,
+        setIsReadOnly: state.setIsReadOnly,
+      })),
+    );
+
+  useEffect(() => {
+    setIsReadOnly(crudAction === "read");
+    setCurrentAgents(currentAgentsDataResponse?.data ?? []);
+    if (currentAgentsDataResponse?.data)
+      setAllAssigned(
+        currentAgentsDataResponse?.data.some((x) => x.isAssigned)
+          ? "indeterminate"
+          : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
+      );
+  }, [rowId, isFetching, currentAgentsDataResponse?.data, setAllAssigned, setCurrentAgents, setIsReadOnly, crudAction])
 
   // Get query client
   const queryClient = useQueryClient();
@@ -104,7 +129,7 @@ export const useDefineMachineForm = () => {
         ? new Date(machineData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession,]);
 
   // Get check availability state and methods
   const {
@@ -146,6 +171,8 @@ export const useDefineMachineForm = () => {
     isDirty,
     rowId,
     crudAction,
+    isFetching,
+    isLoading,
     setShowDialog,
     refineFormData,
     isAvailable,
