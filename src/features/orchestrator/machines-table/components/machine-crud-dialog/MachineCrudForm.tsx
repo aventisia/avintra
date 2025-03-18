@@ -20,12 +20,9 @@ import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
-import { useFetchSelectAgents } from "../../hooks/useFetchSelectAgents";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { agentSelectTableColumnVisibilityState } from "../../constants/column-visibility-state";
-import { agentSelectTableColumns } from "./agents-select-table/AgentSelectTableColumns";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { AddedByAutherCard } from "./AddedByAutherCard";
+import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
+import { useShallow } from "zustand/react/shallow";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -36,6 +33,8 @@ export const MachineCrudForm = () => {
     crudAction,
     isAvailable,
     availabilityMessage,
+    isFetching,
+    isLoading,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
@@ -50,27 +49,21 @@ export const MachineCrudForm = () => {
     MachinesTableDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
 
+  // Get store state and actions
+  const { currentAgents } = useAgentsSelectTableStore(
+    useShallow((state) => ({
+      currentAgents: state.currentAgents,
+    })),
+  );
+
   // Is form in read mode?
   const isReadMode = crudAction === "read";
-
-  // Fetch agents data
-  const { data, isFetching } = useFetchSelectAgents();
-
-  // Create a React table for agents data
-  const table = useDataTable(
-    agentSelectTableColumns,
-    data?.data || [],
-    agentSelectTableColumnVisibilityState,
-    true,
-  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
     const payload = {
       ...(refineFormData(formData) as unknown as MachinesTableDto),
-      agentIds: table
-        .getSelectedRowModel()
-        .rows.map((x) => x.getValue<string>("id")),
+      agentIds: currentAgents?.filter((x) => x.isAssigned).map((m) => m.id),
     };
 
     // Create or update the machine
@@ -131,12 +124,11 @@ export const MachineCrudForm = () => {
         <SwitchField {...isDisabledProps} disabled={isReadMode} />
       )}
 
-      <div className="mt-2 h-fit">
-        {isFetching ? (
-          <DataTableSkeleton />
-        ) : (
-          <AgentSelectTable isReadMode={isReadMode} table={table} />
-        )}
+      <div className="mt-2 h-fit w-[38rem]">
+        <AgentSelectTable
+          isFetching={isFetching || isLoading}
+          isReadMode={isReadMode}
+        />
       </div>
 
       {/* AutherCard */}
