@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useAgentsTableStore } from "../stores/agents-table-store";
+import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
 
 /**
  * Custom hook to set the query key for agents.
@@ -14,7 +14,7 @@ export const useAgentsQueryKey = () => {
   const machineId = queryParams.get("m");
 
   // Get store setAgentsState action
-  const { setAgentsState } = useAgentsTableStore(
+  const { setAgentsState } = useMachinesSelectTableStore(
     useShallow((state) => ({
       setAgentsState: state.setAgentsState,
     })),
