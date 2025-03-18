@@ -6,6 +6,8 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
+import { useShallow } from "zustand/react/shallow";
 
 interface AgentSelectTablePaginationProps<TData> {
   table: Table<TData>;
@@ -16,16 +18,22 @@ export function AgentSelectTablePagination<TData>({
   table,
   isRowSelectionEnabled = true,
 }: Readonly<AgentSelectTablePaginationProps<TData>>) {
+  const { currentAgents } = useAgentsSelectTableStore(
+    useShallow((state) => ({
+      currentAgents: state.currentAgents,
+    })),
+  );
+
   return (
     <div className="flex items-center justify-end px-2 sm:justify-between">
       <div className="hidden flex-1 text-sm text-muted-foreground sm:flex">
         {isRowSelectionEnabled ? (
           <>
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} agents(s) assigned.
+            {currentAgents.filter((x) => x.isAssigned).length} of{" "}
+            {table.getFilteredRowModel().rows.length} agent(s) assigned.
           </>
         ) : (
-          <>{table.getFilteredRowModel().rows.length} agents(s)</>
+          <>{table.getFilteredRowModel().rows.length} agent(s)</>
         )}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
