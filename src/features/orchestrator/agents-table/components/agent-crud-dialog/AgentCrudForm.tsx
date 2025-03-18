@@ -16,10 +16,9 @@ import { MachineSelectTable } from "./machines-select-table/MachineSelectTable";
 import { assignMachines } from "../../apis/agents-table-apis";
 import { AgentAssignMachineDto } from "../../dtos/agent-assign-machine-dto";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { useAgentsTableStore } from "../../stores/agents-table-store";
+import { useMachinesSelectTableStore } from "../../stores/machines-select-table-store";
 import { useShallow } from "zustand/react/shallow";
 import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import { useFetchAgents } from "../../hooks/useFetchAgents";
 
 export const AgentCrudForm = () => {
   // Define agent form
@@ -30,13 +29,11 @@ export const AgentCrudForm = () => {
     rowId: agentId,
   } = useDefineAgentForm();
 
-  const { currentAgentMachines } = useAgentsTableStore(
+  const { currentAgentMachines } = useMachinesSelectTableStore(
     useShallow((state) => ({
-      currentAgentMachines: state.currentAgentMachines,
+      currentAgentMachines: state.currentMachines,
     })),
   );
-
-  const { refetch } = useFetchAgents();
 
   // Define optimistic mutation to crete or update the machine
   const { mutate: mutateAgent } = useOptimisticMutation<
@@ -45,7 +42,7 @@ export const AgentCrudForm = () => {
     AgentAssignMachineDto & { id: string }
   >(
     assignMachines,
-    [agentId],
+    ["machines-to-select", agentId],
     [
       {
         id: "",
@@ -72,9 +69,6 @@ export const AgentCrudForm = () => {
 
     // Close the dialog
     setShowDialog(false);
-
-    //refresh the table
-    refetch();
   };
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -87,19 +81,19 @@ export const AgentCrudForm = () => {
       onSubmit={form.handleSubmit(onSubmit)}
     >
       {/* FlowId Id */}
-      {isReadMode && <InputField {...projectIdProps} disabled={isReadMode} />}
+      {isReadMode && <InputField {...projectIdProps} />}
 
       {/* Agent Id */}
-      {isReadMode && <InputField {...idProps} disabled={isReadMode} />}
+      {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
-      <InputField {...nameProps} disabled={isReadMode} />
+      <InputField {...nameProps} />
 
       {/* machine count */}
-      <InputField {...machineCountProps} disabled={isReadMode} />
+      <InputField {...machineCountProps} />
 
       {/* version number */}
-      <InputField {...versionNumberProps} disabled={isReadMode} />
+      <InputField {...versionNumberProps} />
 
       {/* Is Disabled */}
       {crudAction !== "create" && (
