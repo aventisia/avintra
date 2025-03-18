@@ -30,7 +30,7 @@ import { FormItem } from "@/react-toolkit/ui/form/FormItem";
 import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
 
 // Create error messages for required, minLength, maxLength
-const getFormRules = (
+export const getFormRules = (
   fData: IDynamicFieldSchema,
   form: any,
 ): RegisterOptions | undefined => {
@@ -94,6 +94,58 @@ const getFormRules = (
       value: finalResult,
       message: reqError(fData.label),
     };
+  }
+
+  // Disabled based on field key-value
+  if (options?.disabledBasedOnFields) {
+    let isDisabledFinal = false;
+    let hasToUseInitialState = false; // If field value is undefined then this will be set to true
+
+    // Loop through each field
+    options?.disabledBasedOnFields.conditionList.forEach((item) => {
+      let isDisabled = false;
+      let trueCount = 0;
+      const logicalOperator = item.logicalOperator
+        ? item.logicalOperator
+        : "OR";
+      switch (logicalOperator) {
+        case "OR":
+          item.fields.forEach((field) => {
+            hasToUseInitialState = form.getValues(field.key) === undefined;
+            if (!isDisabled)
+              isDisabled = form.getValues(field.key) === field.value;
+          });
+          break;
+        case "AND":
+          item.fields.forEach((field) => {
+            hasToUseInitialState = form.getValues(field.key) === undefined;
+            if (form.getValues(field.key) === field.value) trueCount++;
+          });
+          if (trueCount === item.fields.length) isDisabled = true;
+          break;
+      }
+
+      // Set final isDisabled
+      if (!isDisabledFinal) isDisabledFinal = isDisabled;
+    });
+
+    // Final result
+    const finalResult = hasToUseInitialState
+      ? options?.disabledBasedOnFields?.initialState
+      : isDisabledFinal;
+
+    // Set fieldData' required to show red astrik sign
+    options.disabled = finalResult;
+
+    // Set field container' display none/block
+    // fData.visible = finalResult;
+
+    // Set required rule
+    // formattedRules.required = {
+    //   value: finalResult,
+    //   message: reqError(fData.label),
+    // };
+    formattedRules.disabled = finalResult;
   }
 
   // Min (number)
@@ -201,7 +253,7 @@ const renderFormField = (fieldData: IDynamicFieldSchema, form: any) => {
       name={fieldData.name}
       rules={getFormRules(fieldData, form)}
       defaultValue={fieldData.defaultValue}
-      disabled={fieldData.disabled}
+      disabled={fieldData.disabled || fieldData.regOptions?.disabled}
       render={({ field }) => (
         <FormItem>
           <DynamicControl form={form} field={field} fData={fieldData} />

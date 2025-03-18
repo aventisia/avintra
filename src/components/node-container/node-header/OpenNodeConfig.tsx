@@ -20,6 +20,7 @@ import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { Node } from "@xyflow/react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import filterFieldValues from "../utils/filterFieldValues";
 
 interface OpenNodeConfigProps {
   data: NodeDataType;
@@ -31,6 +32,7 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
   const [activityConfig, setActivityConfig] = useState<ActivityConfig | null>(
     null,
   );
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
   // Get ReactFlowExt store state & actions
   const { nodes, setNodes } = useReactFlowExtStore(
@@ -52,10 +54,8 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
           ...node,
           data: {
             ...node.data,
-            fieldValues: {
-              ...((node.data.fieldValues as Record<string, unknown>) || {}),
-              ...newFieldValues,
-            },
+            inputs: filterFieldValues(newFieldValues, "input"),
+            outputs: filterFieldValues(newFieldValues, "output"),
           },
         };
       }
@@ -76,7 +76,7 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
   return (
     <StopPropagationWrapper className="flex">
       {activityConfig && (
-        <Popover>
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon6" }),
@@ -89,6 +89,7 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
               className={cn(
                 "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
               )}
+              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
             />
           </PopoverTrigger>
           {/* Popover content */}
@@ -111,7 +112,12 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
                 )}
                 formFieldsToWatch={activityConfig?.fieldsToWatch}
                 onSubmit={formSubmitHandler}
-                formFieldValuesToFill={data.fieldValues}
+                // formFieldValuesToFill={[...data.inputs, ...data.outputs]}
+                formFieldValuesToFill={[
+                  ...(data.inputs ?? []),
+                  ...(data.outputs ?? []),
+                ]}
+                setIsPopoverOpen={setIsPopoverOpen}
               />
             )}
           </PopoverContent>

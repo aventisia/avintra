@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from "@/react-toolkit/ui/accordion";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { IFormValuesToFill } from "../types/dynamic-form-types";
 // import OnErrorTabs from "./OnErrorTabs";
 
 interface DynamicFormProps {
@@ -32,6 +33,8 @@ interface DynamicFormProps {
   viewOnly?: boolean;
   /** A function to be called when the form is submitted. This function will receive an object containing the form data as its argument. */
   onSubmit: (formData: any) => void;
+  /** Open/close the popover when Dynamic form is submitted */
+  setIsPopoverOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /** A React component that renders a dynamic form based on the provided configuration */
@@ -43,24 +46,40 @@ const DynamicForm = ({
   className,
   viewOnly = false,
   onSubmit,
+  setIsPopoverOpen,
 }: DynamicFormProps) => {
-  const form = useForm({ defaultValues: formFieldValuesToFill });
+  const finalFormFieldValuesToFill = formFieldValuesToFill
+    ? formFieldValuesToFill.reduce(
+        (
+          acc: Record<string, string | number | any>,
+          { key, value }: IFormValuesToFill,
+        ) => {
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, string | number | any>,
+      )
+    : formFieldValuesToFill;
+
+  const form = useForm({ defaultValues: finalFormFieldValuesToFill });
 
   const {
     // handleSubmit,
     watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
   } = form;
 
   // Submit handler
   function submitHandler(formData: any) {
-    console.log("inside submit");
-
     // Return if form is only for view information
     if (viewOnly) return;
 
-    // Submit data
-    onSubmit(formData);
+    if (isValid && !isSubmitting) {
+      // Submit data
+      onSubmit(formData);
+      // Close Popover
+      setIsPopoverOpen(false);
+    }
   }
 
   // Watch fields to apply changes to registerOptions
@@ -103,6 +122,24 @@ const DynamicForm = ({
     }
   }
 
+  function renderOutputFields(fieldsToRender: IDynamicFieldSchema[]) {
+    return (
+      <div className="flex items-center justify-between rounded-lg border p-3">
+        {fieldsToRender?.map((fData, index) => (
+          <div
+            className={cn(
+              fData.containerClassName ? fData.containerClassName : "grow",
+              fData.visible ? "block" : "hidden",
+            )}
+            key={index}
+          >
+            {renderFormField(fData, form)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   // Return final form
   return (
     <Form
@@ -125,7 +162,7 @@ const DynamicForm = ({
           {formFieldCategories.length > 1 && (
             <div className="w-full">
               {/* Exclude basic category */}
-              {formFieldCategories?.slice(1).map((category) => (
+              {formFieldCategories?.slice(1).map((category, fieldIdx) => (
                 <>
                   <Accordion
                     type="single"
@@ -144,7 +181,9 @@ const DynamicForm = ({
                       <AccordionContent>
                         {category.formFields?.map((fItem, index) => (
                           <div key={index} className="mt-3">
-                            {renderFieldInFlexView(fItem)}
+                            {fieldIdx === formFieldCategories.length - 2
+                              ? renderOutputFields(fItem)
+                              : renderFieldInFlexView(fItem)}
                           </div>
                         ))}
                       </AccordionContent>
@@ -181,13 +220,11 @@ const DynamicForm = ({
           </Button>
         </PopoverClose>
         {!viewOnly && (
-          <PopoverClose>
-            <SubmitButton
-              size="xs"
-              isPending={isMutationPending || isSubmitting}
-              primaryText="Save"
-            />
-          </PopoverClose>
+          <SubmitButton
+            size="xs"
+            isPending={isMutationPending || isSubmitting}
+            primaryText="Save"
+          />
         )}
       </div>
     </Form>
