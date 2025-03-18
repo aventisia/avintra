@@ -9,11 +9,11 @@ import { useShallow } from "zustand/react/shallow";
  * Custom hook to fetch agents using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchSelectAgents = () => {
+export const useFetchSelectTableAgents = (machhineId: string) => {
 
   // Get crud dialog store state
   const {
-    crudDialogOptions: { rowId: machhineId, crudAction },
+    crudDialogOptions: { crudAction },
   } = useDTCrudDialogStore(
     useShallow((state) => ({
       crudDialogOptions: state.crudDialogOptions,
@@ -22,7 +22,7 @@ export const useFetchSelectAgents = () => {
 
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["select-agent", crudAction === "create" ? "" : machhineId],
+    queryKey: ["select-agent-", crudAction === "create" ? "" : machhineId],
     queryFn: () => crudAction === "create" ? getNewMachineAgents() : getMachineAgents(machhineId),
   });
 
