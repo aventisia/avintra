@@ -47,9 +47,10 @@ export const useDefineMachineForm = () => {
   const { data: currentAgentsDataResponse, isFetching, isLoading } = useFetchSelectTableAgents(rowId);
 
   // Get store state and actions
-  const { setCurrentAgents, setAllAssigned, setIsReadOnly } =
+  const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
     useAgentsSelectTableStore(
       useShallow((state) => ({
+        currentAgents: state.currentAgents,
         setCurrentAgents: state.setCurrentAgents,
         setAllAssigned: state.setAllAssigned,
         setIsReadOnly: state.setIsReadOnly,
@@ -58,7 +59,7 @@ export const useDefineMachineForm = () => {
 
   useEffect(() => {
     setIsReadOnly(crudAction === "read");
-    setCurrentAgents(currentAgentsDataResponse?.data ?? []);
+    setCurrentAgents(currentAgentsDataResponse?.data.filter(a => crudAction !== "read" || a.isAssigned) ?? []);
     if (currentAgentsDataResponse?.data)
       setAllAssigned(
         currentAgentsDataResponse?.data.some((x) => x.isAssigned)
@@ -89,6 +90,8 @@ export const useDefineMachineForm = () => {
     },
   });
 
+  //TODO - isDirty state whenever the assign agent select table changes
+  // Select agents table is not updating the selection on edit machine.
   // Destructor form values and methods
   const {
     formState: { isDirty },
@@ -158,7 +161,7 @@ export const useDefineMachineForm = () => {
   // Save the form dirty state
   useEffect(() => {
     toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+  }, [isDirty, toggleFormDirty, currentAgents]);
 
   // Reset availability message when dialog closes
   useEffect(() => {
