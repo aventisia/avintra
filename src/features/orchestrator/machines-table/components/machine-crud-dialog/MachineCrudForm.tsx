@@ -28,7 +28,9 @@ export const MachineCrudForm = () => {
   // Define machine form
   const {
     form,
-    isDirty,
+    //TODO - isDirty state whenever the assign agent select table changes
+    // Select agents table is not updating the selection on edit machine.
+    // isDirty,
     rowId,
     crudAction,
     isAvailable,
@@ -146,7 +148,7 @@ export const MachineCrudForm = () => {
         <div className="!mt-12 flex w-full justify-end">
           <Button
             type="submit"
-            disabled={!isDirty || !isAvailable || isCheckPending}
+            disabled={!isAvailable || isCheckPending}
             className="min-w-[5rem]"
           >
             {crudAction === "create" ? "Add" : "Save changes"}
