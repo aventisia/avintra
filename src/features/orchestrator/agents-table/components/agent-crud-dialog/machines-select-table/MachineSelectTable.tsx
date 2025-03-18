@@ -4,7 +4,7 @@ import { machineSelectTableColumns } from "./MachineSelectTableColumns";
 import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
-import { useAgentsTableStore } from "../../../stores/agents-table-store";
+import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 import { useShallow } from "zustand/react/shallow";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 
@@ -17,10 +17,10 @@ export function MachineSelectTable({
 }: Readonly<MachineSelectTableProps>) {
   // Get store state and actions
   const { currentAgentMachines, isFetchinCurrentAgentMachines } =
-    useAgentsTableStore(
+    useMachinesSelectTableStore(
       useShallow((state) => ({
-        currentAgentMachines: state.currentAgentMachines,
-        isFetchinCurrentAgentMachines: state.isFetchinCurrentAgentMachines,
+        currentAgentMachines: state.currentMachines,
+        isFetchinCurrentAgentMachines: state.isFetching,
       })),
     );
 

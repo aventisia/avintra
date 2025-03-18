@@ -1,8 +1,8 @@
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 import { AssignMachineDto } from "../../../dtos/assign-machine-dto";
-import { AssignAgentCheckBox } from "./AssignAgentCheckBox";
-import { AssignAllAgentCheckBox } from "./AssignAllAgentCheckBox";
+import { AssignMachineCheckBox } from "./AssignMachineCheckBox";
+import { AssignAllMachineCheckBox } from "./AssignAllMachineCheckBox";
 
 /**
  * Array of table columns for the machine table.
@@ -12,9 +12,9 @@ export const machineSelectTableColumns: ColumnDef<AssignMachineDto>[] = [
   {
     accessorKey: "id",
     header: ({ column, table }) => (
-      <AssignAllAgentCheckBox table={table} column={column} />
+      <AssignAllMachineCheckBox table={table} column={column} />
     ),
-    cell: ({ row }) => <AssignAgentCheckBox row={row} />,
+    cell: ({ row }) => <AssignMachineCheckBox row={row} />,
   },
 
   {
