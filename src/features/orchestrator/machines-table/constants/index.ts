@@ -66,27 +66,26 @@ export const maskIP = (ip: string) => {
 
 
 // Utility function to mask an IPv4 address
-export const maskIPv4 = (ip: string, maskLastOctets: number = 2): string => {
-  const octets = ip.split("."); // Split the IP into its four octets
+const maskIPv4 = (ip: string): string => {
+  const octets = ip.split(".");
   if (octets.length !== 4) return ip; // Invalid IP format
 
-  // Replace the specified number of octets with "*"
-  for (let i = octets.length - maskLastOctets; i < octets.length; i++) {
-    octets[i] = "*";
-  }
-
-  return octets.join("."); // Join the octets back together
+  // Replace the middle two octets with "***"
+  return `${octets[0]}.***.***.${octets[3]}`;
 };
 
 // Utility function to mask an IPv6 address
-export const maskIPv6 = (ip: string, maskLastSegments: number = 2): string => {
-  const segments = ip.split(":"); // Split the IP into its segments
+const maskIPv6 = (ip: string): string => {
+  const segments = ip.split(":");
   if (segments.length < 3 || segments.length > 8) return ip; // Invalid IP format
 
-  // Replace the specified number of segments with "****"
-  for (let i = segments.length - maskLastSegments; i < segments.length; i++) {
-    segments[i] = "****";
-  }
+  // Replace all but the first and last segments with "****"
+  const maskedSegments = segments.map((segment, index) => {
+    if (index === 0 || index === segments.length - 1) {
+      return segment; // Keep the first and last segments
+    }
+    return "****"; // Mask the middle segments
+  });
 
-  return segments.join(":"); // Join the segments back together
+  return maskedSegments.join(":"); // Join the segments back together
 };
