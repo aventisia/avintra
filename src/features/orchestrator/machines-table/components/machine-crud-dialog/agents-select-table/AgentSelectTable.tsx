@@ -2,18 +2,37 @@ import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";
 import { AgentSelectTablePagination } from "./AgentSelectTablePagination";
-import { Table } from "@tanstack/react-table";
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { agentSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
+import { useShallow } from "zustand/react/shallow";
 
-interface AgentSelectTableProps<TData> {
+interface AgentSelectTableProps {
   isReadMode?: boolean;
-  table: Table<TData>;
+  isFetching: boolean;
 }
 
-export function AgentSelectTable<TData>({
-  table,
-  isReadMode,
-}: Readonly<AgentSelectTableProps<TData>>) {
-  return (
+export function AgentSelectTable({
+  isReadMode = true,
+  isFetching,
+}: Readonly<AgentSelectTableProps>) {
+  // Get store state and actions
+  const { currentAgents } = useAgentsSelectTableStore(
+    useShallow((state) => ({
+      currentAgents: state.currentAgents,
+    })),
+  );
+  // Create a React table for agents data
+  const table = useDataTable(
+    agentSelectTableColumns,
+    currentAgents,
+    agentSelectTableColumnVisibilityState,
+    true,
+  );
+  return isFetching ? (
+    <DataTableSkeleton />
+  ) : (
     <>
       <div className="my-2 flex items-center justify-between">
         <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
@@ -23,7 +42,7 @@ export function AgentSelectTable<TData>({
         <div className="flex items-center gap-2">
           <DTSearchBox
             table={table}
-            searchColumn={"name"}
+            searchColumn="name"
             placeholder="Search agents..."
           />
         </div>
