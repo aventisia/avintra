@@ -5,6 +5,7 @@ import {
 } from "@/react-toolkit/utils/error-message-list";
 import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 import { z } from "zod";
+import { ipv4Regex, ipv6Regex } from ".";
 
 /**
  * Represents the Zod object's item schema for a machine name.
@@ -17,6 +18,13 @@ export const machineNameSchema = z
     message: alphaNumericError("Machine name"),
   });
 
+const ipAddressSchema = z
+  .string()
+  .refine(
+    (value) => ipv4Regex.test(value) || ipv6Regex.test(value),
+    "Invalid IP address. Must be a valid IPv4 or IPv6 address."
+  );
+
 /**
  * Represents the Zod schema for a machine.
  */
@@ -25,7 +33,7 @@ export const machineZodSchema = z.object({
   name: machineNameSchema,
   type: z.string().min(1, { message: reqError("Machine OS type") }),
   environment: z.string().min(1, { message: reqError("Environment type") }),
-  ipAddress: z.string({ message: reqError("IP Address") }),
+  ipAddress: ipAddressSchema,
   hostname: z.string({ message: reqError("Host Name") }),
 
   isDisabled: z.boolean().default(false),
