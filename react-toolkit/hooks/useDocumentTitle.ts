@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 const useDocumentTitle = (title: string) => {
   const [docTitle, setDocTitle] = useState(title);
 
+  //update docTitle on title change
+  useEffect(() => {
+    setDocTitle(title);
+  }, [title]);
+
   useEffect(() => {
     document.title =
       docTitle +

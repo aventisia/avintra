@@ -1,4 +1,5 @@
 import { useNavigatePreserveQuery } from "@/hooks/useNavigatePreserveQuery";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { useEffect, useState } from "react";
 
@@ -17,7 +18,7 @@ export const NavigationTabs = () => {
     setActiveTab(currentPath);
   }, []);
 
-  const navigateWithQueryParams = useNavigatePreserveQuery();
+  const { navigateWithQueryParams, modelName } = useNavigatePreserveQuery();
 
   const handleTabClick = (id: string) => {
     //TODO: Add logic to handle moving to next tab based on pervious tab status
@@ -25,13 +26,18 @@ export const NavigationTabs = () => {
     navigateWithQueryParams(id);
   };
 
+  // Find the label of the active tab
+  const activeTabLabel = tabs.find((tab) => tab.id === activeTab)?.label || "";
+
+  useDocumentTitle(`${modelName} | ${activeTabLabel}`);
+
   return (
     <>
       {/* Tabs Container */}
       <div className="mr-2 flex rounded-lg bg-gray-100 p-1">
         {tabs.map((tab) => (
           <Button
-            disabled={["train", "view"].includes(tab.id)} //temporary disable view and train tabs
+            disabled={["fineTune", "view"].includes(tab.id)} //temporary disable view and train tabs
             variant={"ghost"}
             size={"xs"}
             key={tab.id}

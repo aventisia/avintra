@@ -6,6 +6,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 export const useNavigatePreserveQuery = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  //Get model name through query params
+  const modelName = queryParams.get("mn") || "";
 
   /**
    * Navigate to a new path while preserving all existing query parameters
@@ -19,5 +23,5 @@ export const useNavigatePreserveQuery = () => {
     navigate(`${newPath}${currentQueryParams}`);
   };
 
-  return navigateWithQueryParams;
+  return { navigateWithQueryParams, modelName };
 };
