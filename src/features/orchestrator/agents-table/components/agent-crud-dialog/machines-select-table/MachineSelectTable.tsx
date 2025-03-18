@@ -16,28 +16,29 @@ export function MachineSelectTable({
   isRowSelectionEnabled = true,
 }: Readonly<MachineSelectTableProps>) {
   // Get store state and actions
-  const { currentAgentMachines, isFetchinCurrentAgentMachines } =
+  const { currentMachines, isFetching, isReadOnly } =
     useMachinesSelectTableStore(
       useShallow((state) => ({
-        currentAgentMachines: state.currentMachines,
-        isFetchinCurrentAgentMachines: state.isFetching,
+        currentMachines: state.currentMachines,
+        isFetching: state.isFetching,
+        isReadOnly: state.isReadOnly,
       })),
     );
 
   // Create a React table for agents data
   const table = useDataTable(
     machineSelectTableColumns,
-    currentAgentMachines ?? [],
+    currentMachines ?? [],
     machineSelectTableColumnVisibilityState,
     true,
   );
-  return isFetchinCurrentAgentMachines ? (
+  return isFetching ? (
     <DataTableSkeleton />
   ) : (
     <>
       <div className="my-2 flex items-center justify-between">
         <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
-          Select machines
+          {isReadOnly ? "Assigned Machines" : "Select machines"}
         </h4>
 
         <div className="flex items-center gap-2">
