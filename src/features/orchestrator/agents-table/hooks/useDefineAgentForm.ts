@@ -89,7 +89,7 @@ export const useDefineAgentForm = () => {
 
     setIsFetching(isFetching);
     setIsReadOnly(crudAction === "read");
-    setCurrentMachines(data?.data ?? []);
+    setCurrentMachines(data?.data.filter(m => crudAction !== "read" || m.isAssigned) ?? []);
     if (data?.data)
       setAllAssigned(
         data?.data.some((x) => x.isAssigned)
