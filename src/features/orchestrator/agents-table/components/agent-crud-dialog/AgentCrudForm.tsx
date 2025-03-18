@@ -12,17 +12,74 @@ import {
 } from "../../constants/agent-form-field-props";
 import { useDefineAgentForm } from "../../hooks/useDefineAgentForm";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+import { MachineSelectTable } from "./machines-select-table/MachineSelectTable";
+import { assignMachines } from "../../apis/agents-table-apis";
+import { AgentAssignMachineDto } from "../../dtos/agent-assign-machine-dto";
+import { Separator } from "@/react-toolkit/ui/separator";
+import { useMachinesSelectTableStore } from "../../stores/machines-select-table-store";
+import { useShallow } from "zustand/react/shallow";
+import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
 
 export const AgentCrudForm = () => {
   // Define agent form
-  const { form, isDirty, crudAction } = useDefineAgentForm();
+  const {
+    form,
+    crudAction,
+    setShowDialog,
+    rowId: agentId,
+  } = useDefineAgentForm();
 
+  const { currentAgentMachines } = useMachinesSelectTableStore(
+    useShallow((state) => ({
+      currentAgentMachines: state.currentMachines,
+    })),
+  );
+
+  // Define optimistic mutation to crete or update the machine
+  const { mutate: mutateAgent } = useOptimisticMutation<
+    AgentAssignMachineDto,
+    boolean,
+    AgentAssignMachineDto & { id: string }
+  >(
+    assignMachines,
+    ["machines-to-select", agentId],
+    [
+      {
+        id: "",
+        flowVersionId: agentId,
+        machineIds: currentAgentMachines
+          .filter((x) => x.isAssigned)
+          .map((m) => m.id),
+      },
+    ],
+    true,
+  );
+
+  // Define submit handler
+  const onSubmit = () => {
+    const payload = {
+      flowVersionId: agentId,
+      machineIds: currentAgentMachines
+        .filter((x) => x.isAssigned)
+        .map((m) => m.id),
+    };
+
+    // Create or update the machine
+    mutateAgent(payload);
+
+    // Close the dialog
+    setShowDialog(false);
+  };
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
   // Return the form
   return (
-    <Form methods={form} className="px-2.5 pb-5" disabled={isReadMode}>
+    <Form
+      methods={form}
+      className="px-2.5 pb-5"
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
       {/* FlowId Id */}
       {isReadMode && <InputField {...projectIdProps} />}
 
@@ -39,22 +96,30 @@ export const AgentCrudForm = () => {
       <InputField {...versionNumberProps} />
 
       {/* Is Disabled */}
-      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+      {crudAction !== "create" && (
+        <SwitchField {...isDisabledProps} disabled={isReadMode} />
+      )}
+
+      <div className="mt-2 h-fit w-[38rem]">
+        <MachineSelectTable isRowSelectionEnabled={crudAction !== "read"} />
+      </div>
 
       {/* AutherCard */}
       {isReadMode && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
-        />
+        <div className="!mt-10">
+          <Separator />
+          <AutherCard
+            createdBy={form.getValues("createdBy") ?? ""}
+            createdOn={form.getValues("createdOn") ?? new Date()}
+            lastModifiedBy={form.getValues("lastModifiedBy") ?? ""}
+            lastModifiedOn={form.getValues("lastModifiedOn") ?? new Date()}
+          />
+        </div>
       )}
-
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+          <Button type="submit" className="min-w-[5rem]">
             {crudAction === "create" ? "Create agent" : "Save changes"}
           </Button>
         </div>

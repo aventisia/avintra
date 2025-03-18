@@ -1,11 +1,12 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, isValid } from "date-fns";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 import { Badge } from "@/react-toolkit/ui/badge";
+import { maskIP } from "../constants";
 
 /**
  * Array of table columns for the machine table.
@@ -100,10 +101,9 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(
-          row.getValue("lastCheckedIn") ?? new Date(),
-          "dd MMM yyyy, HH:mm",
-        )}
+        {isValid(row.getValue<Date>("lastCheckedIn"))
+          ? format(row.getValue<Date>("lastCheckedIn"), "dd MMM yyyy, HH:mm")
+          : "NA"}
       </div>
     ),
   },
@@ -115,10 +115,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("ipAddress")}
+        {maskIP(row.getValue("ipAddress"))}
       </div>
     ),
   },
+
   {
     accessorKey: "hostname",
     header: ({ column }) => (
@@ -126,7 +127,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("hostname")}
+        {row.getValue<string>("hostname")}
       </div>
     ),
   },
@@ -154,9 +155,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn") ?? new Date(), {
-          addSuffix: true,
-        })}
+        {!isValid(row.getValue<Date>("createdOn"))
+          ? "NA"
+          : formatDistanceToNow(row.getValue<Date>("createdOn"), {
+              addSuffix: true,
+            })}
       </div>
     ),
   },

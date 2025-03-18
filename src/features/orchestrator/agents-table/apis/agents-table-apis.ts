@@ -39,7 +39,7 @@ export const assignMachines = (assignMachineDto: AgentAssignMachineDto) => {
 /**
  * Updates an existing project.
  */
-const updateAgent = (updatedAgent: AgentsTableDto) => {
+export const updateAgent = (updatedAgent: AgentsTableDto) => {
   return axiosInstance
     .put<IHttpResponse<AgentsTableDto>>(`${baseAPIURL}`, updatedAgent)
     .then((res) => res.data);
@@ -73,10 +73,10 @@ const deleteAgents = (ids: string[]) => {
 export const AgentOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<AgentsTableDto | string | string[]>) => {
+}: IOptimisticMutation<AgentsTableDto | string | string[] | AgentAssignMachineDto>) => {
   switch (crudAction) {
     case "update":
-      return updateAgent(payload as AgentsTableDto);
+      return assignMachines(payload as AgentAssignMachineDto);
     case "delete":
       return deleteAgent(payload as string);
     case "delete-multiple":

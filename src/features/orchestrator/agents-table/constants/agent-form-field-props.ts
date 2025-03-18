@@ -19,29 +19,30 @@ export const idProps: InputFieldProps = {
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
-  isRequired: true,
+  disabled: true,
 };
 
 // Machines Using the agent
 export const machineCountProps: InputFieldProps = {
   name: "machineCount",
-  label: "Machines Using",
+  label: "Machines",
   defaultValue: 0,
-  isRequired: true,
+  disabled: true,
 };
 
 // version number 
 export const versionNumberProps: InputFieldProps = {
   name: "versionNumber",
   label: "Version Number",
-  isRequired: true,
+  disabled: true,
+
 };
 
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable Agent",
   description:
-    "Disable this record if it's been outdated, or not required anymore",
+    "Disable this agent if it's been not in use, or not required anymore",
 };
 

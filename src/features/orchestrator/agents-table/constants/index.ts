@@ -13,7 +13,7 @@ export const getDialogHeadingDescription = (crudAction: CrudActionType) => {
         case "read":
             return { heading: "Agent", description: "" };
         case "update":
-            return { heading: "Edit Agent", description: "" };
+            return { heading: "Assign Machines", description: "" };
         default:
             return { heading: "", description: "" };
     }

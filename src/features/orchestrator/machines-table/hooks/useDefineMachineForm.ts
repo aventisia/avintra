@@ -14,6 +14,8 @@ import {
   machineZodSchema,
 } from "../constants/machine-zod-schema";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
+import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
+import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
 
 /**
  * Custom hook for defining a machine form.
@@ -42,6 +44,30 @@ export const useDefineMachineForm = () => {
     })),
   );
 
+  const { data: currentAgentsDataResponse, isFetching, isLoading } = useFetchSelectTableAgents(rowId);
+
+  // Get store state and actions
+  const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
+    useAgentsSelectTableStore(
+      useShallow((state) => ({
+        currentAgents: state.currentAgents,
+        setCurrentAgents: state.setCurrentAgents,
+        setAllAssigned: state.setAllAssigned,
+        setIsReadOnly: state.setIsReadOnly,
+      })),
+    );
+
+  useEffect(() => {
+    setIsReadOnly(crudAction === "read");
+    setCurrentAgents(currentAgentsDataResponse?.data.filter(a => crudAction !== "read" || a.isAssigned) ?? []);
+    if (currentAgentsDataResponse?.data)
+      setAllAssigned(
+        currentAgentsDataResponse?.data.some((x) => x.isAssigned)
+          ? "indeterminate"
+          : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
+      );
+  }, [rowId, isFetching, currentAgentsDataResponse?.data, setAllAssigned, setCurrentAgents, setIsReadOnly, crudAction])
+
   // Get query client
   const queryClient = useQueryClient();
 
@@ -64,6 +90,8 @@ export const useDefineMachineForm = () => {
     },
   });
 
+  //TODO - isDirty state whenever the assign agent select table changes
+  // Select agents table is not updating the selection on edit machine.
   // Destructor form values and methods
   const {
     formState: { isDirty },
@@ -104,7 +132,7 @@ export const useDefineMachineForm = () => {
         ? new Date(machineData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession,]);
 
   // Get check availability state and methods
   const {
@@ -133,7 +161,7 @@ export const useDefineMachineForm = () => {
   // Save the form dirty state
   useEffect(() => {
     toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+  }, [isDirty, toggleFormDirty, currentAgents]);
 
   // Reset availability message when dialog closes
   useEffect(() => {
@@ -146,6 +174,8 @@ export const useDefineMachineForm = () => {
     isDirty,
     rowId,
     crudAction,
+    isFetching,
+    isLoading,
     setShowDialog,
     refineFormData,
     isAvailable,

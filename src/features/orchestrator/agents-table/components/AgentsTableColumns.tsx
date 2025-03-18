@@ -6,9 +6,9 @@ import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
 import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { getColumnName } from "../constants/column-display-names";
-import { AgentRowMachineAssignmentAction } from "./MachineRowAssignmentAction";
 import { AgentRowDeleteAction } from "./AgentRowDeleteAction";
 import { Separator } from "@/react-toolkit/ui/separator";
+import { AssignMachineRowAction } from "./AssignMachineRowAction";
 
 /**
  * Array of table columns for the agents table.
@@ -104,9 +104,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn"), {
-          addSuffix: true,
-        })}
+        {!row.getValue("createdOn")
+          ? "NA"
+          : formatDistanceToNow(row.getValue("createdOn"), {
+              addSuffix: true,
+            })}
       </div>
     ),
   },
@@ -116,8 +118,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       // Render the agents row actions component
       <DataTableRowActions>
         <DTRowAction rowId={row.original.id || "rowId"} crudAction="read" />
-        <DTRowAction rowId={row.original.id || "rowId"} crudAction="update" />
-        <AgentRowMachineAssignmentAction rowId={row.original.id || "rowId"} />
+        <AssignMachineRowAction rowId={row.original.id || "rowId"} />
         <Separator />
         <AgentRowDeleteAction rowId={row.original.id || "rowId"} />
       </DataTableRowActions>

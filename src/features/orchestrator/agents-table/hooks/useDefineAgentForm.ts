@@ -7,8 +7,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
-import { useAgentsTableStore } from "../stores/agents-table-store";
 import { agentZodSchema } from "../constants/agent-zod-schema";
+import { DATA_QUERY_KEY } from "../constants";
+import { useFetchMachines } from "./useFetchMachines";
+import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
 
 /**
  * Custom hook for defining a agent form.
@@ -16,14 +18,6 @@ import { agentZodSchema } from "../constants/agent-zod-schema";
 export const useDefineAgentForm = () => {
   // Set agent name state (required for avaialbility check)
   const [agentName, setAgentName] = useState("");
-
-  // Get agents store state and actions
-  const { machineId: projectId, agentsQueryKey } = useAgentsTableStore(
-    useShallow((state) => ({
-      machineId: state.machineId,
-      agentsQueryKey: state.agentsQueryKey,
-    })),
-  );
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -47,6 +41,19 @@ export const useDefineAgentForm = () => {
 
   // Get query client
   const queryClient = useQueryClient();
+
+  const { data, isFetching } = useFetchMachines(rowId);
+
+  // Get store state and actions
+  const { setCurrentMachines, setAllAssigned, setIsReadOnly, setIsFetching } =
+    useMachinesSelectTableStore(
+      useShallow((state) => ({
+        setCurrentMachines: state.setCurrentMachines,
+        setAllAssigned: state.setAllAssigned,
+        setIsFetching: state.setIsFetching,
+        setIsReadOnly: state.setIsReadOnly,
+      })),
+    );
 
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
@@ -78,7 +85,17 @@ export const useDefineAgentForm = () => {
     // Get agents data from query client
     const agentsData = queryClient.getQueryData<{
       data: AgentsTableDto[];
-    }>(agentsQueryKey);
+    }>(DATA_QUERY_KEY);
+
+    setIsFetching(isFetching);
+    setIsReadOnly(crudAction === "read");
+    setCurrentMachines(data?.data.filter(m => crudAction !== "read" || m.isAssigned) ?? []);
+    if (data?.data)
+      setAllAssigned(
+        data?.data.some((x) => x.isAssigned)
+          ? "indeterminate"
+          : data?.data.every((x) => x.isAssigned),
+      );
 
     // Get agent data by id
     const agentData = agentsData?.data.find((item) => item.id === rowId);
@@ -97,6 +114,7 @@ export const useDefineAgentForm = () => {
       isPublished: agentData?.isPublished,
       isArchived: agentData?.isArchived,
       versionNumber: agentData?.versionNumber,
+      machineCount: agentData?.machineCount,
 
       createdBy:
         agentData?.createdBy ??
@@ -105,7 +123,8 @@ export const useDefineAgentForm = () => {
         ? new Date(agentData?.createdOn)
         : new Date(),
     });
-  }, [rowId, projectId, form, queryClient, agentsQueryKey, userSession]);
+    setIsFetching(isFetching);
+  }, [rowId, form, queryClient, userSession, setIsFetching, isFetching, setCurrentMachines, data?.data, setAllAssigned]);
 
 
   // Refine form data based on crud action
@@ -127,11 +146,11 @@ export const useDefineAgentForm = () => {
   return {
     form,
     isDirty,
-    agentsQueryKey,
     agentName,
     rowId,
     crudAction,
     setShowDialog,
     refineFormData,
+    toggleFormDirty
   };
 };

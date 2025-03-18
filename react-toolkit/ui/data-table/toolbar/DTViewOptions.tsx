@@ -14,7 +14,7 @@ import { Table } from "@tanstack/react-table";
 
 interface DTViewOptionsProps<TData> {
   table: Table<TData>;
-  
+
   /** Array of column names and their corresponding display names. */
   columnDisplayNames: KeyValueLookupType[];
 }
@@ -47,12 +47,12 @@ export function DTViewOptions<TData>({
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className="capitalize"
+                className="w-full text-nowrap capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
                 {columnDisplayNames.find((item) => item.key === column.id)
-                  ?.value || column.id}
+                  ?.value ?? column.id}
               </DropdownMenuCheckboxItem>
             );
           })}

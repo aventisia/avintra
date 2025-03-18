@@ -1,7 +1,6 @@
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
-  BellIcon,
   FolderIcon,
   IdentificationIcon,
   PlayIcon,
@@ -12,6 +11,7 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
+import { Bot, LockKeyholeIcon } from "lucide-react";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -54,7 +54,7 @@ const workspaceAppConfig: IAppConfig = {
             route: "/orchestrator/machines",
           },
           {
-            Icon: BellIcon,
+            Icon: Bot,
             name: "Agents",
             route: "/orchestrator/agents",
           },
@@ -70,8 +70,13 @@ const workspaceAppConfig: IAppConfig = {
           },
           {
             Icon: CogIcon,
-            name: "config hub",
+            name: "Keystore",
             route: "/orchestrator/config-hub",
+          },
+          {
+            Icon: LockKeyholeIcon,
+            name: "Vault",
+            route: "/orchestrator/vault",
           },
         ],
       },
