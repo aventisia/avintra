@@ -22,7 +22,7 @@ export const useFetchSelectTableAgents = (machhineId: string) => {
 
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["select-agent-", crudAction === "create" ? "" : machhineId],
+    queryKey: ["select-agent", crudAction === "create" ? "" : machhineId],
     queryFn: () => crudAction === "create" ? getNewMachineAgents() : getMachineAgents(machhineId),
   });
 
