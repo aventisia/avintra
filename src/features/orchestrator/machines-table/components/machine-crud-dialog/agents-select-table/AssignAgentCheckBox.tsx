@@ -2,13 +2,14 @@ import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-s
 import { useShallow } from "zustand/react/shallow";
 import type { Row } from "@tanstack/react-table";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import type { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 
-interface AssignAgentCheckBoxProps<TData> {
-  row: Row<TData>;
+interface AssignAgentCheckBoxProps {
+  row: Row<SelectAgentTableDto>;
 }
-export function AssignAgentCheckBox<TData>({
+export function AssignAgentCheckBox({
   row,
-}: Readonly<AssignAgentCheckBoxProps<TData>>) {
+}: Readonly<AssignAgentCheckBoxProps>) {
   const { currentAgents, isReadOnly, setIsAssigned } =
     useAgentsSelectTableStore(
       useShallow((state) => ({
@@ -19,9 +20,7 @@ export function AssignAgentCheckBox<TData>({
     );
 
   row.toggleSelected(
-    !!currentAgents.find(
-      (x) => x.id === row.getValue<string>("id") && x.isAssigned,
-    ),
+    !!currentAgents.find((x) => x.id === row.original.id && x.isAssigned),
   );
 
   return (
@@ -29,7 +28,7 @@ export function AssignAgentCheckBox<TData>({
       <Checkbox
         checked={row.getValue<boolean>("isAssigned")}
         onCheckedChange={(value) => {
-          setIsAssigned(row.getValue<string>("id"), !!value);
+          setIsAssigned(row.original.id, !!value);
           row.toggleSelected(!!value);
         }}
         aria-label="Select row"
