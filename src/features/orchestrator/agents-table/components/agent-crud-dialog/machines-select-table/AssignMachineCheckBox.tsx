@@ -2,13 +2,14 @@ import { useMachinesSelectTableStore } from "../../../stores/machines-select-tab
 import { useShallow } from "zustand/react/shallow";
 import type { Row } from "@tanstack/react-table";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import type { AssignMachineDto } from "../../../dtos/assign-machine-dto";
 
-interface AssignMachineCheckBoxProps<TData> {
-  row: Row<TData>;
+interface AssignMachineCheckBoxProps {
+  row: Row<AssignMachineDto>;
 }
-export function AssignMachineCheckBox<TData>({
+export function AssignMachineCheckBox({
   row,
-}: Readonly<AssignMachineCheckBoxProps<TData>>) {
+}: Readonly<AssignMachineCheckBoxProps>) {
   const { currentAgentMachines, setIsAssigned, isReadOnly } =
     useMachinesSelectTableStore(
       useShallow((state) => ({
@@ -20,7 +21,7 @@ export function AssignMachineCheckBox<TData>({
 
   row.toggleSelected(
     !!currentAgentMachines.find(
-      (x) => x.id === row.getValue<string>("id") && x.isAssigned,
+      (x) => x.id === row.original.id && x.isAssigned,
     ),
   );
 
@@ -29,7 +30,7 @@ export function AssignMachineCheckBox<TData>({
       <Checkbox
         checked={row.getValue<boolean>("isAssigned")}
         onCheckedChange={(value) => {
-          setIsAssigned(row.getValue<string>("id"), !!value);
+          setIsAssigned(row.original.id, !!value);
           row.toggleSelected(!!value);
         }}
         aria-label="Select row"
