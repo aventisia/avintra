@@ -9,6 +9,8 @@ import { useShallow } from "zustand/react/shallow";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { agentZodSchema } from "../constants/agent-zod-schema";
 import { DATA_QUERY_KEY } from "../constants";
+import { useFetchMachines } from "./useFetchMachines";
+import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
 
 /**
  * Custom hook for defining a agent form.
@@ -39,6 +41,19 @@ export const useDefineAgentForm = () => {
 
   // Get query client
   const queryClient = useQueryClient();
+
+  const { data, isFetching } = useFetchMachines(rowId);
+
+  // Get store state and actions
+  const { setCurrentMachines, setAllAssigned, setIsReadOnly, setIsFetching } =
+    useMachinesSelectTableStore(
+      useShallow((state) => ({
+        setCurrentMachines: state.setCurrentMachines,
+        setAllAssigned: state.setAllAssigned,
+        setIsFetching: state.setIsFetching,
+        setIsReadOnly: state.setIsReadOnly,
+      })),
+    );
 
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
@@ -72,6 +87,16 @@ export const useDefineAgentForm = () => {
       data: AgentsTableDto[];
     }>(DATA_QUERY_KEY);
 
+    setIsFetching(isFetching);
+    setIsReadOnly(crudAction === "read");
+    setCurrentMachines(data?.data ?? []);
+    if (data?.data)
+      setAllAssigned(
+        data?.data.some((x) => x.isAssigned)
+          ? "indeterminate"
+          : data?.data.every((x) => x.isAssigned),
+      );
+
     // Get agent data by id
     const agentData = agentsData?.data.find((item) => item.id === rowId);
 
@@ -98,7 +123,8 @@ export const useDefineAgentForm = () => {
         ? new Date(agentData?.createdOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+    setIsFetching(isFetching);
+  }, [rowId, form, queryClient, userSession, setIsFetching, isFetching, setCurrentMachines, data?.data, setAllAssigned]);
 
 
   // Refine form data based on crud action
