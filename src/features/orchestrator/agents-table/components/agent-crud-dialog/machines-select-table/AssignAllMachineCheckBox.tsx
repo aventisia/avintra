@@ -12,12 +12,14 @@ export function AssignAllMachineCheckBox<TData, TValue>({
   table,
   column,
 }: Readonly<AssignAllMachineCheckBoxProps<TData, TValue>>) {
-  const { setAllAssigned, allAssigned } = useMachinesSelectTableStore(
-    useShallow((state) => ({
-      setAllAssigned: state.setAllAssigned,
-      allAssigned: state.allAssigned,
-    })),
-  );
+  const { setAllAssigned, allAssigned, isReadOnly } =
+    useMachinesSelectTableStore(
+      useShallow((state) => ({
+        setAllAssigned: state.setAllAssigned,
+        allAssigned: state.allAssigned,
+        isReadOnly: state.isReadOnly,
+      })),
+    );
   return (
     <div className="flex w-auto max-w-20 gap-5 truncate align-middle font-medium">
       <Checkbox
@@ -30,6 +32,7 @@ export function AssignAllMachineCheckBox<TData, TValue>({
         }}
         aria-label="Select all"
         className="mt-2 translate-y-[2px]"
+        disabled={isReadOnly}
       />
       <DTColumnHeader className="m-0" column={column} title="Name" />
     </div>

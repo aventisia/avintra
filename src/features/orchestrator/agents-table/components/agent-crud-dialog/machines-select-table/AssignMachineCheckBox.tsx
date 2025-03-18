@@ -9,12 +9,14 @@ interface AssignMachineCheckBoxProps<TData> {
 export function AssignMachineCheckBox<TData>({
   row,
 }: Readonly<AssignMachineCheckBoxProps<TData>>) {
-  const { currentAgentMachines, setIsAssigned } = useMachinesSelectTableStore(
-    useShallow((state) => ({
-      setIsAssigned: state.setIsAssigned,
-      currentAgentMachines: state.currentMachines,
-    })),
-  );
+  const { currentAgentMachines, setIsAssigned, isReadOnly } =
+    useMachinesSelectTableStore(
+      useShallow((state) => ({
+        setIsAssigned: state.setIsAssigned,
+        currentAgentMachines: state.currentMachines,
+        isReadOnly: state.isReadOnly,
+      })),
+    );
 
   row.toggleSelected(
     !!currentAgentMachines.find(
@@ -32,6 +34,7 @@ export function AssignMachineCheckBox<TData>({
         }}
         aria-label="Select row"
         className="translate-y-[2px]"
+        disabled={isReadOnly}
       />
       {row.getValue("name")}
     </div>
