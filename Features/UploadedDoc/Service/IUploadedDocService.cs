@@ -17,11 +17,12 @@ public interface IUploadedDocService
     Task<ServiceResponse<IList<UploadedDocDto>>> InsertUploadedDocAsync(IList<UploadedDocDto> uploadedDocList);
 
     /// <summary>
-    /// Retrieves the list of uploaded docs
+    /// Get list of uploaded docs
     /// </summary>
     /// <param name="mlModelId"></param>
-    /// <returns>List of uploaded docs</returns>
-    Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId);
+    /// <param name="type"></param>
+    /// <returns>A list of uploaded docs associated with specific ML model and of a specific type </returns>
+    Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId, ExtractedDataType type);
 
     /// <summary>
     /// Delete file

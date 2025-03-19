@@ -30,9 +30,9 @@ public class UploadedDocDto
     public required string Path { get; set; }
 
     /// <summary>
-    /// Gets or sets the purpose type of uploaded file. 
+    /// Gets or sets the type of data which will be extracted from uploaded file. 
     /// </summary>
-    public PurposeTypesEnum Type { get; set; }
+    public ExtractedDataType Type { get; set; }
 
     /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.

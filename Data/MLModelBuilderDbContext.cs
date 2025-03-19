@@ -36,7 +36,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().Property(e =>e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
         modelBuilder.Entity<MLModel>().Property(e =>e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());
         modelBuilder.Entity<DataField>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FieldTypesEnum>());
-        modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<PurposeTypesEnum>());
+        modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User

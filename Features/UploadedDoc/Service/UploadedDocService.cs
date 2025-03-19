@@ -163,7 +163,7 @@ public class UploadedDocService : IUploadedDocService
     }
 
     // Retrieves list of uploaded docs
-    public async Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId)
+    public async Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId, ExtractedDataType type)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<UploadedDocDto>>
@@ -176,7 +176,7 @@ public class UploadedDocService : IUploadedDocService
         {
             // Try to get uploaded docs
             var docs = await _unitOfWork.UploadedDocRepo
-                        .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                        .GetByConditionAsync(w => w.MLModelId == mlModelId && w.Type == type)
                         .Include(c => c.CreatedByUser)
                         .OrderByDescending(o => o.CreatedOn).ToListAsync();
 
