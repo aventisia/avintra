@@ -637,15 +637,24 @@ public class MyAccountService(
 
             // Update account User using UserManager
             user.Email = emailUpdateDto.Email;
-            var updateUserResult = await _userManager.UpdateAsync(user);
 
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, emailUpdateDto.Email);
+            var identityResult = await _userManager.ChangeEmailAsync(user, emailUpdateDto.Email, token);
+            // Update the username
+            var usernameResult = await _userManager.SetUserNameAsync(user, emailUpdateDto.Email);
             // User Update-Job failed
-            if (!updateUserResult.Succeeded)
+            if (!identityResult.Succeeded || !usernameResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user");
                 serviceResponse.Message = "User's email update failed";
                 return serviceResponse;
             }
+
+            // Update the security stamp to invalidate old cookies
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            // Re-sign the user in to refresh the authentication cookie
+            await _signInManager.RefreshSignInAsync(user);
 
             // Task successful
             _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
