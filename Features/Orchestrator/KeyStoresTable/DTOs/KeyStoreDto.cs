@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.DTOs;
 /// <summary>
 /// Data Transfer Object (DTO) representing a configuration item, including job details such as ID, name, type, value, access level, and encryption status.
 /// </summary>
-public class ConfigItemDto
+public class KeyStoreDto
 {
     /// <summary>
     /// Configuration item ID.
@@ -26,7 +26,7 @@ public class ConfigItemDto
     /// Type of the configuration item (e.g., Text, Boolean, Credential, JSON).
     /// </summary>
     [Required]
-    public required ConfigItemTypesEnum Type { get; set; }
+    public required KeyStoreTypesEnum Type { get; set; }
 
     /// <summary>
     /// Value of the configuration item.

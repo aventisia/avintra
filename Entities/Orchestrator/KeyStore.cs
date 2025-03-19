@@ -3,8 +3,8 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a configuration item in the system that stores settings or values associated with a tenant.
 /// </summary>
-[Table("ConfigItems")]
-public class ConfigItem : BaseEntity, IMustHaveTenant
+[Table("KeyStores")]
+public class KeyStore : BaseEntity, IMustHaveTenant
 {
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this configuration item.
@@ -24,7 +24,7 @@ public class ConfigItem : BaseEntity, IMustHaveTenant
     /// This defines the data format or structure of the configuration value.
     /// </summary>
     [Required]
-    public required ConfigItemTypesEnum Type { get; set; }
+    public required KeyStoreTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the configuration item.
