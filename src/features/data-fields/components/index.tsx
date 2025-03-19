@@ -26,30 +26,30 @@ const AddFields = () => {
   );
 
   return (
-    <div className="ml-2 min-w-[35vw] rounded-lg bg-white shadow">
-      <div className="flex items-center justify-between border-b px-4 py-2">
+    <div className="col-span-1 ml-2 rounded-lg bg-white shadow">
+      <div className="flex h-12 items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-2">
           <p className="text-md font-medium">Fields</p>
           <SavingIndicator isSaving={isDataSaving} />
         </div>
-        <ModelCrudDialog>
-          <Tooltip content="Add field">
-            <Button
-              variant={"ghost"}
-              size="icon8"
-              onClick={() =>
-                setCrudDialogOptions({
-                  showDialog: true,
-                  rowId: window.crypto.randomUUID(),
-                  crudAction: "create",
-                })
-              }
-            >
-              <PlusIcon className="h-5 w-5" />
-            </Button>
-          </Tooltip>
-          {/* <AddFieldOptions /> */}
-        </ModelCrudDialog>
+          <ModelCrudDialog>
+            <Tooltip content="Add field">
+              <Button
+                variant={"ghost"}
+                size="icon8"
+                onClick={() =>
+                  setCrudDialogOptions({
+                    showDialog: true,
+                    rowId: window.crypto.randomUUID(),
+                    crudAction: "create",
+                  })
+                }
+              >
+                <PlusIcon className="h-5 w-5" />
+              </Button>
+            </Tooltip>
+            {/* <AddFieldOptions /> */}
+          </ModelCrudDialog>
       </div>
 
       <ScrollArea className="h-[calc(100vh-7.6rem)] p-4">

@@ -55,7 +55,7 @@ export const PdfPreviewer: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
-  const [fieldTypes, setFieldTypes] = useState<DataFieldsDto[]>([]);
+  const [dataFields, setDataFields] = useState<DataFieldsDto[]>([]);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [pendingAnnotation, setPendingAnnotation] = useState<Annotation | null>(
     null,
@@ -112,10 +112,12 @@ export const PdfPreviewer: React.FC = () => {
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  const parentRef = useRef<HTMLDivElement>(null);
+
   // Create a ref for the invisible trigger button
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  const { width } = useParentWidth(canvasRef);
+  const { width } = useParentWidth(parentRef, 32);
 
   const handlePdfSelect = (newPdf: PdfViewerDto) => {
     setSelectedPdf(newPdf);
@@ -148,7 +150,7 @@ export const PdfPreviewer: React.FC = () => {
   }, [selectedPdf, downloadPdf, modelId]);
 
   useEffect(() => {
-    if (data?.data) setFieldTypes(data?.data);
+    if (data?.data) setDataFields(data?.data);
   }, [data?.data]);
 
   useEffect(() => {
@@ -219,7 +221,7 @@ export const PdfPreviewer: React.FC = () => {
       });
 
       // Clear any existing annotations to prevent visual overlap
-      const fieldToUpdate = fieldTypes.find((field) =>
+      const fieldToUpdate = dataFields.find((field) =>
         annotations.some(
           (ann) =>
             ann.fieldId === field?.id &&
@@ -336,16 +338,17 @@ export const PdfPreviewer: React.FC = () => {
   }
 
   return (
-    <div className="w-2/3 max-w-[65vw] rounded-lg border bg-white shadow">
+    <div
+      ref={parentRef}
+      className="col-span-2 overflow-hidden rounded-lg border bg-white shadow"
+    >
       <ControlPanel
         scale={scale}
         numPages={numPages ?? 0}
         pageNumber={pageNumber}
         rotate={rotate}
       />
-      <ScrollArea
-        className={`h-[calc(100vh-11.2rem)] w-[calc(${width / scale}px)] rounded-lg`}
-      >
+      <ScrollArea className={`h-[calc(100vh-11.2rem)] w-full p-2`}>
         <div
           ref={canvasRef}
           style={{ position: "relative", width: "100%" }}
@@ -371,31 +374,30 @@ export const PdfPreviewer: React.FC = () => {
           </Document>
           {!isPdfLoading &&
             annotations.map((annotation) => (
-              <AnnotationBox annotation={annotation} fieldTypes={fieldTypes} />
+              <AnnotationBox annotation={annotation} dataFields={dataFields} />
             ))}
           {currentAnnotation && (
             <AnnotationBox
               annotation={currentAnnotation}
-              fieldTypes={fieldTypes}
+              dataFields={dataFields}
             />
           )}
           {pendingAnnotation && (
             <AnnotationBox
               annotation={pendingAnnotation}
-              fieldTypes={fieldTypes}
+              dataFields={dataFields}
             />
           )}
           <FieldSelectionPopover
             isOpen={isOpen}
             assignTypeToAnnotation={assignTypeToAnnotation}
-            fieldTypes={fieldTypes}
+            dataFields={dataFields}
             setCurrentAnnotation={setCurrentAnnotation}
             setIsOpen={setIsOpen}
             triggerRef={triggerRef}
           />
-
-          <ScrollBar orientation="horizontal" />
         </div>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
       <PaginatedSelect
         pdfList={pdfList?.data}

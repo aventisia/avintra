@@ -159,7 +159,7 @@ const ControlPanel = ({
   };
 
   const isMinZoom = scale < 0.2;
-  const isMaxZoom = scale >= 5.0;
+  const isMaxZoom = scale >= 2.0;
 
   const zoomOutClass = isMinZoom
     ? "opacity-50 pointer-events-none"
@@ -181,7 +181,7 @@ const ControlPanel = ({
   }, [setPageNumber]);
 
   return (
-    <div className="mb-2 flex h-12 w-full items-center justify-between rounded-t-lg border-b p-2">
+    <div className="flex h-12 w-full items-center justify-between rounded-t-lg border-b p-2">
       <PageControl
         numPages={numPages}
         pageNumber={pageNumber}

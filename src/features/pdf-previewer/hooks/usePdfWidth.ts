@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 
 /**
- * Custom hook that observes a parent element's width and returns it
+ * Custom hook that observes a parent element's width and returns it with an optional offset
  * @param {React.RefObject} parentRef - Ref object for the parent element
- * @returns {number} The current width of the parent element
+ * @param {number} offset - An optional offset to adjust the observed width
+ * @returns {number} The current width of the parent element with the applied offset
  */
-export const useParentWidth = (parentRef: React.RefObject<HTMLDivElement>) => {
+export const useParentWidth = (
+  parentRef: React.RefObject<HTMLDivElement>,
+  offset: number = 0, // Default offset is 0
+) => {
   const [width, setWidth] = useState<number>(800);
 
   useEffect(() => {
@@ -14,7 +18,7 @@ export const useParentWidth = (parentRef: React.RefObject<HTMLDivElement>) => {
     // Function to measure and update width
     const updateWidth = () => {
       if (parentRef.current) {
-        const newWidth = parentRef.current.offsetWidth;
+        const newWidth = parentRef.current.offsetWidth - offset;
         setWidth(newWidth);
       }
     };
@@ -34,7 +38,7 @@ export const useParentWidth = (parentRef: React.RefObject<HTMLDivElement>) => {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [parentRef]);
+  }, [offset, parentRef]);
 
-  return {width};
+  return { width };
 };

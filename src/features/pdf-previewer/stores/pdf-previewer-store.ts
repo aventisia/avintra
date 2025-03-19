@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface PdfViewerState {
-  name:string;
+  name: string;
   numPages: number | null;
   pageNumber: number;
   scale: number;
@@ -17,15 +17,15 @@ interface PdfViewerActions {
 
 export const usePdfViewerStore = create<PdfViewerState & PdfViewerActions>(
   (set) => ({
-    name:"",
-    numPages: null,
+    name: "",
+    numPages: 0,
     pageNumber: 1,
     scale: 1.0,
     rotate: 0,
-    
+
     setNumPages: (numPages) => set({ numPages }),
     setPageNumber: (pageNumber) => set({ pageNumber }),
     setScale: (scale) => set({ scale }),
     setRotate: (rotate) => set({ rotate }),
-  })
+  }),
 );

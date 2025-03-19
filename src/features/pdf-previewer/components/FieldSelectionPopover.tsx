@@ -20,7 +20,7 @@ interface FieldSelectionPopoverProps {
     value: React.SetStateAction<Annotation | null>,
   ) => void;
   triggerRef: React.RefObject<HTMLButtonElement>;
-  fieldTypes: DataFieldsDto[];
+  dataFields: DataFieldsDto[];
   assignTypeToAnnotation: (field: DataFieldsDto) => Promise<void>;
 }
 
@@ -29,7 +29,7 @@ const FieldSelectionPopover = ({
   setCurrentAnnotation,
   setIsOpen,
   triggerRef,
-  fieldTypes,
+  dataFields,
   assignTypeToAnnotation,
 }: FieldSelectionPopoverProps) => {
   return (
@@ -49,7 +49,7 @@ const FieldSelectionPopover = ({
           <CommandInput placeholder="Search field..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            {fieldTypes.map((field) => {
+            {dataFields.map((field) => {
               return (
                 <CommandItem
                   key={field.id}
