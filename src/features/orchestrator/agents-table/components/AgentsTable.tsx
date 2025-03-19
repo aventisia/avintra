@@ -11,6 +11,7 @@ import { useFetchAgents } from "../hooks/useFetchAgents";
 import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
+import { AgentsBulkActions } from "./AgentsBulkActions";
 
 /**
  * Renders a table of agents.
@@ -63,6 +64,7 @@ export const AgentsTable = () => {
           <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
+          <AgentsBulkActions table={table} />
         </div>
       ) : (
         // Show data table skeleton while fetching the agents data
