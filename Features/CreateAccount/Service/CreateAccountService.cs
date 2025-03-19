@@ -39,7 +39,7 @@ public class CreateAccountService : ICreateAccountService
         {
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
-                    .GetByConditionAsync(w => w.UserName == createAccountDto.Email)
+                    .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
                     .AsNoTracking()
                     .SingleOrDefaultAsync();
 
@@ -153,7 +153,7 @@ public class CreateAccountService : ICreateAccountService
             var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
 
             // Failed to send AccountCreated email
-            if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues, 
+            if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
                 bccEmailAddresses: _generalConfig.SalesEmails))
             {
                 _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
@@ -165,7 +165,7 @@ public class CreateAccountService : ICreateAccountService
 
             /*Fetching again to get newUser with Tenant and Roles details*/
             var newlyAddedUser = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(w => w.UserName == createAccountDto.Email)
+                .GetByConditionAsync(w => w.UserName.Equals(createAccountDto.Email, StringComparison.InvariantCultureIgnoreCase))
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
