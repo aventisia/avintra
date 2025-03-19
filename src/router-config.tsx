@@ -112,7 +112,7 @@ export const routerConfig: RouteObject[] = [
             element: <QueuesPage />,
           },
           {
-            path: "/orchestrator/execution",
+            path: "/orchestrator/jobs",
             element: <JobsPage />,
           },
           {

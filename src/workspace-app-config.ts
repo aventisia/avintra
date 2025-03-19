@@ -3,7 +3,6 @@ import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
   FolderIcon,
   IdentificationIcon,
-  PlayIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
   CogIcon,
@@ -11,7 +10,7 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
-import { Bot, LockKeyholeIcon } from "lucide-react";
+import { Bot, Briefcase, LockKeyholeIcon } from "lucide-react";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -64,9 +63,9 @@ const workspaceAppConfig: IAppConfig = {
             route: "/orchestrator/queues",
           },
           {
-            Icon: PlayIcon,
-            name: "execution",
-            route: "/orchestrator/execution",
+            Icon: Briefcase,
+            name: "jobs",
+            route: "/orchestrator/jobs",
           },
           {
             Icon: CogIcon,
