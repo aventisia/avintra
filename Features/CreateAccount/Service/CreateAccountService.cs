@@ -165,7 +165,7 @@ public class CreateAccountService : ICreateAccountService
 
             /*Fetching again to get newUser with Tenant and Roles details*/
             var newlyAddedUser = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(w => w.UserName.Equals(createAccountDto.Email, StringComparison.InvariantCultureIgnoreCase))
+                .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
