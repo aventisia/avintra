@@ -407,8 +407,10 @@ public class AuthService : IAuthService
         {
             // Gather required data to create verification code
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
-            var userName = createVerificationCodeDto.Email;
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.UserName.ToString(), out var signedInEmail);
             var requestType = createVerificationCodeDto.RequestType;
+
+            var userName = requestType == VerificationCodeRequestTypesEnum.VerifyEmailAddress ? createVerificationCodeDto.Email : signedInEmail;
 
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
