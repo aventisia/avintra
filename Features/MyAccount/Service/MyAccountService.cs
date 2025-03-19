@@ -640,10 +640,9 @@ public class MyAccountService(
 
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, emailUpdateDto.Email);
             var identityResult = await _userManager.ChangeEmailAsync(user, emailUpdateDto.Email, token);
-            // Update the username
-            var usernameResult = await _userManager.SetUserNameAsync(user, emailUpdateDto.Email);
+
             // User Update-Job failed
-            if (!identityResult.Succeeded || !usernameResult.Succeeded)
+            if (!identityResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user");
                 serviceResponse.Message = "User's email update failed";
