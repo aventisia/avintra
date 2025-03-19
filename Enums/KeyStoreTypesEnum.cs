@@ -1,6 +1,6 @@
 namespace AspNetToolkit.Enums;
 
-public enum ConfigItemTypesEnum
+public enum KeyStoreTypesEnum
 {
     [Description("Represents a string of characters.")]
     TEXT,
