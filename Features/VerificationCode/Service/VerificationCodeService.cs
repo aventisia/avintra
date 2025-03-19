@@ -104,10 +104,10 @@ public class VerificationCodeService : IVerificationCodeService
             {
                 // Get user (Includes Tenant and Roles)
                 var user = await _unitOfWork.AccountUserRepo
-                        .GetByConditionAsync(w => w.UserName == checkVerificationCodeDto.Email)
+                        .GetByConditionAsync(w => EF.Functions.ILike(checkVerificationCodeDto.Email, w.UserName))
                         .AsNoTracking()
                         .SingleOrDefaultAsync();
-                
+
                 // Get Jwt validity config
                 var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
                     _jwtConfig.PwdResetJwtValidityInMinutes);
