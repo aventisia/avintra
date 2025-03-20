@@ -6,8 +6,8 @@ public class VaultMappingProfile : IRegister
     {
         // Mapping for Vault record or records.
         config.NewConfig<Vault, VaultDto>()
-            .Map(dest => dest.Username, src => src.Username == "username: ")
-            .Map(dest => dest.Password, src => src.Password == string.Empty)
+            .Map(dest => dest.Username, src => src.IsEncrypted ? "username: " : src.Username)
+            .Map(dest => dest.Password, src => src.IsEncrypted ? string.Empty : src.Password)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
