@@ -1,16 +1,11 @@
-import { IAppConfig } from "@/react-toolkit/types/app-config";
-import { NavLocation } from "@/react-toolkit/types/nav-data-types";
+import { Bot, Library, MonitorPlayIcon, ScrollTextIcon, Shield } from 'lucide-react';
+
+import { IAppConfig } from '@/react-toolkit/types/app-config';
+import { NavLocation } from '@/react-toolkit/types/nav-data-types';
 import {
-  FolderIcon,
-  IdentificationIcon,
-  QuestionMarkCircleIcon,
-  QueueListIcon,
-  CogIcon,
-  ChartPieIcon,
-  UsersIcon,
-} from "@heroicons/react/24/outline";
-import { DesktopIcon } from "@radix-ui/react-icons";
-import { Bot, Briefcase, LockKeyholeIcon } from "lucide-react";
+    ChartPieIcon, FolderIcon, IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
+} from '@heroicons/react/24/outline';
+import { DesktopIcon } from '@radix-ui/react-icons';
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -63,19 +58,24 @@ const workspaceAppConfig: IAppConfig = {
             route: "/orchestrator/queues",
           },
           {
-            Icon: Briefcase,
-            name: "jobs",
-            route: "/orchestrator/jobs",
+            Icon: MonitorPlayIcon,
+            name: "executions",
+            route: "/orchestrator/executions",
           },
           {
-            Icon: CogIcon,
-            name: "Keystore",
+            Icon: Library,
+            name: "Key Store",
             route: "/orchestrator/config-hub",
           },
           {
-            Icon: LockKeyholeIcon,
+            Icon: Shield,
             name: "Vault",
             route: "/orchestrator/vault",
+          },
+          {
+            Icon: ScrollTextIcon,
+            name: "licenses",
+            route: "/orchestrator/licenses",
           },
         ],
       },
