@@ -5,15 +5,19 @@ meta {
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/list/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/list/0195a90b-e828-79de-a9cd-bcc76fe39642/:type
   body: none
   auth: none
+}
+
+params:path {
+  type: TestData
 }
 
 script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    MLModelId: "01955fbe-a5f0-7be6-add4-9a1ce445d0b6",
+    MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
   })
 }
