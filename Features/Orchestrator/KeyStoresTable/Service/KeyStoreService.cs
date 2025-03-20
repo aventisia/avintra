@@ -27,7 +27,7 @@ public class KeyStoreService : IKeyStoreService
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
         {
             Data = null,
-            Message = "Failed to check key store name availability. Please try again"
+            Message = "Failed to check key store name availability. Please try again."
         };
 
         try
@@ -51,7 +51,7 @@ public class KeyStoreService : IKeyStoreService
             // If no conflict is found, the name is available
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key store name is available.";
+            serviceResponse.Message = "Key store name is available.";
         }
         catch (Exception ex)
         {
@@ -74,15 +74,15 @@ public class KeyStoreService : IKeyStoreService
         try
         {
             // Retrieve and order the user's key stores by creation date
-            var KeyStores = await _unitOfWork.KeyStoreRepo
+            var keyStores = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w => w.CreatedByUserId == _userId)
                 .OrderByDescending(w => w.CreatedOn)
                 .ProjectToType<KeyStoreDto>()
                 .ToListAsync();
 
-            serviceResponse.Data = KeyStores;
+            serviceResponse.Data = keyStores;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key stores retrieved successfully.";
+            serviceResponse.Message = "Key stores retrieved successfully.";
         }
         catch (Exception ex)
         {
@@ -94,7 +94,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to retrieve a specific key store by its ID for the current user
-    public async Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByIdAsync(Guid KeyStoreId)
+    public async Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByIdAsync(Guid keyStoreId)
     {
         var serviceResponse = new ServiceResponse<KeyStoreDto>
         {
@@ -105,14 +105,14 @@ public class KeyStoreService : IKeyStoreService
         try
         {
             // Fetch the key store by ID, ensuring it's created by the current user
-            var KeyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == KeyStoreId && w.CreatedByUserId == _userId)
+            var keyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.Id == keyStoreId && w.CreatedByUserId == _userId)
                 .ProjectToType<KeyStoreDto>()
                 .FirstOrDefaultAsync();
 
-            serviceResponse.Data = KeyStore;
+            serviceResponse.Data = keyStore;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key store retrieved successfully.";
+            serviceResponse.Message = "Key store retrieved successfully.";
         }
         catch (Exception ex)
         {
@@ -124,7 +124,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to insert a new key store for the current user
-    public async Task<ServiceResponse<KeyStoreDto>> InsertKeyStoreAsync(KeyStoreDto KeyStoreDto)
+    public async Task<ServiceResponse<KeyStoreDto>> InsertKeyStoreAsync(KeyStoreDto keyStoreDto)
     {
         var serviceResponse = new ServiceResponse<KeyStoreDto>
         {
@@ -137,29 +137,28 @@ public class KeyStoreService : IKeyStoreService
             // Check if a key store with the same name already exists for the user
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == KeyStoreDto.Name.ToLower() &&
+                    w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
                     w.CreatedByUserId == _userId)
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a conflict response
             if (existingKeyStore != null)
             {
-                _logger.LogInformation("key store already exists.");
+                _logger.LogInformation("Key store already exists.");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A key store with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
             }
 
             // Trim string properties in the DTO for consistency
-            KeyStoreDto = TrimDtoStringPropsUtil.TrimDtoStringProps(KeyStoreDto);
+            keyStoreDto = TrimDtoStringPropsUtil.TrimDtoStringProps(keyStoreDto);
 
             // Map DTO to entity and set user-related properties
-            var newKeyStore = KeyStoreDto.Adapt<KeyStore>();
+            var newKeyStore = keyStoreDto.Adapt<KeyStore>();
             newKeyStore.CreatedByUserId = _userId;
             newKeyStore.LastModifiedByUserId = _userId;
 
             // If the KeyStore type is "CREDENTIAL", encrypt the Value property to protect sensitive information.
-            // This ensures that credentials are not stored in plain text and remain secure.
             if (newKeyStore.Type == KeyStoreTypesEnum.CREDENTIAL)
             {
                 // Encrypt the credential value before saving it
@@ -180,7 +179,7 @@ public class KeyStoreService : IKeyStoreService
             // Return the created key store in the response
             serviceResponse.Data = newKeyStore.Adapt<KeyStoreDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key store created successfully.";
+            serviceResponse.Message = "Key store created successfully.";
         }
         catch (Exception ex)
         {
@@ -192,7 +191,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to update an existing key store for the current user
-    public async Task<ServiceResponse<KeyStoreDto>> UpdateKeyStoreAsync(KeyStoreDto KeyStoreDto)
+    public async Task<ServiceResponse<KeyStoreDto>> UpdateKeyStoreAsync(KeyStoreDto keyStoreDto)
     {
         var serviceResponse = new ServiceResponse<KeyStoreDto>
         {
@@ -203,51 +202,53 @@ public class KeyStoreService : IKeyStoreService
         try
         {
             // Fetch the existing key store
-            var KeyStore = await _unitOfWork.KeyStoreRepo
+            var keyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Id == KeyStoreDto.Id && w.CreatedByUserId == _userId)
+                    w.Id == keyStoreDto.Id && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
-            if (KeyStore == null)
+            if (keyStore == null)
             {
-                _logger.LogInformation("key store does not exist.");
-                serviceResponse.Message = "key store does not exist.";
+                _logger.LogInformation("Key store does not exist.");
+                serviceResponse.Message = "Key store does not exist.";
                 return serviceResponse;
             }
 
             // Check if another key store with the same name exists
-            var existingKeyStore = await _unitOfWork.FlowRepo
+            var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == KeyStoreDto.Name.ToLower() &&
+                    w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
                     w.CreatedByUserId == _userId &&
-                    w.Id != KeyStoreDto.Id)
+                    w.Id != keyStoreDto.Id)
                 .FirstOrDefaultAsync();
 
             // If a conflict is found, return a conflict response
             if (existingKeyStore != null)
             {
-                _logger.LogInformation("key store name already exists.");
+                _logger.LogInformation("Key store name already exists.");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A key store with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
             }
 
             // Trim string properties in the DTO for consistency
-            KeyStoreDto = TrimDtoStringPropsUtil.TrimDtoStringProps(KeyStoreDto);
+            keyStoreDto = TrimDtoStringPropsUtil.TrimDtoStringProps(keyStoreDto);
 
-            // If the KeyStore type is "CREDENTIAL" and it is not already encrypted,
-            // encrypt the Value property to safeguard sensitive information.
-            // This ensures that credentials are not stored in plain text.
-            if (KeyStore.Type == KeyStoreTypesEnum.CREDENTIAL && !KeyStore.IsEncrypted)
+            // If the key store type is "CREDENTIAL" and the value has changed or is not already encrypted,
+            // encrypt the Value property to protect sensitive information.
+            if (keyStoreDto.Type == KeyStoreTypesEnum.CREDENTIAL && !string.IsNullOrEmpty(keyStoreDto.Value))
             {
                 // Encrypt the credential value prior to saving it
-                KeyStore.Value = _stringEncryptionService.EncryptString(KeyStore.Value);
-                KeyStore.IsEncrypted = true;
+                keyStoreDto.Value = _stringEncryptionService.EncryptString(keyStore.Value);
+                keyStoreDto.IsEncrypted = true;
             }
 
+            // Map the properties from the keyStoreDto to the existing keyStore entity
+            keyStoreDto.Adapt(keyStore);
+
             // Update the key store in the repository
-            _unitOfWork.KeyStoreRepo.Update(KeyStore);
+            _unitOfWork.KeyStoreRepo.Update(keyStore);
 
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
@@ -257,9 +258,9 @@ public class KeyStoreService : IKeyStoreService
             }
 
             // Return the updated key store in the response
-            serviceResponse.Data = KeyStore.Adapt<KeyStoreDto>();
+            serviceResponse.Data = keyStore.Adapt<KeyStoreDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key store updated successfully.";
+            serviceResponse.Message = "Key store updated successfully.";
         }
         catch (Exception ex)
         {
@@ -271,7 +272,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to delete a key store by its ID
-    public async Task<ServiceResponse<bool>> DeleteKeyStoreAsync(Guid KeyStoreId)
+    public async Task<ServiceResponse<bool>> DeleteKeyStoreAsync(Guid keyStoreId)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -282,20 +283,20 @@ public class KeyStoreService : IKeyStoreService
         try
         {
             // Fetch the key store to be deleted
-            var KeyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == KeyStoreId && w.CreatedByUserId == _userId)
+            var keyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.Id == keyStoreId && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
-            if (KeyStore == null)
+            if (keyStore == null)
             {
-                _logger.LogInformation("key store does not exist.");
-                serviceResponse.Message = "key store does not exist.";
+                _logger.LogInformation("Key store does not exist.");
+                serviceResponse.Message = "Key store does not exist.";
                 return serviceResponse;
             }
 
             // Delete the key store from the repository
-            _unitOfWork.KeyStoreRepo.Delete(KeyStore);
+            _unitOfWork.KeyStoreRepo.Delete(keyStore);
 
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
@@ -307,7 +308,7 @@ public class KeyStoreService : IKeyStoreService
             // Return a success message
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key store deleted successfully.";
+            serviceResponse.Message = "Key store deleted successfully.";
         }
         catch (Exception ex)
         {
@@ -319,7 +320,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to delete multiple key stores by their IDs
-    public async Task<ServiceResponse<bool>> DeleteKeyStoresAsync(IEnumerable<Guid> KeyStoreIds)
+    public async Task<ServiceResponse<bool>> DeleteKeyStoresAsync(IEnumerable<Guid> keyStoreIds)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -330,20 +331,20 @@ public class KeyStoreService : IKeyStoreService
         try
         {
             // Fetch the key stores to be deleted
-            var KeyStores = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId && KeyStoreIds.Contains(w.Id))
+            var keyStores = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.CreatedByUserId == _userId && keyStoreIds.Contains(w.Id))
                 .ToListAsync();
 
             // If no items are found, return an error message
-            if (KeyStores.Count == 0)
+            if (keyStores.Count == 0)
             {
-                _logger.LogInformation("key stores do not exist.");
-                serviceResponse.Message = "key stores do not exist.";
+                _logger.LogInformation("Key stores do not exist.");
+                serviceResponse.Message = "Key stores do not exist.";
                 return serviceResponse;
             }
 
             // Delete the key stores from the repository
-            _unitOfWork.KeyStoreRepo.Delete(KeyStores);
+            _unitOfWork.KeyStoreRepo.Delete(keyStores);
 
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
@@ -355,7 +356,7 @@ public class KeyStoreService : IKeyStoreService
             // Return a success message with the count of deleted items
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{KeyStoreIds.Count()} key stores deleted successfully.";
+            serviceResponse.Message = $"{keyStoreIds.Count()} key stores deleted successfully.";
         }
         catch (Exception ex)
         {
@@ -367,7 +368,7 @@ public class KeyStoreService : IKeyStoreService
     }
 
     // Method to decrypt the value of an encrypted key store
-    public async Task<ServiceResponse<string>> DecryptKeyStoreValueAsync(Guid KeyStoreId)
+    public async Task<ServiceResponse<string>> DecryptKeyStoreValueAsync(Guid keyStoreId)
     {
         var serviceResponse = new ServiceResponse<string>
         {
@@ -378,31 +379,31 @@ public class KeyStoreService : IKeyStoreService
         try
         {
             // Retrieve the encrypted key store by its ID
-            var KeyStore = await _unitOfWork.KeyStoreRepo
+            var keyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Id == KeyStoreId && w.CreatedByUserId == _userId)
+                    w.Id == keyStoreId && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
             // If the key store doesn't exist, return an error response
-            if (KeyStore == null)
+            if (keyStore == null)
             {
-                _logger.LogInformation("key store not found.");
-                serviceResponse.Message = "key store not found.";
+                _logger.LogInformation("Key store not found.");
+                serviceResponse.Message = "Key store not found.";
                 return serviceResponse;
             }
 
             // If the value is not encrypted, notify the user
-            if (!KeyStore.IsEncrypted)
+            if (!keyStore.IsEncrypted)
             {
                 serviceResponse.Message = "The key store value is not encrypted.";
                 return serviceResponse;
             }
 
             // Decrypt the key store value
-            var decryptedValue = _stringEncryptionService.DecryptString(KeyStore.Value);
+            var decryptedValue = _stringEncryptionService.DecryptString(keyStore.Value);
             serviceResponse.Data = decryptedValue;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "key store decrypted successfully.";
+            serviceResponse.Message = "Key store decrypted successfully.";
         }
         catch (Exception ex)
         {

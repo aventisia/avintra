@@ -21,45 +21,45 @@ public interface IKeyStoreService
     /// <summary>
     /// Fetches a configuration item by its unique identifier.
     /// </summary>
-    /// <param name="KeyStoreId">The identifier of the configuration item to retrieve.</param>
+    /// <param name="keyStoreId">The identifier of the configuration item to retrieve.</param>
     /// <returns>A task representing the service response containing the details of the configuration item.</returns>
-    Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByIdAsync(Guid KeyStoreId);
+    Task<ServiceResponse<KeyStoreDto>> GetKeyStoreByIdAsync(Guid keyStoreId);
 
     /// <summary>
     /// Creates a new configuration item with the provided data.
     /// </summary>
-    /// <param name="KeyStoreDto">The data needed to create the new configuration item.</param>
+    /// <param name="keyStoreDto">The data needed to create the new configuration item.</param>
     /// <returns>A task representing the service response containing the details of the newly created configuration item.</returns>
-    Task<ServiceResponse<KeyStoreDto>> InsertKeyStoreAsync(KeyStoreDto KeyStoreDto);
+    Task<ServiceResponse<KeyStoreDto>> InsertKeyStoreAsync(KeyStoreDto keyStoreDto);
 
     /// <summary>
     /// Modifies an existing configuration item with the provided data.
     /// </summary>
-    /// <param name="KeyStoreDto">The data required to update the configuration item.</param>
+    /// <param name="keyStoreDto">The data required to update the configuration item.</param>
     /// <returns>A task representing the service response containing the updated configuration item details.</returns>
-    Task<ServiceResponse<KeyStoreDto>> UpdateKeyStoreAsync(KeyStoreDto KeyStoreDto);
+    Task<ServiceResponse<KeyStoreDto>> UpdateKeyStoreAsync(KeyStoreDto keyStoreDto);
 
     /// <summary>
     /// Removes a configuration item by its identifier.
     /// </summary>
-    /// <param name="KeyStoreId">The identifier of the configuration item to be deleted.</param>
+    /// <param name="keyStoreId">The identifier of the configuration item to be deleted.</param>
     /// <returns>A task representing the service response indicating whether the configuration item was successfully deleted.</returns>
-    Task<ServiceResponse<bool>> DeleteKeyStoreAsync(Guid KeyStoreId);
+    Task<ServiceResponse<bool>> DeleteKeyStoreAsync(Guid keyStoreId);
 
     /// <summary>
     /// Removes multiple configuration items by their identifiers.
     /// </summary>
-    /// <param name="KeyStoreIds">The list of identifiers of the configuration items to delete.</param>
+    /// <param name="keyStoreIds">The list of identifiers of the configuration items to delete.</param>
     /// <returns>A task representing the service response indicating whether the configuration items were successfully deleted.</returns>
     /// <remarks>
     /// This method is recommended for deleting multiple configuration items at once, reducing the number of server requests.
     /// </remarks>
-    Task<ServiceResponse<bool>> DeleteKeyStoresAsync(IEnumerable<Guid> KeyStoreIds);
+    Task<ServiceResponse<bool>> DeleteKeyStoresAsync(IEnumerable<Guid> keyStoreIds);
     
     /// <summary>
     /// Decrypts the value of an encrypted key store based on its ID.
     /// </summary>
-    /// <param name="KeyStoreId">The unique identifier of the key store.</param>
+    /// <param name="keyStoreId">The unique identifier of the key store.</param>
     /// <returns>A response containing the decrypted value, or an error message if decryption fails.</returns>
-    Task<ServiceResponse<string>> DecryptKeyStoreValueAsync(Guid KeyStoreId);
+    Task<ServiceResponse<string>> DecryptKeyStoreValueAsync(Guid keyStoreId);
 }
