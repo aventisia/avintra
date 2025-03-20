@@ -232,10 +232,16 @@ public class VaultService : IVaultService
             // Trim string properties in the DTO for consistency
             vaultDto = TrimDtoStringPropsUtil.TrimDtoStringProps(vaultDto);
 
-            // Encrypt the username and password before saving them
-            vault.Username = _stringEncryptionService.EncryptString(vault.Username);
-            vault.Password = _stringEncryptionService.EncryptString(vault.Password);
-            vault.IsEncrypted = true;
+            // Check if the username or password in the vault has changed compared to the DTO
+            if (vault.Username != vaultDto.Username || vault.Password != vaultDto.Password)
+            {
+                // Encrypt the username and password before saving them to ensure security
+                vaultDto.Username = _stringEncryptionService.EncryptString(vaultDto.Username);
+                vaultDto.Password = _stringEncryptionService.EncryptString(vaultDto.Password);
+                vaultDto.IsEncrypted = true;
+            }
+
+            vaultDto.Adapt(vault);
 
             // Update the vault in the repository
             _unitOfWork.VaultRepo.Update(vault);
