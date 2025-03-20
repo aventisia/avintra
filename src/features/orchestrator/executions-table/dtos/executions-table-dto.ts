@@ -1,11 +1,11 @@
-import type { JobStatusTypesEnum } from "@/react-toolkit/enums/job-status-type-enum";
+import type { ExecutionStatusTypesEnum } from "@/react-toolkit/enums/execution-status-type-enum";
 
 /**
- * Represents a data transfer object (DTO) for a job.
+ * Represents a data transfer object (DTO) for a execution.
  */
-export interface JobsTableDto {
+export interface ExecutionsTableDto {
   /**
-   * Gets or sets the primary key of the job record.
+   * Gets or sets the primary key of the execution record.
    *
    * Not making it required because same DTO is used for insert and update.
    */
@@ -26,33 +26,33 @@ export interface JobsTableDto {
   flowVersionId?: string;
 
   /**
-   * Gets or sets the name of the job. Max-255
+   * Gets or sets the name of the execution. Max-255
    */
   name: string;
 
   /**
- * Gets or sets the number of retry count in the job.
+ * Gets or sets the number of retry count in the execution.
  */
   retryCount?: number;
 
   /**
- * Gets or sets the status of the job.
+ * Gets or sets the status of the execution.
  */
-  status: JobStatusTypesEnum;
+  status: ExecutionStatusTypesEnum;
 
   /**
- * Gets or sets last update time of the job.
+ * Gets or sets last update time of the execution.
  */
   endTime: Date;
 
 
   /**
-* Gets or sets last update time of the job.
+* Gets or sets last update time of the execution.
 */
   startTime: Date;
 
   /**
-* Gets or sets last update time of the job.
+* Gets or sets last update time of the execution.
 */
   duration: string;
 
@@ -63,7 +63,7 @@ export interface JobsTableDto {
 
 
   /**
-   * Gets or sets a flag indicating whether the job record is disabled.
+   * Gets or sets a flag indicating whether the execution record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.
    *
@@ -72,22 +72,22 @@ export interface JobsTableDto {
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the job record. Max-254
+   * Gets or sets the username of the user who created the execution record. Max-254
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the job record was created.
+   * Gets or sets the date and time when the execution record was created.
    */
   createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the job record. Max-254
+   * Gets or sets the username of the user who last modified the execution record. Max-254
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the job record was last modified.
+   * Gets or sets the date and time when the execution record was last modified.
    */
   lastModifiedOn?: Date;
 }

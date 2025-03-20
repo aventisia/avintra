@@ -1,23 +1,21 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
-import { DATA_QUERY_KEY } from "../../constants";
-import {
-  idProps,
-  isDisabledProps,
-  nameProps,
-} from "../../constants/job-form-field-props";
-import { jobZodSchema } from "../../constants/job-zod-schema";
-import { JobsTableDto } from "../../dtos/jobs-table-dto";
-import { useDefineJobForm } from "../../hooks/useDefineJobForm";
-import { JobOptimisticMutationFn } from "../../apis/jobs-table-apis";
+import { z } from 'zod';
 
-export const JobCrudForm = () => {
-  // Define job form
+import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
+import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
+import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { Form } from '@/react-toolkit/ui/form/Form';
+import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
+
+import { ExecutionOptimisticMutationFn } from '../../apis/executions-table-apis';
+import { DATA_QUERY_KEY } from '../../constants';
+import { idProps, isDisabledProps, nameProps } from '../../constants/execution-form-field-props';
+import { executionZodSchema } from '../../constants/execution-zod-schema';
+import { ExecutionsTableDto } from '../../dtos/executions-table-dto';
+import { useDefineExecutionForm } from '../../hooks/useDefineExecutionForm';
+
+export const ExecutionCrudForm = () => {
+  // Define execution form
   const {
     form,
     isDirty,
@@ -30,20 +28,20 @@ export const JobCrudForm = () => {
     // handleInputChange,
     setShowDialog,
     refineFormData,
-  } = useDefineJobForm();
+  } = useDefineExecutionForm();
 
-  // Define optimistic mutation to crete or update the job
-  const { mutate: mutatejob } = useListOptimisticMutation<
-    JobsTableDto,
-    JobsTableDto | boolean,
-    JobsTableDto
-  >([rowId], JobOptimisticMutationFn, DATA_QUERY_KEY);
+  // Define optimistic mutation to crete or update the execution
+  const { mutate: mutateexecution } = useListOptimisticMutation<
+    ExecutionsTableDto,
+    ExecutionsTableDto | boolean,
+    ExecutionsTableDto
+  >([rowId], ExecutionOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof jobZodSchema>) => {
-    // Create or update the job
-    mutatejob({
-      payload: refineFormData(formData) as unknown as JobsTableDto,
+  const onSubmit = (formData: z.infer<typeof executionZodSchema>) => {
+    // Create or update the execution
+    mutateexecution({
+      payload: refineFormData(formData) as unknown as ExecutionsTableDto,
       crudAction: crudAction,
     });
 
@@ -65,7 +63,7 @@ export const JobCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* job Id */}
+      {/* execution Id */}
       {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
@@ -96,7 +94,7 @@ export const JobCrudForm = () => {
             disabled={!isDirty || !isAvailable || isCheckPending}
             className="min-w-[5rem]"
           >
-            {crudAction === "create" ? "Create job" : "Save changes"}
+            {crudAction === "create" ? "Create execution" : "Save changes"}
           </Button>
         </div>
       )}

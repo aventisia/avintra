@@ -1,12 +1,14 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
-import { getColumnName } from "../constants/column-display-names";
-import { JobsTableDto } from "../dtos/jobs-table-dto";
-import { JobRowActions } from "./job-row-actions/JobRowActions";
+import { formatDistanceToNow } from 'date-fns';
 
-export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
+import { Checkbox } from '@/react-toolkit/ui/checkbox';
+import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
+import { ColumnDef } from '@tanstack/react-table';
+
+import { getColumnName } from '../constants/column-display-names';
+import { ExecutionsTableDto } from '../dtos/executions-table-dto';
+import { ExecutionRowActions } from './execution-row-actions/ExecutionRowActions';
+
+export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -180,8 +182,11 @@ export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      // Render the job row actions component
-      <JobRowActions row={row.original} rowId={row.original?.id ?? "rowid"} />
+      // Render the execution row actions component
+      <ExecutionRowActions
+        row={row.original}
+        rowId={row.original?.id ?? "rowid"}
+      />
     ),
   },
 ];

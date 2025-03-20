@@ -1,10 +1,10 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
+import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
 
-// job Id
+// execution Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Job Id",
+  label: "Execution Id",
   disabled: true,
 };
 

@@ -3,7 +3,7 @@ import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import Lucide from "@/react-toolkit/ui/Lucide";
 import React from "react";
 
-const JobBulkRetryAction = React.forwardRef<
+const ExecutionBulkRetryAction = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => (
@@ -24,6 +24,6 @@ const JobBulkRetryAction = React.forwardRef<
   </button>
 ));
 
-JobBulkRetryAction.displayName = "QueueBulkRetryAction";
+ExecutionBulkRetryAction.displayName = "QueueBulkRetryAction";
 
-export { JobBulkRetryAction };
+export { ExecutionBulkRetryAction };

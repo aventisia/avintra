@@ -3,10 +3,10 @@ import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogW
 import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { useShallow } from "zustand/react/shallow";
-import { JobCrudForm } from "./JobCrudForm";
+import { ExecutionCrudForm } from "./ExecutionCrudForm";
 import { getDialogHeadingDescription } from "../../constants";
 
-export const JobCrudDialog = ({ children }: React.PropsWithChildren) => {
+export const ExecutionCrudDialog = ({ children }: React.PropsWithChildren) => {
   // Get crud dialog store state
   const {
     crudDialogOptions: { crudAction },
@@ -30,7 +30,7 @@ export const JobCrudDialog = ({ children }: React.PropsWithChildren) => {
           description={dialogHeaderOptions.description}
         />
         <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
-          <JobCrudForm />
+          <ExecutionCrudForm />
         </ScrollArea>
       </DialogContent>
     </DTCrudDialogWrapper>
