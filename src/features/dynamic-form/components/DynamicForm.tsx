@@ -8,14 +8,9 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/react-toolkit/ui/accordion";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
+import { ChevronDown, ChevronUp } from "lucide-react";
 // import OnErrorTabs from "./OnErrorTabs";
 
 interface DynamicFormProps {
@@ -154,36 +149,50 @@ const DynamicForm = ({
           {/* If form has multiple categories add those to accordion */}
           {formFieldCategories.length > 1 && (
             <div className="w-full">
+              {/* Custom Accordion */}
               {/* Exclude basic category */}
               {formFieldCategories?.slice(1).map((category, fieldIdx) => (
-                <>
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="mb-3 w-full rounded-lg bg-slate-100 px-2.5 first:mt-3"
+                <div key={category.title} className="mb-3 w-full">
+                  {/* Accordion Item Wrapper */}
+                  <input
+                    type="checkbox"
+                    id={`accordion-toggle-${category.title}`}
+                    className="peer hidden"
+                  />
+                  <label
+                    htmlFor={`accordion-toggle-${category.title}`}
+                    className="flex w-full cursor-pointer items-center gap-3 rounded-lg bg-muted px-2.5 py-2.5 text-sm font-medium hover:underline peer-checked:rounded-b-none"
                   >
-                    <AccordionItem
-                      value={category.title}
-                      className="border-none"
-                    >
-                      <AccordionTrigger className="py-2">
-                        <div className="flex w-full gap-3 text-sm">
-                          {category.title}
+                    {/* Accordion Title */}
+                    {category.title}
+
+                    {/* Chevron Icon (Down or Up depending on state) */}
+                    <div className="ml-auto">
+                      <ChevronDown
+                        size={14}
+                        className="transform transition-transform duration-200 peer-checked:hidden"
+                      />
+                      <ChevronUp className="hidden transform transition-transform duration-200 peer-checked:block" />
+                    </div>
+                  </label>
+
+                  <div
+                    className={`max-h-0 w-full overflow-hidden rounded-b-lg border-none bg-muted shadow-none transition-all duration-700 ease-in-out peer-checked:max-h-[1000px]`}
+                  >
+                    <div className="space-y-4 p-3 pb-4">
+                      {/* Accordion Content */}
+                      {category.formFields?.map((fItem, index) => (
+                        <div key={index}>
+                          {fieldIdx === formFieldCategories.length - 2
+                            ? renderOutputFields(fItem)
+                            : renderFieldInFlexView(fItem)}
                         </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        {category.formFields?.map((fItem, index) => (
-                          <div key={index} className="mt-3">
-                            {fieldIdx === formFieldCategories.length - 2
-                              ? renderOutputFields(fItem)
-                              : renderFieldInFlexView(fItem)}
-                          </div>
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               ))}
+
               {/* To Do
                 To Be Implemented Later
               */}
