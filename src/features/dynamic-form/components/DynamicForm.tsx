@@ -8,9 +8,9 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { PopoverClose } from "@radix-ui/react-popover";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { PopoverClose } from "@radix-ui/react-popover";
 // import OnErrorTabs from "./OnErrorTabs";
 
 interface DynamicFormProps {
@@ -63,6 +63,8 @@ const DynamicForm = ({
 
   // Submit handler
   function submitHandler(formData: any) {
+    console.log("inside submit");
+
     // Return if form is only for view information
     if (viewOnly) return;
 
