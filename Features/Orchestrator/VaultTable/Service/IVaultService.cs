@@ -55,11 +55,11 @@ public interface IVaultService
     /// This method is recommended for deleting multiple configuration items at once, reducing the number of server requests.
     /// </remarks>
     Task<ServiceResponse<bool>> DeleteVaultsAsync(IEnumerable<Guid> vaultIds);
-    
+
     /// <summary>
-    /// Decrypts the value of an encrypted vault based on its ID.
+    /// Retrieves the decrypted values (username and password) of an encrypted vault using its ID.
     /// </summary>
     /// <param name="vaultId">The unique identifier of the vault.</param>
-    /// <returns>A response containing the decrypted value, or an error message if decryption fails.</returns>
-    Task<ServiceResponse<string>> DecryptVaultValueAsync(Guid vaultId);
+    /// <returns>A response containing the decrypted vault data as a <see cref="VaultDto"/>, or an error message if the decryption process fails.</returns>
+    Task<ServiceResponse<VaultDto>> RetrieveDecryptedVaultValueAsync(Guid vaultId);
 }

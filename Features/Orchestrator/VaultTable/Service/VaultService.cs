@@ -357,10 +357,10 @@ public class VaultService : IVaultService
         return serviceResponse;
     }
 
-    // Method to decrypt the value of an encrypted vault
-    public async Task<ServiceResponse<string>> DecryptVaultValueAsync(Guid vaultId)
+    // Method to retrieve the decrypted value of an encrypted vault
+    public async Task<ServiceResponse<VaultDto>> RetrieveDecryptedVaultValueAsync(Guid vaultId)
     {
-        var serviceResponse = new ServiceResponse<string>
+        var serviceResponse = new ServiceResponse<VaultDto>
         {
             Data = null,
             Message = "Unable to decrypt the vault. Please try again later."
@@ -368,13 +368,13 @@ public class VaultService : IVaultService
 
         try
         {
-            // Retrieve the encrypted vault by its ID
+            // Fetch the encrypted vault by its ID
             var vault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
                     w.Id == vaultId && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
-            // If the vault doesn't exist, return an error response
+            // Return an error response if the vault does not exist
             if (vault == null)
             {
                 _logger.LogInformation("Vault not found.");
@@ -382,16 +382,21 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
-            // If the value is not encrypted, notify the user
+            // Notify the user if the vault value is not encrypted
             if (!vault.IsEncrypted)
             {
                 serviceResponse.Message = "The vault value is not encrypted.";
                 return serviceResponse;
             }
 
-            // Decrypt the vault value
-            var decryptedValue = _stringEncryptionService.DecryptString(vault.Value);
-            serviceResponse.Data = decryptedValue;
+            var vaultDto = vault.Adapt<VaultDto>();
+
+            // Decrypt the username and password
+            vaultDto.Username = _stringEncryptionService.DecryptString(vault.Username);
+            vaultDto.Password = _stringEncryptionService.DecryptString(vault.Password);
+
+            // Set the decrypted vault data in the response
+            serviceResponse.Data = vaultDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Vault decrypted successfully.";
         }

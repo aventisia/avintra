@@ -61,10 +61,10 @@ public class VaultController : BaseApiController
         return ResultHelper(await _vaultService.DeleteVaultsAsync(vaultIds));
     }
 
-    // Decrypts the value of a vault by its ID.
+    // Retrieves the decrypted values of a vault based on its ID.
     [HttpGet("decrypt/{vaultId}")]
-    public async Task<IActionResult> DecryptVaultValue(Guid vaultId)
+    public async Task<IActionResult> RetrieveDecryptedVaultValue(Guid vaultId)
     {
-        return ResultHelper(await _vaultService.DecryptVaultValueAsync(vaultId));
+        return ResultHelper(await _vaultService.RetrieveDecryptedVaultValueAsync(vaultId));
     }
 }
