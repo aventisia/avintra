@@ -1,3 +1,5 @@
+using MLModelBuilderAPIs.Hubs;
+
 namespace MLModelBuilderAPIs.Services;
 
 public class ExtractViaLLMService : IExtractViaLLMService
@@ -6,12 +8,14 @@ public class ExtractViaLLMService : IExtractViaLLMService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ExtractViaLLMConfig _extractViaLLMConfig;
     private readonly Guid _userId;
+    private IHubContext<ExtractHub> _extractHub;
 
     public ExtractViaLLMService(
         ILogger<ExtractViaLLMService> logger,
         IUnitOfWork unitOfWork,
         ExtractViaLLMConfig extractViaLLMConfig,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHubContext<ExtractHub> extractHub)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +23,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
         _extractViaLLMConfig = extractViaLLMConfig;
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _extractHub = extractHub;
     }
 
     /// <inheritdoc/>
@@ -241,6 +246,9 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
                 // Add extracted data to the list
                 extractedDataList.Add(extractedData);
+
+                //Send extracted data to UI                
+                await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
             }
 
             // Create response object

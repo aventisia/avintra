@@ -1,5 +1,7 @@
 
 
+using MLModelBuilderAPIs.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 /*---------appsettings and sharedsettings---------*/
@@ -49,6 +51,8 @@ builder.Services.CorsPolicyConfig(config);
 builder.Services.CookiePolicyConfig(config);
 builder.Services.HSTSPolicyConfig(config);
 builder.Services.AddAuthenticationConfig(config);
+builder.Services.AddSignalR();
+
 
 // Database
 builder.Services.AddDbContextConfig(config);
@@ -101,5 +105,7 @@ app.UseAuthorization();
 app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
+
+app.MapHub<ExtractHub>("/extract-hub");
 
 app.Run();
