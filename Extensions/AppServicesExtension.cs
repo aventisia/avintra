@@ -39,7 +39,8 @@ public static class AppServicesExtension
         config.Apply(new QueueTableMappingProfile());
         config.Apply(new QueueTransactionMappingProfile());
         config.Apply(new JobTableMappingProfile());
-        config.Apply(new ConfigItemMappingProfile());
+        config.Apply(new KeyStoreMappingProfile());
+        config.Apply(new VaultMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -75,7 +76,8 @@ public static class AppServicesExtension
         services.AddScoped<IQueueTableService, QueueTableService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
         services.AddScoped<IJobTableService, JobTableService>();
-        services.AddScoped<IConfigItemService, ConfigItemService>();
+        services.AddScoped<IKeyStoreService, KeyStoreService>();
+        services.AddScoped<IVaultService, VaultService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

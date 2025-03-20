@@ -1,11 +1,12 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class ConfigItemMappingProfile : IRegister
+public class KeyStoreMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        // Mapping for ConfigItem record or records.
-        config.NewConfig<ConfigItem, ConfigItemDto>()
+        // Mapping for KeyStore record or records.
+        config.NewConfig<KeyStore, KeyStoreDto>()
+            .Map(dest => dest.Value, src => src.Type == KeyStoreTypesEnum.CREDENTIAL ? string.Empty : src.Value)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -16,7 +17,7 @@ public class ConfigItemMappingProfile : IRegister
                     : null);
 
         // Mapping for inserting or updating a job record.
-        config.NewConfig<ConfigItemDto, ConfigItem>()
+        config.NewConfig<KeyStoreDto, KeyStore>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)

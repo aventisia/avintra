@@ -21,7 +21,8 @@ public interface IUnitOfWork
     IQueueRepo QueueRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }
     IJobRepo JobRepo { get; }
-    IConfigItemRepo ConfigItemRepo { get; }
+    IKeyStoreRepo KeyStoreRepo { get; }
+    IVaultRepo VaultRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
