@@ -1,0 +1,23 @@
+meta {
+  name: Update vault
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/vault
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("VAULT_ID"),
+    name: faker.commerce.product(),
+    username: faker.lorem.paragraph(),
+    password: faker.lorem.paragraph(),
+    isDisabled: false
+  })
+}

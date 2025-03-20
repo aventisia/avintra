@@ -1,0 +1,27 @@
+meta {
+  name: Delete multiple vaults
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/vault/delete-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set vaultIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("VAULT_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "VAULT_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
