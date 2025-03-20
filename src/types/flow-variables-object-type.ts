@@ -1,5 +1,4 @@
-export interface FlowVariablesObjectDTO {
-    dataType: string | null,
-    name: string | null,
-    value: string | null,
+export interface FlowVariablesObjectType {
+    nodeId: string,
+    outputs: string[],
 }

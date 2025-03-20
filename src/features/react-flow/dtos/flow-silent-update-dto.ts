@@ -7,5 +7,5 @@ export interface FlowSilentUpdateDto {
   reactFlowObject: string;
 
   /** Flow Output variables */
-  flowVariablesObject: string | null;
+  flowVariablesObject: string;
 }

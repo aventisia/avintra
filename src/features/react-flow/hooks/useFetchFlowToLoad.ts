@@ -58,6 +58,9 @@ export const useFetchFlowToLoad = () => {
         // Parse react flow object
         const flow = JSON.parse(data.data.reactFlowObject);
 
+        // Parse Flow Variables Object
+        const flowVarObjs = JSON.parse(data.data.flowVariablesObject)
+
         const projectInfo = {
           versionId: data.data.versionId,
           versionNumber: data.data.versionNumber,
@@ -70,7 +73,7 @@ export const useFetchFlowToLoad = () => {
           // Set nodes and edges
           setNodes(flow.nodes);
           setEdges(flow.edges);
-          setFlowVariablesObject(flow.flowVariablesObject)
+          setFlowVariablesObject(flowVarObjs || [])
           setProjectInfo(projectInfo)
 
           // If flow has more than 2 nodes then set the saved viewport

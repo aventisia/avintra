@@ -33,8 +33,6 @@ interface DynamicFormProps {
   viewOnly?: boolean;
   /** A function to be called when the form is submitted. This function will receive an object containing the form data as its argument. */
   onSubmit: (formData: any) => void;
-  /** Open/close the popover when Dynamic form is submitted */
-  setIsPopoverOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /** A React component that renders a dynamic form based on the provided configuration */
@@ -46,7 +44,6 @@ const DynamicForm = ({
   className,
   viewOnly = false,
   onSubmit,
-  setIsPopoverOpen,
 }: DynamicFormProps) => {
   const finalFormFieldValuesToFill = formFieldValuesToFill
     ? formFieldValuesToFill.reduce(
@@ -66,7 +63,7 @@ const DynamicForm = ({
   const {
     // handleSubmit,
     watch,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting },
   } = form;
 
   // Submit handler
@@ -74,12 +71,8 @@ const DynamicForm = ({
     // Return if form is only for view information
     if (viewOnly) return;
 
-    if (isValid && !isSubmitting) {
-      // Submit data
-      onSubmit(formData);
-      // Close Popover
-      setIsPopoverOpen(false);
-    }
+    // Submit data
+    onSubmit(formData);
   }
 
   // Watch fields to apply changes to registerOptions
@@ -206,7 +199,7 @@ const DynamicForm = ({
                   <AccordionContent>
                     <OnErrorTabs />
                   </AccordionContent>
-                </AccordionItem>
+                </AccordionItem> 
               </Accordion> */}
             </div>
           )}
@@ -220,11 +213,13 @@ const DynamicForm = ({
           </Button>
         </PopoverClose>
         {!viewOnly && (
-          <SubmitButton
-            size="xs"
-            isPending={isMutationPending || isSubmitting}
-            primaryText="Save"
-          />
+          <PopoverClose>
+            <SubmitButton
+              size="xs"
+              isPending={isMutationPending || isSubmitting}
+              primaryText="Save"
+            />
+          </PopoverClose>
         )}
       </div>
     </Form>

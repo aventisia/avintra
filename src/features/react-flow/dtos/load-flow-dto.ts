@@ -27,5 +27,5 @@ export interface LoadFlowDto extends IProjectInfoDTO {
   reactFlowObject: string;
 
   /** Output Variables object, i..e the Flow Variables */
-  flowVariablesObject: string[] | null;
+  flowVariablesObject: string;
 }
