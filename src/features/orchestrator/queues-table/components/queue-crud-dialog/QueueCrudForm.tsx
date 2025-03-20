@@ -1,20 +1,23 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
-import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
+import { z } from 'zod';
+
+import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
+import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { CheckboxField } from '@/react-toolkit/ui/form/fields/CheckboxField';
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
+import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { TextareaField } from '@/react-toolkit/ui/form/fields/TextareaField';
+import { Form } from '@/react-toolkit/ui/form/Form';
+import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
+
+import { queueOptimisticMutationFn } from '../../apis/queues-table-apis';
+import { DATA_QUERY_KEY } from '../../constants';
 import {
-  idProps,
-  isDisabledProps,
-  nameProps,
-} from "../../constants/queue-form-field-props";
-import { queueZodSchema } from "../../constants/queue-zod-schema";
-import { QueuesTableDto } from "../../dtos/queues-table-dto";
-import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
+    descriptionProps, idProps, inputJsonSchemaProps, isDisabledProps, maxRetriesProps, nameProps,
+    outputJsonSchemaProps
+} from '../../constants/queue-form-field-props';
+import { queueZodSchema } from '../../constants/queue-zod-schema';
+import { QueuesTableDto } from '../../dtos/queues-table-dto';
+import { useDefineQueueForm } from '../../hooks/useDefineQueueForm';
 
 export const QueueCrudForm = () => {
   // Define queue form
@@ -68,12 +71,61 @@ export const QueueCrudForm = () => {
       {/* queue Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Name */}
-      <InputField
-        {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
-      />
+      <p className="text-md mb-2 border-b-2 pb-2">General Details</p>
+      <div>
+        {/* Name */}
+        <InputField
+          {...nameProps}
+          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+          nonErrorMessage={availabilityMessage}
+        />
+
+        {/* Description */}
+        <TextareaField {...descriptionProps} />
+      </div>
+
+      {/* additional options */}
+      <p className="text-md mb-2 border-b-2 pb-2">Additonal Details</p>
+      <div className="flex flex-col gap-2">
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="default-checkbox" className="fm text-sm">
+            Enforce unique references
+          </label>
+          <CheckboxField name="hasUniqueRef" label="" />
+        </div>
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="default-checkbox" className="fm text-sm">
+            Store in encrypted format
+          </label>
+          <CheckboxField name="isEncrypted" label="" />
+        </div>
+      </div>
+
+      {/* autor etry  */}
+      <p className="text-md mb-2 border-b-2 pb-2">Auto retry</p>
+      <div className="flex flex-col gap-2">
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="default-checkbox" className="fm text-sm">
+            Failed Items
+          </label>
+          <CheckboxField name="hasUniqueRef" label="" />
+        </div>
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="default-checkbox" className="fm text-sm">
+            Abandoned Items
+          </label>
+          <CheckboxField name="isEncrypted" label="" />
+        </div>
+
+        <InputField className="m-0" {...maxRetriesProps} />
+      </div>
+
+      {/* additional options */}
+      <p className="text-md mb-2 border-b-2 pb-2">Shema Definations</p>
+      <div className="flex flex-col gap-2">
+        <InputField className="m-0" {...inputJsonSchemaProps} />
+        <InputField className="m-0" {...outputJsonSchemaProps} />
+      </div>
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
