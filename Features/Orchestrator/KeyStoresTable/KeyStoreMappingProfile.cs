@@ -6,6 +6,7 @@ public class KeyStoreMappingProfile : IRegister
     {
         // Mapping for KeyStore record or records.
         config.NewConfig<KeyStore, KeyStoreDto>()
+            .Map(dest => dest.Value, src => src.Type == KeyStoreTypesEnum.CREDENTIAL ? string.Empty : src.Value)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
