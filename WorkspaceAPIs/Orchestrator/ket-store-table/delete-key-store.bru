@@ -1,11 +1,11 @@
 meta {
-  name: Delete config item
+  name: Delete key store
   type: http
   seq: 7
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/config-item/{{CONFIG_ITEM_ID}}
+  url: {{WORKSPACE_APIS_BASE_URL}}/key-store/{{CONFIG_ITEM_ID}}
   body: none
   auth: none
 }

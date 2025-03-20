@@ -1,11 +1,11 @@
 meta {
-  name: Repeat - Insert conifg item
+  name: Update key store
   type: http
-  seq: 8
+  seq: 3
 }
 
-post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/config-item
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/key-store
   body: none
   auth: none
 }
@@ -14,19 +14,12 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
+    id: bru.getGlobalEnvVar("CONFIG_ITEM_ID"),
     name: faker.commerce.product(),
+    isDisabled: false,
     type: "TEXT",
     value: faker.lorem.paragraph(),
     isEncrypted: false,
     accessLevel: "PUBLIC"
   })
-}
-
-script:post-response {
-  if(res.getStatus() == 200){
-      bru.setGlobalEnvVar(
-          "CONFIG_ITEM_ID",
-          res.getBody().data.id
-      );
-  }
 }

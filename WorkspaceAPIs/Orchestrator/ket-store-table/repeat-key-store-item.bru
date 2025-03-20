@@ -1,11 +1,11 @@
 meta {
-  name: Insert config item
+  name: Repeat - Insert conifg item
   type: http
-  seq: 2
+  seq: 8
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/config-item
+  url: {{WORKSPACE_APIS_BASE_URL}}/key-store
   body: none
   auth: none
 }
@@ -15,8 +15,9 @@ script:pre-request {
   
   req.setBody({
     name: faker.commerce.product(),
-    type: "CREDENTIAL",
+    type: "TEXT",
     value: faker.lorem.paragraph(),
+    isEncrypted: false,
     accessLevel: "PUBLIC"
   })
 }
