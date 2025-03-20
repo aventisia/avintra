@@ -128,15 +128,15 @@ export const routerConfig: RouteObject[] = [
             path: "/orchestrator/vault",
             element: <VaultPage />,
           },
+          {
+            path: "/orchestrator/licenses",
+            element: <LicensesPage />,
+          },
         ],
       },
       {
         path: "/supportticket",
         element: <SupportTicketsPage />,
-      },
-      {
-        path: "/licenses",
-        element: <LicensesPage />,
       },
       {
         path: "/supportticket-reviewer",
