@@ -62,7 +62,7 @@ export const VerifyEmail = () => {
           <InputDivElement
             headingForInput="Verify Your Email"
             isRequired={true}
-            messageForInput="Please enter the verification code sent to your email."
+            messageForInput={`Please enter the verification code sent to your new email ${updateProfileEmailData?.email}.`}
           >
             <InputOtpField
               containerClassName="!justify-center"
