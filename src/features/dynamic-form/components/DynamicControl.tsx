@@ -334,6 +334,52 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           </FormControl>
         </div>
       );
+    case "output-switch-field":
+      return (
+        <div
+          className={cn(
+            "flex flex-row items-center justify-end rounded-lg",
+            fData.disabled ? "opacity-70" : "",
+          )}
+        >
+          {fData.description && (
+            <FormDescription className="text-xs">
+              {fData.description}
+            </FormDescription>
+          )}
+          <FormControl>
+            <Switch
+              size="sm"
+              disabled={fData.disabled}
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          </FormControl>
+        </div>
+      );
+    case "output-text-field":
+      return (
+        <>
+          <FormControl>
+            <Input
+              fieldSize="xs"
+              className={cn(
+                fData.className,
+                "bg-secondary-light inline h-6 w-fit cursor-pointer rounded-lg px-2 py-1 font-semibold text-secondary placeholder:text-white hover:ring-1 focus-visible:cursor-auto focus-visible:border-none focus-visible:ring-1 disabled:opacity-70",
+              )}
+              readOnly={fData.readonly}
+              type={fData.type}
+              placeholder={fData.placeholder}
+              {...field}
+            />
+          </FormControl>
+          {fData.description && (
+            <FormDescription className="text-xs">
+              {fData.description}
+            </FormDescription>
+          )}
+        </>
+      );
     case "radio-group":
       return (
         <div className="flex flex-col items-start justify-between space-y-2 rounded-lg border p-4">

@@ -22,15 +22,16 @@ export const useUpdateFlowSilently = () => {
   );
 
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, isSavePending, setIsSavePending } =
+  const { nodes, edges, isSavePending, setIsSavePending, flowVariablesObject } =
     useReactFlowExtStore(
       useShallow((state) => ({
         nodes: state.nodes,
         edges: state.edges,
+        flowVariablesObject: state.flowVariablesObject,
         isSavePending: state.isSavePending,
         setIsSavePending: state.setIsSavePending,
       })),
-    );
+    );    
 
   // Create a mutation to update flow silently
   const { mutate: updateFlow } = useMutation({
@@ -78,10 +79,11 @@ export const useUpdateFlowSilently = () => {
       saveData({
         id: currentFlow.id,
         reactFlowObject: JSON.stringify(reactFlowObject),
+        flowVariablesObject: JSON.stringify(flowVariablesObject) || null
       });
     }, DEBOUNCE_SAVE_DELAY); // Debounce save operation
 
     // Cleanup function to clear timeout on unmount or state change
     return () => clearTimeout(handler);
-  }, [isSavePending, saveData, currentFlow.id, nodes, edges, viewportState]);
+  }, [isSavePending, saveData, currentFlow.id, nodes, edges, flowVariablesObject, viewportState]);
 };

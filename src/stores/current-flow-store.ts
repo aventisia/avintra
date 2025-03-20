@@ -1,3 +1,4 @@
+import { IProjectInfoDTO } from "@/features/react-flow/dtos/load-flow-dto";
 import { create } from "zustand";
 
 interface ICurrentFlowDetails {
@@ -5,6 +6,7 @@ interface ICurrentFlowDetails {
   name: string;
   // TODO: version
 }
+
 
 type State = {
   /** Details of the currently opened flow */
@@ -18,6 +20,8 @@ type State = {
 
   /** Flag to indicate if flow is executing */
   isFlowExecuting: boolean;
+
+  projectInfo: IProjectInfoDTO
 };
 
 type Actions = {
@@ -32,6 +36,10 @@ type Actions = {
 
   /** Sets the executing state of the flow */
   setIsFlowExecuting: (isExecuting: boolean) => void;
+
+  /** Set Project info of the flow */
+  setProjectInfo: (projectInfo : IProjectInfoDTO) => void;
+
 };
 
 export const useCurrentFlowStore = create<State & Actions>((set) => ({
@@ -41,6 +49,14 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   isFlowLoading: false,
   isFlowSaving: false,
   isFlowExecuting: false,
+  projectInfo: { 
+    versionId: "",
+    versionNumber: null,
+    name: "",
+    type: "",
+    projectName: "",
+  },
+
 
   setCurrentFlow: (flowDetails) => set({ currentFlow: flowDetails }),
 
@@ -49,4 +65,6 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   setIsFlowSaving: (isSaving) => set({ isFlowSaving: isSaving }),
 
   setIsFlowExecuting: (isExecuting) => set({ isFlowExecuting: isExecuting }),
+
+  setProjectInfo: (projectInfo) => set({ projectInfo : projectInfo })
 }));

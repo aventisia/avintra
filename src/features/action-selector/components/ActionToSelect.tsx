@@ -9,12 +9,12 @@ interface ActionToSelectProps {
 
 export const ActionToSelect = ({ data }: ActionToSelectProps) => {
   return (
-    <div className="flex w-full items-center gap-3 px-2 py-2">
+    <div className="grid w-full grid-cols-[auto_1fr] items-center gap-3 px-2 py-2">
       {/* Category icon or image */}
       {data.icon ? (
         <div>{iconMapper[data.icon]}</div>
       ) : (
-        <FallbackImageIcon src={data.img} />
+        <FallbackImageIcon className="h-auto w-auto" src={data.img} />
       )}
 
       <div className="grow space-y-0.5">

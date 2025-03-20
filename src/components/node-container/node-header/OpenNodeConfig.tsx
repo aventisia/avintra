@@ -20,6 +20,8 @@ import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { Node } from "@xyflow/react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import filterFieldValues from "../utils/filterFieldValues";
+import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 
 interface OpenNodeConfigProps {
   data: NodeDataType;
@@ -31,14 +33,16 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
   const [activityConfig, setActivityConfig] = useState<ActivityConfig | null>(
     null,
   );
-
   // Get ReactFlowExt store state & actions
-  const { nodes, setNodes } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      setNodes: state.setNodes,
-    })),
-  );
+  const { nodes, setNodes, setFlowVariablesObject, flowVariablesObject } =
+    useReactFlowExtStore(
+      useShallow((state) => ({
+        nodes: state.nodes,
+        setNodes: state.setNodes,
+        setFlowVariablesObject: state.setFlowVariablesObject,
+        flowVariablesObject: state.flowVariablesObject,
+      })),
+    );
 
   // Function to update the node with the desired id
   function updateNodeFieldValues(
@@ -52,10 +56,8 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
           ...node,
           data: {
             ...node.data,
-            fieldValues: {
-              ...((node.data.fieldValues as Record<string, unknown>) || {}),
-              ...newFieldValues,
-            },
+            inputs: filterFieldValues(newFieldValues, "input"),
+            outputs: filterFieldValues(newFieldValues, "output"),
           },
         };
       }
@@ -63,9 +65,42 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
     });
   }
 
+  function updateFlowVariablesObject(newFieldValues: {
+    nodeId: string;
+    [key: string]: any;
+  }): FlowVariablesObjectType[] {
+    const switchRegex = /^o_.*switch.*$/i;
+
+    // Filter and map field values in one step, excluding keys matching the regex
+    const filteredValues = filterFieldValues(newFieldValues, "output")
+      .filter((item) => !switchRegex.test(item.key))
+      .map((item) => item.value as string);
+
+    const finalFlowVariablesObject = [...flowVariablesObject];
+
+    // Check if the node already exists and update it, otherwise add a new entry
+    const existingNode = finalFlowVariablesObject.find(
+      (item) => item.nodeId === newFieldValues.nodeId,
+    );
+
+    if (existingNode) {
+      existingNode.outputs = filteredValues;
+    } else {
+      finalFlowVariablesObject.push({
+        nodeId: newFieldValues.nodeId,
+        outputs: filteredValues,
+      });
+    }
+
+    return finalFlowVariablesObject; // Return a new array to avoid mutating the original object
+  }
+
   // Handle form submission
   const formSubmitHandler = (formData: { [key: string]: any }) => {
     setNodes(updateNodeFieldValues(id, { ...formData }));
+    setFlowVariablesObject(
+      updateFlowVariablesObject({ nodeId: id as string, ...formData }),
+    );
   };
 
   // Update the activityConfig for selected node
@@ -111,7 +146,10 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
                 )}
                 formFieldsToWatch={activityConfig?.fieldsToWatch}
                 onSubmit={formSubmitHandler}
-                formFieldValuesToFill={data.fieldValues}
+                formFieldValuesToFill={[
+                  ...(data.inputs ?? []),
+                  ...(data.outputs ?? []),
+                ]}
               />
             )}
           </PopoverContent>

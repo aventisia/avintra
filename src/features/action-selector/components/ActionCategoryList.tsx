@@ -18,13 +18,16 @@ import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
 import ActionsList from "./ActionsList";
 import { triggersList } from "../constants/trigger-data";
+import { ActionCategoryType } from "../types/action-category-type";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
-  const { origin, originId } = useNodeSelectorStore(
+  const { origin, originId, query, setQuery } = useNodeSelectorStore(
     useShallow((state) => ({
       origin: state.origin,
       originId: state.originId,
+      query: state.query,
+      setQuery: state.setQuery,
     })),
   );
 
@@ -40,10 +43,38 @@ export const ActionCategoryList = () => {
   // Is used to render the list of triggers
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
-  // Get actionCategories based on primaryCategoryLabel
-  const actionCategories = actionSelectorData.find(
-    (item) => item.label === primaryCategoryLabel,
-  )?.actionCategories;
+  const getActionCategories = () => {
+    if (query) {
+      const result: ActionCategoryType[] = [];
+      actionSelectorData.forEach(({ actionCategories }) => {
+        actionCategories.forEach((category) => {
+          const matchingActions = category.actions
+            ? category.actions?.filter((action) =>
+                action.name.toLowerCase().includes(query.toLowerCase()),
+              )
+            : [];
+
+          if (matchingActions.length > 0) {
+            result.push({
+              description: category.description,
+              img: category.img,
+              label: category.label,
+              name: category.name,
+              actions: matchingActions,
+            });
+          }
+        });
+      });
+
+      return result;
+    } else {
+      return actionSelectorData.find(
+        (item) => item.label === primaryCategoryLabel,
+      )?.actionCategories;
+    }
+  };
+
+  const actionCategories = getActionCategories();
 
   // Get add/replace Node handlers
   const addFirstNodeToFlow = useAddFirstNodeToFlow();
@@ -91,18 +122,26 @@ export const ActionCategoryList = () => {
               variant="ghost"
               size="icon8"
               className="min-w-[2rem]"
-              onClick={() => setPrimaryCategoryLabel(null)}
+              onClick={() => {
+                setPrimaryCategoryLabel(null);
+                setQuery("");
+              }}
             >
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <h2 className="ml-2 w-full truncate text-sm">
-              {primaryCategoryLabel}
+              {!query && primaryCategoryLabel}
             </h2>
           </div>
           {actionCategories?.map((item, index) => (
             <>
               <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion
+                  value={query ? item.name : undefined}
+                  type="single"
+                  collapsible
+                  className="w-full"
+                >
                   <AccordionItem value={item.name} className="border-none">
                     <AccordionTrigger className="px-1.5 py-2">
                       <div className="flex w-full gap-3 text-sm">

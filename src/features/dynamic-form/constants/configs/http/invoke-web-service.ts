@@ -280,29 +280,83 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
       "Enable this to trim the whitespaces at the end of the request body of the web service response",
     defaultValue: true,
   },
+
   //output
   {
-    name: "webServiceResponseHeader",
-    type: "switch",
-    label: "WebServiceResponseHeader",
+    name: "o_webServiceResponseHeaderOutput",
+    type: "output-text-field",
+    label: "",
     description: "The HTTP headers of the response",
-    defaultValue: true,
+    defaultValue: "webServiceResponseHeader",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_webServiceResponseHeaderSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "webServiceResponse",
-    type: "switch",
+    name: "o_webServiceResponseHeaderSwitch",
+    type: "output-switch-field",
     label: "WebServiceResponseHeader",
-    description: "The web service response text",
     defaultValue: true,
   },
+  
   {
-    name: "statusCode",
-    type: "switch",
-    label: "StatusCode",
+    name: "o_webServiceResponseOutput",
+    type: "output-text-field",
+    label: "",
+    description: "The web service response text",
+    defaultValue: "webServiceResponse",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_webServiceResponseSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_webServiceResponseSwitch",
+    type: "output-switch-field",
+    label: "WebServiceResponse",
+    defaultValue: true,
+  },
+
+
+
+ {
+    name: "o_statusCodeOutput",
+    type: "output-text-field",
+    label: "",
     description: "The status code returned",
+    defaultValue: "statusCode",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_statusCodeSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_statusCodeSwitch",
+    type: "output-switch-field",
+    label: "StatusCode",
     defaultValue: true,
   },
 ];
+
 
 const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
   {
@@ -340,9 +394,9 @@ const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["webServiceResponseHeader"],
-      ["webServiceResponse"],
-      ["statusCode"],
+      ["o_webServiceResponseHeaderOutput", "o_webServiceResponseHeaderSwitch"],
+      ["o_webServiceResponseOutput", "o_webServiceResponseSwitch"],
+      ["o_statusCodeOutput", "o_statusCodeSwitch"],
     ],
   },
 ];
@@ -352,6 +406,12 @@ const invokeWebServiceFelidsToWatch: string[] = [
   "saveResponse",
   "fileName",
   "useCredentials",
+  "o_webServiceResponseHeaderOutput", 
+  "o_webServiceResponseHeaderSwitch",
+  "o_webServiceResponseOutput", 
+  "o_webServiceResponseSwitch",
+  "o_statusCodeOutput",
+  "o_statusCodeSwitch"
 ];
 
 const invokeWebService: ActivityConfig = {

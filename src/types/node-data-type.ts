@@ -6,6 +6,12 @@ type NodeTypeAndCategory = {
   category: string;
 };
 
+type NodeDataInputsOutputs = {
+  key: string,
+  value: string | number | boolean,
+}
+
+
 type NodeDataType = {
   type: CustomNodeType;
   name: string;
@@ -14,6 +20,8 @@ type NodeDataType = {
   icon?: string;
   img?: string;
   fieldValues?: { [key: string]: any };
+  inputs: NodeDataInputsOutputs[];
+  outputs: NodeDataInputsOutputs[];
   disabled?: boolean;
   hidden?: boolean;
 };
