@@ -7,7 +7,7 @@ import { useCallback } from "react";
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
   // Get nodes/edges and setter functions
-  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore();
+  const { nodes, edges, flowVariablesObject, setFlowVariablesObject, setNodes, setEdges } = useReactFlowExtStore();
 
   // Get clipboard actions
   const { getClipboard, setClipboard, clearClipboard } = useClipboard();
@@ -173,6 +173,10 @@ export const useFlowOperations = () => {
             // Then remove the node
             setNodes(nodes.filter((node) => node.id !== nodeId));
             setEdges(newEdges);
+
+            // Updating the flowVariablesObject
+            setFlowVariablesObject(flowVariablesObject.filter((flowVarObj) => flowVarObj.nodeId !== nodeId))
+
           },
           alertType: "delete",
         });
