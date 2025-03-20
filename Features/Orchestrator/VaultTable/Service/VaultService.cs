@@ -161,7 +161,6 @@ public class VaultService : IVaultService
             // Encrypt the credential values (username and password) before saving them
             newVault.Username = _stringEncryptionService.EncryptString(newVault.Username);
             newVault.Password = _stringEncryptionService.EncryptString(newVault.Password);
-            newVault.IsEncrypted = true;
 
             // Insert the new vault into the repository
             await _unitOfWork.VaultRepo.InsertAsync(newVault);
@@ -238,7 +237,6 @@ public class VaultService : IVaultService
                 // Encrypt the username and password before saving them to ensure security
                 vaultDto.Username = _stringEncryptionService.EncryptString(vaultDto.Username);
                 vaultDto.Password = _stringEncryptionService.EncryptString(vaultDto.Password);
-                vaultDto.IsEncrypted = true;
             }
 
             vaultDto.Adapt(vault);
@@ -388,12 +386,6 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
-            // Notify the user if the vault value is not encrypted
-            if (!vault.IsEncrypted)
-            {
-                serviceResponse.Message = "The vault value is not encrypted.";
-                return serviceResponse;
-            }
 
             var vaultDto = vault.Adapt<VaultDto>();
 

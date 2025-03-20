@@ -34,17 +34,4 @@ public class Vault : BaseEntity, IMustHaveTenant
     [Required]
     [MaxLength(256)]
     public required string Password { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the configuration values are encrypted.
-    /// If set to true, the values are encrypted to ensure data security.
-    /// </summary>
-    public bool IsEncrypted { get; set; }
-
-    /// <summary>
-    /// Gets or sets the access level for this configuration item.
-    /// This determines whether the configuration is accessible publicly or is restricted.
-    /// </summary>
-    [Required]
-    public AccessLevelTypesEnum AccessLevel { get; set; }
 }

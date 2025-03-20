@@ -39,17 +39,6 @@ public class VaultDto
     public required string Password { get; set; }
 
     /// <summary>
-    /// Indicates if the value is encrypted.
-    /// </summary>
-    public bool IsEncrypted { get; set; }
-
-    /// <summary>
-    /// Access level of the configuration item (Public or Private).
-    /// </summary>
-    [Required]
-    public AccessLevelTypesEnum AccessLevel { get; set; }
-
-    /// <summary>
     /// Flag indicating if the record is disabled (nullable to distinguish true/false/null).
     /// </summary>
     public bool? IsDisabled { get; set; }
