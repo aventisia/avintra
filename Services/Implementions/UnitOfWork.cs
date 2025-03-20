@@ -41,6 +41,7 @@ public class UnitOfWork : IUnitOfWork
     public IQueueTransactionRepo QueueTransactionRepo => new QueueTransactionRepo(_workspaceDbContext);
     public IJobRepo JobRepo => new JobRepo(_workspaceDbContext);
     public IKeyStoreRepo KeyStoreRepo => new KeyStoreRepo(_workspaceDbContext);
+    public IVaultRepo VaultRepo => new VaultRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
