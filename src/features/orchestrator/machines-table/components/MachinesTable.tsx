@@ -1,20 +1,22 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
-import { useFetchMachines } from "../hooks/useFetchMachines";
-import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
-import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
-import { machinesTableColumns } from "./MachinesTableColumns";
+import { useDataTable } from '@/react-toolkit/hooks/useDataTable';
+import { useDocumentTitle } from '@/react-toolkit/hooks/useDocumentTitle';
+import { DataTable } from '@/react-toolkit/ui/data-table';
+import { DataTableSkeleton } from '@/react-toolkit/ui/data-table/DataTableSkeleton';
+import { DTPagination } from '@/react-toolkit/ui/data-table/DTPagination';
+import { DTCreateButton } from '@/react-toolkit/ui/data-table/toolbar/DTCreateButton';
+import { DTHeading } from '@/react-toolkit/ui/data-table/toolbar/DTHeading';
+import { DTSearchBox } from '@/react-toolkit/ui/data-table/toolbar/DTSearchBox';
+import { DTViewOptions } from '@/react-toolkit/ui/data-table/toolbar/DTViewOptions';
+import { Separator } from '@/react-toolkit/ui/separator';
+
+import { SEARCH_COLUMN, TABLE_HEADING } from '../constants';
+import { columnDisplayNames } from '../constants/column-display-names';
+import { columnVisibilityState } from '../constants/column-visibility-state';
+import { useFetchMachines } from '../hooks/useFetchMachines';
+import { MachineCrudDialog } from './machine-crud-dialog/MachineCrudDialog';
+import { MachinesBulkActions } from './machine-row-actions/MachinesBulkActions';
+import { machinesTableColumns } from './MachinesTableColumns';
+import { MachineStats } from './MachineStats';
 
 /**
  * Renders a table of machines.
@@ -60,11 +62,14 @@ export const MachinesTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={machinesTableColumns.length}
-              />
+            <div className="flex flex-col gap-2">
+              <MachineStats />
+              <div className="rounded-md border">
+                <DataTable
+                  table={table}
+                  columnsLength={machinesTableColumns.length}
+                />
+              </div>
             </div>
           </MachineCrudDialog>
 
