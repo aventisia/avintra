@@ -1,18 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { getKeystores } from "../apis/keystores-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { getKeystore } from '../apis/keystores-table-apis';
+import { DATA_QUERY_KEY } from '../constants';
 
 /**
- * Custom hook to fetch configs using react query.
+ * Custom hook to fetch keystores using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchKeystores = () => {
-  // Get configs using react query
+  // Get keystores using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
-    queryFn: () => getKeystores(),
+    queryFn: () => getKeystore(),
   });
 
   // Show toast on fetch error

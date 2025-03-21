@@ -1,26 +1,25 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
-import { isKeystoreNameAvailable } from "../apis/keystores-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
-import {
-  keystoreNameSchema,
-  keystoreZodSchema,
-} from "../constants/keystore-zod-schema";
-import { KeystoresTableDto } from "../dtos/keystores-table-dto";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useShallow } from 'zustand/react/shallow';
+
+import { useCheckAvailability } from '@/react-toolkit/hooks/useCheckAvailability';
+import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { isKeystoreNameAvailable } from '../apis/keystores-table-apis';
+import { DATA_QUERY_KEY } from '../constants';
+import { keystoreNameSchema, keystoreZodSchema } from '../constants/keystore-zod-schema';
+import { KeystoresTableDto } from '../dtos/keystores-table-dto';
 
 /**
- * Custom hook for defining a config form.
+ * Custom hook for defining a keystore form.
  */
 export const useDefineKeystoreForm = () => {
-  // Set config name state (required for avaialbility check)
-  const [configName, setConfigName] = useState("");
+  // Set keystore name state (required for avaialbility check)
+  const [keystoreName, setKeystoreName] = useState("");
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -70,41 +69,41 @@ export const useDefineKeystoreForm = () => {
     formState: { isDirty },
   } = form;
 
-  // Fetch config data when rowId changes
+  // Fetch keystore data when rowId changes
   useEffect(() => {
-    // Get configs data from query client
-    const configsData = queryClient.getQueryData<{
+    // Get keystores data from query client
+    const keystoresData = queryClient.getQueryData<{
       data: KeystoresTableDto[];
     }>(DATA_QUERY_KEY);
 
-    // Get config data by id
-    const configData = configsData?.data.find((item) => item.id === rowId);
+    // Get keystore data by id
+    const keystoreData = keystoresData?.data.find((item) => item.id === rowId);
 
-    // Set config name
-    setConfigName(configData?.name ?? "");
+    // Set keystore name
+    setKeystoreName(keystoreData?.name ?? "");
 
-    // Set config data to form
+    // Set keystore data to form
     form.reset({
       id: rowId,
-      type: configData?.type ?? "",
-      name: configData?.name ?? "",
+      type: keystoreData?.type ?? "",
+      name: keystoreData?.name ?? "",
       value: "",
-      accessLevel: configData?.accessLevel ?? "",
-      isEncrypted: configData?.isEncrypted ?? false,
+      accessLevel: keystoreData?.accessLevel ?? "",
+      isEncrypted: keystoreData?.isEncrypted ?? false,
 
-      isDisabled: configData?.isDisabled ?? false,
+      isDisabled: keystoreData?.isDisabled ?? false,
       // Read (view) only fields
       createdBy:
-        configData?.createdBy ??
+        keystoreData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
-      createdOn: configData?.createdOn
-        ? new Date(configData?.createdOn)
+      createdOn: keystoreData?.createdOn
+        ? new Date(keystoreData?.createdOn)
         : new Date(),
       lastModifiedBy:
-        configData?.lastModifiedBy ??
+        keystoreData?.lastModifiedBy ??
         userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: configData?.lastModifiedOn
-        ? new Date(configData?.lastModifiedOn)
+      lastModifiedOn: keystoreData?.lastModifiedOn
+        ? new Date(keystoreData?.lastModifiedOn)
         : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
@@ -117,7 +116,7 @@ export const useDefineKeystoreForm = () => {
     availabilityMessage,
     setAvailabilityMessage,
   } = useCheckAvailability<z.infer<typeof keystoreZodSchema>, z.ZodString>({
-    defaultInputValue: configName,
+    defaultInputValue: keystoreName,
     fieldName: "name",
     form,
     fieldSchema: keystoreNameSchema,
