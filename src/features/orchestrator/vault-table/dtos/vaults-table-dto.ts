@@ -1,6 +1,3 @@
-import type { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
-import type { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-types-enum";
-
 /**
  * Represents a data transfer object (DTO) for a config.
  */
@@ -23,25 +20,14 @@ export interface VaultsTableDto {
   name: string;
 
   /**
- * Gets or sets the type of the config.
+ * Gets or sets the name of the config. Max-255
  */
-  type: ConfigItemTypesEnum;
-
-
-  /**
-   * Gets or sets the value of the config.
-   */
-  value: string;
+  userName: string;
 
   /**
-   * Gets or sets the encryption state of the config.
-   */
-  isEncrypted: boolean;
-
-  /**
-   * Gets or sets the Access Level state of the config.
-   */
-  accessLevel: AccessLevelTypesEnum;
+* Gets or sets the name of the config. Max-255
+*/
+  password: string;
 
   /**
    * Gets or sets a flag indicating whether the config record is disabled.
