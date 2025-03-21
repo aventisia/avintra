@@ -1,7 +1,5 @@
 import { FlowTypesEnum } from '@/react-toolkit/enums/flow-types-enum';
 import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
-import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
-import { TextareaFieldProps } from '@/react-toolkit/ui/form/fields/TextareaField';
 import { enumToArray } from '@/react-toolkit/utils/enum-to-array';
 
 import type { SelectFieldProps } from '@/react-toolkit/ui/form/fields/SelectField';
@@ -27,17 +25,9 @@ export const nameProps: InputFieldProps = {
   isRequired: true,
 };
 
-// Description
-export const descriptionProps: TextareaFieldProps = {
-  name: "description",
-  label: "Description",
-  className: "min-h-[6rem]",
+// Name
+export const quantityProps: InputFieldProps = {
+  name: "quantity",
+  label: "New Allocated Units",
+  isRequired: true,
 };
-
-// Is Disabled
-export const isDisabledProps: SwitchFieldProps = {
-  name: "isDisabled",
-  label: "Disable Record",
-  description:
-    "Disable this record if it's been outdated, or not required anymore",
-}
