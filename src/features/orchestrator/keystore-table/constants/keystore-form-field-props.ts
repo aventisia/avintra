@@ -1,28 +1,28 @@
-import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
-import { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-types-enum";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { AccessLevelTypesEnum } from '@/react-toolkit/enums/access-level-types-enum';
+import { KeyStoreTypesEnum } from '@/react-toolkit/enums/key-store-types-enum';
+import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
+import { SelectFieldProps } from '@/react-toolkit/ui/form/fields/SelectField';
+import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { TextareaFieldProps } from '@/react-toolkit/ui/form/fields/TextareaField';
+import { enumToArray } from '@/react-toolkit/utils/enum-to-array';
 
-// Config Id
-const idProps: InputFieldProps = {
+// Keystore Id
+export const idProps: InputFieldProps = {
   name: "id",
-  label: "Config Id",
+  label: "Key Id",
   disabled: true,
 };
 
-// Config Type - Only view/edit mode
-const typeProps: SelectFieldProps = {
+// Keystore Type - Only view/edit mode
+export const typeProps: SelectFieldProps = {
   name: "type",
-  label: "Config Type",
+  label: "Key Type",
   isRequired: true,
-  selectOptions: enumToArray(ConfigItemTypesEnum),
+  selectOptions: enumToArray(KeyStoreTypesEnum),
 };
 
 // acceses level
-const accessLevelProps: SelectFieldProps = {
+export const accessLevelProps: SelectFieldProps = {
   name: "accessLevel",
   label: "Access Level",
   isRequired: true,
@@ -30,21 +30,21 @@ const accessLevelProps: SelectFieldProps = {
 };
 
 // Name
-const nameProps: InputFieldProps = {
+export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
 };
 
 // value
-const valueOptionProps: TextareaFieldProps = {
+export const valueOptionProps: TextareaFieldProps = {
   name: "value",
   label: "Value",
   className: "min-h-[6rem]",
 };
 
 // Is Disabled
-const isDisabledProps: SwitchFieldProps = {
+export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
   label: "Disable Record",
   description:
@@ -52,19 +52,10 @@ const isDisabledProps: SwitchFieldProps = {
 };
 
 // Is Disabled
-const isEncrypterProps: SwitchFieldProps = {
+export const isEncrypterProps: SwitchFieldProps = {
   name: "isEncrypted",
-  label: "Add Encrypted",
+  label: "Encrypted",
   description:
     "No one can access this key, without the adder's credentials",
 };
 
-export {
-  valueOptionProps,
-  idProps,
-  isDisabledProps,
-  nameProps,
-  typeProps,
-  accessLevelProps,
-  isEncrypterProps
-};

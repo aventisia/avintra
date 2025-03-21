@@ -1,4 +1,4 @@
-/** Column visibility initial state for the configs table. */
+/** Column visibility initial state for the keystores table. */
 export const columnVisibilityState = {
   id: false,
   name: true,

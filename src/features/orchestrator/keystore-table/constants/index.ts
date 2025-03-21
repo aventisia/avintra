@@ -1,17 +1,17 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from '@/react-toolkit/types/literal-types';
 
 /**
- * The unique key for the configs query to be used in the query client. ["configs"]
+ * The unique key for the keystores query to be used in the query client. ["keystores"]
  */
-const DATA_QUERY_KEY = ["configs"];
+const DATA_QUERY_KEY = ["keystore"];
 
 /**
- * The heading for the configs table.
+ * The heading for the keystores table.
  */
-const TABLE_HEADING = "Keystore";
+const TABLE_HEADING = "Key Store";
 
 /**
- * The column used for searching in the configs.
+ * The column used for searching in the keystores.
  */
 const SEARCH_COLUMN = "name";
 
