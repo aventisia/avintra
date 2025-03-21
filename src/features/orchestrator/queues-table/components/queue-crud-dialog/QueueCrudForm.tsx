@@ -1,23 +1,29 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
-import { Button } from '@/react-toolkit/ui/buttons/Button';
-import { CheckboxField } from '@/react-toolkit/ui/form/fields/CheckboxField';
-import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
-import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
-import { TextareaField } from '@/react-toolkit/ui/form/fields/TextareaField';
-import { Form } from '@/react-toolkit/ui/form/Form';
-import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputFileField } from "@/react-toolkit/ui/form/fields/InputFileField";
+import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
-import { queueOptimisticMutationFn } from '../../apis/queues-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
+import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
 import {
-    descriptionProps, idProps, inputJsonSchemaProps, isDisabledProps, maxRetriesProps, nameProps,
-    outputJsonSchemaProps
-} from '../../constants/queue-form-field-props';
-import { queueZodSchema } from '../../constants/queue-zod-schema';
-import { QueuesTableDto } from '../../dtos/queues-table-dto';
-import { useDefineQueueForm } from '../../hooks/useDefineQueueForm';
+  descriptionProps,
+  idProps,
+  inputJsonSchemaProps,
+  isDisabledProps,
+  maxRetriesProps,
+  nameProps,
+  outputJsonSchemaProps,
+} from "../../constants/queue-form-field-props";
+import { queueZodSchema } from "../../constants/queue-zod-schema";
+import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
 
 export const QueueCrudForm = () => {
   // Define queue form
@@ -72,7 +78,7 @@ export const QueueCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       <p className="text-md mb-2 border-b-2 pb-2">General Details</p>
-      <div>
+      <div className="flex flex-col gap-3">
         {/* Name */}
         <InputField
           {...nameProps}
@@ -122,9 +128,17 @@ export const QueueCrudForm = () => {
 
       {/* additional options */}
       <p className="text-md mb-2 border-b-2 pb-2">Shema Definations</p>
-      <div className="flex flex-col gap-2">
-        <InputField className="m-0" {...inputJsonSchemaProps} />
-        <InputField className="m-0" {...outputJsonSchemaProps} />
+      <div className="flex flex-col gap-3">
+        <InputFileField
+          {...inputJsonSchemaProps}
+          fileTypes={[".json"]}
+          getSelectedFiles={(e) => console.log(e?.length)}
+        />
+        <InputFileField
+          {...outputJsonSchemaProps}
+          fileTypes={[".json"]}
+          getSelectedFiles={(e) => console.log(e?.length)}
+        />
       </div>
 
       {/* Is Disabled */}
@@ -142,7 +156,7 @@ export const QueueCrudForm = () => {
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <div className="!mt-10 flex w-full justify-end">
           <Button
             type="submit"
             disabled={!isDirty || !isAvailable || isCheckPending}
