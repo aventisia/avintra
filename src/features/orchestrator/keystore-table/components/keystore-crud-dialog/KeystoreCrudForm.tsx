@@ -1,11 +1,14 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
@@ -20,10 +23,9 @@ import {
 import { keystoreZodSchema } from "../../constants/keystore-zod-schema";
 import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
 import { useDefineKeystoreForm } from "../../hooks/useDefineKeystoreForm";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 
 export const KeystoreCrudForm = () => {
-  // Define config form
+  // Define keystore form
   const {
     form,
     isDirty,
@@ -38,8 +40,8 @@ export const KeystoreCrudForm = () => {
     refineFormData,
   } = useDefineKeystoreForm();
 
-  // Define optimistic mutation to crete or update the config
-  const { mutate: mutateConfig } = useListOptimisticMutation<
+  // Define optimistic mutation to crete or update the keystore
+  const { mutate: mutateKeystore } = useListOptimisticMutation<
     KeystoresTableDto,
     KeystoresTableDto | boolean,
     KeystoresTableDto
@@ -47,8 +49,8 @@ export const KeystoreCrudForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof keystoreZodSchema>) => {
-    // Create or update the config
-    mutateConfig({
+    // Create or update the keystore
+    mutateKeystore({
       payload: refineFormData(formData) as unknown as KeystoresTableDto,
       crudAction: crudAction,
     });
@@ -71,7 +73,7 @@ export const KeystoreCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* Config Id */}
+      {/* Keystore Id */}
       {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
@@ -122,7 +124,7 @@ export const KeystoreCrudForm = () => {
             disabled={!isDirty || !isAvailable || isCheckPending}
             className="min-w-[5rem]"
           >
-            {crudAction === "create" ? "Create config" : "Save changes"}
+            {crudAction === "create" ? "Create" : "Save changes"}
           </Button>
         </div>
       )}
