@@ -1,10 +1,7 @@
-import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
-import { z } from "zod";
+import { z } from 'zod';
+
+import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
+import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
 
 /**
  * Represents the Zod object's item schema for a config name.
@@ -22,15 +19,12 @@ export const vaultNameSchema = z
  */
 export const vaultZodSchema = z.object({
   id: z.string(),
-  type: z.string().min(1, { message: reqError("Config type") }),
   name: vaultNameSchema,
-  value: z
-    .string()
-    .max(500, { message: maxLenError("Config value", 500) }),
+  userName: z.string().min(1, { message: reqError("User Name") }),
+  password: z.string().min(1, { message: reqError("Password") }),
+
   isDisabled: z.boolean().default(false),
-  isEncrypted: z.optional(z.boolean().default(false)),
   // Read (view) only fields
-  accessLevel: z.string().min(1, { message: reqError("Access level") }),
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),
