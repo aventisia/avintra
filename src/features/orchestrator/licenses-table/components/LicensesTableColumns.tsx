@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
@@ -90,9 +90,11 @@ export const licensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("nextBillingDate"), {
-          addSuffix: true,
-        })}
+        {!isValid(row.getValue<Date>("nextBillingDate"))
+          ? "NA"
+          : formatDistanceToNow(row.getValue<Date>("nextBillingDate"), {
+              addSuffix: true,
+            })}
       </div>
     ),
   },
