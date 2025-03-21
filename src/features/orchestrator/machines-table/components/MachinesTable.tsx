@@ -57,7 +57,7 @@ export const MachinesTable = () => {
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
-                <DTCreateButton buttonText="Add" />
+                <DTCreateButton buttonText="Add Machine" />
               </div>
             </div>
 
