@@ -1,7 +1,7 @@
-import { FaMoneyBills } from 'react-icons/fa6';
-import { PiCertificate, PiScroll } from 'react-icons/pi';
+import { FaMoneyBills } from "react-icons/fa6";
+import { PiCertificate, PiScroll } from "react-icons/pi";
 
-import { StatsCard } from '@/react-toolkit/ui/card/StatsCard';
+import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 export const LicensesStats = () => {
   return (
@@ -10,19 +10,19 @@ export const LicensesStats = () => {
         title={"License"}
         description={"25 consumed & 5 available"}
         mainText={"30"}
-        icon={<PiCertificate className="h-10 w-10" />}
+        icon={<PiCertificate fill="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
         title={"Credits"}
         description={"25 consumed & 5 available"}
         mainText={"30"}
-        icon={<PiScroll className="h-10 w-10" />}
+        icon={<PiScroll fill="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
         title={"Billing"}
         description={"25 consumed & 5 available"}
         mainText={"30"}
-        icon={<FaMoneyBills className="h-10 w-10" />}
+        icon={<FaMoneyBills fill="var(--primary)" className="h-10 w-10" />}
       />
     </div>
   );
