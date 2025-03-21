@@ -1,9 +1,9 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from '@/react-toolkit/types/literal-types';
 
 /**
  * The unique key for the configs query to be used in the query client. ["configs"]
  */
-const DATA_QUERY_KEY = ["configs"];
+const DATA_QUERY_KEY = ["vault"];
 
 /**
  * The heading for the configs table.
@@ -18,7 +18,7 @@ const SEARCH_COLUMN = "name";
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Credentials", description: "" };
+      return { heading: "Add Credentials", description: "" };
     case "read":
       return { heading: "Credentials", description: "" };
     case "update":
