@@ -1,25 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useCheckAvailability } from '@/react-toolkit/hooks/useCheckAvailability';
 import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
 import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { isLicenseNameAvailable } from '../apis/licenses-table-apis';
 import { DATA_QUERY_KEY } from '../constants';
-import { licenseNameSchema, licenseZodSchema } from '../constants/license-zod-schema';
+import { licenseZodSchema } from '../constants/license-zod-schema';
 import { LicensesTableDto } from '../dtos/licenses-table-dto';
 
 /**
  * Custom hook for defining a license form.
  */
 export const useDefineLicenseForm = () => {
-  // Set license name state (required for avaialbility check)
-  const [licenseName, setLicenseName] = useState("");
+
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -30,7 +27,7 @@ export const useDefineLicenseForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
+    crudDialogOptions: { rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -51,10 +48,8 @@ export const useDefineLicenseForm = () => {
     defaultValues: {
       id: "",
       type: "",
-      name: "",
-      description: "",
+      quantity: 0,
       isDisabled: false,
-      flowCount: 0,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -77,18 +72,13 @@ export const useDefineLicenseForm = () => {
     // Get license data by id
     const licenseData = licensesData?.data.find((item) => item.id === rowId);
 
-    // Set license name
-    setLicenseName(licenseData?.name ?? "");
-
     // Set license data to form
     form.reset({
       id: rowId,
       type: licenseData?.type ?? "",
-      name: licenseData?.name ?? "",
-      description: licenseData?.description ?? "",
+      quantity: licenseData?.flowCount ?? 0,
       isDisabled: licenseData?.isDisabled ?? false,
       // Read (view) only fields
-      flowCount: licenseData?.flowCount ?? 0,
       createdBy:
         licenseData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
@@ -104,21 +94,6 @@ export const useDefineLicenseForm = () => {
     });
   }, [rowId, form, queryClient, userSession]);
 
-  // Get check availability state and methods
-  const {
-    isAvailable,
-    isCheckPending,
-    handleInputChange,
-    availabilityMessage,
-    setAvailabilityMessage,
-  } = useCheckAvailability<z.infer<typeof licenseZodSchema>, z.ZodString>({
-    defaultInputValue: licenseName,
-    fieldName: "name",
-    form,
-    fieldSchema: licenseNameSchema,
-    checkAvailabilityAPIFn: isLicenseNameAvailable,
-  });
-
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof licenseZodSchema>) => {
     return {
@@ -133,10 +108,7 @@ export const useDefineLicenseForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
-  // Reset availability message when dialog closes
-  useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+
 
   // Return form and methods
   return {
@@ -146,10 +118,5 @@ export const useDefineLicenseForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    isAvailable,
-    availabilityMessage,
-    setAvailabilityMessage,
-    isCheckPending,
-    handleInputChange,
   };
 };
