@@ -1,16 +1,17 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { VaultsTableDto } from "../dtos/vaults-table-dto";
+import { IHttpResponse } from '@/react-toolkit/dtos/http-response';
+import { IOptimisticMutation } from '@/react-toolkit/dtos/optimistic-mutation';
+import { CheckAvailabilityDto } from '@/react-toolkit/dtos/request/check-availability-dto';
+import { TrueFalseResultDto } from '@/react-toolkit/dtos/response/true-false-result-dto';
+import { axiosInstance } from '@/react-toolkit/lib/axios-instance';
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/config-item`;
+import { VaultsTableDto } from '../dtos/vaults-table-dto';
+
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/vault`;
 
 /**
  * Retrieves list of configs.
  */
-const getVaults = () => {
+export const getVaults = () => {
   return axiosInstance
     .get<IHttpResponse<VaultsTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
@@ -19,7 +20,7 @@ const getVaults = () => {
 /**
  * Retrieves list of configs.
  */
-const getDecryptedVault = (rowId: string) => {
+export const getDecryptedVault = (rowId: string) => {
   return axiosInstance
     .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`)
     .then((res) => res.data);
@@ -28,7 +29,7 @@ const getDecryptedVault = (rowId: string) => {
 /**
  * Checks the availability of a config name.
  */
-const isVaultNameAvailable = (postObj: CheckAvailabilityDto) => {
+export const isVaultNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
@@ -39,7 +40,7 @@ const isVaultNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new config.
  */
-const insertVault = (newConfig: VaultsTableDto) => {
+export const insertVault = (newConfig: VaultsTableDto) => {
   return axiosInstance
     .post<IHttpResponse<VaultsTableDto>>(`${baseAPIURL}`, newConfig)
     .then((res) => res.data);
@@ -48,7 +49,7 @@ const insertVault = (newConfig: VaultsTableDto) => {
 /**
  * Updates an existing config.
  */
-const updateVault = (updatedConfig: VaultsTableDto) => {
+export const updateVault = (updatedConfig: VaultsTableDto) => {
   return axiosInstance
     .put<IHttpResponse<VaultsTableDto>>(`${baseAPIURL}`, updatedConfig)
     .then((res) => res.data);
@@ -57,7 +58,7 @@ const updateVault = (updatedConfig: VaultsTableDto) => {
 /**
  * Deletes a config by its ID.
  */
-const deleteVault = (id: string) => {
+export const deleteVault = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
@@ -66,7 +67,7 @@ const deleteVault = (id: string) => {
 /**
  * Deletes multiple configs by their IDs.
  */
-const deleteVaults = (ids: string[]) => {
+export const deleteVaults = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
@@ -79,7 +80,7 @@ const deleteVaults = (ids: string[]) => {
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-const vaultOptimisticMutationFn = ({
+export const vaultOptimisticMutationFn = ({
   payload,
   crudAction,
 }: IOptimisticMutation<VaultsTableDto | string | string[]>) => {
@@ -97,13 +98,3 @@ const vaultOptimisticMutationFn = ({
   }
 };
 
-export {
-  getVaults,
-  isVaultNameAvailable,
-  insertVault,
-  updateVault,
-  deleteVault,
-  deleteVaults,
-  vaultOptimisticMutationFn,
-  getDecryptedVault
-};
