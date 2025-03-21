@@ -5,15 +5,15 @@ import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
-import { ConfigsTableDto } from "../dtos/configs-table-dto";
-import { ConfigRowActions } from "./config-row-actions/ConfigRowActions";
+import { KeystoresTableDto } from "../dtos/keystores-table-dto";
+import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
 import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 
 /**
  * Array of table columns for the configs table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const configsTableColumns: ColumnDef<ConfigsTableDto>[] = [
+export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -111,7 +111,7 @@ export const configsTableColumns: ColumnDef<ConfigsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the configs row actions component
-      <ConfigRowActions rowId={row.original.id || "rowId"} />
+      <KeystoreRowActions rowId={row.original.id || "rowId"} />
     ),
   },
 ];

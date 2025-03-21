@@ -9,7 +9,7 @@ import { z } from "zod";
 /**
  * Represents the Zod object's item schema for a config name.
  */
-export const configNameSchema = z
+export const keystoreNameSchema = z
   .string()
   .min(1, { message: reqError("Config name") })
   .max(255, { message: maxLenError("Config name", 255) })
@@ -20,10 +20,10 @@ export const configNameSchema = z
 /**
  * Represents the Zod schema for a config.
  */
-export const configZodSchema = z.object({
+export const keystoreZodSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("Config type") }),
-  name: configNameSchema,
+  name: keystoreNameSchema,
   value: z
     .string()
     .max(500, { message: maxLenError("Config value", 500) }),

@@ -4,7 +4,7 @@ import type { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-type
 /**
  * Represents a data transfer object (DTO) for a config.
  */
-export interface ConfigsTableDto {
+export interface KeystoresTableDto {
   /**
    * Gets or sets the primary key of the config record.
    *

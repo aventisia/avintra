@@ -4,9 +4,9 @@ import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { useShallow } from "zustand/react/shallow";
 import { getDialogHeadingDescription } from "../../constants";
-import { ConfigCrudForm } from "./ConfigCrudForm";
+import { KeystoreCrudForm } from "./KeystoreCrudForm";
 
-export const ConfigCrudDialog = ({ children }: React.PropsWithChildren) => {
+export const KeystoreCrudDialog = ({ children }: React.PropsWithChildren) => {
   // Get crud dialog store state
   const {
     crudDialogOptions: { crudAction },
@@ -30,7 +30,7 @@ export const ConfigCrudDialog = ({ children }: React.PropsWithChildren) => {
           description={dialogHeaderOptions.description}
         />
         <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
-          <ConfigCrudForm />
+          <KeystoreCrudForm />
         </ScrollArea>
       </DialogContent>
     </DTCrudDialogWrapper>

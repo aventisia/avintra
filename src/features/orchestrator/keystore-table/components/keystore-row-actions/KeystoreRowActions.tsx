@@ -1,13 +1,13 @@
 import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
-import { ConfigRowDeleteAction } from "./ConfigRowDeleteAction";
+import { KeystoreRowDeleteAction } from "./KeystoreRowDeleteAction";
 
-interface ConfigRowActionsProps {
+interface KeystoreRowActionsProps {
   rowId: string;
 }
 
-export const ConfigRowActions = ({ rowId }: ConfigRowActionsProps) => {
+export const KeystoreRowActions = ({ rowId }: KeystoreRowActionsProps) => {
   return (
     // Dropdown menu for config table row action */}
     <DataTableRowActions>
@@ -21,7 +21,7 @@ export const ConfigRowActions = ({ rowId }: ConfigRowActionsProps) => {
       <DropdownMenuSeparator />
 
       {/* Triggers Config delete alert dialog  */}
-      <ConfigRowDeleteAction rowId={rowId} />
+      <KeystoreRowDeleteAction rowId={rowId} />
     </DataTableRowActions>
   );
 };

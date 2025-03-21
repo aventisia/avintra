@@ -6,7 +6,7 @@ import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
-import { configOptimisticMutationFn } from "../../apis/configs-table-apis";
+import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
   accessLevelProps,
@@ -16,13 +16,13 @@ import {
   nameProps,
   typeProps,
   valueOptionProps,
-} from "../../constants/config-form-field-props";
-import { configZodSchema } from "../../constants/config-zod-schema";
-import { ConfigsTableDto } from "../../dtos/configs-table-dto";
-import { useDefineConfigForm } from "../../hooks/useDefineConfigForm";
+} from "../../constants/keystore-form-field-props";
+import { keystoreZodSchema } from "../../constants/keystore-zod-schema";
+import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
+import { useDefineKeystoreForm } from "../../hooks/useDefineKeystoreForm";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 
-export const ConfigCrudForm = () => {
+export const KeystoreCrudForm = () => {
   // Define config form
   const {
     form,
@@ -36,20 +36,20 @@ export const ConfigCrudForm = () => {
     handleInputChange,
     setShowDialog,
     refineFormData,
-  } = useDefineConfigForm();
+  } = useDefineKeystoreForm();
 
   // Define optimistic mutation to crete or update the config
   const { mutate: mutateConfig } = useListOptimisticMutation<
-    ConfigsTableDto,
-    ConfigsTableDto | boolean,
-    ConfigsTableDto
-  >([rowId], configOptimisticMutationFn, DATA_QUERY_KEY);
+    KeystoresTableDto,
+    KeystoresTableDto | boolean,
+    KeystoresTableDto
+  >([rowId], keystoreOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof configZodSchema>) => {
+  const onSubmit = (formData: z.infer<typeof keystoreZodSchema>) => {
     // Create or update the config
     mutateConfig({
-      payload: refineFormData(formData) as unknown as ConfigsTableDto,
+      payload: refineFormData(formData) as unknown as KeystoresTableDto,
       crudAction: crudAction,
     });
 

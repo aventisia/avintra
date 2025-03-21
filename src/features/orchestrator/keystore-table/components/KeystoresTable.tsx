@@ -11,26 +11,26 @@ import { Separator } from "@/react-toolkit/ui/separator";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
-import { useFetchConfigs } from "../hooks/useFetchConfigs";
-import { ConfigCrudDialog } from "./config-crud-dialog/ConfigCrudDialog";
-import { ConfigsBulkActions } from "./config-row-actions/ConfigsBulkActions";
-import { configsTableColumns } from "./ConfigsTableColumns";
+import { useFetchKeystores } from "../hooks/useFetchKeystores";
+import { KeystoreCrudDialog } from "./keystore-crud-dialog/KeystoreCrudDialog";
+import { KeystoresBulkActions } from "./keystore-row-actions/KeystoresBulkActions";
+import { keystoresTableColumns } from "./KeystoresTableColumns";
 
 /**
  * Renders a table of configs.
  *
  * @returns The rendered ConfigsTable component.
  */
-export const ConfigsTable = () => {
+export const KeystoresTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
   // Fetch configs data
-  const { data } = useFetchConfigs();
+  const { data } = useFetchKeystores();
 
   // Create a React table for configs data
   const table = useDataTable(
-    configsTableColumns,
+    keystoresTableColumns,
     data?.data || [],
     columnVisibilityState,
     true,
@@ -42,7 +42,7 @@ export const ConfigsTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
-          <ConfigCrudDialog>
+          <KeystoreCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
               <DTHeading heading={TABLE_HEADING} />
@@ -63,16 +63,16 @@ export const ConfigsTable = () => {
             <div className="rounded-md border">
               <DataTable
                 table={table}
-                columnsLength={configsTableColumns.length}
+                columnsLength={keystoresTableColumns.length}
               />
             </div>
-          </ConfigCrudDialog>
+          </KeystoreCrudDialog>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
-          <ConfigsBulkActions table={table} />
+          <KeystoresBulkActions table={table} />
         </div>
       ) : (
         // Show data table skeleton while fetching the configs data

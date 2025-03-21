@@ -5,17 +5,17 @@ import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/D
 import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Table } from "@tanstack/react-table";
-import { configOptimisticMutationFn } from "../../apis/configs-table-apis";
+import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { ConfigsTableDto } from "../../dtos/configs-table-dto";
+import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
 
-interface ConfigsBulkActionsProps {
-  table: Table<ConfigsTableDto>;
+interface KeystoresBulkActionsProps {
+  table: Table<KeystoresTableDto>;
 }
 
-export function ConfigsBulkActions({
+export function KeystoresBulkActions({
   table,
-}: Readonly<ConfigsBulkActionsProps>) {
+}: Readonly<KeystoresBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
@@ -28,9 +28,9 @@ export function ConfigsBulkActions({
   // Get mutation function to delete the config
   const { mutate: deleteConfigs } = useListOptimisticMutation<
     string[],
-    ConfigsTableDto | boolean,
-    ConfigsTableDto
-  >(selectedRowIds, configOptimisticMutationFn, DATA_QUERY_KEY);
+    KeystoresTableDto | boolean,
+    KeystoresTableDto
+  >(selectedRowIds, keystoreOptimisticMutationFn, DATA_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
 

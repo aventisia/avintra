@@ -3,23 +3,23 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ConfigsTableDto } from "../dtos/configs-table-dto";
+import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/config-item`;
 
 /**
  * Retrieves list of configs.
  */
-const getConfigs = () => {
+const getKeystores = () => {
   return axiosInstance
-    .get<IHttpResponse<ConfigsTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<KeystoresTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
 /**
  * Retrieves list of configs.
  */
-const getDecryptedConfig = (rowId: string) => {
+const getDecryptedKeystore = (rowId: string) => {
   return axiosInstance
     .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`)
     .then((res) => res.data);
@@ -28,7 +28,7 @@ const getDecryptedConfig = (rowId: string) => {
 /**
  * Checks the availability of a config name.
  */
-const isConfigNameAvailable = (postObj: CheckAvailabilityDto) => {
+const isKeystoreNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
@@ -39,25 +39,25 @@ const isConfigNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new config.
  */
-const insertConfig = (newConfig: ConfigsTableDto) => {
+const insertKeystore = (newConfig: KeystoresTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<ConfigsTableDto>>(`${baseAPIURL}`, newConfig)
+    .post<IHttpResponse<KeystoresTableDto>>(`${baseAPIURL}`, newConfig)
     .then((res) => res.data);
 };
 
 /**
  * Updates an existing config.
  */
-const updateConfig = (updatedConfig: ConfigsTableDto) => {
+const updateKeystore = (updatedConfig: KeystoresTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<ConfigsTableDto>>(`${baseAPIURL}`, updatedConfig)
+    .put<IHttpResponse<KeystoresTableDto>>(`${baseAPIURL}`, updatedConfig)
     .then((res) => res.data);
 };
 
 /**
  * Deletes a config by its ID.
  */
-const deleteConfig = (id: string) => {
+const deleteKeystore = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
@@ -66,7 +66,7 @@ const deleteConfig = (id: string) => {
 /**
  * Deletes multiple configs by their IDs.
  */
-const deleteConfigs = (ids: string[]) => {
+const deleteKeystores = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
@@ -75,35 +75,35 @@ const deleteConfigs = (ids: string[]) => {
 /**
  * Performs an optimistic mutation on a config based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<ConfigsTableDto | string | string[]>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<KeystoresTableDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-const configOptimisticMutationFn = ({
+const keystoreOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<ConfigsTableDto | string | string[]>) => {
+}: IOptimisticMutation<KeystoresTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertConfig(payload as ConfigsTableDto);
+      return insertKeystore(payload as KeystoresTableDto);
     case "update":
-      return updateConfig(payload as ConfigsTableDto);
+      return updateKeystore(payload as KeystoresTableDto);
     case "delete":
-      return deleteConfig(payload as string);
+      return deleteKeystore(payload as string);
     case "delete-multiple":
-      return deleteConfigs(payload as string[]);
+      return deleteKeystores(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
 };
 
 export {
-  getConfigs,
-  isConfigNameAvailable,
-  insertConfig,
-  updateConfig,
-  deleteConfig,
-  deleteConfigs,
-  configOptimisticMutationFn,
-  getDecryptedConfig
+  getKeystores,
+  isKeystoreNameAvailable,
+  insertKeystore,
+  updateKeystore,
+  deleteKeystore,
+  deleteKeystores,
+  keystoreOptimisticMutationFn,
+  getDecryptedKeystore
 };

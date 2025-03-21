@@ -7,18 +7,18 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { isConfigNameAvailable } from "../apis/configs-table-apis";
+import { isKeystoreNameAvailable } from "../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
-  configNameSchema,
-  configZodSchema,
-} from "../constants/config-zod-schema";
-import { ConfigsTableDto } from "../dtos/configs-table-dto";
+  keystoreNameSchema,
+  keystoreZodSchema,
+} from "../constants/keystore-zod-schema";
+import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
 /**
  * Custom hook for defining a config form.
  */
-export const useDefineConfigForm = () => {
+export const useDefineKeystoreForm = () => {
   // Set config name state (required for avaialbility check)
   const [configName, setConfigName] = useState("");
 
@@ -48,8 +48,8 @@ export const useDefineConfigForm = () => {
 
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
-  const form = useForm<z.infer<typeof configZodSchema>>({
-    resolver: zodResolver(configZodSchema),
+  const form = useForm<z.infer<typeof keystoreZodSchema>>({
+    resolver: zodResolver(keystoreZodSchema),
     defaultValues: {
       id: "",
       type: "",
@@ -74,7 +74,7 @@ export const useDefineConfigForm = () => {
   useEffect(() => {
     // Get configs data from query client
     const configsData = queryClient.getQueryData<{
-      data: ConfigsTableDto[];
+      data: KeystoresTableDto[];
     }>(DATA_QUERY_KEY);
 
     // Get config data by id
@@ -116,16 +116,16 @@ export const useDefineConfigForm = () => {
     handleInputChange,
     availabilityMessage,
     setAvailabilityMessage,
-  } = useCheckAvailability<z.infer<typeof configZodSchema>, z.ZodString>({
+  } = useCheckAvailability<z.infer<typeof keystoreZodSchema>, z.ZodString>({
     defaultInputValue: configName,
     fieldName: "name",
     form,
-    fieldSchema: configNameSchema,
-    checkAvailabilityAPIFn: isConfigNameAvailable,
+    fieldSchema: keystoreNameSchema,
+    checkAvailabilityAPIFn: isKeystoreNameAvailable,
   });
 
   // Refine form data based on crud action
-  const refineFormData = (formData: z.infer<typeof configZodSchema>) => {
+  const refineFormData = (formData: z.infer<typeof keystoreZodSchema>) => {
     return {
       ...formData,
       tenantId: userSession?.tenantId,
