@@ -3,11 +3,7 @@ import { Bot, Library, MonitorPlayIcon, ScrollTextIcon, Shield } from 'lucide-re
 import { IAppConfig } from '@/react-toolkit/types/app-config';
 import { NavLocation } from '@/react-toolkit/types/nav-data-types';
 import {
-  FolderIcon,
-  IdentificationIcon,
-  QuestionMarkCircleIcon,
-  QueueListIcon,
-  UsersIcon,
+  FolderIcon, IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
 } from '@heroicons/react/24/outline';
 import { DesktopIcon } from '@radix-ui/react-icons';
 
@@ -73,7 +69,7 @@ const workspaceAppConfig: IAppConfig = {
           },
           {
             Icon: ScrollTextIcon,
-            name: "licenses",
+            name: "licenses & Credits",
             route: "/orchestrator/licenses",
           },
         ],
