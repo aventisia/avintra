@@ -20,13 +20,10 @@ export const licenseNameSchema = z
 export const licenseZodSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("License type") }),
-  name: licenseNameSchema,
-  description: z
-    .string()
-    .max(500, { message: maxLenError("License description", 500) }),
+  quantity: z.number().default(0),
+
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
-  flowCount: z.number().default(0),
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),
