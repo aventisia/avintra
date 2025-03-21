@@ -42,12 +42,10 @@ export const inputJsonSchemaProps: InputFieldProps = {
   name: "inputJsonSchema",
   label: "Specific Data Json Schema",
   isRequired: true,
-  type: "file",
 };
 
 export const outputJsonSchemaProps: InputFieldProps = {
   name: "outputJsonSchema",
   label: "Output Data Json Schema",
   isRequired: true,
-  type: "file",
 };
