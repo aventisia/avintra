@@ -1,8 +1,6 @@
 import Enumerable from "linq";
-import { MonitorCheck } from "lucide-react";
+import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
 import { useEffect, useState } from "react";
-import { MdOutlineDisplaySettings } from "react-icons/md";
-import { TbHeartRateMonitor } from "react-icons/tb";
 
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
@@ -60,15 +58,13 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
         title={"Machines"}
         description={`${stats?.linux} Linux & ${stats?.windows} Windows`}
         mainText={data?.length}
-        icon={<MonitorCheck stroke="var(--primary)" className="h-10 w-10" />}
+        icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
         title={"Environments"}
-        description={`${stats?.dev} Development, ${stats?.uat} UAT, ${stats?.prod} Production`}
+        description={`${stats?.dev} Development, ${stats?.uat} UAT`}
         mainText={stats?.prod ?? 0}
-        icon={
-          <TbHeartRateMonitor stroke="var(--primary)" className="h-10 w-10" />
-        }
+        icon={<MonitorCog stroke="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
         title={"Statuses"}
@@ -80,12 +76,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
           </>
         }
         mainText={stats?.running ?? 0}
-        icon={
-          <MdOutlineDisplaySettings
-            fill="var(--primary)"
-            className="h-10 w-10"
-          />
-        }
+        icon={<MonitorCheck stroke="var(--primary)" className="h-10 w-10" />}
       />
     </div>
   );
