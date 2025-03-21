@@ -8,6 +8,7 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
+
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -17,18 +18,18 @@ import { KeystoresBulkActions } from "./keystore-row-actions/KeystoresBulkAction
 import { keystoresTableColumns } from "./KeystoresTableColumns";
 
 /**
- * Renders a table of configs.
+ * Renders a table of keystores.
  *
- * @returns The rendered ConfigsTable component.
+ * @returns The rendered KeystoresTable component.
  */
 export const KeystoresTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Fetch configs data
+  // Fetch keystores data
   const { data } = useFetchKeystores();
 
-  // Create a React table for configs data
+  // Create a React table for keystores data
   const table = useDataTable(
     keystoresTableColumns,
     data?.data || [],
@@ -51,7 +52,7 @@ export const KeystoresTable = () => {
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
-                  placeholder="Search configs..."
+                  placeholder="Search keys..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
@@ -75,7 +76,7 @@ export const KeystoresTable = () => {
           <KeystoresBulkActions table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the configs data
+        // Show data table skeleton while fetching the keystores data
         <DataTableSkeleton />
       )}
     </>

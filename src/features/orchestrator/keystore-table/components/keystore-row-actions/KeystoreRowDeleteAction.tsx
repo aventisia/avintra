@@ -1,6 +1,7 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
@@ -15,8 +16,8 @@ export const KeystoreRowDeleteAction = ({
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
-  // Get mutation function to delete the config
-  const { mutate: deleteConfig } = useListOptimisticMutation<
+  // Get mutation function to delete the keystore
+  const { mutate: deleteKeystore } = useListOptimisticMutation<
     string,
     KeystoresTableDto | boolean,
     KeystoresTableDto
@@ -28,12 +29,12 @@ export const KeystoreRowDeleteAction = ({
       onClick={() => {
         showDefaultAlertDialog({
           confirmActionFn: () =>
-            deleteConfig({
+            deleteKeystore({
               payload: rowId,
               crudAction: "delete",
             }),
           alertType: "delete-record",
-          additionalText: "config",
+          additionalText: "keystore",
         });
       }}
     />

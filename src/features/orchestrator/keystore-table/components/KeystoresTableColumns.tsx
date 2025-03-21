@@ -1,16 +1,18 @@
-import { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-types-enum";
+import { formatDistanceToNow } from "date-fns";
+
+import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
+import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
+
 import { getColumnName } from "../constants/column-display-names";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
-import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 
 /**
- * Array of table columns for the configs table.
+ * Array of table columns for the keystores table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
@@ -53,7 +55,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(ConfigItemTypesEnum, row.getValue("type"))}
+        {getEnumValueByKey(KeyStoreTypesEnum, row.getValue("type"))}
       </div>
     ),
   },
@@ -110,7 +112,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      // Render the configs row actions component
+      // Render the keystores row actions component
       <KeystoreRowActions rowId={row.original.id || "rowId"} />
     ),
   },

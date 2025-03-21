@@ -5,6 +5,7 @@ import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/D
 import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Table } from "@tanstack/react-table";
+
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
@@ -25,8 +26,8 @@ export function KeystoresBulkActions({
     .rows.map((row) => row.original.id)
     .filter((id): id is string => id !== undefined);
 
-  // Get mutation function to delete the config
-  const { mutate: deleteConfigs } = useListOptimisticMutation<
+  // Get mutation function to delete the keystore
+  const { mutate: deleteKeystores } = useListOptimisticMutation<
     string[],
     KeystoresTableDto | boolean,
     KeystoresTableDto
@@ -45,8 +46,8 @@ export function KeystoresBulkActions({
               // Show alert dialog to confirm delete
               showDefaultAlertDialog({
                 confirmActionFn: () => {
-                  // Delete selected configs
-                  deleteConfigs({
+                  // Delete selected keystores
+                  deleteKeystores({
                     payload: selectedRowIds,
                     crudAction: "delete-multiple",
                   });
@@ -55,7 +56,7 @@ export function KeystoresBulkActions({
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "configs" : "config"}`,
+                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "keystores" : "keystore"}`,
               });
             }}
           />
