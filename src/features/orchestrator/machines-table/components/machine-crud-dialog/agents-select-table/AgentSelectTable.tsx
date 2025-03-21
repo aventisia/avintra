@@ -1,12 +1,14 @@
+import { useShallow } from "zustand/react/shallow";
+
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { DataTable } from "@/react-toolkit/ui/data-table";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+
+import { agentSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";
 import { AgentSelectTablePagination } from "./AgentSelectTablePagination";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { agentSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
-import { useShallow } from "zustand/react/shallow";
 
 interface AgentSelectTableProps {
   isReadMode?: boolean;
