@@ -3,7 +3,11 @@ import { Bot, Library, MonitorPlayIcon, ScrollTextIcon, Shield } from 'lucide-re
 import { IAppConfig } from '@/react-toolkit/types/app-config';
 import { NavLocation } from '@/react-toolkit/types/nav-data-types';
 import {
-    ChartPieIcon, FolderIcon, IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
+  FolderIcon,
+  IdentificationIcon,
+  QuestionMarkCircleIcon,
+  QueueListIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 import { DesktopIcon } from '@radix-ui/react-icons';
 
@@ -37,11 +41,6 @@ const workspaceAppConfig: IAppConfig = {
         showSection: true, // TODO: Remove this once we have a way to handle this using user roles
         sectionName: "Orchestrator",
         menuItems: [
-          {
-            Icon: ChartPieIcon,
-            name: "overview",
-            route: "/overview",
-          },
           {
             Icon: DesktopIcon,
             name: "machines",
