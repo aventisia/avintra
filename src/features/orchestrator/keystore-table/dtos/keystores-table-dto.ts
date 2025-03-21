@@ -1,12 +1,12 @@
 import type { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
-import type { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-types-enum";
+import type { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 
 /**
- * Represents a data transfer object (DTO) for a config.
+ * Represents a data transfer object (DTO) for a keystore.
  */
 export interface KeystoresTableDto {
   /**
-   * Gets or sets the primary key of the config record.
+   * Gets or sets the primary key of the keystore record.
    *
    * Not making it required because same DTO is used for insert and update.
    */
@@ -18,33 +18,33 @@ export interface KeystoresTableDto {
   tenantId?: string;
 
   /**
-   * Gets or sets the name of the config. Max-255
+   * Gets or sets the name of the keystore. Max-255
    */
   name: string;
 
   /**
- * Gets or sets the type of the config.
+ * Gets or sets the type of the keystore.
  */
-  type: ConfigItemTypesEnum;
+  type: KeyStoreTypesEnum;
 
 
   /**
-   * Gets or sets the value of the config.
+   * Gets or sets the value of the keystore.
    */
   value: string;
 
   /**
-   * Gets or sets the encryption state of the config.
+   * Gets or sets the encryption state of the keystore.
    */
   isEncrypted: boolean;
 
   /**
-   * Gets or sets the Access Level state of the config.
+   * Gets or sets the Access Level state of the keystore.
    */
   accessLevel: AccessLevelTypesEnum;
 
   /**
-   * Gets or sets a flag indicating whether the config record is disabled.
+   * Gets or sets a flag indicating whether the keystore record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.
    *
@@ -53,22 +53,22 @@ export interface KeystoresTableDto {
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the config record. Max-254
+   * Gets or sets the username of the user who created the keystore record. Max-254
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the config record was created.
+   * Gets or sets the date and time when the keystore record was created.
    */
   createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the config record. Max-254
+   * Gets or sets the username of the user who last modified the keystore record. Max-254
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the config record was last modified.
+   * Gets or sets the date and time when the keystore record was last modified.
    */
   lastModifiedOn?: Date;
 }
