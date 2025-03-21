@@ -1,12 +1,17 @@
-import { twMerge } from 'tailwind-merge';
+import { twMerge } from "tailwind-merge";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/react-toolkit/ui/card/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/react-toolkit/ui/card/card";
 
 type StatsCardProps = {
   icon: JSX.Element;
   iconContainerClassName?: string;
   title: JSX.Element | string;
-  mainText: JSX.Element | string;
+  mainText: JSX.Element | string | number;
   description: JSX.Element | string;
 };
 export const StatsCard = ({
@@ -21,7 +26,7 @@ export const StatsCard = ({
       <div className="flex flex-row items-center">
         <div
           className={twMerge(
-            "bg-primary-100 shadow-primary-200 ms-5 rounded-md p-4 shadow-inner",
+            "ms-5 rounded-md bg-primary-50 p-4 shadow-primary-100",
             iconContainerClassName,
           )}
         >
