@@ -18,8 +18,8 @@ public class MLModelService : IMLModelService
         _unitOfWork = unitOfWork;
     }
 
-    // Get the list of model records associated with a project.
-    public async Task<ServiceResponse<IEnumerable<MLModelDto>>> GetMLModelListAsync(Guid projectId)
+    // Get the list of model records created by the user
+    public async Task<ServiceResponse<IEnumerable<MLModelDto>>> GetMLModelListAsync()
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<MLModelDto>>
@@ -30,10 +30,9 @@ public class MLModelService : IMLModelService
 
         try
         {
-            //Try to get model records associated with a project
+            //Try to get model records created by the user
             var mlModels = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    w.ProjectId == projectId &&
                     w.CreatedByUserId == _userId)
                 .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<MLModelDto>()
@@ -53,7 +52,7 @@ public class MLModelService : IMLModelService
     }
 
     // Checks the availability of a model name.
-    public async Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(Guid projectId, CheckAvailabilityDto checkAvailabilityDto)
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
@@ -67,7 +66,6 @@ public class MLModelService : IMLModelService
             // Validate model uniqueness
             var modelAlreadyExists = await _unitOfWork.MLModelRepo
                                                         .GetByConditionAsync(w =>
-                                                            w.ProjectId == projectId &&
                                                             w.CreatedByUserId == _userId &&
                                                             w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                                                         .FirstOrDefaultAsync();
@@ -111,7 +109,6 @@ public class MLModelService : IMLModelService
             var modelAlreadyExists = await _unitOfWork.MLModelRepo
                                                         .GetByConditionAsync(w =>
                                                             w.CreatedByUserId == _userId &&
-                                                            w.ProjectId == mlModelDto.ProjectId &&
                                                             w.Name.ToLower() == mlModelDto.Name.Trim().ToLower())
                                                         .FirstOrDefaultAsync();
 
@@ -175,7 +172,6 @@ public class MLModelService : IMLModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => 
                     w.Id == mlModelDto.Id && 
-                    w.ProjectId == mlModelDto.ProjectId &&
                     w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
@@ -191,7 +187,6 @@ public class MLModelService : IMLModelService
             var modelAlreadyExists = await _unitOfWork.MLModelRepo
                                                         .GetByConditionAsync(w =>
                                                             w.CreatedByUserId == _userId &&
-                                                            w.ProjectId == mlModelDto.ProjectId &&
                                                             w.Name.ToLower() == mlModelDto.Name.Trim().ToLower()
                                                             && w.Id != mlModelDto.Id)
                                                         .FirstOrDefaultAsync();

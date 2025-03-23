@@ -14,16 +14,16 @@ public class MLModelController : BaseApiController
     _mlModelService = mlModelService;
   }
 
-  [HttpGet("list/{projectId}")]
-  public async Task<ActionResult<ServiceResponse<IEnumerable<MLModelDto>>>> GetMLModelList(Guid projectId)
+  [HttpGet("list")]
+  public async Task<ActionResult<ServiceResponse<IEnumerable<MLModelDto>>>> GetMLModelList()
   {
-    return ResultHelper(await _mlModelService.GetMLModelListAsync(projectId));
+    return ResultHelper(await _mlModelService.GetMLModelListAsync());
   }
 
-  [HttpPost("is-available/{projectId}")]
-  public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMLModelNameAvailable(Guid projectId, CheckAvailabilityDto checkAvailabilityDto)
+  [HttpPost("is-available")]
+  public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsMLModelNameAvailable(CheckAvailabilityDto checkAvailabilityDto)
   {
-    return ResultHelper(await _mlModelService.IsMLModelNameAvailableAsync(projectId, checkAvailabilityDto));
+    return ResultHelper(await _mlModelService.IsMLModelNameAvailableAsync(checkAvailabilityDto));
   }
 
   //Inserts a new ML model

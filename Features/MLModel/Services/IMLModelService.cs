@@ -3,19 +3,17 @@ namespace MLModelBuilderAPIs.Services;
 public interface IMLModelService
 {
     /// <summary>
-    /// Retrieves all models associated with a project.
+    /// Retrieves all models created by the user.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
     /// <returns>The task result contains the service response with the list of models details.</returns>
-    Task<ServiceResponse<IEnumerable<MLModelDto>>> GetMLModelListAsync(Guid projectId);
+    Task<ServiceResponse<IEnumerable<MLModelDto>>> GetMLModelListAsync();
 
     /// <summary>
     /// Checks the availability of a model name.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
     /// <param name="checkAvailabilityDto">The DTO containing the model name to check.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the model name is available or not.</returns>
-    Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(Guid projectId, CheckAvailabilityDto checkAvailabilityDto);
+    Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
     
     /// <summary>
     /// Inserts a ML model
