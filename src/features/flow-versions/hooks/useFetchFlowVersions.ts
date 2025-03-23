@@ -18,7 +18,7 @@ export const useFetchFlowVersions = () => {
     })),
   );
 
-  // Get projects using react query
+  // Get flow versions using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
     queryFn: () => getFlowVersions(currentFlow.id),

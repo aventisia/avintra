@@ -1,5 +1,7 @@
 import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
+export const FLOWS_QUERY_KEY = ["flows"];
+
 /**
  * Returns the heading and description based on the provided CRUD action type.
  * @param crudAction - The CRUD action type.

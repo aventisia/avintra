@@ -13,12 +13,12 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
-  projectIdProps,
   typeProps,
 } from "../../constants/flow-form-field-props";
 import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useDefineFlowForm } from "../../hooks/useDefineFlowForm";
+import { FLOWS_QUERY_KEY } from "../../constants/constants";
 
 /* Note: Its a copy of flows-table feature of workspace app. 
   Any change to the this file is going to affect both the files/features. 
@@ -32,7 +32,6 @@ export const FlowCrudForm = () => {
     rowId,
     isDirty,
     crudAction,
-    flowsQueryKey,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
@@ -47,7 +46,7 @@ export const FlowCrudForm = () => {
     FlowsTableDto,
     FlowsTableDto | boolean,
     FlowsTableDto
-  >([rowId], flowOptimisticMutationFn, flowsQueryKey);
+  >([rowId], flowOptimisticMutationFn, FLOWS_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowZodSchema>) => {
@@ -75,9 +74,6 @@ export const FlowCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* Project Id */}
-      {isReadMode && <InputField {...projectIdProps} />}
-
       {/* Flow Id */}
       {isReadMode && <InputField {...idProps} />}
 

@@ -2,29 +2,28 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import { getProjectFlows } from "../apis/flows-table-apis";
+import { getFlows } from "../apis/flows-table-apis";
+import { FLOWS_QUERY_KEY } from "../constants/constants";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
 /**
- * Custom hook to fetch associated flows with project using react query.
+ * Custom hook to fetch flows using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchFlows = () => {
   // Get flows store state and actions
-  const { projectId, isPopoverOpen, setFlowsCount, flowsQueryKey } =
+  const { isPopoverOpen, setFlowsCount } =
     useFlowsPopoverStore(
       useShallow((state) => ({
-        projectId: state.projectId,
         isPopoverOpen: state.isPopoverOpen,
         setFlowsCount: state.setFlowsCount,
-        flowsQueryKey: state.flowsQueryKey,
       })),
     );
 
   // Get flows using react query
   const { data, refetch, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: flowsQueryKey,
-    queryFn: () => getProjectFlows(projectId),
+    queryKey: FLOWS_QUERY_KEY,
+    queryFn: () => getFlows(),
   });
 
   // Show toast on fetch error
