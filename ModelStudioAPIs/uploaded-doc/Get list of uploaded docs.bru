@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/list/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/list/0195a90b-e828-79de-a9cd-bcc76fe39642/:type
   body: none
   auth: none
+}
+
+params:path {
+  type: TestData
 }
 
 script:pre-request {

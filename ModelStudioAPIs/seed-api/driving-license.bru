@@ -1,0 +1,24 @@
+meta {
+  name: driving-license
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    name: "Driving License",
+    type: "Extraction",
+    lLM: "gemma",
+    description: "Driving License",
+    status:"Annotation",
+    trainedOn: faker.date.anytime(),
+  })
+}
