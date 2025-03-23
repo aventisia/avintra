@@ -14,7 +14,6 @@ script:pre-request {
   const {faker} = require('@faker-js/faker');
   
   req.setBody({
-    projectId: bru.getGlobalEnvVar("PROJECT_ID"),
     type: "AutomationAgent",
     name: faker.commerce.product(),
     description: faker.lorem.paragraph(),

@@ -17,7 +17,7 @@ body:json {
 }
 
 script:pre-request {
-  // Set projectIds in request body
+  // Set flowIds in request body
   req.setBody(
     JSON.parse(`["${bru.getGlobalEnvVar("FLOW_ID")}"]`)
   )
@@ -33,5 +33,5 @@ script:post-response {
 }
 
 docs {
-  > TODO: Implement functionality to delete multiple projects only if the user provides an OTP or password, especially when the projects are linked to other sub-content.
+  > TODO: Implement functionality to delete multiple flows only if the user provides an OTP or password, especially when the flows are linked to other sub-content.
 }

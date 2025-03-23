@@ -21,7 +21,6 @@ script:pre-request {
   
   req.setBody({
     id: bru.getGlobalEnvVar("FLOW_ID"),
-    projectId: bru.getGlobalEnvVar("PROJECT_ID"),
     type: "AutomationAgent",
     name: faker.commerce.product(),
     description: faker.lorem.paragraph(),
