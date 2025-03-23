@@ -14,12 +14,6 @@ public class FlowsTableDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the project to which the flow record belongs.
-    /// </summary>
-    [RequiredGuid]
-    public Guid ProjectId { get; set; }
-
-    /// <summary>
     /// Gets or sets the type of the flow.
     /// </summary>
     public required FlowTypesEnum Type { get; set; } // TODO: Update enum values

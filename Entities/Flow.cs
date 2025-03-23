@@ -36,17 +36,6 @@ public class Flow : BaseEntity, IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the project to which the flow record belongs.
-    /// </summary>
-    public Guid ProjectId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the project this flow is associated with.
-    /// </summary>
-    [ForeignKey("ProjectId")]
-    public virtual Project? Project { get; set; }
-
-    /// <summary>
     /// Gets or sets the list of FlowComments to manage the one-to-many relation.
     /// </summary>
     

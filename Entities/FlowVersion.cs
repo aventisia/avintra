@@ -44,7 +44,7 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public required Guid FlowId { get; set; }
 
     /// <summary>
-    /// Gets or sets the project this flow is associated with.
+    /// Gets or sets the flow record associated with a flow version record
     /// </summary>
     [ForeignKey("FlowId")]
     public virtual Flow? Flow { get; set; }

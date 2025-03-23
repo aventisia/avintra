@@ -21,8 +21,8 @@ public class FlowsTableService : IFlowsTableService
         _flowVersionService = flowVersionService;
     }
 
-    // Retrieves all flows associated with a project.
-    public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(Guid projectId)
+    // Retrieves all flows created by the user.
+    public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync()
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FlowsTableDto>>
@@ -36,7 +36,6 @@ public class FlowsTableService : IFlowsTableService
             // Get flows
             var flows = await _unitOfWork.FlowRepo
                                          .GetByConditionAsync(w =>
-                                            w.ProjectId == projectId &&
                                             w.CreatedByUserId == _userId) // TODO: Update condition
                                          .OrderByDescending(w => w.CreatedOn)
                                          .ProjectToType<FlowsTableDto>()
@@ -57,7 +56,7 @@ public class FlowsTableService : IFlowsTableService
     }
 
     // Checks the availability of a flow name.
-    public async Task<ServiceResponse<TrueFalseResultDto>> IsFlowNameAvailableAsync(Guid projectId, CheckAvailabilityDto checkAvailabilityDto)
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsFlowNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
@@ -71,7 +70,6 @@ public class FlowsTableService : IFlowsTableService
             // Validate flow uniqueness
             var flowAlreadyExists = await _unitOfWork.FlowRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.ProjectId == projectId &&
                                                         w.CreatedByUserId == _userId &&
                                                         w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                                                      .FirstOrDefaultAsync();
@@ -115,7 +113,6 @@ public class FlowsTableService : IFlowsTableService
             var flowAlreadyExists = await _unitOfWork.FlowRepo
                                                      .GetByConditionAsync(w =>
                                                         w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
-                                                        w.ProjectId == flowsTableDto.ProjectId &&
                                                         w.CreatedByUserId == _userId)
                                                      .FirstOrDefaultAsync();
 
@@ -135,7 +132,7 @@ public class FlowsTableService : IFlowsTableService
             var newFlow = flowsTableDto.Adapt<Flow>();
             newFlow.CreatedByUserId = _userId;
             newFlow.LastModifiedByUserId = _userId;
- 
+
             // Insert flow
             await _unitOfWork.FlowRepo.InsertAsync(newFlow);
 
@@ -186,7 +183,6 @@ public class FlowsTableService : IFlowsTableService
             var flow = await _unitOfWork.FlowRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == flowsTableDto.Id &&
-                                            w.ProjectId == flowsTableDto.ProjectId &&
                                             w.CreatedByUserId == _userId)
                                         .SingleOrDefaultAsync();
 
@@ -202,7 +198,6 @@ public class FlowsTableService : IFlowsTableService
             var flowAlreadyExists = await _unitOfWork.FlowRepo
                                                      .GetByConditionAsync(w =>
                                                         w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
-                                                        w.ProjectId == flowsTableDto.ProjectId &&
                                                         w.CreatedByUserId == _userId &&
                                                         w.Id != flowsTableDto.Id)
                                                      .FirstOrDefaultAsync();

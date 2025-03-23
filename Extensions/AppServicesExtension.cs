@@ -17,7 +17,6 @@ public static class AppServicesExtension
         // Mapster mapping profiles
         var config = TypeAdapterConfig.GlobalSettings;
         config.Apply(new WorkspaceUserMappingProfile());
-        config.Apply(new ProjectsTableMappingProfile());
         config.Apply(new GlobalNotificationMappingProfile());
         config.Apply(new UnreadNotificationMappingProfile());
         config.Apply(new AutoNotificationMappingProfile());
@@ -54,7 +53,6 @@ public static class AppServicesExtension
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
-        services.AddScoped<IProjectsTableService, ProjectsTableService>();
         services.AddScoped<INotificationHelperService, NotificationHelperService>();
         services.AddScoped<IGlobalNotificationService, GlobalNotificationService>();
         services.AddScoped<IUnreadNotificationService, UnreadNotificationService>();

@@ -3,7 +3,6 @@ namespace WorkspaceAPIs.Services;
 public interface IUnitOfWork
 {
     IWorkspaceUserRepo WorkspaceUserRepo { get; }
-    IProjectRepo ProjectRepo { get; }
     INotificationRepo NotificationRepo { get; }
     INotificationUserRepo NotificationUserRepo { get; }
     IFlowRepo FlowRepo { get; }

@@ -11,8 +11,6 @@ public class UnitOfWork : IUnitOfWork
 
     public IWorkspaceUserRepo WorkspaceUserRepo => new WorkspaceUserRepo(_workspaceDbContext);
 
-    public IProjectRepo ProjectRepo => new ProjectRepo(_workspaceDbContext);
-
     public INotificationRepo NotificationRepo => new NotificationRepo(_workspaceDbContext);
 
     public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext);

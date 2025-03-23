@@ -12,18 +12,18 @@ public class FlowsTableController : BaseApiController
         _flowsTableService = flowsTableService;
     }
 
-    // Retrieves all flows associated with a project.
-    [HttpGet("list/{projectId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetFlows(Guid projectId)
+    // Retrieves all flows created by the user.
+    [HttpGet("list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetFlows()
     {
-        return ResultHelper(await _flowsTableService.GetFlowsAsync(projectId));
+        return ResultHelper(await _flowsTableService.GetFlowsAsync());
     }
 
     // Checks the availability of a flow name.
-    [HttpPost("is-available/{projectId}")]
-    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsFlowNameAvailable(Guid projectId, [FromBody] CheckAvailabilityDto checkAvailabilityDto)
+    [HttpPost("is-available")]
+    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsFlowNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
-        return ResultHelper(await _flowsTableService.IsFlowNameAvailableAsync(projectId, checkAvailabilityDto));
+        return ResultHelper(await _flowsTableService.IsFlowNameAvailableAsync(checkAvailabilityDto));
     }
 
     // Inserts a new flow.

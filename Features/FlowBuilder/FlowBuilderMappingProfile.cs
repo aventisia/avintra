@@ -11,9 +11,7 @@ public class FlowBuilderMappingProfile : IRegister
             .Map(dest => dest.FlowId, src => src.Flow != null ? src.Flow.Id : Guid.Empty)
             .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
             .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : null)
-            .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : null)
-            .Map(dest => dest.ProjectId, src => src.Flow != null && src.Flow.Project != null ? src.Flow.Project.Id : Guid.Empty)
-            .Map(dest => dest.ProjectName, src => src.Flow != null && src.Flow.Project != null ? src.Flow.Project.Name : null);
+            .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : null);
 
         // To Update flow's node, edges etc silently in the background
         config.NewConfig<FlowSilentUpdateDto, FlowVersion>()

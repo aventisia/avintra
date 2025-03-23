@@ -71,15 +71,4 @@ public class LoadFlowDto
     /// Gets or sets the description of the flow
     /// </summary>
     public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ID of the project to which the flow record belongs.
-    /// </summary>
-    [RequiredGuid]
-    public Guid ProjectId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the project
-    /// </summary>
-    public string? ProjectName { get; set; }
 }

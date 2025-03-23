@@ -6,19 +6,17 @@ namespace WorkspaceAPIs.Services;
 public interface IFlowsTableService
 {
     /// <summary>
-    /// Retrieves all flows associated with a project.
+    /// Retrieves all flows created by the user.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
     /// <returns>The task result contains the service response with the list of flow details.</returns>
-    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(Guid projectId);
+    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync();
 
     /// <summary>
     /// Checks the availability of a flow name.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
     /// <param name="checkAvailabilityDto">The DTO containing the flow name to check.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the flow name is available or not.</returns>
-    Task<ServiceResponse<TrueFalseResultDto>> IsFlowNameAvailableAsync(Guid projectId, CheckAvailabilityDto checkAvailabilityDto);
+    Task<ServiceResponse<TrueFalseResultDto>> IsFlowNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
 
     /// <summary>
     /// Inserts a new flow.
