@@ -1,0 +1,23 @@
+meta {
+  name: Download file
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc?fileurl=/files/914697a8-ec1e-4473-ae4c-1a8b580d18fd.pdf
+  body: json
+  auth: none
+}
+
+params:query {
+  fileurl: /files/914697a8-ec1e-4473-ae4c-1a8b580d18fd.pdf
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    fileUrl: "/files/4bb3f813-4444-429e-badd-890b7b2b6503.pdf"
+  })
+}

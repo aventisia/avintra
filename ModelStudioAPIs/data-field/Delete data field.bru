@@ -1,0 +1,19 @@
+meta {
+  name: Delete data field
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/data-field/{{DATA_FIELD_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    Id: bru.getGlobalEnvVar("DATA_FIELD_ID"),
+  })
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Is data field name available
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/data-field/IsDataFieldNameAvailable
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    userInput: "Liaison",
+  })
+}
