@@ -12,11 +12,6 @@ export interface FlowsTableDto {
   id?: string;
 
   /**
-   * Gets or sets the ID of the project to which the flow record belongs.
-   */
-  projectId: string;
-
-  /**
    * Gets or sets the type of the flow.
    */
   type: FlowTypesEnum; // TODO: Update enum values

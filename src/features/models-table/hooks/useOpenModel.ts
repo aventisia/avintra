@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
+import { MODELS_QUERY_KEY } from "../constants";
 import { ModelsTableDto } from "../dtos/models-table-dto";
-import { useModelsTableStore } from "../stores/models-table-store";
 import { ModelStagesType } from "../types/model-stages-type";
 
 /**
@@ -10,14 +9,6 @@ import { ModelStagesType } from "../types/model-stages-type";
  * @returns A function to handle opening the model
  */
 export const useOpenModel = () => {
-  // Get models store state and actions
-  const { projectId, modelsQueryKey } = useModelsTableStore(
-    useShallow((state) => ({
-      projectId: state.projectId,
-      modelsQueryKey: state.modelsQueryKey,
-    })),
-  );
-
   // Get query client
   const queryClient = useQueryClient();
 
@@ -26,7 +17,7 @@ export const useOpenModel = () => {
     // Get models data from query client
     const modelsData = queryClient.getQueryData<{
       data: ModelsTableDto[];
-    }>(modelsQueryKey);
+    }>(MODELS_QUERY_KEY);
 
     // Get model data by id
     const modelData = modelsData?.data.find((item) => item.id === rowId);
@@ -35,13 +26,13 @@ export const useOpenModel = () => {
     let url = '';
     switch (stage) {
       case "Label":
-        url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/label?p=${projectId}&mid=${rowId}&mn=${modelData?.name}`;
+        url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/label?mid=${rowId}&mn=${modelData?.name}`;
         break;
       case "Test":
-        url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/test?p=${projectId}&mid=${rowId}&mn=${modelData?.name}`;
+        url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/test?mid=${rowId}&mn=${modelData?.name}`;
         break;
       case "View":
-        url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/label?p=${projectId}&mid=${rowId}&mn=${modelData?.name}`;
+        url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/label?mid=${rowId}&mn=${modelData?.name}`;
         break;
     }
 

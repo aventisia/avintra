@@ -8,12 +8,12 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
+import { FLOWS_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
   isDisabledProps,
   nameProps,
-  projectIdProps,
   typeProps,
 } from "../../constants/flow-form-field-props";
 import { flowZodSchema } from "../../constants/flow-zod-schema";
@@ -27,7 +27,6 @@ export const FlowCrudForm = () => {
     rowId,
     isDirty,
     crudAction,
-    flowsQueryKey,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
@@ -42,7 +41,7 @@ export const FlowCrudForm = () => {
     FlowsTableDto,
     FlowsTableDto | boolean,
     FlowsTableDto
-  >([rowId], flowOptimisticMutationFn, flowsQueryKey);
+  >([rowId], flowOptimisticMutationFn, FLOWS_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowZodSchema>) => {
@@ -70,9 +69,6 @@ export const FlowCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* Project Id */}
-      {isReadMode && <InputField {...projectIdProps} />}
-
       {/* Flow Id */}
       {isReadMode && <InputField {...idProps} />}
 

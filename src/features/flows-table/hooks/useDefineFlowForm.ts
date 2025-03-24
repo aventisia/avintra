@@ -1,4 +1,3 @@
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -9,9 +8,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { isFlowNameAvailable } from "../apis/flows-table-apis";
+import { FLOWS_QUERY_KEY } from "../constants";
 import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { useFlowsTableStore } from "../stores/flows-table-store";
 
 /**
  * Custom hook for defining a flow form.
@@ -19,14 +18,6 @@ import { useFlowsTableStore } from "../stores/flows-table-store";
 export const useDefineFlowForm = () => {
   // Set flow name state (required for avaialbility check)
   const [flowName, setFlowName] = useState("");
-
-  // Get flows store state and actions
-  const { projectId, flowsQueryKey } = useFlowsTableStore(
-    useShallow((state) => ({
-      projectId: state.projectId,
-      flowsQueryKey: state.flowsQueryKey,
-    })),
-  );
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -63,7 +54,6 @@ export const useDefineFlowForm = () => {
       thumbnail: "",
       isDisabled: false,
       flowCommentCount: 0,
-      projectId: projectId,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -81,7 +71,7 @@ export const useDefineFlowForm = () => {
     // Get flows data from query client
     const flowsData = queryClient.getQueryData<{
       data: FlowsTableDto[];
-    }>(flowsQueryKey);
+    }>(FLOWS_QUERY_KEY);
 
     // Get flow data by id
     const flowData = flowsData?.data.find((item) => item.id === rowId);
@@ -99,7 +89,6 @@ export const useDefineFlowForm = () => {
       isDisabled: flowData?.isDisabled ?? false,
       // Read (view) only fields
       flowCommentCount: flowData?.flowCommentCount ?? 0,
-      projectId: projectId,
       createdBy:
         flowData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
@@ -113,12 +102,7 @@ export const useDefineFlowForm = () => {
         ? new Date(flowData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, projectId, form, queryClient, flowsQueryKey, userSession]);
-
-  // Flow name availability check API extension
-  const isFlowNameAvailableExt = (postObj: CheckAvailabilityDto) => {
-    return isFlowNameAvailable(projectId, postObj);
-  };
+  }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
   const {
@@ -132,7 +116,7 @@ export const useDefineFlowForm = () => {
     fieldName: "name",
     form,
     fieldSchema: flowNameSchema,
-    checkAvailabilityAPIFn: isFlowNameAvailableExt,
+    checkAvailabilityAPIFn: isFlowNameAvailable,
   });
 
   // Refine form data based on crud action
@@ -158,7 +142,6 @@ export const useDefineFlowForm = () => {
   return {
     form,
     isDirty,
-    flowsQueryKey,
     rowId,
     crudAction,
     setShowDialog,

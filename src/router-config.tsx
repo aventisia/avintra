@@ -1,36 +1,45 @@
-import { Navigate, RouteObject } from "react-router-dom";
+import { Navigate, RouteObject, type } from 'react-router-dom';
 
-import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
-import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { ErrorPage } from '@/react-toolkit/pages/ErrorPage';
+import { NotFoundPage } from '@/react-toolkit/pages/NotFoundPage';
+import { RedirectPage } from '@/react-toolkit/pages/RedirectPage';
 
-import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
+import { WorkspaceUILayout } from './components/layout/WorkspaceUILayout';
 import {
-  AccountDeactivation,
-  DeviceHistory,
-  EmailSettings,
-  ProfileInfo,
-  Security,
-} from "./features/my-account/components";
-import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
-import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
-import ComingSoon from "./pages/CommingSoon";
-import { FlowsPage } from "./pages/FlowsPage";
-import { LicensesPage } from "./pages/LicensesPage";
-import { ModelsPage } from "./pages/ModelsPage";
-import MyAccountPage from "./pages/MyAccountPage";
-import { AgentsPage } from "./pages/orchestrator/AgentsPage";
-import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
-import { KeystorePage } from "./pages/orchestrator/KeystorePage";
-import { MachinesPage } from "./pages/orchestrator/MachinesPage";
-import { Orchestrator } from "./pages/orchestrator/Orchestrator";
-import { QueuesPage } from "./pages/orchestrator/QueuesPage";
-import { VaultPage } from "./pages/orchestrator/VaultPage";
-import { ProjectsPage } from "./pages/ProjectsPage";
-import { SupportTicketsPage } from "./pages/SupportTicketsPage";
-import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantsPage } from "./pages/TenantsPage";
-import { UsersPage } from "./pages/UsersPage";
+    AccountDeactivationTab
+} from './features/my-account/components/account-deactivation-tab/AccountDeactivationTab';
+import {
+    DeviceHistoryTab
+} from './features/my-account/components/device-history-tab/DeviceHistoryTab';
+import {
+    EmailSettingsTab
+} from './features/my-account/components/email-settings-tab/EmailSettingsTab';
+import { ProfileInfoTab } from './features/my-account/components/profile-info-tab/ProfileInfoTab';
+import { SecurityTab } from './features/my-account/components/security-tab/SecurityTab';
+import {
+    STCreatePage
+} from './features/support-tickets-table/components/support-ticket-create-page/STCreatePage';
+import {
+    SupportTicketEditForm
+} from './features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm';
+import ComingSoon from './pages/CommingSoon';
+import { FlowsPage } from './pages/FlowsPage';
+import { ModelsPage } from './pages/ModelsPage';
+import MyAccountPage from './pages/MyAccountPage';
+import { AgentsPage } from './pages/orchestrator/AgentsPage';
+import { ConfigsPage } from './pages/orchestrator/ConfigsPage';
+import { ExecutionsPage } from './pages/orchestrator/ExecutionsPage';
+import { JobsPage } from './pages/orchestrator/JobsPage';
+import { KeystorePage } from './pages/orchestrator/KeystorePage';
+import { MachinesPage } from './pages/orchestrator/MachinesPage';
+import { Orchestrator } from './pages/orchestrator/Orchestrator';
+import { QueuesPage } from './pages/orchestrator/QueuesPage';
+import { VaultPage } from './pages/orchestrator/VaultPage';
+import { ProjectsPage } from './pages/ProjectsPage';
+import { SupportTicketsPage } from './pages/SupportTicketsPage';
+import { SupportTicketsReviewerPage } from './pages/SupportTicketsReviewerPage';
+import { TenantsPage } from './pages/TenantsPage';
+import { UsersPage } from './pages/UsersPage';
 
 export const routerConfig: RouteObject[] = [
   {
@@ -40,18 +49,14 @@ export const routerConfig: RouteObject[] = [
     children: [
       {
         path: "/",
-        element: <Navigate to="/projects" />,
+        element: <Navigate to="/agents" />,
       },
       {
-        path: "/projects",
-        element: <ProjectsPage />,
-      },
-      {
-        path: "/projects/agents",
+        path: "/agents",
         element: <FlowsPage />,
       },
       {
-        path: "/projects/models",
+        path: "/ai-models",
         element: <ModelsPage />,
       },
       {

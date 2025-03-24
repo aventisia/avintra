@@ -7,7 +7,6 @@ import {
   isDisabledProps,
   machineCountProps,
   nameProps,
-  projectIdProps,
   versionNumberProps,
 } from "../../constants/agent-form-field-props";
 import { useDefineAgentForm } from "../../hooks/useDefineAgentForm";
@@ -80,9 +79,6 @@ export const AgentCrudForm = () => {
       className="px-2.5 pb-5"
       onSubmit={form.handleSubmit(onSubmit)}
     >
-      {/* FlowId Id */}
-      {isReadMode && <InputField {...projectIdProps} />}
-
       {/* Agent Id */}
       {isReadMode && <InputField {...idProps} />}
 

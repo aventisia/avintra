@@ -6,13 +6,6 @@ import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 import { ModelLLMEnum } from "../enums/model-llm-enum";
 import { ModelTypesEnum } from "../enums/model-type-enum";
 
-// Project Id
-const projectIdProps: InputFieldProps = {
-  name: "projectId",
-  label: "Project Id",
-  disabled: true,
-};
-
 // Model Id
 const idProps: InputFieldProps = {
   name: "id",
@@ -64,6 +57,5 @@ export {
   isDisabledProps,
   llmProps,
   nameProps,
-  projectIdProps,
   typeProps,
 };

@@ -1,4 +1,3 @@
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -9,13 +8,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { isModelNameAvailable } from "../apis/models-table-apis";
+import { MODELS_QUERY_KEY } from "../constants";
 import {
   modelNameSchema,
-  // modelNameSchema,
   modelZodSchema,
 } from "../constants/model-zod-schema";
 import { ModelsTableDto } from "../dtos/models-table-dto";
-import { useModelsTableStore } from "../stores/models-table-store";
 
 /**
  * Custom hook for defining a model form.
@@ -23,14 +21,6 @@ import { useModelsTableStore } from "../stores/models-table-store";
 export const useDefineModelForm = () => {
   // Set model name state (required for avaialbility check)
   const [modelName, setModelName] = useState("");
-
-  // Get models store state and actions
-  const { projectId, modelsQueryKey } = useModelsTableStore(
-    useShallow((state) => ({
-      projectId: state.projectId,
-      modelsQueryKey: state.modelsQueryKey,
-    })),
-  );
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -66,7 +56,6 @@ export const useDefineModelForm = () => {
       llm: "",
       description: "",
       status: "Active",
-      projectId: projectId,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       trainedOn: new Date(),
@@ -83,7 +72,7 @@ export const useDefineModelForm = () => {
     // Get models data from query client
     const modelsData = queryClient.getQueryData<{
       data: ModelsTableDto[];
-    }>(modelsQueryKey);
+    }>(MODELS_QUERY_KEY);
 
     // Get model data by id
     const modelData = modelsData?.data.find((item) => item.id === rowId);
@@ -100,7 +89,6 @@ export const useDefineModelForm = () => {
       llm: modelData?.llm ?? "",
       // Read (view) only fields
       status: "Active",
-      projectId: projectId,
       createdBy:
         modelData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
@@ -111,12 +99,7 @@ export const useDefineModelForm = () => {
         ? new Date(modelData?.trainedOn)
         : new Date(),
     });
-  }, [rowId, projectId, form, queryClient, userSession, modelsQueryKey]);
-
-  // Model name availability check API extension
-  const isModelNameAvailableExt = (postObj: CheckAvailabilityDto) => {
-    return isModelNameAvailable(projectId, postObj);
-  };
+  }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
   const {
@@ -130,7 +113,7 @@ export const useDefineModelForm = () => {
     fieldName: "name",
     form,
     fieldSchema: modelNameSchema,
-    checkAvailabilityAPIFn: isModelNameAvailableExt,
+    checkAvailabilityAPIFn: isModelNameAvailable,
   });
 
   // Refine form data based on crud action
@@ -158,7 +141,6 @@ export const useDefineModelForm = () => {
     isDirty,
     rowId,
     crudAction,
-    modelsQueryKey,
     setShowDialog,
     refineFormData,
     isAvailable,

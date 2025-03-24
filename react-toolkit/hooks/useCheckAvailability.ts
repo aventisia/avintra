@@ -99,7 +99,7 @@ export const useCheckAvailability = <
   // ---------------------------Field value is valid/invalid handler
   const isFieldValidHandler = (inputValue: string) => {
     const fieldZodSchema = z.object({ fieldName: fieldSchema }); // Define the field zod schema
-    const result = fieldZodSchema.safeParse({ fieldName: inputValue }); // Validate the project name
+    const result = fieldZodSchema.safeParse({ fieldName: inputValue }); // Validate the name
 
     if (!result.success) {
       // Set field error message
@@ -117,7 +117,7 @@ export const useCheckAvailability = <
     return result.success;
   };
 
-  // ---------------------------Handler to set error message when project name is not available
+  // ---------------------------Handler to set error message when name is not available
   const notAvailableErrorHandler = (inputValue: string) => {
     form.setError(fieldName, {
       type: "Red",

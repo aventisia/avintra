@@ -8,15 +8,11 @@ import { FlowsTableDto } from "../dtos/flows-table-dto";
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 
 /**
- * Retrieves all flows associated with a project.
+ * Retrieves all flows created by user
  */
-const getProjectFlows = (projectId?: string) => {
-  // Return if projectId is not provided (projectId can be null if not passed in query params)
-  if (!projectId) return Promise.resolve(null);
-
-  // Fetch flows from API
+const getFlows = () => {
   return axiosInstance
-    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/list/${projectId}`)
+    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
@@ -24,13 +20,12 @@ const getProjectFlows = (projectId?: string) => {
  * Checks the availability of a flow name.
  */
 const isFlowNameAvailable = (
-  projectId: string,
   postObj: CheckAvailabilityDto,
 ) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/is-available/${projectId}`, postObj)
+    >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
@@ -96,7 +91,7 @@ const flowOptimisticMutationFn = ({
 };
 
 export {
-  getProjectFlows,
+  getFlows,
   isFlowNameAvailable,
   insertFlow,
   updateFlow,

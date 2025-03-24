@@ -1,9 +1,10 @@
-import { Bot, Library, MonitorPlayIcon, ScrollTextIcon, Shield } from 'lucide-react';
+import { BotIcon, FileBoxIcon, LockKeyholeIcon } from 'lucide-react';
 
 import { IAppConfig } from '@/react-toolkit/types/app-config';
 import { NavLocation } from '@/react-toolkit/types/nav-data-types';
 import {
-  FolderIcon, IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
+    ChartPieIcon, CogIcon, IdentificationIcon, PlayIcon, QuestionMarkCircleIcon, QueueListIcon,
+    UsersIcon
 } from '@heroicons/react/24/outline';
 import { DesktopIcon } from '@radix-ui/react-icons';
 
@@ -22,9 +23,14 @@ const workspaceAppConfig: IAppConfig = {
         sectionName: "main menu",
         menuItems: [
           {
-            Icon: FolderIcon,
-            name: "projects",
-            route: "/projects",
+            Icon: BotIcon,
+            name: "agents",
+            route: "/agents",
+          },
+          {
+            Icon: FileBoxIcon,
+            name: "AI Models",
+            route: "/ai-models",
           },
           {
             Icon: QuestionMarkCircleIcon,
@@ -43,7 +49,7 @@ const workspaceAppConfig: IAppConfig = {
             route: "/orchestrator/machines",
           },
           {
-            Icon: Bot,
+            Icon: BotIcon,
             name: "Agents",
             route: "/orchestrator/agents",
           },
@@ -95,4 +101,3 @@ const workspaceAppConfig: IAppConfig = {
 };
 
 export { workspaceAppConfig };
-
