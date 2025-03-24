@@ -1,13 +1,13 @@
-import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
-import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
-import type { TextareaFieldProps } from '@/react-toolkit/ui/form/fields/TextareaField';
+import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField'
+import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField'
+import type { TextareaFieldProps } from '@/react-toolkit/ui/form/fields/TextareaField'
 
 // Config Id
 export const idProps: InputFieldProps = {
   name: "id",
   label: "Config Id",
   disabled: true,
-};
+}
 
 // Name
 export const nameProps: InputFieldProps = {
@@ -15,7 +15,7 @@ export const nameProps: InputFieldProps = {
   label: "Name",
   isRequired: true,
   placeholder: "AdobeCloude"
-};
+}
 
 // User Name
 export const userNameProps: InputFieldProps = {
@@ -23,7 +23,7 @@ export const userNameProps: InputFieldProps = {
   label: "User Name",
   isRequired: true,
   placeholder: "example-username"
-};
+}
 
 // password
 export const passwordProps: InputFieldProps = {
@@ -32,7 +32,7 @@ export const passwordProps: InputFieldProps = {
   isRequired: true,
   type: "password",
   placeholder: "******"
-};
+}
 
 //confirm password
 export const confirmPasswordProps: InputFieldProps = {
@@ -41,14 +41,14 @@ export const confirmPasswordProps: InputFieldProps = {
   isRequired: true,
   type: "password",
   placeholder: "******"
-};
+}
 
 // Description
 export const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
   className: "min-h-[6rem]",
-};
+}
 
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
