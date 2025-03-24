@@ -6,14 +6,14 @@ import { axiosInstance } from '@/react-toolkit/lib/axios-instance';
 
 import { LicensesTableDto } from '../dtos/licenses-table-dto';
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/project`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
 
 /**
  * Retrieves list of licenses.
  */
 const getLicenses = () => {
   return axiosInstance
-    .get<IHttpResponse<LicensesTableDto[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<LicensesTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
