@@ -10,6 +10,8 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { vaultOptimisticMutationFn } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
+  confirmPasswordProps,
+  descriptionProps,
   idProps,
   isDisabledProps,
   nameProps,
@@ -19,6 +21,7 @@ import {
 import { vaultZodSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useDefineVaultForm } from "../../hooks/useDefineVaultForm";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 
 export const VaultCrudForm = () => {
   // Define config form
@@ -89,6 +92,12 @@ export const VaultCrudForm = () => {
 
       {/* Password */}
       <InputField {...passwordProps} />
+
+      {/* retype Password */}
+      <InputField {...confirmPasswordProps} />
+
+      {/* Description */}
+      <TextareaField {...descriptionProps} />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
