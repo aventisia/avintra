@@ -1,4 +1,3 @@
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
@@ -7,11 +6,12 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 interface RedirectPageProps {
+  appLogo: React.ReactNode;
   className?: string;
 }
 
 /** Default message is Loading... redirect?url=https://domain.com/&msg=Please Wait...*/
-const RedirectPage = ({ className }: RedirectPageProps) => {
+const RedirectPage = ({ appLogo, className }: RedirectPageProps) => {
   const [searchParams] = useSearchParams();
   const url = searchParams.get("url");
   const message = searchParams.get("msg"); // loading or wait message
@@ -30,7 +30,7 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
       )}
     >
       <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        <AppLogo doNotShowAppName={true} />
+        {appLogo}
         <a
           href="/help?id=redirect"
           className={cn(
