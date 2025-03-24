@@ -20,6 +20,12 @@ public class Vault : BaseEntity, IMustHaveTenant
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the description of the vault. Max-500 characters.
+    /// </summary>
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Gets or sets the encrypted username associated with this configuration item.
     /// This value must be encrypted to ensure data security.
     /// </summary>
