@@ -1,10 +1,11 @@
-import { BotIcon, FileBoxIcon, LockKeyholeIcon } from 'lucide-react';
+import {
+  BotIcon, FileBoxIcon, Library, MonitorPlayIcon, ScrollTextIcon, Shield
+} from 'lucide-react';
 
 import { IAppConfig } from '@/react-toolkit/types/app-config';
 import { NavLocation } from '@/react-toolkit/types/nav-data-types';
 import {
-    ChartPieIcon, CogIcon, IdentificationIcon, PlayIcon, QuestionMarkCircleIcon, QueueListIcon,
-    UsersIcon
+  IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
 } from '@heroicons/react/24/outline';
 import { DesktopIcon } from '@radix-ui/react-icons';
 
