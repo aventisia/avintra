@@ -55,6 +55,7 @@ export const useDefineVaultForm = () => {
       userName: "",
       password: "",
       confirmPassword: "",
+      description: "",
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -84,6 +85,10 @@ export const useDefineVaultForm = () => {
     form.reset({
       id: rowId,
       name: configData?.name ?? "",
+
+      userName:configData?.userName,
+      password:configData?.password,
+      description: configData?.description,
 
       isDisabled: configData?.isDisabled ?? false,
       // Read (view) only fields
