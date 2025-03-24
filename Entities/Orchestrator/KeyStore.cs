@@ -20,6 +20,12 @@ public class KeyStore : BaseEntity, IMustHaveTenant
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the description of the key store. Max-500 characters.
+    /// </summary>
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the configuration item (e.g., Text, Boolean, Credential, JSON).
     /// This defines the data format or structure of the configuration value.
     /// </summary>

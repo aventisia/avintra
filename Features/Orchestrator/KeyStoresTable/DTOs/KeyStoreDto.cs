@@ -19,8 +19,14 @@ public class KeyStoreDto
     /// Unique name for the configuration item.
     /// </summary>
     [Required]
-    [MaxLength(256)]
+    [StringLength(256)]
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of the key store. Max-500 characters.
+    /// </summary>
+    [StringLength(500)]
+    public string? Description { get; set; }
 
     /// <summary>
     /// Type of the configuration item (e.g., Text, Boolean, Credential, JSON).
