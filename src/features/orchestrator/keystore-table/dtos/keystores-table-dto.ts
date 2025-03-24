@@ -44,6 +44,16 @@ export interface KeystoresTableDto {
   accessLevel: AccessLevelTypesEnum;
 
   /**
+ * Gets or sets the description of the key.
+ */
+  description: string;
+
+  /**
+* Gets or sets the tags of the key.
+*/
+  tags: string;
+
+  /**
    * Gets or sets a flag indicating whether the keystore record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.
