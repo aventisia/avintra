@@ -1,8 +1,8 @@
 import { cn } from "@/react-toolkit/lib/utils";
 
 interface AppLogoProps {
-  /** Set to true, if want to forcefully hide app name */
-  doNotShowAppName?: boolean;
+  /** Set to true, if want to show full logo */
+  showFullLogo?: boolean;
 
   /** (Optional): To pass css classes to override style
    *
@@ -13,9 +13,15 @@ interface AppLogoProps {
 
 /** Component to render logo without app name or with app name */
 const AppLogo = ({
-  doNotShowAppName = false,
-  className = "h-7 text-xl",
+  showFullLogo = false,
+  className = "h-6 text-xl",
 }: AppLogoProps) => {
+  // Logo path
+  const logoSrc = showFullLogo
+    ? import.meta.env.BASE_URL + "logo.svg"
+    : import.meta.env.BASE_URL + "favicon.svg";
+
+  // Return logo with app name
   return (
     <a
       href={import.meta.env.BASE_URL}
@@ -26,10 +32,10 @@ const AppLogo = ({
     >
       <img
         className={cn(className)}
-        src={import.meta.env.BASE_URL + "logo.svg"}
+        src={logoSrc}
         alt={import.meta.env.VITE_COMPANY_NAME + " Logo"}
       />
-      {import.meta.env.VITE_APP_NAME && !doNotShowAppName && (
+      {import.meta.env.VITE_APP_NAME && !showFullLogo && (
         <h1>{import.meta.env.VITE_APP_NAME}</h1>
       )}
     </a>
