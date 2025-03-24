@@ -12,13 +12,14 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  accessLevelProps,
+  descriptionProps,
   idProps,
   isDisabledProps,
   isEncrypterProps,
   nameProps,
+  tagsProps,
   typeProps,
-  valueOptionProps,
+  valueProps,
 } from "../../constants/keystore-form-field-props";
 import { keystoreZodSchema } from "../../constants/keystore-zod-schema";
 import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
@@ -76,6 +77,12 @@ export const KeystoreCrudForm = () => {
       {/* Keystore Id */}
       {isReadMode && <InputField {...idProps} />}
 
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
+
       {/* Name */}
       <InputField
         {...nameProps}
@@ -83,22 +90,14 @@ export const KeystoreCrudForm = () => {
         nonErrorMessage={availabilityMessage}
       />
 
-      {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
+      {/* value  */}
+      <InputField {...valueProps} />
 
-      {crudAction === "create" ? (
-        <SelectField {...accessLevelProps} />
-      ) : (
-        form.getValues("accessLevel") !== "" && (
-          <SelectField {...accessLevelProps} />
-        )
-      )}
+      {/* description  */}
+      <TextareaField {...descriptionProps} />
 
       {/* value  */}
-      <TextareaField {...valueOptionProps} />
+      <InputField {...tagsProps} />
 
       {/* Is encrtypted */}
       <SwitchField {...isEncrypterProps} />
