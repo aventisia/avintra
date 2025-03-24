@@ -1,5 +1,3 @@
-import { LicenseTypesEnum } from '@/react-toolkit/enums/license-types-enum';
-
 /**
  * Represents a data transfer object (DTO) for a license.
  */
@@ -12,25 +10,14 @@ export interface LicensesTableDto {
   id?: string;
 
   /**
-   * Gets or sets the type of the license.
+   * Gets or sets the type of the license. Max-255
    */
-  type: LicenseTypesEnum; // TODO: Update enum values
+  type: string;
 
   /**
-   * Gets or sets the name of the license. Max-255
-   */
-  name: string;
-
-  /**
-   * Gets or sets the description of the license. Max-500
-   */
-  description?: string;
-
-  /**
-   * Gets or sets the number of flows in the license.
-   */
-  flowCount?: number;
-
+ * Gets or sets the quantity request for new license. Max-255
+ */
+  quantity: number;
   /**
    * Gets or sets a flag indicating whether the license record is disabled.
    *
