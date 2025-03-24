@@ -1,13 +1,13 @@
-import * as React from "react";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+import * as React from "react"
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form"
 
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
-import { Input } from "@/react-toolkit/ui/input";
+import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props"
+import { FormControl } from "@/react-toolkit/ui/form/FormControl"
+import { FormField } from "@/react-toolkit/ui/form/FormField"
+import { FormItem } from "@/react-toolkit/ui/form/FormItem"
+import { FormMessage } from "@/react-toolkit/ui/form/FormMessage"
+import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt"
+import { Input } from "@/react-toolkit/ui/input"
 
 interface InputFieldProps
   extends React.ComponentPropsWithoutRef<typeof Input>,
@@ -21,8 +21,6 @@ interface InputFieldProps
    * @memberof InputFieldProps
    */
   fileTypes: string[];
-
-  getSelectedFiles: (files: FileList | null) => void;
 }
 
 /**
@@ -37,26 +35,10 @@ export const InputFileField = ({
   disabled,
   fileTypes,
   nonErrorMessage,
-  getSelectedFiles,
   ...props
 }: InputFieldProps) => {
   // Get the form context
   const { control } = useFormContext<FieldValues>();
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const [fileName, setFileName] = React.useState<string>();
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.files);
-    setFileName(event.target.files?.item(0)?.name);
-    getSelectedFiles(event.target.files);
-  };
-
-  const handleBrowseClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
 
   // Render the InputFileField component
   return (
@@ -72,35 +54,29 @@ export const InputFileField = ({
           )}
           <FormControl>
             <div className="relative w-full">
-              <Input
-                fieldSize={fieldSize}
-                placeholder={fileName ?? "Select File"}
-                className="!cursor-pointer pr-24"
-                onClick={handleBrowseClick}
-                readOnly
-                {...{ type: "text", onChange: handleFileChange, ...props }}
-                {...field}
-                ref={field.ref}
-              />
+              <label
+                htmlFor="fileInput"
+                className="block h-10 w-full cursor-pointer rounded-md border bg-transparent px-4 py-2 text-left text-sm font-normal text-slate-700"
+              >
+                <span>
+                  <p>{field.value??"Select File"}</p>
+                  <p className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-primary-500 hover:underline focus:outline-none">
+                    Browse File
+                  </p>
+                </span>{" "}
+              </label>
 
               <input
+                id="fileInput"
+                className="hidden"
+                name={name}
                 type="file"
                 disabled={disabled}
-                className="hidden"
                 accept={fileTypes?.join(",")}
                 multiple={false}
-                ref={fileInputRef}
-                onChange={handleFileChange}
+                ref={field.ref}
+                {...props}
               />
-
-              {/* Browse Link Button (Inside the Input) */}
-              <button
-                type="button"
-                onClick={handleBrowseClick}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-primary-500 hover:underline focus:outline-none"
-              >
-                Browse File
-              </button>
             </div>
           </FormControl>
 
