@@ -7,42 +7,62 @@ export interface QueuesTableDto {
    *
    * Not making it required because same DTO is used for insert and update.
    */
-  id?: string;
+  id?: string
 
   /**
    * Gets or sets the name of the queue. Max-255
    */
-  name: string;
+  name: string
 
   /**
-   * Gets or sets the number of pednding transactions in the queue.
+   * Gets or sets the wheather to enforce the uniqueness of the queue.
    */
-  pendingCount?: number;
+  hasUniqueRef: boolean
+
+  /**
+ * Gets or sets the wheather to store the queue in encrypted format.
+ */
+  isEncrypted: boolean
+
+  /**
+ * Gets or sets the wheather to retry failed items in queue.
+ */
+  retryFailed: boolean
+
+  /**
+ * Gets or sets the wheather to retry abandoned items queue.
+ */
+  retryAbandoned: boolean
+
+  /**
+   * Gets or sets the peding count of items in queue.
+   */
+  pendingCount?: number
 
   /**
  * Gets or sets the number of inprogress transactions in the queue.
  */
-  inprogressCount?: number;
+  inprogressCount?: number
 
   /**
  * Gets or sets the number of completed transactions in the queue.
  */
-  completedCount?: number;
+  completedCount?: number
 
   /**
  * Gets or sets the number of failed transactions in the queue.
  */
-  failedCount?: number;
+  failedCount?: number
 
   /**
  * Gets or sets the number of total transactions in the queue.
  */
-  totalCount?: number;
+  totalCount?: number
 
   /**
  * Gets or sets last update time of the queue.
  */
-  lastUpdatedOn: Date;
+  lastUpdatedOn: Date
 
 
   /**
@@ -52,25 +72,25 @@ export interface QueuesTableDto {
    *
    * Its important to have this property nullable because we need to differentiate between true; false and null.
    */
-  isDisabled?: boolean;
+  isDisabled?: boolean
 
   /**
    * Gets or sets the username of the user who created the queue record. Max-254
    */
-  createdBy?: string;
+  createdBy?: string
 
   /**
    * Gets or sets the date and time when the queue record was created.
    */
-  createdOn?: Date;
+  createdOn?: Date
 
   /**
    * Gets or sets the username of the user who last modified the queue record. Max-254
    */
-  lastModifiedBy?: string;
+  lastModifiedBy?: string
 
   /**
    * Gets or sets the date and time when the queue record was last modified.
    */
-  lastModifiedOn?: Date;
+  lastModifiedOn?: Date
 }
