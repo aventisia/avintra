@@ -12,7 +12,7 @@ type StatsCardProps = {
   iconContainerClassName?: string;
   title: JSX.Element | string;
   mainText: JSX.Element | string | number;
-  description: JSX.Element | string;
+  description?: JSX.Element | string;
 };
 export const StatsCard = ({
   icon,
