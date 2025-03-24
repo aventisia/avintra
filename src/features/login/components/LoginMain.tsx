@@ -1,3 +1,4 @@
+import AccountsAppLogo from "@/components/layout/AccountsAppLogo";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
@@ -21,12 +22,12 @@ export const LoginMain = () => {
 
   // Validate user session
   const { isPending } = useValidateUserSessionForLoginPage();
-  
+
   // Return component
   return (
     <>
       {isPending ? (
-        <RedirectPage className="h-auto p-3" />
+        <RedirectPage appLogo={<AccountsAppLogo />} className="h-auto p-3" />
       ) : (
         <PageContainer>
           <LeftContainer>
