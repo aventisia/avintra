@@ -97,7 +97,7 @@ export const QueueCrudForm = () => {
           <label htmlFor="default-checkbox" className="fm text-sm">
             Enforce unique references
           </label>
-          <CheckboxField name="hasUniqueRef" label="" />
+          <CheckboxField name="enforceUniqueRef" label="" />
         </div>
         <div className="ml-1 flex justify-between">
           <label htmlFor="default-checkbox" className="fm text-sm">
@@ -114,13 +114,13 @@ export const QueueCrudForm = () => {
           <label htmlFor="default-checkbox" className="fm text-sm">
             Failed Items
           </label>
-          <CheckboxField name="hasUniqueRef" label="" />
+          <CheckboxField name="retryFailed" label="" />
         </div>
         <div className="ml-1 flex justify-between">
           <label htmlFor="default-checkbox" className="fm text-sm">
             Abandoned Items
           </label>
-          <CheckboxField name="isEncrypted" label="" />
+          <CheckboxField name="retryAbandoned" label="" />
         </div>
 
         <InputField className="m-0" {...maxRetriesProps} />
