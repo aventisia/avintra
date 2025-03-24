@@ -1,23 +1,23 @@
-import { z } from "zod";
-
+import { z } from 'zod';
 
 /**
  * Represents the Zod schema for a agent.
  */
 export const agentZodSchema = z.object({
-  id: z.string().optional(),
-  flowId: z.string().optional(),
-  name: z.string().optional(),
-  isLocked: z.boolean().optional(),
-  isDraft: z.boolean().optional(),
-  isPublished: z.boolean().optional(),
-  isArchived: z.boolean().optional(),
-  createdBy: z.string().optional(),
-  createdByUsername: z.string().optional(),
-  createdOn: z.date().optional(),
-  createdByUserInitials: z.string().optional(),
-  versionNumber: z.number().optional(),
-  lastModifiedBy: z.string().optional(),
-  lastModifiedOn: z.date().optional(),
-  machineCount: z.number().optional(),
+  id: z.string(),
+  flowId: z.string(),
+  name: z.string(),
+  licenseType: z.string(),
+  versionNumber: z.number(),
+  machineCount: z.number(),
+
+  // isLocked: z.boolean(),
+  // isDraft: z.boolean(),
+  // isPublished: z.boolean(),
+  // isArchived: z.boolean(),
+
+  createdBy: z.string(),
+  createdOn: z.date(),
+  lastModifiedBy: z.string(),
+  lastModifiedOn: z.date(),
 });
