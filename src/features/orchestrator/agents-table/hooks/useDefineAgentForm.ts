@@ -1,16 +1,18 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
-import { AgentsTableDto } from "../dtos/agents-table-dto";
-import { agentZodSchema } from "../constants/agent-zod-schema";
-import { DATA_QUERY_KEY } from "../constants";
-import { useFetchMachines } from "./useFetchMachines";
-import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useShallow } from 'zustand/react/shallow';
+
+import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { DATA_QUERY_KEY } from '../constants';
+import { agentZodSchema } from '../constants/agent-zod-schema';
+import { AgentsTableDto } from '../dtos/agents-table-dto';
+import { useMachinesSelectTableStore } from '../stores/machines-select-table-store';
+import { useFetchMachines } from './useFetchMachines';
 
 /**
  * Custom hook for defining a agent form.
@@ -63,15 +65,17 @@ export const useDefineAgentForm = () => {
       id: "",
       flowId: "",
       name: "",
-      isLocked: false,
-      isDraft: false,
-      isPublished: false,
-      isArchived: false,
-      createdBy: "",
-      createdByUsername: "",
-      createdOn: new Date(),
-      createdByUserInitials: "",
+      licenseType: "",
+      machineCount: 0,
       versionNumber: 0,
+
+      // isLocked: false,
+      // isDraft: false,
+      // isPublished: false,
+      // isArchived: false,
+
+      createdBy: "",
+      createdOn: new Date(),
     },
   });
 
@@ -106,15 +110,16 @@ export const useDefineAgentForm = () => {
     // Set agent data to form
     form.reset({
       id: rowId,
-      name: agentData?.name ?? "",
-
       flowId: agentData?.flowId,
-      isLocked: agentData?.isLocked,
-      isDraft: agentData?.isDraft,
-      isPublished: agentData?.isPublished,
-      isArchived: agentData?.isArchived,
+      name: agentData?.name ?? "",
+      licenseType: agentData?.licenseType ?? " ",//TODO - romve the whitespace after the licenses selection is ready from backened
       versionNumber: agentData?.versionNumber,
       machineCount: agentData?.machineCount,
+
+      // isLocked: agentData?.isLocked,
+      // isDraft: agentData?.isDraft,
+      // isPublished: agentData?.isPublished,
+      // isArchived: agentData?.isArchived,
 
       createdBy:
         agentData?.createdBy ??
@@ -122,9 +127,15 @@ export const useDefineAgentForm = () => {
       createdOn: agentData?.createdOn
         ? new Date(agentData?.createdOn)
         : new Date(),
+      lastModifiedBy:
+        agentData?.lastModifiedBy ??
+        userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: agentData?.lastModifiedOn
+        ? new Date(agentData?.lastModifiedOn)
+        : new Date(),
     });
     setIsFetching(isFetching);
-  }, [rowId, form, queryClient, userSession, setIsFetching, isFetching, setCurrentMachines, data?.data, setAllAssigned]);
+  }, [rowId, form, queryClient, userSession, setIsFetching, isFetching, setCurrentMachines, data?.data, setAllAssigned, setIsReadOnly, crudAction]);
 
 
   // Refine form data based on crud action
