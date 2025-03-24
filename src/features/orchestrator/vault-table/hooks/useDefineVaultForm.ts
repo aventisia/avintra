@@ -1,19 +1,18 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
-import { isVaultNameAvailable } from "../apis/vaults-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
-import {
-  vaultNameSchema,
-  vaultZodSchema,
-} from "../constants/vault-zod-schema";
-import { VaultsTableDto } from "../dtos/vaults-table-dto";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useShallow } from 'zustand/react/shallow';
+
+import { useCheckAvailability } from '@/react-toolkit/hooks/useCheckAvailability';
+import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
+import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { isVaultNameAvailable } from '../apis/vaults-table-apis';
+import { DATA_QUERY_KEY } from '../constants';
+import { vaultNameSchema, vaultZodSchema } from '../constants/vault-zod-schema';
+import { VaultsTableDto } from '../dtos/vaults-table-dto';
 
 /**
  * Custom hook for defining a config form.
@@ -52,12 +51,10 @@ export const useDefineVaultForm = () => {
     resolver: zodResolver(vaultZodSchema),
     defaultValues: {
       id: "",
-      type: "",
       name: "",
-      value: "",
-      accessLevel: "",
-      isEncrypted: false,
-      isDisabled: false,
+      userName: "",
+      password: "",
+      confirmPassword: "",
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -86,11 +83,7 @@ export const useDefineVaultForm = () => {
     // Set config data to form
     form.reset({
       id: rowId,
-      type: configData?.type ?? "",
       name: configData?.name ?? "",
-      value: "",
-      accessLevel: configData?.accessLevel ?? "",
-      isEncrypted: configData?.isEncrypted ?? false,
 
       isDisabled: configData?.isDisabled ?? false,
       // Read (view) only fields
