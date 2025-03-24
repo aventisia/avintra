@@ -16,16 +16,16 @@ export const queueNameSchema = z
 
 // Define a Zod schema for file validation
 const jsonFileSchema = z
-  .instanceof(File) // Ensure the input is a File object
+  .instanceof(FileList) // Ensure the input is a File object
   .refine(
     (file) => {
       const allowedTypes = ["application/json"]
-      return allowedTypes.includes(file.type) // Validate file type
+      return allowedTypes.includes(file[0].type) // Validate file type
     },
     { message: "Invalid file type. Only json files are allowed." }
   )
   .refine(
-    (file) => file.size <= 5 * 1024 * 1024, // Validate file size (<= 5MB)
+    (file) => file[0].size <= 5 * 1024 * 1024, // Validate file size (<= 5MB)
     { message: "File size must be less than 5MB." }
   )
 
