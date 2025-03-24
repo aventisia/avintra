@@ -75,8 +75,9 @@ export const useDefineLicenseForm = () => {
     // Set license data to form
     form.reset({
       id: rowId,
-      type: licenseData?.type ?? "",
-      quantity: licenseData?.flowCount ?? 0,
+      type: licenseData?.type,
+      quantity: licenseData?.quantity ?? 0,
+
       isDisabled: licenseData?.isDisabled ?? false,
       // Read (view) only fields
       createdBy:
