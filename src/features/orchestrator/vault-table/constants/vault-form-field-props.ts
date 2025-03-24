@@ -1,5 +1,6 @@
 import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
 import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
+import type { TextareaFieldProps } from '@/react-toolkit/ui/form/fields/TextareaField';
 
 // Config Id
 export const idProps: InputFieldProps = {
@@ -13,6 +14,7 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
+  placeholder: "AdobeCloude"
 };
 
 // User Name
@@ -20,6 +22,7 @@ export const userNameProps: InputFieldProps = {
   name: "userName",
   label: "User Name",
   isRequired: true,
+  placeholder: "example-username"
 };
 
 // password
@@ -27,9 +30,25 @@ export const passwordProps: InputFieldProps = {
   name: "password",
   label: "Password",
   isRequired: true,
-  type: "password"
+  type: "password",
+  placeholder: "******"
 };
 
+//confirm password
+export const confirmPasswordProps: InputFieldProps = {
+  name: "confirmPassword",
+  label: "Confirm Password",
+  isRequired: true,
+  type: "password",
+  placeholder: "******"
+};
+
+// Description
+export const descriptionProps: TextareaFieldProps = {
+  name: "description",
+  label: "Description",
+  className: "min-h-[6rem]",
+};
 
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
