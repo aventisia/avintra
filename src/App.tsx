@@ -1,6 +1,7 @@
-import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
+import AccountsAppLogo from "@/components/layout/AccountsAppLogo";
 import { AccountsUILayout } from "@/components/layout/AccountsUILayout";
-import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
+import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
+import { NotFoundWithLayoutPage } from "@/react-toolkit/pages/NotFoundWithLayoutPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy } from "react";
@@ -29,7 +30,7 @@ const router = createBrowserRouter(
     {
       path: "/",
       element: <AccountsUILayout />,
-      errorElement: <ErrorPage />,
+      errorElement: <ErrorPage appLogo={<AccountsAppLogo />} />,
       children: [
         {
           path: "/",
@@ -49,18 +50,18 @@ const router = createBrowserRouter(
         },
         {
           path: "/page-not-found",
-          element: <NotFoundPage />,
+          element: <NotFoundWithLayoutPage appLogo={<AccountsAppLogo />} />,
         },
         {
           path: "/*",
-          element: <NotFoundPage />,
+          element: <NotFoundWithLayoutPage appLogo={<AccountsAppLogo />} />,
         },
       ],
     },
     {
       path: "/redirect",
-      element: <RedirectPage />,
-      errorElement: <ErrorPage />,
+      element: <RedirectPage appLogo={<AccountsAppLogo />} />,
+      errorElement: <ErrorPage appLogo={<AccountsAppLogo />} />,
     },
   ],
   { basename: import.meta.env.BASE_URL },
