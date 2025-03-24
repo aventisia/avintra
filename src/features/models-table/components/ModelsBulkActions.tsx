@@ -6,9 +6,8 @@ import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSe
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Table } from "@tanstack/react-table";
 import { modelOptimisticMutationFn } from "../apis/models-table-apis";
+import { MODELS_QUERY_KEY } from "../constants";
 import { ModelsTableDto } from "../dtos/models-table-dto";
-import { useShallow } from "zustand/react/shallow";
-import { useModelsTableStore } from "../stores/models-table-store";
 
 interface ModelsBulkActionsProps {
   table: Table<ModelsTableDto>;
@@ -17,13 +16,6 @@ interface ModelsBulkActionsProps {
 export function ModelsBulkActions({ table }: ModelsBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
-
-  // Get models store state and actions
-    const { modelsQueryKey } = useModelsTableStore(
-      useShallow((state) => ({
-        modelsQueryKey: state.modelsQueryKey,
-      })),
-    );
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -36,7 +28,7 @@ export function ModelsBulkActions({ table }: ModelsBulkActionsProps) {
     string[],
     ModelsTableDto | boolean,
     ModelsTableDto
-  >(selectedRowIds, modelOptimisticMutationFn, modelsQueryKey);
+  >(selectedRowIds, modelOptimisticMutationFn, MODELS_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
 

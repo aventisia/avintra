@@ -8,14 +8,11 @@ import { ModelsTableDto } from "../dtos/models-table-dto";
 const baseAPIURL: string = `${import.meta.env.VITE_MODEL_STUDIO_API_URL}/ml-model`;
 
 /**
- * Retrieves all models associated with a project.
+ * Retrieves all ai models created by user
  */
-const getProjectModels = (projectId?: string) => {
-  // Return if projectId is not provided (projectId can be null if not passed in query params)
-  if (!projectId) return Promise.resolve(null);
-
+const getModels = () => {
   return axiosInstance
-    .get<IHttpResponse<ModelsTableDto[]>>(`${baseAPIURL}/list/${projectId}`)
+    .get<IHttpResponse<ModelsTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
@@ -67,14 +64,11 @@ const deleteModels = (ids: string[]) => {
 /**
  * Checks the availability of a model name.
  */
-const isModelNameAvailable = (
-  projectId: string,
-  postObj: CheckAvailabilityDto,
-) => {
+const isModelNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/is-available/${projectId}`, postObj)
+    >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
@@ -105,9 +99,11 @@ const modelOptimisticMutationFn = ({
 
 export {
   deleteModel,
-  deleteModels, getModel,
-  getProjectModels,
-  insertModel, isModelNameAvailable,
-  modelOptimisticMutationFn, updateModel
+  deleteModels,
+  getModel,
+  getModels,
+  insertModel,
+  isModelNameAvailable,
+  modelOptimisticMutationFn,
+  updateModel,
 };
-

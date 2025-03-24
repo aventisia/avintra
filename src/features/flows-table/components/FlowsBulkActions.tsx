@@ -5,10 +5,9 @@ import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/D
 import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Table } from "@tanstack/react-table";
-import { useShallow } from "zustand/react/shallow";
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
+import { FLOWS_QUERY_KEY } from "../constants";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { useFlowsTableStore } from "../stores/flows-table-store";
 
 interface FlowsBulkActionsProps {
   table: Table<FlowsTableDto>;
@@ -17,13 +16,6 @@ interface FlowsBulkActionsProps {
 export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
-
-  // Get flows store state and actions
-  const { flowsQueryKey } = useFlowsTableStore(
-    useShallow((state) => ({
-      flowsQueryKey: state.flowsQueryKey,
-    })),
-  );
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -36,7 +28,7 @@ export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
     string[],
     FlowsTableDto | boolean,
     FlowsTableDto
-  >(selectedRowIds, flowOptimisticMutationFn, flowsQueryKey);
+  >(selectedRowIds, flowOptimisticMutationFn, FLOWS_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
   

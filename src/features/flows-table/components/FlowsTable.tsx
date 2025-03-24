@@ -3,18 +3,17 @@ import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
 import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
+import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { SEARCH_COLUMN } from "../constants";
+import { PAGE_HEADER, SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchFlows } from "../hooks/useFetchFlows";
-import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
 import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
 import { FlowsBulkActions } from "./FlowsBulkActions";
 import { flowsTableColumns } from "./FlowsTableColumns";
-import { FlowsTableHeading } from "./FlowsTableHeading";
 
 /**
  * Renders a table of flows.
@@ -22,9 +21,6 @@ import { FlowsTableHeading } from "./FlowsTableHeading";
  * @returns The rendered FlowsTable component.
  */
 export const FlowsTable = () => {
-  // Set flows query key, projectId and projectName in store
-  useFlowsQueryKey();
-
   // Fetch flows data
   const { data } = useFetchFlows();
 
@@ -45,7 +41,7 @@ export const FlowsTable = () => {
           <FlowCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <FlowsTableHeading />
+              <DTHeading heading={PAGE_HEADER} />
 
               <div className="flex items-center gap-2">
                 <DTSearchBox

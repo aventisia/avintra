@@ -14,7 +14,6 @@ import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
-import { ProjectsPage } from "./pages/ProjectsPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantsPage } from "./pages/TenantsPage";
@@ -35,18 +34,14 @@ export const routerConfig: RouteObject[] = [
     children: [
       {
         path: "/",
-        element: <Navigate to="/projects" />,
+        element: <Navigate to="/agents" />,
       },
       {
-        path: "/projects",
-        element: <ProjectsPage />,
-      },
-      {
-        path: "/projects/agents",
+        path: "/agents",
         element: <FlowsPage />,
       },
       {
-        path: "/projects/models",
+        path: "/ai-models",
         element: <ModelsPage />,
       },
       {

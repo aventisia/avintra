@@ -8,13 +8,13 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 // import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
 import { modelOptimisticMutationFn } from "../../apis/models-table-apis";
+import { MODELS_QUERY_KEY } from "../../constants";
 import {
   descriptionProps,
   idProps,
   isDisabledProps,
   llmProps,
   nameProps,
-  projectIdProps,
   typeProps
 } from "../../constants/model-form-field-props";
 import { modelZodSchema } from "../../constants/model-zod-schema";
@@ -29,7 +29,6 @@ export const ModelCrudForm = () => {
     rowId,
     crudAction,
     isAvailable,
-    modelsQueryKey,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
@@ -43,7 +42,7 @@ export const ModelCrudForm = () => {
     ModelsTableDto,
     ModelsTableDto | boolean,
     ModelsTableDto
-  >([rowId], modelOptimisticMutationFn, modelsQueryKey);
+  >([rowId], modelOptimisticMutationFn, MODELS_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof modelZodSchema>) => {
@@ -71,9 +70,6 @@ export const ModelCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* Project Id */}
-      {isReadMode && <InputField {...projectIdProps} />}
-
       {/* Model Id */}
       {isReadMode && <InputField {...idProps} />}
 

@@ -45,11 +45,6 @@ export interface ModelsTableDto {
   docsProcessed?: number;
 
   /**
-   * Gets or sets the Id of the project to which the model record belongs.
-   */
-  projectId: string;
-
-  /**
    * Gets or sets the date and time when the model record was created.
    */
   createdOn?: Date;
