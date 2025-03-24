@@ -1,13 +1,14 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DTBulkActions } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkActions";
-import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkDeleteAction";
-import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { Table } from "@tanstack/react-table";
-import { AgentsTableDto } from "../dtos/agents-table-dto";
-import { AgentOptimisticMutationFn } from "../apis/agents-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
+import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
+import { useShowAlertHandler } from '@/react-toolkit/hooks/useShowAlertHandler';
+import { DTBulkActions } from '@/react-toolkit/ui/data-table/bulk-actions/DTBulkActions';
+import { DTBulkDeleteAction } from '@/react-toolkit/ui/data-table/bulk-actions/DTBulkDeleteAction';
+import { DTSelectionInfo } from '@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo';
+import { Separator } from '@/react-toolkit/ui/separator';
+import { Table } from '@tanstack/react-table';
+
+import { AgentOptimisticMutationFn } from '../../apis/agents-table-apis';
+import { DATA_QUERY_KEY } from '../../constants';
+import { AgentsTableDto } from '../../dtos/agents-table-dto';
 
 interface AgentsBulkActionsProps {
   table: Table<AgentsTableDto>;

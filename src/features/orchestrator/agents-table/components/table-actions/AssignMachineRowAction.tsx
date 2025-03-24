@@ -1,8 +1,9 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import React from "react";
-import { useShallow } from "zustand/react/shallow";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { MonitorCheck } from "lucide-react";
+import { MonitorCheck } from 'lucide-react';
+import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
+import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
+import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
 
 interface DTEditRowActionProps {
   rowId: string;

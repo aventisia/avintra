@@ -1,10 +1,11 @@
-import { DATA_QUERY_KEY } from "../constants/index";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
-import type { AgentsTableDto } from "../dtos/agents-table-dto";
-import { AgentOptimisticMutationFn } from "../apis/agents-table-apis";
 
+import { AgentOptimisticMutationFn } from "../../apis/agents-table-apis";
+import { DATA_QUERY_KEY } from "../../constants/index";
+
+import type { AgentsTableDto } from "../../dtos/agents-table-dto";
 interface AgentRowDeleteActionProps {
   rowId: string;
 }
