@@ -1,23 +1,22 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { useShallow } from 'zustand/react/shallow';
+
+import { useOptimisticMutation } from '@/react-toolkit/hooks/useOptimisticMutation';
+import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
+import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { Form } from '@/react-toolkit/ui/form/Form';
+import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
+import { Separator } from '@/react-toolkit/ui/separator';
+
+import { assignMachines } from '../../apis/agents-table-apis';
 import {
-  idProps,
-  isDisabledProps,
-  machineCountProps,
-  nameProps,
-  versionNumberProps,
-} from "../../constants/agent-form-field-props";
-import { useDefineAgentForm } from "../../hooks/useDefineAgentForm";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { MachineSelectTable } from "./machines-select-table/MachineSelectTable";
-import { assignMachines } from "../../apis/agents-table-apis";
-import { AgentAssignMachineDto } from "../../dtos/agent-assign-machine-dto";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { useMachinesSelectTableStore } from "../../stores/machines-select-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
+    idProps, isDisabledProps, machineCountProps, nameProps, versionNumberProps
+} from '../../constants/agent-form-field-props';
+import { AgentAssignMachineDto } from '../../dtos/agent-assign-machine-dto';
+import { useDefineAgentForm } from '../../hooks/useDefineAgentForm';
+import { useMachinesSelectTableStore } from '../../stores/machines-select-table-store';
+import { LicenseDiv } from './LicenseDiv';
+import { MachineSelectTable } from './machines-select-table/MachineSelectTable';
 
 export const AgentCrudForm = () => {
   // Define agent form
@@ -95,6 +94,11 @@ export const AgentCrudForm = () => {
       {crudAction !== "create" && (
         <SwitchField {...isDisabledProps} disabled={isReadMode} />
       )}
+
+      <LicenseDiv
+        isReadOnly={isReadMode}
+        value={form.getValues("licenseType")}
+      />
 
       <div className="mt-2 h-fit w-[38rem]">
         <MachineSelectTable isRowSelectionEnabled={crudAction !== "read"} />
