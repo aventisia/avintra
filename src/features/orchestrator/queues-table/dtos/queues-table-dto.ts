@@ -14,6 +14,12 @@ export interface QueuesTableDto {
    */
   name: string
 
+
+  /**
+ * Gets or sets the description of the queue. Max-255
+ */
+  description: string
+
   /**
    * Gets or sets the wheather to enforce the uniqueness of the queue.
    */
@@ -23,6 +29,11 @@ export interface QueuesTableDto {
  * Gets or sets the wheather to store the queue in encrypted format.
  */
   isEncrypted: boolean
+
+  /**
+ * Gets or sets the wheather to maximum retry attempts for queue.
+ */
+  maxRetries: number
 
   /**
  * Gets or sets the wheather to retry failed items in queue.
