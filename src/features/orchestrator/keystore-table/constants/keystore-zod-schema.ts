@@ -21,13 +21,13 @@ export const keystoreZodSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("Key type") }),
   name: keystoreNameSchema,
-  value: z
-    .string()
-    .max(500, { message: maxLenError("Key value", 500) }),
+  value: z.string().min(1, { message: reqError("Value") }),
   isDisabled: z.boolean().default(false),
   isEncrypted: z.optional(z.boolean().default(false)),
+  description: z.string().optional(),
+  tags: z.string().optional(),
+
   // Read (view) only fields
-  accessLevel: z.string().min(1, { message: reqError("Access level") }),
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),

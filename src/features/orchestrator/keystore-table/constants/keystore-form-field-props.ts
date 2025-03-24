@@ -34,12 +34,29 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
+  placeholder: "abc"
 };
 
-// value
-export const valueOptionProps: TextareaFieldProps = {
+// Name
+export const valueProps: InputFieldProps = {
   name: "value",
   label: "Value",
+  isRequired: true,
+  placeholder: "abc"
+};
+
+// Name
+export const tagsProps: InputFieldProps = {
+  name: "tags",
+  label: "Tags",
+  isRequired: false,
+  placeholder: "inovice,billing",
+};
+
+// Description
+export const descriptionProps: TextareaFieldProps = {
+  name: "description",
+  label: "Description",
   className: "min-h-[6rem]",
 };
 
