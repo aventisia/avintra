@@ -123,7 +123,9 @@ export const QueueCrudForm = () => {
           <CheckboxField name="retryAbandoned" label="" />
         </div>
 
-        <InputField className="m-0" {...maxRetriesProps} />
+        <div className="mt-4">
+          <InputField {...maxRetriesProps} />
+        </div>
       </div>
 
       {/* additional options */}
@@ -131,14 +133,12 @@ export const QueueCrudForm = () => {
       <div className="flex flex-col gap-3">
         <InputFileField
           {...inputJsonSchemaProps}
+          onChange={() =>
+            console.log(form.getValues("inputJsonSchema")?.length)
+          }
           fileTypes={[".json"]}
-          getSelectedFiles={(e) => console.log(e?.length)}
         />
-        <InputFileField
-          {...outputJsonSchemaProps}
-          fileTypes={[".json"]}
-          getSelectedFiles={(e) => console.log(e?.length)}
-        />
+        <InputFileField {...outputJsonSchemaProps} fileTypes={[".json"]} />
       </div>
 
       {/* Is Disabled */}
