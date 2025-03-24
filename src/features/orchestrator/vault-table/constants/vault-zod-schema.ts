@@ -22,6 +22,7 @@ export const vaultZodSchema = z.object({
   name: vaultNameSchema,
   userName: z.string().min(1, { message: reqError("User Name") }),
   password: z.string().min(1, { message: reqError("Password") }),
+  confirmPassword: z.string().min(1, { message: reqError("Confirm Password") }),
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
