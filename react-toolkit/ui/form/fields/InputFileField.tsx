@@ -22,6 +22,12 @@ interface InputFieldProps
    */
   fileTypes: string[];
 
+  /**
+   * when multiple is true then the value of the input is @type {File | null} otherwise @type {FileList | null}
+   *
+   * @type {boolean}
+   * @memberof InputFieldProps
+   */
   multiple: boolean;
   getFiles?: (files: FileList | null) => void;
 }
@@ -52,10 +58,14 @@ export const InputFileField = ({
     setFiles(event.target.files);
     if (getFiles) getFiles(event.target.files);
 
-    setValue(name, event.target.files, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
+    setValue(
+      name,
+      multiple ? event.target.files : event.target.files?.item(0),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
+    );
   };
 
   const Id = window.crypto.randomUUID();
