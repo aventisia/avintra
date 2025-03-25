@@ -2,7 +2,7 @@ import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Loader2 } from "lucide-react";
+import LoadingSpinner from "@/react-toolkit/ui/loading-spinner/LoadingSpinner";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -17,27 +17,33 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
   const message = searchParams.get("msg"); // loading or wait message
 
   useEffect(() => {
-    url ? window.location.assign(url) : null;
+    if (url) {
+      window.location.assign(url);
+    }
   });
 
   return (
     <div
       className={cn(
-        "flex h-screen w-full flex-col items-center justify-between p-3 lg:w-[100%]",
+        "flex h-screen w-full flex-col items-center justify-between p-3 pb-3 lg:w-[100%]",
         className,
       )}
     >
-      <div className="flex w-full items-center justify-between p-5 xs:p-3">
-        <AppLogo doNotShowAppName={true} />
+      <div className="flex w-full items-center justify-between p-5 xs:p-6">
+        <AppLogo showFullLogo={true} className="h-7" />
         <a
           href="/help?id=redirect"
-          className={cn(buttonVariants({ variant: "link" }), "text-right")}
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "text-md text-right",
+            "hidden", // TODO: Hide the help link till we have a docs app
+          )}
         >
           Help?
         </a>
       </div>
-      <div className="-mt-4 flex items-center gap-3">
-        <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
+      <div className="text-md -mt-4 flex items-center gap-3">
+        <LoadingSpinner />
         {message ? message : "Loading..."}
       </div>
       <MinimalFooter />
