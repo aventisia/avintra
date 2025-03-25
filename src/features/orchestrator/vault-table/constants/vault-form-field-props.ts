@@ -14,7 +14,7 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
-  placeholder: "AdobeCloude"
+  placeholder: "exampleName"
 }
 
 // User Name
@@ -22,7 +22,7 @@ export const userNameProps: InputFieldProps = {
   name: "userName",
   label: "User Name",
   isRequired: true,
-  placeholder: "example-username"
+  placeholder: "exampleUserName"
 }
 
 // password
@@ -31,7 +31,6 @@ export const passwordProps: InputFieldProps = {
   label: "Password",
   isRequired: true,
   type: "password",
-  placeholder: "******"
 }
 
 //confirm password
@@ -40,7 +39,6 @@ export const confirmPasswordProps: InputFieldProps = {
   label: "Confirm Password",
   isRequired: true,
   type: "password",
-  placeholder: "******"
 }
 
 // Description
