@@ -14,10 +14,9 @@ export interface QueuesTableDto {
    */
   name: string
 
-
   /**
- * Gets or sets the description of the queue. Max-255
- */
+   * Gets or sets the description of the queue. Max-255
+   */
   description: string
 
   /**
@@ -26,23 +25,23 @@ export interface QueuesTableDto {
   hasUniqueRef: boolean
 
   /**
- * Gets or sets the wheather to store the queue in encrypted format.
- */
+   * Gets or sets the wheather to store the queue in encrypted format.
+   */
   isEncrypted: boolean
 
   /**
- * Gets or sets the wheather to maximum retry attempts for queue.
- */
+   * Gets or sets the wheather to maximum retry attempts for queue.
+   */
   maxRetries: number
 
   /**
- * Gets or sets the wheather to retry failed items in queue.
- */
+   * Gets or sets the wheather to retry failed items in queue.
+   */
   retryFailed: boolean
 
   /**
- * Gets or sets the wheather to retry abandoned items queue.
- */
+   * Gets or sets the wheather to retry abandoned items queue.
+   */
   retryAbandoned: boolean
 
   /**
@@ -51,30 +50,39 @@ export interface QueuesTableDto {
   pendingCount?: number
 
   /**
- * Gets or sets the number of inprogress transactions in the queue.
- */
+   * Gets or sets the number of inprogress transactions in the queue.
+   */
   inprogressCount?: number
 
   /**
- * Gets or sets the number of completed transactions in the queue.
- */
+   * Gets or sets the number of completed transactions in the queue.
+   */
   completedCount?: number
 
   /**
- * Gets or sets the number of failed transactions in the queue.
- */
+   * Gets or sets the number of failed transactions in the queue.
+   */
   failedCount?: number
 
   /**
- * Gets or sets the number of total transactions in the queue.
- */
+   * Gets or sets the number of total transactions in the queue.
+   */
   totalCount?: number
 
   /**
- * Gets or sets last update time of the queue.
- */
+   * Gets or sets last update time of the queue.
+   */
   lastUpdatedOn: Date
 
+  /**
+   * Gets or sets json schema for input value of queue.
+   */
+  inputJsonSchema: File
+
+  /**
+   * Gets or sets json schema for output value of queue.
+   */
+  outputJsonSchema: File
 
   /**
    * Gets or sets a flag indicating whether the queue record is disabled.
