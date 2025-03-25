@@ -12,12 +12,6 @@ interface IUserSessionStore {
   avatarSrc?: string;
 }
 
-interface IUserSessionLS {
-  tenantId: string;
-  userName: string;
-  expiresOn: Date;
-}
-
 interface IJwtPayload {
   /** jwt audience */
   aud: string;
@@ -41,4 +35,4 @@ interface IJwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
 }
 
-export { type IUserSessionStore, type IUserSessionLS, type IJwtPayload };
+export { type IUserSessionStore, type IJwtPayload };

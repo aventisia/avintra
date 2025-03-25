@@ -10,7 +10,7 @@
 export type CustomMessageType = "None" | "Gray" | "Yellow" | "Red" | "Green";
 
 /** Custom form message type to show messages (which are not errors) in the place of error message in form field. */
-export interface CustomFormMessage {
+export type CustomFormMessage = {
   type: CustomMessageType;
   message: string;
 }
