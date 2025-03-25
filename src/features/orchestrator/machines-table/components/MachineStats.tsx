@@ -70,7 +70,6 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
         title={"Statuses"}
         description={
           <>
-            <span className="text-green-600"> {stats?.online} Online</span>,{" "}
             <span className="text-yellow-600"> {stats?.idle} idle</span>,{" "}
             <span className="text-slate-600"> {stats?.offline} Offline</span>
           </>
