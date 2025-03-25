@@ -133,12 +133,14 @@ export const QueueCrudForm = () => {
       <div className="flex flex-col gap-3">
         <InputFileField
           {...inputJsonSchemaProps}
-          onChange={() =>
-            console.log(form.getValues("inputJsonSchema")?.length)
-          }
+          multiple={false}
           fileTypes={[".json"]}
         />
-        <InputFileField {...outputJsonSchemaProps} fileTypes={[".json"]} />
+        <InputFileField
+          multiple={false}
+          {...outputJsonSchemaProps}
+          fileTypes={[".json"]}
+        />
       </div>
 
       {/* Is Disabled */}
