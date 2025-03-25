@@ -30,6 +30,7 @@ import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 
 export const routerConfig: RouteObject[] = [
   {
@@ -114,6 +115,10 @@ export const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/executions",
             element: <ExecutionsPage />,
+          },
+          {
+            path: "/orchestrator/triggers",
+            element: <TriggersPage />,
           },
           {
             path: "/orchestrator/keystore",

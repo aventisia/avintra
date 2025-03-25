@@ -1,8 +1,7 @@
 import {
   BotIcon, FileBoxIcon, Library, MonitorPlayIcon, ScrollTextIcon, Shield
 } from 'lucide-react'
-
-import { IAppConfig } from '@/react-toolkit/types/app-config'
+import { AiOutlineThunderbolt } from "react-icons/ai"; import { IAppConfig } from '@/react-toolkit/types/app-config'
 import { NavLocation } from '@/react-toolkit/types/nav-data-types'
 import {
   IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
@@ -58,6 +57,11 @@ const workspaceAppConfig: IAppConfig = {
             Icon: QueueListIcon,
             name: "queues",
             route: "/orchestrator/queues",
+          },
+          {
+            Icon: AiOutlineThunderbolt,
+            name: "triggers",
+            route: "/orchestrator/triggers",
           },
           {
             Icon: MonitorPlayIcon,
