@@ -1,3 +1,4 @@
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
@@ -5,14 +6,14 @@ import { Separator } from "@/react-toolkit/ui/separator";
 import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 interface NotFoundWithLayoutPageProps {
-  appLogo: React.ReactNode;
+  appLogo?: React.ReactNode;
 }
 
 const NotFoundWithLayoutPage = ({ appLogo }: NotFoundWithLayoutPageProps) => {
   return (
     <div className="flex max-h-screen w-full flex-col items-center justify-between p-3 lg:w-[100%]">
       <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        {appLogo}
+        {appLogo && <AppLogo showFullLogo={true} />}
         <a
           href="/help?id=help-on-error"
           className={cn(
@@ -39,3 +40,4 @@ const NotFoundWithLayoutPage = ({ appLogo }: NotFoundWithLayoutPageProps) => {
 };
 
 export { NotFoundWithLayoutPage };
+

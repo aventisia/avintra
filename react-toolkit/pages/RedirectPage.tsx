@@ -1,3 +1,4 @@
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
@@ -6,7 +7,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 interface RedirectPageProps {
-  appLogo: React.ReactNode;
+  appLogo?: React.ReactNode;
   className?: string;
 }
 
@@ -30,7 +31,7 @@ const RedirectPage = ({ appLogo, className }: RedirectPageProps) => {
       )}
     >
       <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        {appLogo}
+        {appLogo && <AppLogo showFullLogo={true} />}
         <a
           href="/help?id=redirect"
           className={cn(
@@ -52,3 +53,4 @@ const RedirectPage = ({ appLogo, className }: RedirectPageProps) => {
 };
 
 export { RedirectPage };
+
