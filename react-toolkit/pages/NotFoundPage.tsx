@@ -1,5 +1,5 @@
-import { Separator } from "@/react-toolkit/ui/separator";
 import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Separator } from "@/react-toolkit/ui/separator";
 
 const NotFoundPage = () => {
   return (

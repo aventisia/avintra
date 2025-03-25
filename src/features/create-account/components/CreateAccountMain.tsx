@@ -1,8 +1,8 @@
-import AccountsAppLogo from "@/components/layout/AccountsAppLogo";
 import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
@@ -24,7 +24,7 @@ export const CreateAccountMain = () => {
     <PageContainer>
       <LeftContainer>
         <HeaderContainer>
-          <AccountsAppLogo />
+          <AppLogo showFullLogo={true} className="h-7" />
           <a
             href="/help?id=create-account"
             className={cn(

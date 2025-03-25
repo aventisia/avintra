@@ -7,12 +7,11 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 interface RedirectPageProps {
-  appLogo?: React.ReactNode;
   className?: string;
 }
 
 /** Default message is Loading... redirect?url=https://domain.com/&msg=Please Wait...*/
-const RedirectPage = ({ appLogo, className }: RedirectPageProps) => {
+const RedirectPage = ({ className }: RedirectPageProps) => {
   const [searchParams] = useSearchParams();
   const url = searchParams.get("url");
   const message = searchParams.get("msg"); // loading or wait message
@@ -31,19 +30,19 @@ const RedirectPage = ({ appLogo, className }: RedirectPageProps) => {
       )}
     >
       <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        {appLogo && <AppLogo showFullLogo={true} />}
+        <AppLogo showFullLogo={true} className="h-7" />
         <a
           href="/help?id=redirect"
           className={cn(
             buttonVariants({ variant: "link" }),
-            "text-right text-md",
+            "text-md text-right",
             "hidden", // TODO: Hide the help link till we have a docs app
           )}
         >
           Help?
         </a>
       </div>
-      <div className="-mt-4 flex items-center gap-3 text-md">
+      <div className="text-md -mt-4 flex items-center gap-3">
         <LoadingSpinner />
         {message ? message : "Loading..."}
       </div>
@@ -53,4 +52,3 @@ const RedirectPage = ({ appLogo, className }: RedirectPageProps) => {
 };
 
 export { RedirectPage };
-

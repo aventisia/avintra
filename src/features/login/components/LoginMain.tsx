@@ -1,4 +1,3 @@
-import AccountsAppLogo from "@/components/layout/AccountsAppLogo";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
@@ -27,7 +26,7 @@ export const LoginMain = () => {
   return (
     <>
       {isPending ? (
-        <RedirectPage appLogo={<AccountsAppLogo />} className="h-auto p-3" />
+        <RedirectPage className="h-auto p-3" />
       ) : (
         <PageContainer>
           <LeftContainer>

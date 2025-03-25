@@ -1,4 +1,3 @@
-import AccountsAppLogo from "@/components/layout/AccountsAppLogo";
 import { AccountsUILayout } from "@/components/layout/AccountsUILayout";
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundWithLayoutPage } from "@/react-toolkit/pages/NotFoundWithLayoutPage";
@@ -30,7 +29,7 @@ const router = createBrowserRouter(
     {
       path: "/",
       element: <AccountsUILayout />,
-      errorElement: <ErrorPage appLogo={<AccountsAppLogo />} />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: "/",
@@ -50,18 +49,18 @@ const router = createBrowserRouter(
         },
         {
           path: "/page-not-found",
-          element: <NotFoundWithLayoutPage appLogo={<AccountsAppLogo />} />,
+          element: <NotFoundWithLayoutPage />,
         },
         {
           path: "/*",
-          element: <NotFoundWithLayoutPage appLogo={<AccountsAppLogo />} />,
+          element: <NotFoundWithLayoutPage />,
         },
       ],
     },
     {
       path: "/redirect",
-      element: <RedirectPage appLogo={<AccountsAppLogo />} />,
-      errorElement: <ErrorPage appLogo={<AccountsAppLogo />} />,
+      element: <RedirectPage />,
+      errorElement: <ErrorPage />,
     },
   ],
   { basename: import.meta.env.BASE_URL },

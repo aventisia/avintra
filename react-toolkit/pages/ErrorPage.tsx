@@ -5,11 +5,8 @@ import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useRouteError } from "react-router-dom";
-interface ErrorPageProps {
-  appLogo?: React.ReactNode;
-}
 
-const ErrorPage = ({ appLogo }: ErrorPageProps) => {
+const ErrorPage = () => {
   // Get the error object
   const error = useRouteError() as {
     message: string;
@@ -20,7 +17,7 @@ const ErrorPage = ({ appLogo }: ErrorPageProps) => {
   return (
     <div className="flex h-screen w-full flex-col items-center p-3 lg:w-[100%]">
       <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        {appLogo && <AppLogo showFullLogo={true} />}
+        <AppLogo showFullLogo={true} className="h-7" />
         <a
           href="/help?id=help-on-error"
           className={cn(

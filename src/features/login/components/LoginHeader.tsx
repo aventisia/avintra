@@ -1,12 +1,12 @@
-import AccountsAppLogo from "@/components/layout/AccountsAppLogo";
 import { HeaderContainer } from "@/components/layout/HeaderContainer";
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
 export const LoginHeader = () => {
   return (
     <HeaderContainer>
-      <AccountsAppLogo />
+      <AppLogo showFullLogo={true} className="h-7" />
       <a
         href="/help?id=login"
         className={cn(
