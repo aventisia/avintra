@@ -15,6 +15,7 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
+  placeholder: "exampleQueue"
 }
 
 // Is Disabled
