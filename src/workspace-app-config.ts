@@ -1,13 +1,13 @@
 import {
   BotIcon, FileBoxIcon, Library, MonitorPlayIcon, ScrollTextIcon, Shield
-} from 'lucide-react';
+} from 'lucide-react'
 
-import { IAppConfig } from '@/react-toolkit/types/app-config';
-import { NavLocation } from '@/react-toolkit/types/nav-data-types';
+import { IAppConfig } from '@/react-toolkit/types/app-config'
+import { NavLocation } from '@/react-toolkit/types/nav-data-types'
 import {
   IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
-} from '@heroicons/react/24/outline';
-import { DesktopIcon } from '@radix-ui/react-icons';
+} from '@heroicons/react/24/outline'
+import { DesktopIcon } from '@radix-ui/react-icons'
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -67,7 +67,7 @@ const workspaceAppConfig: IAppConfig = {
           {
             Icon: Library,
             name: "Key Store",
-            route: "/orchestrator/config-hub",
+            route: "/orchestrator/keystore",
           },
           {
             Icon: Shield,
@@ -99,6 +99,6 @@ const workspaceAppConfig: IAppConfig = {
       },
     ],
   },
-};
+}
 
-export { workspaceAppConfig };
+export { workspaceAppConfig }

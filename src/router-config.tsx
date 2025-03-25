@@ -1,35 +1,35 @@
-import { Navigate, RouteObject } from 'react-router-dom';
+import { Navigate, RouteObject } from "react-router-dom";
 
-import { ErrorPage } from '@/react-toolkit/pages/ErrorPage';
-import { NotFoundPage } from '@/react-toolkit/pages/NotFoundPage';
-import { RedirectPage } from '@/react-toolkit/pages/RedirectPage';
+import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
+import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
+import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 
-import { WorkspaceUILayout } from './components/layout/WorkspaceUILayout';
+import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
 import {
-    AccountDeactivation, DeviceHistory, EmailSettings, ProfileInfo, Security
-} from './features/my-account/components';
-import {
-    STCreatePage
-} from './features/support-tickets-table/components/support-ticket-create-page/STCreatePage';
-import {
-    SupportTicketEditForm
-} from './features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm';
-import ComingSoon from './pages/CommingSoon';
-import { FlowsPage } from './pages/FlowsPage';
-import { LicensesPage } from './pages/LicensesPage';
-import { ModelsPage } from './pages/ModelsPage';
-import MyAccountPage from './pages/MyAccountPage';
-import { AgentsPage } from './pages/orchestrator/AgentsPage';
-import { ExecutionsPage } from './pages/orchestrator/ExecutionsPage';
-import { KeystorePage } from './pages/orchestrator/KeystorePage';
-import { MachinesPage } from './pages/orchestrator/MachinesPage';
-import { Orchestrator } from './pages/orchestrator/Orchestrator';
-import { QueuesPage } from './pages/orchestrator/QueuesPage';
-import { VaultPage } from './pages/orchestrator/VaultPage';
-import { SupportTicketsPage } from './pages/SupportTicketsPage';
-import { SupportTicketsReviewerPage } from './pages/SupportTicketsReviewerPage';
-import { TenantsPage } from './pages/TenantsPage';
-import { UsersPage } from './pages/UsersPage';
+  AccountDeactivation,
+  DeviceHistory,
+  EmailSettings,
+  ProfileInfo,
+  Security,
+} from "./features/my-account/components";
+import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
+import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import ComingSoon from "./pages/CommingSoon";
+import { FlowsPage } from "./pages/FlowsPage";
+import { LicensesPage } from "./pages/LicensesPage";
+import { ModelsPage } from "./pages/ModelsPage";
+import MyAccountPage from "./pages/MyAccountPage";
+import { AgentsPage } from "./pages/orchestrator/AgentsPage";
+import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
+import { KeystorePage } from "./pages/orchestrator/KeystorePage";
+import { MachinesPage } from "./pages/orchestrator/MachinesPage";
+import { Orchestrator } from "./pages/orchestrator/Orchestrator";
+import { QueuesPage } from "./pages/orchestrator/QueuesPage";
+import { VaultPage } from "./pages/orchestrator/VaultPage";
+import { SupportTicketsPage } from "./pages/SupportTicketsPage";
+import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
+import { TenantsPage } from "./pages/TenantsPage";
+import { UsersPage } from "./pages/UsersPage";
 
 export const routerConfig: RouteObject[] = [
   {
@@ -116,7 +116,7 @@ export const routerConfig: RouteObject[] = [
             element: <ExecutionsPage />,
           },
           {
-            path: "/orchestrator/config-hub",
+            path: "/orchestrator/keystore",
             element: <KeystorePage />,
           },
           {
