@@ -16,7 +16,6 @@ import { Button } from '@/react-toolkit/ui/buttons/Button'
 import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
 import { Popover, PopoverContent, PopoverTrigger } from '@/react-toolkit/ui/popover'
 import { Separator } from '@/react-toolkit/ui/separator'
-import { removeUserSessionLocally } from '@/react-toolkit/utils/user-session-utils'
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -50,7 +49,6 @@ const UserAccountModal = ({
     onSuccess: (httpResponse) => {
       if (httpResponse.data) {
         setUserSession(null);
-        removeUserSessionLocally();
         navigate(
           "/redirect?msg=Logging out...&url=" + import.meta.env.VITE_LOGIN_URL,
         );
