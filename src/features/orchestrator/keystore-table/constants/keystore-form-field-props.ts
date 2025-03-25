@@ -34,7 +34,7 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
-  placeholder: "abc"
+  placeholder: "exampleKey"
 }
 
 // Name
@@ -49,7 +49,6 @@ export const tagsProps: InputFieldProps = {
   name: "tags",
   label: "Tags",
   isRequired: false,
-  placeholder: "inovice,billing",
 }
 
 // Description
