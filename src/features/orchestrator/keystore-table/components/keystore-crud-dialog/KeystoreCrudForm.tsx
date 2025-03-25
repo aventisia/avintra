@@ -97,7 +97,12 @@ export const KeystoreCrudForm = () => {
       <TextareaField {...descriptionProps} />
 
       {/* value  */}
-      <InputField {...tagsProps} />
+      <InputField
+        {...{
+          ...tagsProps,
+          placeholder: crudAction !== "read" ? "inovice,billing" : "",
+        }}
+      />
 
       {/* Is encrtypted */}
       <SwitchField {...isEncrypterProps} />
