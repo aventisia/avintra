@@ -1,10 +1,8 @@
-import * as React from 'react'
-import { type VariantProps } from 'class-variance-authority'
+import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
-import { cn } from '@/react-toolkit/lib/utils'
-import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
-
-// TODO: Need to export this in other repositories
 /** Base Button props interface */
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,

@@ -1,5 +1,5 @@
 import { cn } from "@/react-toolkit/lib/utils";
-import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
+import { FormFieldSizeType } from "@/react-toolkit/types/form-field-size-type";
 import { useFormField } from "@/react-toolkit/ui/form/useFormField";
 import { Label } from "@/react-toolkit/ui/label";
 import * as LabelPrimitive from "@radix-ui/react-label";
