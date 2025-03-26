@@ -133,7 +133,7 @@ public class QueueTableService : IQueueTableService
     }
 
     // Creates a new queue
-    public async Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(QueuesTableDto queuesTableDto)
+    public async Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(CreateOrUpdateQueuesTableDto createQueuesTableDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueuesTableDto>
@@ -146,7 +146,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue uniqueness
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == queuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Name.ToLower() == createQueuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId)
                 .FirstOrDefaultAsync();
 
             // Queue already exists
@@ -158,7 +158,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Default mapping
-            var newQueue = queuesTableDto.Adapt<Queue>();
+            var newQueue = createQueuesTableDto.Adapt<Queue>();
             newQueue.CreatedByUserId = _userId;
             newQueue.LastModifiedByUserId = _userId;
 
@@ -187,7 +187,7 @@ public class QueueTableService : IQueueTableService
     }
 
     // Updates an existing queue
-    public async Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(QueuesTableDto queuesTableDto)
+    public async Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(CreateOrUpdateQueuesTableDto updateQueuesTableDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueuesTableDto>
@@ -200,7 +200,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == updateQueuesTableDto.Id && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -210,8 +210,9 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
+
             // Update queue
-            queuesTableDto.Adapt(queue);
+            updateQueuesTableDto.Adapt(queue);
             queue.LastModifiedByUserId = _userId;
             queue.LastModifiedOn = DateTimeOffset.UtcNow;
 

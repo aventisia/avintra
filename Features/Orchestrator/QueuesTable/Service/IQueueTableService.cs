@@ -28,16 +28,16 @@ public interface IQueueTableService
     /// <summary>
     /// Creates a new queue with the specified details.
     /// </summary>
-    /// <param name="queuesTableDto">The data used to create the new queue.</param>
+    /// <param name="createQueuesTableDto">The data used to create the new queue.</param>
     /// <returns>The task result containing the service response with the details of the created queue.</returns>
-    Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(QueuesTableDto queuesTableDto);
+    Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(CreateOrUpdateQueuesTableDto createQueuesTableDto);
 
     /// <summary>
     /// Updates an existing queue with the provided details.
     /// </summary>
-    /// <param name="queuesTableDto">The data used to update the queue.</param>
+    /// <param name="updateQueuesTableDto">The data used to update the queue.</param>
     /// <returns>The task result containing the service response with the updated queue details.</returns>
-    Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(QueuesTableDto queuesTableDto);
+    Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(CreateOrUpdateQueuesTableDto updateQueuesTableDto);
 
     /// <summary>
     /// Deletes a queue by its unique identifier.
