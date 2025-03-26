@@ -157,6 +157,8 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
+            //TODO: Add file upload logic here
+
             // Default mapping
             var newQueue = createQueuesTableDto.Adapt<Queue>();
             newQueue.CreatedByUserId = _userId;
@@ -210,6 +212,27 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
+            // Validate queue name uniqueness
+            var queueAlreadyExists = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(m =>
+                    m.Name.ToLower() == updateQueuesTableDto.Name.ToLower() &&
+                    m.Id != updateQueuesTableDto.Id
+                )
+                .FirstOrDefaultAsync();
+
+            // Queue already exists
+            if (queueAlreadyExists != null)
+            {
+                _logger.LogInformation("Queue name already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A queue with the same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            //TODO: Add file upload logic here
+
+            // Trim dto's string properties
+            updateQueuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(updateQueuesTableDto);
 
             // Update queue
             updateQueuesTableDto.Adapt(queue);
