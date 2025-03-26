@@ -16,6 +16,7 @@ script:pre-request {
   req.setBody({
     id: bru.getGlobalEnvVar("VAULT_ID"),
     name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
     username: faker.lorem.paragraph(),
     password: faker.lorem.paragraph(),
     isDisabled: false

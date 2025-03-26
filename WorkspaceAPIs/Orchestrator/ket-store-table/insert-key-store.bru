@@ -15,6 +15,7 @@ script:pre-request {
   
   req.setBody({
     name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
     type: "CREDENTIAL",
     value: faker.lorem.paragraph(),
     accessLevel: "PUBLIC"
