@@ -51,7 +51,7 @@ const truncateNumberFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "o_truncateValueOutput",
+    name: "o_truncateValueOutput", //to watch
     type: "output-text-field",
     label: "",
     description: "The truncated or rounded number",
@@ -68,7 +68,7 @@ const truncateNumberFieldList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "o_truncateValueSwitch",
+    name: "o_truncateValueSwitch", //to watch
     type: "output-switch-field",
     label: "TruncatedValue",
     defaultValue: true,

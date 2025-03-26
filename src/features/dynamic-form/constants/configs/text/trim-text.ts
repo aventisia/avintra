@@ -32,10 +32,26 @@ const trimTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "trimmedText",
-    type: "switch",
-    label: "TrimmedText",
+    name: "o_trimmedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new trimmed text",
+    defaultValue: "TrimmedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_trimmedTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_trimmedTextSwitch",
+    type: "output-switch-field",
+    label: "TrimmedText",
     defaultValue: true,
   },
 ];
@@ -47,10 +63,10 @@ const trimTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["trimmedText"]],
+    formFieldKeys: [["o_trimmedTextOutput", "o_trimmedTextSwitch"]],
   },
 ];
-const trimTextFieldsToWatch: string[] = [];
+const trimTextFieldsToWatch: string[] = ["o_trimmedTextOutput", "o_trimmedTextSwitch"];
 
 const trimText: ActivityConfig = {
   fieldList: trimTextFieldList,

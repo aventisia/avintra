@@ -98,11 +98,27 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "decryptedFile",
-    type: "text",
-    label: "DecryptedFile",
+    name: "o_decryptedFileOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The decrypted file for later processing",
-    defaultValue: "",
+    defaultValue: "DecryptedFile",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_decryptedFileSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_decryptedFileSwitch",
+    type: "output-switch-field",
+    label: "DecryptedFile",
+    defaultValue: true,
   },
 ];
 
@@ -128,14 +144,14 @@ const decryptToFileWithAesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["decryptedFile"]],
+    formFieldKeys: [["o_decryptedFileOutput", "o_decryptedFileSwitch"]],
   },
 ];
 
 const decryptToFileWithAes: ActivityConfig = {
   fieldList: decryptToFileWithAesFieldList,
   fieldCategories: decryptToFileWithAesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_decryptedFileOutput", "o_decryptedFileSwitch"],
 };
 
 export default decryptToFileWithAes;

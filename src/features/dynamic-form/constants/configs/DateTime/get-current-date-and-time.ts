@@ -79,12 +79,30 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
     description: "Specify the time zone (Windows time zone)",
     defaultValue: "",
   },
+
+  // Output
   {
-    name: "currentDateTime",
-    type: "switch",
-    label: "CurrentDateTime",
+    name: "o_currentDateTimeOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The current datetime value",
-    defaultValue: false,
+    defaultValue: "CurrentDateTime",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_currentDateTimeSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_currentDateTimeSwitch",
+    type: "output-switch-field",
+    label: "CurrentDateTime",
+    defaultValue: true,
   },
 ];
 
@@ -103,13 +121,13 @@ const getCurrentDateAndTimeFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["currentDateTime"]],
+    formFieldKeys: [["o_currentDateTimeOutput", "o_currentDateTimeSwitch"]],
   },
 ];
 const getCurrentDateAndTime: ActivityConfig = {
   fieldList: getCurrentDateAndTimeFieldList,
   fieldCategories: getCurrentDateAndTimeFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_currentDateTimeOutput", "o_currentDateTimeSwitch"],
 };
 
 export default getCurrentDateAndTime;

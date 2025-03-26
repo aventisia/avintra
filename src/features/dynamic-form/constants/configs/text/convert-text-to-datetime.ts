@@ -41,10 +41,26 @@ const convertTextToDatetimeFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "textAsDateTime",
-    type: "switch",
-    label: "TextAsDateTime",
+    name: "o_textAsDateTimeOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The datetime value",
+    defaultValue: "TextAsDateTime",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_textAsDateTimeSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_textAsDateTimeSwitch",
+    type: "output-switch-field",
+    label: "TextAsDateTime",
     defaultValue: true,
   },
 ];
@@ -60,15 +76,14 @@ const convertTextToDatetimeFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["textAsDateTime"]],
+    formFieldKeys: [["o_textAsDateTimeOutput", "o_textAsDateTimeSwitch"]],
   },
 ];
-const convertTextToDatetimeFieldsToWatch: string[] = ["dateInCustomFormat"];
 
 const convertTextToDatetime: ActivityConfig = {
   fieldList: convertTextToDatetimeFieldList,
   fieldCategories: convertTextToDatetimeFieldCategories,
-  fieldsToWatch: convertTextToDatetimeFieldsToWatch,
+  fieldsToWatch: ["o_textAsDateTimeOutput", "o_textAsDateTimeSwitch"],
 };
 
 export default convertTextToDatetime;

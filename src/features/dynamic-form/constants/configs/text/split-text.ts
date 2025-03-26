@@ -117,10 +117,26 @@ const splitTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "textText",
-    type: "switch",
-    label: "TextText",
+    name: "o_splitTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new list",
+    defaultValue: "splitText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_splitTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_splitTextSwitch",
+    type: "output-switch-field",
+    label: "SplitText",
     defaultValue: true,
   },
 ];
@@ -140,10 +156,10 @@ const splitTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["textText"]],
+    formFieldKeys: [["o_splitTextOutput", "o_splitTextSwitch"]],
   },
 ];
-const splitTextFieldsToWatch: string[] = ["delimiterType"];
+const splitTextFieldsToWatch: string[] = ["delimiterType", "o_splitTextOutput", "o_splitTextSwitch"];
 
 const splitText: ActivityConfig = {
   fieldList: splitTextFieldList,

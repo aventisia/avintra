@@ -130,11 +130,27 @@ const findOrReplaceInDataTableFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "dataTableMatches",
-    type: "switch",
-    label: "DataTableMatches",
+    name: "o_dataTableMatchesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The data table containing the row and column indexes for matches.",
+    defaultValue: "DataTableMatches",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_dataTableMatchesSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_dataTableMatchesSwitch", //to watch
+    type: "output-switch-field",
+    label: "DataTableMatches",
     defaultValue: true,
   },
 ];
@@ -157,13 +173,15 @@ const findOrReplaceInDataTableFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["dataTableMatches"]],
+    formFieldKeys: [["o_dataTableMatchesOutput", "o_dataTableMatchesSwitch"]],
   },
 ];
 const findOrReplaceInDataTableFieldsToWatch: string[] = [
   "searchMode",
   "findUsingARegularExpression",
   "searchBy",
+  "o_dataTableMatchesOutput", 
+  "o_dataTableMatchesSwitch"
 ];
 
 const findOrReplaceInDataTable: ActivityConfig = {

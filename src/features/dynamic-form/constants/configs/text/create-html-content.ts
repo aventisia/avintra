@@ -48,10 +48,26 @@ const createHtmlContentFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "htmlContent",
-    type: "switch",
-    label: "HtmlContent",
+    name: "o_htmlContentOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The html code",
+    defaultValue: "HtmlContent",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_htmlContentSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_htmlContentSwitch", //to watch
+    type: "output-switch-field",
+    label: "HtmlContent",
     defaultValue: true,
   },
 ];
@@ -63,10 +79,10 @@ const createHtmlContentFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["htmlContent"]],
+    formFieldKeys: [["o_htmlContentOutput", "o_htmlContentSwitch"]],
   },
 ];
-const createHtmlContentFieldsToWatch: string[] = ["editor"];
+const createHtmlContentFieldsToWatch: string[] = ["editor", "o_htmlContentOutput", "o_htmlContentSwitch"];
 
 const createHtmlContent: ActivityConfig = {
   fieldList: createHtmlContentFieldList,

@@ -145,7 +145,7 @@ const DynamicForm = ({
           {/*Form basic category */}
           <div className="mt-2.5">
             {formFieldCategories[0].formFields?.map((fItem, index) => (
-              <div key={index} className="mt-3 px-0.5 first:mt-0">
+              <div key={index} className="mb-4 mt-3 px-0.5 first:mt-0">
                 {renderFieldInFlexView(fItem)}
               </div>
             ))}

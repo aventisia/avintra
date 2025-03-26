@@ -27,10 +27,26 @@ const changeTextCaseFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "textWithNewCase",
-    type: "switch",
-    label: "TextWithNewCase",
+    name: "o_textWithNewCaseOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new converted text",
+    defaultValue: "TextWithNewCase",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_textWithNewCaseSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_textWithNewCaseSwitch", //to watch
+    type: "output-switch-field",
+    label: "TextWithNewCase",
     defaultValue: true,
   },
 ];
@@ -42,15 +58,14 @@ const changeTextCaseFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["textWithNewCase"]],
+    formFieldKeys: [["o_textWithNewCaseOutput", "o_textWithNewCaseSwitch"]],
   },
 ];
-const changeTextCaseFieldsToWatch: string[] = [];
 
 const changeTextCase: ActivityConfig = {
   fieldList: changeTextCaseFieldList,
   fieldCategories: changeTextCaseFieldCategories,
-  fieldsToWatch: changeTextCaseFieldsToWatch,
+  fieldsToWatch: ["o_textWithNewCaseOutput", "o_textWithNewCaseSwitch"],
 };
 
 export default changeTextCase;

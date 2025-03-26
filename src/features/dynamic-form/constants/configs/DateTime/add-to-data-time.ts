@@ -37,11 +37,27 @@ const addToDataTimeFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "resultedDate",
-    type: "switch",
-    label: "ResultedDate",
+    name: "o_resultedDateOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new, altered datetime value",
-    defaultValue: "",
+    defaultValue: "ResultedDate",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_resultedDateSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_resultedDateSwitch",
+    type: "output-switch-field",
+    label: "ResultedDate",
+    defaultValue: true,
   },
 ];
 
@@ -52,13 +68,13 @@ const addToDateTimeFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["resultedDate"]],
+    formFieldKeys: [["o_resultedDateOutput", "o_resultedDateSwitch"]],
   },
 ];
 const addToDateTime: ActivityConfig = {
   fieldList: addToDataTimeFieldList,
   fieldCategories: addToDateTimeFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_resultedDateOutput", "o_resultedDateSwitch"],
 };
 
 export default addToDateTime;

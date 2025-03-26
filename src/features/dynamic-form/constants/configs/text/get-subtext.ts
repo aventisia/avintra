@@ -72,10 +72,26 @@ const getSubtextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "subtext",
-    type: "switch",
-    label: "Subtext",
+    name: "o_subtextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The retrieved subtext",
+    defaultValue: "Subtext",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_subtextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_subtextSwitch",
+    type: "output-switch-field",
+    label: "Subtext",
     defaultValue: true,
   },
 ];
@@ -93,10 +109,10 @@ const getSubtextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["subtext"]],
+    formFieldKeys: [["o_subtextOutput", "o_subtextSwitch"]],
   },
 ];
-const getSubtextToWatch: string[] = ["startIndex", "length"];
+const getSubtextToWatch: string[] = ["startIndex", "length", "o_subtextOutput", "o_subtextSwitch"];
 
 const getSubtext: ActivityConfig = {
   fieldList: getSubtextFieldList,

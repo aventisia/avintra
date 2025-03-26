@@ -283,7 +283,7 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
 
   //output
   {
-    name: "o_webServiceResponseHeaderOutput",
+    name: "o_webServiceResponseHeaderOutput", //to watch
     type: "output-text-field",
     label: "",
     description: "The HTTP headers of the response",
@@ -300,14 +300,14 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "o_webServiceResponseHeaderSwitch",
+    name: "o_webServiceResponseHeaderSwitch",//to watch
     type: "output-switch-field",
     label: "WebServiceResponseHeader",
     defaultValue: true,
   },
   
   {
-    name: "o_webServiceResponseOutput",
+    name: "o_webServiceResponseOutput",//to watch
     type: "output-text-field",
     label: "",
     description: "The web service response text",
@@ -324,7 +324,7 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "o_webServiceResponseSwitch",
+    name: "o_webServiceResponseSwitch",//to watch
     type: "output-switch-field",
     label: "WebServiceResponse",
     defaultValue: true,
@@ -333,7 +333,7 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
 
 
  {
-    name: "o_statusCodeOutput",
+    name: "o_statusCodeOutput",//to watch
     type: "output-text-field",
     label: "",
     description: "The status code returned",
@@ -350,7 +350,7 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "o_statusCodeSwitch",
+    name: "o_statusCodeSwitch",//to watch
     type: "output-switch-field",
     label: "StatusCode",
     defaultValue: true,

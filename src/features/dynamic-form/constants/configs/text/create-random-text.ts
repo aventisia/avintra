@@ -56,10 +56,26 @@ const createRandomTextFieldList: IDynamicFieldSchema[] = [
 
   //   output
   {
-    name: "randomText",
-    type: "switch",
-    label: "RandomText",
+    name: "o_randomTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The generated random text",
+    defaultValue: "RandomText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_randomTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_randomTextSwitch",
+    type: "output-switch-field",
+    label: "RandomText",
     defaultValue: true,
   },
 ];
@@ -78,10 +94,10 @@ const createRandomTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["randomText"]],
+    formFieldKeys: [["o_randomTextOutput", "o_randomTextSwitch"]],
   },
 ];
-const createRandomTextFieldsToWatch: string[] = [];
+const createRandomTextFieldsToWatch: string[] = ["o_randomTextOutput", "o_randomTextSwitch"];
 
 const createRandomText: ActivityConfig = {
   fieldList: createRandomTextFieldList,

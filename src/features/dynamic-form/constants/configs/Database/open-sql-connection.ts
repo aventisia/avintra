@@ -12,12 +12,30 @@ const openSQLConnectionFieldList: IDynamicFieldSchema[] = [
     description: "The connection string to use to connect to the database",
     defaultValue: "",
   },
+
+  // Output
   {
-    name: "SQLConnection",
-    type: "switch",
-    label: "SQL Connection",
+    name: "o_SQLConnectionOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "A handle for the new SQL connection",
-    defaultValue: false,
+    defaultValue: "SQL Connection",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_SQLConnectionSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_SQLConnectionSwitch",
+    type: "output-switch-field",
+    label: "SQL Connection",
+    defaultValue: true,
   },
 ];
 
@@ -28,14 +46,14 @@ const openSQLConnectionFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["SQLConnection"]],
+    formFieldKeys: [["o_SQLConnectionOutput", "o_SQLConnectionSwitch"]],
   },
 ];
 
 const openSQLConnection: ActivityConfig = {
   fieldList: openSQLConnectionFieldList,
   fieldCategories: openSQLConnectionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_SQLConnectionOutput", "o_SQLConnectionSwitch"],
 };
 
 export default openSQLConnection;
