@@ -4,18 +4,21 @@ public class QueueTableService : IQueueTableService
 {
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUploadFileService _uploadFileService;
     private readonly Guid _userId;
 
     public QueueTableService(
         ILogger<QueueTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IUploadFileService uploadFileService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _uploadFileService = uploadFileService;
     }
 
     // Checks the availability of a queue name.
@@ -157,12 +160,46 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            //TODO: Add file upload logic here
+            createQueuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(createQueuesTableDto);
 
             // Default mapping
             var newQueue = createQueuesTableDto.Adapt<Queue>();
             newQueue.CreatedByUserId = _userId;
             newQueue.LastModifiedByUserId = _userId;
+
+            // Check if the specific data schema file is provided
+            if (createQueuesTableDto.SpecificDataSchemaFile != null)
+            {
+                // Upload the specific data schema file
+                var specificDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(createQueuesTableDto.SpecificDataSchemaFile);
+
+                // Check if the upload was successful; if not, set the error message and return
+                if (specificDataSchemaUploadResponse.StatusCode != 200)
+                {
+                    serviceResponse.Message = specificDataSchemaUploadResponse.Message;
+                    return serviceResponse;
+                }
+
+                // If successful, assign the file path to the newQueue's SpecificDataSchemaPath
+                newQueue.SpecificDataSchemaPath = specificDataSchemaUploadResponse.Data.Path;
+            }
+
+            // Check if the output data schema file is provided
+            if (createQueuesTableDto.OutputDataSchemaFile != null)
+            {
+                // Upload the output data schema file
+                var outputDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(createQueuesTableDto.OutputDataSchemaFile);
+
+                // Check if the upload was successful; if not, set the error message and return
+                if (outputDataSchemaUploadResponse.StatusCode != 200)
+                {
+                    serviceResponse.Message = outputDataSchemaUploadResponse.Message;
+                    return serviceResponse;
+                }
+
+                // If successful, assign the file path to the newQueue's OutputDataSchemaPath
+                newQueue.OutputDataSchemaPath = outputDataSchemaUploadResponse.Data.Path;
+            }
 
             // Insert queue
             await _unitOfWork.QueueRepo.InsertAsync(newQueue);
@@ -238,6 +275,41 @@ public class QueueTableService : IQueueTableService
             updateQueuesTableDto.Adapt(queue);
             queue.LastModifiedByUserId = _userId;
             queue.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Check if the specific data schema file is provided
+            if (updateQueuesTableDto.SpecificDataSchemaFile != null)
+            {
+                // Upload the specific data schema file
+                var specificDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(updateQueuesTableDto.SpecificDataSchemaFile);
+
+                // Check if the upload was successful; if not, set the error message and return
+                if (specificDataSchemaUploadResponse.StatusCode != 200)
+                {
+                    serviceResponse.Message = specificDataSchemaUploadResponse.Message;
+                    return serviceResponse;
+                }
+
+                // If successful, assign the file path to the newQueue's SpecificDataSchemaPath
+                queue.SpecificDataSchemaPath = specificDataSchemaUploadResponse.Data.Path;
+            }
+
+            // Check if the output data schema file is provided
+            if (updateQueuesTableDto.OutputDataSchemaFile != null)
+            {
+                // Upload the output data schema file
+                var outputDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(updateQueuesTableDto.OutputDataSchemaFile);
+
+                // Check if the upload was successful; if not, set the error message and return
+                if (outputDataSchemaUploadResponse.StatusCode != 200)
+                {
+                    serviceResponse.Message = outputDataSchemaUploadResponse.Message;
+                    return serviceResponse;
+                }
+
+                // If successful, assign the file path to the newQueue's OutputDataSchemaPath
+                queue.OutputDataSchemaPath = outputDataSchemaUploadResponse.Data.Path;
+            }
+
 
             _unitOfWork.QueueRepo.Update(queue);
 
