@@ -81,7 +81,7 @@ export interface TriggersTableDto {
   /**
    * Gets or sets the username of the user who created the trigger record. Max-254
    */
-  createdBy?: boolean;
+  createdBy?: string;
 
   /**
    * Gets or sets the date and time when the trigger record was created.
