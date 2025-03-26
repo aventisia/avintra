@@ -94,16 +94,16 @@ export const QueueCrudForm = () => {
       <p className="text-md mb-2 border-b-2 pb-2">Additonal Details</p>
       <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
-          <label htmlFor="default-checkbox" className="fm text-sm">
+          <label htmlFor="hasUniqueRef" className="fm text-sm">
             Enforce unique references
           </label>
-          <CheckboxField name="enforceUniqueRef" label="" />
+          <CheckboxField id="hasUniqueRef" name="hasUniqueRef" label="" />
         </div>
         <div className="ml-1 flex justify-between">
-          <label htmlFor="default-checkbox" className="fm text-sm">
+          <label htmlFor="isEncrypted" className="fm text-sm">
             Store in encrypted format
           </label>
-          <CheckboxField name="isEncrypted" label="" />
+          <CheckboxField id="isEncrypted" name="isEncrypted" label="" />
         </div>
       </div>
 
@@ -111,16 +111,16 @@ export const QueueCrudForm = () => {
       <p className="text-md mb-2 border-b-2 pb-2">Auto retry</p>
       <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
-          <label htmlFor="default-checkbox" className="fm text-sm">
+          <label htmlFor="retryFailed" className="fm text-sm">
             Failed Items
           </label>
-          <CheckboxField name="retryFailed" label="" />
+          <CheckboxField id="retryFailed" name="retryFailed" label="" />
         </div>
         <div className="ml-1 flex justify-between">
-          <label htmlFor="default-checkbox" className="fm text-sm">
+          <label htmlFor="retryAbandoned" className="fm text-sm">
             Abandoned Items
           </label>
-          <CheckboxField name="retryAbandoned" label="" />
+          <CheckboxField id="retryAbandoned" name="retryAbandoned" label="" />
         </div>
 
         <div className="mt-4">
