@@ -3,16 +3,13 @@ import { browserAutomationActions } from "./browser-automation-actions";
 import { clipboardActions } from "./clipboard-actions";
 import { cmdSessionActions } from "./cmd-actions";
 import { compressionActions } from "./compression-actions";
-import { excelActions } from "./excel-actions";
 import { fileActions } from "./file-actions";
 import { folderActions } from "./folder-actions";
 import { messageBoxesActions } from "./message-boxes-actions";
 import { mouseAndKeyboardActions } from "./mouse-and-keyboard-actions";
-import { outlookActions } from "./outlook-actions";
 import { scriptingActions } from "./scripting-actions";
 import { systemActions } from "./system-actions";
 import { uiAutomationActions } from "./ui-automation-actions";
-import { wordActions } from "./word-actions";
 import { workstationActions } from "./workstation-actions";
 import { xmlActions } from "./xml-actions";
 
@@ -54,20 +51,6 @@ export const uiAutomationAndUserActions: ActionCategoryType[] = [
     actions: scriptingActions,
   },
   {
-    name: "word",
-    label: "Word",
-    description: "Automate any Word related activity",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: wordActions,
-  },
-  {
-    name: "excel",
-    label: "Excel",
-    description: "Automate any excel related activity",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: excelActions,
-  },
-  {
     name: "compression",
     label: "compression",
     description: "Zip or unzip files from archives",
@@ -87,14 +70,6 @@ export const uiAutomationAndUserActions: ActionCategoryType[] = [
     description: "Start and manage web applications on browsers",
     img: `${import.meta.env.BASE_URL}function.png`,
     actions: browserAutomationActions,
-  },
-  {
-    name: "outlook",
-    label: "Outlook",
-    description:
-      "Automate sending, receiving, and managing email messages of an Outlook account",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: outlookActions,
   },
   {
     name: "messageBoxes",

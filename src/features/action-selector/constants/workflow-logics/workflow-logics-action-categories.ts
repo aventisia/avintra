@@ -1,8 +1,6 @@
 import { ActionCategoryType } from "../../types/action-category-type";
 import { conditionalsActions } from "./conditonals-actions";
-import { dataTableActions } from "./data-table-actions";
 import { flowControlActions } from "./flow-control-actions";
-import { httpActions } from "./http-actions";
 import { loopsActions } from "./loops-actions";
 import { runFlowActions } from "./run-flow-actions";
 import { variableActions } from "./variable-actions";
@@ -14,13 +12,6 @@ export const workFlowLogicsActions: ActionCategoryType[] = [
     description: "Create and manage variables of different datatypes",
     img: `${import.meta.env.BASE_URL}function.png`,
     actions: variableActions,
-  },
-  {
-    name: "dataTable",
-    label: "DataTable",
-    description: "Create and manipulate data in table variables",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: dataTableActions,
   },
   {
     name: "conditionals",
@@ -50,12 +41,5 @@ export const workFlowLogicsActions: ActionCategoryType[] = [
     description: "Set your automation to trigger other flows",
     img: `${import.meta.env.BASE_URL}function.png`,
     actions: runFlowActions,
-  },
-  {
-    name: "http",
-    label: "HTTP",
-    description: "Communicate with web applications and services directly",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: httpActions,
-  },
+  }
 ];
