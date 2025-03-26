@@ -27,5 +27,9 @@ public class QueueTableMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
+
+        config.NewConfig<CreateOrUpdateQueuesTableDto, Queue>()
+            .Ignore(dest => dest.Id)
+            .IgnoreNullValues(true);
     }
 }
