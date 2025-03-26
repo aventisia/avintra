@@ -25,6 +25,53 @@ public class QueuesTableDto
     public int? TotalPendingItems { get; set; }
 
     /// <summary>
+    /// Gets or sets the description of the queue.
+    /// This field is optional and can contain a maximum of 500 characters.
+    /// </summary>
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to enforce unique references in the queue.
+    /// </summary>
+    public bool IsUniqueReferencesEnforced { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to store items in encrypted format.
+    /// </summary>
+    public bool IsStoredEncrypted { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to retry processing failed items.
+    /// </summary>
+    public bool ShouldRetryFailedItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to retry processing abandoned items.
+    /// </summary>
+    public bool ShouldRetryAbandonedItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of retry attempts for processing items.
+    /// This value must be non-negative.
+    /// </summary>
+    [Required]
+    [Range(0, int.MaxValue)]
+    public int MaximumRetryAttempts { get; set; }
+
+    /// <summary>
+    /// Gets or sets the file path for the specific data JSON schema.
+    /// Actual files are stored separately.
+    /// </summary>
+    public string? SpecificDataSchemaPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets the file path for the output data JSON schema.
+    /// Actual files are stored separately.
+    /// </summary>
+    public string? OutputDataSchemaPath { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>
