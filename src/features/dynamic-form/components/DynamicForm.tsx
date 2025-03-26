@@ -10,6 +10,7 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";
+// import VariableSelectorPopover from "@/features/variable-selector-popover/components/VariableSelectorPopover";
 import { PopoverClose } from "@radix-ui/react-popover";
 // import OnErrorTabs from "./OnErrorTabs";
 
@@ -63,8 +64,6 @@ const DynamicForm = ({
 
   // Submit handler
   function submitHandler(formData: any) {
-    console.log("inside submit");
-
     // Return if form is only for view information
     if (viewOnly) return;
 
@@ -114,7 +113,7 @@ const DynamicForm = ({
 
   function renderOutputFields(fieldsToRender: IDynamicFieldSchema[]) {
     return (
-      <div className="flex items-center justify-between rounded-lg border p-3">
+      <div className="flex items-center justify-between rounded-lg border px-3 py-4">
         {fieldsToRender?.map((fData, index) => (
           <div
             className={cn(
@@ -137,11 +136,14 @@ const DynamicForm = ({
       className={cn("space-y-4", className)}
       onSubmit={form.handleSubmit(submitHandler)}
     >
+      {/* <div>
+        <VariableSelectorPopover className="max-h-80" />
+      </div> */}
       {/* Scrollable input fields container using ScrollArea */}
       <ScrollArea className="mt-4 max-h-[calc(60vh-4rem)] flex-grow px-4">
         <FormProvider {...form}>
           {/*Form basic category */}
-          <div className="">
+          <div className="mt-2.5">
             {formFieldCategories[0].formFields?.map((fItem, index) => (
               <div key={index} className="mt-3 px-0.5 first:mt-0">
                 {renderFieldInFlexView(fItem)}
