@@ -129,7 +129,7 @@ export const QueueCrudForm = () => {
       </div>
 
       {/* additional options */}
-      <p className="text-md mb-2 border-b-2 pb-2">Shema Definations</p>
+      <p className="text-md mb-2 border-b-2 pb-2">Schema Definations</p>
       <div className="flex flex-col gap-3">
         <InputFileField
           {...inputJsonSchemaProps}
