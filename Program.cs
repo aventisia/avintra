@@ -70,6 +70,7 @@ builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.AddStringEncryptionService();
+builder.Services.AddUploadFileService();
 
 /*--Configure the HTTP request pipeline.--*/
 
