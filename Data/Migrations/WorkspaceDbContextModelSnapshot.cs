@@ -449,6 +449,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -752,7 +756,17 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsStoredEncrypted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsUniqueReferencesEnforced")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("LastModifiedByUserId")
@@ -761,10 +775,25 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("MaximumRetryAttempts")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("OutputDataSchemaPath")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("ShouldRetryAbandonedItems")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("ShouldRetryFailedItems")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SpecificDataSchemaPath")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1033,6 +1062,10 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
