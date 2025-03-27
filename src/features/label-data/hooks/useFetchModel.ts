@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { toast } from "sonner";
+//import { useEffect } from "react";
+//import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 import { getModel } from "@/features/model-library-table/apis/model-library-table-apis";
 
@@ -15,15 +15,17 @@ export const useFetchModel = () => {
   const modelId = queryParams.get("mid") || "";
 
   // Get models using react query
-  const { data, isError, error, refetch } = useQuery({
+  const { data, 
+    // isError, error, 
+    refetch } = useQuery({
     queryKey: ["model", modelId],
     queryFn: () => getModel(modelId),
   });
 
   // Show toast on fetch error
-  useEffect(() => {
-    if (isError) toast.error(error.toString());
-  }, [error, isError]);
+  // useEffect(() => {
+  //   if (isError) toast.error(error.toString());
+  // }, [error, isError]);
 
   // Return data and refetch
   return { data, refetch };

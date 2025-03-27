@@ -24,7 +24,7 @@ export interface FileUploadDto {
 
   extension?: string;
 
-  type?: "Testing" | "Training" | "RealData";
+  type?: "LabelData" | "Testing" | "Training" | "RealData";
 
   mlModelId?: string;
 }

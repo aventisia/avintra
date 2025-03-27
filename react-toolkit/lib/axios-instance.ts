@@ -101,17 +101,17 @@ axiosInstance.interceptors.response.use(
         toast.error(errorMessage);
         break;
       case 404:
-        toast.error(errorMessage);
+        //toast.error(errorMessage);
         // TODO: Route to 404 page
         break;
       case 500:
-        toast.error(errorMessage);
+        //toast.error(errorMessage);
         // TODO: Route to 500 page
         break;
       default:
-        toast.error(error.response.status + " Error", {
-          description: errorMessage,
-        });
+        // toast.error(error.response.status + " Error", {
+        //   description: errorMessage,
+        // });
     }
     return Promise.reject(error);
   },

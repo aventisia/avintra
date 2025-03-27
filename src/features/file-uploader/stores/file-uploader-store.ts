@@ -25,7 +25,7 @@ export const useFileStore = create<FileStoreState>((set) => ({
     })),
   addFileToUpload: (file) =>
     set((state) => ({
-      filesToUpload: [...state.filesToUpload, { ...file, type: "Training" }],
+      filesToUpload: [...state.filesToUpload, { ...file, type: "LabelData" }],
     })),
   updateProgress: (name, progress) =>
     set((state) => ({

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { getAnnotationList } from "../apis/annotation-apis";
@@ -30,7 +30,9 @@ export const useFetchAnnotationData = () => {
     })),
   );
   // Get models using react query
-  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
+  const { data, isFetching, isLoading, 
+    // isError, error, 
+    refetch } = useQuery({
     queryKey: ["annotation", modelId],
     queryFn: () => getAnnotationList(modelId),
   });
@@ -42,9 +44,9 @@ export const useFetchAnnotationData = () => {
     setAnnotationObject(currObj);
   }, [data, selectedPdf?.id, setAnnotationObject]);
   // Show toast on fetch error
-  useEffect(() => {
-    if (isError) toast.error(error.toString());
-  }, [error, isError]);
+  // useEffect(() => {
+  //   if (isError) toast.error(error.toString());
+  // }, [error, isError]);
 
   // Return isFetching and isLoading flag
   return { data, isFetching, isLoading, refetch };
