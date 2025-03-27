@@ -199,7 +199,8 @@ import appendLineToText from "../constants/configs/text/append-line-to-text";
 import changeTextCase from "../constants/configs/text/change-text-case";
 import convertNumberToText from "../constants/configs/text/convert-number-to-text";
 import convertTextToDatetime from "../constants/configs/text/convert-text-to-datetime";
-import ConvertTextToNumber from "../constants/configs/text/convert-text-to-number";
+import convertTextToNumber from "../constants/configs/text/convert-text-to-number";
+import convertDatetimeToText from "../constants/configs/text/convert-datetime-to-text"
 import createHtmlContent from "../constants/configs/text/create-html-content";
 import createRandomText from "../constants/configs/text/create-random-text";
 import cropText from "../constants/configs/text/crop-text";
@@ -614,10 +615,10 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   trimText,
   reverseText,
   changeTextCase,
-  ConvertTextToNumber,
+  convertTextToNumber,
   convertNumberToText,
   convertTextToDatetime,
-  // convertDatetimeToText,
+  convertDatetimeToText,
   createRandomText,
   joinText,
   splitText,
