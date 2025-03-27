@@ -50,7 +50,7 @@ export const ActionCategoryList = () => {
         actionCategories.forEach((category) => {
           const matchingActions = category.actions
             ? category.actions?.filter((action) =>
-                action.name.toLowerCase().includes(query.toLowerCase()),
+                action.label.toLowerCase().includes(query.toLowerCase()),
               )
             : [];
 
