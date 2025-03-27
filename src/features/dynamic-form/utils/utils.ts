@@ -112,7 +112,7 @@ import getLastError from "../constants/configs/flow-control/get-last-error";
 import goTo from "../constants/configs/flow-control/go-to";
 import label from "../constants/configs/flow-control/label";
 import region from "../constants/configs/flow-control/region";
-import runSubFlow from "../constants/configs/flow-control/run-subflow";
+import runSubflow from "../constants/configs/flow-control/run-subflow";
 import stopFlow from "../constants/configs/flow-control/stop-flow";
 import wait from "../constants/configs/flow-control/wait";
 import copyFolder from "../constants/configs/Folder/copy-folder";
@@ -372,7 +372,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   goTo,
   label,
   region,
-  runSubFlow,
+  runSubflow,
   stopFlow,
   wait,
 
