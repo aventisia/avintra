@@ -4,13 +4,12 @@ import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-stor
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useShallow } from "zustand/react/shallow";
 
-interface DTCrudDialogWrapperProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root> {}
-
 /**
  * Wrapper component for a CRUD dialog which support alert-dialog and form dirty check.
  */
-const DTCrudDialogWrapper = ({ ...props }: DTCrudDialogWrapperProps) => {
+const DTCrudDialogWrapper = ({
+  ...props
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>) => {
   // Get alert dialog store state
   const { isAlertDialogOpen } = useAlertDialogStore(
     useShallow((state) => ({
