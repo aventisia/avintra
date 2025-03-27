@@ -8,7 +8,6 @@ import {
 } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { SESSION_EXPIRED_LS_KEY } from "../constants";
 
 /**
  * Custom hook to validate user session and handle session refresh.
@@ -37,13 +36,7 @@ export const useValidateUserSession = () => {
 
   // Refresh the session on app-load.
   useEffect(() => {
-    // Get session expired flag
-    const sessionExpired = localStorage.getItem(SESSION_EXPIRED_LS_KEY);
-
-    // If session is not expired, refresh the session
-    if (sessionExpired != null && !JSON.parse(sessionExpired)) {
-      mutate();
-    }
+    mutate();
   }, [mutate]);
 
   // return isPending state
