@@ -249,19 +249,22 @@ import clearList from "../constants/configs/variables/clear-list";
 import convertCustomObjectToJson from "../constants/configs/variables/convert-custom-object-to-json";
 import convertJsonToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
 import createNewList from "../constants/configs/variables/create-new-list";
-import clearDataTable from "../constants/configs/variables/data-table/clear-data-table";
-import convertDataTableToText from "../constants/configs/variables/data-table/convert-data-table-to-text";
-import deleteColumnFromDataTable from "../constants/configs/variables/data-table/delete-column-from-data-table";
-import deleteDuplicateRowsFromDataTable from "../constants/configs/variables/data-table/delete-duplicate-rows-from-data-table";
-import deleteEmptyRowsFromDataTable from "../constants/configs/variables/data-table/delete-empty-rows-from-data-table";
-import deleteRowFromDataTable from "../constants/configs/variables/data-table/delete-row-from-data-table";
-import findOrReplaceInDataTable from "../constants/configs/variables/data-table/find-or-replace-in-data-table";
-import insertColumnIntoDataTable from "../constants/configs/variables/data-table/insert-column-into-data-table";
-import insertRowIntoDataTable from "../constants/configs/variables/data-table/insert-row-into-data-table";
-import mergeDataTables from "../constants/configs/variables/data-table/merge-data-table";
-import readFromCsvTextVariable from "../constants/configs/variables/data-table/read-from-csv-text-variable";
-import sortDataTable from "../constants/configs/variables/data-table/sort-data-table";
-import updateDataTableItem from "../constants/configs/variables/data-table/update-data-table-item";
+import clearDataTable from "../constants/configs/DataTable/clear-data-table";
+import createNewDataTable from "../constants/configs/DataTable/create-data-table";
+import convertDataTableToText from "../constants/configs/DataTable/convert-data-table-to-text";
+import deleteColumnFromDataTable from "../constants/configs/DataTable/delete-column-from-data-table";
+import deleteDuplicateRowsFromDataTable from "../constants/configs/DataTable/delete-duplicate-rows-from-data-table";
+import deleteEmptyRowsFromDataTable from "../constants/configs/DataTable/delete-empty-rows-from-data-table";
+import deleteRowFromDataTable from "../constants/configs/DataTable/delete-row-from-data-table";
+import findOrReplaceInDataTable from "../constants/configs/DataTable/find-or-replace-in-data-table";
+import insertColumnIntoDataTable from "../constants/configs/DataTable/insert-column-into-data-table";
+import insertRowIntoDataTable from "../constants/configs/DataTable/insert-row-into-data-table";
+import mergeDataTables from "../constants/configs/DataTable/merge-data-table";
+import readFromCsvTextVariable from "../constants/configs/DataTable/read-from-csv-text-variable";
+import sortDataTable from "../constants/configs/DataTable/sort-data-table";
+import updateDataTableItem from "../constants/configs/DataTable/update-data-table-item";
+import joinDataTables from "../constants/configs/DataTable/join-data-table"
+import filterDataTable from "../constants/configs/DataTable/filter-data-table"
 import decreaseVariable from "../constants/configs/variables/decrease-variable";
 import findCommonListItems from "../constants/configs/variables/find-common-list-items";
 import generateRandomNumber from "../constants/configs/variables/generate-random-number";
@@ -326,10 +329,11 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   deleteEmptyRowsFromDataTable,
   deleteDuplicateRowsFromDataTable,
   clearDataTable,
+  createNewDataTable,
   sortDataTable,
-  // filterDataTable,
+  filterDataTable,
   mergeDataTables,
-  // joinDataTables,
+  joinDataTables,
   readFromCsvTextVariable,
   convertDataTableToText,
   truncateNumber,

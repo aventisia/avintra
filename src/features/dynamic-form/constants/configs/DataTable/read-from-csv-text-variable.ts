@@ -2,7 +2,7 @@ import {
   ActivityConfig,
   IDynamicFieldSchema,
   IDynamicFormKeysCategory,
-} from "../../../../types/dynamic-form-types";
+} from "../../../types/dynamic-form-types";
 
 const readFromCsvTextVariableFieldList: IDynamicFieldSchema[] = [
   {
@@ -144,6 +144,7 @@ const readFromCsvTextVariableFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["trimFields"],
       ["firstLineContainsColumnNames"],
+      ["getCsvFieldsAsText"],
       ["columnsSeparator"],
       ["separator"],
       ["customSeparator"],
