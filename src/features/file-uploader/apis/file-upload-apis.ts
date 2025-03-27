@@ -13,7 +13,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc
 
 const getUploadedFiles = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<PdfViewerDto[]>>(`${baseAPIURL}/list/${modelId}`)
+    .get<IHttpResponse<PdfViewerDto[]>>(`${baseAPIURL}/list/${modelId}/LabelData`)
     .then((res) => res.data);
 };
 

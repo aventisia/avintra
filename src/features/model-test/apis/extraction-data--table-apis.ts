@@ -9,7 +9,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extracted-
  */
 const getExtractedDataList = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<ExtractedDataDto[]>>(`${baseAPIURL}/list/${modelId}`)
+    .get<IHttpResponse<ExtractedDataDto[]>>(`${baseAPIURL}/list/${modelId}/TestData`)
     .then((res) => res.data);
 };
 
