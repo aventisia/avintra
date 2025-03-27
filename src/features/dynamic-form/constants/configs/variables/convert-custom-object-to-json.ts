@@ -10,7 +10,7 @@ const convertCustomObjectToJsonFieldList: IDynamicFieldSchema[] = [
     type: "select",
     label: "Custom object",
     description: "The custom object to convert to JSON",
-    selectOptions: [],
+    selectOptions: [{label:"%JsonAsCustomObject%", value:"%JsonAsCustomObject%"}],
     defaultValue: "",
   },
   //output

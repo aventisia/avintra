@@ -20,8 +20,8 @@ type NodeDataType = {
   icon?: string;
   img?: string;
   fieldValues?: { [key: string]: any };
-  inputs: NodeDataInputsOutputs[];
-  outputs: NodeDataInputsOutputs[];
+  inputs?: NodeDataInputsOutputs[];
+  outputs?: NodeDataInputsOutputs[];
   disabled?: boolean;
   hidden?: boolean;
 };

@@ -247,7 +247,7 @@ import setWindowVisibility from "../constants/configs/ui-automation/windows/set-
 import addItemToList from "../constants/configs/variables/add-item-to-list";
 import clearList from "../constants/configs/variables/clear-list";
 import convertCustomObjectToJson from "../constants/configs/variables/convert-custom-object-to-json";
-import convertJSONToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
+import convertJsonToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
 import createNewList from "../constants/configs/variables/create-new-list";
 import clearDataTable from "../constants/configs/variables/data-table/clear-data-table";
 import convertDataTableToText from "../constants/configs/variables/data-table/convert-data-table-to-text";
@@ -344,7 +344,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   findCommonListItems,
   subtractLists,
   retrieveDataTableColumnIntoList,
-  convertJSONToCustomObject,
+  convertJsonToCustomObject,
   convertCustomObjectToJson,
   addItemToList,
   createNewList,
