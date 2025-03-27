@@ -1,4 +1,4 @@
-import { Navigate, RouteObject } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
@@ -31,8 +31,10 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
 
-export const routerConfig: RouteObject[] = [
+const routerConfig: RouteObject[] = [
   {
     path: "/",
     element: <WorkspaceUILayout />,
@@ -101,35 +103,35 @@ export const routerConfig: RouteObject[] = [
         children: [
           {
             index: true,
-            path: "/orchestrator/machines",
+            path: "/orchestrator/machines/:id?/:a?",
             element: <MachinesPage />,
           },
           {
-            path: "/orchestrator/agents",
+            path: "/orchestrator/agents/:id?/:a?",
             element: <AgentsPage />,
           },
           {
-            path: "/orchestrator/queues",
+            path: "/orchestrator/queues/:id?/:a?",
             element: <QueuesPage />,
           },
           {
-            path: "/orchestrator/executions",
+            path: "/orchestrator/executions/:id?/:a?",
             element: <ExecutionsPage />,
           },
           {
-            path: "/orchestrator/triggers",
+            path: "/orchestrator/triggers/:id?/:a?",
             element: <TriggersPage />,
           },
           {
-            path: "/orchestrator/keystore",
+            path: "/orchestrator/keystore/:id?/:a?",
             element: <KeystorePage />,
           },
           {
-            path: "/orchestrator/vault",
+            path: "/orchestrator/vault/:id?/:a?",
             element: <VaultPage />,
           },
           {
-            path: "/orchestrator/licenses",
+            path: "/orchestrator/licenses/:id?/:a?",
             element: <LicensesPage />,
           },
         ],
@@ -166,3 +168,26 @@ export const routerConfig: RouteObject[] = [
     errorElement: <ErrorPage />,
   },
 ];
+
+export const router = createBrowserRouter(routerConfig, {
+  basename: import.meta.env.BASE_URL,
+  unstable_patchRoutesOnNavigation: (state) => {
+    const currentMatch = state.matches[state.matches.length - 1];
+    const id = currentMatch.params["id"];
+    const action = currentMatch.params["a"];
+
+    useDTCrudDialogStore.subscribe(
+      (state) => state,
+      (state) => {
+        if (!!id && !!action && !!CrudActionTypeLong[action]) {
+          state.setCrudDialogOptions({
+            rowId: id ?? window.crypto.randomUUID(),
+            crudAction: CrudActionTypeLong[action],
+            showDialog: true,
+          });
+          state.setShowDialog(true);
+        }
+      },
+    );
+  },
+});
