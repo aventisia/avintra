@@ -1,3 +1,5 @@
+import { CrudActionType } from "../types/literal-types";
+
 const USER_PREFERENCES_LS_KEY = "userPreferences";
 const USER_SESSION_LS_KEY = "userSession";
 const DEV_JWT_LS_KEY = "dev_jwt";
@@ -12,4 +14,23 @@ export {
   USER_NAME_LS_KEY,
   REQUEST_TIMEOUT,
   ARTIFICIAL_DELAY,
+};
+
+export const CrudActionTypeLong: {
+  [key: string]: CrudActionType;
+} = {
+  c: "create",
+  r: "read",
+  u: "update",
+  d: "delete",
+};
+
+export const CrudActionTypeShort: {
+  [key in CrudActionType]: string;
+} = {
+  create: "c",
+  read: "r",
+  update: "u",
+  delete: "d",
+  "delete-multiple": "m",
 };
