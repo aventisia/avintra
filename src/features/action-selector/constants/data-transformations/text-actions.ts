@@ -1,14 +1,14 @@
 import { NodeDataType } from "@/types/node-data-type";
 
 export const textActions: NodeDataType[] = [
-  {
-    type: "activityNode",
-    name: "useTheRecognizeEntitiesInTextAction",
-    label: "Use the Recognize entities in text action",
-    description:
-      "Desktop flows enable you to extract various entities from texts in natural language, such as numbers, dates, and measurement units, through the Recognize entities in text action",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // {
+  //   type: "activityNode",
+  //   name: "useTheRecognizeEntitiesInTextAction",
+  //   label: "Use the Recognize entities in text action",
+  //   description:
+  //     "Desktop flows enable you to extract various entities from texts in natural language, such as numbers, dates, and measurement units, through the Recognize entities in text action",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "appendLineToText",

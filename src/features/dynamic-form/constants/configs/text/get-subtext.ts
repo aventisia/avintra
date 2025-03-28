@@ -48,7 +48,7 @@ const getSubtextFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether the subtext continues to the end of the text, or includes only a certain number of characters",
     selectOptions: [
-      { label: "Start of text", value: "startOfText" },
+      { label: "End of text", value: "endOfText" },
       { label: "Number of chars", value: "numberOfChars" },
     ],
     defaultValue: "numberOfChars",

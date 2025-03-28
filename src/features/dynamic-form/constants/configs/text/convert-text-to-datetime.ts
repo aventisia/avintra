@@ -24,7 +24,7 @@ const convertTextToDatetimeFieldList: IDynamicFieldSchema[] = [
   {
     name: "customFormat",
     type: "text",
-    label: "Custom",
+    label: "Custom format",
     description:
       "The format in which the date is stored in the text. A custom format can be expressed as, for example, yyyyMMdd for date and hhmmss for time",
     defaultValue: "",

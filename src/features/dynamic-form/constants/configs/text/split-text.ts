@@ -121,7 +121,7 @@ const splitTextFieldList: IDynamicFieldSchema[] = [
     type: "output-text-field",
     label: "",
     description: "The new list",
-    defaultValue: "splitText",
+    defaultValue: "TextList",
     regOptions: {
       disabledBasedOnFields: {
         conditionList: [
