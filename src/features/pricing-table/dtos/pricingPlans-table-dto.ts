@@ -43,7 +43,7 @@ export interface PricingPlansTableDto {
    * Gets or sets the plan unit Price.
    *
    */
-  unitPrice: string;
+  unitPrice: number;
 
   /**
    * Gets or sets the plan billing Frequency.
@@ -55,7 +55,7 @@ export interface PricingPlansTableDto {
    * Gets or sets the plan cola.
    *
    */
-  cola: string;
+  cola: number;
 
   /**
    * Gets or sets a flag indicating whether the pricingplan record is disabled.

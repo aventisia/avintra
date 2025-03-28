@@ -2,9 +2,9 @@ import {
   alphaNumericError,
   maxLenError,
   reqError,
-} from "@/react-toolkit/utils/error-message-list"
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list"
-import { z } from "zod"
+} from "@/react-toolkit/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a pricingplan name.
@@ -30,7 +30,8 @@ export const pricingPlanZodSchema = z.object({
   unit: z.string({ message: reqError("unit") }),
   unitPrice: z.coerce
     .number({ message: reqError("Unit Price") })
-    .positive({ message: "Price must be positive." }),
+    .positive({ message: "Price must be positive." })
+    .default(0),
   billingFrequency: z.string({ message: reqError("Billing Frequency") }),
   cola: z.coerce
     .number({ message: reqError("COLA") })
