@@ -24,6 +24,7 @@ import {
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
+import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 
 export const QueueCrudForm = () => {
   // Define queue form
@@ -43,8 +44,8 @@ export const QueueCrudForm = () => {
 
   // Define optimistic mutation to crete or update the queue
   const { mutate: mutatequeue } = useListOptimisticMutation<
-    QueuesTableDto,
-    QueuesTableDto | boolean,
+    QueueCreateUpdateDto,
+    QueueCreateUpdateDto | boolean,
     QueuesTableDto
   >([rowId], queueOptimisticMutationFn, DATA_QUERY_KEY);
 
@@ -52,7 +53,7 @@ export const QueueCrudForm = () => {
   const onSubmit = (formData: z.infer<typeof queueZodSchema>) => {
     // Create or update the queue
     mutatequeue({
-      payload: refineFormData(formData) as unknown as QueuesTableDto,
+      payload: refineFormData(formData) as unknown as QueueCreateUpdateDto,
       crudAction: crudAction,
     });
 
@@ -94,16 +95,20 @@ export const QueueCrudForm = () => {
       <p className="text-md mb-2 border-b-2 pb-2">Additonal Details</p>
       <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
-          <label htmlFor="hasUniqueRef" className="fm text-sm">
+          <label htmlFor="isUniqueReferencesEnforced" className="fm text-sm">
             Enforce unique references
           </label>
-          <CheckboxField id="hasUniqueRef" name="hasUniqueRef" label="" />
+          <CheckboxField
+            id="isUniqueReferencesEnforced"
+            name="hasUniqueRef"
+            label=""
+          />
         </div>
         <div className="ml-1 flex justify-between">
-          <label htmlFor="isEncrypted" className="fm text-sm">
+          <label htmlFor="isStoredEncrypted" className="fm text-sm">
             Store in encrypted format
           </label>
-          <CheckboxField id="isEncrypted" name="isEncrypted" label="" />
+          <CheckboxField id="isStoredEncrypted" name="isEncrypted" label="" />
         </div>
       </div>
 
@@ -111,16 +116,24 @@ export const QueueCrudForm = () => {
       <p className="text-md mb-2 border-b-2 pb-2">Auto retry</p>
       <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
-          <label htmlFor="retryFailed" className="fm text-sm">
+          <label htmlFor="shouldRetryFailedItems" className="fm text-sm">
             Failed Items
           </label>
-          <CheckboxField id="retryFailed" name="retryFailed" label="" />
+          <CheckboxField
+            id="shouldRetryFailedItems"
+            name="retryFailed"
+            label=""
+          />
         </div>
         <div className="ml-1 flex justify-between">
-          <label htmlFor="retryAbandoned" className="fm text-sm">
+          <label htmlFor="shouldRetryAbandonedItems" className="fm text-sm">
             Abandoned Items
           </label>
-          <CheckboxField id="retryAbandoned" name="retryAbandoned" label="" />
+          <CheckboxField
+            id="shouldRetryAbandonedItems"
+            name="retryAbandoned"
+            label=""
+          />
         </div>
 
         <div className="mt-4">
