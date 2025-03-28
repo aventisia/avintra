@@ -12,6 +12,7 @@ import {
         description:
           "The input data table",
         defaultValue: "",
+        placeholder: "0 Rows, 0 columns"
     },
 
     //output
