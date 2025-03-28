@@ -4,6 +4,7 @@ import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availab
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
+import { QueueCreateUpdateDto } from "../dtos/queue-create-update-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
 
@@ -30,9 +31,9 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new queue.
  */
-export const insertQueue = (newqueue: QueuesTableDto) => {
+export const insertQueue = (newqueue: QueueCreateUpdateDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue, {
+    .post<IHttpResponse<QueueCreateUpdateDto>>(`${baseAPIURL}`, newqueue, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -43,9 +44,9 @@ export const insertQueue = (newqueue: QueuesTableDto) => {
 /**
  * Updates an existing queue.
  */
-export const updateQueue = (updatedqueue: QueuesTableDto) => {
+export const updateQueue = (updatedqueue: QueueCreateUpdateDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue, {
+    .put<IHttpResponse<QueueCreateUpdateDto>>(`${baseAPIURL}`, updatedqueue, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -81,12 +82,12 @@ export const deleteQueues = (ids: string[]) => {
 export const queueOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<QueuesTableDto | string | string[]>) => {
+}: IOptimisticMutation<QueueCreateUpdateDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertQueue(payload as QueuesTableDto);
+      return insertQueue(payload as QueueCreateUpdateDto);
     case "update":
-      return updateQueue(payload as QueuesTableDto);
+      return updateQueue(payload as QueueCreateUpdateDto);
     case "delete":
       return deleteQueue(payload as string);
     case "delete-multiple":

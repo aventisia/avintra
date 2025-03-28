@@ -19,7 +19,6 @@ import { FlowsPage } from "./pages/FlowsPage";
 import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
-import { AgentsPage } from "./pages/orchestrator/AgentsPage";
 import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
@@ -33,6 +32,7 @@ import { UsersPage } from "./pages/UsersPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { CrudActionTypeLong } from "@/react-toolkit/constants";
+import { PricingPage } from "./pages/PricingPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -97,6 +97,10 @@ const routerConfig: RouteObject[] = [
         element: <TenantsPage />,
       },
       {
+        path: "/pricing",
+        element: <PricingPage />,
+      },
+      {
         path: "/orchestrator",
         element: <Orchestrator />,
         errorElement: import.meta.env.DEV && <ErrorPage />,
@@ -105,10 +109,6 @@ const routerConfig: RouteObject[] = [
             index: true,
             path: "/orchestrator/machines/:id?/:a?",
             element: <MachinesPage />,
-          },
-          {
-            path: "/orchestrator/agents/:id?/:a?",
-            element: <AgentsPage />,
           },
           {
             path: "/orchestrator/queues/:id?/:a?",

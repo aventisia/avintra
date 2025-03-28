@@ -20,20 +20,19 @@ export interface VaultsTableDto {
   name: string;
 
   /**
- * Gets or sets the name of the credentials. Max-255
- */
+   * Gets or sets the name of the credentials. Max-255
+   */
   userName: string;
 
   /**
-* Gets or sets the name of the credentials. Max-255
-*/
+   * Gets or sets the name of the credentials. Max-255
+   */
   password: string;
 
   /**
-* Gets or sets the description of the credentials. Max-255
-*/
+   * Gets or sets the description of the credentials. Max-255
+   */
   description: string;
-
 
   /**
    * Gets or sets a flag indicating whether the credentials record is disabled.

@@ -17,7 +17,8 @@ import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
 import { machinesTableColumns } from "./MachinesTableColumns";
 import { MachineStats } from "./MachineStats";
-import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction"
+import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
+import { MachineTabsList } from "./MachineTabs";
 
 /**
  * Renders a table of machines.
@@ -51,6 +52,8 @@ export const MachinesTable = () => {
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
               <DTHeading heading={TABLE_HEADING} />
+
+              <MachineTabsList />
 
               <div className="flex items-center gap-2">
                 <DTSearchBox

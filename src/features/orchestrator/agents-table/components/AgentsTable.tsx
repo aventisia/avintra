@@ -14,6 +14,7 @@ import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import { AgentStats } from "./AgentStats";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
+import { MachineTabsList } from "../../machines-table/components/MachineTabs";
 
 /**
  * Renders a table of agents.
@@ -43,6 +44,9 @@ export const AgentsTable = () => {
             <div className="flex items-center justify-between">
               {/* <AgentsTableHeading /> */}
               <DTHeading heading="Agents" />
+
+              <MachineTabsList />
+
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
