@@ -33,7 +33,7 @@ const addToDataTimeFieldList: IDynamicFieldSchema[] = [
       { label: "Months", value: "months" },
       { label: "Years", value: "years" },
     ],
-    defaultValue: "Seconds",
+    defaultValue: "seconds",
   },
   // output
   {

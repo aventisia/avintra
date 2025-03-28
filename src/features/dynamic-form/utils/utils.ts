@@ -45,7 +45,7 @@ import hashTextWithKey from "../constants/configs/cryptography/hash-text-with-ke
 import closeSQLConnection from "../constants/configs/Database/close-sql-connection";
 import executeSQLStatement from "../constants/configs/Database/execute-sql-statement";
 import openSQLConnection from "../constants/configs/Database/open-sql-connection";
-import addToDateTime from "../constants/configs/DateTime/add-to-data-time";
+import addToDatetime from "../constants/configs/DateTime/add-to-data-time";
 import getCurrentDateAndTime from "../constants/configs/DateTime/get-current-date-and-time";
 import subtractDates from "../constants/configs/DateTime/subtract-dates";
 import processEmailMessages from "../constants/configs/email/process-email-messages";
@@ -629,7 +629,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   createHtmlContent,
 
   //Date time
-  addToDateTime,
+  addToDatetime,
   subtractDates,
   getCurrentDateAndTime,
 
