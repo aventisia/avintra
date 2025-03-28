@@ -16,6 +16,7 @@ import { useFetchQueues } from "../hooks/useFetchQueues";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import { queuesTableColumns } from "./QueuesTableColumns";
+import { QueueUploadItemsDialog } from "./queue-upload-items/QueueUploadItemsDialog";
 
 /**
  * Renders a table of queues.
@@ -43,31 +44,33 @@ export const QueuesTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
-          <QueueCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          <QueueUploadItemsDialog>
+            <QueueCrudDialog>
+              {/* Table toolbar */}
+              <div className="flex items-center justify-between">
+                <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumn={SEARCH_COLUMN}
-                  placeholder="Search queues..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
-                <Separator orientation="vertical" className="mx-2 h-6" />
-                <DTCreateButton />
+                <div className="flex items-center gap-2">
+                  <DTSearchBox
+                    table={table}
+                    searchColumn={SEARCH_COLUMN}
+                    placeholder="Search queues..."
+                  />
+                  <DTViewOptions {...{ table, columnDisplayNames }} />
+                  <Separator orientation="vertical" className="mx-2 h-6" />
+                  <DTCreateButton />
+                </div>
               </div>
-            </div>
 
-            {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={queuesTableColumns.length}
-              />
-            </div>
-          </QueueCrudDialog>
+              {/* Data table to render data */}
+              <div className="rounded-md border">
+                <DataTable
+                  table={table}
+                  columnsLength={queuesTableColumns.length}
+                />
+              </div>
+            </QueueCrudDialog>
+          </QueueUploadItemsDialog>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
