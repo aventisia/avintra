@@ -34,19 +34,19 @@ export const descriptionProps: TextareaFieldProps = {
 }
 
 export const maxRetriesProps: InputFieldProps = {
-  name: "maxRetries",
+  name: "maximumRetryAttempts",
   label: "Max Of Retries",
   isRequired: true,
-}
+};
 
 export const inputJsonSchemaProps: InputFieldProps = {
-  name: "inputJsonSchema",
+  name: "specificDataSchemaFile",
   label: "Specific Data Json Schema",
   isRequired: true,
-}
+};
 
 export const outputJsonSchemaProps: InputFieldProps = {
-  name: "outputJsonSchema",
+  name: "outputDataSchemaFile",
   label: "Output Data Json Schema",
   isRequired: true,
-}
+};

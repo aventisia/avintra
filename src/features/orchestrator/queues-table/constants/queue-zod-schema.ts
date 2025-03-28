@@ -44,16 +44,16 @@ const numberSchema = z.coerce
 export const queueZodSchema = z.object({
   id: z.string(),
   name: queueNameSchema,
-  description: z.string().optional(),
+  description: z.string(),
 
-  hasUniqueRef: z.boolean().default(false),
-  isEncrypted: z.boolean().default(false),
-  retryFailed: z.boolean().default(false),
-  retryAbandoned: z.boolean().default(false),
-  maxRetries: numberSchema,
+  isUniqueReferencesEnforced: z.boolean().default(false),
+  isStoredEncrypted: z.boolean().default(false),
+  shouldRetryFailedItems: z.boolean().default(false),
+  shouldRetryAbandonedItems: z.boolean().default(false),
+  maximumRetryAttempts: numberSchema,
 
-  inputJsonSchema: jsonFileSchema,
-  outputJsonSchema: jsonFileSchema,
+  specificDataSchemaFile: jsonFileSchema,
+  outputDataSchemaFile: jsonFileSchema,
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
