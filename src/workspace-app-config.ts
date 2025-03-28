@@ -1,12 +1,22 @@
 import {
-  BotIcon, FileBoxIcon, Library, MonitorPlayIcon, ScrollTextIcon, Shield
-} from 'lucide-react'
-import { AiOutlineThunderbolt } from "react-icons/ai"; import { IAppConfig } from '@/react-toolkit/types/app-config'
-import { NavLocation } from '@/react-toolkit/types/nav-data-types'
+  BotIcon,
+  FileBoxIcon,
+  Library,
+  MonitorPlayIcon,
+  ScrollTextIcon,
+  Shield,
+  TagIcon,
+} from "lucide-react";
+import { AiOutlineThunderbolt } from "react-icons/ai";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
+import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
-  IdentificationIcon, QuestionMarkCircleIcon, QueueListIcon, UsersIcon
-} from '@heroicons/react/24/outline'
-import { DesktopIcon } from '@radix-ui/react-icons'
+  IdentificationIcon,
+  QuestionMarkCircleIcon,
+  QueueListIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
+import { DesktopIcon } from "@radix-ui/react-icons";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -95,6 +105,11 @@ const workspaceAppConfig: IAppConfig = {
             route: "/tenants",
           },
           {
+            Icon: TagIcon,
+            name: "pricing",
+            route: "/pricing",
+          },
+          {
             Icon: UsersIcon,
             name: "users",
             route: "/users",
@@ -103,6 +118,6 @@ const workspaceAppConfig: IAppConfig = {
       },
     ],
   },
-}
+};
 
-export { workspaceAppConfig }
+export { workspaceAppConfig };

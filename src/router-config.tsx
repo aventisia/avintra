@@ -33,6 +33,7 @@ import { UsersPage } from "./pages/UsersPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { CrudActionTypeLong } from "@/react-toolkit/constants";
+import { PricingPage } from "./pages/PricingPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -95,6 +96,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/tenants",
         element: <TenantsPage />,
+      },
+      {
+        path: "/pricing",
+        element: <PricingPage />,
       },
       {
         path: "/orchestrator",
