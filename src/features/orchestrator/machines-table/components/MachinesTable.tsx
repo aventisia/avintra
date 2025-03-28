@@ -17,6 +17,7 @@ import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
 import { machinesTableColumns } from "./MachinesTableColumns";
 import { MachineStats } from "./MachineStats";
+import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction"
 
 /**
  * Renders a table of machines.
@@ -29,6 +30,8 @@ export const MachinesTable = () => {
 
   // Fetch machines data
   const { data } = useFetchMachines();
+
+  useDtCrudQueryAction(data?.data);
 
   // Create a React table for machines data
   const table = useDataTable(
