@@ -140,7 +140,7 @@ import synchronizeDirectories from "../constants/configs/FTP/synchronizeDirector
 import uploadFilesToFtp from "../constants/configs/FTP/upload-file(s)-to-FTP";
 import uploadFoldersToFtp from "../constants/configs/FTP/upload-folder(s)-to-FTP";
 import downloadFromWeb from "../constants/configs/http/download-from-web";
-import invokeSOAPWebService from "../constants/configs/http/invoke-soap-web-service";
+import invokeSoapWebService from "../constants/configs/http/invoke-soap-web-service";
 import invokeWebService from "../constants/configs/http/invoke-web-service";
 import displayInputDialog from "../constants/configs/message-boxes/display-input-dialog";
 import displayMessage from "../constants/configs/message-boxes/display-message";
@@ -525,7 +525,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
 
   //HTTP
   downloadFromWeb,
-  invokeSOAPWebService,
+  invokeSoapWebService,
   invokeWebService,
 
   //Browser automation

@@ -63,6 +63,22 @@ const invokeSOAPWebServiceFieldList: IDynamicFieldSchema[] = [
     defaultValue: false,
   },
   {
+    name: "failOnErrorStatus",
+    type: "switch",
+    label: "Fail on error status",
+    description:
+      "Specify whether the responses of the invoked web service that denote errors will be processed as if they were normal responses (supressing all exceptions), or will result in realted exceptions",
+    defaultValue: false,
+  },
+  {
+    name: "encodeRequestBody",
+    type: "switch",
+    label: "Encode request body",
+    description:
+      "Specify whether the body of request should be URL-econded before invoking",
+    defaultValue: true,
+  },
+  {
     name: "useAgent",
     type: "text",
     label: "User agent",
@@ -147,28 +163,82 @@ const invokeSOAPWebServiceFieldList: IDynamicFieldSchema[] = [
       "Enable this to trim the whitespaces at the end of the request body of the web service response",
     defaultValue: true,
   },
-  //output
-  {
-    name: "soapServiceResponseHeader",
-    type: "switch",
-    label: "SoapServiceResponseHeader",
-    description: "The HTTP headers of the response",
-    defaultValue: true,
+
+ //output
+ {
+  name: "o_soapServiceResponseHeadersOutput", //to watch
+  type: "output-text-field",
+  label: "",
+  description: "The HTTP headers of the response",
+  defaultValue: "SoapServiceResponseHeaders",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_soapServiceResponseHeadersSwitch", value: false }],
+        },
+      ],
+      initialState: true,
+    },
   },
-  {
-    name: "soapServiceResponse",
-    type: "switch",
-    label: "SoapServiceResponseHeader",
-    description: "The web service response text",
-    defaultValue: true,
+},
+{
+  name: "o_soapServiceResponseHeadersSwitch",//to watch
+  type: "output-switch-field",
+  label: "soapServiceResponseHeaders",
+  defaultValue: true,
+},
+
+{
+  name: "o_soapServiceResponseOutput",//to watch
+  type: "output-text-field",
+  label: "",
+  description: "The web service response text",
+  defaultValue: "SoapServiceResponse",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_soapServiceResponseSwitch", value: false }],
+        },
+      ],
+      initialState: true,
+    },
   },
-  {
-    name: "statusCode",
-    type: "switch",
-    label: "StatusCode",
-    description: "The status code returned",
-    defaultValue: true,
+},
+{
+  name: "o_soapServiceResponseSwitch",//to watch
+  type: "output-switch-field",
+  label: "soapServiceResponse",
+  defaultValue: true,
+},
+
+
+
+{
+  name: "o_statusCodeOutput",//to watch
+  type: "output-text-field",
+  label: "",
+  description: "The status code returned",
+  defaultValue: "statusCode",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_statusCodeSwitch", value: false }],
+        },
+      ],
+      initialState: true,
+    },
   },
+},
+{
+  name: "o_statusCodeSwitch",//to watch
+  type: "output-switch-field",
+  label: "StatusCode",
+  defaultValue: true,
+},
+
 ];
 
 const invokeSOAPWebServiceFieldCategories: IDynamicFormKeysCategory[] = [
@@ -182,6 +252,8 @@ const invokeSOAPWebServiceFieldCategories: IDynamicFormKeysCategory[] = [
       ["connectionTimeout"],
       ["followRedirection"],
       ["clearCookies"],
+      ["failOnErrorStatus"],
+      ["encodeRequestBody"],
       ["useAgent"],
       ["encoding"],
       ["acceptUntrustedCertificates"],
@@ -194,14 +266,14 @@ const invokeSOAPWebServiceFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["soapServiceResponseHeader"],
-      ["soapServiceResponse"],
-      ["statusCode"],
+      ["o_soapServiceResponseHeadersOutput", "o_soapServiceResponseHeadersSwitch"],
+      ["o_soapServiceResponseOutput", "o_soapServiceResponseSwitch"],
+      ["o_statusCodeOutput", "o_statusCodeSwitch"],
     ],
   },
 ];
 
-const invokeSOAPWebServiceFieldsToWatch: string[] = ["useCredentials"];
+const invokeSOAPWebServiceFieldsToWatch: string[] = ["useCredentials", "o_soapServiceResponseHeadersOutput", "o_soapServiceResponseHeadersSwitch", "o_soapServiceResponseOutput", "o_soapServiceResponseSwitch", "o_statusCodeOutput", "o_statusCodeSwitch"];
 
 const invokeSOAPWebService: ActivityConfig = {
   fieldList: invokeSOAPWebServiceFieldList,

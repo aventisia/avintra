@@ -112,7 +112,7 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     ],
     description:
       "Specify whether to keep the original file name of the downloaded file or specify a new name",
-    defaultValue: "",
+    defaultValue: "keepOriginalFileName",
     regOptions: {
       requiredBasedOnFields: {
         conditionList: [
@@ -136,7 +136,10 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
       requiredBasedOnFields: {
         conditionList: [
           {
-            fields: [{ key: "fileName", value: "keepOriginalFileName" }],
+            fields: [
+              { key: "fileName", value: "keepOriginalFileName" },
+              { key: "saveResponse", value: "saveToDisk" },
+            ],
             logicalOperator: "AND",
           },
         ],
@@ -155,7 +158,10 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
       requiredBasedOnFields: {
         conditionList: [
           {
-            fields: [{ key: "fileName", value: "specifyFullPath" }],
+            fields: [
+              { key: "fileName", value: "specifyFullPath" },
+              { key: "saveResponse", value: "saveToDisk" },
+            ],
             logicalOperator: "AND",
           },
         ],
@@ -194,6 +200,22 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to clear all cookies created by similar actions during this flow",
     defaultValue: false,
+  },
+  {
+    name: "failOnErrorStatus",
+    type: "switch",
+    label: "Fail on error status",
+    description:
+      "Specify whether the responses of the invoked web service that denote errors will be processed as if they were normal responses (supressing all exceptions), or will result in realted exceptions",
+    defaultValue: false,
+  },
+  {
+    name: "encodeRequestBody",
+    type: "switch",
+    label: "Encode request body",
+    description:
+      "Specify whether the body of request should be URL-econded before invoking",
+    defaultValue: true,
   },
   {
     name: "useAgent",
@@ -382,6 +404,8 @@ const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
       ["connectionTimeout"],
       ["followRedirection"],
       ["clearCookies"],
+      ["failOnErrorStatus"],
+      ["encodeRequestBody"],
       ["useAgent"],
       ["encoding"],
       ["acceptUntrustedCertificates"],
