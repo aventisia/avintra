@@ -59,11 +59,6 @@ const workspaceAppConfig: IAppConfig = {
             route: "/orchestrator/machines",
           },
           {
-            Icon: BotIcon,
-            name: "Agents",
-            route: "/orchestrator/agents",
-          },
-          {
             Icon: QueueListIcon,
             name: "queues",
             route: "/orchestrator/queues",

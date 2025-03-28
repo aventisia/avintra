@@ -19,7 +19,6 @@ import { FlowsPage } from "./pages/FlowsPage";
 import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
-import { AgentsPage } from "./pages/orchestrator/AgentsPage";
 import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
@@ -110,10 +109,6 @@ const routerConfig: RouteObject[] = [
             index: true,
             path: "/orchestrator/machines/:id?/:a?",
             element: <MachinesPage />,
-          },
-          {
-            path: "/orchestrator/agents/:id?/:a?",
-            element: <AgentsPage />,
           },
           {
             path: "/orchestrator/queues/:id?/:a?",
