@@ -1,5 +1,9 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { ARTIFICIAL_DELAY, DEV_JWT_LS_KEY, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
+import {
+  ARTIFICIAL_DELAY,
+  DEV_JWT_LS_KEY,
+  REQUEST_TIMEOUT,
+} from "@/react-toolkit/constants";
 import {
   removeUserSessionLocally,
   setUserSessionLocally,
@@ -9,9 +13,9 @@ import { toast } from "sonner";
 
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
 });
 
 // Intercept request
@@ -122,4 +126,3 @@ function sleep(ms = 2000): Promise<void> {
 }
 
 export { axiosInstance };
-
