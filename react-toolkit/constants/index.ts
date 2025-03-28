@@ -1,3 +1,5 @@
+import { CrudActionType } from "../types/literal-types";
+
 /**
  * A constant string representing an message which user will get from backend when 2FA is enabled.
  * Any change to the backend error message should be reflected here.
@@ -62,4 +64,23 @@ export {
   USER_NAME_LS_KEY,
   REQUEST_TIMEOUT,
   COPYRIGHT_TEXT,
+};
+
+export const CrudActionTypeLong: {
+  [key: string]: CrudActionType;
+} = {
+  c: "create",
+  r: "read",
+  u: "update",
+  d: "delete",
+};
+
+export const CrudActionTypeShort: {
+  [key in CrudActionType]: string;
+} = {
+  create: "c",
+  read: "r",
+  update: "u",
+  delete: "d",
+  "delete-multiple": "m",
 };

@@ -1,8 +1,10 @@
+import { useShallow } from "zustand/react/shallow";
+
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper";
 import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { useShallow } from "zustand/react/shallow";
+
 import { getDialogHeadingDescription } from "../../constants";
 import { MachineCrudForm } from "./MachineCrudForm";
 
@@ -23,7 +25,7 @@ export const MachineCrudDialog = ({ children }: React.PropsWithChildren) => {
   return (
     <DTCrudDialogWrapper>
       {children}
-      <DialogContent side={"right"} className="!max-w-[40rem]">
+      <DialogContent side={"right"} className="!max-w-[32rem]">
         <DialogDefaultHeader
           className="px-3.5 py-3 text-lg tracking-wide"
           heading={dialogHeaderOptions.heading}

@@ -26,6 +26,20 @@ export interface AgentsTableDto {
   name: string | null;
 
   /**
+*  Gets or sets the license Type of the flow.
+* @type {string | null}
+* @memberof AgentsTableDto
+*/
+  licenseType: string | null;
+
+  /**
+ *  Gets or sets a value indicating whether the version is in locked state.
+ * @type {boolean}
+ * @memberof AgentsTableDto
+ */
+  isActive: boolean;
+
+  /**
  *  Gets or sets a value indicating whether the version is in locked state.
  * @type {boolean}
  * @memberof AgentsTableDto

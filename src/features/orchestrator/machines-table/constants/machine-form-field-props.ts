@@ -1,9 +1,9 @@
-import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
-import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { MachineEnvironmentTypesEnum } from '@/react-toolkit/enums/machine-environment-types-enum';
+import { MachineOsTypesEnum } from '@/react-toolkit/enums/machine-os-types-enum';
+import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
+import { SelectFieldProps } from '@/react-toolkit/ui/form/fields/SelectField';
+import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { enumToArray } from '@/react-toolkit/utils/enum-to-array';
 
 // Machine Id
 export const idProps: InputFieldProps = {

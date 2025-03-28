@@ -14,12 +14,17 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
     case "create":
       return { heading: "Create Agent", description: "" };
     case "read":
-      return { heading: "Flow", description: "" };
+      return { heading: "Agent", description: "" };
     case "update":
-      return { heading: "Edit Flow", description: "" };
+      return { heading: "Edit Agent", description: "" };
     default:
       return { heading: "", description: "" };
   }
 };
 
-export { FLOWS_QUERY_KEY, PAGE_HEADER, SEARCH_COLUMN, getDialogHeadingDescription };
+export {
+  FLOWS_QUERY_KEY,
+  PAGE_HEADER,
+  SEARCH_COLUMN,
+  getDialogHeadingDescription,
+};

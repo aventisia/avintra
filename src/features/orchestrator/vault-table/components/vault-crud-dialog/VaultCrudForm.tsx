@@ -1,21 +1,22 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { vaultOptimisticMutationFn } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  accessLevelProps,
+  confirmPasswordProps,
+  descriptionProps,
   idProps,
   isDisabledProps,
-  isEncrypterProps,
   nameProps,
-  typeProps,
-  valueOptionProps,
+  passwordProps,
+  userNameProps,
 } from "../../constants/vault-form-field-props";
 import { vaultZodSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
@@ -63,6 +64,11 @@ export const VaultCrudForm = () => {
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
+  if (crudAction === "read") {
+    form.setValue("userName", "********");
+    form.setValue("password", "********");
+  }
+
   // Return the form
   return (
     <Form
@@ -81,25 +87,17 @@ export const VaultCrudForm = () => {
         nonErrorMessage={availabilityMessage}
       />
 
-      {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
+      {/* User Name */}
+      <InputField {...userNameProps} />
 
-      {crudAction === "create" ? (
-        <SelectField {...accessLevelProps} />
-      ) : (
-        form.getValues("accessLevel") !== "" && (
-          <SelectField {...accessLevelProps} />
-        )
-      )}
+      {/* Password */}
+      <InputField {...passwordProps} />
 
-      {/* value  */}
-      <TextareaField {...valueOptionProps} />
+      {/* retype Password */}
+      <InputField {...confirmPasswordProps} />
 
-      {/* Is encrtypted */}
-      <SwitchField {...isEncrypterProps} />
+      {/* Description */}
+      <TextareaField {...descriptionProps} />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
@@ -122,7 +120,7 @@ export const VaultCrudForm = () => {
             disabled={!isDirty || !isAvailable || isCheckPending}
             className="min-w-[5rem]"
           >
-            {crudAction === "create" ? "Create config" : "Save changes"}
+            {crudAction === "create" ? "Add" : "Save changes"}
           </Button>
         </div>
       )}

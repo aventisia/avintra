@@ -32,7 +32,11 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 export const insertQueue = (newqueue: QueuesTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue)
+    .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
     .then((res) => res.data);
 };
 
@@ -41,7 +45,11 @@ export const insertQueue = (newqueue: QueuesTableDto) => {
  */
 export const updateQueue = (updatedqueue: QueuesTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue)
+    .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
     .then((res) => res.data);
 };
 
@@ -87,4 +95,3 @@ export const queueOptimisticMutationFn = ({
       throw new Error("Invalid action type");
   }
 };
-

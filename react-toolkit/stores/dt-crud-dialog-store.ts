@@ -1,3 +1,4 @@
+import { subscribeWithSelector } from "zustand/middleware";
 import { CrudActionType } from "@/react-toolkit/types/literal-types";
 import { create } from "zustand";
 
@@ -31,26 +32,26 @@ type Actions = {
   toggleFormDirty: (isFormDirty: boolean) => void;
 };
 
-const useDTCrudDialogStore = create<State & Actions>((set) => ({
-  crudDialogOptions: {
-    showDialog: false,
-    rowId: window.crypto.randomUUID(),
-    crudAction: "create",
-  },
-  isFormDirty: false,
+export const useDTCrudDialogStore = create<State & Actions>()(
+  subscribeWithSelector((set) => ({
+    crudDialogOptions: {
+      showDialog: false,
+      rowId: window.crypto.randomUUID(),
+      crudAction: "create",
+    },
+    isFormDirty: false,
 
-  setCrudDialogOptions: (options) => set({ crudDialogOptions: options }),
+    setCrudDialogOptions: (options) => set({ crudDialogOptions: options }),
 
-  setShowDialog: (showDialog) =>
-    set((state) => ({
-      crudDialogOptions: {
-        ...state.crudDialogOptions,
-        showDialog,
-      },
-      isFormDirty: showDialog ? state.isFormDirty : false,
-    })),
+    setShowDialog: (showDialog) =>
+      set((state) => ({
+        crudDialogOptions: {
+          ...state.crudDialogOptions,
+          showDialog,
+        },
+        isFormDirty: showDialog ? state.isFormDirty : false,
+      })),
 
-  toggleFormDirty: (isFormDirty) => set({ isFormDirty }),
-}));
-
-export { useDTCrudDialogStore };
+    toggleFormDirty: (isFormDirty) => set({ isFormDirty }),
+  })),
+);

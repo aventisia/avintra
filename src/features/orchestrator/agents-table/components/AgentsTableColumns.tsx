@@ -1,14 +1,12 @@
+import { formatDistanceToNow } from "date-fns";
+
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
-import { AgentsTableDto } from "../dtos/agents-table-dto";
-import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
-import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+
 import { getColumnName } from "../constants/column-display-names";
-import { AgentRowDeleteAction } from "./AgentRowDeleteAction";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { AssignMachineRowAction } from "./AssignMachineRowAction";
+import { AgentsTableDto } from "../dtos/agents-table-dto";
+import { TableActions } from "./table-actions/TableActions";
 
 /**
  * Array of table columns for the agents table.
@@ -116,12 +114,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the agents row actions component
-      <DataTableRowActions>
-        <DTRowAction rowId={row.original.id || "rowId"} crudAction="read" />
-        <AssignMachineRowAction rowId={row.original.id || "rowId"} />
-        <Separator />
-        <AgentRowDeleteAction rowId={row.original.id || "rowId"} />
-      </DataTableRowActions>
+      <TableActions rowId={row.original.id} />
     ),
   },
 ];

@@ -1,32 +1,40 @@
+import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
+
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-import { Navigate, type RouteObject } from "react-router-dom";
+
 import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
-import { AccountDeactivationTab } from "./features/my-account/components/account-deactivation-tab/AccountDeactivationTab";
-import { DeviceHistoryTab } from "./features/my-account/components/device-history-tab/DeviceHistoryTab";
-import { EmailSettingsTab } from "./features/my-account/components/email-settings-tab/EmailSettingsTab";
-import { ProfileInfoTab } from "./features/my-account/components/profile-info-tab/ProfileInfoTab";
-import { SecurityTab } from "./features/my-account/components/security-tab/SecurityTab";
+import {
+  AccountDeactivation,
+  DeviceHistory,
+  EmailSettings,
+  ProfileInfo,
+  Security,
+} from "./features/my-account/components";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
+import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import { AgentsPage } from "./pages/orchestrator/AgentsPage";
+import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
+import { KeystorePage } from "./pages/orchestrator/KeystorePage";
+import { MachinesPage } from "./pages/orchestrator/MachinesPage";
+import { Orchestrator } from "./pages/orchestrator/Orchestrator";
+import { QueuesPage } from "./pages/orchestrator/QueuesPage";
+import { VaultPage } from "./pages/orchestrator/VaultPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantsPage } from "./pages/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { TriggersPage } from "./pages/orchestrator/TriggersPage";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
 
-import { MachinesPage } from "./pages/orchestrator/MachinesPage";
-import { AgentsPage } from "./pages/orchestrator/AgentsPage";
-import { Orchestrator } from "./pages/orchestrator/Orchestrator";
-import { QueuesPage } from "./pages/orchestrator/QueuesPage";
-import { JobsPage } from "./pages/orchestrator/JobsPage";
-import { ConfigsPage } from "./pages/orchestrator/ConfigsPage";
-import { VaultPage } from "./pages/orchestrator/VaultPage";
-export const routerConfig: RouteObject[] = [
+const routerConfig: RouteObject[] = [
   {
     path: "/",
     element: <WorkspaceUILayout />,
@@ -56,23 +64,23 @@ export const routerConfig: RouteObject[] = [
           {
             index: true,
             path: "/account",
-            element: <ProfileInfoTab />,
+            element: <ProfileInfo />,
           },
           {
             path: "/account/email-settings",
-            element: <EmailSettingsTab />,
+            element: <EmailSettings />,
           },
           {
             path: "/account/security",
-            element: <SecurityTab />,
+            element: <Security />,
           },
           {
             path: "/account/device-history",
-            element: <DeviceHistoryTab />,
+            element: <DeviceHistory />,
           },
           {
             path: "/account/account-deactivation",
-            element: <AccountDeactivationTab />,
+            element: <AccountDeactivation />,
           },
         ],
       },
@@ -95,28 +103,36 @@ export const routerConfig: RouteObject[] = [
         children: [
           {
             index: true,
-            path: "/orchestrator/machines",
+            path: "/orchestrator/machines/:id?/:a?",
             element: <MachinesPage />,
           },
           {
-            path: "/orchestrator/agents",
+            path: "/orchestrator/agents/:id?/:a?",
             element: <AgentsPage />,
           },
           {
-            path: "/orchestrator/queues",
+            path: "/orchestrator/queues/:id?/:a?",
             element: <QueuesPage />,
           },
           {
-            path: "/orchestrator/execution",
-            element: <JobsPage />,
+            path: "/orchestrator/executions/:id?/:a?",
+            element: <ExecutionsPage />,
           },
           {
-            path: "/orchestrator/config-hub",
-            element: <ConfigsPage />,
+            path: "/orchestrator/triggers/:id?/:a?",
+            element: <TriggersPage />,
           },
           {
-            path: "/orchestrator/vault",
+            path: "/orchestrator/keystore/:id?/:a?",
+            element: <KeystorePage />,
+          },
+          {
+            path: "/orchestrator/vault/:id?/:a?",
             element: <VaultPage />,
+          },
+          {
+            path: "/orchestrator/licenses/:id?/:a?",
+            element: <LicensesPage />,
           },
         ],
       },
@@ -152,3 +168,26 @@ export const routerConfig: RouteObject[] = [
     errorElement: <ErrorPage />,
   },
 ];
+
+export const router = createBrowserRouter(routerConfig, {
+  basename: import.meta.env.BASE_URL,
+  unstable_patchRoutesOnNavigation: (state) => {
+    const currentMatch = state.matches[state.matches.length - 1];
+    const id = currentMatch.params["id"];
+    const action = currentMatch.params["a"];
+
+    useDTCrudDialogStore.subscribe(
+      (state) => state,
+      (state) => {
+        if (!!id && !!action && !!CrudActionTypeLong[action]) {
+          state.setCrudDialogOptions({
+            rowId: id ?? window.crypto.randomUUID(),
+            crudAction: CrudActionTypeLong[action],
+            showDialog: true,
+          });
+          state.setShowDialog(true);
+        }
+      },
+    );
+  },
+});

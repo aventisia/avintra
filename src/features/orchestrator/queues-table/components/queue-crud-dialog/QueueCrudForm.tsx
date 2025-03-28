@@ -1,16 +1,25 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputFileField } from "@/react-toolkit/ui/form/fields/InputFileField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
+  descriptionProps,
   idProps,
+  inputJsonSchemaProps,
   isDisabledProps,
+  maxRetriesProps,
   nameProps,
+  outputJsonSchemaProps,
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
@@ -68,12 +77,71 @@ export const QueueCrudForm = () => {
       {/* queue Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Name */}
-      <InputField
-        {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
-      />
+      <p className="text-md mb-2 border-b-2 pb-2">General Details</p>
+      <div className="flex flex-col gap-3">
+        {/* Name */}
+        <InputField
+          {...nameProps}
+          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+          nonErrorMessage={availabilityMessage}
+        />
+
+        {/* Description */}
+        <TextareaField {...descriptionProps} />
+      </div>
+
+      {/* additional options */}
+      <p className="text-md mb-2 border-b-2 pb-2">Additonal Details</p>
+      <div className="flex flex-col gap-2">
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="hasUniqueRef" className="fm text-sm">
+            Enforce unique references
+          </label>
+          <CheckboxField id="hasUniqueRef" name="hasUniqueRef" label="" />
+        </div>
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="isEncrypted" className="fm text-sm">
+            Store in encrypted format
+          </label>
+          <CheckboxField id="isEncrypted" name="isEncrypted" label="" />
+        </div>
+      </div>
+
+      {/* autor etry  */}
+      <p className="text-md mb-2 border-b-2 pb-2">Auto retry</p>
+      <div className="flex flex-col gap-2">
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="retryFailed" className="fm text-sm">
+            Failed Items
+          </label>
+          <CheckboxField id="retryFailed" name="retryFailed" label="" />
+        </div>
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="retryAbandoned" className="fm text-sm">
+            Abandoned Items
+          </label>
+          <CheckboxField id="retryAbandoned" name="retryAbandoned" label="" />
+        </div>
+
+        <div className="mt-4">
+          <InputField {...maxRetriesProps} />
+        </div>
+      </div>
+
+      {/* additional options */}
+      <p className="text-md mb-2 border-b-2 pb-2">Schema Definations</p>
+      <div className="flex flex-col gap-3">
+        <InputFileField
+          {...inputJsonSchemaProps}
+          multiple={false}
+          fileTypes={[".json"]}
+        />
+        <InputFileField
+          multiple={false}
+          {...outputJsonSchemaProps}
+          fileTypes={[".json"]}
+        />
+      </div>
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
@@ -90,7 +158,7 @@ export const QueueCrudForm = () => {
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <div className="!mt-10 flex w-full justify-end">
           <Button
             type="submit"
             disabled={!isDirty || !isAvailable || isCheckPending}

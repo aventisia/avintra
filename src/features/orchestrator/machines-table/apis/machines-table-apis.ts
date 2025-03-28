@@ -23,7 +23,9 @@ const getMachines = () => {
  */
 export const getMachineAgents = (machineId: string) => {
   return axiosInstance
-    .get<IHttpResponse<SelectAgentTableDto[]>>(`${baseAPIURL}/${machineId}/agents`)
+    .get<
+      IHttpResponse<SelectAgentTableDto[]>
+    >(`${baseAPIURL}/${machineId}/agents`)
     .then((res) => res.data);
 };
 
@@ -32,7 +34,9 @@ export const getMachineAgents = (machineId: string) => {
  */
 export const assignAgents = (assignAgentDto: AssignAgentDto) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/${assignAgentDto.machineId}/assign-agent`, assignAgentDto.agentIds)
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/${assignAgentDto.machineId}/assign-agent`, assignAgentDto.agentIds)
     .then((res) => res.data);
 };
 
@@ -40,9 +44,10 @@ export const assignAgents = (assignAgentDto: AssignAgentDto) => {
  * Retrieves list of select options to assign a agent to  new machine.
  */
 export const getNewMachineAgents = () => {
-  console.log("getNewMachineAgents")
   return axiosInstance
-    .get<IHttpResponse<SelectAgentTableDto[]>>(`${import.meta.env.VITE_WORKSPACE_API_URL}/agent/publish-flows`)
+    .get<
+      IHttpResponse<SelectAgentTableDto[]>
+    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/agent/publish-flows`)
     .then((res) => res.data);
 };
 
