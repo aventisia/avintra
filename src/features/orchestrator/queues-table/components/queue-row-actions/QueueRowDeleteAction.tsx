@@ -4,6 +4,7 @@ import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuI
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 
 interface QueueRowDeleteActionProps {
   rowId: string;
@@ -16,7 +17,7 @@ export const QueueRowDeleteAction = ({ rowId }: QueueRowDeleteActionProps) => {
   // Get mutation function to delete the queue
   const { mutate: deleteQueue } = useListOptimisticMutation<
     string,
-    QueuesTableDto | boolean,
+    boolean | QueueCreateUpdateDto,
     QueuesTableDto
   >([rowId], queueOptimisticMutationFn, DATA_QUERY_KEY);
 

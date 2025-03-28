@@ -82,7 +82,9 @@ export const deleteQueues = (ids: string[]) => {
 export const queueOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<QueueCreateUpdateDto | string | string[]>) => {
+}: IOptimisticMutation<
+  QueueCreateUpdateDto | QueuesTableDto | string | string[]
+>) => {
   switch (crudAction) {
     case "create":
       return insertQueue(payload as QueueCreateUpdateDto);
