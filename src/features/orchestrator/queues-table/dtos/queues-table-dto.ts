@@ -7,109 +7,84 @@ export interface QueuesTableDto {
    *
    * Not making it required because same DTO is used for insert and update.
    */
-  id?: string
+  id: string;
 
   /**
-   * Gets or sets the name of the queue. Max-255
+   * Gets or sets the name of the queue.
    */
-  name: string
+  name: string;
 
   /**
-   * Gets or sets the description of the queue. Max-255
+   * Gets the toatal peding work items in queue
    */
-  description: string
+  totalPendingItems: number;
 
   /**
-   * Gets or sets the wheather to enforce the uniqueness of the queue.
+   * Gets or sets description for the queue
    */
-  hasUniqueRef: boolean
+  description: string;
 
   /**
-   * Gets or sets the wheather to store the queue in encrypted format.
+   * Gets or sets the wheather queue Unique References Enforced.
    */
-  isEncrypted: boolean
+  isUniqueReferencesEnforced: boolean;
 
   /**
-   * Gets or sets the wheather to maximum retry attempts for queue.
+   * Gets or sets the wheather queue is Stored Encrypted
    */
-  maxRetries: number
+  isStoredEncrypted: boolean;
 
   /**
-   * Gets or sets the wheather to retry failed items in queue.
+   * Gets or sets the wheather queue should Retry Failed Items
    */
-  retryFailed: boolean
+  shouldRetryFailedItems: boolean;
 
   /**
-   * Gets or sets the wheather to retry abandoned items queue.
+   * Gets or sets the wheather queue should Retry Abandoned Items
    */
-  retryAbandoned: boolean
+  shouldRetryAbandonedItems: boolean;
 
   /**
-   * Gets or sets the peding count of items in queue.
+   * Gets or sets the maximum Retry Attempts for work item
    */
-  pendingCount?: number
+  maximumRetryAttempts: number;
 
   /**
-   * Gets or sets the number of inprogress transactions in the queue.
+   * Gets the queue specific Data Schema Path
    */
-  inprogressCount?: number
+  specificDataSchemaPath: string;
 
   /**
-   * Gets or sets the number of completed transactions in the queue.
+   * Gets the wheather queue output Data Schema Path
    */
-  completedCount?: number
+  outputDataSchemaPath: string;
 
   /**
-   * Gets or sets the number of failed transactions in the queue.
-   */
-  failedCount?: number
-
-  /**
-   * Gets or sets the number of total transactions in the queue.
-   */
-  totalCount?: number
-
-  /**
-   * Gets or sets last update time of the queue.
-   */
-  lastUpdatedOn: Date
-
-  /**
-   * Gets or sets json schema for input value of queue.
-   */
-  inputJsonSchema: File
-
-  /**
-   * Gets or sets json schema for output value of queue.
-   */
-  outputJsonSchema: File
-
-  /**
-   * Gets or sets a flag indicating whether the queue record is disabled.
+   * Gets or sets a flag indicating whether the credentials record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.
    *
-   * Its important to have this property nullable because we need to differentiate between true; false and null.
+   * Its important to have this property nullable because we need to differentiate between true, false and null.
    */
-  isDisabled?: boolean
+  isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the queue record. Max-254
+   * Gets or sets the username of the user who created the credentials record. Max-254
    */
-  createdBy?: string
+  createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the queue record was created.
+   * Gets or sets the date and time when the credentials record was created.
    */
-  createdOn?: Date
+  createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the queue record. Max-254
+   * Gets or sets the username of the user who last modified the credentials record. Max-254
    */
-  lastModifiedBy?: string
+  lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the queue record was last modified.
+   * Gets or sets the date and time when the credentials record was last modified.
    */
-  lastModifiedOn?: Date
+  lastModifiedOn?: Date;
 }
