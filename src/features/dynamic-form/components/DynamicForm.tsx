@@ -84,7 +84,7 @@ const DynamicForm = ({
           <div
             className={cn(
               "w-full",
-              fieldsToRender[0].visible ? "block" : "hidden",
+              // fieldsToRender[0].visible ? "block" : "hidden",
             )}
           >
             {renderFormField(fieldsToRender[0], form)}
@@ -98,7 +98,7 @@ const DynamicForm = ({
                 className={cn(
                   "w-full",
                   fData.containerClassName ? fData.containerClassName : "grow",
-                  fData.visible ? "block" : "hidden",
+                  // fData.visible ? "block" : "hidden",
                 )}
                 key={index}
               >
