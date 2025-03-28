@@ -30,7 +30,7 @@ const removeItemFromListFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "removeItemsBy", value: "index" }],
           },
         ],
-        initialState: false,
+        initialState: true,
       },
       required: true,
     },
