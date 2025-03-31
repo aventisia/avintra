@@ -70,22 +70,68 @@ const runApplicationFieldList: IDynamicFieldSchema[] = [
     description:
       "The maximum wait time, and how long before forcing a continue",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "afterApplicationLaunch", value: "Wait for application to load" },
+              { key: "afterApplicationLaunch", value: "Wait for application to complete" }
+            ],
+            logicalOperator:"OR"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   //   output 
   {
-    name: "appProcessId",
-    type: "switch",
-    label: "AppProcessId",
+    name: "o_appProcessIdOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The process ID output",
-    defaultValue: false,
+    defaultValue: "AppProcessId",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_appProcessIdSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "windowHandle",
-    type: "switch",
-    label: "WindowHandle",
+    name: "o_appProcessIdSwitch",
+    type: "output-switch-field",
+    label: "AppProcessId",
+    defaultValue: true,
+  },
+  {
+    name: "o_appExitCodeOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "Tne window handle. When opening a new window, this will catch the value if the window handle, abd store it in this variable. A window handle is useful to specifically identify a window in a later action",
-    defaultValue: false,
+      "The application exit code",
+    defaultValue: "AppExitCode",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_appExitCodeSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_appExitCodeSwitch",
+    type: "output-switch-field",
+    label: "AppExitCode",
+    defaultValue: true,
   },
 ];
 
@@ -103,14 +149,14 @@ const runApplicationFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["appProcessId"], ["windowHandle"]],
+    formFieldKeys: [["o_appProcessIdOutput", "o_appProcessIdSwitch"], ["o_appExitCodeOutput", "o_appExitCodeSwitch"]],
   },
 ];
 
 const runApplication: ActivityConfig = {
   fieldList: runApplicationFieldList,
   fieldCategories: runApplicationFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["afterApplicationLaunch", "o_appProcessIdOutput", "o_appProcessIdSwitch", "o_appExitCodeOutput", "o_appExitCodeSwitch"],
 };
 
 export default runApplication;

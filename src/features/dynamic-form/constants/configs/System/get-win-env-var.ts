@@ -5,20 +5,29 @@ import {
 } from "../../..";
 
 const getWindowsEnvironmentVariableFieldList: IDynamicFieldSchema[] = [
+  // {
+  //   name: "environmentVariableName",
+  //   type: "select",
+  //   label: "Environment variable name",
+  //   selectOptions: [
+  //     { label: "ChocolateyLastPathUpdate", value: "ChocolateyLastPathUpdate" },
+  //     { label: "OneDrive", value: "OneDrive" },
+  //     { label: "Path", value: "Path" },
+  //     { label: "TEMP", value: "TEMP" },
+  //   ],
+  //   description:
+  //     "The name of the environment variable whose value will be retrieved",
+  //   defaultValue: "Path",
+  // },
   {
     name: "environmentVariableName",
-    type: "select",
+    type: "text",
     label: "Environment variable name",
-    selectOptions: [
-      { label: "ChocolateyLastPathUpdate", value: "ChocolateyLastPathUpdate" },
-      { label: "OneDrive", value: "OneDrive" },
-      { label: "Path", value: "Path" },
-      { label: "TEMP", value: "TEMP" },
-    ],
     description:
       "The name of the environment variable whose value will be retrieved",
-    defaultValue: "Path",
+    defaultValue: "",
   },
+  // Advance
   {
     name: "searchForVariableOnlyInScope",
     type: "switch",
@@ -38,13 +47,40 @@ const getWindowsEnvironmentVariableFieldList: IDynamicFieldSchema[] = [
     description:
       "The scope from which the environment variable should be retrieved",
     defaultValue: "User",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "searchForVariableOnlyInScope", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  // Output
+  {
+    name: "o_environmentVariableValueOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The environment variable's value",
+    defaultValue: "EnvironmentVariableValue",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_environmentVariableValueSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "environmentVariableValue",
-    type: "switch",
+    name: "o_environmentVariableValueSwitch",
+    type: "output-switch-field",
     label: "EnvironmentVariableValue",
-    description: "The environment variable's value",
-    defaultValue: "",
+    defaultValue: true,
   },
 ];
 
@@ -62,14 +98,14 @@ const getWindowsEnvironmentVariableFieldCategories: IDynamicFormKeysCategory[] =
     },
     {
       title: "Output",
-      formFieldKeys: [["environmentVariableValue"]],
+      formFieldKeys: [["o_environmentVariableValueOutput", "o_environmentVariableValueSwitch"]],
     },
   ];
 
 const getWindowsEnvironmentVariable: ActivityConfig = {
   fieldList: getWindowsEnvironmentVariableFieldList,
   fieldCategories: getWindowsEnvironmentVariableFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["searchForVariableOnlyInScope", "o_environmentVariableValueOutput", "o_environmentVariableValueSwitch"],
 };
 
 export default getWindowsEnvironmentVariable;
