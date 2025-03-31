@@ -121,7 +121,7 @@ import createFolder from "../constants/configs/Folder/create-folder";
 import deleteFolder from "../constants/configs/Folder/delete-folder";
 import emptyFolder from "../constants/configs/Folder/empty-folder";
 import getFilesInFolder from "../constants/configs/Folder/get-files-in-folder";
-import getSpecialFolder from "../constants/configs/Folder/get-special-folder";
+import getspecialFolder from "../constants/configs/Folder/get-special-folder";
 import getSubFoldersInFolder from "../constants/configs/Folder/get-sub-folder-in-folder";
 import ifFolderExists from "../constants/configs/Folder/if-folder-exist";
 import moveFolder from "../constants/configs/Folder/move-folder";
@@ -388,7 +388,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   copyFolder,
   moveFolder,
   renameFolder,
-  getSpecialFolder,
+  getspecialFolder,
 
   //File
   ifFileExists,

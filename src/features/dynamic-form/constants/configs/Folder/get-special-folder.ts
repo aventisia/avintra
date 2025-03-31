@@ -33,7 +33,18 @@ const getSpecialFolderFieldList: IDynamicFieldSchema[] = [
       { label: "Pictures", value: "Pictures" },
       { label: "Common program files", value: "CommonProgramFiles" },
     ],
-    defaultValue: "Documents",
+    defaultValue: "Desktop",
+    regOptions: {
+      required: true,
+    },
+  },
+  {
+    name: "folderPath",
+    type: "text",
+    label: "Special folder path",
+    description:
+      "This is the path of the selected special folder for this computer",
+    defaultValue: "",
     regOptions: {
       required: true,
     },
@@ -51,7 +62,7 @@ const getSpecialFolderFieldList: IDynamicFieldSchema[] = [
 const getSpecialFolderFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["specialFolderName"]],
+    formFieldKeys: [["specialFolderName"], ["folderPath"]],
   },
   {
     title: "Output",
