@@ -10,7 +10,6 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";
-// import VariableSelectorPopover from "@/features/variable-selector-popover/components/VariableSelectorPopover";
 import { PopoverClose } from "@radix-ui/react-popover";
 // import OnErrorTabs from "./OnErrorTabs";
 
