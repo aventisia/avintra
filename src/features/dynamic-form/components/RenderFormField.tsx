@@ -255,7 +255,7 @@ const renderFormField = (fieldData: IDynamicFieldSchema, form: any) => {
       defaultValue={fieldData.defaultValue}
       disabled={fieldData.disabled || fieldData.regOptions?.disabled}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={fieldData.visible ? "block" : "hidden"}>
           <DynamicControl form={form} field={field} fData={fieldData} />
           <FormMessage />
         </FormItem>

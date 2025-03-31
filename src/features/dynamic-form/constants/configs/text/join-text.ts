@@ -87,10 +87,26 @@ const joinTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "joinedText",
-    type: "switch",
-    label: "JoinedText",
+    name: "o_joinedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new cropped text",
+    defaultValue: "JoinedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_joinedTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_joinedTextSwitch",
+    type: "output-switch-field",
+    label: "JoinedText",
     defaultValue: true,
   },
 ];
@@ -108,10 +124,10 @@ const joinTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["joinedText"]],
+    formFieldKeys: [["o_joinedTextOutput", "o_joinedTextSwitch"]],
   },
 ];
-const joinTextFieldsToWatch: string[] = ["delimiterToSeparateListItems"];
+const joinTextFieldsToWatch: string[] = ["delimiterToSeparateListItems", "o_joinedTextOutput", "o_joinedTextSwitch"];
 
 const joinText: ActivityConfig = {
   fieldList: joinTextFieldList,

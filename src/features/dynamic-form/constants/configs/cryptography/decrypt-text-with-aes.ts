@@ -92,10 +92,26 @@ const decryptTextWithAesFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "decryptedText",
-    type: "switch",
-    label: "DecryptedText",
+    name: "o_decryptedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The decrypted text for later processing",
+    defaultValue: "DecryptedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_decryptedTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_decryptedTextSwitch",
+    type: "output-switch-field",
+    label: "DecryptedText",
     defaultValue: true,
   },
 ];
@@ -122,14 +138,14 @@ const decryptTextWithAesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["decryptedText"]],
+    formFieldKeys: [["o_decryptedTextOutput", "o_decryptedTextSwitch"]],
   },
 ];
 
 const decryptTextWithAes: ActivityConfig = {
   fieldList: decryptTextWithAesFieldList,
   fieldCategories: decryptTextWithAesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_decryptedTextOutput", "o_decryptedTextSwitch"],
 };
 
 export default decryptTextWithAes;

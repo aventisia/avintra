@@ -75,29 +75,77 @@ const encryptTextWithAesFieldList: IDynamicFieldSchema[] = [
       "Specifies whether to use an initialization vector. When this option is enabled, the randomly generated initialization vector becomes an output in the form of a base64 string",
     defaultValue: false,
   },
-  // output
-  {
-    name: "encryptedText",
-    type: "text",
-    label: "EncryptedText",
-    description: "The encrypted text for later processing",
-    defaultValue: "",
+// output
+{
+  name: "o_encryptedTextOutput",//to watch
+  type: "output-text-field",
+  label: "",
+  description: "The encrypted text for later processing",
+  defaultValue: "EncryptedText",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_encryptedTextSwitch", value: false }],
+        },
+      ],
+      initialState: true,
+    },
   },
-  {
-    name: "salt",
-    type: "text",
-    label: "Salt",
-    description: "The randomly generated salt value for later processing",
-    defaultValue: "",
+},
+{
+  name: "o_encryptedTextSwitch", //to watch
+  type: "output-switch-field",
+  label: "EncryptedText",
+  defaultValue: true,
+},
+{
+  name: "o_saltOutput",//to watch
+  type: "output-text-field",
+  label: "",
+  description: "The randomly generated salt value for later processing",
+  defaultValue: "Salt",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_saltSwitch", value: false }],
+        },
+      ],
+      initialState: true,
+    },
   },
+},
+{
+  name: "o_saltSwitch",
+  type: "output-switch-field",
+  label: "Salt",
+  defaultValue: true,
+},
   {
-    name: "initializationVector",
-    type: "text",
-    label: "InitializationVector",
-    description:
-      "The randomly generated initialization vector value for later processing",
-    defaultValue: "",
+  name: "o_initializationVectorOutput",//to watch
+  type: "output-text-field",
+  label: "",
+  description:
+    "The randomly generated initialization vector value for later processing",
+  defaultValue: "InitializationVector",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_initializationVectorSwitch", value: false }],
+        },
+      ],
+      initialState: true,
+    },
   },
+},
+{
+  name: "o_initializationVectorSwitch",
+  type: "output-switch-field",
+  label: "InitializationVector",
+  defaultValue: true,
+},
 ];
 
 const encryptTextWithAesFieldCategories: IDynamicFormKeysCategory[] = [
@@ -116,14 +164,12 @@ const encryptTextWithAesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["encryptedText"], ["salt"], ["initializationVector"]],
-  },
+    formFieldKeys: [["o_encryptedTextOutput", "o_encryptedTextSwitch"], ["o_saltOutput", "o_saltSwitch"], ["o_initializationVectorOutput", "o_initializationVectorSwitch"]],  },
 ];
 
 const encryptTextWithAes: ActivityConfig = {
   fieldList: encryptTextWithAesFieldList,
   fieldCategories: encryptTextWithAesFieldCategories,
-  fieldsToWatch: [],
-};
+  fieldsToWatch: ["o_encryptedTextOutput", "o_encryptedTextSwitch", "o_saltOutput", "o_saltSwitch", "o_initializationVectorOutput", "o_initializationVectorSwitch"],};
 
 export default encryptTextWithAes;

@@ -2,7 +2,7 @@ import {
   ActivityConfig,
   IDynamicFieldSchema,
   IDynamicFormKeysCategory,
-} from "../../../../types/dynamic-form-types";
+} from "../../../types/dynamic-form-types";
 
 const convertDataTableToTextFieldList: IDynamicFieldSchema[] = [
   {
@@ -72,10 +72,26 @@ const convertDataTableToTextFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "csvText",
-    type: "switch",
-    label: "CSVText",
+    name: "o_csvTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The variable in which the CSV result will be stored",
+    defaultValue: "CSVText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_csvTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_csvTextSwitch",
+    type: "output-switch-field",
+    label: "CSVText",
     defaultValue: true,
   },
 ];
@@ -96,11 +112,13 @@ const convertDataTableToTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["csvText"]],
+    formFieldKeys: [["o_csvTextOutput", "o_csvTextSwitch"]],
   },
 ];
 const convertDataTableToTextFieldsToWatch: string[] = [
   "useCustomColumnsSeparator",
+  "o_csvTextOutput", 
+  "o_csvTextSwitch"
 ];
 
 const convertDataTableToText: ActivityConfig = {

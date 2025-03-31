@@ -42,6 +42,16 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
     description:
       "The country/region to get the time of or add a numeric value as the hours that will be added in the UTC time zone",
     defaultValue: "Europe/Bucharest",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "timeZone", value: "specific time zone (to be deprecated)" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "windowsTimeZone",
@@ -50,11 +60,20 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
     label: "Windows time zone",
     description: "Specify the country/region to obtain the time zone from",
     defaultValue: "(UTC) Coordinated Universal Time",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "timeZone", value: "windows time zone" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "inputType",
     type: "select",
-
     label: "Input Type",
     description:
       "Choose whether to set the offset via a numeric value or by providing a Windows format time zone",
@@ -63,6 +82,16 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
       { label: "Windows time zone", value: "windows time zone" },
     ],
     defaultValue: "offset",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "timeZone", value: "custom input" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "offset",
@@ -71,20 +100,66 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify the number of hours the offset is going to be. Time format is UTC.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "timeZone", value: "custom input" }, 
+              {key: "inputType", value:"offset"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "timeZone",
+    name: "timezoneInput",
     type: "text",
     label: "Time zone",
-    description: "Specify the time zone (Windows time zone)",
+    description:
+      "Specify the time zone (Windows time zone).",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "inputType", value: "windows time zone" },               
+              { key: "timeZone", value: "custom input" }, 
+            ],
+            logicalOperator:"AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+
+  // Output
+  {
+    name: "o_currentDateTimeOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The current datetime value",
+    defaultValue: "CurrentDateTime",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_currentDateTimeSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "currentDateTime",
-    type: "switch",
+    name: "o_currentDateTimeSwitch",
+    type: "output-switch-field",
     label: "CurrentDateTime",
-    description: "The current datetime value",
-    defaultValue: false,
+    defaultValue: true,
   },
 ];
 
@@ -98,18 +173,18 @@ const getCurrentDateAndTimeFieldCategories: IDynamicFormKeysCategory[] = [
       ["windowsTimeZone"],
       ["inputType"],
       ["offset"],
-      ["timeZone"],
+      ["timezoneInput"],
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["currentDateTime"]],
+    formFieldKeys: [["o_currentDateTimeOutput", "o_currentDateTimeSwitch"]],
   },
 ];
 const getCurrentDateAndTime: ActivityConfig = {
   fieldList: getCurrentDateAndTimeFieldList,
   fieldCategories: getCurrentDateAndTimeFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["timeZone", "inputType", "o_currentDateTimeOutput", "o_currentDateTimeSwitch"],
 };
 
 export default getCurrentDateAndTime;

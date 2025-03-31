@@ -241,10 +241,27 @@ const downloadFromWebFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "webPageText",
-    type: "switch",
-    label: "WebPageText",
-    description: "The web page text",
+    name: "o_downloadedFileOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The downloaded file",
+    defaultValue: "DownloadedFile",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_downloadedFileSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    // name: "webPageText",
+    name: "o_downloadedFileSwitch",
+    type: "output-switch-field",
+    label: "DownloadedFile",
     defaultValue: true,
   },
 ];
@@ -279,7 +296,7 @@ const downloadFromWebFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["webPageText"]],
+    formFieldKeys: [["o_downloadedFileOutput", "o_downloadedFileSwitch"]],
   },
 ];
 
@@ -288,6 +305,8 @@ const downloadFromWebFieldsToWatch: string[] = [
   "saveResponse",
   "fileName",
   "useCredentials",
+  "o_downloadedFileOutput", 
+  "o_downloadedFileSwitch"
 ];
 
 const downloadFromWeb: ActivityConfig = {

@@ -56,6 +56,10 @@ import { FormControl } from "@/react-toolkit/ui/form/FormControl";
 import { FormDescription } from "@/react-toolkit/ui/form/FormDescription";
 import { FormItem } from "@/react-toolkit/ui/form/FormItem";
 import { CodeEditor } from "./code-editor/CodeEditor";
+import VariableSelectorPopover from "@/features/variable-selector-popover/components/VariableSelectorPopover";
+import { useEffect, useMemo } from "react";
+import { useVariableSelectorInputStore } from "@/stores/variable-selector-input-value-store";
+import { useShallow } from "zustand/react/shallow";
 
 interface DynamicControlProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -64,6 +68,66 @@ interface DynamicControlProps {
 }
 
 const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
+  const { focusedInput, selectedValue, setFocusedInput, setSelectedValue } =
+    useVariableSelectorInputStore(
+      useShallow((state) => ({
+        setSelectedValue: state.setSelectedValue,
+        selectedValue: state.selectedValue,
+        focusedInput: state.focusedInput,
+        setFocusedInput: state.setFocusedInput,
+      })),
+    );
+
+  const { setValue } = form;
+
+  const handleFocus = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    // Set the reference to the currently focused input or textarea
+    setFocusedInput(e.currentTarget);
+  };
+
+  const memoizedInputValue = useMemo(() => {
+    if (focusedInput && selectedValue) {
+      const currentInputValue = focusedInput.value;
+      const cursorPosition = focusedInput.selectionStart;
+
+      // Check if cursorPosition is valid (not null)
+      if (cursorPosition !== null && cursorPosition !== undefined) {
+        // Insert the selected value (%${selectedValue}%) at the cursor position
+        const newValue =
+          currentInputValue.slice(0, cursorPosition) +
+          `%${selectedValue}%` +
+          currentInputValue.slice(cursorPosition);
+
+        return newValue;
+      } else {
+        return `${currentInputValue} %${selectedValue}%`;
+      }
+    }
+    return "";
+  }, [selectedValue, focusedInput]); // Recompute when selectedValue or focusedInput changes
+
+  useEffect(() => {
+    if (focusedInput && selectedValue) {
+      const name = focusedInput.getAttribute("name");
+      if (name?.startsWith("o_")) {
+        setValue(name, selectedValue);
+      } else {
+        setValue(name, memoizedInputValue);
+      }
+      setFocusedInput(null);
+      setSelectedValue("");
+    }
+  }, [
+    memoizedInputValue,
+    focusedInput,
+    selectedValue,
+    setFocusedInput,
+    setSelectedValue,
+    setValue,
+  ]); // Run the effect when memoizedInputValue changes
+
   switch (fData.type) {
     case "text":
     case "number":
@@ -75,16 +139,26 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
       return (
         <>
           <DynamicFieldLabel fData={fData} />
-          <FormControl>
-            <Input
-              fieldSize="sm"
-              className={cn(fData.className)}
-              readOnly={fData.readonly}
-              type={fData.type}
-              placeholder={fData.placeholder}
-              {...field}
-            />
-          </FormControl>
+          <div className="group relative">
+            <FormControl>
+              <Input
+                fieldSize="sm"
+                className={cn(fData.className)}
+                readOnly={fData.readonly}
+                type={fData.type}
+                placeholder={fData.placeholder}
+                {...field}
+                onFocus={handleFocus}
+              />
+            </FormControl>
+            <div
+              className="z-100 absolute bottom-full right-0 hidden transition-opacity duration-300 ease-in-out group-focus-within:block"
+              onFocus={(e) => e.currentTarget.classList.remove("hidden")}
+              onBlur={(e) => e.currentTarget.classList.add("hidden")}
+            >
+              <VariableSelectorPopover />
+            </div>
+          </div>
         </>
       );
     case "otp":
@@ -360,24 +434,35 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
     case "output-text-field":
       return (
         <>
-          <FormControl>
-            <Input
-              fieldSize="xs"
-              className={cn(
-                fData.className,
-                "bg-secondary-light inline h-6 w-fit cursor-pointer rounded-lg px-2 py-1 font-semibold text-secondary placeholder:text-white hover:ring-1 focus-visible:cursor-auto focus-visible:border-none focus-visible:ring-1 disabled:opacity-70",
-              )}
-              readOnly={fData.readonly}
-              type={fData.type}
-              placeholder={fData.placeholder}
-              {...field}
-            />
-          </FormControl>
-          {fData.description && (
-            <FormDescription className="text-xs">
-              {fData.description}
-            </FormDescription>
-          )}
+          <div className="group relative">
+            <FormControl>
+              <Input
+                fieldSize="xs"
+                className={cn(
+                  fData.className,
+                  "inline h-6 w-fit cursor-pointer rounded-lg bg-secondary-light px-2 py-1 font-semibold text-secondary placeholder:text-white hover:ring-1 focus-visible:cursor-auto focus-visible:border-none focus-visible:ring-1 disabled:opacity-70",
+                )}
+                readOnly={fData.readonly}
+                type={fData.type}
+                placeholder={fData.placeholder}
+                {...field}
+                onFocus={handleFocus}
+                autoComplete="off"
+              />
+            </FormControl>
+            {fData.description && (
+              <FormDescription className="text-xs">
+                {fData.description}
+              </FormDescription>
+            )}
+            <div
+              className="z-100 absolute bottom-[90%] right-0 hidden transition-opacity duration-300 ease-in-out group-focus-within:block"
+              onFocus={(e) => e.currentTarget.classList.remove("hidden")}
+              onBlur={(e) => e.currentTarget.classList.add("hidden")}
+            >
+              <VariableSelectorPopover />
+            </div>
+          </div>
         </>
       );
     case "radio-group":
@@ -462,14 +547,24 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
       return (
         <>
           <DynamicFieldLabel fData={fData} />
-          <FormControl>
-            <Textarea
-              size="sm"
-              className={cn(fData.className)}
-              placeholder={fData.placeholder}
-              {...field}
-            />
-          </FormControl>
+          <div className="group relative">
+            <FormControl>
+              <Textarea
+                size="sm"
+                className={cn(fData.className)}
+                placeholder={fData.placeholder}
+                {...field}
+                onFocus={handleFocus}
+              />
+            </FormControl>
+            <div
+              className="absolute bottom-full right-0 z-10 hidden group-focus-within:block"
+              onFocus={(e) => e.currentTarget.classList.remove("hidden")}
+              onBlur={(e) => e.currentTarget.classList.add("hidden")}
+            >
+              <VariableSelectorPopover />
+            </div>
+          </div>
         </>
       );
     case "codeEditor":

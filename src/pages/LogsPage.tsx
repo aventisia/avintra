@@ -1,7 +1,7 @@
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { lazy, Suspense } from "react";
 
-// Lazy load the ProjectsTable component.
+// Lazy load the Flow logs component.
 const FlowLogsTable = lazy(() =>
   import("@/features/flow-logs/components/FlowLogsTable").then((module) => ({
     default: module.FlowLogsTable,
@@ -9,8 +9,8 @@ const FlowLogsTable = lazy(() =>
 );
 
 /**
- * Renders the ProjectsPage component.
- * @returns JSX element representing the ProjectsPage component.
+ * Renders the Flow logs component.
+ * @returns JSX element representing the Flow logs component.
  */
 export const LogsPage = () => {
   return (

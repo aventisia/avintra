@@ -19,7 +19,7 @@ export const useFetchFlowLogs = () => {
   // Access flowId query parameters
   const flowId = queryParams.get("f");
 
-  // Get projects using react query
+  // Get flow logs using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
     queryFn: () => getFlowLogs(flowId || ""),

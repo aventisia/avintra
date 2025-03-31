@@ -66,7 +66,6 @@ export const useFetchFlowToLoad = () => {
           versionNumber: data.data.versionNumber,
           name: data.data.name,
           type: data.data.type,
-          projectName: data.data.projectName,
         }
 
         if (flow) {

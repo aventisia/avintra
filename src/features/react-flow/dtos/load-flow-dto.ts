@@ -10,9 +10,6 @@ export interface IProjectInfoDTO {
 
   /** Flow Type */
   type?: string;
-
-  /** Project Name */
-  projectName?: string;
 }
 
 /** To get flow props to load when user opens a flow in studio */

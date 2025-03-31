@@ -76,15 +76,80 @@ const readFromCSVFileFieldList: IDynamicFieldSchema[] = [
       { label: "Semicolon", value: "semicolon" },
       { label: "Tab", value: "tab" },
     ],
-    defaultValue: "comma",
+    defaultValue: "systemDefault",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "columnsSeparator", value: "predefined" },
+
+            ],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "customSeparator",
+    type: "text",
+    label: "Custom Separator",
+    description:
+      "The custom column-separator to use a predefined columns separator, a custom one or fixed column widths",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "columnsSeparator", value: "custom" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "fixedColumnWidths",
+    type: "text",
+    label: "Fixed Column widths",
+    description:
+      "The fixed column-widths to use for parsing the CSV resource specified. Separate the widths using commas, spaces, tabs, or newlines",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "columnsSeparator", value: "fixedWidths" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   //   output 
   {
-    name: "CSVTable",
-    type: "switch",
-    label: "CSVTable",
+    name: "o_CSVTableOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The contents of the CSV files as a data table",
-    defaultValue: "",
+    defaultValue: "CSVTable",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_CSVTableSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_CSVTableSwitch",
+    type: "output-switch-field",
+    label: "CSVTable",
+    defaultValue: true,
   },
 ];
 
@@ -100,14 +165,16 @@ const readFromCSVFileFieldCategories: IDynamicFormKeysCategory[] = [
       ["firstLineContainsColumnNames"],
       ["columnsSeparator"],
       ["separator"],
+      ["customSeparator"],
+      ["fixedColumnWidths"]
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["CSVTable"]],
+    formFieldKeys: [["o_CSVTableOutput", "o_CSVTableSwitch"]],
   },
 ];
-const readFromCSVFileFieldsToWatch: string[] = [];
+const readFromCSVFileFieldsToWatch: string[] = ["columnsSeparator", "separator", "customSeparator", "fixedColumnWidths", "o_CSVTableOutput", "o_CSVTableSwitch"];
 const readFromCSVFile: ActivityConfig = {
   fieldList: readFromCSVFileFieldList,
   fieldCategories: readFromCSVFileFieldCategories,

@@ -4,7 +4,7 @@ import {
   ActivityConfig,
 } from "../../..";
 
-const writeFromCSVFileFieldList: IDynamicFieldSchema[] = [
+const writeToCSVFileFieldList: IDynamicFieldSchema[] = [
   {
     name: "variableToWrite",
     type: "text",
@@ -68,6 +68,24 @@ const writeFromCSVFileFieldList: IDynamicFieldSchema[] = [
     defaultValue: "overwrite",
   },
   {
+    name: "customColumnSeparator",
+    type: "text",
+    label: "Custom column separator",
+    description:
+      "The custom column separator to use in the csv file",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useCustomColumnsSeparator", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
     name: "separator",
     type: "select",
     label: "Separator",
@@ -78,7 +96,17 @@ const writeFromCSVFileFieldList: IDynamicFieldSchema[] = [
       { label: "Semicolon", value: "semicolon" },
       { label: "Tab", value: "tab" },
     ],
-    defaultValue: "comma",
+    defaultValue: "systemDefault",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useCustomColumnsSeparator", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "useCustomColumnsSeparator",
@@ -88,18 +116,9 @@ const writeFromCSVFileFieldList: IDynamicFieldSchema[] = [
       "Specifies whether to use a custom column separator or predefined separator",
     defaultValue: false,
   },
-
-  // output 
-  {
-    name: "CSVTable",
-    type: "switch",
-    label: "CSVTable",
-    description: "The contents of the CSV files as a data table",
-    defaultValue: "",
-  },
 ];
 
-const writeFromCSVFileFieldCategories: IDynamicFormKeysCategory[] = [
+const writeToCSVFileFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
     formFieldKeys: [["variableToWrite"], ["filePath"], ["encoding"]],
@@ -110,20 +129,17 @@ const writeFromCSVFileFieldCategories: IDynamicFormKeysCategory[] = [
       ["includeColumnNames"],
       ["ifFileExists"],
       ["separator"],
+      ["customColumnSeparator"],
       ["useCustomColumnsSeparator"],
     ],
-  },
-  {
-    title: "Output",
-    formFieldKeys: [["CSVTable"]],
   },
 ];
 
 
-const writeFromCSVFile: ActivityConfig = {
-  fieldList: writeFromCSVFileFieldList,
-  fieldCategories: writeFromCSVFileFieldCategories,
-  fieldsToWatch: [],
+const writeToCSVFile: ActivityConfig = {
+  fieldList: writeToCSVFileFieldList,
+  fieldCategories: writeToCSVFileFieldCategories,
+  fieldsToWatch: ["useCustomColumnsSeparator"],
 };
 
-export default writeFromCSVFile;
+export default writeToCSVFile;

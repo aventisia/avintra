@@ -10,7 +10,7 @@ const goToFieldList: IDynamicFieldSchema[] = [
     type: "select",
     label: "Got to label",
     description: "Label in the flow",
-    selectOptions: [], //dynamic options
+    selectOptions: [{label: "No labels available", value: "No labels avaialble", disable: true}], //dynamic options
     defaultValue: "",
   },
 ];

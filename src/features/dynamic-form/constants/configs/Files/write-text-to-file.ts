@@ -4,7 +4,7 @@ import {
   ActivityConfig,
 } from "../../..";
 
-const writeTextFromFileFieldList: IDynamicFieldSchema[] = [
+const writeTextToFileFieldList: IDynamicFieldSchema[] = [
   {
     name: "filePath",
     type: "text",
@@ -27,12 +27,11 @@ const writeTextFromFileFieldList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "appendNewFile",
-    type: "textarea",
-    label: "Append new file",
-    description:
-      "Specify whether to append new line at the end of overall text to write to the file",
-    defaultValue: "",
+    name: "appendNewLine",
+    type: "switch",
+    label: "Append new line",
+    description: "Specifies whether to append a new line at the end of the overall text to write to the file",
+    defaultValue: true,
   },
   {
     name: "ifFileExists",
@@ -64,27 +63,27 @@ const writeTextFromFileFieldList: IDynamicFieldSchema[] = [
       },
       { label: "ASCII", value: "ascii" },
     ],
-    defaultValue: "utf8",
+    defaultValue: "unicode",
   },
 ];
 
-const writeTextFromFileFieldCategories: IDynamicFormKeysCategory[] = [
+const writeTextToFileFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
     formFieldKeys: [
       ["filePath"],
       ["textToWrite"],
-      ["appendNewFile"],
+      ["appendNewLine"],
       ["ifFileExists"],
       ["encoding"],
     ],
   },
 ];
 
-const writeTextFromFile: ActivityConfig = {
-  fieldList: writeTextFromFileFieldList,
-  fieldCategories: writeTextFromFileFieldCategories,
+const writeTextToFile: ActivityConfig = {
+  fieldList: writeTextToFileFieldList,
+  fieldCategories: writeTextToFileFieldCategories,
   fieldsToWatch: [],
 };
 
-export default writeTextFromFile;
+export default writeTextToFile;

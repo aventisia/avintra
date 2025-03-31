@@ -69,10 +69,26 @@ const generateRandomNumberFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "randomNumbers",
-    type: "switch",
-    label: "RandomNumbers",
+    name: "o_randomNumbersOutput",//to watch
+    type: "output-text-field",
+    label: "",
     description: "The newly generated list of random numbers",
+    defaultValue: "randomNumber",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_randomNumbersSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_randomNumbersSwitch",//to watch
+    type: "output-switch-field",
+    label: "RandomNumbers",
     defaultValue: true,
   },
 ];
@@ -90,13 +106,13 @@ const generateRandomNumberFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["randomNumbers"]],
+    formFieldKeys: [["o_randomNumbersOutput", "o_randomNumbersSwitch"]],
   },
 ];
 
 const generateRandomNumber: ActivityConfig = {
   fieldList: generateRandomNumberFieldList,
   fieldCategories: generateRandomNumberFieldCategories,
-  fieldsToWatch: ["generateMultipleNumbers"],
+  fieldsToWatch: ["generateMultipleNumbers", "o_randomNumbersOutput", "o_randomNumbersSwitch"],
 };
 export default generateRandomNumber;

@@ -28,7 +28,7 @@ const openFtpConnectionFieldList: IDynamicFieldSchema[] = [
     defaultValue: false,
   },
   {
-    name: "username",
+    name: "userName",
     type: "text",
     label: "Username",
     description: "Specify the username of the FTP account to use",

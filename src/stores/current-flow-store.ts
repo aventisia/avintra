@@ -43,9 +43,7 @@ type Actions = {
 };
 
 export const useCurrentFlowStore = create<State & Actions>((set) => ({
-  projectId: "",
   currentFlow: { id: "", name: "" },
-  flowsQueryKey: [],
   isFlowLoading: false,
   isFlowSaving: false,
   isFlowExecuting: false,
@@ -54,7 +52,6 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     versionNumber: null,
     name: "",
     type: "",
-    projectName: "",
   },
 
 

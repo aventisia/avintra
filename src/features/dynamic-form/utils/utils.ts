@@ -45,7 +45,7 @@ import hashTextWithKey from "../constants/configs/cryptography/hash-text-with-ke
 import closeSQLConnection from "../constants/configs/Database/close-sql-connection";
 import executeSQLStatement from "../constants/configs/Database/execute-sql-statement";
 import openSQLConnection from "../constants/configs/Database/open-sql-connection";
-import addToDateTime from "../constants/configs/DateTime/add-to-data-time";
+import addToDatetime from "../constants/configs/DateTime/add-to-data-time";
 import getCurrentDateAndTime from "../constants/configs/DateTime/get-current-date-and-time";
 import subtractDates from "../constants/configs/DateTime/subtract-dates";
 import processEmailMessages from "../constants/configs/email/process-email-messages";
@@ -102,17 +102,18 @@ import getFilePathPart from "../constants/configs/Files/get-file-path-part";
 import getTemporaryFile from "../constants/configs/Files/get-temporary-file";
 import ifFileExists from "../constants/configs/Files/if-file-exists";
 import moveFiles from "../constants/configs/Files/move-files";
+import renameFile from "../constants/configs/Files/rename-files"
 import readFromCSVFile from "../constants/configs/Files/read-from-csv-file";
 import readTextFromFile from "../constants/configs/Files/read-text-from-file";
 import waitForFile from "../constants/configs/Files/wait-for-file";
-import writeFromCSVFile from "../constants/configs/Files/write-from-csv-file";
-import writeTextFromFile from "../constants/configs/Files/write-text-from-file";
+import writeToCSVFile from "../constants/configs/Files/write-to-csv-file";
+import writeTextToFile from "../constants/configs/Files/write-text-to-file";
 import comment from "../constants/configs/flow-control/comment";
 import getLastError from "../constants/configs/flow-control/get-last-error";
 import goTo from "../constants/configs/flow-control/go-to";
 import label from "../constants/configs/flow-control/label";
 import region from "../constants/configs/flow-control/region";
-import runSubFlow from "../constants/configs/flow-control/run-subflow";
+import runSubflow from "../constants/configs/flow-control/run-subflow";
 import stopFlow from "../constants/configs/flow-control/stop-flow";
 import wait from "../constants/configs/flow-control/wait";
 import copyFolder from "../constants/configs/Folder/copy-folder";
@@ -140,7 +141,7 @@ import synchronizeDirectories from "../constants/configs/FTP/synchronizeDirector
 import uploadFilesToFtp from "../constants/configs/FTP/upload-file(s)-to-FTP";
 import uploadFoldersToFtp from "../constants/configs/FTP/upload-folder(s)-to-FTP";
 import downloadFromWeb from "../constants/configs/http/download-from-web";
-import invokeSOAPWebService from "../constants/configs/http/invoke-soap-web-service";
+import invokeSoapWebService from "../constants/configs/http/invoke-soap-web-service";
 import invokeWebService from "../constants/configs/http/invoke-web-service";
 import displayInputDialog from "../constants/configs/message-boxes/display-input-dialog";
 import displayMessage from "../constants/configs/message-boxes/display-message";
@@ -199,7 +200,8 @@ import appendLineToText from "../constants/configs/text/append-line-to-text";
 import changeTextCase from "../constants/configs/text/change-text-case";
 import convertNumberToText from "../constants/configs/text/convert-number-to-text";
 import convertTextToDatetime from "../constants/configs/text/convert-text-to-datetime";
-import ConvertTextToNumber from "../constants/configs/text/convert-text-to-number";
+import convertTextToNumber from "../constants/configs/text/convert-text-to-number";
+import convertDatetimeToText from "../constants/configs/text/convert-datetime-to-text"
 import createHtmlContent from "../constants/configs/text/create-html-content";
 import createRandomText from "../constants/configs/text/create-random-text";
 import cropText from "../constants/configs/text/crop-text";
@@ -247,21 +249,24 @@ import setWindowVisibility from "../constants/configs/ui-automation/windows/set-
 import addItemToList from "../constants/configs/variables/add-item-to-list";
 import clearList from "../constants/configs/variables/clear-list";
 import convertCustomObjectToJson from "../constants/configs/variables/convert-custom-object-to-json";
-import convertJSONToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
+import convertJsonToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
 import createNewList from "../constants/configs/variables/create-new-list";
-import clearDataTable from "../constants/configs/variables/data-table/clear-data-table";
-import convertDataTableToText from "../constants/configs/variables/data-table/convert-data-table-to-text";
-import deleteColumnFromDataTable from "../constants/configs/variables/data-table/delete-column-from-data-table";
-import deleteDuplicateRowsFromDataTable from "../constants/configs/variables/data-table/delete-duplicate-rows-from-data-table";
-import deleteEmptyRowsFromDataTable from "../constants/configs/variables/data-table/delete-empty-rows-from-data-table";
-import deleteRowFromDataTable from "../constants/configs/variables/data-table/delete-row-from-data-table";
-import findOrReplaceInDataTable from "../constants/configs/variables/data-table/find-or-replace-in-data-table";
-import insertColumnIntoDataTable from "../constants/configs/variables/data-table/insert-column-into-data-table";
-import insertRowIntoDataTable from "../constants/configs/variables/data-table/insert-row-into-data-table";
-import mergeDataTables from "../constants/configs/variables/data-table/merge-data-table";
-import readFromCsvTextVariable from "../constants/configs/variables/data-table/read-from-csv-text-variable";
-import sortDataTable from "../constants/configs/variables/data-table/sort-data-table";
-import updateDataTableItem from "../constants/configs/variables/data-table/update-data-table-item";
+import clearDataTable from "../constants/configs/DataTable/clear-data-table";
+import createNewDataTable from "../constants/configs/DataTable/create-data-table";
+import convertDataTableToText from "../constants/configs/DataTable/convert-data-table-to-text";
+import deleteColumnFromDataTable from "../constants/configs/DataTable/delete-column-from-data-table";
+import deleteDuplicateRowsFromDataTable from "../constants/configs/DataTable/delete-duplicate-rows-from-data-table";
+import deleteEmptyRowsFromDataTable from "../constants/configs/DataTable/delete-empty-rows-from-data-table";
+import deleteRowFromDataTable from "../constants/configs/DataTable/delete-row-from-data-table";
+import findOrReplaceInDataTable from "../constants/configs/DataTable/find-or-replace-in-data-table";
+import insertColumnIntoDataTable from "../constants/configs/DataTable/insert-column-into-data-table";
+import insertRowIntoDataTable from "../constants/configs/DataTable/insert-row-into-data-table";
+import mergeDataTables from "../constants/configs/DataTable/merge-data-table";
+import readFromCsvTextVariable from "../constants/configs/DataTable/read-from-csv-text-variable";
+import sortDataTable from "../constants/configs/DataTable/sort-data-table";
+import updateDataTableItem from "../constants/configs/DataTable/update-data-table-item";
+import joinDataTables from "../constants/configs/DataTable/join-data-table"
+import filterDataTable from "../constants/configs/DataTable/filter-data-table"
 import decreaseVariable from "../constants/configs/variables/decrease-variable";
 import findCommonListItems from "../constants/configs/variables/find-common-list-items";
 import generateRandomNumber from "../constants/configs/variables/generate-random-number";
@@ -326,10 +331,11 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   deleteEmptyRowsFromDataTable,
   deleteDuplicateRowsFromDataTable,
   clearDataTable,
+  createNewDataTable,
   sortDataTable,
-  // filterDataTable,
+  filterDataTable,
   mergeDataTables,
-  // joinDataTables,
+  joinDataTables,
   readFromCsvTextVariable,
   convertDataTableToText,
   truncateNumber,
@@ -344,7 +350,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   findCommonListItems,
   subtractLists,
   retrieveDataTableColumnIntoList,
-  convertJSONToCustomObject,
+  convertJsonToCustomObject,
   convertCustomObjectToJson,
   addItemToList,
   createNewList,
@@ -368,7 +374,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   goTo,
   label,
   region,
-  runSubFlow,
+  runSubflow,
   stopFlow,
   wait,
 
@@ -389,11 +395,12 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   waitForFile,
   copyFile,
   moveFiles,
+  renameFile,
   deleteFiles,
   readTextFromFile,
-  writeTextFromFile,
+  writeTextToFile,
   readFromCSVFile,
-  writeFromCSVFile,
+  writeToCSVFile,
   getFilePathPart,
   getTemporaryFile,
   convertBase64ToText,
@@ -520,7 +527,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
 
   //HTTP
   downloadFromWeb,
-  invokeSOAPWebService,
+  invokeSoapWebService,
   invokeWebService,
 
   //Browser automation
@@ -610,10 +617,10 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   trimText,
   reverseText,
   changeTextCase,
-  ConvertTextToNumber,
+  convertTextToNumber,
   convertNumberToText,
   convertTextToDatetime,
-  // convertDatetimeToText,
+  convertDatetimeToText,
   createRandomText,
   joinText,
   splitText,
@@ -624,7 +631,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   createHtmlContent,
 
   //Date time
-  addToDateTime,
+  addToDatetime,
   subtractDates,
   getCurrentDateAndTime,
 

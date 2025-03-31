@@ -5,7 +5,6 @@ import {
 } from "@/react-toolkit/ui/popover";
 import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
 import { useShallow } from "zustand/react/shallow";
-import { useFlowsQueryKey } from "../hooks/useFlowsQueryKey";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 import { FlowCrudDialog } from "./flow-crud-dialog";
 import { FlowsPopoverContent } from "./flows-popover-content";
@@ -24,9 +23,6 @@ export const FlowsPopover = ({
       togglePopoverOpen: state.togglePopoverOpen,
     })),
   );
-
-  // Set flows query key, projectId in store
-  useFlowsQueryKey();
 
   // Return Popover
   return (

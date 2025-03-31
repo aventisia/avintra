@@ -77,26 +77,74 @@ const encryptFromFileWithAesFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "encryptedText",
-    type: "text",
-    label: "EncryptedText",
+    name: "o_encryptedTextOutput",//to watch
+    type: "output-text-field",
+    label: "",
     description: "The encrypted text for later processing",
-    defaultValue: "",
+    defaultValue: "EncryptedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_encryptedTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "salt",
-    type: "text",
-    label: "Salt",
+    name: "o_encryptedTextSwitch", //to watch
+    type: "output-switch-field",
+    label: "EncryptedText",
+    defaultValue: true,
+  },
+  {
+    name: "o_saltOutput",//to watch
+    type: "output-text-field",
+    label: "",
     description: "The randomly generated salt value for later processing",
-    defaultValue: "",
+    defaultValue: "Salt",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_saltSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "initializationVector",
-    type: "text",
-    label: "InitializationVector",
+    name: "o_saltSwitch",
+    type: "output-switch-field",
+    label: "Salt",
+    defaultValue: true,
+  },
+    {
+    name: "o_initializationVectorOutput",//to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The randomly generated initialization vector value for later processing",
-    defaultValue: "",
+    defaultValue: "InitializationVector",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_initializationVectorSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_initializationVectorSwitch",
+    type: "output-switch-field",
+    label: "InitializationVector",
+    defaultValue: true,
   },
 ];
 
@@ -116,14 +164,14 @@ const encryptFromFileWithAesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["encryptedText"], ["salt"], ["initializationVector"]],
+    formFieldKeys: [["o_encryptedTextOutput", "o_encryptedTextSwitch"], ["o_saltOutput", "o_saltSwitch"], ["o_initializationVectorOutput", "o_initializationVectorSwitch"]],
   },
 ];
 
 const encryptFromFileWithAes: ActivityConfig = {
   fieldList: encryptFromFileWithAesFieldList,
   fieldCategories: encryptFromFileWithAesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_encryptedTextOutput", "o_encryptedTextSwitch", "o_saltOutput", "o_saltSwitch", "o_initializationVectorOutput", "o_initializationVectorSwitch"],
 };
 
 export default encryptFromFileWithAes;

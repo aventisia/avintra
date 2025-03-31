@@ -2,7 +2,7 @@ import {
   ActivityConfig,
   IDynamicFieldSchema,
   IDynamicFormKeysCategory,
-} from "../../../../types/dynamic-form-types";
+} from "../../../types/dynamic-form-types";
 
 const readFromCsvTextVariableFieldList: IDynamicFieldSchema[] = [
   {
@@ -110,10 +110,26 @@ const readFromCsvTextVariableFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "csvTable",
-    type: "switch",
-    label: "CSVTable",
+    name: "o_csvTableOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The contents of the CSV text as a data table",
+    defaultValue: "CSVTable",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_csvTableSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_csvTableSwitch", //to watch
+    type: "output-switch-field",
+    label: "CSVTable",
     defaultValue: true,
   },
 ];
@@ -128,6 +144,7 @@ const readFromCsvTextVariableFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["trimFields"],
       ["firstLineContainsColumnNames"],
+      ["getCsvFieldsAsText"],
       ["columnsSeparator"],
       ["separator"],
       ["customSeparator"],
@@ -136,10 +153,10 @@ const readFromCsvTextVariableFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["csvTable"]],
+    formFieldKeys: [["o_csvTableOutput", "o_csvTableSwitch"]],
   },
 ];
-const readFromCsvTextVariableFieldsToWatch: string[] = ["columnsSeparator"];
+const readFromCsvTextVariableFieldsToWatch: string[] = ["columnsSeparator", "o_csvTableOutput", "o_csvTableSwitch"];
 
 const readFromCsvTextVariable: ActivityConfig = {
   fieldList: readFromCsvTextVariableFieldList,

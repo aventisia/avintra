@@ -2,7 +2,7 @@ import {
   ActivityConfig,
   IDynamicFieldSchema,
   IDynamicFormKeysCategory,
-} from "../../../../types/dynamic-form-types";
+} from "../../../types/dynamic-form-types";
 
 const sortDataTableFieldList: IDynamicFieldSchema[] = [
   {
