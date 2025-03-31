@@ -3,7 +3,7 @@ import { lazy, Suspense } from "react";
 
 // Lazy load the PricingPlansTable component.
 const PricingPlansTable = lazy(() =>
-  import("@/features/pricing-table/components/PricingPlansTable").then(
+  import("@/features/sa/pricing-table/components/PricingPlansTable").then(
     (module) => ({
       default: module.PricingPlansTable,
     }),
