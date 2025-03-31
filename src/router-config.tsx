@@ -32,7 +32,9 @@ import { UsersPage } from "./pages/UsersPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { CrudActionTypeLong } from "@/react-toolkit/constants";
-import { PricingPage } from "./pages/PricingPage";
+import { PricingPage } from "./pages/sa/PricingPage";
+import { BillingPage } from "./pages/BillingPage";
+import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -97,8 +99,8 @@ const routerConfig: RouteObject[] = [
         element: <TenantsPage />,
       },
       {
-        path: "/pricing",
-        element: <PricingPage />,
+        path: "/billing",
+        element: <BillingPage />,
       },
       {
         path: "/orchestrator",
@@ -133,6 +135,24 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/licenses/:id?/:a?",
             element: <LicensesPage />,
+          },
+        ],
+      },
+      {
+        path: "sa",
+        children: [
+          {
+            path: "/sa/tenants",
+            element: <TenantsPage />,
+            index: true,
+          },
+          {
+            path: "/sa/licenses",
+            element: <SaLicensesPage />,
+          },
+          {
+            path: "/sa/pricing",
+            element: <PricingPage />,
           },
         ],
       },
