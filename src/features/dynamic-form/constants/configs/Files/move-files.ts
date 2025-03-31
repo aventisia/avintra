@@ -43,11 +43,27 @@ const moveFilesFieldList: IDynamicFieldSchema[] = [
   },
   //   output 
   {
-    name: "movedFiles",
-    type: "switch",
-    label: "MovedFiles",
+    name: "o_movedFilesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The moved file(s) as a list of files",
-    defaultValue: "",
+    defaultValue: "MovedFiles",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_movedFilesSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_movedFilesSwitch",
+    type: "output-switch-field",
+    label: "MovedFiles",
+    defaultValue: true,
   },
 ];
 
@@ -58,7 +74,7 @@ const moveFilesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["movedFiles"]],
+    formFieldKeys: [["o_movedFilesOutput", "o_movedFilesSwitch"]],
   },
 ];
 
@@ -67,7 +83,7 @@ const moveFilesFieldCategories: IDynamicFormKeysCategory[] = [
 const moveFiles: ActivityConfig = {
   fieldList: moveFilesFieldList,
   fieldCategories: moveFilesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_movedFilesOutput", "o_movedFilesSwitch"],
 };
 
 export default moveFiles;

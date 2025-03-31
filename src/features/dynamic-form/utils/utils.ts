@@ -102,11 +102,12 @@ import getFilePathPart from "../constants/configs/Files/get-file-path-part";
 import getTemporaryFile from "../constants/configs/Files/get-temporary-file";
 import ifFileExists from "../constants/configs/Files/if-file-exists";
 import moveFiles from "../constants/configs/Files/move-files";
+import renameFile from "../constants/configs/Files/rename-files"
 import readFromCSVFile from "../constants/configs/Files/read-from-csv-file";
 import readTextFromFile from "../constants/configs/Files/read-text-from-file";
 import waitForFile from "../constants/configs/Files/wait-for-file";
-import writeFromCSVFile from "../constants/configs/Files/write-from-csv-file";
-import writeTextFromFile from "../constants/configs/Files/write-text-from-file";
+import writeToCSVFile from "../constants/configs/Files/write-to-csv-file";
+import writeTextToFile from "../constants/configs/Files/write-text-to-file";
 import comment from "../constants/configs/flow-control/comment";
 import getLastError from "../constants/configs/flow-control/get-last-error";
 import goTo from "../constants/configs/flow-control/go-to";
@@ -394,11 +395,12 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   waitForFile,
   copyFile,
   moveFiles,
+  renameFile,
   deleteFiles,
   readTextFromFile,
-  writeTextFromFile,
+  writeTextToFile,
   readFromCSVFile,
-  writeFromCSVFile,
+  writeToCSVFile,
   getFilePathPart,
   getTemporaryFile,
   convertBase64ToText,

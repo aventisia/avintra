@@ -43,11 +43,27 @@ const copyFileFieldList: IDynamicFieldSchema[] = [
   },
   //   output 
   {
-    name: "copiedFiles",
-    type: "switch",
-    label: "CopiedFiles",
+    name: "o_copiedFilesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The copied file(s) as a list of files ",
-    defaultValue: "",
+    defaultValue: "CopiedFiles",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_copiedFilesSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_copiedFilesSwitch",
+    type: "output-switch-field",
+    label: "CopiedFiles",
+    defaultValue: true,
   },
 ];
 
@@ -58,11 +74,11 @@ const copyFileFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["copiedFiles"]],
+    formFieldKeys: [["o_copiedFilesOutput", "o_copiedFilesSwitch"]],
   },
 ];
 
-const copyFileFieldsToWatch: string[] = [];
+const copyFileFieldsToWatch: string[] = ["o_copiedFilesOutput", "o_copiedFilesSwitch"];
 
 const copyFile: ActivityConfig = {
   fieldList: copyFileFieldList,
