@@ -33,20 +33,53 @@ const runPythonScriptFieldList: IDynamicFieldSchema[] = [
       "The path(s) of folder(s) where external Python modules reside",
     defaultValue: "",
   },
+  // Output
   {
-    name: "pythonScriptOutput",
-    type: "switch",
-    label: "PythonScriptOutput",
+    name: "o_pythonScriptOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The script's output",
-    defaultValue: "",
+    defaultValue: "PythonScriptOutput",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_pythonScriptOutputSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "scriptError",
-    type: "switch",
+    name: "o_pythonScriptOutputSwitch",
+    type: "output-switch-field",
+    label: "PythonScriptOutput",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_scriptErrorOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The errors that may occur during the execution of the Python script code",
+    defaultValue: "ScriptError",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_scriptErrorSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_scriptErrorSwitch",
+    type: "output-switch-field",
     label: "ScriptError",
-    description:
-      "The errors that may occur during the execution of the Python script code",
-    defaultValue: "",
+    defaultValue: false,
   },
 ];
 
@@ -61,14 +94,14 @@ const runPythonScriptFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["pythonScriptOutput"], ["scriptError"]],
+    formFieldKeys: [["o_pythonScriptOutput", "o_pythonScriptOutputSwitch"], ["o_scriptErrorOutput", "o_scriptErrorSwitch"]],
   },
 ];
 
 const runPythonScript: ActivityConfig = {
   fieldList: runPythonScriptFieldList,
   fieldCategories: runPythonScriptFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_pythonScriptOutput", "o_pythonScriptOutputSwitch", "o_scriptErrorOutput", "o_scriptErrorSwitch"],
 };
 
 export default runPythonScript;

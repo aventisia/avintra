@@ -16,44 +16,96 @@ const runJavaScriptFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "failAfterTimeout",
-    type: "text",
+    type: "switch",
     label: "Fail after timeout",
     description:
-      "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
-    defaultValue: "",
+      "Specify whether the DOS command or application will run indefinitely or fail after a set period of time",
+    defaultValue: false,
   },
   {
-    name: "javascriptOutput",
-    type: "switch",
-    label: "JavascriptOutput",
-    description: "The script's output",
-    defaultValue: "",
-  },
-  {
-    name: "scriptError",
-    type: "switch",
-    label: "ScriptError",
+    name: "timeout",
+    type: "text",
+    label: "Timeout",
     description:
-      "The errors that may occur during the execution of the JavaScript code",
-    defaultValue: "",
+      "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
+    defaultValue: "10",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "failAfterTimeout", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  // Output
+  {
+    name: "o_javascriptOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The script's output",
+    defaultValue: "JavascriptOutput",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_javascriptOutputSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_javascriptOutputSwitch",
+    type: "output-switch-field",
+    label: "JavascriptOutput",
+    defaultValue: true,
+  },
+
+  
+  {
+    name: "o_scriptErrorOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The errors that may occur during the execution of the Javascript code",
+    defaultValue: "ScriptError",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_scriptErrorSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_scriptErrorSwitch",
+    type: "output-switch-field",
+    label: "ScriptError",
+    defaultValue: false,
   },
 ];
 
 const runJavaScriptFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["JavaScriptToRun"], ["failAfterTimeout"]],
+    formFieldKeys: [["JavaScriptToRun"], ["failAfterTimeout"], ["timeout"]],
   },
   {
     title: "Output",
-    formFieldKeys: [["javascriptOutput"], ["scriptError"]],
+    formFieldKeys: [["o_javascriptOutput", "o_javascriptOutputSwitch"], ["o_scriptErrorOutput", "o_scriptErrorSwitch"]],
   },
 ];
 
 const runJavaScript: ActivityConfig = {
   fieldList: runJavaScriptFieldList,
   fieldCategories: runJavaScriptFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["failAfterTimeout", "o_javascriptOutput", "o_javascriptOutputSwitch", "o_scriptErrorOutput", "o_scriptErrorSwitch"],
 };
 
 export default runJavaScript;
