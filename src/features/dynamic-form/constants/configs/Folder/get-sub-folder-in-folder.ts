@@ -39,7 +39,7 @@ const getSubFoldersInFolderFieldList: IDynamicFieldSchema[] = [
     type: "switch",
     label: "Fail upon denied access to any subfolder",
     description:
-      "Specify whether to throw an error when trying to get subfolders of a folder with no access rights or ignore those folders",
+      "Specify whether to throw an error when trying to get files of a folder with no access rights or ignore those folders",
     defaultValue: false,
   },
   {
@@ -47,36 +47,26 @@ const getSubFoldersInFolderFieldList: IDynamicFieldSchema[] = [
     type: "select",
     label: "Sort by",
     selectOptions: [
-      { label: "No Sort", value: "No Sort" },
-      { label: "Full name", value: "Full name" },
-      { label: "Root path", value: "Root path" },
-      { label: "Directory", value: "Directory" },
-      { label: "Name", value: "Name" },
-      { label: "Name without extension", value: "Name without extension" },
-      { label: "Extension", value: "Extension" },
-      { label: "Size", value: "Size" },
-      { label: "Creation time", value: "Creation time" },
-      { label: "Last accessed", value: "Last accessed" },
-      { label: "Last modified", value: "Last modified" },
-      { label: "Is hidden", value: "Is hidden" },
-      { label: "Is system", value: "Is system" },
-      { label: "Is read-only", value: "Is read-only" },
-      { label: "Is archive", value: "Is archive" },
-      { label: "Exists", value: "Exists" },
+      { label: "No Sort", value: "noSort" },
+      { label: "Full name", value: "fullName" },
+      { label: "Root path", value: "rootPath" },
+      { label: "Directory", value: "directory" },
+      { label: "Name", value: "name" },
+      { label: "Name without extension", value: "nameWithoutExtension" },
+      { label: "Extension", value: "extension" },
+      { label: "Size", value: "size" },
+      { label: "Creation time", value: "creationTime" },
+      { label: "Last accessed", value: "lastAccessed" },
+      { label: "Last modified", value: "lastModified" },
+      { label: "Is hidden", value: "isHidden" },
+      { label: "Is system", value: "isSystem" },
+      { label: "Is read-only", value: "isReadOnly" },
+      { label: "Is archive", value: "isArchive" },
+      { label: "Exists", value: "exists" },
     ],
-    description: "Specify whether to sort the results and by which criterion",
-    defaultValue: "No Sort",
+    defaultValue: "noSort",
     regOptions: {
-      requiredBasedOnFields: {
-        conditionList: [
-          {
-            fields: [
-              { key: "failUponDeniedAccessToAnySubfolder", value: true },
-            ],
-          },
-        ],
-        initialState: false,
-      },
+      required: true
     },
   },
   {
@@ -87,16 +77,7 @@ const getSubFoldersInFolderFieldList: IDynamicFieldSchema[] = [
       "Specify whether to sort items in descending or ascending order",
     defaultValue: false,
     regOptions: {
-      requiredBasedOnFields: {
-        conditionList: [
-          {
-            fields: [
-              { key: "failUponDeniedAccessToAnySubfolder", value: true },
-            ],
-          },
-        ],
-        initialState: false,
-      },
+      required: true
     },
   },
   {
@@ -104,45 +85,100 @@ const getSubFoldersInFolderFieldList: IDynamicFieldSchema[] = [
     type: "select",
     label: "Then by",
     selectOptions: [
-      { label: "No Sort", value: "No Sort" },
-      { label: "Full name", value: "Full name" },
-      { label: "Root path", value: "Root path" },
-      { label: "Directory", value: "Directory" },
-      { label: "Name", value: "Name" },
-      { label: "Name without extension", value: "Name without extension" },
-      { label: "Extension", value: "Extension" },
-      { label: "Size", value: "Size" },
-      { label: "Creation time", value: "Creation time" },
-      { label: "Last accessed", value: "Last accessed" },
-      { label: "Last modified", value: "Last modified" },
-      { label: "Is hidden", value: "Is hidden" },
-      { label: "Is system", value: "Is system" },
-      { label: "Is read-only", value: "Is read-only" },
-      { label: "Is archive", value: "Is archive" },
-      { label: "Exists", value: "Exists" },
+      { label: "No Sort", value: "noSort" },
+      { label: "Full name", value: "fullName" },
+      { label: "Root path", value: "rootPath" },
+      { label: "Directory", value: "directory" },
+      { label: "Name", value: "name" },
+      { label: "Name without extension", value: "nameWithoutExtension" },
+      { label: "Extension", value: "extension" },
+      { label: "Size", value: "size" },
+      { label: "Creation time", value: "creationTime" },
+      { label: "Last accessed", value: "lastAccessed" },
+      { label: "Last modified", value: "lastModified" },
+      { label: "Is hidden", value: "isHidden" },
+      { label: "Is system", value: "isSystem" },
+      { label: "Is read-only", value: "isReadOnly" },
+      { label: "Is archive", value: "isArchive" },
+      { label: "Exists", value: "exists" },
     ],
-    description: "Specify whether to sort the results by a second criterion",
-    defaultValue: "No Sort",
+    defaultValue: "noSort",
     regOptions: {
-      requiredBasedOnFields: {
-        conditionList: [
-          {
-            fields: [
-              { key: "failUponDeniedAccessToAnySubfolder", value: true },
-            ],
-          },
-        ],
-        initialState: false,
-      },
+      required: true
+    },
+  },
+  {
+    name: "descending2",
+    type: "switch",
+    label: "Descending",
+    description:
+      "Specify whether to sort items in descending or ascending order",
+    defaultValue: false,
+    regOptions: {
+      required: true
+    },
+  },
+  {
+    name: "thenBy2",
+    type: "select",
+    label: "Then by",
+    selectOptions: [
+      { label: "No Sort", value: "noSort" },
+      { label: "Full name", value: "fullName" },
+      { label: "Root path", value: "rootPath" },
+      { label: "Directory", value: "directory" },
+      { label: "Name", value: "name" },
+      { label: "Name without extension", value: "nameWithoutExtension" },
+      { label: "Extension", value: "extension" },
+      { label: "Size", value: "size" },
+      { label: "Creation time", value: "creationTime" },
+      { label: "Last accessed", value: "lastAccessed" },
+      { label: "Last modified", value: "lastModified" },
+      { label: "Is hidden", value: "isHidden" },
+      { label: "Is system", value: "isSystem" },
+      { label: "Is read-only", value: "isReadOnly" },
+      { label: "Is archive", value: "isArchive" },
+      { label: "Exists", value: "exists" },
+    ],
+    defaultValue: "noSort",
+    regOptions: {
+      required: true
+    },
+  },
+  {
+    name: "descending3",
+    type: "switch",
+    label: "Descending",
+    description:
+      "Specify whether to sort items in descending or ascending order",
+    defaultValue: false,
+    regOptions: {
+      required: true
     },
   },
   //   outputs
   {
-    name: "folders",
-    type: "switch",
+    name: "o_foldersOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The retrieved subfolders as a list of folder objects",
+    defaultValue: "Folders",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_foldersSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_foldersSwitch",
+    type: "output-switch-field",
     label: "Folders",
-    description: "List of subfolder objects.",
-    defaultValue: false,
+    defaultValue: true,
   },
 ];
 
@@ -158,11 +194,14 @@ const getSubFoldersInFolderFieldCategories: IDynamicFormKeysCategory[] = [
       ["sortBy"],
       ["descending"],
       ["thenBy"],
+      ["descending2"],
+      ["thenBy2"],
+      ["descending3"]
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["folders"]],
+    formFieldKeys: [["o_foldersOutput", "o_foldersSwitch"]],
   },
 ];
 
@@ -172,6 +211,8 @@ const getSubFoldersInFolder: ActivityConfig = {
   fieldCategories: getSubFoldersInFolderFieldCategories,
   fieldsToWatch: [
     "failUponDeniedAccessToAnySubfolder",
+    "o_foldersOutput", 
+    "o_foldersSwitch"
   ],
 };
 

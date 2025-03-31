@@ -44,7 +44,48 @@ import {
         { label: "File", value: "file" },
       ],
       description: "The location to save the screenshot to",
-      defaultValue: "Clipboard",
+      defaultValue: "clipboard",
+    },
+    {
+      name: "imageFile",
+      type: "text",
+      label: "Image file",
+      description: "The full path of the file name where the captured image will be saved",
+      defaultValue: "",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "saveScreenshotTo", value: "file" }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    {
+      name: "imageFormat",
+      type: "select",
+      label: "Image format",
+      selectOptions: [
+        { label: "BMP", value: "bmp" },
+        { label: "GIF", value: "gif" },
+        { label: "JPG", value: "jpg" },
+        { label: "PNG", value: "png" },
+        { label: "TIFF", value: "tiff" },
+      ],
+      description: "The format for the image file to save",
+      defaultValue: "bmp",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "saveScreenshotTo", value: "file" }],
+            },
+          ],
+          initialState: false,
+        },
+      },
     },
   ];
   
@@ -55,6 +96,8 @@ import {
         ["capture"],
         ["screenToCapture"],
         ["saveScreenshotTo"],
+        ["imageFile"],
+        ["imageFormat"]
       ],
     },
   ];
@@ -62,7 +105,7 @@ import {
   const takeScreenshot: ActivityConfig = {
     fieldList: takeScreenshotFieldList,
     fieldCategories: takeScreenshotFieldCategories,
-    fieldsToWatch: ["capture"],
+    fieldsToWatch: ["capture", "saveScreenshotTo"],
   };
   
   export default takeScreenshot;

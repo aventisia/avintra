@@ -14,7 +14,7 @@ const runDotNetScriptFieldList: IDynamicFieldSchema[] = [
       { label: "C#", value: "c#" },
       { label: "VB.NET", value: "VB.NET" },
     ],
-    defaultValue: "C#", 
+    defaultValue: "c#", 
   },
   {
     name: "dotNetScriptImports",
@@ -37,7 +37,7 @@ const runDotNetScriptFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Script parameters",
     description: "Setting the values of the parameters defined in the script",
-    defaultValue: "",
+    defaultValue: "()",
   },
   {
     name: "dotNetCodeToRun",

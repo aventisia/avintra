@@ -15,24 +15,77 @@ import {
     },
     {
       name: "failAfterTimeout",
-      type: "text",
+      type: "switch",
       label: "Fail after timeout",
-      description: "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
-      defaultValue: "",
+      description:
+        "Specify whether the DOS command or application will run indefinitely or fail after a set period of time",
+      defaultValue: false,
     },
     {
-      name: "powerShellOutput",
-      type: "switch",
-      label: "PowerShellOutput",
+      name: "timeout",
+      type: "text",
+      label: "Timeout",
+      description:
+        "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
+      defaultValue: "10",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "failAfterTimeout", value: true }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    // Output
+    {
+      name: "o_powerShellOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The script's output",
-      defaultValue: "",
+      defaultValue: "PowerShellOutput",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_powerShellOutputSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
     },
     {
-      name: "scriptError",
-      type: "switch",
+      name: "o_powerShellOutputSwitch",
+      type: "output-switch-field",
+      label: "PowerShellOutput",
+      defaultValue: true,
+    },
+
+    {
+      name: "o_scriptErrorOutput", //to watch
+      type: "output-text-field",
+      label: "",
+      description: "The errors that may occur during the execution of the Powershell code",
+      defaultValue: "ScriptError",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_scriptErrorSwitch", value: false }],
+            },
+          ],
+          initialState: true,
+        },
+      },
+    },
+    {
+      name: "o_scriptErrorSwitch",
+      type: "output-switch-field",
       label: "ScriptError",
-      description: "The errors that may occur during the execution of the PowerShell code",
-      defaultValue: "",
+      defaultValue: false,
     },
   ];
   
@@ -42,13 +95,14 @@ import {
       formFieldKeys: [
         ["PowerShellCodeToRun"],
         ["failAfterTimeout"],
+        ["timeout"]
       ],
     },
     {
       title: "Output",
       formFieldKeys: [
-        ["powerShellOutput"],
-        ["scriptError"],
+        ["o_powerShellOutput", "o_powerShellOutputSwitch"],
+        ["o_scriptErrorOutput", "o_scriptErrorSwitch"],
       ],
     },
   ];
@@ -56,7 +110,7 @@ import {
   const runPowerShellScript: ActivityConfig = {
     fieldList: runPowerShellScriptFieldList,
     fieldCategories: runPowerShellScriptFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["failAfterTimeout", "o_powerShellOutput", "o_powerShellOutputSwitch", "o_scriptErrorOutput", "o_scriptErrorSwitch"],
   };
   
   export default runPowerShellScript;

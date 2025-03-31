@@ -17,6 +17,13 @@ export const workstationActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
+    name: "setDefaultPrinter",
+    label: "Set default printer",
+    description: "Sets a printer as a default printer",
+    img: `${import.meta.env.BASE_URL}function.png`,
+  },
+  {
+    type: "activityNode",
     name: "showDesktop",
     label: "Show desktop",
     description: "Shows the desktop",
@@ -65,6 +72,22 @@ export const workstationActions: NodeDataType[] = [
     label: "Get screen resolution",
     description:
       "Gets the width, height, bit count and frequency of a selected monitor",
+    img: `${import.meta.env.BASE_URL}function.png`,
+  },
+  {
+    type: "activityNode",
+    name: "setScreenResolution",
+    label: "Set screen resolution",
+    description:
+      "Sets the width, height, bit count and frequency of a selected monitor",
+    img: `${import.meta.env.BASE_URL}function.png`,
+  },
+  {
+    type: "activityNode",
+    name: "shutdownComputer",
+    label: "Shutdown computer",
+    description:
+      "Shuts down the computer.",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {

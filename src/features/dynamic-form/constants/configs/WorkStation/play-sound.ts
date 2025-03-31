@@ -14,7 +14,7 @@ import {
         { label: "WAV file", value: "WAV file" },
       ],
       description: "The type of sound to play",
-      defaultValue: "",
+      defaultValue: "system",
     },
     {
       name: "soundToPlay",
@@ -31,12 +31,12 @@ import {
       defaultValue: "Asterisk",
       regOptions: {
         requiredBasedOnFields: {
-          initialState: false,
           conditionList: [
             {
               fields: [{ key: "playSoundFrom", value: "system" }],
             },
           ],
+          initialState: true,
         },
       },
     },

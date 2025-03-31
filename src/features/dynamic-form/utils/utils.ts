@@ -121,7 +121,7 @@ import createFolder from "../constants/configs/Folder/create-folder";
 import deleteFolder from "../constants/configs/Folder/delete-folder";
 import emptyFolder from "../constants/configs/Folder/empty-folder";
 import getFilesInFolder from "../constants/configs/Folder/get-files-in-folder";
-import getSpecialFolder from "../constants/configs/Folder/get-special-folder";
+import getspecialFolder from "../constants/configs/Folder/get-special-folder";
 import getSubFoldersInFolder from "../constants/configs/Folder/get-sub-folder-in-folder";
 import ifFolderExists from "../constants/configs/Folder/if-folder-exist";
 import moveFolder from "../constants/configs/Folder/move-folder";
@@ -297,7 +297,10 @@ import saveWord from "../constants/configs/Word/save-word";
 import writeToWordDocument from "../constants/configs/Word/write-to-word-document";
 import controlScreensaver from "../constants/configs/WorkStation/control-screen-saver";
 import getDefaultPrinter from "../constants/configs/WorkStation/get-default-printer";
+import setDefaultPrinter from "../constants/configs/WorkStation/set-default-printer"
 import getScreenResolution from "../constants/configs/WorkStation/get-screen-resolution";
+import setScreenResolution from "../constants/configs/WorkStation/set-screen-resolution"
+import shutdownComputer from "../constants/configs/WorkStation/shutdown-computer"
 import logOffUser from "../constants/configs/WorkStation/log-off-user";
 import playSound from "../constants/configs/WorkStation/play-sound";
 import printDocument from "../constants/configs/WorkStation/print-document";
@@ -388,7 +391,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   copyFolder,
   moveFolder,
   renameFolder,
-  getSpecialFolder,
+  getspecialFolder,
 
   //File
   ifFileExists,
@@ -419,6 +422,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Workstation
   printDocument,
   getDefaultPrinter,
+  setDefaultPrinter,
   showDesktop,
   // lockWorkstation,
   playSound,
@@ -426,6 +430,8 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   takeScreenshot,
   controlScreensaver,
   getScreenResolution,
+  setScreenResolution,
+  shutdownComputer,
   logOffUser,
 
   //Scripting
