@@ -180,12 +180,29 @@ const retrieveExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  // Output
   {
-    name: "retrievedEmails",
-    type: "switch",
-    label: "RetrievedEmails",
+    name: "o_retrievedEmailsOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "The retrieved email messages for later processing as a list of Exchange mail messages objects",
+        "The retrieved email messages for later processing as a list of Exchange mail messages objects",
+    defaultValue: "RetrievedEmails",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_retrievedEmailsSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_retrievedEmailsSwitch",
+    type: "output-switch-field",
+    label: "RetrievedEmails",
     defaultValue: true,
   },
 ];
@@ -213,7 +230,7 @@ const retrieveExchangeEmailMessagesFieldCategories: IDynamicFormKeysCategory[] =
     },
     {
       title: "Output",
-      formFieldKeys: [["retrievedEmails"]],
+      formFieldKeys: [["o_retrievedEmailsOutput", "o_retrievedEmailsSwitch"]],
     },
   ];
 
@@ -221,6 +238,8 @@ const retrieveExchangeEmailMessagesFieldsToWatch: string[] = [
   "mailboxType",
   "retrieveFromCustomFolder",
   "attachments",
+  "o_retrievedEmailsOutput", 
+  "o_retrievedEmailsSwitch"
 ];
 const retrieveExchangeEmailMessages: ActivityConfig = {
   fieldList: retrieveExchangeEmailMessagesFieldList,

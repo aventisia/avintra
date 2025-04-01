@@ -15,7 +15,7 @@ const executeSQLStatementFieldList: IDynamicFieldSchema[] = [
       { label: "Connection string", value: "connectionString" },
       { label: "SQL connection variable", value: "SQLConnectionVariable" },
     ],
-    defaultValue: "connectionString",
+    defaultValue: "SQLConnectionVariable",
   },
   {
     name: "connectionString",
@@ -23,6 +23,16 @@ const executeSQLStatementFieldList: IDynamicFieldSchema[] = [
     label: "Connection String",
     description: "The connection string to use to connect to the database",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "getConnectionBy", value: "connectionString" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "SQLConnection",
@@ -30,6 +40,16 @@ const executeSQLStatementFieldList: IDynamicFieldSchema[] = [
     label: "SQL connection",
     description: "The handle for new SQL connection",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "getConnectionBy", value: "SQLConnectionVariable" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "SQLStatement",
@@ -47,6 +67,30 @@ const executeSQLStatementFieldList: IDynamicFieldSchema[] = [
       "The maximum amount of time to wait for a result from the database",
     defaultValue: "30",
   },
+  // Output
+  {
+    name: "o_queryResultOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The result from the database in the form of a data table, with rows and columns",
+    defaultValue: "QueryResult",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_queryResultSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_queryResultSwitch", //to watch
+    type: "output-switch-field",
+    label: "QueryResult",
+    defaultValue: true,
+  },
 ];
 
 const executeSQLStatementFieldCategories: IDynamicFormKeysCategory[] = [
@@ -56,18 +100,20 @@ const executeSQLStatementFieldCategories: IDynamicFormKeysCategory[] = [
       ["getConnectionBy"],
       ["connectionString"],
       ["SQLConnection"],
+      ["SQLStatement"], 
+      ["timeout"]
     ],
   },
   {
-    title: "Advanced",
-    formFieldKeys: [["SQLStatement"], ["timeout"]],
+    title: "Output",
+    formFieldKeys: [["o_queryResultOutput", "o_queryResultSwitch"]],
   },
 ];
 
 const executeSQLStatement: ActivityConfig = {
   fieldList: executeSQLStatementFieldList,
   fieldCategories: executeSQLStatementFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["getConnectionBy", "o_queryResultOutput", "o_queryResultSwitch"],
 };
 
 export default executeSQLStatement;
