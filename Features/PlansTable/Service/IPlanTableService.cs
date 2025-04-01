@@ -12,6 +12,13 @@ public interface IPlanTableService
     Task<ServiceResponse<IEnumerable<PlanTableDto>>> GetPlansAsync();
 
     /// <summary>
+    /// Retrieves a plan by its ID.
+    /// </summary>
+    /// <param name="planId">The ID of the plan to retrieve.</param>
+    /// <returns>A <see cref="ServiceResponse{PlanTableDto}"/> containing the plan data if found, otherwise an error message.</returns>
+    Task<ServiceResponse<PlanTableDto>> GetPlanByIdAsync(Guid planId);
+
+    /// <summary>
     /// Checks if a specified plan name is available for new entries.
     /// </summary>
     /// <param name="availabilityCheckDto">A DTO that includes the plan name to check.</param>

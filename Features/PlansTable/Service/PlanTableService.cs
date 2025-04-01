@@ -51,6 +51,44 @@ public class PlanTableService : IPlanTableService
         return serviceResponse;
     }
 
+     // Retrieves a plan by its ID
+    public async Task<ServiceResponse<PlanTableDto>> GetPlanByIdAsync(Guid planId)
+    {
+        var serviceResponse = new ServiceResponse<PlanTableDto>
+        {
+            Data = null,
+            Message = "Failed to delete plan. Please try again.",
+        };
+
+        try
+        {
+            // Fetch the plan by ID
+            var plan = await _unitOfWork
+                .PlanRepo.GetByConditionAsync(w => w.Id == planId)
+                .FirstOrDefaultAsync();
+
+            // Check if the plan was found
+            if (plan == null)
+            {
+                _logger.LogInformation("No plan found with ID: {PlanId}", planId);
+                return serviceResponse; 
+            }
+
+            // If found, set the response data and message
+            serviceResponse.Data = plan.Adapt<PlanTableDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Plan retrieved successfully.";
+            _logger.LogInformation("Plan retrieved successfully with ID: {PlanId}", planId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving the plan with ID: {PlanId}", planId);
+            serviceResponse.StatusCode = 500;
+        }
+
+        return serviceResponse;
+    }
+
     // Checks if a plan name is available
     public async Task<ServiceResponse<TrueFalseResultDto>> IsPlanNameAvailableAsync(CheckAvailabilityDto availabilityCheckDto)
     {

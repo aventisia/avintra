@@ -19,6 +19,13 @@ public class PlanTableController : BaseApiController
         return ResultHelper(await _planTableService.GetPlansAsync());
     }
 
+    // Retrieves plan by the Id.
+    [HttpGet("{planId}")]
+    public async Task<ActionResult<ServiceResponse<PlanTableDto>>> GetPlanByIdAsync(Guid planId)
+    {
+        return ResultHelper(await _planTableService.GetPlanByIdAsync(planId));
+    }
+
     // Checks the availability of a plan name.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsPlanNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
