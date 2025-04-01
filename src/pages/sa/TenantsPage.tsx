@@ -3,9 +3,11 @@ import { lazy, Suspense } from "react";
 
 // Lazy load the TenantsTable component.
 const TenantsTable = lazy(() =>
-  import("@/features/tenants-table/components/TenantsTable").then((module) => ({
-    default: module.TenantsTable,
-  })),
+  import("@/features/sa/tenants-table/components/TenantsTable").then(
+    (module) => ({
+      default: module.TenantsTable,
+    }),
+  ),
 );
 
 /**
