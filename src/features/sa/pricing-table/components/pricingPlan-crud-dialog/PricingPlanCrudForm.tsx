@@ -14,8 +14,8 @@ import {
   idProps,
   isDisabledProps,
   pricingComponentTypeProps,
-  tenantNameTypeProps,
-  tenantTypeTypeProps,
+  nameProps,
+  typeProps,
   unitPriceTypeProps,
   unitTypeProps,
 } from "../../constants/pricingPlan-form-field-props";
@@ -63,14 +63,14 @@ export const PricingPlanCrudForm = () => {
       {/* PricingPlan Id */}
       {isReadMode && <InputField {...idProps} />}
 
+      {/* name */}
+      <InputField {...nameProps} />
+
+      {/* type */}
+      <SelectField {...typeProps} />
+
       {/* pricingComponent */}
       <SelectField {...pricingComponentTypeProps} />
-
-      {/* tenantType */}
-      <SelectField {...tenantTypeTypeProps} />
-
-      {/* tenantName */}
-      <SelectField {...tenantNameTypeProps} />
 
       {/* currency */}
       <SelectField {...currencyTypeProps} />
