@@ -16,9 +16,9 @@ interface UNPopoverTriggerProps {
  * Renders a trigger component for the notifications popover.
  * This component displays a bell icon button with a tooltip.
  */
-export const UNPopoverTrigger = (
-  { triggerSize="icon8" }: UNPopoverTriggerProps,
-) => {
+export const UNPopoverTrigger = ({
+  triggerSize = "icon8",
+}: UNPopoverTriggerProps) => {
   // Get store state and actions
   const { isPopoverOpen, togglePopoverOpen } = useUnreadNotificationsStore(
     useShallow((state) => ({
@@ -33,7 +33,8 @@ export const UNPopoverTrigger = (
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: triggerSize }),
-          isPopoverOpen && "hidden bg-slate-100 mlg:flex",
+          "hover:bg-white/10",
+          isPopoverOpen && "hidden bg-white/10 mlg:flex",
         )}
         onClick={() => togglePopoverOpen}
       >

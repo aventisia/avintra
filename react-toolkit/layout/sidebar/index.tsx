@@ -1,10 +1,9 @@
-import PerfectScrollbar from 'react-perfect-scrollbar'
-
-import { UpgradeCard } from '@/react-toolkit/layout/sidebar/UpgradeCard'
-import { SidebarMenuItems } from '@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItems'
-import { cn } from '@/react-toolkit/lib/utils'
-import { useBaseLayoutStore } from '@/react-toolkit/stores/base-layout-store'
-import { IAppConfig } from '@/react-toolkit/types/app-config'
+import { UpgradeCard } from "@/react-toolkit/layout/sidebar/UpgradeCard";
+import { SidebarMenuItems } from "@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItems";
+import { cn } from "@/react-toolkit/lib/utils";
+import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 interface SidebarProps {
   appConfig: IAppConfig;
@@ -17,7 +16,7 @@ const Sidebar = ({ appConfig, className }: SidebarProps) => {
   return (
     <div
       className={cn(
-        "fixed left-0 top-[--header-height] z-10 h-[calc(100vh-var(--header-height))] border-r py-1 transition-[width] duration-500",
+        "fixed left-0 top-[calc(var(--header-height)+var(--header-padding))] z-10 h-[calc(100vh-var(--header-height)-var(--header-padding))] border-r py-1 transition-[width] duration-500",
         className,
         sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
       )}
@@ -35,3 +34,4 @@ const Sidebar = ({ appConfig, className }: SidebarProps) => {
 };
 
 export { Sidebar };
+

@@ -1,21 +1,24 @@
-import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline'
-import { useMutation } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useShallow } from 'zustand/react/shallow'
-
-import Lucide from '@/react-toolkit/ui/Lucide'
-import { logOffFromCurrentSession } from '@/react-toolkit/apis/accounts-me-apis'
-import { DefaultTenantsEnum } from '@/react-toolkit/enums/default-tenants-enum'
-import { cn } from '@/react-toolkit/lib/utils'
-import { useBaseLayoutStore } from '@/react-toolkit/stores/base-layout-store'
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store'
-import { Avatar, AvatarFallback } from '@/react-toolkit/ui/avatar'
-import { Button } from '@/react-toolkit/ui/buttons/Button'
-import { buttonVariants } from '@/react-toolkit/ui/buttons/button-variants'
-import { Popover, PopoverContent, PopoverTrigger } from '@/react-toolkit/ui/popover'
-import { Separator } from '@/react-toolkit/ui/separator'
+import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+import { cn } from "@/react-toolkit/lib/utils";
+import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import Lucide from "@/react-toolkit/ui/Lucide";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/react-toolkit/ui/popover";
+import { Separator } from "@/react-toolkit/ui/separator";
+import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -27,7 +30,7 @@ interface UserAccountModalProps {
 
 const UserAccountModal = ({
   className,
-  sizeClassName = "h-9 w-9",
+  sizeClassName = "h-8 w-8",
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
@@ -63,13 +66,12 @@ const UserAccountModal = ({
     <Popover open={isPopOverOpen} onOpenChange={setisPopOverOpen}>
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "ghost", size: "icon9" }),
-          "rounded-full",
-          sizeClassName,
+          buttonVariants({ variant: "ghost", size: "icon10" }),
+          "rounded-full border-[4px] border-[#363082]",
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>
-          <AvatarFallback className="capitalize">
+          <AvatarFallback className="bg-[#aba7e7] font-bold capitalize tracking-wider text-secondary">
             {userSession ? userSession?.userInitials : "--"}
           </AvatarFallback>
         </Avatar>

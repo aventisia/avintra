@@ -33,14 +33,14 @@ const SidebarMenuItem = ({
         }}
         onClick={closeNavbarOnSheet}
       >
-        <li className="my-1.5 flex h-9 cursor-pointer items-center justify-between overflow-hidden rounded-lg border-0 pr-3.5 transition-[width] duration-500 hover:bg-slate-100 group-[.active]:bg-slate-100">
+        <li className="group my-1.5 flex h-9 cursor-pointer items-center justify-between overflow-hidden rounded-lg border-0 pr-3.5 transition-[width] duration-500 hover:bg-slate-100 hover:text-primary group-[.active]:bg-slate-100 group-[.active]:text-primary">
           <div className="flex items-center justify-center">
             <div
               className={`mr-1 flex h-9 items-center justify-center ${
                 sidebarExpand ? "w-[2.5rem]" : "w-9"
               }`}
             >
-              <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color]" />
+              <Icon className="h-5 w-5 text-[--icon-color] group-hover:text-primary group-[.active]:text-primary" />
             </div>
             <span
               className={`whitespace-nowrap text-sm font-medium capitalize tracking-wide ${
@@ -66,3 +66,4 @@ const SidebarMenuItem = ({
 };
 
 export { SidebarMenuItem };
+
