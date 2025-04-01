@@ -38,6 +38,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Cells name",
     description: "	The name of the cells range to search for the lookup value.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "named cells" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "startColumn",
@@ -45,6 +55,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start column",
     description: "The index or letter of the first column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "startRow",
@@ -52,6 +72,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "The index of the first row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endColumn",
@@ -59,6 +89,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "The index or letter of the last column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endRow",
@@ -66,6 +106,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The index of the last row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "arrayForm",
@@ -82,6 +132,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The name of the cells range from which the matching value is returned.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "named cells" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "startColumnOfResultsSource",
@@ -90,6 +154,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The index or letter of the first column of the range from which the matching value is returned.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "startRowOfResultsSource",
@@ -98,6 +176,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The first row number of the range from which the matching value is returned. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endColumnOfResultsSource",
@@ -106,6 +198,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The index or letter of the last column of the range from which the matching value is returned.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endRowOfResultsSource",
@@ -114,6 +220,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The last row number of the range from which the matching value is returned. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   // output
   {
@@ -134,7 +254,8 @@ const lookupRangeInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
       ["rangesFormat"],
       ["cellsName"],
       ["startColumn"],
-      ["startRow"]["endColumn"],
+      ["startRow"],
+      ["endColumn"],
       ["endRow"],
       ["arrayForm"],
       ["CellsNameOfResultsSource"],
@@ -153,7 +274,7 @@ const lookupRangeInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
 const lookupRangeInExcelWorksheet: ActivityConfig = {
   fieldList: lookupRangeInExcelWorksheetFieldList,
   fieldCategories: lookupRangeInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["rangesFormat", "arrayForm"],
 };
 
 export default lookupRangeInExcelWorksheet;

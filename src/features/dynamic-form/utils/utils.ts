@@ -61,11 +61,11 @@ import deleteColumnFromExcelWorksheet from "../constants/configs/Excel/advanced/
 import deleteExcelWorksheet from "../constants/configs/Excel/advanced/delete-excel -worksheet";
 import deleteFromExcelWorksheet from "../constants/configs/Excel/advanced/delete-from-excel -worksheet";
 import deleteRowFromExcelWorksheet from "../constants/configs/Excel/advanced/delete-row-from-excel-worksheet";
-import findsAndReplaceCellsInExcelWorksheet from "../constants/configs/Excel/advanced/find-and-replace-cells-in-excel-worksheet";
+import findAndReplaceCellsInExcelWorksheet from "../constants/configs/Excel/advanced/find-and-replace-cells-in-excel-worksheet";
 import getActiveCellOnExcelWorksheet from "../constants/configs/Excel/advanced/get-active-excel-worksheet";
 import getActiveExcelWorksheet from "../constants/configs/Excel/advanced/get-active-excel-worksheet";
 import getAllExcelWorksheets from "../constants/configs/Excel/advanced/get-all-excel-worksheet";
-import getFirstFreeColumnRowFromExcelWorksheet from "../constants/configs/Excel/advanced/get-first-free-row-on-column-from-excel";
+import getFirstFreeColumnRowFromExcelWorksheet from "../constants/configs/Excel/get-first-free-column-row";
 import getFirstFreeRowOnColumnFromExcelWorksheet from "../constants/configs/Excel/advanced/get-first-free-row-on-column-from-excel";
 import getSelectedCellRangeFromExcelWorksheet from "../constants/configs/Excel/advanced/get-selected-cell-range-from-excel-worksheet";
 import getTableRangeFromExcelWorksheet from "../constants/configs/Excel/advanced/get-table-range-from-excel-worksheet";
@@ -85,7 +85,7 @@ import filterCellsInExcelWorksheet from "../constants/configs/Excel/filter-cells
 import getColumnNameOnExcelWorksheet from "../constants/configs/Excel/get-column-name-of-the-column";
 import launchExcel from "../constants/configs/Excel/launch-excel";
 import readFromExcelWorksheet from "../constants/configs/Excel/read-from-excel-worksheet";
-import resizeColumnsRows from "../constants/configs/Excel/resize-columns-rows";
+import resizeColumnsRowsInExcelWorksheet from "../constants/configs/Excel/resize-columns-rows";
 import saveExcel from "../constants/configs/Excel/save-excel";
 import setActiveExcelWorksheet from "../constants/configs/Excel/set-active-excel-worksheet";
 import writeToExcelWorksheet from "../constants/configs/Excel/write-to-excel-worksheet";
@@ -453,7 +453,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   findAndReplaceWordsInWordDocument,
 
   //Excel
-  resizeColumnsRows,
+  resizeColumnsRowsInExcelWorksheet,
   runExcelMacro,
   getActiveExcelWorksheet,
   getAllExcelWorksheets,
@@ -470,7 +470,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   deleteRowFromExcelWorksheet,
   insertColumnToExcelWorksheet,
   deleteColumnFromExcelWorksheet,
-  findsAndReplaceCellsInExcelWorksheet,
+  findAndReplaceCellsInExcelWorksheet,
   getFirstFreeRowOnColumnFromExcelWorksheet,
   readFormulaFromExcel,
   getTableRangeFromExcelWorksheet,

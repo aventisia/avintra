@@ -33,6 +33,20 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start column",
     description: "The index or letter of the first column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setColorOf", value: "single cell" },
+              { key: "setColorOf", value: "range of cells" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "startRow",
@@ -40,6 +54,20 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "The index of the first row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setColorOf", value: "single cell" },
+              { key: "setColorOf", value: "range of cells" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "endColumn",
@@ -47,6 +75,18 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "The index or letter of the last column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setColorOf", value: "range of cells" },
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endRow",
@@ -54,6 +94,18 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The index of the last row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setColorOf", value: "range of cells" },
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "cellsName",
@@ -61,6 +113,18 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Cells name",
     description: "	The name of the cells range to search for the lookup value.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setColorOf", value: "named cells" },
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "colorFormat",
@@ -80,6 +144,18 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Color name",
     description: "	Select one of the system defined colors.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "colorFormat", value: "name" },
+            ],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "colorHexadecimalValue",
@@ -87,6 +163,18 @@ const setColorOfCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Color hexadecimal value",
     description: "Specify the hexadecimal (RGB) value of the color.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "colorFormat", value: "hexadecimal value" },
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -112,7 +200,7 @@ const setColorOfCellsInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[]
 const setColorOfCellsInExcelWorksheet: ActivityConfig = {
   fieldList: setColorOfCellsInExcelWorksheetFieldList,
   fieldCategories: setColorOfCellsInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["setColorOf", "colorFormat"],
 };
 
 export default setColorOfCellsInExcelWorksheet;

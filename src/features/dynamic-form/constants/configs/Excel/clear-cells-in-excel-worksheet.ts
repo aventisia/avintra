@@ -39,7 +39,7 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
           {
             fields: [{ key: "clear", value: "Range of cells" }],
@@ -54,6 +54,16 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "The first row number.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [{ key: "clear", value: "Range of cells" }],
+          },
+        ],
+      },
+    },
   },
   {
     name: "endColumn",
@@ -61,6 +71,16 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "The index or letter of the last column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [{ key: "clear", value: "Range of cells" }],
+          },
+        ],
+      },
+    },
   },
   {
     name: "endRow",
@@ -68,6 +88,16 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The last row number.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [{ key: "clear", value: "Range of cells" }],
+          },
+        ],
+      },
+    },
   },
   {
     name: "xAxisDirection",
@@ -79,7 +109,7 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "Left", value: "Left" },
       { label: "Right", value: "Right" },
     ],
-    defaultValue: "Right",
+    defaultValue: "Left",
     regOptions: {
       requiredBasedOnFields: {
         initialState: false,
@@ -99,6 +129,18 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "X Offset",
     description: "The X-axis offset",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "clear", value: "Range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "yAxisDirection",
@@ -111,6 +153,18 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "Below", value: "Below" },
     ],
     defaultValue: "Below",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "clear", value: "Range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "yOffset",
@@ -118,6 +172,18 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Y Offset",
     description: "The Y-axis offset",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "clear", value: "Range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "name",
@@ -159,6 +225,16 @@ const clearCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Row",
     description: "The row number. The numbering starts from 1",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "clear", value: "Single cell" }],
+          },
+        ],
+      },
+    },
   },
 ];
 

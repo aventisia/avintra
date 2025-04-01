@@ -39,6 +39,21 @@ const deleteFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The cell column (single cell's value) or first column as a numeric value or a letter",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "retrieve", value: "the value of a single cell" },
+              { key: "retrieve", value: "values from a range of cells" },
+
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+      },
+    },
   },
   {
     name: "startRow",
@@ -46,6 +61,21 @@ const deleteFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "	The cell row (single cell's value) or first row number",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "retrieve", value: "the value of a single cell" },
+              { key: "retrieve", value: "values from a range of cells" },
+
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+      },
+    },
   },
   {
     name: "endColumn",
@@ -53,6 +83,19 @@ const deleteFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "	The last column as a numeric value or a letter",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "retrieve", value: "values from a range of cells" },
+
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "endRow",
@@ -60,6 +103,19 @@ const deleteFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The last row number",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "retrieve", value: "values from a range of cells" },
+
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "shiftDirection",
@@ -92,7 +148,7 @@ const deleteFromExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
 const deleteFromExcelWorksheet: ActivityConfig = {
   fieldList: deleteFromExcelWorksheetFieldList,
   fieldCategories: deleteFromExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["retrieve"],
 };
 
 export default deleteFromExcelWorksheet;

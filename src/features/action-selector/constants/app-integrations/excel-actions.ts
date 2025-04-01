@@ -3,7 +3,7 @@ import { NodeDataType } from "@/types/node-data-type";
 export const excelActions: NodeDataType[] = [
   {
     type: "activityNode",
-    name: "resizeColumns/rowsInExcelWorksheet",
+    name: "resizeColumnsRowsInExcelWorksheet",
     label: "Resize columns/rows in Excel worksheet",
     description:
       "Resizes a selection of columns or rows in the active worksheet of an Excel instance.",
@@ -259,7 +259,7 @@ export const excelActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "getFirstFreeColumn/rowFromExcelWorksheet",
+    name: "getFirstFreeColumnRowFromExcelWorksheet",
     label: "Get first free column/row from Excel worksheet",
     description:
       "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.",

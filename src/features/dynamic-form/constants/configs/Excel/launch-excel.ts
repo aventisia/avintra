@@ -39,7 +39,7 @@ const launchExcelFieldList: IDynamicFieldSchema[] = [
     type: "switch",
     label: "Make instance visible",
     description: "Specify whether to make the Excel window visible or hide it",
-    defaultValue: false,
+    defaultValue: true,
   },
   {
     name: "openAsReadonly",
@@ -48,15 +48,25 @@ const launchExcelFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to open stored document in read-only mode or not",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "launchExcel", value: "withBlankDocument" }],
+          },
+        ],
+      },
+    },
   },
-
+  // Advance
   {
     name: "nestUnderANewExcelProcess",
-    type: "text",
+    type: "switch",
     label: "Nest under a new Excel process",
     description:
       "Specify whether the Excel spreadsheet should be under a unique Excel process. Macros and add-ins from other spreadsheets won't be accessible",
-    defaultValue: "",
+    defaultValue: false,
   },
   {
     name: "readProtectionPassword",
@@ -65,6 +75,16 @@ const launchExcelFieldList: IDynamicFieldSchema[] = [
     description:
       "The read protection password on the Excel document, if it's password protected",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "launchExcel", value: "openDocument" }],
+          },
+        ],
+      },
+    },
   },
   {
     name: "writeProtectionPassword",
@@ -73,6 +93,16 @@ const launchExcelFieldList: IDynamicFieldSchema[] = [
     description:
       "The write protection password on the Excel document, if it's password protected",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "launchExcel", value: "openDocument" }],
+          },
+        ],
+      },
+    },
   },
   {
     name: "loadAddInsAndMacros",
@@ -81,14 +111,42 @@ const launchExcelFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to load add-ins and macros into the new Excel instance",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "nestUnderANewExcelProcess", value: true }],
+          },
+        ],
+      },
+    },
+    
   },
+  // Output
   {
-    name: "excelInstance",
-    type: "switch",
-    label: "ExcelInstance",
+    name: "o_excelInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The specific Excel instance for use with later Excel actions. This allows the user to specify which Excel spreadsheet to access",
-    defaultValue: "",
+    defaultValue: "ExcelInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_excelInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_excelInstanceSwitch",
+    type: "output-switch-field",
+    label: "ExcelInstance",
+    defaultValue: true,
   },
 ];
 
@@ -113,14 +171,14 @@ const launchExcelFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["excelInstance"]],
+    formFieldKeys: [["o_excelInstanceOutput", "o_excelInstanceSwitch"]],
   },
 ];
 
 const launchExcel: ActivityConfig = {
   fieldList: launchExcelFieldList,
   fieldCategories: launchExcelFieldCategories,
-  fieldsToWatch: ["launchExcel"],
+  fieldsToWatch: ["launchExcel", "nestUnderANewExcelProcess", "o_excelInstanceOutput", "o_excelInstanceSwitch"],
 };
 
 export default launchExcel;

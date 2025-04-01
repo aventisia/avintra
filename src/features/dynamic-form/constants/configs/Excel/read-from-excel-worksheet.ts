@@ -27,7 +27,7 @@ const readFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "All available values from worksheet", value: "allValues" },
       { label: "Values of named cells", value: "namedCells" },
     ],
-    defaultValue: "",
+    defaultValue: "singleCell",
   },
   {
     name: "startColumn",
@@ -38,7 +38,7 @@ const readFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
           {
             fields: [{ key: "retrieve", value: "singleCell" },{ key: "retrieve", value: "rangeOfCells" }],
@@ -57,7 +57,7 @@ const readFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
             {
                 fields: [{ key: "retrieve", value: "singleCell" },{ key: "retrieve", value: "rangeOfCells" }],
@@ -118,7 +118,7 @@ const readFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
-
+  // Advance
   {
     name: "getCellContentsAsText",
     type: "switch",
@@ -135,12 +135,29 @@ const readFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       "By enabling this option, consecutive empty columns located to the right and consecutive empty rows located at the bottom of the retrieved section will be trimmed",
     defaultValue: false,
   },
+  // Output
   {
-    name: "excelData",
-    type: "switch",
-    label: "ExcelData",
+    name: "o_excelDataOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The value of the range of cells as a DataTable",
-    defaultValue: false,
+    defaultValue: "ExcelData",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_excelDataSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_excelDataSwitch",
+    type: "output-switch-field",
+    label: "ExcelData",
+    defaultValue: true,
   },
 ];
 
@@ -166,14 +183,14 @@ const readFromExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["excelData"]],
+    formFieldKeys: [["o_excelDataOutput", "o_excelDataSwitch"]],
   },
 ];
 
 const readFromExcelWorksheet: ActivityConfig = {
   fieldList: readFromExcelWorksheetFieldList,
   fieldCategories: readFromExcelWorksheetFieldCategories,
-  fieldsToWatch: ["retrieve",],
+  fieldsToWatch: ["retrieve","o_excelDataOutput", "o_excelDataSwitch"],
 };
 
 export default readFromExcelWorksheet;
