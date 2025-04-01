@@ -55,7 +55,7 @@ const processEmailMessagesFieldList: IDynamicFieldSchema[] = [
             ],
           },
         ],
-        initialState: false,
+        initialState: true,
       },
     },
   },
