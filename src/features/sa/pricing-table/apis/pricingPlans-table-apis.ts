@@ -5,14 +5,14 @@ import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-res
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/plan`;
 
 /**
  * Retrieves list of pricingplans.
  */
 const getPricingPlans = () => {
   return axiosInstance
-    .get<IHttpResponse<PricingPlansTableDto[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<PricingPlansTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
