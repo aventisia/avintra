@@ -17,7 +17,7 @@ public class PlanTableDto
     /// <summary>
     /// Gets or sets the name of the pricing component.
     /// </summary>
-    [MaxLength(256), Required]
+    [StringLength(256), Required]
     public required string Name { get; set; }
 
     /// <summary>
