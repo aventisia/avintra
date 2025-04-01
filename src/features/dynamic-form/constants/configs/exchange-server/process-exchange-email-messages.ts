@@ -54,6 +54,16 @@ const processExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
       { label: "Shared", value: "Shared" },
     ],
     defaultValue: "Personal",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "operation", value: "Move email messages to mail folder" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "sharedMailboxAddress",
@@ -62,6 +72,20 @@ const processExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
     description:
       "The address of the shared mailbox to retrieve email messages from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "operation", value: "Move email messages to mail folder" },
+              {key: "mailboxType" , value: "Shared"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "moveToCustomFolder",
@@ -70,6 +94,16 @@ const processExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
     description:
       "Specifies whether to move email messages to a custom folder or a predefined Exchange folder",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "operation", value: "Move email messages to mail folder" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "exchangeFolder",
@@ -85,6 +119,20 @@ const processExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
       { label: "Junk email", value: "Junk email" },
     ],
     defaultValue: "Inbox",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "operation", value: "Move email messages to mail folder" }, 
+              {key: "moveToCustomFolder", value: false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "mailFolder",
@@ -93,6 +141,20 @@ const processExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
     description:
       "The name or path (e.g. folder1\\folder2) of the mail-folder to move email messages to",
     defaultValue: "Inbox",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "operation", value: "Move email messages to mail folder" },
+              {key: "moveToCustomFolder", value: true}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -113,7 +175,7 @@ const processExchangeEmailMessagesFieldCategories: IDynamicFormKeysCategory[] =
     },
   ];
 
-const processExchangeEmailMessagesFieldsToWatch: string[] = ["operation"];
+const processExchangeEmailMessagesFieldsToWatch: string[] = ["operation", "moveToCustomFolder", "mailboxType"];
 
 const processExchangeEmailMessages: ActivityConfig = {
   fieldList: processExchangeEmailMessagesFieldList,
