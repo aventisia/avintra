@@ -86,7 +86,7 @@ const saveWordFieldList: IDynamicFieldSchema[] = [
         value: "OpenDocument Text (*.odt)",
       },
     ],
-    defaultValue: "Word Document (*.docx)",
+    defaultValue: "Default (From Extension)",
     regOptions: {
       requiredBasedOnFields: {
         initialState: false,
@@ -105,6 +105,16 @@ const saveWordFieldList: IDynamicFieldSchema[] = [
     description:
       "The full path of the document. Insert the desired document file extension according to the selection in the Document format parameter",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "saveMode", value: "Save document as" }],
+          },
+        ],
+      },
+    },
   },
 ];
 

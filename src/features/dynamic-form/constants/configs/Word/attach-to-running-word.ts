@@ -13,13 +13,30 @@ const attachToRunningWordFieldList: IDynamicFieldSchema[] = [
     selectOptions: [],
     defaultValue: "",
   },
+  // Output
   {
-    name: "wordInstance",
-    type: "switch",
-    label: "WordInstance",
+    name: "o_wordInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "The Word instance this action has attached to for use with later Word actions",
-    defaultValue: "",
+    "The Word instance this action has attached to for use with later Word actions",
+    defaultValue: "WordInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_wordInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_wordInstanceSwitch",
+    type: "output-switch-field",
+    label: "WordInstance",
+    defaultValue: true,
   },
 ];
 
@@ -30,14 +47,14 @@ const attachToRunningWordFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["wordInstance"]],
+    formFieldKeys: [["o_wordInstanceOutput", "o_wordInstanceSwitch"]],
   },
 ];
 
 const attachToRunningWord: ActivityConfig = {
   fieldList: attachToRunningWordFieldList,
   fieldCategories: attachToRunningWordFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_wordInstanceOutput", "o_wordInstanceSwitch"],
 };
 
 export default attachToRunningWord;

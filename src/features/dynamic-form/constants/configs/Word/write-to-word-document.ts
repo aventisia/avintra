@@ -50,6 +50,20 @@ import {
       description:
         "The target bookmark in the Word document where the text will be appended. This action appends text before or after the specified bookmark in the Word document",
       defaultValue: "",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [
+                { key: "writeTextTo", value: "Before Bookmark" },
+                { key: "writeTextTo", value: "After Bookmark" },
+              ],
+              logicalOperator:"OR"
+            },
+          ],
+          initialState: false,
+        },
+      },
     },
   ];
   
@@ -69,7 +83,7 @@ import {
   const writeToWordDocument: ActivityConfig = {
     fieldList: writeToWordDocumentFieldList,
     fieldCategories: writeToWordDocumentFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["writeTextTo"],
   };
   
   export default writeToWordDocument;
