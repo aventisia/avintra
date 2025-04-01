@@ -120,4 +120,13 @@ public class Tenant : BaseEntity
     /// </summary>
     public string? DbNamePrefix { get; set; }
 
+    /// <summary>
+    /// Represents the date when the tenant's settings become effective.
+    /// </summary>
+    public DateTimeOffset EffectiveDate { get; set; }
+
+    /// <summary>
+    /// Indicates the date for the renewal of the tenant's agreement or settings.
+    /// </summary>
+    public DateTimeOffset RenewalDate { get; set; }
 }

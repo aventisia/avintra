@@ -129,4 +129,14 @@ public class TenantsTableDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Represents the date when the tenant's settings become effective.
+    /// </summary>
+    public DateTimeOffset EffectiveDate { get; set; }
+
+    /// <summary>
+    /// Indicates the date for the renewal of the tenant's agreement or settings.
+    /// </summary>
+    public DateTimeOffset RenewalDate { get; set; }
 }
