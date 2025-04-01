@@ -2,9 +2,9 @@ import {
   alphaNumericError,
   maxLenError,
   reqError,
-} from "@/react-toolkit/utils/error-message-list"
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list"
-import { z } from "zod"
+} from "@/react-toolkit/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a pricingplan name.
@@ -24,8 +24,8 @@ export const pricingPlanZodSchema = z.object({
   // Single fields
   id: z.string().optional(),
   pricingComponent: z.string({ message: reqError("Pricing Component") }),
-  tenantType: z.string({ message: reqError("Tenant Type") }),
-  tenantName: z.string({ message: reqError("Tenant Name") }),
+  type: z.string({ message: reqError("Tenant Type") }),
+  name: z.string({ message: reqError("Tenant Name") }),
   currency: z.string({ message: reqError("currency") }),
   unit: z.string({ message: reqError("unit") }),
   unitPrice: z.coerce
