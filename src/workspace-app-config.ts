@@ -1,5 +1,4 @@
 import { IAppConfig } from "@/react-toolkit/types/app-config";
-import { NavLocation } from "@/react-toolkit/types/nav-data-types";
 import {
   IdentificationIcon,
   PlayIcon,
@@ -20,7 +19,6 @@ const workspaceAppConfig: IAppConfig = {
     position: "center",
   },
   navData: {
-    navLocation: NavLocation.sidebar,
     sideNavMenuSections: [
       {
         showSection: true, // TODO: Remove this once we have a way to handle this using user roles
