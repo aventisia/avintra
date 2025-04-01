@@ -51,11 +51,27 @@ const extractPdfFilePagesToNewPdfFileFieldList:IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "extractedPDF",
-    type: "switch",
-    label: "ExtractedPDF",
+    name: "o_extractedPDFOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new PDF file",
-    defaultValue: "",
+    defaultValue: "ExtractedPDF",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_extractedPDFSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_extractedPDFSwitch",
+    type: "output-switch-field",
+    label: "ExtractedPDF",
+    defaultValue: true,
   },
 ];
 
@@ -66,7 +82,7 @@ const extractPdfFilePagesToNewPdfFileFieldCategories:IDynamicFormKeysCategory[] 
       ["pdfFile"],
       ["pageSelection"],
       ["extractedPdfPath"],
-      ["extractedPdfPath"],
+      ["ifFileExists"]
     ],
   },
 
@@ -76,13 +92,13 @@ const extractPdfFilePagesToNewPdfFileFieldCategories:IDynamicFormKeysCategory[] 
   },
   {
     title: "Output",
-    formFieldKeys: [["extractedPDF"]],
+    formFieldKeys: [["o_extractedPDFOutput", "o_extractedPDFSwitch"]],
   },
 ];
 const extractPdfFilePagesToNewPdfFile:ActivityConfig = {
   fieldList: extractPdfFilePagesToNewPdfFileFieldList,
   fieldCategories: extractPdfFilePagesToNewPdfFileFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_extractedPDFOutput", "o_extractedPDFSwitch"],
 };
 
 export default extractPdfFilePagesToNewPdfFile;

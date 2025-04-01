@@ -39,6 +39,16 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
       label: "CmdError",
       description: "The CMD session's standard error",
       defaultValue: "",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "separateOutputFromError", value: true }],
+            },
+          ],
+          initialState: false,
+        },
+      },
     },
   ];
   
@@ -55,7 +65,7 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
   const readFromCmdSession:ActivityConfig = {
     fieldList: readFromCmdSessionFieldList,
     fieldCategories: readFromCmdSessionFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["separateOutputFromError"],
   };
   
   export default readFromCmdSession;

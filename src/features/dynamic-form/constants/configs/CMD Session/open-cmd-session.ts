@@ -130,7 +130,17 @@ const openCmdSessionFieldList: IDynamicFieldSchema[] = [
       { label: "Chinese Traditional (CNS)", value: "x-Chinese-CNS" },
       { label: "Chinese Traditional (Eten)", value: "x-Chinese-E" },
     ],
-    defaultValue: "utf-8 : Unicode (UTF-8)",
+    defaultValue: "utf-8",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "changeCodePage", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   //output
   {
@@ -145,12 +155,12 @@ const openCmdSessionFieldList: IDynamicFieldSchema[] = [
 const openCmdSessionFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["workingFolder"], ["changeCodePage"], ["encoding"]],
+    formFieldKeys: [["workingFolder"], ],
   },
 
   {
     title: "Advanced",
-    formFieldKeys: [["changeCodePage"]],
+    formFieldKeys: [["changeCodePage"], ["encoding"]],
   },
   {
     title: "Output",
@@ -161,7 +171,7 @@ const openCmdSessionFieldCategories: IDynamicFormKeysCategory[] = [
 const openCmdSession: ActivityConfig = {
   fieldList: openCmdSessionFieldList,
   fieldCategories: openCmdSessionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["changeCodePage"],
 };
 
 export default openCmdSession;

@@ -32,6 +32,16 @@ const extractTextFromPdfFieldList: IDynamicFieldSchema[] = [
     label: "Single page number",
     description: "The number of the single page to extract text from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "single" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "fromPageNumber",
@@ -40,6 +50,16 @@ const extractTextFromPdfFieldList: IDynamicFieldSchema[] = [
     description:
       "The first page number from the range of pages to extract text from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "range" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "toPageNumber",
@@ -48,7 +68,18 @@ const extractTextFromPdfFieldList: IDynamicFieldSchema[] = [
     description:
       "The last page number from the range of pages to extract text from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "range" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  // Advance
   {
     name: "password",
     type: "password",
@@ -63,15 +94,31 @@ const extractTextFromPdfFieldList: IDynamicFieldSchema[] = [
     label: "Optimize for structured data",
     description:
       "Specify whether to detect formatted layout in the document and extract text accordingly",
-    defaultValue: "False",
+    defaultValue: false,
   },
   //   output
   {
-    name: "extractedPDFText",
-    type: "switch",
-    label: "ExtractedPDFText",
+    name: "o_extractedPDFTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The extracted text",
-    defaultValue: "",
+    defaultValue: "ExtractedPDFText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_extractedPDFTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_extractedPDFTextSwitch",
+    type: "output-switch-field",
+    label: "ExtractedPDFText",
+    defaultValue: true,
   },
 ];
 
@@ -84,22 +131,21 @@ const extractTextFromPdfFieldCategories: IDynamicFormKeysCategory[] = [
       ["singlePageNumber"],
       ["fromPageNumber"],
       ["toPageNumber"],
-      ["optimizeForStructuredData"],
     ],
   },
   {
     title: "Advanced",
-    formFieldKeys: [["password"]],
+    formFieldKeys: [["password"],["optimizeForStructuredData"]],
   },
   {
     title: "Output",
-    formFieldKeys: [["extractedPDFText"]],
+    formFieldKeys: [["o_extractedPDFTextOutput", "o_extractedPDFTextSwitch"]],
   },
 ];
 const extractTextFromPdf: ActivityConfig = {
   fieldList: extractTextFromPdfFieldList,
   fieldCategories: extractTextFromPdfFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["page(s)ToExtract", "o_extractedPDFTextOutput", "o_extractedPDFTextSwitch"],
 };
 
 export default extractTextFromPdf;

@@ -30,7 +30,7 @@ const extractImagesFromPdfFieldList: IDynamicFieldSchema[] = [
     selectOptions: [
       { label: "All", value: "all" },
       { label: "Single", value: "single" },
-      { label: "Range", value: "Range" },
+      { label: "Range", value: "range" },
     ],
     defaultValue: "all",
   },
@@ -38,24 +38,54 @@ const extractImagesFromPdfFieldList: IDynamicFieldSchema[] = [
     name: "singlePageNumber",
     type: "text",
     label: "Single page number",
-    description: "The number of the single page to extract images from",
+    description: "The number of the single page to extract text from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "single" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "fromPageNumber",
     type: "text",
     label: "From page number",
     description:
-      "The first page number from the range of pages to extract images from",
+      "The first page number from the range of pages to extract text from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "range" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "toPageNumber",
     type: "text",
     label: "To page number",
     description:
-      "The last page number from the range of pages to extract images from",
+      "The last page number from the range of pages to extract text from",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "range" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "image(s)name",
@@ -95,7 +125,7 @@ const extractImagesFromPdfFieldCategories: IDynamicFormKeysCategory[] = [
 const extractImagesFromPdf: ActivityConfig = {
   fieldList: extractImagesFromPdfFieldList,
   fieldCategories: extractImagesFromPdfFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["page(s)ToExtract"],
 };
 
 export default extractImagesFromPdf;
