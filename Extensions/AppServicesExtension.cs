@@ -30,7 +30,7 @@ public static class AppServicesExtension
         config.Apply(new PermissionMappingProfile());
         config.Apply(new InvoiceMappingProfile());
         config.Apply(new PaymentMappingProfile());
-        config.Apply(new PlanMappingProfile());
+        config.Apply(new PlanTableMappingProfile());
         config.Apply(new BillingAccountMappingProfile());
         
         config.Apply(new AuditLogMappingProfile());
@@ -97,7 +97,7 @@ public static class AppServicesExtension
 
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<IPaymentService,PaymentService>();
-        services.AddScoped<IPlanService,PlanService>();
+        services.AddScoped<IPlanTableService,PlanTableService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
 
         // Common Services
