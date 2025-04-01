@@ -131,9 +131,6 @@ public partial class AccountsDbContext
         builder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         builder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
 
-        //Configure one-to-many relationship between Plan and Subscription
-        builder.Entity<PlanPricing>().HasMany(p => p.Subscriptions).WithOne(one => one.PlanPricing).HasForeignKey(fKey => fKey.PlanId).IsRequired();
-
         // Configure one-to-many relationship between Subscription and Invoice
         builder.Entity<Subscription>().HasMany(i => i.Invoice).WithOne(s => s.Subscription).HasForeignKey(fKey => fKey.SubscriptionId).IsRequired();
 
