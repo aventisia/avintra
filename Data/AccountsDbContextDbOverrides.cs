@@ -91,7 +91,7 @@ public partial class AccountsDbContext
         builder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        builder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        
         // Unique property
         builder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         builder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
@@ -100,7 +100,9 @@ public partial class AccountsDbContext
         builder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
         builder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         builder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());
-        builder.Entity<Plan>().Property(e => e.Status).HasConversion(new EnumToStringConverter<PlanStatusEnum>());
+        builder.Entity<PlanPricing>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
+        builder.Entity<PlanPricing>().Property(e => e.Unit).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
+        builder.Entity<PlanPricing>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<FrequencyTypesEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
@@ -119,7 +121,7 @@ public partial class AccountsDbContext
         builder.Entity<Tenant>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         //Configure one-to-many relationship between Plan and Subscription
-        builder.Entity<Plan>().HasMany(p => p.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
+        builder.Entity<PlanPricing>().HasMany(p => p.Subscriptions).WithOne(one => one.PlanPricing).HasForeignKey(fKey => fKey.PlanId).IsRequired();
 
         // Configure Many-to-Many relationship between Permission and Custom Role
         builder.Entity<RolePermission>().HasOne(o => o.Permission).WithMany(r => r.RolePermissions).HasForeignKey(fkey => fkey.PermissionId).IsRequired();
@@ -130,7 +132,7 @@ public partial class AccountsDbContext
         builder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
 
         //Configure one-to-many relationship between Plan and Subscription
-        builder.Entity<Plan>().HasMany(p => p.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
+        builder.Entity<PlanPricing>().HasMany(p => p.Subscriptions).WithOne(one => one.PlanPricing).HasForeignKey(fKey => fKey.PlanId).IsRequired();
 
         // Configure one-to-many relationship between Subscription and Invoice
         builder.Entity<Subscription>().HasMany(i => i.Invoice).WithOne(s => s.Subscription).HasForeignKey(fKey => fKey.SubscriptionId).IsRequired();

@@ -11,7 +11,7 @@ public partial class AccountsDbContext
     public DbSet<ObsoletePwd> ObsoletePwds { get; set; }
     public DbSet<VerificationCode> VerificationCodes { get; set; }
     public DbSet<ContactUs> ContactUs { get; set; }
-    public DbSet<Plan> Plans { get; set; }
+    public DbSet<PlanPricing> PlanPricings { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
