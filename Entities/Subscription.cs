@@ -28,14 +28,14 @@ public class Subscription : BaseEntity, IMustHaveTenant
 
     
 	/// <summary>
-    /// Gets or sets the Id of a plan pricing, this subscription is associated with
+    /// Gets or sets the Id of a plan, this subscription is associated with
     /// </summary>
-    public Guid PlanPricingId { get; set; }
+    public Guid PlanId { get; set; }
 
     /// <summary>
-    /// Gets or sets the plan pricing, this subscription is associated with
+    /// Gets or sets the plan, this subscription is associated with
     /// </summary>
-    [ForeignKey("PlanPricingId")]
+    [ForeignKey("PlanId")]
     public virtual PlanPricing? PlanPricing { get; set; } 
 
     public virtual ICollection<Invoice>? Invoice { get; set; }
