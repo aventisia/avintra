@@ -683,7 +683,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.Plan", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.PlanPricing", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -695,13 +695,13 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("Features")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -712,20 +712,20 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("MonthlyPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("PlanName")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Status")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("UnitPrice")
+                        .HasColumnType("double precision");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -733,16 +733,15 @@ namespace AccountsAPIs.Data.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
-                    b.Property<decimal>("YearlyPrice")
-                        .HasColumnType("numeric");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("Plans");
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("PlanPricings");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.RolePermission", b =>
@@ -935,6 +934,9 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
+                    b.Property<DateTimeOffset>("EffectiveDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("ExpiresOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -975,6 +977,9 @@ namespace AccountsAPIs.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("RenewalDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SSOConfigJson")
                         .HasColumnType("text");
@@ -1327,7 +1332,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.Plan", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.PlanPricing", b =>
                 {
                     b.HasOne("AccountsAPIs.Entities.AccountUser", "CreatedByUser")
                         .WithMany()
@@ -1341,9 +1346,17 @@ namespace AccountsAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AccountsAPIs.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.RolePermission", b =>
@@ -1406,7 +1419,7 @@ namespace AccountsAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AccountsAPIs.Entities.Plan", "Plan")
+                    b.HasOne("AccountsAPIs.Entities.PlanPricing", "PlanPricing")
                         .WithMany("Subscriptions")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1416,7 +1429,7 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.Navigation("LastModifiedByUser");
 
-                    b.Navigation("Plan");
+                    b.Navigation("PlanPricing");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Tenant", b =>
@@ -1496,7 +1509,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("RolePermissions");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.Plan", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.PlanPricing", b =>
                 {
                     b.Navigation("Subscriptions");
                 });
