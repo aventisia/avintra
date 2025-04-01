@@ -1,28 +1,32 @@
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { z } from "zod";
+import { Separator } from "@/react-toolkit/ui/separator";
+
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
+  environmentTypeProps,
   hostnameProps,
   idProps,
   ipAddressProps,
   isDisabledProps,
   nameProps,
-  environmentTypeProps,
   osTypeProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
-import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
-import { AddedByAutherCard } from "./AddedByAutherCard";
 import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
-import { useShallow } from "zustand/react/shallow";
+import { AddedByAutherCard } from "./AddedByAutherCard";
+import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
+import { LicenseDiv } from "./LicenseDiv";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -121,12 +125,19 @@ export const MachineCrudForm = () => {
         <SelectField {...environmentTypeProps} disabled={isReadMode} />
       )}
 
+      <Separator className="!my-6" />
+
+      <LicenseDiv
+        isReadOnly={isReadMode}
+        value={form.getValues("licenseType")}
+      />
+
       {/* Is Disabled */}
       {crudAction !== "create" && (
         <SwitchField {...isDisabledProps} disabled={isReadMode} />
       )}
 
-      <div className="mt-2 h-fit w-[38rem]">
+      <div className="!mt-4 h-fit w-[30rem]">
         <AgentSelectTable
           isFetching={isFetching || isLoading}
           isReadMode={isReadMode}

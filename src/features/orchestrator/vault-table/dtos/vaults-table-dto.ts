@@ -1,12 +1,9 @@
-import type { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
-import type { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-types-enum";
-
 /**
- * Represents a data transfer object (DTO) for a config.
+ * Represents a data transfer object (DTO) for a credentials.
  */
 export interface VaultsTableDto {
   /**
-   * Gets or sets the primary key of the config record.
+   * Gets or sets the primary key of the credentials record.
    *
    * Not making it required because same DTO is used for insert and update.
    */
@@ -18,33 +15,27 @@ export interface VaultsTableDto {
   tenantId?: string;
 
   /**
-   * Gets or sets the name of the config. Max-255
+   * Gets or sets the name of the credentials. Max-255
    */
   name: string;
 
   /**
- * Gets or sets the type of the config.
- */
-  type: ConfigItemTypesEnum;
-
-
-  /**
-   * Gets or sets the value of the config.
+   * Gets or sets the name of the credentials. Max-255
    */
-  value: string;
+  userName: string;
 
   /**
-   * Gets or sets the encryption state of the config.
+   * Gets or sets the name of the credentials. Max-255
    */
-  isEncrypted: boolean;
+  password: string;
 
   /**
-   * Gets or sets the Access Level state of the config.
+   * Gets or sets the description of the credentials. Max-255
    */
-  accessLevel: AccessLevelTypesEnum;
+  description: string;
 
   /**
-   * Gets or sets a flag indicating whether the config record is disabled.
+   * Gets or sets a flag indicating whether the credentials record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.
    *
@@ -53,22 +44,22 @@ export interface VaultsTableDto {
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the config record. Max-254
+   * Gets or sets the username of the user who created the credentials record. Max-254
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the config record was created.
+   * Gets or sets the date and time when the credentials record was created.
    */
   createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the config record. Max-254
+   * Gets or sets the username of the user who last modified the credentials record. Max-254
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the config record was last modified.
+   * Gets or sets the date and time when the credentials record was last modified.
    */
   lastModifiedOn?: Date;
 }

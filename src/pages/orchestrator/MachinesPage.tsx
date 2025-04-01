@@ -2,12 +2,12 @@ import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkelet
 import { lazy, Suspense } from "react";
 
 // Lazy load the MachineTable component.
-const MachinesTable = lazy(() =>
-  import(
-    "@/features/orchestrator/machines-table/components/MachinesTable"
-  ).then((module) => ({
-    default: module.MachinesTable,
-  })),
+const MachineTabs = lazy(() =>
+  import("@/features/orchestrator/machines-table/components/MachineTabs").then(
+    (module) => ({
+      default: module.MachineTabs,
+    }),
+  ),
 );
 
 /**
@@ -17,7 +17,7 @@ const MachinesTable = lazy(() =>
 export const MachinesPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <MachinesTable />
+      <MachineTabs />
     </Suspense>
   );
 };

@@ -1,15 +1,21 @@
+import {
+  BotIcon,
+  FileBoxIcon,
+  Library,
+  MonitorPlayIcon,
+  ScrollTextIcon,
+  Shield,
+  TagIcon,
+} from "lucide-react";
+import { AiOutlineThunderbolt } from "react-icons/ai";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import {
   IdentificationIcon,
-  PlayIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
-  CogIcon,
-  ChartPieIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
-import { BotIcon, FileBoxIcon, LockKeyholeIcon } from "lucide-react";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -46,19 +52,9 @@ const workspaceAppConfig: IAppConfig = {
         sectionName: "Orchestrator",
         menuItems: [
           {
-            Icon: ChartPieIcon,
-            name: "overview",
-            route: "/overview",
-          },
-          {
             Icon: DesktopIcon,
             name: "machines",
             route: "/orchestrator/machines",
-          },
-          {
-            Icon: BotIcon,
-            name: "Agents",
-            route: "/orchestrator/agents",
           },
           {
             Icon: QueueListIcon,
@@ -66,19 +62,29 @@ const workspaceAppConfig: IAppConfig = {
             route: "/orchestrator/queues",
           },
           {
-            Icon: PlayIcon,
-            name: "execution",
-            route: "/orchestrator/execution",
+            Icon: AiOutlineThunderbolt,
+            name: "triggers",
+            route: "/orchestrator/triggers",
           },
           {
-            Icon: CogIcon,
-            name: "Keystore",
-            route: "/orchestrator/config-hub",
+            Icon: MonitorPlayIcon,
+            name: "executions",
+            route: "/orchestrator/executions",
           },
           {
-            Icon: LockKeyholeIcon,
+            Icon: Library,
+            name: "Key Store",
+            route: "/orchestrator/keystore",
+          },
+          {
+            Icon: Shield,
             name: "Vault",
             route: "/orchestrator/vault",
+          },
+          {
+            Icon: ScrollTextIcon,
+            name: "licenses & Credits",
+            route: "/orchestrator/licenses",
           },
         ],
       },
@@ -90,6 +96,11 @@ const workspaceAppConfig: IAppConfig = {
             Icon: IdentificationIcon,
             name: "tenants",
             route: "/tenants",
+          },
+          {
+            Icon: TagIcon,
+            name: "pricing",
+            route: "/pricing",
           },
           {
             Icon: UsersIcon,

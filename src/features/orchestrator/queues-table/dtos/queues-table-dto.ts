@@ -7,70 +7,84 @@ export interface QueuesTableDto {
    *
    * Not making it required because same DTO is used for insert and update.
    */
-  id?: string;
+  id: string;
 
   /**
-   * Gets or sets the name of the queue. Max-255
+   * Gets or sets the name of the queue.
    */
   name: string;
 
   /**
-   * Gets or sets the number of pednding transactions in the queue.
+   * Gets the toatal peding work items in queue
    */
-  pendingCount?: number;
+  totalPendingItems: number;
 
   /**
- * Gets or sets the number of inprogress transactions in the queue.
- */
-  inprogressCount?: number;
+   * Gets or sets description for the queue
+   */
+  description: string;
 
   /**
- * Gets or sets the number of completed transactions in the queue.
- */
-  completedCount?: number;
+   * Gets or sets the wheather queue Unique References Enforced.
+   */
+  isUniqueReferencesEnforced: boolean;
 
   /**
- * Gets or sets the number of failed transactions in the queue.
- */
-  failedCount?: number;
+   * Gets or sets the wheather queue is Stored Encrypted
+   */
+  isStoredEncrypted: boolean;
 
   /**
- * Gets or sets the number of total transactions in the queue.
- */
-  totalCount?: number;
+   * Gets or sets the wheather queue should Retry Failed Items
+   */
+  shouldRetryFailedItems: boolean;
 
   /**
- * Gets or sets last update time of the queue.
- */
-  lastUpdatedOn: Date;
-
+   * Gets or sets the wheather queue should Retry Abandoned Items
+   */
+  shouldRetryAbandonedItems: boolean;
 
   /**
-   * Gets or sets a flag indicating whether the queue record is disabled.
+   * Gets or sets the maximum Retry Attempts for work item
+   */
+  maximumRetryAttempts: number;
+
+  /**
+   * Gets the queue specific Data Schema Path
+   */
+  specificDataSchemaPath: string;
+
+  /**
+   * Gets the wheather queue output Data Schema Path
+   */
+  outputDataSchemaPath: string;
+
+  /**
+   * Gets or sets a flag indicating whether the credentials record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.
    *
-   * Its important to have this property nullable because we need to differentiate between true; false and null.
+   * Its important to have this property nullable because we need to differentiate between true, false and null.
    */
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the queue record. Max-254
+   * Gets or sets the username of the user who created the credentials record. Max-254
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the queue record was created.
+   * Gets or sets the date and time when the credentials record was created.
    */
   createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the queue record. Max-254
+   * Gets or sets the username of the user who last modified the credentials record. Max-254
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the queue record was last modified.
+   * Gets or sets the date and time when the credentials record was last modified.
    */
   lastModifiedOn?: Date;
 }

@@ -56,15 +56,16 @@ export const useListOptimisticMutation = <
       switch (mutateObj.crudAction) {
         case "create":
           // Add new record
-          orderBy === "desc"
-            ? (updatedQueryData = [
+          if (orderBy === "desc")
+            updatedQueryData = [
               mutateObj.payload as unknown as TQueryData,
               ...previousData.data,
-            ])
-            : (updatedQueryData = [
+            ];
+          else
+            updatedQueryData = [
               ...previousData.data,
               mutateObj.payload as unknown as TQueryData,
-            ]);
+            ];
           break;
         case "update":
           updatedQueryData = previousData?.data?.map((item) => {

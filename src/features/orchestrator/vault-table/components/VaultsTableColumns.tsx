@@ -1,13 +1,12 @@
-import { ConfigItemTypesEnum } from "@/react-toolkit/enums/config-item-types-enum";
+import { formatDistanceToNow } from "date-fns";
+
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
+
 import { getColumnName } from "../constants/column-display-names";
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
-import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 
 /**
  * Array of table columns for the configs table.
@@ -44,39 +43,6 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-    ),
-  },
-  {
-    accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(ConfigItemTypesEnum, row.getValue("type"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "accessLevel",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("accessLevel")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(AccessLevelTypesEnum, row.getValue("accessLevel"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "isEncrypted",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isEncrypted")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("isEncrypted") ? "Yes" : "No"}
-      </div>
     ),
   },
   {

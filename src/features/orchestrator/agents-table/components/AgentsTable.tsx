@@ -2,15 +2,19 @@ import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+
 import { SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
 import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
 import { agentsTableColumns } from "./AgentsTableColumns";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
+import { AgentStats } from "./AgentStats";
+import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
+import { MachineTabsList } from "../../machines-table/components/MachineTabs";
 
 /**
  * Renders a table of agents.
@@ -40,6 +44,9 @@ export const AgentsTable = () => {
             <div className="flex items-center justify-between">
               {/* <AgentsTableHeading /> */}
               <DTHeading heading="Agents" />
+
+              <MachineTabsList />
+
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
@@ -51,11 +58,14 @@ export const AgentsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={agentsTableColumns.length}
-              />
+            <div className="flex flex-col gap-2">
+              <AgentStats data={data?.data} />
+              <div className="rounded-md border">
+                <DataTable
+                  table={table}
+                  columnsLength={agentsTableColumns.length}
+                />
+              </div>
             </div>
           </AgentCrudDialog>
 
@@ -63,6 +73,7 @@ export const AgentsTable = () => {
           <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
+          <AgentsBulkActions table={table} />
         </div>
       ) : (
         // Show data table skeleton while fetching the agents data

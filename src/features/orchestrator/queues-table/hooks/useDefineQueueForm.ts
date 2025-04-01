@@ -9,10 +9,7 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { isNameAvailable } from "../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import {
-  queueNameSchema,
-  queueZodSchema,
-} from "../constants/queue-zod-schema";
+import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 
 /**
@@ -52,6 +49,16 @@ export const useDefineQueueForm = () => {
     defaultValues: {
       id: "",
       name: "",
+      description: "",
+
+      isUniqueReferencesEnforced: false,
+      isStoredEncrypted: false,
+      shouldRetryFailedItems: false,
+      shouldRetryAbandonedItems: false,
+      maximumRetryAttempts: 3,
+      specificDataSchemaFile: undefined,
+      outputDataSchemaFile: undefined,
+
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -82,6 +89,16 @@ export const useDefineQueueForm = () => {
     form.reset({
       id: rowId,
       name: queueData?.name ?? "",
+      description: queueData?.description ?? "",
+
+      isUniqueReferencesEnforced: false,
+      isStoredEncrypted: false,
+      shouldRetryFailedItems: false,
+      shouldRetryAbandonedItems: false,
+      maximumRetryAttempts: 3,
+      specificDataSchemaFile: undefined,
+      outputDataSchemaFile: undefined,
+
       isDisabled: queueData?.isDisabled ?? false,
       // Read (view) only fields
       createdBy:

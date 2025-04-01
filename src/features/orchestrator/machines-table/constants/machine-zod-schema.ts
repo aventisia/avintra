@@ -1,11 +1,9 @@
-import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
-import { z } from "zod";
-import { ipv4Regex, ipv6Regex } from ".";
+import { z } from 'zod';
+
+import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
+import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
+
+import { ipv4Regex, ipv6Regex } from './';
 
 /**
  * Represents the Zod object's item schema for a machine name.
@@ -33,6 +31,7 @@ export const machineZodSchema = z.object({
   name: machineNameSchema,
   type: z.string().min(1, { message: reqError("Machine OS type") }),
   environment: z.string().min(1, { message: reqError("Environment type") }),
+  licenseType: z.string().min(1, { message: reqError("License type") }),
   ipAddress: ipAddressSchema,
   hostname: z.string({ message: reqError("Host Name") }),
 

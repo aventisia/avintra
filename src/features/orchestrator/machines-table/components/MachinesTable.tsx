@@ -8,6 +8,7 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
+
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -15,6 +16,9 @@ import { useFetchMachines } from "../hooks/useFetchMachines";
 import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
 import { machinesTableColumns } from "./MachinesTableColumns";
+import { MachineStats } from "./MachineStats";
+import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
+import { MachineTabsList } from "./MachineTabs";
 
 /**
  * Renders a table of machines.
@@ -27,6 +31,8 @@ export const MachinesTable = () => {
 
   // Fetch machines data
   const { data } = useFetchMachines();
+
+  useDtCrudQueryAction(data?.data);
 
   // Create a React table for machines data
   const table = useDataTable(
@@ -47,6 +53,8 @@ export const MachinesTable = () => {
             <div className="flex items-center justify-between">
               <DTHeading heading={TABLE_HEADING} />
 
+              <MachineTabsList />
+
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
@@ -60,11 +68,14 @@ export const MachinesTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={machinesTableColumns.length}
-              />
+            <div className="flex flex-col gap-2">
+              <MachineStats data={data?.data} />
+              <div className="rounded-md border">
+                <DataTable
+                  table={table}
+                  columnsLength={machinesTableColumns.length}
+                />
+              </div>
             </div>
           </MachineCrudDialog>
 

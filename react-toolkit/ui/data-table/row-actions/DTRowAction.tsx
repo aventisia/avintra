@@ -6,6 +6,7 @@ import {
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface DTEditRowActionProps {
   rowId: string;
@@ -22,6 +23,9 @@ export const DTRowAction: React.FC<DTEditRowActionProps> = ({
   crudAction,
   size = "md",
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // Get store state and actions
   const { setCrudDialogOptions } = useDTCrudDialogStore(
     useShallow((state) => ({
@@ -35,13 +39,17 @@ export const DTRowAction: React.FC<DTEditRowActionProps> = ({
       size={size}
       content={crudAction === "read" ? "View" : "Edit"}
       Icon={crudAction === "read" ? ArrowUpRightIcon : PencilSquareIcon}
-      onClick={() =>
+      onClick={() => {
+        navigate({
+          pathname: location?.pathname,
+        });
+        console.log(location);
         setCrudDialogOptions({
           showDialog: true,
           rowId,
           crudAction: crudAction,
-        })
-      }
+        });
+      }}
     />
   );
 };
