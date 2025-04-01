@@ -23,7 +23,7 @@ import {
         { label: "Index", value: "index" },
         { label: "Name", value: "name" },
       ],
-      defaultValue: "",
+      defaultValue: "name",
     },
     {
       name: "worksheetIndex",
@@ -34,7 +34,7 @@ import {
       defaultValue: "",
       regOptions: {
         requiredBasedOnFields: {
-          initialState: true,
+          initialState: false,
           conditionList: [
             {
               fields: [{ key: "activateWorksheetWith", value: "index" }],
@@ -51,7 +51,7 @@ import {
       defaultValue: "",
       regOptions: {
         requiredBasedOnFields: {
-          initialState: false,
+          initialState: true,
           conditionList: [
             {
               fields: [{ key: "activateWorksheetWith", value: "name" }],

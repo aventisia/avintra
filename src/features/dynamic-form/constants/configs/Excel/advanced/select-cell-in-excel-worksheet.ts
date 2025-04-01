@@ -22,15 +22,19 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       "Specify whether to select an explicitly specified range of cells or a range of cells relative to the currently active cell.",
     selectOptions: [
       {
-        label: "Absolutely specified cell",
-        value: "absolutely specified cell",
+        label: "Range of cells",
+        value: "range of cells",
       },
       {
-        label: "Relatively specified cell",
-        value: "relatively specified cell",
+        label: "Range of cells relative to active cell",
+        value: "range of cells relative to active cell",
       },
+      {
+        label: "Named cells",
+        value: "named cells"
+      }
     ],
-    defaultValue: "",
+    defaultValue: "range of cells",
   },
   {
     name: "xAxisDirection",
@@ -43,6 +47,18 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "Right", value: "right" },
     ],
     defaultValue: "left",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "startColumn",
@@ -50,13 +66,37 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start column",
     description: "	The index or letter of the first column.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
-    name: " xOffset",
+    name: "xOffset",
     type: "number",
     label: "X Offset",
     description: "The X-axis offset.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "startRow",
@@ -64,6 +104,18 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "The first row number. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "endColumn",
@@ -71,6 +123,18 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "The index or letter of the last column.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "yAxisDirection",
@@ -83,6 +147,18 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "Below", value: "below" },
     ],
     defaultValue: "above",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "endRow",
@@ -90,6 +166,18 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "	The last row number. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "yOffset",
@@ -97,6 +185,37 @@ const selectCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Y Offset",
     description: "The Y-axis offset.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "range of cells relative to active cell" },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    description: "The name of cells.",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "select", value: "named cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 
@@ -114,6 +233,7 @@ const selectCellsInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
       ["yAxisDirection"],
       ["endRow"],
       ["yOffset"],
+      ["name"]
     ],
   },
 ];
@@ -121,7 +241,7 @@ const selectCellsInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
 const selectCellsInExcelWorksheet: ActivityConfig = {
   fieldList: selectCellsInExcelWorksheetFieldList,
   fieldCategories: selectCellsInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["select"],
 };
 
 export default selectCellsInExcelWorksheet;

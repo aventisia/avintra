@@ -33,7 +33,7 @@ const writeToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "On currently active cell", value: "onActiveCell" },
       { label: "On named cells", value: "onNamedCells" },
     ],
-    defaultValue: "onActiveCell",
+    defaultValue: "onSpecifiedCell",
   },
   {
     name: "column",
@@ -43,7 +43,7 @@ const writeToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
           {
             fields: [{ key: "writeMode", value: "onSpecifiedCell" }],
@@ -60,7 +60,7 @@ const writeToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
           {
             fields: [{ key: "writeMode", value: "onSpecifiedCell" }],
@@ -93,6 +93,16 @@ const writeToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "By enabling this option, the entire selected range will be populated with the provided value",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "writeMode", value: "onNamedCells" }],
+          },
+        ],
+      },
+    },
   },
 ];
 

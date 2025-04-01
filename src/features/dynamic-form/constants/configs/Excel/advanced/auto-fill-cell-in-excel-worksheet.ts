@@ -30,9 +30,20 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     name: "sourceCellsName",
     type: "text",
     label: "Source cells name",
-    description: "	Name representing the source range for auto filling",
-
+    description: "Name representing the source range for auto filling",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "named cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "destinationCellsName",
@@ -42,14 +53,37 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       "Name representing the destination range to auto fill. The source range should begin from the same cell and should be included in the destination range",
 
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "named cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "startColumn",
     type: "text",
     label: "Start column",
     description: "	The index or letter of the first column of both ranges",
-
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "startRow",
@@ -58,6 +92,18 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The first row number of both ranges. The numbering starts from 1",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "sourceEndColumn",
@@ -65,6 +111,18 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Source end column",
     description: "	The index or letter of the last column of the source range",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "sourceEndRow",
@@ -73,6 +131,18 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The last row number of the source range. The numbering starts from 1",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+            ],
+          },
+        ],
+      },
+    },
   },
 
   {
@@ -82,6 +152,18 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The index or letter of the last column of the destination range",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "destinationEndRow",
@@ -90,6 +172,18 @@ const autoFillCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The last row number of the destination range. The numbering starts from 1",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 
@@ -115,7 +209,7 @@ const autoFillCellsInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] =
 const autoFillCellsInExcelWorksheet: ActivityConfig = {
   fieldList: autoFillCellsInExcelWorksheetFieldList,
   fieldCategories: autoFillCellsInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["rangesFormat"],
 };
 
 export default autoFillCellsInExcelWorksheet;

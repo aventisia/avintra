@@ -46,7 +46,7 @@ const resizeColumnsRowsFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
           {
             fields: [
@@ -109,6 +109,20 @@ const resizeColumnsRowsFieldList: IDynamicFieldSchema[] = [
     label: "End Column",
     description: "The column's index number of last column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "resizeTarget", value: "Column" },
+              { key: "selectionRange", value: "Range" },
+            ],
+            logicalOperator:"AND"
+          },
+        ],
+      },
+    },
   },
   {
     name: "startRow",
@@ -137,6 +151,20 @@ const resizeColumnsRowsFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The row's index number of last row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "resizeTarget", value: "Row" },
+              { key: "selectionRange", value: "Range" },
+            ],
+            logicalOperator:"AND"
+          },
+        ],
+      },
+    },
   },
   {
     name: "resizeType",
@@ -148,7 +176,7 @@ const resizeColumnsRowsFieldList: IDynamicFieldSchema[] = [
       { label: "AutoFit", value: "AutoFit" },
       { label: "Custom size", value: "Custom size" },
     ],
-    defaultValue: "",
+    defaultValue: "AutoFit",
   },
   {
     name: "width",

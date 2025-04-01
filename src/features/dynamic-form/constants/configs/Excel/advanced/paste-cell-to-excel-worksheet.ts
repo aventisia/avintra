@@ -22,8 +22,9 @@ const pasteCellsToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     selectOptions: [
       { label: "On specified cell", value: "on specified cell" },
       { label: "On currently active cell", value: "on currently active cell" },
+      { label: "Values of named cells", value: "named cells" },
     ],
-    defaultValue: "",
+    defaultValue: "on specified cell",
   },
   {
     name: "column",
@@ -31,6 +32,18 @@ const pasteCellsToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Column",
     description: "	The index or letter of the cell column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "pasteMode", value: "on specified cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "row",
@@ -38,19 +51,50 @@ const pasteCellsToExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Row",
     description: "	The row number",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "pasteMode", value: "on specified cell" },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    description: "The name of cells.",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "pasteMode", value: "named cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 
 const pasteCellsToExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["excelInstance"], ["pasteMode"], ["column"], ["row"]],
+    formFieldKeys: [["excelInstance"], ["pasteMode"], ["column"], ["row"], ["name"]],
   },
 ];
 const pasteCellsToExcelWorksheet: ActivityConfig = {
   fieldList: pasteCellsToExcelWorksheetFieldList,
   fieldCategories: pasteCellsToExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["pasteMode"],
 };
 
 export default pasteCellsToExcelWorksheet;

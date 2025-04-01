@@ -10,10 +10,12 @@ import {
       type: "select",
       label: "Environment variable name",
       selectOptions: [
-        { label: "ChocolateyLastPathUpdate", value: "ChocolateyLastPathUpdate" },
+        // { label: "ChocolateyLastPathUpdate", value: "ChocolateyLastPathUpdate" },
         { label: "OneDrive", value: "OneDrive" },
         { label: "Path", value: "Path" },
         { label: "TEMP", value: "TEMP" },
+        { label: "TMP", value: "TMP" },
+
       ],
       description: "The name of the environment variable to delete",
       defaultValue: "Path",

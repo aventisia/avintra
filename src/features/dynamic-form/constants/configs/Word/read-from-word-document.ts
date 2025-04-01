@@ -62,12 +62,29 @@ const readFromWordDocumentFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  // Output
   {
-    name: "wordData",
-    type: "switch",
-    label: "WordData",
+    name: "o_wordDataOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The value of the retrieved content",
-    defaultValue: "",
+    defaultValue: "WordData",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_wordDataSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_wordDataSwitch",
+    type: "output-switch-field",
+    label: "WordData",
+    defaultValue: true,
   },
 ];
 
@@ -78,14 +95,14 @@ const readFromWordDocumentFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["wordData"]],
+    formFieldKeys: [["o_wordDataOutput", "o_wordDataSwitch"]],
   },
 ];
 
 const readFromWordDocument: ActivityConfig = {
   fieldList: readFromWordDocumentFieldList,
   fieldCategories: readFromWordDocumentFieldCategories,
-  fieldsToWatch: ["retrieve"],
+  fieldsToWatch: ["retrieve", "o_wordDataOutput", "o_wordDataSwitch"],
 };
 
 export default readFromWordDocument;
