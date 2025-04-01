@@ -1,12 +1,15 @@
 import { cn } from "@/react-toolkit/lib/utils";
 
 interface AppLogoProps {
-  /** Set to true, if want to show full logo */
+  /** Set to true, if want to show aventisia logo */
   showFullLogo?: boolean;
+
+  /** Set to true, if want to show light logo */
+  lightLogo?: boolean;
 
   /** (Optional): To pass css classes to override style
    *
-   * NOTE: Only update font-size (text-) and height (h-) styles using className prop
+   * NOTE: Only update height (h-) styles using className prop
    */
   className?: string;
 }
@@ -14,12 +17,16 @@ interface AppLogoProps {
 /** Component to render logo without app name or with app name */
 const AppLogo = ({
   showFullLogo = false,
+  lightLogo = true,
   className = "h-6 text-xl",
 }: AppLogoProps) => {
+  // Logo file
+  const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
+
   // Logo path
   const logoSrc = showFullLogo
     ? import.meta.env.BASE_URL + "logo.svg"
-    : import.meta.env.BASE_URL + "favicon.svg";
+    : import.meta.env.BASE_URL + logoFile;
 
   // Return logo with app name
   return (
@@ -30,14 +37,7 @@ const AppLogo = ({
         className,
       )}
     >
-      <img
-        className={cn(className)}
-        src={logoSrc}
-        alt={import.meta.env.VITE_COMPANY_NAME + " Logo"}
-      />
-      {import.meta.env.VITE_APP_NAME && !showFullLogo && (
-        <h1>{import.meta.env.VITE_APP_NAME}</h1>
-      )}
+      <img className={cn(className)} src={logoSrc} alt="Logo" />
     </a>
   );
 };
