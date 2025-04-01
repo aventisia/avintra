@@ -46,8 +46,8 @@ export const useDefinePricingPlanForm = () => {
     defaultValues: {
       id: "",
       pricingComponent: "",
-      tenantType: "",
-      tenantName: "",
+      type: "",
+      name: "",
       currency: "",
       unit: "",
       unitPrice: 0,
@@ -74,36 +74,31 @@ export const useDefinePricingPlanForm = () => {
     }>(DATA_QUERY_KEY);
 
     // Get pricingplan data by id
-    const pricingplanData = pricingplansData?.data.find(
-      (item) => item.id === rowId,
-    );
+    const data = pricingplansData?.data.find((item) => item.id === rowId);
 
     // Set pricingplan data to form
     form.reset({
       // Single fields
       id: rowId,
-      pricingComponent: pricingplanData?.pricingComponent ?? "",
-      tenantType: pricingplanData?.tenantType ?? "",
-      tenantName: pricingplanData?.tenantName ?? "",
-      currency: pricingplanData?.currency ?? "",
-      unit: pricingplanData?.unit ?? "",
-      unitPrice: pricingplanData?.unitPrice ?? 0,
-      billingFrequency: pricingplanData?.billingFrequency ?? "",
-      cola: pricingplanData?.cola ?? 0,
+      pricingComponent: data?.pricingComponent ?? "",
+      type: data?.type ?? "",
+      name: data?.name ?? "",
+      currency: data?.currency ?? "",
+      unit: data?.unit ?? "",
+      unitPrice: data?.unitPrice ?? 0,
+      billingFrequency: data?.billingFrequency ?? "",
+      cola: data?.cola ?? 0,
       // Single field
-      isDisabled: pricingplanData?.isDisabled ?? false,
+      isDisabled: data?.isDisabled ?? false,
       // Group (read-only)
       createdBy:
-        pricingplanData?.createdBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      createdOn: pricingplanData?.createdOn
-        ? new Date(pricingplanData?.createdOn)
-        : new Date(),
+        data?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdOn: data?.createdOn ? new Date(data?.createdOn) : new Date(),
       lastModifiedBy:
-        pricingplanData?.lastModifiedBy ??
+        data?.lastModifiedBy ??
         userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: pricingplanData?.lastModifiedOn
-        ? new Date(pricingplanData?.lastModifiedOn)
+      lastModifiedOn: data?.lastModifiedOn
+        ? new Date(data?.lastModifiedOn)
         : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
@@ -112,6 +107,7 @@ export const useDefinePricingPlanForm = () => {
   const refineFormData = (formData: z.infer<typeof pricingPlanZodSchema>) => {
     return {
       ...formData,
+      tenantId: userSession?.tenantId,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

@@ -16,16 +16,16 @@ export interface PricingPlansTableDto {
   pricingComponent: string;
 
   /**
-   * Gets or sets the plan tenantType.
+   * Gets or sets the plan Type.
    *
    */
-  tenantType: string;
+  type: string;
 
   /**
-   * Gets or sets the plan tenant Name.
+   * Gets or sets the plan Name.
    *
    */
-  tenantName: string;
+  name: string;
 
   /**
    * Gets or sets the plan currency.
