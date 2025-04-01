@@ -93,7 +93,7 @@ const workspaceAppConfig: IAppConfig = {
           {
             Icon: IdentificationIcon,
             name: "tenant",
-            route: "/tenants",
+            route: "/tenant",
           },
           {
             Icon: TbCertificate,

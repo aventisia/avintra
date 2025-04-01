@@ -27,7 +27,7 @@ import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantsPage } from "./pages/TenantsPage";
+import { TenantsPage } from "./pages/sa/TenantsPage";
 import { UsersPage } from "./pages/UsersPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
@@ -35,6 +35,7 @@ import { CrudActionTypeLong } from "@/react-toolkit/constants";
 import { PricingPage } from "./pages/sa/PricingPage";
 import { BillingPage } from "./pages/BillingPage";
 import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
+import { TenantInfoPage } from "./pages/TenantsInfoPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -95,8 +96,8 @@ const routerConfig: RouteObject[] = [
         element: <UsersPage />,
       },
       {
-        path: "/tenants",
-        element: <TenantsPage />,
+        path: "/tenant",
+        element: <TenantInfoPage />,
       },
       {
         path: "/billing",
