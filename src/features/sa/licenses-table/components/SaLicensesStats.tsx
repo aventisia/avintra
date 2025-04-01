@@ -5,7 +5,7 @@ import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 export const SaLicensesStats = () => {
   return (
-    <div className="my-4 grid grid-cols-3 gap-10 gap-x-8">
+    <div className="my-4 grid grid-cols-4 gap-10 gap-x-8">
       <StatsCard
         title={"Total Tenants"}
         description={"5 dedicated  05 On-prem 15 shared"}
