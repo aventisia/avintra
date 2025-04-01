@@ -10,6 +10,17 @@ export const idProps: InputFieldProps = {
   label: "BillingPlan Id",
   disabled: true,
 };
+export const nameProps: InputFieldProps = {
+  name: "name",
+  label: "Full Name",
+  isRequired: true,
+};
+
+export const emailProps: InputFieldProps = {
+  name: "email",
+  label: "Email",
+  isRequired: true,
+};
 
 export const addressLine1Props: InputFieldProps = {
   name: "addressLine1",

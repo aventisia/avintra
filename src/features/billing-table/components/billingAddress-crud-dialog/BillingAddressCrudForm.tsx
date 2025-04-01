@@ -13,8 +13,10 @@ import {
   addressLine3Props,
   cityProps,
   countryProps,
+  emailProps,
   idProps,
   isDisabledProps,
+  nameProps,
   pinCodeProps,
   stateProps,
   taxIdProps,
@@ -67,6 +69,12 @@ export const BillingAddressCrudForm = () => {
         <p>Company Name</p>
         <p className="font-semibold">Xyz company</p>
       </div>
+
+      {/* address line 1 */}
+      <InputField {...nameProps} />
+
+      {/* address line 1 */}
+      <InputField {...emailProps} />
 
       {/* address line 1 */}
       <InputField {...addressLine1Props} />

@@ -24,7 +24,7 @@ export const inoviceZodSchema = z.object({
   // Single fields
   id: z.string().optional(),
   name: z.string({ message: reqError("Name") }),
-  email: z.string({ message: reqError("Email") }),
+  email: z.string({ message: reqError("Email") }).email(),
   addressLine1: z.string({ message: reqError("Address Line 1") }),
   addressLine2: z.string({ message: reqError("Address Line 2") }),
   addressLine3: z.string().optional(),
@@ -34,7 +34,7 @@ export const inoviceZodSchema = z.object({
   taxId: z.string().optional(),
   pinCode: z.coerce
     .number({ message: reqError("Pin Code") })
-    .positive({ message: reqError("Pin Code") }),
+    .positive({ message: reqError("Pin Code must be positive") }),
   // Single field
   isDisabled: z.boolean(),
   // Group (read-only)
