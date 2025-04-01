@@ -1,4 +1,4 @@
-export enum TenantTypeEnum {
+export enum PricingPlanTypeEnum {
   Shared = "Shared",
   OnPrem = "OnPrem",
 }
