@@ -1,0 +1,36 @@
+meta {
+  name: Repeat - Insert plan
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/plan
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody(
+    {
+     name: "TestPlan1",
+     currency: "USD",
+     unitPrice: 350,
+     unit: "Credit",
+     frequency: "Monthly",
+     cola: 5
+    }
+  )
+    
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "PLAN_ID",
+    res.getBody().data.id
+    );
+  }
+}

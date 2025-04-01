@@ -1,0 +1,29 @@
+meta {
+  name: Update plan
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/plan
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody(
+    {
+     id: bru.getGlobalEnvVar("PLAN_ID"),
+     name: "New plan",
+     currency: "USD",
+     unitPrice: 450,
+     unit: "Credit",
+     frequency: "Monthly",
+     cola : 5,
+     isDisabled: true  
+    }
+  )
+    
+}

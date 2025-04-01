@@ -1,11 +1,11 @@
 meta {
   name: Insert plan
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/plan/insert-plan
+  url: {{ACCOUNTS_APIS_BASE_URL}}/plan
   body: none
   auth: none
 }
@@ -13,15 +13,17 @@ post {
 script:pre-request {
   const {faker} = require('@faker-js/faker');
   
-  req.setBody({
-   planName:"Plan A",
-   description: faker.lorem.paragraph(),
-   monthlyPrice: 349,
-   yearlyPrice: 2540,
-   features: "Create Ten flow; Create flow logs;",
-   status: "Active",
-   isDisabled: true  
-  })
+  req.setBody(
+    {
+      tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+     name: "TestP2la1",
+     currency: "USD",
+     unitPrice: 350,
+     unit: "Credit",
+     frequency: "Monthly",
+     cola : 5
+    }
+  )
     
 }
 
