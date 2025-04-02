@@ -91,6 +91,37 @@ public class PlanTableService : IPlanTableService
         return serviceResponse;
     }
 
+    // Retrieves a list of plan options.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync()
+    {
+        // Initialize the service response with a default null data and an error message
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve plans. Please try again."
+        };
+
+        try
+        {
+            // Retrieve all plans from the repository
+            var plans = await _unitOfWork.PlanRepo.GetAllAsync().ToListAsync();
+
+            // Map the retrieved plan list to SelectOptionDto and update the response
+            serviceResponse.Data = plans.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Plans retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return the service response with the default message
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+
     // Checks if a plan name is available
     public async Task<ServiceResponse<TrueFalseResultDto>> IsPlanNameAvailableAsync(CheckAvailabilityDto availabilityCheckDto)
     {
@@ -145,7 +176,7 @@ public class PlanTableService : IPlanTableService
         {
             // Check if the plan already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
-                .GetByConditionAsync(w => 
+                .GetByConditionAsync(w =>
                     w.Name.ToLower() == planTableDto.Name.ToLower() &&
                     (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
                     (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&

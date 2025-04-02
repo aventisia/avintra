@@ -19,6 +19,12 @@ public interface IPlanTableService
     Task<ServiceResponse<PlanTableDto>> GetPlanByIdAsync(Guid planId);
 
     /// <summary>
+    /// Asynchronously retrieves a list of plan options without filtering by tenant type.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync();
+
+    /// <summary>
     /// Checks if a specified plan name is available for new entries.
     /// </summary>
     /// <param name="availabilityCheckDto">A DTO that includes the plan name to check.</param>

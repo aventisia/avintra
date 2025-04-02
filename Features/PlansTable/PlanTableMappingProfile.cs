@@ -22,5 +22,11 @@ public class PlanTableMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
+
+        // Get plans in SelectOptionDto format
+        config.NewConfig<PlanPricing, SelectOptionDto>()
+            .Map(dest => dest.Label, src => src.Name)
+            .Map(dest => dest.Value, src => src.Id)
+            .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }
