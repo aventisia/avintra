@@ -162,7 +162,8 @@ import setKeyState from "../constants/configs/mouse-and-keyboard/set-key-state";
 import waitForMouse from "../constants/configs/mouse-and-keyboard/wait-for-mouse";
 import waitForShortcutKey from "../constants/configs/mouse-and-keyboard/wait-for-shortcut-key";
 import extractTextWithOcr from "../constants/configs/ocr/extract-text-with";
-import waitForTextOnScreen from "../constants/configs/ocr/wait-for-text-on-screen";
+// import waitForTextOnScreen from "../constants/configs/ocr/wait-for-text-on-screen";
+// import ifTextOnScreen from "../constants/configs/ocr/if-text-on-screen"
 import closeOutlook from "../constants/configs/outlook/close-outlook";
 import launchOutlook from "../constants/configs/outlook/launch-outlook";
 import processEmailMessagesInOutlook from "../constants/configs/outlook/process-email-messages-in-outlook";
@@ -667,7 +668,8 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
 
   //OCR
   // useTheWindowsOcrEngine,
-  waitForTextOnScreen,
+  // ifTextOnScreen, // To Be done later
+  // waitForTextOnScreen, // To be done later
   extractTextWithOcr,
 
   //Cryptography

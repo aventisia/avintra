@@ -25,16 +25,8 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
     selectOptions: [
       { label: "Windows OCR engine", value: "windows OCR engine" },
       { label: "Tesseract engine", value: "tesseract engine" },
-      { label: "OCR engine variable", value: "oCR engine variable" },
     ],
     defaultValue: "windows OCR engine",
-  },
-  {
-    name: "oCREngineVariable",
-    type: "text",
-    label: "OCR engine variable",
-    description: "The engine to use for the OCR operation",
-    defaultValue: "",
   },
   {
     name: "textToFind",
@@ -301,7 +293,6 @@ const ifTextOnScreenOCRFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["ifText"],
       ["OCREngineType"],
-      ["oCREngineVariable"],
       ["textToFind"],
       ["isRegularExpression"],
       ["searchForTextOn"],

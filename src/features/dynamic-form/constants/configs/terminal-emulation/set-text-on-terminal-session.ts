@@ -59,21 +59,20 @@ const setTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     },
   },
 
-  {
-    name: "text",
-    type: "text",
-    label: "Text",
-    description: "The text to set on the specified location",
-    defaultValue: "",
-  },
+  // {
+  //   name: "text",
+  //   type: "text",
+  //   label: "Text",
+  //   description: "The text to set on the specified location",
+  //   defaultValue: "",
+  // },
   {
     name: "setText",
     type: "select",
     label: "Set text",
     description: "The location to set the text to",
     selectOptions: [
-      { label: "Cursor", value: "cursor" },
-      { label: "Position", value: "position" },
+      { label: "Cursor Position", value: "cursor position" },
       { label: "Field", value: "field" },
     ],
     defaultValue: "field",
@@ -89,6 +88,16 @@ const setTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
       { label: "Position", value: "position" },
     ],
     defaultValue: "label",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "setText", value: "field" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "label",
@@ -96,6 +105,20 @@ const setTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Label",
     description: "The label of the field to look for",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setText", value: "field" },
+              { key: "getFieldBy", value: "label" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "index",
@@ -103,6 +126,20 @@ const setTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Index",
     description: "The index of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setText", value: "field" },
+              { key: "getFieldBy", value: "index" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "row",
@@ -110,6 +147,20 @@ const setTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Row",
     description: "The vertical position of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setText", value: "field" },
+              { key: "getFieldBy", value: "position" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "column",
@@ -117,7 +168,23 @@ const setTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Column",
     description: "The horizontal position of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "setText", value: "field" },
+              { key: "getFieldBy", value: "position" },
+            ],
+            logicalOperator: "AND"
+
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  // Advance
   {
     name: "treat@CharacterAsLiteral",
     type: "switch",
@@ -147,11 +214,11 @@ const setTextOnTerminalSessionFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Advanced",
-    formFieldKeys: [["CharacterAsLiteral"]],
+    formFieldKeys: [["treat@CharacterAsLiteral"]],
   },
 ];
 
-const setTextOnTerminalSessionFieldsToWatch: string[] = ["inputTextAs"];
+const setTextOnTerminalSessionFieldsToWatch: string[] = ["inputTextAs", "setText", "getFieldBy"];
 const setTextOnTerminalSession: ActivityConfig = {
   fieldList: setTextOnTerminalSessionFieldList,
   fieldCategories: setTextOnTerminalSessionFieldCategories,
