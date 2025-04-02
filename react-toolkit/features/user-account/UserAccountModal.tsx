@@ -67,7 +67,7 @@ const UserAccountModal = ({
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon10" }),
-          "rounded-full border-[4px] border-[#363082]",
+          "rounded-full border-[4px] border-[#363082] hover:border-primary",
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>

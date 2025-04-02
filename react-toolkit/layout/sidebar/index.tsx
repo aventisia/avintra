@@ -27,11 +27,11 @@ const Sidebar = ({ appConfig, className }: SidebarProps) => {
         sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
       )}
     >
-      <Tooltip content={sidebarExpand ? "Collapse" : "Expand "}>
+      <Tooltip content={sidebarExpand ? "Collapse" : "Expand "} side="right">
         <Button
           variant="ghost"
           size="icon5"
-          className="absolute -right-2.5 top-1 z-10 rounded-full border-none bg-white text-indigo-100 shadow-none hover:text-primary"
+          className="absolute -right-2.5 top-2 z-10 rounded-full border-none bg-white text-indigo-100 shadow-none hover:text-primary"
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
