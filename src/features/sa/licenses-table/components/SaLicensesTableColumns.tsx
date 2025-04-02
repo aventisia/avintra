@@ -1,11 +1,10 @@
-import { formatDistanceToNow, isValid } from "date-fns";
-
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { SaLicensesTableDto } from "../dtos/saLicenses-table-dto";
 import { SaLicenseRowActions } from "./saLicense-row-actions/SaLicenseRowActions";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the licenses table.
@@ -110,11 +109,7 @@ export const saLicensesTableColumns: ColumnDef<SaLicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {!isValid(row.getValue<Date>("nextBillingDate"))
-          ? "NA"
-          : formatDistanceToNow(row.getValue<Date>("nextBillingDate"), {
-              addSuffix: true,
-            })}
+        {dateFormat(row.getValue<Date>("nextBillingDate"))}
       </div>
     ),
   },

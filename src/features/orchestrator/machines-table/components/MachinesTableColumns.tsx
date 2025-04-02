@@ -1,12 +1,12 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { format, formatDistanceToNow, isValid } from "date-fns";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 import { Badge } from "@/react-toolkit/ui/badge";
 import { maskIP } from "../constants";
+import { dateFormat, dateFormatDistanceToNow } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the machine table.
@@ -101,9 +101,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {isValid(row.getValue<Date>("lastCheckedIn"))
-          ? format(row.getValue<Date>("lastCheckedIn"), "dd MMM yyyy, HH:mm")
-          : "NA"}
+        {dateFormatDistanceToNow(row.getValue<Date>("lastCheckedIn"))}
       </div>
     ),
   },
@@ -155,11 +153,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {!isValid(row.getValue<Date>("createdOn"))
-          ? "NA"
-          : formatDistanceToNow(row.getValue<Date>("createdOn"), {
-              addSuffix: true,
-            })}
+        {dateFormat(row.getValue<Date>("createdOn"))}
       </div>
     ),
   },

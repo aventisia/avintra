@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { getColumnName } from "../constants/column-display-names";
 import { InovicesTableDto } from "../dtos/inovices-table-dto";
 import { InoviceDownloadRowAction } from "./inovice-table-actions/InoviceDownloadRowAction";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the billingplans table.
@@ -74,7 +75,7 @@ export const inovicesTableColumns: ColumnDef<InovicesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("dueDate")}
+        {dateFormat(row.getValue("dueDate"))}
       </div>
     ),
   },
@@ -85,7 +86,7 @@ export const inovicesTableColumns: ColumnDef<InovicesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("paidOn")}
+        {dateFormat(row.getValue("paidOn"))}
       </div>
     ),
   },

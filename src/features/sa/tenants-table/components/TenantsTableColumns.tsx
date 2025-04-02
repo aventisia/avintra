@@ -1,10 +1,10 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the tenants table.
@@ -53,15 +53,35 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
   },
   {
+    accessorKey: "effectiveDate",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("effectiveDate")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormat(row.getValue("effectiveDate"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "renewalDate",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("renewalDate")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormat(row.getValue<Date>("renewalDate"))}
+      </div>
+    ),
+  },
+  {
     accessorKey: "expiresOn",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("expiresOn")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("expiresOn"), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue<Date>("expiresOn"))}
       </div>
     ),
   },
@@ -87,9 +107,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn"), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -97,7 +115,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the tenants row actions component
-      <TenantRowActions rowId={row.original.id || "rowId"} />
+      <TenantRowActions rowId={row.original.id ?? "rowId"} />
     ),
   },
 ];

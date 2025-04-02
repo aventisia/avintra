@@ -1,10 +1,10 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 import { PricingPlanRowActions } from "./pricingPlan-table-actions/PricingPlanRowActions";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the pricingplans table.
@@ -47,7 +47,10 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "pricingComponent",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("pricingComponent")} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("pricingComponent")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -97,9 +100,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("unit")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("unit")}
-      </div>
+      <div className="w-auto truncate font-medium">{row.getValue("unit")}</div>
     ),
   },
 
@@ -117,7 +118,10 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "billingFrequency",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("billingFrequency")} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("billingFrequency")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -132,9 +136,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("cola")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("cola")}
-      </div>
+      <div className="w-auto truncate font-medium">{row.getValue("cola")}</div>
     ),
   },
 
@@ -161,9 +163,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn"), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },
