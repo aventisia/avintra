@@ -26,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingAccountRepo BillingAccountRepo => new BillingAccountRepo(_accountsDbContext);
     public IAddressRepo AddressRepo => new AddressRepo(_accountsDbContext);
+    public ILicenseCreditRepo LicenseCreditRepo => new LicenseCreditRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false) => checkHasChanges && (!_accountsDbContext.ChangeTracker.HasChanges() || await _accountsDbContext.SaveChangesAsync() > 0) || await _accountsDbContext.SaveChangesAsync() > 0;
 

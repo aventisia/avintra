@@ -35,7 +35,9 @@ public interface IUnitOfWork
     IBillingAccountRepo BillingAccountRepo { get; }
 
     IAddressRepo AddressRepo { get; }
-
+    
+    ILicenseCreditRepo LicenseCreditRepo { get; }
+ 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>
