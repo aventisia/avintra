@@ -45,13 +45,13 @@ export const useDefinePricingPlanForm = () => {
     resolver: zodResolver(pricingPlanZodSchema),
     defaultValues: {
       id: "",
-      pricingComponent: "",
+      name: "",
       tenantType: "",
       tenantName: "",
       currency: "",
       unit: "",
       unitPrice: 0,
-      billingFrequency: "",
+      frequency: "",
       cola: 0,
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
@@ -80,13 +80,13 @@ export const useDefinePricingPlanForm = () => {
     form.reset({
       // Single fields
       id: rowId,
-      pricingComponent: data?.pricingComponent ?? "",
+      name: data?.name ?? "",
       tenantType: data?.tenantType ?? "",
       tenantName: data?.tenantName ?? "",
       currency: data?.currency ?? "",
       unit: data?.unit ?? "",
       unitPrice: data?.unitPrice ?? 0,
-      billingFrequency: data?.billingFrequency ?? "",
+      frequency: data?.frequency ?? "",
       cola: data?.cola ?? 0,
       // Single field
       isDisabled: data?.isDisabled ?? false,
