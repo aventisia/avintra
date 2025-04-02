@@ -306,15 +306,15 @@ import playSound from "../constants/configs/WorkStation/play-sound";
 import printDocument from "../constants/configs/WorkStation/print-document";
 import showDesktop from "../constants/configs/WorkStation/show-desktop";
 import takeScreenshot from "../constants/configs/WorkStation/take-screenshot";
-import executexPathExpression from "../constants/configs/XML/execute-xPath-expression";
+import executeXpathExpression from "../constants/configs/XML/execute-xPath-expression";
 import getXmlElementAttribute from "../constants/configs/XML/get-xml-element-attribute";
-import getXMLElementValue from "../constants/configs/XML/get-xml-element-value";
-import insertXMLElement from "../constants/configs/XML/insert-xml-element";
+import getXmlElementValue from "../constants/configs/XML/get-xml-element-value";
+import insertXmlElement from "../constants/configs/XML/insert-xml-element";
 import readXmlFromFile from "../constants/configs/XML/read-xml-from-file";
 import removeXmlElement from "../constants/configs/XML/remove-xml-element";
-import removeXMLElementAttribute from "../constants/configs/XML/remove-xml-element-attribute";
+import removeXmlElementAttribute from "../constants/configs/XML/remove-xml-element-attribute";
 import setXmlElementAttribute from "../constants/configs/XML/set-xml-element-attribute";
-import setXMLElementValue from "../constants/configs/XML/set-xml-element-value";
+import setXmlElementValue from "../constants/configs/XML/set-xml-element-value";
 import writeXmlToFile from "../constants/configs/XML/write-xml-to-file";
 import scheduleTrigger from "../constants/configs/triggers/schedule-trigger";
 import { ActivityConfig } from "../types/dynamic-form-types";
@@ -691,13 +691,13 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //XML
   readXmlFromFile,
   writeXmlToFile,
-  executexPathExpression,
+  executeXpathExpression,
   getXmlElementAttribute,
   setXmlElementAttribute,
-  removeXMLElementAttribute,
-  getXMLElementValue,
-  setXMLElementValue,
-  insertXMLElement,
+  removeXmlElementAttribute,
+  getXmlElementValue,
+  setXmlElementValue,
+  insertXmlElement,
   removeXmlElement,
 
   //FTP
