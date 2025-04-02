@@ -32,6 +32,7 @@ public static class AppServicesExtension
         config.Apply(new PaymentMappingProfile());
         config.Apply(new PlanTableMappingProfile());
         config.Apply(new BillingAccountMappingProfile());
+        config.Apply(new LicenseCreditMappingProfile());
 
         config.Apply(new AuditLogMappingProfile());
         config.Apply(new ActiveSessionMappingProfile());
