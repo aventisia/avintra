@@ -144,8 +144,7 @@ public class PlanTableService : IPlanTableService
             // Check if the plan already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == planTableDto.Name.ToLower() &&
-                                                        w.CreatedByUserId == _userId)
+                                                        w.Name.ToLower() == planTableDto.Name.ToLower())
                                                      .FirstOrDefaultAsync();
 
             if (planAlreadyExists != null)
@@ -160,6 +159,7 @@ public class PlanTableService : IPlanTableService
             planTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(planTableDto);
             var newPlan = planTableDto.Adapt<PlanPricing>();
             newPlan.CreatedByUserId = _userId;
+            newPlan.LastModifiedByUserId = _userId;
 
             // Insert the new plan
             await _unitOfWork.PlanRepo.InsertAsync(newPlan);
