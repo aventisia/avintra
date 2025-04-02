@@ -150,7 +150,7 @@ public class PlanTableService : IPlanTableService
                     (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
                     (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
                     w.Currency == planTableDto.Currency &&
-                    w.Frequency == planTableDto.BillingFrequency
+                    w.Frequency == planTableDto.Frequency
                 )
                 .FirstOrDefaultAsync();
 
@@ -225,7 +225,7 @@ public class PlanTableService : IPlanTableService
                                                         (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
                                                         (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
                                                         w.Currency == planTableDto.Currency &&
-                                                        w.Frequency == planTableDto.BillingFrequency)
+                                                        w.Frequency == planTableDto.Frequency)
                                                      .FirstOrDefaultAsync();
 
             if (planAlreadyExists != null)

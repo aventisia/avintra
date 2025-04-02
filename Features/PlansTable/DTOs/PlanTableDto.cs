@@ -53,7 +53,7 @@ public class PlanTableDto
     /// <summary>
     /// Gets or sets the billing frequency for the pricing plan (e.g., monthly, yearly).
     /// </summary>
-    public required FrequencyTypesEnum BillingFrequency { get; set; }
+    public required FrequencyTypesEnum Frequency { get; set; }
 
     /// <summary>
     /// Gets or sets the Cost of Living Adjustment (COLA) applicable to the pricing plan.
