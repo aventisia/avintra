@@ -32,7 +32,7 @@ public static class AppServicesExtension
         config.Apply(new PaymentMappingProfile());
         config.Apply(new PlanTableMappingProfile());
         config.Apply(new BillingAccountMappingProfile());
-        
+
         config.Apply(new AuditLogMappingProfile());
         config.Apply(new ActiveSessionMappingProfile());
         services.AddSingleton(config);
@@ -96,8 +96,9 @@ public static class AppServicesExtension
         services.AddScoped<IBillingAccountService, BillingAccountService>();
 
         services.AddScoped<IInvoiceService, InvoiceService>();
-        services.AddScoped<IPaymentService,PaymentService>();
-        services.AddScoped<IPlanTableService,PlanTableService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IPlanTableService, PlanTableService>();
+        services.AddScoped<ILicenseCreditService, LicenseCreditService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
 
         // Common Services
