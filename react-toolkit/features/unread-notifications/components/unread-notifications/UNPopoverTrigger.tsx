@@ -3,7 +3,7 @@ import { UN_POPOVER_HEADING } from "@/react-toolkit/features/unread-notification
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@/react-toolkit/ui/Tooltip";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 
