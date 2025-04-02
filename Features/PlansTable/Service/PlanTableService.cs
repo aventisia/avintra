@@ -145,9 +145,14 @@ public class PlanTableService : IPlanTableService
         {
             // Check if the plan already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == planTableDto.Name.ToLower())
-                                                     .FirstOrDefaultAsync();
+                .GetByConditionAsync(w => 
+                    w.Name.ToLower() == planTableDto.Name.ToLower() &&
+                    (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
+                    (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                    w.Currency == planTableDto.Currency &&
+                    w.Frequency == planTableDto.BillingFrequency
+                )
+                .FirstOrDefaultAsync();
 
             if (planAlreadyExists != null)
             {
@@ -215,8 +220,12 @@ public class PlanTableService : IPlanTableService
             // Check if another plan with the same name exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
                                                      .GetByConditionAsync(w =>
+                                                        w.Id != planTableDto.Id &&
                                                         w.Name.ToLower() == planTableDto.Name.ToLower() &&
-                                                        w.Id != planTableDto.Id)
+                                                        (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
+                                                        (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                                                        w.Currency == planTableDto.Currency &&
+                                                        w.Frequency == planTableDto.BillingFrequency)
                                                      .FirstOrDefaultAsync();
 
             if (planAlreadyExists != null)
