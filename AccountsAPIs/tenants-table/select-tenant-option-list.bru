@@ -1,0 +1,34 @@
+meta {
+  name: Select tenant option list
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/tenants-to-select
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    name: faker.company.name(),
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "TENANT_ID",
+          res.getBody().data.id
+      );
+  }
+}
