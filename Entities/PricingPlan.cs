@@ -34,9 +34,21 @@ public class PlanPricing : BaseEntity
     public required FrequencyTypesEnum Frequency { get; set; }
 
     /// <summary>
+    /// Gets or sets the Cost of Living Adjustment (COLA) applicable to the pricing plan.
+    /// This adjustment is used to account for inflation and changes in living costs.
+    /// </summary>
+    [Range(0, 100)]
+    public required double COLA { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of tenant associated with this pricing plan.
+    /// </summary>
+    public TenantTypesEnum? TenantType { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
-    public required Guid TenantId { get; set; }
+    public Guid? TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the tenant related to this pricing plan.

@@ -12,7 +12,12 @@ public class PlanTableDto
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
-    public required Guid TenantId { get; set; }
+    public Guid? TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of tenant associated with this pricing plan.
+    /// </summary>
+    public TenantTypesEnum? TenantType { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the pricing component.
@@ -43,6 +48,13 @@ public class PlanTableDto
     /// Gets or sets the billing frequency for the pricing plan (e.g., monthly, yearly).
     /// </summary>
     public required FrequencyTypesEnum BillingFrequency { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Cost of Living Adjustment (COLA) applicable to the pricing plan.
+    /// This adjustment is used to account for inflation and changes in living costs.
+    /// </summary>
+    [Range(0, 100)]
+    public required double COLA { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
