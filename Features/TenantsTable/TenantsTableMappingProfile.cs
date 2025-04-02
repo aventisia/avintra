@@ -18,5 +18,11 @@ public class TenantsTableMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
+
+            // Get tenants in SelectOptionDto format
+        config.NewConfig<Tenant, SelectOptionDto>()
+            .Map(dest => dest.Label, src => src.Name)
+            .Map(dest => dest.Value, src => src.Id)
+            .Map(dest => dest.Disabled, src => src.IsDefault);
     }
 }

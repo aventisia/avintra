@@ -18,6 +18,13 @@ public class TenantsTableController : BaseApiController
     {
         return ResultHelper(await _tenantsTableService.GetTenantsAsync());
     }
+    
+    // Retrieves a list of tenant options.
+    [HttpGet("tenants-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)
+    {
+        return ResultHelper(await _tenantsTableService.GetTenantOptionListAsync(tenantType));
+    }
 
     // Checks the availability of a tenant name.
     [HttpPost("is-available")]
