@@ -92,7 +92,7 @@ export const TenantInfo = () => {
               <Separator className="my-4" />
               <div className="flex justify-between">
                 <div className="flex w-8/12 flex-col">
-                  <p className="text-base">
+                  <p className="text-base font-semibold">
                     Required Two Factor Authentication (2FA)
                   </p>
                   <p className="text-pretty text-muted-foreground">
@@ -102,7 +102,7 @@ export const TenantInfo = () => {
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <Switch />
+                  <Switch disabled />
                 </div>
               </div>
 
@@ -110,13 +110,15 @@ export const TenantInfo = () => {
 
               <div className="flex justify-between">
                 <div className="flex w-8/12 flex-col">
-                  <p className="text-base">Enable Password Login</p>
+                  <p className="text-base font-semibold">
+                    Enable Password Login
+                  </p>
                   <p className="text-pretty text-muted-foreground">
                     if disabled, users cannot log in using their password.
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <Switch />
+                  <Switch disabled />
                 </div>
               </div>
 
@@ -124,14 +126,16 @@ export const TenantInfo = () => {
 
               <div className="flex justify-between">
                 <div className="flex w-8/12 flex-col">
-                  <p className="text-base">Enable Single Sign-On (SSO)</p>
+                  <p className="text-base font-semibold">
+                    Enable Single Sign-On (SSO)
+                  </p>
                   <p className="text-pretty text-muted-foreground">
                     if enabled, users can log in using external authentication
                     provider.
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <Switch />
+                  <Switch disabled />
                 </div>
               </div>
 
@@ -139,13 +143,15 @@ export const TenantInfo = () => {
 
               <div className="flex justify-between">
                 <div className="flex w-8/12 flex-col">
-                  <p className="text-base">Password Never Expires</p>
+                  <p className="text-base font-semibold">
+                    Password Never Expires
+                  </p>
                   <p className="text-pretty text-muted-foreground">
                     enabling this removes password expiration.
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <Switch />
+                  <Switch disabled />
                 </div>
               </div>
 
@@ -153,14 +159,16 @@ export const TenantInfo = () => {
 
               <div className="flex justify-between">
                 <div className="flex w-8/12 flex-col">
-                  <p className="text-base">Enable Idle Session Timeout</p>
+                  <p className="text-base font-semibold">
+                    Enable Idle Session Timeout
+                  </p>
                   <p className="text-pretty text-muted-foreground">
                     if enabled, users sessions will automatically time out after
                     a period of inactivity.
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <Switch />
+                  <Switch disabled />
                 </div>
               </div>
               <Separator className="my-4" />
