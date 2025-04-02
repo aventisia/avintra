@@ -23,6 +23,16 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     description:
       "	The HLLAPI DLL of the provider. RocketSoftware BlueZone default name: 'ehlapi64.dll'. IBM Personal Communications default name: 'EHLAPI32.dll'. MicroFocus Rumba default path: 'System/ehlapi32.Dll'. Cybelesoft zScope default name: 'zHllap32.dll'. Any other provider that offers an HLLAPI DLL in its installation folder.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "provider", value: "hLLAPI" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "installationPath",
@@ -31,15 +41,38 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     description:
       "The installation path of the provider's application on the user's file system",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "provider", value: "micro focus reflection" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "configuration",
-    type: "text",
+    type: "select",
     label: "Configuration",
     description:
       "Choose 'Existing profile' to select a file containing a preconfigured terminal emulation connection. Choose 'Specify connection' to specify the type of the connection, the host address and the port.",
-    selectOptions: [{ label: "Existing profile", value: "existing profile" }],
+    selectOptions: [
+      { label: "Existing profile", value: "existing profile" },
+      { label: "Specify Connection", value: "specify connection" }
+    ],
     defaultValue: "existing profile",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "provider", value: "micro focus reflection" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "sessionName",
@@ -48,6 +81,16 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     description:
       "The session name to connect to. The HLLAPI short name, and it's a unique identifier for the host session. It can be found in the Terminal emulator's configuration settings.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "provider", value: "hLLAPI" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "hostType",
@@ -59,6 +102,20 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
       { label: "IBM 5250", value: "iBM 5250" },
     ],
     defaultValue: "iBM 3270",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "provider", value: "micro focus reflection" },
+              { key: "configuration", value: "specify connection" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "profile",
@@ -66,6 +123,20 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Profile",
     description: "The file that contains the preconfigured connection",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "provider", value: "micro focus reflection" },
+              { key: "configuration", value: "existing profile" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "hostAddress",
@@ -73,6 +144,20 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Host address",
     description: "The host's address to connect to",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "provider", value: "micro focus reflection" },
+              { key: "configuration", value: "specify connection" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "port",
@@ -80,6 +165,20 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Port",
     description: "The port to be used for this connection",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "provider", value: "micro focus reflection" },
+              { key: "configuration", value: "specify connection" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "attachToRunningSession",
@@ -88,15 +187,43 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
     description:
       "Specifies whether to attach to a currently open/running terminal session",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "provider", value: "micro focus reflection" },
+            ],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   // output
   {
-    name: "terminalSession",
-    type: "switch",
-    label: "TerminalSession",
+    name: "o_terminalSessionOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The specific terminal session for use with later terminal emulation commands",
-    defaultValue: "",
+    defaultValue: "TerminalSession",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_terminalSessionSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_terminalSessionSwitch",
+    type: "output-switch-field",
+    label: "TerminalSession",
+    defaultValue: true,
   },
 ];
 
@@ -113,17 +240,18 @@ const openTerminalSessionFieldCategories: IDynamicFormKeysCategory[] = [
       ["profile"],
       ["hostAddress"],
       ["port"],
+      ["attachToRunningSession"]
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["terminalSession"]],
+    formFieldKeys: [["o_terminalSessionOutput", "o_terminalSessionSwitch"]],
   },
 ];
 const openTerminalSession: ActivityConfig = {
   fieldList: openTerminalSessionFieldList,
   fieldCategories: openTerminalSessionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["provider", "configuration", "o_terminalSessionOutput", "o_terminalSessionSwitch"],
 };
 
 export default openTerminalSession;

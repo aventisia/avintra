@@ -36,6 +36,16 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
       { label: "Position", value: "position" },
     ],
     defaultValue: "label",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "GetTextFrom", value: "field" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "label",
@@ -43,6 +53,20 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Label",
     description: "The label of the field to look for",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "field" },
+              {key: "getFieldBy",  value: "label"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "index",
@@ -50,6 +74,20 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Index",
     description: "The index of the field to look for",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "field" },
+              {key: "getFieldBy",  value: "index"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "textLength",
@@ -57,6 +95,20 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Text length",
     description: "The length of the text to receive",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "cursor position" },
+              { key: "GetTextFrom", value: "specific position" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "row",
@@ -64,6 +116,20 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Row",
     description: "The vertical position of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "field" },
+              {key: "getFieldBy",  value: "position"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "column",
@@ -71,6 +137,59 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Column",
     description: "The horizontal position of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "field" },
+              {key: "getFieldBy",  value: "position"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  // -------------------
+  {
+    name: "rowSP",
+    type: "number",
+    label: "Row",
+    description: "The vertical position of the field on the screen",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "specific position" },
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "columnSP",
+    type: "number",
+    label: "Column",
+    description: "The horizontal position of the field on the screen",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "GetTextFrom", value: "specific position" },
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   //output
   {
@@ -94,6 +213,8 @@ const getTextFromTerminalSessionFieldCategories: IDynamicFormKeysCategory[] = [
       ["textLength"],
       ["row"],
       ["column"],
+      ["rowSP"],
+      ["columnSP"]
     ],
   },
   {
@@ -104,7 +225,7 @@ const getTextFromTerminalSessionFieldCategories: IDynamicFormKeysCategory[] = [
 const getTextFromTerminalSession: ActivityConfig = {
   fieldList: getTextFromTerminalSessionFieldList,
   fieldCategories: getTextFromTerminalSessionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["GetTextFrom", "getFieldBy"],
 };
 
 export default getTextFromTerminalSession;

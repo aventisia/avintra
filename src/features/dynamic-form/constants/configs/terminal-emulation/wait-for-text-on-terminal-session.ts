@@ -50,6 +50,19 @@ const waitForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
       { label: "Position", value: "position" },
     ],
     defaultValue: "label",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              {key: "waitForTextLocation", value: "field"}
+            
+            ],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "label",
@@ -57,13 +70,41 @@ const waitForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Label",
     description: "The label of the field to look for",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForTextLocation", value: "field" },
+              { key: "getFieldBy", value: "label" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "index",
     type: "number",
     label: "Index",
-    description: "",
+    description: "The index of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForTextLocation", value: "field" },
+              { key: "getFieldBy", value: "index" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "row",
@@ -71,6 +112,20 @@ const waitForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Row",
     description: "The vertical position of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForTextLocation", value: "field" },
+              { key: "getFieldBy", value: "position" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "column",
@@ -78,7 +133,23 @@ const waitForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     label: "Column",
     description: "The horizontal position of the field on the screen",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForTextLocation", value: "field" },
+              { key: "getFieldBy", value: "position" },
+            ],
+            logicalOperator: "AND"
+
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  // Advance
   {
     name: "timeOut",
     type: "number",
@@ -112,7 +183,7 @@ const waitForTextOnTerminalSessionFieldCategories: IDynamicFormKeysCategory[] =
 const waitForTextOnTerminalSession: ActivityConfig = {
   fieldList: waitForTextOnTerminalSessionFieldList,
   fieldCategories: waitForTextOnTerminalSessionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["waitForTextLocation", "getFieldBy"],
 };
 
 export default waitForTextOnTerminalSession;
