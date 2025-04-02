@@ -50,7 +50,7 @@ const saveOutlookEmailMessagesFieldList: IDynamicFieldSchema[] = [
       { label: "HTML (.html)", value: "HTML (.html)" },
       { label: "MHT files (.mht)", value: "MHT files (.mht)" },
     ],
-    defaultValue: "Outlook message format (*.msg)",
+    defaultValue: "Outlook message format - Unicode (.msg)",
   },
   {
     name: "fileName",
@@ -90,12 +90,29 @@ const saveOutlookEmailMessagesFieldList: IDynamicFieldSchema[] = [
     description: "The folder to save the messages to",
     defaultValue: "",
   },
+  // Output
   {
-    name: "storedMessagesFiles",
-    type: "switch",
-    label: "StoredMessagesFiles",
+    name: "o_storedMessagesFilesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The file paths of the saved email messages for later processing",
+    defaultValue: "StoredMessagesFiles",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_storedMessagesFilesSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_storedMessagesFilesSwitch",
+    type: "output-switch-field",
+    label: "StoredMessagesFiles",
     defaultValue: true,
   },
 ];
@@ -115,11 +132,11 @@ const saveOutlookEmailMessagesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["storedMessagesFiles"]],
+    formFieldKeys: [["o_storedMessagesFilesOutput", "o_storedMessagesFilesSwitch"]],
   },
 ];
 
-const saveOutlookEmailMessagesFieldsToWatch: string[] = ["fileName"];
+const saveOutlookEmailMessagesFieldsToWatch: string[] = ["fileName", "o_storedMessagesFilesOutput", "o_storedMessagesFilesSwitch"];
 
 const saveOutlookEmailMessages: ActivityConfig = {
   fieldList: saveOutlookEmailMessagesFieldList,

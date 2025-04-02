@@ -163,13 +163,13 @@ import waitForMouse from "../constants/configs/mouse-and-keyboard/wait-for-mouse
 import waitForShortcutKey from "../constants/configs/mouse-and-keyboard/wait-for-shortcut-key";
 import extractTextWithOcr from "../constants/configs/ocr/extract-text-with";
 import waitForTextOnScreen from "../constants/configs/ocr/wait-for-text-on-screen";
-import closeOutLook from "../constants/configs/outlook/close-outlook";
+import closeOutlook from "../constants/configs/outlook/close-outlook";
 import launchOutlook from "../constants/configs/outlook/launch-outlook";
 import processEmailMessagesInOutlook from "../constants/configs/outlook/process-email-messages-in-outlook";
 import respondToOutlookMailMessage from "../constants/configs/outlook/respond-to-outlook-message";
 import retrieveEmailMessagesFromOutlook from "../constants/configs/outlook/retrieve-email-messages-from-outlook";
 import saveOutlookEmailMessages from "../constants/configs/outlook/save-outlook-email-messages";
-import sendEmailMessageThroughOutlook from "../constants/configs/outlook/send-email-message-through-outlook";
+import sendEmailThroughOutlook from "../constants/configs/outlook/send-email-message-through-outlook";
 import extractImagesFromPdf from "../constants/configs/PDF/extract-images-from-pdf";
 import extractPdfFilePagesToNewPdfFile from "../constants/configs/PDF/extract-pdf-file-pages-to-new-pdf-file";
 import extractTablesFromPdf from "../constants/configs/PDF/extract-tables-from-pdf";
@@ -580,11 +580,11 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Outlook
   launchOutlook,
   retrieveEmailMessagesFromOutlook,
-  sendEmailMessageThroughOutlook,
+  sendEmailThroughOutlook,
   processEmailMessagesInOutlook,
   saveOutlookEmailMessages,
   respondToOutlookMailMessage,
-  closeOutLook,
+  closeOutlook,
 
   //Message boxes
   displayMessage,

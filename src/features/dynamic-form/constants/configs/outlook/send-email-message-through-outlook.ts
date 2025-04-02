@@ -90,10 +90,9 @@ const sendEmailMessageThroughOutlookFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "body",
-    type: "text",
+    type: "textarea",
     label: "Body",
     description: "The text of the body",
-
     defaultValue: "",
   },
   {
