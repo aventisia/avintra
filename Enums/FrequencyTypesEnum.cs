@@ -1,27 +1,17 @@
 namespace AccountsAPIs.Enums;
 
 /// <summary>
-/// Represents the different billing frequencies available for pricing plans.
+/// Defines the various billing frequencies for pricing plans.
 /// </summary>
 public enum FrequencyTypesEnum
 {
     /// <summary>
-    /// Indicates billing occurs on a monthly basis.
+    /// Represents billing that takes place monthly.
     /// </summary>
     Monthly,
 
     /// <summary>
-    /// Indicates billing occurs on a quarterly basis.
+    /// Represents billing that occurs annually.
     /// </summary>
-    Quarterly,
-
-    /// <summary>
-    /// Indicates billing occurs on a yearly basis.
-    /// </summary>
-    Yearly,
-
-    /// <summary>
-    /// Indicates a one-time billing event.
-    /// </summary>
-    OneTime
+    Annually
 }
