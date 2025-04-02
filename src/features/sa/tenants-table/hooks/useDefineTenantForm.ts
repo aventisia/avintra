@@ -55,6 +55,8 @@ export const useDefineTenantForm = () => {
     defaultValues: {
       id: "",
       name: "",
+      effectiveDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      renewalDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       expiresOn: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       isTwoFAEnabled: false,
       isPwdEnabled: true,
@@ -102,6 +104,12 @@ export const useDefineTenantForm = () => {
       // Single fields
       id: rowId,
       name: tenantData?.name ?? "",
+      effectiveDate: tenantData?.effectiveDate
+        ? new Date(tenantData?.effectiveDate)
+        : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      renewalDate: tenantData?.renewalDate
+        ? new Date(tenantData?.renewalDate)
+        : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       expiresOn: tenantData?.expiresOn
         ? new Date(tenantData?.expiresOn)
         : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),

@@ -2,7 +2,10 @@
 export const columnVisibilityState = {
   id: false,
   name: true,
+  type: true,
+  effectiveDate: true,
+  renewalDate: true,
   expiresOn: true,
   createdBy: false,
-  createdOn: true,
+  createdOn: false,
 };

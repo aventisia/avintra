@@ -38,6 +38,8 @@ export const tenantZodSchema = z
       .regex(alphaNumericRegex, {
         message: alphaNumericError("Tenant name"),
       }),
+    effectiveDate: z.date(),
+    renewalDate: z.date(),
     expiresOn: z.date().optional(),
     isTwoFAEnabled: z.boolean().optional(),
     // Group

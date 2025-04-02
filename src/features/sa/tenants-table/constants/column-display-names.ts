@@ -5,9 +5,11 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
   { key: "type", value: "Type" },
-  { key: "createdOn", value: "Effective Date" },
+  { key: "effectiveDate", value: "Effective Date" },
+  { key: "renewalDate", value: "Renewal Date" },
+  { key: "expiresOn", value: "Expires On" },
+  { key: "createdOn", value: "Created On" },
   { key: "createdBy", value: "Created By" },
-  { key: "expiresOn", value: "Renewal Date" },
 ];
 
 // Get the column display name for the given column key.

@@ -17,6 +17,16 @@ export interface TenantsTableDto {
   name: string;
 
   /**
+   * Gets or sets the contract effective date and time of the tenant's account based on the subscription/trial period.
+   */
+  effectiveDate: Date;
+
+  /**
+   * Gets or sets the contract renewal date and time of the tenant's account based on the subscription/trial period.
+   */
+  renewalDate: Date;
+
+  /**
    * Gets or sets the expiry date and time of the tenant's account based on the subscription/trial period.
    */
   expiresOn?: Date;
