@@ -9,10 +9,16 @@ public class PlanTableDto
     /// Unique identifier for the tenant.
     /// </summary>
     public Guid Id { get; set; }
+    
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
     public Guid? TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
+    /// </summary>
+    public string? TenantName { get; set; }
 
     /// <summary>
     /// Gets or sets the type of tenant associated with this pricing plan.

@@ -6,11 +6,12 @@ public class PlanTableMappingProfile : IRegister
     {
         // Mapping for flow record or records.
         config.NewConfig<PlanPricing, PlanTableDto>()
-            .Map(dest => dest.CreatedBy, 
+            .Map(dest => dest.TenantName, src => src.Tenant != null ? src.Tenant.Name : null)
+            .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
                     : null)
-            .Map(dest => dest.LastModifiedBy, 
+            .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);

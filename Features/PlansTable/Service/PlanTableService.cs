@@ -33,6 +33,7 @@ public class PlanTableService : IPlanTableService
             var plans = await _unitOfWork.PlanRepo
                                           .GetAllAsync()
                                           .OrderByDescending(w => w.CreatedOn)
+                                          .Include(a => a.Tenant)
                                           .ProjectToType<PlanTableDto>()
                                           .ToListAsync();
 
@@ -51,7 +52,7 @@ public class PlanTableService : IPlanTableService
         return serviceResponse;
     }
 
-     // Retrieves a plan by its ID
+    // Retrieves a plan by its ID
     public async Task<ServiceResponse<PlanTableDto>> GetPlanByIdAsync(Guid planId)
     {
         var serviceResponse = new ServiceResponse<PlanTableDto>
@@ -65,13 +66,14 @@ public class PlanTableService : IPlanTableService
             // Fetch the plan by ID
             var plan = await _unitOfWork
                 .PlanRepo.GetByConditionAsync(w => w.Id == planId)
+                .Include(a => a.Tenant)
                 .FirstOrDefaultAsync();
 
             // Check if the plan was found
             if (plan == null)
             {
                 _logger.LogInformation("No plan found with ID: {PlanId}", planId);
-                return serviceResponse; 
+                return serviceResponse;
             }
 
             // If found, set the response data and message
