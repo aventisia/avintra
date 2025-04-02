@@ -1,9 +1,6 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { getColumnName } from "../../constants/column-display-names";
 import { InovicesTableDto } from "../../dtos/inovices-table-dto";
-import { InoviceDownloadRowAction } from "../inovice-table-actions/InoviceDownloadRowAction";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 /**
  * Array of table columns for the billingplans table.
@@ -12,92 +9,23 @@ import { InoviceDownloadRowAction } from "../inovice-table-actions/InoviceDownlo
 export const AddressTableColumns: ColumnDef<InovicesTableDto>[] = [
   {
     accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
     enableSorting: false,
-  },
-  {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title="Inovice Id" />
-    ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("id")}</div>
-    ),
-  },
-
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("status")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("status")}
+      <div className="flex content-between justify-between rounded-md border p-4 px-8 align-middle">
+        <div className="flex flex-col gap-2">
+          <p>Billing Address #{row.index}</p>
+          <div className="flex flex-col space-y-1 text-muted-foreground">
+            <p>address</p>
+            <p>pincode city</p>
+            <p>state country</p>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <Button className="bg-primary-100" variant="outline">
+            Edit
+          </Button>
+        </div>
       </div>
-    ),
-  },
-
-  {
-    accessorKey: "amount",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("amount")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("amount")}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "dueDate",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("dueDate")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("dueDate")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "paidOn",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("paidOn")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("paidOn")}
-      </div>
-    ),
-  },
-
-  {
-    id: "actions",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("action")} />
-    ),
-    cell: ({ row }) => (
-      // Render the billingplans row actions component
-      <InoviceDownloadRowAction rowId={row.original.id ?? "rowId"} />
     ),
   },
 ];
