@@ -10,10 +10,16 @@ export interface PricingPlansTableDto {
   id?: string;
 
   /**
+   * Gets or sets the plan for tenant id.
+   *
+   */
+  tenantId: string;
+
+  /**
    * Gets or sets the plan pricing Component.
    *
    */
-  pricingComponent: string;
+  name: string;
 
   /**
    * Gets or sets the plan Type.
@@ -49,7 +55,7 @@ export interface PricingPlansTableDto {
    * Gets or sets the plan billing Frequency.
    *
    */
-  billingFrequency: string;
+  frequency: string;
 
   /**
    * Gets or sets the plan cola.
