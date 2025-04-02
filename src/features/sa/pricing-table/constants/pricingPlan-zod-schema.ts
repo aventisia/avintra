@@ -24,8 +24,8 @@ export const pricingPlanZodSchema = z.object({
   // Single fields
   id: z.string().optional(),
   pricingComponent: z.string({ message: reqError("Pricing Component") }),
-  type: z.string({ message: reqError("Tenant Type") }),
-  name: z.string({ message: reqError("Tenant Name") }),
+  tenantType: z.string({ message: reqError("Tenant Type") }),
+  tenantName: z.string({ message: reqError("Tenant Name") }),
   currency: z.string({ message: reqError("currency") }),
   unit: z.string({ message: reqError("unit") }),
   unitPrice: z.coerce

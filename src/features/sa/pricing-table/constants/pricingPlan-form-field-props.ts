@@ -22,16 +22,16 @@ export const pricingComponentTypeProps: SelectFieldProps = {
   isRequired: true,
   selectOptions: enumToArray(PricingComponentsEnum),
 };
-export const typeProps: SelectFieldProps = {
-  name: "type",
-  label: "Plan Type",
+export const tenantTypeProps: SelectFieldProps = {
+  name: "tenantType",
+  label: "Tenant Type",
   isRequired: true,
   selectOptions: enumToArray(PlanTypeEnum),
 };
-export const nameProps: InputFieldProps = {
-  name: "name",
-  label: "Plan Name",
-  isRequired: true,
+export const tenantNameProps: SelectFieldProps = {
+  name: "tenantName",
+  label: "Tenant Name",
+  selectOptions:[]
 };
 export const currencyTypeProps: SelectFieldProps = {
   name: "currency",

@@ -46,8 +46,8 @@ export const useDefinePricingPlanForm = () => {
     defaultValues: {
       id: "",
       pricingComponent: "",
-      type: "",
-      name: "",
+      tenantType: "",
+      tenantName: "",
       currency: "",
       unit: "",
       unitPrice: 0,
@@ -81,8 +81,8 @@ export const useDefinePricingPlanForm = () => {
       // Single fields
       id: rowId,
       pricingComponent: data?.pricingComponent ?? "",
-      type: data?.type ?? "",
-      name: data?.name ?? "",
+      tenantType: data?.tenantType ?? "",
+      tenantName: data?.tenantName ?? "",
       currency: data?.currency ?? "",
       unit: data?.unit ?? "",
       unitPrice: data?.unitPrice ?? 0,
