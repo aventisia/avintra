@@ -1,22 +1,24 @@
 import { NodeDataType } from "@/types/node-data-type";
 
 export const ocrActions: NodeDataType[] = [
-  {
-    type: "activityNode",
-    name: "useTheWindowsOcrEngine",
-    label: "Use the Windows OCR engine",
-    description:
-      "The default OCR engine in Power Automate is the Windows OCR engine. To extract texts using the Windows OCR engine, you must install the appropriate language pack for the language you want to extract",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
-    name: "waitForTextOnScreen(ocr)",
-    label: "Wait for text on screen (OCR)",
-    description:
-      "Wait until a specific text appears/disappears on the screen, on the foreground window, or relative to an image on the screen or foreground window using OCR",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // To be done later
+
+  // {
+  //   type: "activityNode",
+  //   name: "ifTextOnScreen",
+  //   label: "If text on screen (OCR)",
+  //   description:
+  //     "Marks the beginning of a conditional block of actions depending on whether the text specified appears on the screen or not using OCR",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
+  // {
+  //   type: "activityNode",
+  //   name: "waitForTextOnScreen",
+  //   label: "Wait for text on screen (OCR)",
+  //   description:
+  //     "Wait until a specific text appears/disappears on the screen, on the foreground window, or relative to an image on the screen or foreground window using OCR",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "extractTextWithOcr",
