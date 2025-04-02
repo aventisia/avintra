@@ -129,4 +129,9 @@ public class Tenant : BaseEntity
     /// Indicates the date for the renewal of the tenant's agreement or settings.
     /// </summary>
     public DateTimeOffset RenewalDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of tenant.
+    /// </summary>
+    public required TenantTypesEnum Type { get; set; }
 }
