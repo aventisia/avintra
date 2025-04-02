@@ -8,7 +8,7 @@ import { z } from "zod";
 import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  billingFrequencyTypeProps,
+  frequencyTypeProps,
   colaTypeProps,
   currencyTypeProps,
   idProps,
@@ -64,25 +64,37 @@ export const PricingPlanCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       {/* type */}
-      <SelectField {...tenantTypeProps} />
+      {form.getValues("tenantType") || crudAction === "create" ? (
+        <SelectField {...tenantTypeProps} />
+      ) : null}
 
-      {/* name */}
-      <SelectField {...tenantNameProps} />
+      {/* name of tenant */}
+      {form.getValues("tenantName") || crudAction === "create" ? (
+        <SelectField {...tenantNameProps} />
+      ) : null}
 
-      {/* pricingComponent */}
-      <SelectField {...pricingComponentTypeProps} />
+      {/* pricingComponent name fo the plan */}
+      {form.getValues("name") || crudAction === "create" ? (
+        <SelectField {...pricingComponentTypeProps} />
+      ) : null}
 
       {/* currency */}
-      <SelectField {...currencyTypeProps} />
+      {form.getValues("currency") || crudAction === "create" ? (
+        <SelectField {...currencyTypeProps} />
+      ) : null}
 
       {/* unit */}
-      <SelectField {...unitTypeProps} />
+      {form.getValues("unit") || crudAction === "create" ? (
+        <SelectField {...unitTypeProps} />
+      ) : null}
 
       {/* unitPrice */}
       <InputField {...unitPriceTypeProps} />
 
-      {/* billingFrequency */}
-      <SelectField {...billingFrequencyTypeProps} />
+      {/* frequency */}
+      {form.getValues("frequency") || crudAction === "create" ? (
+        <SelectField {...frequencyTypeProps} />
+      ) : null}
 
       {/* cola */}
       <IconInputField {...colaTypeProps} />

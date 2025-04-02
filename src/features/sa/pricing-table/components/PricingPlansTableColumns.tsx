@@ -45,21 +45,6 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   },
 
   {
-    accessorKey: "pricingComponent",
-    header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("pricingComponent")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("pricingComponent")}
-      </div>
-    ),
-  },
-
-  {
     accessorKey: "tenantType",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("tenantType")} />
@@ -116,16 +101,13 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
   },
   {
-    accessorKey: "billingFrequency",
+    accessorKey: "frequency",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("billingFrequency")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("frequency")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("billingFrequency")}
+        {row.getValue("frequency")}
       </div>
     ),
   },
