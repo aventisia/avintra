@@ -17,7 +17,7 @@ export const idProps: InputFieldProps = {
 };
 
 export const pricingComponentTypeProps: SelectFieldProps = {
-  name: "pricingComponent",
+  name: "name",
   label: "Pricing Component",
   isRequired: true,
   selectOptions: enumToArray(PricingComponentsEnum),
@@ -31,7 +31,7 @@ export const tenantTypeProps: SelectFieldProps = {
 export const tenantNameProps: SelectFieldProps = {
   name: "tenantName",
   label: "Tenant Name",
-  selectOptions:[]
+  selectOptions: [],
 };
 export const currencyTypeProps: SelectFieldProps = {
   name: "currency",
@@ -50,8 +50,8 @@ export const unitPriceTypeProps: InputFieldProps = {
   label: "Unit Price",
   isRequired: true,
 };
-export const billingFrequencyTypeProps: SelectFieldProps = {
-  name: "billingFrequency",
+export const frequencyTypeProps: SelectFieldProps = {
+  name: "frequency",
   label: "Billing Frequency",
   isRequired: true,
   selectOptions: enumToArray(BillingFrequenciesEnum),

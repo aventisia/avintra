@@ -23,7 +23,7 @@ export const pricingPlanNameSchema = z
 export const pricingPlanZodSchema = z.object({
   // Single fields
   id: z.string().optional(),
-  pricingComponent: z.string({ message: reqError("Pricing Component") }),
+  name: z.string({ message: reqError("Pricing Component") }),
   tenantType: z.string({ message: reqError("Tenant Type") }),
   tenantName: z.string({ message: reqError("Tenant Name") }),
   currency: z.string({ message: reqError("currency") }),
@@ -31,7 +31,7 @@ export const pricingPlanZodSchema = z.object({
   unitPrice: z.coerce
     .number({ message: reqError("Unit Price") })
     .positive({ message: "Price must be positive." }),
-  billingFrequency: z.string({ message: reqError("Billing Frequency") }),
+  frequency: z.string({ message: reqError("Billing Frequency") }),
   cola: z.coerce
     .number({ message: reqError("COLA") })
     .positive({ message: reqError("COLA must be positive") }),

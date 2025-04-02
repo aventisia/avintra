@@ -1,14 +1,14 @@
 /** Column visibility initial state for the pricingplans table. */
 export const columnVisibilityState = {
   id: false,
-  pricingComponent: true,
+  name: true,
   tenantType: true,
   tenantName: true,
   currency: true,
   unit: true,
   unitPrice: true,
-  billingFrequency: true,
+  frequency: true,
   cola: false,
-  createdBy: true,
-  createdOn: true,
+  createdBy: false,
+  createdOn: false,
 };
