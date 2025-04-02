@@ -689,6 +689,9 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<double>("COLA")
+                        .HasColumnType("double precision");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -717,8 +720,11 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<Guid>("TenantId")
+                    b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("TenantType")
+                        .HasColumnType("text");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -1348,9 +1354,7 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.HasOne("AccountsAPIs.Entities.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TenantId");
 
                     b.Navigation("CreatedByUser");
 
