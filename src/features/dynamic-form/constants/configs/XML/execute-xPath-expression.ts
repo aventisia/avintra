@@ -37,32 +37,49 @@ const executexPathExpressionFieldList: IDynamicFieldSchema[] = [
       "The extracted node(s) as an XML node",
     defaultValue: false,
   },
+  // Output
   {
-    name: "XPathResults",
-    type: "switch",
-    label: "XPathResults",
+    name: "o_XPathResultsOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The extracted node(s) as a list of XML nodes",
-    defaultValue: false,
+    defaultValue: "XPathResults",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_XPathResultsSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_XPathResultsSwitch",
+    type: "output-switch-field",
+    label: "XPathResults",
+    defaultValue: true,
   },
 ];
 
 const executexPathExpressionFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["xMLDocumentToParse"], ["xPathQuery"],["getFirstValueOnly"]],
+    formFieldKeys: [["XMLDocumentToParse"], ["xPathQuery"],["getFirstValueOnly"]],
   },
 
   {
     title: "Output",
-    formFieldKeys: [["XPathResults"]],
+    formFieldKeys: [["o_XPathResultsOutput", "o_XPathResultsSwitch"]],
   },
 ];
 
 const executexPathExpression: ActivityConfig = {
   fieldList: executexPathExpressionFieldList,
   fieldCategories: executexPathExpressionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_XPathResultsOutput", "o_XPathResultsSwitch"],
 };
 
 export default executexPathExpression;

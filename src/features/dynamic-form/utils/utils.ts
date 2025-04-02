@@ -163,13 +163,13 @@ import waitForMouse from "../constants/configs/mouse-and-keyboard/wait-for-mouse
 import waitForShortcutKey from "../constants/configs/mouse-and-keyboard/wait-for-shortcut-key";
 import extractTextWithOcr from "../constants/configs/ocr/extract-text-with";
 import waitForTextOnScreen from "../constants/configs/ocr/wait-for-text-on-screen";
-import closeOutLook from "../constants/configs/outlook/close-outlook";
+import closeOutlook from "../constants/configs/outlook/close-outlook";
 import launchOutlook from "../constants/configs/outlook/launch-outlook";
 import processEmailMessagesInOutlook from "../constants/configs/outlook/process-email-messages-in-outlook";
 import respondToOutlookMailMessage from "../constants/configs/outlook/respond-to-outlook-message";
 import retrieveEmailMessagesFromOutlook from "../constants/configs/outlook/retrieve-email-messages-from-outlook";
 import saveOutlookEmailMessages from "../constants/configs/outlook/save-outlook-email-messages";
-import sendEmailMessageThroughOutlook from "../constants/configs/outlook/send-email-message-through-outlook";
+import sendEmailThroughOutlook from "../constants/configs/outlook/send-email-message-through-outlook";
 import extractImagesFromPdf from "../constants/configs/PDF/extract-images-from-pdf";
 import extractPdfFilePagesToNewPdfFile from "../constants/configs/PDF/extract-pdf-file-pages-to-new-pdf-file";
 import extractTablesFromPdf from "../constants/configs/PDF/extract-tables-from-pdf";
@@ -306,15 +306,15 @@ import playSound from "../constants/configs/WorkStation/play-sound";
 import printDocument from "../constants/configs/WorkStation/print-document";
 import showDesktop from "../constants/configs/WorkStation/show-desktop";
 import takeScreenshot from "../constants/configs/WorkStation/take-screenshot";
-import executexPathExpression from "../constants/configs/XML/execute-xPath-expression";
+import executeXpathExpression from "../constants/configs/XML/execute-xPath-expression";
 import getXmlElementAttribute from "../constants/configs/XML/get-xml-element-attribute";
-import getXMLElementValue from "../constants/configs/XML/get-xml-element-value";
-import insertXMLElement from "../constants/configs/XML/insert-xml-element";
+import getXmlElementValue from "../constants/configs/XML/get-xml-element-value";
+import insertXmlElement from "../constants/configs/XML/insert-xml-element";
 import readXmlFromFile from "../constants/configs/XML/read-xml-from-file";
 import removeXmlElement from "../constants/configs/XML/remove-xml-element";
-import removeXMLElementAttribute from "../constants/configs/XML/remove-xml-element-attribute";
+import removeXmlElementAttribute from "../constants/configs/XML/remove-xml-element-attribute";
 import setXmlElementAttribute from "../constants/configs/XML/set-xml-element-attribute";
-import setXMLElementValue from "../constants/configs/XML/set-xml-element-value";
+import setXmlElementValue from "../constants/configs/XML/set-xml-element-value";
 import writeXmlToFile from "../constants/configs/XML/write-xml-to-file";
 import scheduleTrigger from "../constants/configs/triggers/schedule-trigger";
 import { ActivityConfig } from "../types/dynamic-form-types";
@@ -580,11 +580,11 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Outlook
   launchOutlook,
   retrieveEmailMessagesFromOutlook,
-  sendEmailMessageThroughOutlook,
+  sendEmailThroughOutlook,
   processEmailMessagesInOutlook,
   saveOutlookEmailMessages,
   respondToOutlookMailMessage,
-  closeOutLook,
+  closeOutlook,
 
   //Message boxes
   displayMessage,
@@ -691,13 +691,13 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //XML
   readXmlFromFile,
   writeXmlToFile,
-  executexPathExpression,
+  executeXpathExpression,
   getXmlElementAttribute,
   setXmlElementAttribute,
-  removeXMLElementAttribute,
-  getXMLElementValue,
-  setXMLElementValue,
-  insertXMLElement,
+  removeXmlElementAttribute,
+  getXmlElementValue,
+  setXmlElementValue,
+  insertXmlElement,
   removeXmlElement,
 
   //FTP
