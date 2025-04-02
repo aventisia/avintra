@@ -184,6 +184,7 @@ public static class AccountsDbInitialSeed
                 // Initialize default tenant
                 var newTenant = new Tenant()
                 {
+                    Type = TenantTypesEnum.Shared,
                     Name = GetEnumDescriptionUtil.GetEnumDescription(defaultTenant),
                     ExpiresOn = DateTimeOffset.UtcNow.AddDays(tenantDefaultConfig.InactiveDaysBeforeDataExpires),
                     IsSSOEnabled = false,
