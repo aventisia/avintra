@@ -5,17 +5,7 @@ export enum BillingFrequenciesEnum {
   Monthly = "Monthly",
 
   /**
-   *  Indicates billing occurs on a quarterly basis.
+   *  Indicates billing occurs on a annualy basis.
    */
-  Quarterly = "Quarterly",
-
-  /**
-   *  Indicates billing occurs on a yearly basis.
-   */
-  Yearly = "Yearly",
-
-  /**
-   *  Indicates a one-time billing event.
-   */
-  OneTime = "OneTime",
+  Annually = "Annually",
 }
