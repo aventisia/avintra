@@ -33,7 +33,7 @@ export const useMarkNotificationAsRead = (id: string) => {
     string,
     boolean,
     UnreadNotificationDto
-  >(markNotificationAsRead, UN_QUERY_KEY, updatedQueryData);
+  >(markNotificationAsRead, UN_QUERY_KEY, updatedQueryData, false);
 
   // Handle mark as read mutate
   const handleMutateMarkAsRead = () => {
