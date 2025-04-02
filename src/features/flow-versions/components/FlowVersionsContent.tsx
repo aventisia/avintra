@@ -49,7 +49,7 @@ const FlowVersionsContent = () => {
 
                 {/* Content container */}
                 <div className="flex grow flex-col gap-0">
-                  {/* Flow name */}
+                  {/* Agent name */}
                   <span className="truncate text-xs font-medium leading-5">{`Version ${item.versionNumber}`}</span>
 
                   {/* Time container */}

@@ -16,12 +16,12 @@ export const FlowListItem = ({ flowData }: FlowListItemProps) => {
   // Return the component
   return (
     <div className={cn("flex w-full items-center gap-3 px-0.5 py-0.5 pl-2")}>
-      {/* Flow thumbnail */}
+      {/* Agent thumbnail */}
       {/* <FLIThumbnail /> */}
 
       {/* Content container */}
       <div className="flex grow flex-col gap-0">
-        {/* Flow name */}
+        {/* Agent name */}
         <FLIName flowData={flowData} />
 
         {/* Time container */}
