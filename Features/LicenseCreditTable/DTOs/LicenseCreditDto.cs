@@ -38,6 +38,17 @@ public class LicenseCreditDto
     public string? PlanName { get; set; }
 
     /// <summary>
+    /// Gets or sets the price per unit for the pricing plan.
+    /// </summary>
+    public double? UnitPrice { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of unit associated with the pricing plan (e.g., Credit or License).
+    /// This indicates the quantity relevant to the specified unit type.
+    /// </summary>
+    public UnitTypesEnum? Unit { get; set; }
+
+    /// <summary>
     /// Gets or sets the total number of units allocated to the tenant or user.
     /// </summary>
     public int Allocated { get; set; }

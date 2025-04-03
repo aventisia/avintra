@@ -8,6 +8,8 @@ public class LicenseCreditMappingProfile : IRegister
         config.NewConfig<LicenseCredit, LicenseCreditDto>()
             .Map(dest => dest.PlanName, src => src.PlanPricing != null ? src.PlanPricing.Name : null)
             .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
+            .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
+            .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
             .Map(dest => dest.TenantType, src => src.PlanPricing != null ? src.PlanPricing.TenantType : null)
             .Map(dest => dest.TenantId, src => src.TenantId)
             .Map(dest => dest.TenantName, src => src.Tenant != null ? src.PlanPricing.Tenant.Name : null)
@@ -29,6 +31,8 @@ public class LicenseCreditMappingProfile : IRegister
         config.NewConfig<LicenseCredit, MyLicenseCreditDto>()
             .Map(dest => dest.PlanName, src => src.PlanPricing != null ? src.PlanPricing.Name : null)
             .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
+            .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
+            .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}"
