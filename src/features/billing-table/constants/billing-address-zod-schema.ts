@@ -20,7 +20,7 @@ export const inoviceNameSchema = z
 /**
  * Represents the Zod schema for a billingplan.
  */
-export const inoviceZodSchema = z.object({
+export const billingAddressZodSchema = z.object({
   // Single fields
   id: z.string().optional(),
   name: z.string({ message: reqError("Name") }),
@@ -32,9 +32,7 @@ export const inoviceZodSchema = z.object({
   state: z.string({ message: reqError("State") }),
   country: z.string({ message: reqError("Country") }),
   taxId: z.string().optional(),
-  pinCode: z.coerce
-    .number({ message: reqError("Pin Code") })
-    .positive({ message: reqError("Pin Code must be positive") }),
+  pinCode: z.string({ message: reqError("Pin Code") }),
   // Single field
   isDisabled: z.boolean(),
   // Group (read-only)
