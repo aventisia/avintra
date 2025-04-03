@@ -1,8 +1,8 @@
-import { FlowTypesEnum } from '@/react-toolkit/enums/flow-types-enum'
-import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField'
-import { enumToArray } from '@/react-toolkit/utils/enum-to-array'
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
-import type { SelectFieldProps } from '@/react-toolkit/ui/form/fields/SelectField'
+import type { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
 // License Id
 export const idProps: InputFieldProps = {
   name: "id",
@@ -10,24 +10,38 @@ export const idProps: InputFieldProps = {
   disabled: true,
 };
 
-// Type
-export const typeProps: SelectFieldProps = {
-  name: "type",
-  label: "License Type",
+export const accountTypeProps: SelectFieldProps = {
+  name: "accountType",
+  label: "Account Type",
   isRequired: true,
   selectOptions: enumToArray(FlowTypesEnum),
 };
-
-// Name
-export const nameProps: InputFieldProps = {
+export const nameProps: SelectFieldProps = {
   name: "name",
-  label: "Name",
+  label: "Tenant / User Name",
+  isRequired: true,
+  selectOptions: enumToArray(FlowTypesEnum),
+};
+export const pricingComponentProps: SelectFieldProps = {
+  name: "pricingComponent",
+  label: "Pricing Component",
+  isRequired: true,
+  selectOptions: enumToArray(FlowTypesEnum),
+};
+export const unitCostProps: InputFieldProps = {
+  name: "unitCost",
+  label: "Unit Cost",
   isRequired: true,
 };
-
-// Name
-export const quantityProps: InputFieldProps = {
-  name: "quantity",
-  label: "New Allocated Units",
+export const currentQuantityProps: InputFieldProps = {
+  name: "currentQuantity",
+  disabled: true,
+};
+export const newQuantityProps: InputFieldProps = {
+  name: "newQuantity",
   isRequired: true,
+};
+export const additionaCostProps: InputFieldProps = {
+  name: "additionaCost",
+  disabled: true,
 };
