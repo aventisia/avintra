@@ -19,6 +19,7 @@ public class LicenseCreditMappingProfile : IRegister
             .Map(dest => dest.Allocated, src => src.LicenseCredits != null ? src.LicenseCredits.Sum(a => a.Allocated) : 0)
             .Map(dest => dest.Available, src => src.LicenseCredits != null ? src.LicenseCredits.Sum(a => a.Available) : 0)
             .Map(dest => dest.Consumed, src => src.LicenseCredits != null ? src.LicenseCredits.Sum(a => a.Consumed) : 0)
+            .Map(dest => dest.AdditionalUnitsRequested, src => src.LicenseCredits != null ? src.LicenseCredits.Sum(a => a.AdditionalUnitsRequested) : 0)
             .Map(dest => dest.PlanId, src => src.Id)
             .Map(dest => dest.PlanName, src => src.Name)
             .Map(dest => dest.TenantId, src => src.TenantId)
@@ -35,6 +36,12 @@ public class LicenseCreditMappingProfile : IRegister
 
         // Configuration for mapping LicenseCreditDto to LicenseCredit during insertion or update.
         config.NewConfig<LicenseCreditDto, LicenseCredit>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
+        
+        config.NewConfig<RequestLicenseCreditDto, LicenseCredit>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)

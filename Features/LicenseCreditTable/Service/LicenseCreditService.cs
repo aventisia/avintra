@@ -17,9 +17,7 @@ public class LicenseCreditService : ILicenseCreditService
         _unitOfWork = unitOfWork;
     }
 
-    /// <summary>
     /// Retrieves all license credits asynchronously.
-    /// </summary>
     public async Task<ServiceResponse<IEnumerable<LicenseCreditDto>>> GetLicenseCreditsAsync()
     {
         var serviceResponse = new ServiceResponse<IEnumerable<LicenseCreditDto>>
@@ -52,9 +50,7 @@ public class LicenseCreditService : ILicenseCreditService
         return serviceResponse;
     }
 
-    /// <summary>
     /// Retrieves a license credit by its ID asynchronously.
-    /// </summary>
     public async Task<ServiceResponse<LicenseCreditDto>> GetLicenseCreditByIdAsync(Guid creditId)
     {
         var serviceResponse = new ServiceResponse<LicenseCreditDto>
@@ -91,9 +87,7 @@ public class LicenseCreditService : ILicenseCreditService
         return serviceResponse;
     }
 
-    /// <summary>
     /// Inserts a new license credit asynchronously.
-    /// </summary>
     public async Task<ServiceResponse<LicenseCreditDto>> InsertLicenseCreditAsync(LicenseCreditDto licenseCreditDto)
     {
         var serviceResponse = new ServiceResponse<LicenseCreditDto>
@@ -147,9 +141,76 @@ public class LicenseCreditService : ILicenseCreditService
         return serviceResponse;
     }
 
-    /// <summary>
-    /// Updates an existing license credit asynchronously.
-    /// </summary>
+
+    public async Task<ServiceResponse<LicenseCreditDto>> RequestLicenseCreditAsync(RequestLicenseCreditDto licenseCreditDto)
+    {
+        var serviceResponse = new ServiceResponse<LicenseCreditDto>
+        {
+            Data = null,
+            Message = "Unable to insert or update license credit. Please try again."
+        };
+
+        try
+        {
+            // Check if a similar license credit already exists
+            var existingCredit = await _unitOfWork.LicenseCreditRepo
+                .GetByConditionAsync(w =>
+                    w.PlanId == licenseCreditDto.PlanId)
+                .FirstOrDefaultAsync();
+
+            // Trim string properties
+            licenseCreditDto = TrimDtoStringPropsUtil.TrimDtoStringProps(licenseCreditDto);
+
+            if (existingCredit != null)
+            {
+                // Update the existing credit's AdditionalUnitsRequested
+                existingCredit.AdditionalUnitsRequested = licenseCreditDto.AdditionalUnitsRequested;
+                existingCredit.LastModifiedByUserId = _userId;
+
+                _unitOfWork.LicenseCreditRepo.Update(existingCredit);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Failed to save changes while updating license credit.");
+                    return serviceResponse;
+                }
+
+                serviceResponse.Data = existingCredit.Adapt<LicenseCreditDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "License credit updated successfully.";
+                _logger.LogInformation("License credit updated successfully for PlanId: '{PlanId}'.", licenseCreditDto.PlanId);
+            }
+            else
+            {
+                // Create a new license credit
+                var newCredit = licenseCreditDto.Adapt<LicenseCredit>();
+                newCredit.CreatedByUserId = _userId;
+                newCredit.LastModifiedByUserId = _userId;
+
+                await _unitOfWork.LicenseCreditRepo.InsertAsync(newCredit);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Failed to save changes while inserting new license credit.");
+                    return serviceResponse;
+                }
+
+                serviceResponse.Data = newCredit.Adapt<LicenseCreditDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "License credit created successfully.";
+                _logger.LogInformation("License credit with additional units requested '{AdditionalUnitsRequested}' was created successfully.", licenseCreditDto.AdditionalUnitsRequested);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while processing license credit.");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates an existing license credit asynchronously.
     public async Task<ServiceResponse<LicenseCreditDto>> UpdateLicenseCreditAsync(LicenseCreditDto licenseCreditDto)
     {
         var serviceResponse = new ServiceResponse<LicenseCreditDto>
@@ -213,9 +274,7 @@ public class LicenseCreditService : ILicenseCreditService
         return serviceResponse;
     }
 
-    /// <summary>
-    /// Deletes a license credit by ID asynchronously.
-    /// </summary>
+    // Deletes a license credit by ID asynchronously.
     public async Task<ServiceResponse<bool>> DeleteLicenseCreditAsync(Guid creditId)
     {
         var serviceResponse = new ServiceResponse<bool>
@@ -261,9 +320,7 @@ public class LicenseCreditService : ILicenseCreditService
         return serviceResponse;
     }
 
-    /// <summary>
-    /// Deletes multiple license credits asynchronously.
-    /// </summary>
+    // Deletes multiple license credits asynchronously.
     public async Task<ServiceResponse<bool>> DeleteLicenseCreditsAsync(List<Guid> creditIds)
     {
         var serviceResponse = new ServiceResponse<bool>
