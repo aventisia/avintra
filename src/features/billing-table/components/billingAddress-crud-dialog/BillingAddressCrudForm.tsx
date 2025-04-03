@@ -20,8 +20,8 @@ import {
   pinCodeProps,
   stateProps,
   taxIdProps,
-} from "../../constants/inovice-form-field-props";
-import { billingAddressZodSchema } from "../../constants/inovice-zod-schema";
+} from "../../constants/billing-address-form-field-props";
+import { billingAddressZodSchema } from "../../constants/billing-address-zod-schema";
 import { InovicesTableDto } from "../../dtos/inovices-table-dto";
 import { useDefineBillingAddressForm } from "../../hooks/useDefineBillingAddressForm";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
