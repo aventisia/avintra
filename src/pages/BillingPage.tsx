@@ -1,13 +1,11 @@
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { lazy, Suspense } from "react";
 
-// Lazy load the InovicesTable component.
-const InovicesTable = lazy(() =>
-  import("@/features/billing-table/components/InovicesTable").then(
-    (module) => ({
-      default: module.InovicesTable,
-    }),
-  ),
+// Lazy load the Billings component.
+const Billings = lazy(() =>
+  import("@/features/billing-table/components/Billings").then((module) => ({
+    default: module.Billings,
+  })),
 );
 
 /**
@@ -17,7 +15,7 @@ const InovicesTable = lazy(() =>
 export const BillingPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <InovicesTable />
+      <Billings />
     </Suspense>
   );
 };
