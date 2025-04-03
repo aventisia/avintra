@@ -26,11 +26,18 @@ public interface ILicenseCreditService
     Task<ServiceResponse<LicenseCreditDto>> InsertLicenseCreditAsync(LicenseCreditDto licenseCreditDto);
 
     /// <summary>
-    /// Asynchronously requests a license credit.
+    /// Requests a new license credit.
     /// </summary>
     /// <param name="licenseCreditDto">Details for the license credit request.</param>
     /// <returns>A task with the response containing the license credit information.</returns>
     Task<ServiceResponse<LicenseCreditDto>> RequestLicenseCreditAsync(RequestLicenseCreditDto licenseCreditDto);
+
+    /// <summary> 
+    /// Approve exiting license credit request.
+    /// </summary> 
+    /// <param name="licenseCreditDto">Information related to the license credit approval.</param> 
+    /// <returns>A task that yields a response with the license credit details.</returns>   
+    Task<ServiceResponse<LicenseCreditDto>> ApproveLicenseCreditAsync(RequestLicenseCreditDto licenseCreditDto);
 
     /// <summary>
     /// Updates the details of an existing license credit.
