@@ -34,6 +34,7 @@ public class LicenseCreditService : ILicenseCreditService
                                             .OrderByDescending(w => w.CreatedOn)
                                             .Include(a => a.CreatedByUser)
                                             .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.Tenant)
                                             .Include(a => a.PlanPricing)
                                                 .ThenInclude(b => b.Tenant)
                                             .ProjectToType<LicenseCreditDto>()
@@ -71,6 +72,7 @@ public class LicenseCreditService : ILicenseCreditService
                             .Include(a => a.LastModifiedByUser)
                             .Include(a => a.PlanPricing)
                             .ThenInclude(b => b.Tenant)
+                            .Include(a => a.Tenant)
                             .FirstOrDefaultAsync();
 
             if (credit == null)
@@ -171,7 +173,7 @@ public class LicenseCreditService : ILicenseCreditService
             {
                 // Update the existing credit's AdditionalUnitsRequested
                 existingCredit.AdditionalUnitsRequested = licenseCreditDto.AdditionalUnitsRequested;
-                existingCredit.Status = LicenseCreditStatusesEnum.Rejected;
+                existingCredit.Status = LicenseCreditStatusesEnum.Requested;
                 existingCredit.LastModifiedByUserId = _userId;
 
                 _unitOfWork.LicenseCreditRepo.Update(existingCredit);

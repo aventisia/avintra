@@ -53,6 +53,13 @@ public class LicenseCredit : BaseEntity, IMustHaveTenant
     [ForeignKey("PlanId")]
     public virtual PlanPricing? PlanPricing { get; set; }
 
+    /// <summary>
+    /// Gets or sets the tenant related to this license credit.
+    /// </summary>
+    [ForeignKey("TenantId")]
+    public virtual Tenant? Tenant { get; set; }
+
+
     // /// <summary>
     // /// Gets or sets the collection of billing accounts associated with this pricing plan.
     // /// </summary>
