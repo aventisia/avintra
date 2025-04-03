@@ -4,22 +4,32 @@ import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availab
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { InovicesTableDto } from "../dtos/inovices-table-dto";
+import { BillingAddressDto } from "../dtos/billing-address-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/invoice`;
 
 /**
- * Retrieves list of billingplans.
+ * Retrieves list of inovices.
  */
-const getInovices = () => {
+export const getBillingAddresses = () => {
   return axiosInstance
-    .get<IHttpResponse<InovicesTableDto[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<BillingAddressDto[]>>(`${baseAPIURL}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves list of inovices.
+ */
+export const getInovices = () => {
+  return axiosInstance
+    .get<IHttpResponse<InovicesTableDto[]>>(`${baseAPIURL}/invoice-list`)
     .then((res) => res.data);
 };
 
 /**
  * Checks the availability of a billingplan name.
  */
-const isInoviceNameAvailable = (postObj: CheckAvailabilityDto) => {
+export const isInoviceNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>
@@ -30,7 +40,7 @@ const isInoviceNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new billingplan.
  */
-const insertInovice = (newBillingPlan: InovicesTableDto) => {
+export const insertInovice = (newBillingPlan: InovicesTableDto) => {
   return axiosInstance
     .post<IHttpResponse<InovicesTableDto>>(`${baseAPIURL}`, newBillingPlan)
     .then((res) => res.data);
@@ -39,7 +49,7 @@ const insertInovice = (newBillingPlan: InovicesTableDto) => {
 /**
  * Updates an existing billingplan.
  */
-const updateInovice = (updatedBillingPlan: InovicesTableDto) => {
+export const updateInovice = (updatedBillingPlan: InovicesTableDto) => {
   return axiosInstance
     .put<IHttpResponse<InovicesTableDto>>(`${baseAPIURL}`, updatedBillingPlan)
     .then((res) => res.data);
@@ -48,16 +58,16 @@ const updateInovice = (updatedBillingPlan: InovicesTableDto) => {
 /**
  * Deletes a billingplan by its ID.
  */
-const deleteInovice = (id: string) => {
+export const deleteInovice = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
 /**
- * Disable multiple billingplans by their IDs.
+ * Disable multiple inovices by their IDs.
  */
-const disableInovices = (ids: string[]) => {
+export const disableInovices = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
     .then((res) => res.data);
@@ -70,7 +80,7 @@ const disableInovices = (ids: string[]) => {
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-const inoviceOptimisticMutationFn = ({
+export const inoviceOptimisticMutationFn = ({
   payload,
   crudAction,
 }: IOptimisticMutation<InovicesTableDto | string>) => {
@@ -84,14 +94,4 @@ const inoviceOptimisticMutationFn = ({
     default:
       throw new Error("Invalid action type");
   }
-};
-
-export {
-  getInovices,
-  isInoviceNameAvailable,
-  insertInovice,
-  updateInovice,
-  deleteInovice,
-  disableInovices,
-  inoviceOptimisticMutationFn,
 };
