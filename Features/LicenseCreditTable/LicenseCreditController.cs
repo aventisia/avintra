@@ -19,11 +19,18 @@ public class LicenseCreditController : BaseApiController
         return ResultHelper(await _licenseCreditService.GetLicenseCreditsAsync());
     }
 
-    // Retrieves all license credits created by the user.
+    // Retrieves my all license credits created by the user.
     [HttpGet("my")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<MyLicenseCreditDto>>>> GetMyLicenseCredits()
     {
         return ResultHelper(await _licenseCreditService.GetMyLicenseCreditsAsync());
+    }
+
+    // Retrieves a list of license credit options for the current user.
+    [HttpGet("license-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetLicenseCreditOptionListAsync()
+    {
+        return ResultHelper(await _licenseCreditService.GetLicenseCreditOptionListAsync());
     }
 
     // Retrieves a license credit by its ID.

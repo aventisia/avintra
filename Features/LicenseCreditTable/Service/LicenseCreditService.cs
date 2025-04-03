@@ -19,7 +19,7 @@ public class LicenseCreditService : ILicenseCreditService
         _unitOfWork = unitOfWork;
     }
 
-    /// Retrieves all license credits asynchronously.
+    // Retrieves all license credits asynchronously.
     public async Task<ServiceResponse<IEnumerable<LicenseCreditDto>>> GetLicenseCreditsAsync()
     {
         var serviceResponse = new ServiceResponse<IEnumerable<LicenseCreditDto>>
@@ -54,6 +54,39 @@ public class LicenseCreditService : ILicenseCreditService
         }
 
         return serviceResponse;
+    }
+
+    // Retrieves a list of license credit options for the current user.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetLicenseCreditOptionListAsync()
+    {
+        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Unable to retrieve license credits. Please try again."
+        };
+
+        try
+        {
+            // Fetch and order license credits by creation date, then project to DTO
+            var credits = await _unitOfWork.LicenseCreditRepo
+                                            .GetByConditionAsync(a => a.CreatedByUserId == _userId || a.TenantId == _tenantId)
+                                            .OrderByDescending(w => w.CreatedOn)
+                                            .Include(a => a.PlanPricing)
+                                            .ProjectToType<SelectOptionDto>()
+                                            .ToListAsync();
+
+            response.Data = credits;
+            response.StatusCode = 200;
+            response.Message = "License credits retrieved successfully.";
+            _logger.LogInformation("Retrieved {Count} license credits.", credits.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving license credits.");
+            return response;
+        }
+
+        return response;
     }
 
     /// Retrieves all my license credits asynchronously.

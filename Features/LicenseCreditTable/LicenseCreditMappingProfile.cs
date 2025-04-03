@@ -20,6 +20,11 @@ public class LicenseCreditMappingProfile : IRegister
                     ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
                     : null);
 
+        config.NewConfig<LicenseCredit, SelectOptionDto>()
+            .Map(dest => dest.Label, src => src.PlanPricing != null ? $"{src.PlanPricing.Name} - {src.Available}" : null)
+            .Map(dest => dest.Disabled, src => src.IsDisabled)
+            .Map(dest => dest.Value, src => src.Id);
+
         // Configuration for mapping LicenseCredit to LicenseCreditDto.
         config.NewConfig<LicenseCredit, MyLicenseCreditDto>()
             .Map(dest => dest.PlanName, src => src.PlanPricing != null ? src.PlanPricing.Name : null)

@@ -18,6 +18,12 @@ public interface ILicenseCreditService
     Task<ServiceResponse<IEnumerable<MyLicenseCreditDto>>> GetMyLicenseCreditsAsync();
 
     /// <summary>
+    /// Asynchronously retrieves a list of all license credit options for the current user.
+    /// </summary>
+    /// <returns>A <see cref="ServiceResponse{IEnumerable{SelectOptionDto}}"/> containing the license credit options.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetLicenseCreditOptionListAsync();
+
+    /// <summary>
     /// Retrieves a license credit by its ID.
     /// </summary>
     /// <param name="licenseCreditId">The ID of the license credit to retrieve.</param>
