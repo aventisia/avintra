@@ -29,10 +29,13 @@ public class LicenseCreditService : ILicenseCreditService
         try
         {
             // Fetch license credits, order them by creation date, and project to DTO
-            var credits = await _unitOfWork.PlanRepo
+            var credits = await _unitOfWork.LicenseCreditRepo
                                             .GetAllAsync()
                                             .OrderByDescending(w => w.CreatedOn)
-                                            .Include(a => a.LicenseCredits)
+                                            .Include(a => a.CreatedByUser)
+                                            .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.PlanPricing)
+                                                .ThenInclude(b => b.Tenant)
                                             .ProjectToType<LicenseCreditDto>()
                                             .ToListAsync();
 
@@ -62,10 +65,13 @@ public class LicenseCreditService : ILicenseCreditService
         try
         {
             // Find the license credit by ID and include plan pricing
-            var credit = await _unitOfWork
-                .LicenseCreditRepo.GetByConditionAsync(w => w.Id == creditId)
-                .Include(a => a.PlanPricing)
-                .FirstOrDefaultAsync();
+            var credit = await _unitOfWork.LicenseCreditRepo
+                            .GetByConditionAsync(w => w.Id == creditId)
+                            .Include(a => a.CreatedByUser)
+                            .Include(a => a.LastModifiedByUser)
+                            .Include(a => a.PlanPricing)
+                            .ThenInclude(b => b.Tenant)
+                            .FirstOrDefaultAsync();
 
             if (credit == null)
             {
