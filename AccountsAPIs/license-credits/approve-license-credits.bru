@@ -1,0 +1,34 @@
+meta {
+  name: Approve license and credits
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/license-credit/approve
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody(
+    {
+      id: bru.getGlobalEnvVar("LICENSE_CREDIT_ID"),
+      tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+      planId: bru.getGlobalEnvVar("PLAN_ID"),
+      additionalUnitsRequested: 10,
+    }
+  )
+    
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "LICENSEC_REDIT_ID",
+    res.getBody().data.id
+    );
+  }
+}
