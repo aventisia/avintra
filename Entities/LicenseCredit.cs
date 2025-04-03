@@ -18,6 +18,11 @@ public class LicenseCredit : BaseEntity, IMustHaveTenant
     public required Guid PlanId { get; set; }
 
     /// <summary>
+    /// Gets or sets the status of the license credit.
+    /// </summary>
+    public LicenseCreditStatusesEnum? Status { get; set; }
+
+    /// <summary>
     /// The total number of units allocated to the tenant or user.
     /// </summary>
     public int Allocated { get; set; }

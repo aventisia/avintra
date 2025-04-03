@@ -171,6 +171,7 @@ public class LicenseCreditService : ILicenseCreditService
             {
                 // Update the existing credit's AdditionalUnitsRequested
                 existingCredit.AdditionalUnitsRequested = licenseCreditDto.AdditionalUnitsRequested;
+                existingCredit.Status = LicenseCreditStatusesEnum.Rejected;
                 existingCredit.LastModifiedByUserId = _userId;
 
                 _unitOfWork.LicenseCreditRepo.Update(existingCredit);
@@ -190,6 +191,8 @@ public class LicenseCreditService : ILicenseCreditService
             {
                 // Create a new license credit
                 var newCredit = licenseCreditDto.Adapt<LicenseCredit>();
+
+                newCredit.Status = LicenseCreditStatusesEnum.Rejected;
                 newCredit.CreatedByUserId = _userId;
                 newCredit.LastModifiedByUserId = _userId;
 
@@ -249,6 +252,7 @@ public class LicenseCreditService : ILicenseCreditService
             // Update the available and allocated units based on the additional units requested
             existingCredit.Available += existingCredit.AdditionalUnitsRequested;
             existingCredit.Allocated += existingCredit.AdditionalUnitsRequested;
+            existingCredit.Status = LicenseCreditStatusesEnum.Approved;
             existingCredit.AdditionalUnitsRequested = 0;
             existingCredit.LastModifiedByUserId = _userId;
 

@@ -10,7 +10,7 @@ public class LicenseCreditDto
     /// Gets or sets the unique identifier for the associated license credit.
     /// </summary>
     public Guid Id { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the unique ID of the tenant associated with this pricing plan.
     /// </summary>
@@ -56,6 +56,11 @@ public class LicenseCreditDto
     /// Gets or sets the date of the next billing cycle for this pricing entity.
     /// </summary>
     public DateTime NextBillingDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the license credit.
+    /// </summary>
+    public LicenseCreditStatusesEnum? Status { get; set; }
 
     /// <summary>
     /// Gets or sets the number of additional units requested by the tenant or user.
