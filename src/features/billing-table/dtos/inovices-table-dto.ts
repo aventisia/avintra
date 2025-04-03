@@ -1,89 +1,101 @@
 /**
- * Represents a data transfer object (DTO) for a billingplan.
+ * Represents a data transfer object (DTO) for a inovice.
  */
 export interface InovicesTableDto {
   /**
-   * Gets or sets the billingplan record's primary key.
+   * Gets or sets the inovice record's primary key.
    *
    * Note: Not making it required because the same DTO is used for insert and update.
    */
   id?: string;
 
   /**
-   * Gets or sets the plan billing Component.
-   *
+   * get subscription id of the inovice
    */
-  billingComponent: string;
+  subscriptionId: string;
 
   /**
-   * Gets or sets the plan tenantType.
-   *
+   * get the amount of the subscription.
    */
-  tenantType: string;
+  amount: number;
 
   /**
-   * Gets or sets the plan tenant Name.
-   *
+   * get the generated date of the the inovice
    */
-  tenantName: string;
+  generatedDate: Date;
 
   /**
-   * Gets or sets the plan currency.
-   *
+   * get wheather the subscription is paid or not
    */
-  currency: string;
+  isPaid: boolean;
 
   /**
-   * Gets or sets the plan unit.
-   *
+   * get the date of the payment
    */
-  unit: string;
+  paidOn: Date;
 
   /**
-   * Gets or sets the plan unit Price.
-   *
+   * get the inovice number of the subscription
    */
-  unitPrice: number;
+  invoiceNumber: string;
 
   /**
-   * Gets or sets the plan billing Frequency.
-   *
+   * get the effective date of the inovice
    */
-  billingFrequency: string;
+  invoiceDate: Date;
 
   /**
-   * Gets or sets the plan cola.
-   *
+   * get the tax percentage
    */
-  cola: number;
+  tax: number;
 
   /**
-   * Gets or sets a flag indicating whether the billingplan record is disabled.
+   * get the discount on the subscription
+   */
+  discount: number;
+
+  /**
+   * total amount of subscription including the tax
+   */
+  totalAmount: number;
+
+  /**
+   * subscription due date
+   */
+  dueDate: Date;
+
+  /**
+   * status of the payment
+   */
+  status: string;
+
+  /**
+   * Gets or sets a flag indicating whether the inovice record is disabled.
    *
    * Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
    */
   isDisabled?: boolean;
 
   /**
-   * Gets or sets the username of the user who created the billingplan record.
+   * Gets or sets the username of the user who created the inovice record.
    * This property is intended for use in responses only and should not be included in requests.
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the billingplan record was created.
+   * Gets or sets the date and time when the inovice record was created.
    * This property is intended for use in responses only and should not be included in requests.
    */
   createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the billingplan record.
+   * Gets or sets the username of the user who last modified the inovice record.
    * This property is intended for use in responses only and should not be included in requests.
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the billingplan record was last modified.
+   * Gets or sets the date and time when the inovice record was last modified.
    * This property is intended for use in responses only and should not be included in requests.
    */
   lastModifiedOn?: Date;
