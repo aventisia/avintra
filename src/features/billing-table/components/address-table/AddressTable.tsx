@@ -2,15 +2,10 @@ import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../../constants";
-import { columnDisplayNames } from "../../constants/column-display-names";
 import { columnVisibilityState } from "../../constants/column-visibility-state";
-import { useFetchInovices } from "../../hooks/useFetchInovices";
-import { inovicesTableColumns } from "../InovicesTableColumns";
-import { BillingAddressList } from "../BillingAddressList";
+import { AddressTableColumns } from "./AddressTableColumns";
+import { useFetchBillingAddresses } from "../../hooks/useFetchBillingAddresses";
+import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
 
 /**
  * Renders a table of billing.
@@ -22,11 +17,11 @@ export const AddressTable = () => {
   useDocumentTitle("Billing Plans");
 
   // Fetch billingplans data
-  const { data } = useFetchInovices();
+  const { data } = useFetchBillingAddresses();
 
   // Create a React table for billingplans data
   const table = useDataTable(
-    inovicesTableColumns,
+    AddressTableColumns,
     data?.data || [],
     columnVisibilityState,
     true,
@@ -35,28 +30,21 @@ export const AddressTable = () => {
   // Return the rendered DataTable component.
   return (
     <>
-      <BillingAddressList />
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
-
-            <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumn={SEARCH_COLUMN}
-                placeholder="Search billingplans..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames }} />
-            </div>
+            <h2 className="ml-1 flex w-full items-center truncate text-base font-medium text-foreground">
+              My Addreses
+            </h2>
+            <DTCreateButton buttonText="Add Address" />
           </div>
 
           {/* Data table to render data */}
           <div className="rounded-md border">
             <DataTable
               table={table}
-              columnsLength={inovicesTableColumns.length}
+              columnsLength={AddressTableColumns.length}
             />
           </div>
         </div>

@@ -1,12 +1,12 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { InovicesTableDto } from "../../dtos/inovices-table-dto";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { BillingAddressDto } from "../../dtos/billing-address-dto";
 
 /**
- * Array of table columns for the billingplans table.
+ * Array of table columns for the billing address table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const AddressTableColumns: ColumnDef<InovicesTableDto>[] = [
+export const AddressTableColumns: ColumnDef<BillingAddressDto>[] = [
   {
     accessorKey: "id",
     enableSorting: false,

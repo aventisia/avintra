@@ -21,7 +21,7 @@ import {
   stateProps,
   taxIdProps,
 } from "../../constants/inovice-form-field-props";
-import { inoviceZodSchema } from "../../constants/inovice-zod-schema";
+import { billingAddressZodSchema } from "../../constants/inovice-zod-schema";
 import { InovicesTableDto } from "../../dtos/inovices-table-dto";
 import { useDefineBillingAddressForm } from "../../hooks/useDefineBillingAddressForm";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
@@ -39,7 +39,7 @@ export const BillingAddressCrudForm = () => {
   >([rowId], inoviceOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof inoviceZodSchema>) => {
+  const onSubmit = (formData: z.infer<typeof billingAddressZodSchema>) => {
     // Create or update the billingplan
     mutateBillingPlan({
       payload: refineFormData(formData) as unknown as InovicesTableDto,
