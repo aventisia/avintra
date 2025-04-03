@@ -19,7 +19,7 @@ const getFlowExecutionLog = async (id: string) => {
     return res.data;
   } catch {
     // Show error toast if the request fails
-    toast.error("Unable to load flow execution logs. Please try again.");
+    toast.error("Unable to load agent execution logs. Please try again.");
     return null;
   }
 };

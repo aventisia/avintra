@@ -3,6 +3,7 @@ import {
   IDynamicFormKeysCategory,
   ActivityConfig,
 } from "../../..";
+import { WindowsTimeZonesEnum } from "@/react-toolkit/enums/windows-timezone-enums";
 
 const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
   {
@@ -26,40 +27,23 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
       "Specify whether to use the system's time zone or select a specific one or set up a time zone manually",
     selectOptions: [
       { label: "System time zone", value: "system time zone" },
-      {
-        label: "Specific time zone (to be deprecated)",
-        value: "specific time zone (to be deprecated)",
-      },
       { label: "Windows time zone", value: "windows time zone" },
       { label: "Custom input", value: "custom input" },
     ],
     defaultValue: "system time zone",
   },
   {
-    name: "country/Region",
-    type: "text",
-    label: "Country/region",
-    description:
-      "The country/region to get the time of or add a numeric value as the hours that will be added in the UTC time zone",
-    defaultValue: "Europe/Bucharest",
-    regOptions: {
-      requiredBasedOnFields: {
-        conditionList: [
-          {
-            fields: [{ key: "timeZone", value: "specific time zone (to be deprecated)" }],
-          },
-        ],
-        initialState: false,
-      },
-    },
-  },
-  {
     name: "windowsTimeZone",
-    type: "text",
-
+    type: "select",
     label: "Windows time zone",
     description: "Specify the country/region to obtain the time zone from",
-    defaultValue: "(UTC) Coordinated Universal Time",
+    selectOptions: Object.keys(WindowsTimeZonesEnum).map(key => {
+      return {
+        label: WindowsTimeZonesEnum[key as keyof typeof WindowsTimeZonesEnum],
+        value: key
+      };
+    }),
+    defaultValue: "UTC",
     regOptions: {
       requiredBasedOnFields: {
         conditionList: [

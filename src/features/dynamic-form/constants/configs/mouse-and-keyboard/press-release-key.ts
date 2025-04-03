@@ -58,11 +58,7 @@ const pressReleaseKeyFieldCategories: IDynamicFormKeysCategory[] = [
       ["shift"],
       ["win"],
     ],
-  },
-  {
-    title: "Output",
-    formFieldKeys: [[""], [""]],
-  },
+  }
 ];
 const pressReleaseKey: ActivityConfig = {
   fieldList: pressReleaseKeyFieldList,

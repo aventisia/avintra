@@ -36,7 +36,7 @@ export const FlowListItemActions = ({ flowId }: FlowListItemActionsProps) => {
         {/* DropdownMenuSeparator component */}
         <DropdownMenuSeparator />
 
-        {/* Triggers Flow delete alert dialog  */}
+        {/* Triggers Agent delete alert dialog  */}
         <FLIDeleteAction flowId={flowId} />
       </DropdownMenuContent>
     </DropdownMenu>

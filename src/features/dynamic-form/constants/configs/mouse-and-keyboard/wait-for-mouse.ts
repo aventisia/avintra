@@ -32,23 +32,41 @@ const waitForMouseFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "Arrow",
   },
-  // In ui There is an switch input to select on or off, but in more info it's data is not there
+  {
+    name: "failWithTimeoutError",
+    type: "switch",
+    label: "Fail with timeout error",
+    description: "Specifiy whether you want the action to wait indefinitely or fail after a set period of time",
+    defaultValue: false,
+  },
+  {
+    name: "duration",
+    type : "number",
+    label: "Duration",
+    description: "Time duration in seconds",
+    defaultValue: "5",
+    regOptions: {
+    requiredBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "failWithTimeoutError", value: true }],
+        },
+      ],
+      initialState: false,
+    },
+  },}
 ];
 
 const waitForMouseFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["waitForMousePointerTo"], ["mousePointer"]],
-  },
-  {
-    title: "Output",
-    formFieldKeys: [[""], [""]],
-  },
+    formFieldKeys: [["waitForMousePointerTo"], ["mousePointer"], ["failWithTimeoutError"], ["duration"]],
+  }
 ];
 const waitForMouse: ActivityConfig = {
   fieldList: waitForMouseFieldList,
   fieldCategories: waitForMouseFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["failWithTimeoutError"],
 };
 
 export default waitForMouse;

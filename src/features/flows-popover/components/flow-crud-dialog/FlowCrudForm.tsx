@@ -74,7 +74,7 @@ export const FlowCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* Flow Id */}
+      {/* Agent Id */}
       {isReadMode && <InputField {...idProps} />}
 
       {/* Type. TODO: Select field doesn't update. Applied workaround for now */}

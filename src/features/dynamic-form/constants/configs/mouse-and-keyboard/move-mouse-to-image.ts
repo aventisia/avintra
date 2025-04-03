@@ -67,6 +67,16 @@ const moveMouseToImageFieldList: IDynamicFieldSchema[] = [
       { label: "Right button up", value: "Right button up" },
     ],
     defaultValue: "Left click",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "sendClickAfterMove", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "waitForImage",
@@ -257,7 +267,7 @@ const moveMouseToImageFieldCategories: IDynamicFormKeysCategory[] = [
 const moveMouseToImage: ActivityConfig = {
   fieldList: moveMouseToImageFieldList,
   fieldCategories: moveMouseToImageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["sendClickAfterMove"],
 };
 
 export default moveMouseToImage;
