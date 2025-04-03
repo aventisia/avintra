@@ -155,7 +155,7 @@ import getMousePosition from "../constants/configs/mouse-and-keyboard/get-mouse-
 import moveMouse from "../constants/configs/mouse-and-keyboard/move-mouse";
 import moveMouseToImage from "../constants/configs/mouse-and-keyboard/move-mouse-to-image";
 import moveMouseToTextOnScreenOcr from "../constants/configs/mouse-and-keyboard/move-mouse-to-text-on-screen-ocr";
-import pressReleaseKey from "../constants/configs/mouse-and-keyboard/press-release-key";
+import pressreleaseKey from "../constants/configs/mouse-and-keyboard/press-release-key";
 import sendKeys from "../constants/configs/mouse-and-keyboard/send-keys";
 import sendMouseClick from "../constants/configs/mouse-and-keyboard/send-mouse-click";
 import setKeyState from "../constants/configs/mouse-and-keyboard/set-key-state";
@@ -604,7 +604,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   moveMouseToTextOnScreenOcr,
   sendMouseClick,
   sendKeys,
-  pressReleaseKey,
+  pressreleaseKey,
   setKeyState,
   waitForMouse,
   getKeyboardIdentifier,
