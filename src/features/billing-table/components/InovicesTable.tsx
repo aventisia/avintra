@@ -1,19 +1,17 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
-import { useFetchInovices } from "../hooks/useFetchInovices";
-import { InovicesBulkActions } from "./inovice-table-actions/InovicesBulkActions";
-import { inovicesTableColumns } from "./InovicesTableColumns";
-import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
-import { BillingAddressList } from "./BillingAddressList";
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable"
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle"
+import { DataTable } from "@/react-toolkit/ui/data-table"
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton"
+import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination"
+import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox"
+import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions"
+import { SEARCH_COLUMN } from "../constants"
+import { columnDisplayNames } from "../constants/column-display-names"
+import { columnVisibilityState } from "../constants/column-visibility-state"
+import { useFetchInovices } from "../hooks/useFetchInovices"
+import { InovicesBulkActions } from "./inovice-table-actions/InovicesBulkActions"
+import { inovicesTableColumns } from "./InovicesTableColumns"
+import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog"
 
 /**
  * Renders a table of billing.
@@ -21,13 +19,13 @@ import { BillingAddressList } from "./BillingAddressList";
  * @returns The rendered InovicesTable component.
  */
 export const InovicesTable = () => {
-  // Set the document title to "BillingPlans".
-  useDocumentTitle("Billing Plans");
+  // Set the document title to "billing plans".
+  useDocumentTitle("Billing");
 
-  // Fetch billingplans data
+  // Fetch billing plans data
   const { data } = useFetchInovices();
 
-  // Create a React table for billingplans data
+  // Create a React table for billing plans data
   const table = useDataTable(
     inovicesTableColumns,
     data?.data || [],
@@ -38,20 +36,21 @@ export const InovicesTable = () => {
   // Return the rendered DataTable component.
   return (
     <>
-      <BillingAddressList />
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
           <BillingAddressCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+              <h2 className="ml-1 flex w-full items-center truncate text-base font-medium text-foreground">
+                Inovices
+              </h2>
 
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
-                  placeholder="Search billingplans..."
+                  placeholder="Search  invoices..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
               </div>
@@ -73,7 +72,7 @@ export const InovicesTable = () => {
           <InovicesBulkActions table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the billingplans data
+        // Show data table skeleton while fetching the billing plans data
         <DataTableSkeleton />
       )}
     </>
