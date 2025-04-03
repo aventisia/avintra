@@ -1,14 +1,14 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
-import { DATA_QUERY_KEY } from "../constants";
-import { inoviceZodSchema } from "../constants/inovice-zod-schema";
-import { InovicesTableDto } from "../dtos/inovices-table-dto";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store"
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { useShallow } from "zustand/react/shallow"
+import { DATA_QUERY_KEY } from "../constants"
+import { billingAddressZodSchema } from "../constants/inovice-zod-schema"
+import { BillingAddressDto } from "../dtos/billing-address-dto"
 
 /**
  * Custom hook for defining a billingplan form.
@@ -41,8 +41,8 @@ export const useDefineBillingAddressForm = () => {
 
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
-  const form = useForm<z.infer<typeof inoviceZodSchema>>({
-    resolver: zodResolver(inoviceZodSchema),
+  const form = useForm<z.infer<typeof billingAddressZodSchema>>({
+    resolver: zodResolver(billingAddressZodSchema),
     defaultValues: {
       id: "",
       name: "",
@@ -54,7 +54,7 @@ export const useDefineBillingAddressForm = () => {
       state: "",
       country: "",
       taxId: "",
-      pinCode: 0,
+      pinCode: "",
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -71,49 +71,47 @@ export const useDefineBillingAddressForm = () => {
   // Fetch billingplan data when rowId changes
   useEffect(() => {
     // Get billingplans data from query client
-    const billingplansData = queryClient.getQueryData<{
-      data: InovicesTableDto[];
+    const billingAddresses = queryClient.getQueryData<{
+      data: BillingAddressDto[];
     }>(DATA_QUERY_KEY);
 
     // Get billingplan data by id
-    const billingplanData = billingplansData?.data.find(
-      (item) => item.id === rowId,
-    );
+    const data = billingAddresses?.data.find((item) => item.id === rowId);
 
     // Set billingplan data to form
     form.reset({
       // Single fields
-      id: rowId,
-      name: "",
-      email: "",
-      addressLine1: "",
-      addressLine2: "",
-      addressLine3: "",
-      city: "",
-      state: "",
-      country: "",
-      taxId: "",
-      pinCode: billingplanData?.cola ?? 0,
+      id: data?.id ?? "",
+      name: data?.name ?? "",
+      email: data?.email ?? "",
+      addressLine1: data?.addressLine1 ?? "",
+      addressLine2: data?.addressLine2 ?? "",
+      addressLine3: data?.addressLine3 ?? "",
+      city: data?.city ?? "",
+      state: data?.state ?? "",
+      country: data?.country ?? "",
+      taxId: data?.taxId ?? "",
+      pinCode: data?.pinCode ?? "",
+
       // Single field
-      isDisabled: billingplanData?.isDisabled ?? false,
+      isDisabled: data?.isDisabled ?? false,
       // Group (read-only)
       createdBy:
-        billingplanData?.createdBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      createdOn: billingplanData?.createdOn
-        ? new Date(billingplanData?.createdOn)
-        : new Date(),
+        data?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdOn: data?.createdOn ? new Date(data?.createdOn) : new Date(),
       lastModifiedBy:
-        billingplanData?.lastModifiedBy ??
+        data?.lastModifiedBy ??
         userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: billingplanData?.lastModifiedOn
-        ? new Date(billingplanData?.lastModifiedOn)
+      lastModifiedOn: data?.lastModifiedOn
+        ? new Date(data?.lastModifiedOn)
         : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
 
   // Refine form data based on crud action
-  const refineFormData = (formData: z.infer<typeof inoviceZodSchema>) => {
+  const refineFormData = (
+    formData: z.infer<typeof billingAddressZodSchema>,
+  ) => {
     return {
       ...formData,
       lastModifiedBy: userSession?.email ?? "",
