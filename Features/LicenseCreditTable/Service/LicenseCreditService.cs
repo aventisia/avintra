@@ -5,6 +5,7 @@ public class LicenseCreditService : ILicenseCreditService
     private readonly ILogger<LicenseCreditService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public LicenseCreditService(
         ILogger<LicenseCreditService> logger,
@@ -13,6 +14,7 @@ public class LicenseCreditService : ILicenseCreditService
     {
         // Parse the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -48,6 +50,43 @@ public class LicenseCreditService : ILicenseCreditService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving license credits.");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    /// Retrieves all my license credits asynchronously.
+    public async Task<ServiceResponse<IEnumerable<MyLicenseCreditDto>>> GetMyLicenseCreditsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<MyLicenseCreditDto>>
+        {
+            Data = null,
+            Message = "Unable to retrieve license credits. Please try again."
+        };
+
+        try
+        {
+            // Fetch my license credits, order them by creation date, and project to DTO
+            var credits = await _unitOfWork.LicenseCreditRepo
+                                            .GetByConditionAsync(a => a.CreatedByUserId == _userId || a.TenantId == _tenantId)
+                                            .OrderByDescending(w => w.CreatedOn)
+                                            .Include(a => a.CreatedByUser)
+                                            .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.Tenant)
+                                            .Include(a => a.PlanPricing)
+                                                .ThenInclude(b => b.Tenant)
+                                            .ProjectToType<MyLicenseCreditDto>()
+                                            .ToListAsync();
+
+            serviceResponse.Data = credits;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully retrieved license credits.";
+            _logger.LogInformation("Retrieved {Count} license credits.", credits.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving my license credits.");
             return serviceResponse;
         }
 

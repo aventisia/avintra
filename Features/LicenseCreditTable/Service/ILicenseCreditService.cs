@@ -12,6 +12,12 @@ public interface ILicenseCreditService
     Task<ServiceResponse<IEnumerable<LicenseCreditDto>>> GetLicenseCreditsAsync();
 
     /// <summary>
+    /// Retrieves my all available license credits.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{T}"/> with a collection of <see cref="MyLicenseCreditDto"/>.</returns>
+    Task<ServiceResponse<IEnumerable<MyLicenseCreditDto>>> GetMyLicenseCreditsAsync();
+
+    /// <summary>
     /// Retrieves a license credit by its ID.
     /// </summary>
     /// <param name="licenseCreditId">The ID of the license credit to retrieve.</param>
