@@ -6,9 +6,7 @@ import goToWebPage from "../constants/configs/browser-automation/go-to-web-page"
 import hoverMouseOverElementOnWebPage from "../constants/configs/browser-automation/hover-mouse-over-element-on-web-page";
 import ifWebPageContains from "../constants/configs/browser-automation/if-web-page-contains";
 import launchNewChrome from "../constants/configs/browser-automation/launch-new-chrome";
-import launchNewFirefox from "../constants/configs/browser-automation/launch-new-firefox";
-import launchNewInternetExplorer from "../constants/configs/browser-automation/launch-new-internet-explorer";
-import launchNewIMicrosoftEdge from "../constants/configs/browser-automation/launch-new-microsoft-edge";
+import launchNewMicrosoftEdge from "../constants/configs/browser-automation/launch-new-microsoft-edge";
 import runJavascriptFunctionOnWebPage from "../constants/configs/browser-automation/run-javascript-function-on-web-page";
 import waitForWebPageContent from "../constants/configs/browser-automation/wait-for-web-page-content";
 import extractDataFromWebPage from "../constants/configs/browser-automation/web-data-extraction/extract-data-from-web-page";
@@ -19,8 +17,8 @@ import focusTextFieldOnWebPage from "../constants/configs/browser-automation/web
 import populateTextFieldOnWebPage from "../constants/configs/browser-automation/web-form-filling/populate-text-field -on-web-page";
 import pressButtonOnWebPage from "../constants/configs/browser-automation/web-form-filling/press-button-on-web-page";
 import selectRadioButtonOnWebPage from "../constants/configs/browser-automation/web-form-filling/select-radio-button-on-web-page";
-import setCheckboxStateOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-checkbox-state-on-web-page";
-import setDropDownListValueOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-drop-down-list-value-on-web-page";
+import setCheckBoxStateOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-checkbox-state-on-web-page";
+import setDropdownListValueOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-drop-down-list-value-on-web-page";
 import getClipboardText from "../constants/configs/clipboard/get-clipboard-text";
 import setClipboardText from "../constants/configs/clipboard/set-clipboard-text";
 import closeCmdSession from "../constants/configs/CMD Session/close-cmd-session";
@@ -217,7 +215,7 @@ import replaceText from "../constants/configs/text/replace-text";
 import reverseText from "../constants/configs/text/reverse-text";
 import splitText from "../constants/configs/text/split-text";
 import trimText from "../constants/configs/text/trim-text";
-import clickUiELementInWindow from "../constants/configs/ui-automation/click-ui-element-in-window";
+import clickUiElementInWindow from "../constants/configs/ui-automation/click-ui-element-in-window";
 import extractDataFromTable from "../constants/configs/ui-automation/data-extraction/extract-data-from-table";
 import extractDataFromWindow from "../constants/configs/ui-automation/data-extraction/extract-data-from-window";
 import getDetailsOfWindow from "../constants/configs/ui-automation/data-extraction/get-details-of-window";
@@ -225,7 +223,7 @@ import getDetailsOfAUiElementInWindow from "../constants/configs/ui-automation/d
 import getSelectedCheckboxesInWindow from "../constants/configs/ui-automation/data-extraction/get-selected-checkboxes-in-window";
 import getSelectedRadioButtonInWindow from "../constants/configs/ui-automation/data-extraction/get-selected-radio-button-in-window";
 import takeScreenshotOfUiElement from "../constants/configs/ui-automation/data-extraction/take-screenshot-of-ui-element";
-import dragDropUiELementInWindow from "../constants/configs/ui-automation/drag-drop-ui-element-in-window";
+import dragAndDropUiElementInWindow from "../constants/configs/ui-automation/drag-drop-ui-element-in-window";
 import expandCollapseTreeNodeInWindow from "../constants/configs/ui-automation/expand-collapse-tree-node";
 import focusTextFieldInWindow from "../constants/configs/ui-automation/form-filling/focus-text-field-in-Window";
 import populateTextFieldInWindow from "../constants/configs/ui-automation/form-filling/populate-text-field-in-window";
@@ -530,9 +528,9 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   selectTabInWindow,
   // waitForImage,
   hoverMouseOverUiElementInWindow,
-  clickUiELementInWindow,
+  clickUiElementInWindow,
   selectMenuOptionInWindow,
-  dragDropUiELementInWindow,
+  dragAndDropUiElementInWindow,
   expandCollapseTreeNodeInWindow,
   ifWindow,
   waitForWindow,
@@ -549,16 +547,14 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   takeScreenshotOfWebPage,
   focusTextFieldOnWebPage,
   populateTextFieldOnWebPage,
-  setCheckboxStateOnWebPage,
+  setCheckBoxStateOnWebPage,
   selectRadioButtonOnWebPage,
-  setDropDownListValueOnWebPage,
+  setDropdownListValueOnWebPage,
   pressButtonOnWebPage,
   ifWebPageContains,
   waitForWebPageContent,
-  launchNewInternetExplorer,
-  launchNewFirefox,
   launchNewChrome,
-  launchNewIMicrosoftEdge,
+  launchNewMicrosoftEdge,
   createNewTab,
   goToWebPage,
   clickLinkOnWebPage,

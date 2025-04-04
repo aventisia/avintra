@@ -279,11 +279,12 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
           </Popover>
         </>
       );
-    //TODO: Check UI element selector
+    //TODO: Making ui-element-selector a text field for now.
+    // TODO: To be implemented later.
     case "ui-element-selector":
       return (
         <>
-          <DynamicFieldLabel fData={fData} />
+          {/* <DynamicFieldLabel fData={fData} />
           <Select
             disabled={fData.disabled}
             onValueChange={field.onChange}
@@ -305,7 +306,28 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
                 <Button size="sm">Button</Button>
               </div>
             </SelectContent>
-          </Select>
+          </Select> */}
+          <DynamicFieldLabel fData={fData} />
+          <div className="group relative">
+            <FormControl>
+              <Input
+                fieldSize="sm"
+                className={cn(fData.className)}
+                readOnly={fData.readonly}
+                type={fData.type}
+                placeholder={fData.placeholder}
+                {...field}
+                onFocus={handleFocus}
+              />
+            </FormControl>
+            <div
+              className="z-100 absolute bottom-full right-0 hidden transition-opacity duration-300 ease-in-out group-focus-within:block"
+              onFocus={(e) => e.currentTarget.classList.remove("hidden")}
+              onBlur={(e) => e.currentTarget.classList.add("hidden")}
+            >
+              <VariableSelectorPopover />
+            </div>
+          </div>
         </>
       );
 
