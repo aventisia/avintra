@@ -1,8 +1,5 @@
-import { FlowTypesEnum } from '@/react-toolkit/enums/flow-types-enum';
-import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
-import { enumToArray } from '@/react-toolkit/utils/enum-to-array';
-
-import type { SelectFieldProps } from '@/react-toolkit/ui/form/fields/SelectField';
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { LicenseSelectFieldProps } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
 // License Id
 export const idProps: InputFieldProps = {
   name: "id",
@@ -10,24 +7,16 @@ export const idProps: InputFieldProps = {
   disabled: true,
 };
 
-// Type
-export const typeProps: SelectFieldProps = {
-  name: "type",
+// Plan name
+export const licenseTypesProps: LicenseSelectFieldProps = {
+  name: "planId",
   label: "License Type",
   isRequired: true,
-  selectOptions: enumToArray(FlowTypesEnum),
 };
 
-// Name
-export const nameProps: InputFieldProps = {
-  name: "name",
-  label: "Name",
-  isRequired: true,
-};
-
-// Name
-export const quantityProps: InputFieldProps = {
-  name: "quantity",
+// New Allocated Units
+export const additionalUnitsRequestedProps: InputFieldProps = {
+  name: "additionalUnitsRequested",
   label: "New Allocated Units",
   isRequired: true,
 };

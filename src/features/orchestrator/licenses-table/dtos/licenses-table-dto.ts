@@ -1,23 +1,74 @@
+import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
+import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum"
+
 /**
  * Represents a data transfer object (DTO) for a license.
  */
-export interface LicensesTableDto {
+export interface MyLicensesTableDto {
   /**
    * Gets or sets the primary key of the license record.
    *
    * Not making it required because same DTO is used for insert and update.
    */
-  id?: string;
+  id: string;
 
   /**
-   * Gets or sets the type of the license. Max-255
+   * get the plan Id of the license plan
    */
-  type: string;
+  planId: string;
 
   /**
- * Gets or sets the quantity request for new license. Max-255
- */
-  quantity: number;
+   * get the plan Name of the license plan
+   */
+  planName: string;
+
+  /**
+   * get the allocated units of the license plan
+   */
+  allocated: number;
+
+  /**
+   * get the consumed units of the license plan
+   */
+  consumed: number;
+
+  /**
+   * get the available units of the license plan
+   */
+  available: number;
+
+  /**
+   * Gets the plan unit.
+   *
+   */
+  unit: PricingUnitTypesEnum;
+
+  /**
+   * Gets  the plan unit price.
+   *
+   */
+  unitPrice: number;
+
+  /**
+   * get the additional requested units for the license plan
+   */
+  additionalUnitsRequested: number;
+
+  /**
+   * get the status of the requested units
+   */
+  status: LicenseCreditStatusesEnum;
+
+  /**
+   * get the overdue balance of the license plan
+   */
+  overdueBalance: number;
+
+  /**
+   * get the  next billing date of the plan
+   */
+  nextBillingDate: Date;
+
   /**
    * Gets or sets a flag indicating whether the license record is disabled.
    *

@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { useEffect } from "react";
+import { toast } from "sonner";
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { getLicenses } from '../apis/licenses-table-apis';
-import { DATA_QUERY_KEY } from '../constants';
+import { getMyLicenses } from "../apis/licenses-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook to fetch licenses using react query.
@@ -14,7 +14,7 @@ export const useFetchLicenses = () => {
   // Get licenses using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
-    queryFn: () => getLicenses(),
+    queryFn: () => getMyLicenses(),
   });
 
   // Show toast on fetch error

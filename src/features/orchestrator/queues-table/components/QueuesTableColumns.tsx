@@ -1,10 +1,10 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
-import { getColumnName } from "../constants/column-display-names";
-import { QueuesTableDto } from "../dtos/queues-table-dto";
-import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
+import { Checkbox } from "@/react-toolkit/ui/checkbox"
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader"
+import { ColumnDef } from "@tanstack/react-table"
+import { getColumnName } from "../constants/column-display-names"
+import { QueuesTableDto } from "../dtos/queues-table-dto"
+import { QueueRowActions } from "./queue-row-actions/QueueRowActions"
+import { dateFormat, dateFormatDistanceToNow } from "@/react-toolkit/constants"
 
 /**
  * Array of table columns for the queues table.
@@ -127,9 +127,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("lastUpdatedOn") ?? new Date(), {
-          addSuffix: true,
-        })}
+        {dateFormatDistanceToNow(row.getValue("lastUpdatedOn"))}
       </div>
     ),
   },
@@ -156,9 +154,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn"), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue("createdOn") )}
       </div>
     ),
   },

@@ -1,5 +1,3 @@
-import { formatDistanceToNow } from "date-fns";
-
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
@@ -7,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableActions } from "./table-actions/TableActions";
+import { dateFormat } from "@/react-toolkit/constants"
 
 /**
  * Array of table columns for the agents table.
@@ -102,11 +101,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {!row.getValue("createdOn")
-          ? "NA"
-          : formatDistanceToNow(row.getValue("createdOn"), {
-              addSuffix: true,
-            })}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },

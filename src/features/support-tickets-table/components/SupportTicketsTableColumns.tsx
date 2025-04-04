@@ -5,6 +5,7 @@ import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
 import { Key } from "react";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the support tickets table.
@@ -81,12 +82,7 @@ export const supportTicketsTableColumns: ColumnDef<SupportTicketsTableDto>[] = [
       <DTColumnHeader className="hidden" column={column} title="Created On" />
     ),
     cell: ({ row }) => (
-      <div className="hidden">
-        {row.original.createdOn &&
-          formatDistanceToNow(row.getValue("createdOn"), {
-            addSuffix: true,
-          })}
-      </div>
+      <div className="hidden">{dateFormat(row.getValue("createdOn"))}</div>
     ),
   },
   {

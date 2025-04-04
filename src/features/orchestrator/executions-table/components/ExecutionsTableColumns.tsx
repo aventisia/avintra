@@ -1,12 +1,11 @@
-import { formatDistanceToNow } from 'date-fns';
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { ColumnDef } from "@tanstack/react-table";
 
-import { Checkbox } from '@/react-toolkit/ui/checkbox';
-import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
-import { ColumnDef } from '@tanstack/react-table';
-
-import { getColumnName } from '../constants/column-display-names';
-import { ExecutionsTableDto } from '../dtos/executions-table-dto';
-import { ExecutionRowActions } from './execution-row-actions/ExecutionRowActions';
+import { getColumnName } from "../constants/column-display-names";
+import { ExecutionsTableDto } from "../dtos/executions-table-dto";
+import { ExecutionRowActions } from "./execution-row-actions/ExecutionRowActions";
+import { dateFormat, dateFormatDistanceToNow } from "@/react-toolkit/constants";
 
 export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
@@ -65,11 +64,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {!row.getValue("startTime")
-          ? "-"
-          : formatDistanceToNow(row.getValue("startTime"), {
-              addSuffix: true,
-            })}
+        {dateFormatDistanceToNow(row.getValue("startTime"))}
       </div>
     ),
   },
@@ -85,11 +80,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {!row.getValue("endTime")
-          ? "-"
-          : formatDistanceToNow(row.getValue("endTime"), {
-              addSuffix: true,
-            })}
+        {dateFormatDistanceToNow(row.getValue("endTime"))}
       </div>
     ),
   },
@@ -173,9 +164,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn") ?? new Date(), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },

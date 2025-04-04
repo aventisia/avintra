@@ -1,9 +1,9 @@
-import { DataTableRowActions } from '@/react-toolkit/ui/data-table/row-actions/DataTableRowActions';
-import { DTRowAction } from '@/react-toolkit/ui/data-table/row-actions/DTRowAction';
-import { Separator } from '@/react-toolkit/ui/separator';
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
+import { Separator } from "@/react-toolkit/ui/separator";
 
-import { AgentRowDeleteAction } from './AgentRowDeleteAction';
-import { AssignMachineRowAction } from './AssignMachineRowAction';
+import { AgentRowDeleteAction } from "./AgentRowDeleteAction";
+import { AssignMachineRowAction } from "./AssignMachineRowAction";
 
 type TableActionsProps = {
   rowId: string;

@@ -3,11 +3,11 @@ import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the flows table.
@@ -96,9 +96,7 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn"), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },

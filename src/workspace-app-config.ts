@@ -1,9 +1,9 @@
+import { TbCertificate } from "react-icons/tb";
 import {
   BotIcon,
   FileBoxIcon,
   Library,
   MonitorPlayIcon,
-  ScrollTextIcon,
   Shield,
   TagIcon,
 } from "lucide-react";
@@ -17,6 +17,7 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
+import { PiScrollLight } from "react-icons/pi";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,
@@ -83,26 +84,52 @@ const workspaceAppConfig: IAppConfig = {
             name: "Vault",
             route: "/orchestrator/vault",
           },
+        ],
+      },
+      {
+        showSection: false, // TODO: Remove this once we have a way to handle this using user roles
+        sectionName: "Admin",
+        menuItems: [
           {
-            Icon: ScrollTextIcon,
+            Icon: IdentificationIcon,
+            name: "tenant",
+            route: "/tenant",
+          },
+          {
+            Icon: TbCertificate,
             name: "licenses & Credits",
             route: "/orchestrator/licenses",
+          },
+          {
+            Icon: PiScrollLight,
+            name: "billing",
+            route: "/billing",
+          },
+          {
+            Icon: UsersIcon,
+            name: "users",
+            route: "/users",
           },
         ],
       },
       {
         showSection: false, // TODO: Remove this once we have a way to handle this using user roles
-        sectionName: "admin options",
+        sectionName: "Super Admin",
         menuItems: [
           {
             Icon: IdentificationIcon,
             name: "tenants",
-            route: "/tenants",
+            route: "sa/tenants",
           },
           {
             Icon: TagIcon,
             name: "pricing",
-            route: "/pricing",
+            route: "sa/pricing",
+          },
+          {
+            Icon: TbCertificate,
+            name: "licenses & Credits",
+            route: "sa/licenses",
           },
           {
             Icon: UsersIcon,
