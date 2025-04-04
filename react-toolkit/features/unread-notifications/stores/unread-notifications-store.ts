@@ -1,28 +1,28 @@
 import { create } from "zustand";
 
 type State = {
-  /** To manage notification popover open/close state */
-  isPopoverOpen: boolean;
+  /** To manage notification dialog open/close state */
+  isOpen: boolean;
 
   /** Count of unread notifications */
   unreadCount: number;
 };
 
 type Actions = {
-  /** To toggle notification popover open/close state */
-  togglePopoverOpen: (value?: boolean) => void;
+  /** To toggle notification dialog open/close state */
+  toggleOpen: (value?: boolean) => void;
 
   /** Set unread notifications count */
   setUnreadCount: (count?: number) => void;
 };
 
 export const useUnreadNotificationsStore = create<State & Actions>((set) => ({
-  isPopoverOpen: false,
+  isOpen: false,
   unreadCount: 0,
 
-  togglePopoverOpen: (value) =>
+  toggleOpen: (value) =>
     set((state) => ({
-      isPopoverOpen: typeof value === "boolean" ? value : !state.isPopoverOpen,
+      isOpen: typeof value === "boolean" ? value : !state.isOpen,
     })),
 
   setUnreadCount: (count) => set({ unreadCount: count }),

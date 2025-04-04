@@ -8,7 +8,7 @@ import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 /**
  * Renders a list of unread notifications.
  */
-export const UNPopverContent = () => {
+export const UNDialogContent = () => {
   // Get unread notifications data from query client
   const unreadNotifications = useQueryData<UnreadNotificationDto>(UN_QUERY_KEY);
 
@@ -18,10 +18,12 @@ export const UNPopverContent = () => {
       {unreadNotifications?.length === 0 ? (
         <UNNoContentMessage />
       ) : (
-        <ScrollArea>
-          {unreadNotifications?.map((item, index) => (
-            <UnreadNotificationItem key={index} index={index} data={item} />
-          ))}
+        <ScrollArea className="h-[calc(100vh-4rem)]">
+          <div className="py-3">
+            {unreadNotifications?.map((item, index) => (
+              <UnreadNotificationItem key={index} index={index} data={item} />
+            ))}
+          </div>
         </ScrollArea>
       )}
     </>

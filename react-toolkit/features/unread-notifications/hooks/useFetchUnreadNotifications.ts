@@ -12,9 +12,9 @@ import { useShallow } from "zustand/react/shallow";
  */
 export const useFetchUnreadNotifications = () => {
   // Get store state and actions
-  const { isPopoverOpen, setUnreadCount } = useUnreadNotificationsStore(
+  const { isOpen, setUnreadCount } = useUnreadNotificationsStore(
     useShallow((state) => ({
-      isPopoverOpen: state.isPopoverOpen,
+      isOpen: state.isOpen,
       setUnreadCount: state.setUnreadCount,
     })),
   );
@@ -35,13 +35,13 @@ export const useFetchUnreadNotifications = () => {
     if (data) setUnreadCount(data?.data.length);
   }, [data, setUnreadCount]);
 
-  // Refetch unread notifications on popover open
+  // Refetch unread notifications on dialog open
   useEffect(() => {
-    if (isPopoverOpen) {
+    if (isOpen) {
       // Refetch unread notifications
       refetch();
     }
-  }, [isPopoverOpen, refetch]);
+  }, [isOpen, refetch]);
 
   // Return the fetching and loading status
   return { isFetching, isLoading };

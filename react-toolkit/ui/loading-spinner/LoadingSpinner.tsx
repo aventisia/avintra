@@ -1,10 +1,15 @@
 import "./loading-spinner.css";
 
-export default function LoadingSpinner() {
+interface LoadingSpinnerProps {
+  className?: string;
+}
+
+export default function LoadingSpinner({
+  className = "h-8 w-8",
+}: LoadingSpinnerProps) {
   return (
     <svg
-      width="30"
-      height="30"
+      className={className}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >
