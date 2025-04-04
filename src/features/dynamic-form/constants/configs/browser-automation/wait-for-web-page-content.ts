@@ -41,6 +41,30 @@ const waitForWebPageContentFieldList: IDynamicFieldSchema[] = [
     description: "Enter the text on web page to check for",
     defaultValue: "",
   },
+  {
+    name:"failWithTimeoutError",
+    type:"switch",
+    label:"Fail with timeout error",
+    description: "Specifiy whether you want the action to wait indefinitely or fail after a set time period",
+    defaultValue: false,
+  },
+  {
+    name:"duration",
+    type:"number",
+    label:"Duration",
+    description: "Specifiy whether you want the action to wait indefinitely or fail after a set time period",
+    defaultValue: "5",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "failWithTimeoutError", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  }
 ];
 
 const waitForWebPageContentFieldCategories: IDynamicFormKeysCategory[] = [
@@ -51,6 +75,8 @@ const waitForWebPageContentFieldCategories: IDynamicFormKeysCategory[] = [
       ["waitForWebPageTo"],
       ["uIElement"],
       ["text"],
+      ["failWithTimeoutError"],
+      ["duration"]
     ],
   },
 ];
@@ -58,7 +84,7 @@ const waitForWebPageContentFieldCategories: IDynamicFormKeysCategory[] = [
 const waitForWebPageContent: ActivityConfig = {
   fieldList: waitForWebPageContentFieldList,
   fieldCategories: waitForWebPageContentFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["failWithTimeoutError"],
 };
 
 export default waitForWebPageContent;

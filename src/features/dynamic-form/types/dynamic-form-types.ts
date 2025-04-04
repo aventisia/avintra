@@ -14,6 +14,7 @@ type ControlType =
   | "otp"
   | "phone"
   | "select"
+  | "flow-select-combobox"
   | "multi-selector"
   | "tag-input"
   | "combobox"

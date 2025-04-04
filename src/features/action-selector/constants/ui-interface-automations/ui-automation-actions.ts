@@ -223,7 +223,7 @@ export const uiAutomationActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "expand/collapseTreeNodeInWindow",
+    name: "expandCollapseTreeNodeInWindow",
     label: "Expand/collapse tree node in window",
     description:
       "Expands or collapses a node of a tree view residing in a window",

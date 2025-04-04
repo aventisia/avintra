@@ -114,28 +114,107 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
       "Specify whether to store the extracted data in a variable or an Excel spreadsheet",
     selectOptions: [
       { label: "Variable", value: "variable" },
-      { label: " Excel spreadsheet", value: " excel spreadsheet" },
+      { label: " Excel spreadsheet", value: "excel spreadsheet" },
     ],
     defaultValue: "variable",
   },
   // output
   {
-    name: "excelInstance",
-    type: "select",
-    label: "ExcelInstance",
+    name: "o_excelInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The Excel instance with the extracted data. Use this instance to manipulate the spreadsheet (or save and close it) by using the dedicated Excel actions.",
-    selectOptions: [],
-    defaultValue: "",
+    defaultValue: "ExcelInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_excelInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              {key: "storeDataMode", value: "excel spreadsheet"}
+            ]
+            
+          }
+        ],
+        initialState: false
+      }
+    },
   },
   {
-    name: "dataFromWebPage",
-    type: "text",
-    //datatable
-    label: "DataFromWebPage",
+    name: "o_excelInstanceSwitch",
+    type: "output-switch-field",
+    label: "ExcelInstance",
+    defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              {key: "storeDataMode", value: "excel spreadsheet"}
+            ]
+            
+          }
+        ],
+        initialState: false
+      }
+    },
+  },
+// 
+  {
+    name: "o_dataFromWebPageOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "The extracted data in the form of a single value, list, data row, or data table.",
-    defaultValue: "",
+    "The extracted data in the form of a single value, list, data row, or data table.",
+    defaultValue: "DataFromWebPage",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_dataFromWebPageSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              {key: "storeDataMode", value: "variable"}
+            ]
+            
+          }
+        ],
+        initialState: true
+      }
+    },
+  },
+  {
+    name: "o_dataFromWebPageSwitch",
+    type: "output-switch-field",
+    label: "DataFromWebPage",
+    defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              {key: "storeDataMode", value: "variable"}
+            ]
+            
+          }
+        ],
+        initialState: true
+      }
+    },
   },
 ];
 
@@ -144,29 +223,32 @@ const extractDataFromWebPageFieldCategories: IDynamicFormKeysCategory[] = [
     title: "Basic",
     formFieldKeys: [
       ["webBrowserInstance"],
-      ["uIElement"],
-      ["extractionParameter"],
-      ["maxWebPagesToProcess"],
-      ["sendPhysicalClickForNextPage"],
-      ["pageCssSelector"],
-      ["extractionMode"],
-      ["usePaging"],
-      ["getAllWebPages"],
-      ["processDataUponExtraction"],
+      // ["uIElement"],
+      // ["extractionParameter"],
+      // ["maxWebPagesToProcess"],
+      // ["sendPhysicalClickForNextPage"],
+      // ["pageCssSelector"],
+      // ["extractionMode"],
+      // ["usePaging"],
+      // ["getAllWebPages"],
+      // ["processDataUponExtraction"],
       ["timeOut"],
       ["storeDataMode"],
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["excelInstance"], ["dataFromWebPage"]],
+    formFieldKeys: [
+      ["o_excelInstanceOutput", "o_excelInstanceSwitch"], 
+      ["o_dataFromWebPageOutput", "o_dataFromWebPageSwitch"]
+    ],
   },
 ];
 
 const extractDataFromWebPage: ActivityConfig = {
   fieldList: extractDataFromWebPageFieldList,
   fieldCategories: extractDataFromWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["storeDataMode", "o_excelInstanceOutput", "o_excelInstanceSwitch", "o_dataFromWebPageOutput", "o_dataFromWebPageSwitch"],
 };
 
 export default extractDataFromWebPage;
