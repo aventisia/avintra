@@ -40,6 +40,7 @@ const DynamicForm = ({
   viewOnly = false,
   onSubmit,
 }: DynamicFormProps) => {
+  const outputRegex = /^o_/i;
   const finalFormFieldValuesToFill = formFieldValuesToFill
     ? formFieldValuesToFill.reduce(
         (
@@ -106,7 +107,12 @@ const DynamicForm = ({
 
   function renderOutputFields(fieldsToRender: IDynamicFieldSchema[]) {
     return (
-      <div className="flex items-center justify-between rounded-lg border px-3 py-4">
+      <div
+        className={cn(
+          "flex items-center justify-between rounded-lg",
+          fieldsToRender[0].visible ? "border px-3 py-4" : "",
+        )}
+      >
         {fieldsToRender?.map((fData, index) => (
           <div
             className={cn(
@@ -147,7 +153,7 @@ const DynamicForm = ({
             <div className="w-full">
               {/* Custom Accordion */}
               {/* Exclude basic category */}
-              {formFieldCategories?.slice(1).map((category, fieldIdx) => (
+              {formFieldCategories?.slice(1).map((category) => (
                 <div key={category.title} className="mb-3 w-full">
                   {/* Accordion Item Wrapper */}
                   <input
@@ -179,7 +185,7 @@ const DynamicForm = ({
                       {/* Accordion Content */}
                       {category.formFields?.map((fItem, index) => (
                         <div key={index}>
-                          {fieldIdx === formFieldCategories.length - 2
+                          {outputRegex.test(fItem[0].name)
                             ? renderOutputFields(fItem)
                             : renderFieldInFlexView(fItem)}
                         </div>
