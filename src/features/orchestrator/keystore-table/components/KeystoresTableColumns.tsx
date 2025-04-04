@@ -1,5 +1,3 @@
-import { formatDistanceToNow } from "date-fns";
-
 import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
@@ -10,6 +8,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { getColumnName } from "../constants/column-display-names";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the keystores table.
@@ -103,9 +102,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {formatDistanceToNow(row.getValue("createdOn"), {
-          addSuffix: true,
-        })}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },

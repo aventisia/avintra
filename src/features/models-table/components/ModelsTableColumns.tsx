@@ -1,13 +1,13 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { Badge } from "@/react-toolkit/ui/badge";
 import { ModelStatusEnum } from "../enums/model-status-enum";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
+import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the model table.
@@ -108,7 +108,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(row.getValue("createdOn"), "dd MMM, yyyy")}
+        {dateFormat(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -123,7 +123,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(row.getValue("trainedOn"), "dd MMM, yyyy")}
+        {dateFormat(row.getValue("trainedOn"))}
       </div>
     ),
   },

@@ -1,28 +1,127 @@
-import { FaMoneyBills } from "react-icons/fa6";
-import { PiCertificate, PiScroll } from "react-icons/pi";
-
+import { TbDatabaseDollar } from "react-icons/tb";
+import { GiWallet } from "react-icons/gi";
+import { PiCertificate } from "react-icons/pi";
+import { BsDot } from "react-icons/bs";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
+import { useQueryClient } from "@tanstack/react-query";
+import { DATA_QUERY_KEY } from "../constants";
+import IEnumerable from "linq";
+import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
+import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
+
+type LicensesStats = {
+  totalLicenses: number;
+  allocatedLicenses: number;
+  consumedLicenses: number;
+  availableLicenses: number;
+
+  totalCredits: number;
+  allocatedCredits: number;
+  consumedCredits: number;
+  availableCredits: number;
+
+  annualRevenue: number;
+  totalOverdue: number;
+};
 
 export const LicensesStats = () => {
+  const queryClient = useQueryClient();
+
+  const licensesData = queryClient.getQueryData<{
+    data: MyLicensesTableDto[];
+  }>(DATA_QUERY_KEY);
+
+  const statsData = IEnumerable.from<MyLicensesTableDto>(
+    licensesData?.data ?? [],
+  );
+
+  const stats: LicensesStats = {
+    totalLicenses: statsData.count(
+      (x) => x.unit === PricingUnitTypesEnum.License,
+    ),
+    allocatedLicenses: statsData.sum((x) => x.allocated),
+    consumedLicenses: statsData.sum((x) => x.consumed),
+    availableLicenses: statsData.sum((x) => x.available),
+
+    totalCredits: statsData.count(
+      (x) => x.unit === PricingUnitTypesEnum.Credit,
+    ),
+    allocatedCredits: statsData.sum((x) => x.available),
+    consumedCredits: statsData.sum((x) => x.consumed),
+    availableCredits: statsData.sum((x) => x.available),
+
+    annualRevenue: statsData.sum((x) => x.unitPrice),
+    totalOverdue: statsData.sum((x) => x.overdueBalance),
+  };
+
   return (
     <div className="my-4 grid grid-cols-3 gap-10 gap-x-8">
       <StatsCard
-        title={"License"}
-        description={"25 consumed & 5 available"}
-        mainText={"30"}
+        title={"Licenses"}
+        description={
+          <span className="flex items-center">
+            <p>
+              <span className="font-semibold">{stats.consumedLicenses}</span>{" "}
+              Consumed
+            </p>
+            <BsDot strokeWidth={4} />
+
+            <p>
+              <span className="font-semibold">{stats.allocatedLicenses}</span>{" "}
+              Allocated
+            </p>
+            <BsDot strokeWidth={4} />
+
+            <p>
+              <span className="font-semibold">{stats.availableLicenses}</span>{" "}
+              Available
+            </p>
+          </span>
+        }
+        mainText={stats.totalLicenses}
         icon={<PiCertificate fill="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
-        title={"Credits"}
-        description={"25 consumed & 5 available"}
-        mainText={"30"}
-        icon={<PiScroll fill="var(--primary)" className="h-10 w-10" />}
+        title={"Creadits"}
+        description={
+          <span className="flex items-center">
+            <p>
+              <span className="font-semibold">{stats.consumedCredits}</span>{" "}
+              Consumed
+            </p>
+            <BsDot strokeWidth={4} />
+
+            <p>
+              <span className="font-semibold">{stats.allocatedCredits}</span>{" "}
+              Allocated
+            </p>
+            <BsDot strokeWidth={4} />
+
+            <p>
+              <span className="font-semibold">{stats.availableCredits}</span>{" "}
+              Available
+            </p>
+          </span>
+        }
+        mainText={stats.totalCredits}
+        icon={
+          <TbDatabaseDollar stroke="var(--primary)" className="h-10 w-10" />
+        }
       />
+
       <StatsCard
-        title={"Billing"}
-        description={"25 consumed & 5 available"}
-        mainText={"30"}
-        icon={<FaMoneyBills fill="var(--primary)" className="h-10 w-10" />}
+        title={"Creadits"}
+        description={
+          <p
+            className={
+              stats.totalOverdue ? "text-destructive" : "text-green-700"
+            }
+          >
+            {stats.totalOverdue} Overdue
+          </p>
+        }
+        mainText={stats.annualRevenue}
+        icon={<GiWallet fill="var(--primary)" className="h-10 w-10" />}
       />
     </div>
   );

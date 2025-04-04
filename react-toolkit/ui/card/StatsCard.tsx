@@ -1,11 +1,11 @@
-import { twMerge } from "tailwind-merge";
+import { twMerge } from "tailwind-merge"
 
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/react-toolkit/ui/card/card";
+} from "@/react-toolkit/ui/card/card"
 
 type StatsCardProps = {
   icon: JSX.Element;
@@ -40,7 +40,7 @@ export const StatsCard = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mainText}</div>
-            <p className="text-xs text-muted-foreground">{description}</p>
+            <div className="text-xs text-muted-foreground">{description}</div>
           </CardContent>
         </div>
       </div>

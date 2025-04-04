@@ -1,29 +1,30 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useShallow } from 'zustand/react/shallow';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { DATA_QUERY_KEY } from '../constants';
-import { licenseZodSchema } from '../constants/license-zod-schema';
-import { LicensesTableDto } from '../dtos/licenses-table-dto';
+import { DATA_QUERY_KEY } from "../constants";
+import { licenseZodSchema } from "../constants/license-zod-schema";
+import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
 
 /**
  * Custom hook for defining a license form.
  */
 export const useDefineLicenseForm = () => {
-
-
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
+
+  const [currentLicenseData, setCurrentLicenseData] =
+    useState<MyLicensesTableDto>();
 
   // Get data-table crud dialog store state and actions
   const {
@@ -47,8 +48,8 @@ export const useDefineLicenseForm = () => {
     resolver: zodResolver(licenseZodSchema),
     defaultValues: {
       id: "",
-      type: "",
-      quantity: 0,
+      planId: "",
+      additionalUnitsRequested: undefined,
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -60,23 +61,25 @@ export const useDefineLicenseForm = () => {
   // Destructor form values and methods
   const {
     formState: { isDirty },
+    watch,
   } = form;
 
   // Fetch license data when rowId changes
   useEffect(() => {
     // Get licenses data from query client
     const licensesData = queryClient.getQueryData<{
-      data: LicensesTableDto[];
+      data: MyLicensesTableDto[];
     }>(DATA_QUERY_KEY);
 
     // Get license data by id
     const licenseData = licensesData?.data.find((item) => item.id === rowId);
 
+    setCurrentLicenseData(licenseData);
     // Set license data to form
     form.reset({
       id: rowId,
-      type: licenseData?.type,
-      quantity: licenseData?.quantity ?? 0,
+      planId: licenseData?.planId,
+      additionalUnitsRequested: licenseData?.additionalUnitsRequested,
 
       isDisabled: licenseData?.isDisabled ?? false,
       // Read (view) only fields
@@ -99,6 +102,7 @@ export const useDefineLicenseForm = () => {
   const refineFormData = (formData: z.infer<typeof licenseZodSchema>) => {
     return {
       ...formData,
+      tenantId: userSession?.tenantId,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
@@ -109,11 +113,11 @@ export const useDefineLicenseForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
-
-
   // Return form and methods
   return {
     form,
+    currentLicenseData,
+    watch,
     isDirty,
     rowId,
     crudAction,
