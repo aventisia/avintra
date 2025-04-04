@@ -4,7 +4,7 @@ import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkelet
 
 // Lazy load the SaLicensesTable component.
 const SaLicensesTable = lazy(() =>
-  import("@/features/sa/licenses-table/components/SaLicensesTable").then(
+  import("@/features/sa/sa-licenses-table/components/SaLicensesTable").then(
     (module) => ({
       default: module.SaLicensesTable,
     }),
