@@ -1,5 +1,5 @@
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { PricingPlanTypeEnum } from "@/react-toolkit/enums/pricing-plan-types-enum";
+import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { RadioGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioGroupField";
@@ -25,7 +25,7 @@ export const nameProps: InputFieldProps = {
 export const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
-  selectOptions: enumToArray(PricingPlanTypeEnum),
+  selectOptions: enumToArray(DeploymentTypeEnum),
 };
 
 export const effectiveOnProps: DatePickerFieldProps = {
