@@ -1,26 +1,17 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
-import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
-
-/**
- * Represents the Zod object's item schema for a license name.
- */
-export const licenseNameSchema = z
-  .string()
-  .min(1, { message: reqError("License name") })
-  .max(255, { message: maxLenError("License name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("License name"),
-  });
+import { reqError } from "@/react-toolkit/utils/error-message-list";
 
 /**
- * Represents the Zod schema for a license.
+ * Represents the Zod schema for a request license units.
  */
 export const licenseZodSchema = z.object({
   id: z.string(),
-  type: z.string().min(1, { message: reqError("License type") }),
-  quantity: z.number().default(0),
+  planId: z.string().min(1, { message: reqError("Pricing Component") }),
+  additionalUnitsRequested: z
+    .string({ message: reqError("New Allocated Units") })
+    .transform((val) => Number(val))
+    .pipe(z.number().positive("Requested units must be positive")),
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
