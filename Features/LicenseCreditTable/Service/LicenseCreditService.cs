@@ -356,6 +356,69 @@ public class LicenseCreditService : ILicenseCreditService
         return serviceResponse;
     }
 
+    // Records a license credit request and updates the existing license credit details.
+    public async Task<ServiceResponse<LicenseCreditDto>> RecordLicenseCreditAsync(RecordLicenseCreditDto licenseCreditDto)
+    {
+        // Initialize the service response with a default message
+        var serviceResponse = new ServiceResponse<LicenseCreditDto>
+        {
+            Data = null,
+            Message = "Unable to insert or update license credit. Please try again."
+        };
+
+        try
+        {
+            // Check if a license credit with the specified ID and PlanId exists
+            var existingCredit = await _unitOfWork.LicenseCreditRepo
+                .GetByConditionAsync(w =>
+                    w.Id == licenseCreditDto.Id &&
+                    w.PlanId == licenseCreditDto.PlanId)
+                .FirstOrDefaultAsync();
+
+            // If no existing credit is found, log and return a message
+            if (existingCredit == null)
+            {
+                _logger.LogInformation("License credit with ID '{CreditId}' does not exist.", licenseCreditDto.Id);
+                serviceResponse.Message = "License credit not found.";
+                return serviceResponse;
+            }
+
+            // Trim string properties of the incoming DTO for consistency
+            licenseCreditDto = TrimDtoStringPropsUtil.TrimDtoStringProps(licenseCreditDto);
+
+            // Update the available and allocated units based on the additional units requested
+            existingCredit.Available += existingCredit.AdditionalUnitsRequested;
+            existingCredit.Allocated += existingCredit.AdditionalUnitsRequested;
+            existingCredit.Status = LicenseCreditStatusesEnum.Approved;
+            existingCredit.AdditionalUnitsRequested = 0;
+            existingCredit.LastModifiedByUserId = _userId;
+
+            // Update the repository with the modified credit information
+            _unitOfWork.LicenseCreditRepo.Update(existingCredit);
+
+            // Attempt to save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Failed to save changes while updating license credit.");
+                return serviceResponse;
+            }
+
+            // Populate the service response with the updated credit information
+            serviceResponse.Data = existingCredit.Adapt<LicenseCreditDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "License credit updated successfully.";
+            _logger.LogInformation("License credit updated successfully for PlanId: '{PlanId}'.", licenseCreditDto.PlanId);
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during processing
+            _logger.LogError(ex, "An error occurred while processing license credit.");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Updates an existing license credit asynchronously.
     public async Task<ServiceResponse<LicenseCreditDto>> UpdateLicenseCreditAsync(LicenseCreditDto licenseCreditDto)
     {

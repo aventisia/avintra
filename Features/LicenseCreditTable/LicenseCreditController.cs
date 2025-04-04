@@ -61,6 +61,13 @@ public class LicenseCreditController : BaseApiController
         return ResultHelper(await _licenseCreditService.ApproveLicenseCreditAsync(licenseCreditDto));
     }
 
+    // Record a new license credit.
+    [HttpPost("record")]
+    public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> RecordLicenseCredit([FromBody] RecordLicenseCreditDto licenseCreditDto)
+    {
+        return ResultHelper(await _licenseCreditService.RecordLicenseCreditAsync(licenseCreditDto));
+    }
+
     // Updates an existing license credit.
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> UpdateLicenseCredit([FromBody] LicenseCreditDto licenseCreditDto)
