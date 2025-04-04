@@ -1,4 +1,4 @@
-export enum PricingPlanTypeEnum {
+export enum DeploymentTypeEnum {
   Shared = "Shared",
   OnPrem = "OnPrem",
   Dedicated = "Dedicated",
