@@ -130,6 +130,7 @@ import changeWorkingDirectory from "../constants/configs/FTP/change-working-dire
 import closeConnection from "../constants/configs/FTP/close-connection";
 import deleteFtpDirectory from "../constants/configs/FTP/delete-FTP-directory";
 import deleteFtpFile from "../constants/configs/FTP/delete-FTP-file";
+import createFtpDirectory from "../constants/configs/FTP/create-ftp-directory"
 import downloadFilesFromFtp from "../constants/configs/FTP/download-file(s)-from-FTP";
 import downloadFoldersFromFtp from "../constants/configs/FTP/download-folder(s)-from-FTP";
 import invokeFtpCommand from "../constants/configs/FTP/invoke-FTP-command";
@@ -718,7 +719,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   uploadFoldersToFtp,
   deleteFtpFile,
   renameFtpFile,
-  // createFtpDirectory,
+  createFtpDirectory,
   deleteFtpDirectory,
   invokeFtpCommand,
   synchronizeDirectories,

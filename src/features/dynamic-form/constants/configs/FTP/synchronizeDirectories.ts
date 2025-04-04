@@ -39,11 +39,11 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
     selectOptions: [
       { label: "All files", value: "All files" },
       {
-        label: " Only files matching the file filter",
+        label: "Only files matching the file filter",
         value: "Only files matching the file filter",
       },
       {
-        label: "ASCOnly files not matching the file filterII",
+        label: "Only files not matching the file filter",
         value: "Only files not matching the file filter",
       },
     ],
@@ -52,15 +52,28 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
       "Choose whether you want to synchronize all files, or you want to use a file filter to include or exclude a specific set of files",
     defaultValue: "All files",
   },
-  // {
-  //   name: "File filter",
-  //   type: "switch",
-  //   label: "File filter",
-
-  //   description:
-  //     "File-name pattern that controls which files will be included or excluded. This option allows wildcards such as '.txt', 'document?.doc'. The option also allows for multiple filters by using coma as a separator, .txt,*.pdf,document?",
-  //   defaultValue: false,
-  // },
+  {
+    name: "fileFilter",
+    type: "text",
+    label: "File filter",
+    description:
+      "File-name pattern that controls which files will be included or excluded. This option allows wildcards such as '.txt', 'document?.doc'. The option also allows for multiple filters by using coma as a separator, .txt,*.pdf,document?",
+    defaultValue: "*",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "filesToSync", value: "Only files matching the file filter" },
+              { key: "filesToSync", value: "Only files not matching the file filter" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
   {
     name: "localFolder",
     type: "text",
@@ -71,10 +84,8 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "FTPDirectory",
-    type: "select",
+    type: "text",
     label: "FTP directory",
-    selectOptions: [],
-
     description: "Name of the FTP directory to be synchronized",
     defaultValue: "/",
   },
@@ -109,7 +120,6 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
     name: "timeDifferenceInMinutes",
     type: "text",
     label: "Time difference in minutes",
-
     description:
       "Time difference in Minutes of the remote server in case it operates on a different Time Zone.",
     defaultValue: "0",
@@ -123,32 +133,266 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
     description: "Specify whether the server's time zone is ahead or not.",
     defaultValue: true,
   },
+  
+  // Output
+  // Local Remote Download
   {
-    name: "ftpFilesAdded",
-    type: "switch",
-    label: "FtpFilesDeleted",
-
+    name: "o_filesAddedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "List of FTP files that initially existed in the target directory and after the synchronization process were deleted.",
-    defaultValue: true,
+      "List of files that initially existed in the source and after the synchronization process were added to the target.",
+    defaultValue: "filesAdded",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_filesAddedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Remote -> local (Download)"}]
+          }
+        ],
+        initialState: true
+      }
+    },
   },
   {
-    name: "ftpFilesModified",
-    type: "switch",
+    name: "o_filesAddedSwitch",
+    type: "output-switch-field",
+    label: "filesAdded",
+    defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Remote -> local (Download)"}]
+          }
+        ],
+        initialState: true
+      }
+    }
+  },
+
+  {
+    name: "o_filesModifiedOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description:
+    "List of files that initially existed in both the source and the target and after the synchronization process were added to the target.",
+    defaultValue: "FilesModified",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_filesModifiedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Remote -> local (Download)"}]
+          }
+        ],
+        initialState: true
+      }
+    },
+  },
+  {
+    name: "o_filesModifiedSwitch",
+    type: "output-switch-field",
+    label: "FilesModified",
+    defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Remote -> local (Download)"}]
+          }
+        ],
+        initialState: true
+      }
+    }
+  },
+  
+  {
+    name: "o_filesDeletedOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description:
+      "List of FTP files that initially existed in the target directory and after the synchronization process were deleted.",
+    defaultValue: "FilesDeleted",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_filesDeletedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Remote -> local (Download)"}]
+          }
+        ],
+        initialState: true
+      }
+    },
+  },
+  {
+    name: "o_filesDeletedSwitch",
+    type: "output-switch-field",
+    label: "FilesDeleted",
+    defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Remote -> local (Download)"}]
+          }
+        ],
+        initialState: true
+      }
+    }
+  },
+
+  // Local Remote Upload
+  {
+    name: "o_ftpFilesAddedOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description:
+      "List of FTP files that initially existed in the target directory and after the synchronization process were added to the target.",
+    defaultValue: "FtpFilesAdded",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_ftpFilesAddedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Local -> remote (Upload)"}]
+          }
+        ],
+        initialState: false
+      }
+    },
+  },
+  {
+    name: "o_ftpFilesAddedSwitch",
+    type: "output-switch-field",
+    label: "FtpFilesAdded",
+    defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Local -> remote (Upload)"}]
+          }
+        ],
+        initialState: false
+      }
+    }
+  },
+
+  {
+    name: "o_ftpFilesModifiedOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description:
+    "List of FTP files that initially existed in both the source and the target and after the synchronization process were added to the target.",
+    defaultValue: "FtpFilesModified",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_ftpFilesModifiedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Local -> remote (Upload)"}]
+          }
+        ],
+        initialState: false
+      }
+    },
+  },
+  {
+    name: "o_ftpFilesModifiedSwitch",
+    type: "output-switch-field",
     label: "FtpFilesModified",
-
-    description:
-      "List of FTP files that initially existed in both the source and the target and after the synchronization process were added to the target.",
     defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Local -> remote (Upload)"}]
+          }
+        ],
+        initialState: false
+      }
+    }
   },
-  {
-    name: "ftpFilesDeleted",
-    type: "switch",
-    label: "FtpFilesDeleted",
 
+  {
+    name: "o_ftpFilesDeletedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "List of FTP files that initially existed in the target directory and after the synchronization process were deleted.",
+    defaultValue: "FtpFilesDeleted",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_ftpFilesDeletedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Local -> remote (Upload)"}]
+          }
+        ],
+        initialState: false
+      }
+    },
+  },
+  {
+    name: "o_ftpFilesDeletedSwitch",
+    type: "output-switch-field",
+    label: "FtpFilesDeleted",
     defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields : [{key: "synchronizationDirection", value: "Local -> remote (Upload)"}]
+          }
+        ],
+        initialState: false
+      }
+    }
   },
 ];
 
@@ -158,12 +402,13 @@ const synchronizeDirectoriesFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["FTPConnection"],
       ["synchronizationDirection"],
-      ["fileToSync"],
+      ["filesToSync"],
+      ["fileFilter"],
       ["localFolder"],
       ["FTPDirectory"],
       ["deleteIfSourceIsAbsent"],
       ["includeSubdirectories"],
-      ["timeDiffrenceInHours"],
+      ["timeDifferenceInHours"],
       ["timeDifferenceInMinutes"],
       ["timeDifferencAhead"],
     ],
@@ -171,9 +416,12 @@ const synchronizeDirectoriesFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["ftpFilesAdded"],
-      ["ftpFilesModified"],
-      ["ftpFilesDeleted"],
+      ["o_filesAddedOutput", "o_filesAddedSwitch"],
+      ["o_filesModifiedOutput", "o_filesModifiedSwitch"],
+      ["o_filesDeletedOutput", "o_filesDeletedSwitch"],
+      ["o_ftpFilesAddedOutput", "o_ftpFilesAddedSwitch"],
+      ["o_ftpFilesModifiedOutput","o_ftpFilesModifiedSwitch"],
+      ["o_ftpFilesDeletedOutput", "o_ftpFilesDeletedSwitch"]
     ],
   },
 ];
@@ -181,7 +429,22 @@ const synchronizeDirectoriesFieldCategories: IDynamicFormKeysCategory[] = [
 const synchronizeDirectories: ActivityConfig = {
   fieldList: synchronizeDirectoriesFieldList,
   fieldCategories: synchronizeDirectoriesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: [
+    "filesToSync", 
+    "synchronizationDirection", 
+    "o_filesAddedOutput", 
+    "o_filesAddedSwitch", 
+    "o_filesModifiedOutput", 
+    "o_filesModifiedSwitch", 
+    "o_filesDeletedOutput", 
+    "o_filesDeletedSwitch",
+    "o_ftpFilesAddedOutput",
+    "o_ftpFilesAddedSwitch",
+    "o_ftpFilesModifiedOutput",
+    "o_ftpFilesModifiedSwitch",
+    "o_ftpFilesDeletedOutput",
+    "o_ftpFilesDeletedSwitch"
+  ],
 };
 
 export default synchronizeDirectories;

@@ -17,14 +17,16 @@ export const ftpActions: NodeDataType[] = [
       "This action returns the subdirectories and files contained in the current directory of an FTP connection",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
-  {
-    type: "activityNode",
-    name: "openSecureFtpConnection",
-    label: "Open secure FTP connection",
-    description:
-      "This action establishes a specific secure connection to a remote FTP server, and stores that connection as a variable for later use",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // TO DO - To be implmented later
+  // Reason for hiding - it required both AND, OR conditions in conjuction on a single field.
+  // {
+  //   type: "activityNode",
+  //   name: "openSecureFtpConnection",
+  //   label: "Open secure FTP connection",
+  //   description:
+  //     "This action establishes a specific secure connection to a remote FTP server, and stores that connection as a variable for later use",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "closeConnection",
@@ -42,28 +44,28 @@ export const ftpActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "downloadFile(s)FromFtp",
+    name: "downloadFilesFromFtp",
     label: "Download file(s) from FTP",
     description: "Downloads one or more files from an FTP server",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
     type: "activityNode",
-    name: "downloadFolder(s)FromFtp",
+    name: "downloadFoldersFromFtp",
     label: "Download folder(s) from FTP",
     description: "Downloads one or more folders from an FTP server",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
     type: "activityNode",
-    name: "uploadFile(s)ToFtp",
+    name: "uploadFilesToFtp",
     label: "Upload File(s) to FTP",
     description: "Uploads one or more files to an FTP server",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
     type: "activityNode",
-    name: "uploadFolder(s)ToFtp",
+    name: "uploadFoldersToFtp",
     label: "Upload folder(s) to FTP",
     description: "Uploads one or more folders to an FTP server",
     img: `${import.meta.env.BASE_URL}function.png`,
