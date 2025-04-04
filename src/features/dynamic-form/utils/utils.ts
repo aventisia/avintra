@@ -320,6 +320,7 @@ import writeXmlToFile from "../constants/configs/XML/write-xml-to-file";
 import scheduleTrigger from "../constants/configs/triggers/schedule-trigger";
 import { ActivityConfig } from "../types/dynamic-form-types";
 import forEachLoop from "../constants/configs/loops/for-each-loop";
+import runDesktopFlow from "../constants/configs/run-flow/run-desktop-flow"
 
 const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Triggers
@@ -496,6 +497,9 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Compression
   zipFiles,
   unzipFiles,
+
+  // run flow
+  runDesktopFlow,
 
   //UI Automation
   getDetailsOfWindow,

@@ -60,6 +60,7 @@ import VariableSelectorPopover from "@/features/variable-selector-popover/compon
 import { useEffect, useMemo } from "react";
 import { useVariableSelectorInputStore } from "@/stores/variable-selector-input-value-store";
 import { useShallow } from "zustand/react/shallow";
+import { useFetchFlows } from "@/features/flows-popover/hooks/useFetchFlows";
 
 interface DynamicControlProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -77,6 +78,8 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
         setFocusedInput: state.setFocusedInput,
       })),
     );
+
+  const { data: flowsList } = useFetchFlows();
 
   const { setValue } = form;
 
@@ -219,6 +222,61 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
               ))}
             </SelectContent>
           </Select>
+        </>
+      );
+    case "flow-select-combobox":
+      return (
+        <>
+          <DynamicFieldLabel fData={fData} />
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  disabled={fData.disabled}
+                  variant="outline"
+                  size="sm"
+                  role="combobox"
+                  className={cn(
+                    "w-full justify-between pl-3 pr-[0.68rem] font-normal",
+                    !field.value && "text-muted-foreground",
+                  )}
+                >
+                  {field.value ? field.value : fData.placeholder}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command className="w-full">
+                <CommandInput placeholder={fData.placeholder} />
+                <CommandEmpty>No result found</CommandEmpty>
+                <CommandGroup>
+                  {flowsList &&
+                    flowsList.data.map((item, index) => {
+                      return (
+                        <CommandItem
+                          value={item.name}
+                          key={index}
+                          onSelect={() => {
+                            form?.setValue(fData.name, item.name);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              item.name === field.value
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                          {item.name}
+                        </CommandItem>
+                      );
+                    })}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </>
       );
     //TODO: Check UI element selector
