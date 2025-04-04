@@ -4,25 +4,22 @@ import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
-import { LicensesTableDto } from "../dtos/licenses-table-dto";
+import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
 import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
 
 /**
  * Array of table columns for the licenses table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const licensesTableColumns: ColumnDef<LicensesTableDto>[] = [
+export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
-    accessorKey: "pricingComponent",
+    accessorKey: "planName",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("pricingComponent")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("planName")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("pricingComponent")}
+        {row.getValue("planName")}
       </div>
     ),
   },
@@ -69,6 +66,20 @@ export const licensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     ),
   },
   {
+    accessorKey: "additionalUnitsRequested",
+    header: ({ column }) => (
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("additionalUnitsRequested")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("additionalUnitsRequested")}
+      </div>
+    ),
+  },
+  {
     accessorKey: "unitPrice",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("unitPrice")} />
@@ -76,6 +87,18 @@ export const licensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("unitPrice")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "overdueBalance",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("overdueBalance")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("overdueBalance")}
       </div>
     ),
   },
@@ -95,17 +118,6 @@ export const licensesTableColumns: ColumnDef<LicensesTableDto>[] = [
           : formatDistanceToNow(row.getValue<Date>("nextBillingDate"), {
               addSuffix: true,
             })}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "overdueBalance",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("overdueBalance")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("overdueBalance")}
       </div>
     ),
   },
