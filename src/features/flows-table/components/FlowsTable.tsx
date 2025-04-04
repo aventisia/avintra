@@ -1,4 +1,5 @@
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
@@ -7,7 +8,7 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { PAGE_HEADER, SEARCH_COLUMN } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchFlows } from "../hooks/useFetchFlows";
@@ -21,6 +22,9 @@ import { flowsTableColumns } from "./FlowsTableColumns";
  * @returns The rendered FlowsTable component.
  */
 export const FlowsTable = () => {
+  // Set the document title
+  useDocumentTitle(TABLE_HEADING);
+
   // Fetch flows data
   const { data } = useFetchFlows();
 
@@ -41,7 +45,7 @@ export const FlowsTable = () => {
           <FlowCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
-              <DTHeading heading={PAGE_HEADER} />
+              <DTHeading heading={TABLE_HEADING} />
 
               <div className="flex items-center gap-2">
                 <DTSearchBox
