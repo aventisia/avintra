@@ -2,7 +2,7 @@ import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
 const FLOWS_QUERY_KEY = ["flows"];
 
-const PAGE_HEADER = "Agents";
+const TABLE_HEADING = "Agents";
 
 /**
  * The column used for searching in the flows.
@@ -24,7 +24,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 
 export {
   FLOWS_QUERY_KEY,
-  PAGE_HEADER,
+  TABLE_HEADING,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 };
