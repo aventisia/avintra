@@ -24,6 +24,7 @@ import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
 import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
+import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
 
 export const PricingPlanCrudForm = () => {
   // Define pricingplan form
@@ -70,7 +71,7 @@ export const PricingPlanCrudForm = () => {
 
       {/* name of tenant */}
       {form.getValues("tenantName") || crudAction === "create" ? (
-        <SelectField {...tenantNameProps} />
+        <TenantSelectField {...tenantNameProps} />
       ) : null}
 
       {/* pricingComponent name fo the plan */}
