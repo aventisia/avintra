@@ -2,12 +2,13 @@ import { BillingFrequenciesEnum } from "@/react-toolkit/enums/billing-frequencie
 import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
-import { PricingPlanTypeEnum as PlanTypeEnum } from "@/react-toolkit/enums/pricing-plan-types-enum";
+import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { IconInputFieldProps } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { TenantSelectFieldProps } from "@/react-toolkit/ui/form/fields/TenantSelectField";
 
 // PricingPlan Id
 export const idProps: InputFieldProps = {
@@ -26,12 +27,11 @@ export const tenantTypeProps: SelectFieldProps = {
   name: "tenantType",
   label: "Tenant Type",
   isRequired: true,
-  selectOptions: enumToArray(PlanTypeEnum),
+  selectOptions: enumToArray(DeploymentTypeEnum),
 };
-export const tenantNameProps: SelectFieldProps = {
+export const tenantNameProps: TenantSelectFieldProps = {
   name: "tenantName",
   label: "Tenant Name",
-  selectOptions: [],
 };
 export const currencyTypeProps: SelectFieldProps = {
   name: "currency",
