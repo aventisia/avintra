@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { BillingFrequenciesEnum } from "@/react-toolkit/enums/billing-frequencies-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
@@ -52,7 +51,7 @@ export const useDefinePricingPlanForm = () => {
       id: "",
       pricingComponent: "",
       tenantType: "",
-      tenantName: "",
+      tenantId: "",
       currency: "",
       unitPrice: undefined,
       frequency: "",
@@ -87,7 +86,7 @@ export const useDefinePricingPlanForm = () => {
       id: rowId,
       pricingComponent: data?.pricingComponent ?? "",
       tenantType: data?.tenantType ?? "",
-      tenantName: data?.tenantName ?? "",
+      tenantId: data?.tenantId ?? "",
       currency: data?.currency ?? "",
       unitPrice: data?.unitPrice,
       frequency: data?.frequency,
@@ -110,15 +109,15 @@ export const useDefinePricingPlanForm = () => {
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof pricingPlanZodSchema>) => {
     return {
+      ...formData,
       unit:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? PricingUnitTypesEnum.Credit
           : PricingUnitTypesEnum.License,
       frequency:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
-          ? BillingFrequenciesEnum.NA
+          ? "NA"
           : formData.frequency,
-      ...formData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

@@ -25,9 +25,10 @@ export const pricingPlanZodSchema = z
   .object({
     // Single fields
     id: z.string().optional(),
+    tenantId: z.string().optional(),
     pricingComponent: z.string().min(1, { message: reqError("Tenant Name") }),
     tenantType: z.string().min(1, { message: reqError("Tenant Type") }),
-    tenantName: z.string().optional(),
+    // tenantName: z.string().optional(),
     currency: z.string().min(1, { message: reqError("currency") }),
     unitPrice: z
       .string()
@@ -49,7 +50,13 @@ export const pricingPlanZodSchema = z
     lastModifiedOn: z.date(),
   })
   .refine(
-    (data) => !(data.pricingComponent && data.pricingComponent != "GpuCompute"),
+    (data) => {
+      console.log(
+        data.pricingComponent && data.pricingComponent == "GpuCompute",
+        data.pricingComponent,
+      );
+      return data.pricingComponent == "GpuCompute" || data.frequency;
+    },
     {
       path: ["frequency"],
       message: reqError("Billing Frequency"),

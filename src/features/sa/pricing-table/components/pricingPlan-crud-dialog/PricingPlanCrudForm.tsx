@@ -1,31 +1,24 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
+import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { IconInputField } from '@/react-toolkit/ui/form/fields/IconInputField';
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
+import { SelectField } from '@/react-toolkit/ui/form/fields/SelectField';
+import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { TenantSelectField } from '@/react-toolkit/ui/form/fields/TenantSelectField';
+import { Form } from '@/react-toolkit/ui/form/Form';
+import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
 
-import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
+import { pricingPlanOptimisticMutationFn } from '../../apis/pricingPlans-table-apis';
+import { DATA_QUERY_KEY } from '../../constants';
 import {
-  colaTypeProps,
-  currencyTypeProps,
-  frequencyTypeProps,
-  idProps,
-  isDisabledProps,
-  pricingComponentTypeProps,
-  tenantNameProps,
-  tenantTypeProps,
-  unitPriceTypeProps,
-} from "../../constants/pricingPlan-form-field-props";
-import { pricingPlanZodSchema } from "../../constants/pricingPlan-zod-schema";
-import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
-import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
+    colaTypeProps, currencyTypeProps, frequencyTypeProps, idProps, isDisabledProps,
+    pricingComponentTypeProps, tenantNameProps, tenantTypeProps, unitPriceTypeProps
+} from '../../constants/pricingPlan-form-field-props';
+import { pricingPlanZodSchema } from '../../constants/pricingPlan-zod-schema';
+import { PricingPlansTableDto } from '../../dtos/pricingPlans-table-dto';
+import { useDefinePricingPlanForm } from '../../hooks/useDefinePricingPlanForm';
 
 export const PricingPlanCrudForm = () => {
   // Define pricingplan form
@@ -80,7 +73,7 @@ export const PricingPlanCrudForm = () => {
       ) : null}
 
       {/* name of tenant */}
-      {form.getValues("tenantName") || crudAction === "create" ? (
+      {form.getValues("tenantId") || crudAction === "create" ? (
         <TenantSelectField {...tenantNameProps} />
       ) : null}
 

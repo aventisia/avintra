@@ -29,7 +29,7 @@ export const tenantTypeProps: SelectFieldProps = {
   selectOptions: enumToArray(DeploymentTypeEnum),
 };
 export const tenantNameProps: TenantSelectFieldProps = {
-  name: "tenantName",
+  name: "tenantId",
   label: "Tenant Name",
 };
 export const currencyTypeProps: SelectFieldProps = {
