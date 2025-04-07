@@ -9,4 +9,8 @@ export enum BillingFrequenciesEnum {
    */
   Annually = "Annually",
 
+  /**
+   *  Indicates no billing occurs for credits only for backend side
+   */
+  // NA = "NA",
 }
