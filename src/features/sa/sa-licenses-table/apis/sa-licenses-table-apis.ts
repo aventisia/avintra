@@ -2,6 +2,8 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { RecordPaymentDto } from "../dtos/record-payment-dto";
+import { RequestLicensesDto } from "../dtos/request-license-dto";
 import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/license-credit`;
@@ -21,6 +23,26 @@ export const getLicenses = () => {
 export const insertLicense = (newLicense: LicensesTableDto) => {
   return axiosInstance
     .post<IHttpResponse<LicensesTableDto>>(`${baseAPIURL}`, newLicense)
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new license request.
+ */
+export const requestLicense = (newLicense: RequestLicensesDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<RequestLicensesDto>
+    >(`${baseAPIURL}/request`, newLicense)
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new license request.
+ */
+export const recordPaymnet = (payment: RecordPaymentDto) => {
+  return axiosInstance
+    .post<IHttpResponse<RequestLicensesDto>>(`${baseAPIURL}/record`, payment)
     .then((res) => res.data);
 };
 
@@ -69,12 +91,14 @@ export const deleteLicenses = (ids: string[]) => {
 export const saLicenseOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<LicensesTableDto | string | string[]>) => {
+}: IOptimisticMutation<
+  LicensesTableDto | RequestLicensesDto | string | string[]
+>) => {
   switch (crudAction) {
     case "create":
       return insertLicense(payload as LicensesTableDto);
     case "update":
-      return updateLicense(payload as LicensesTableDto);
+      return approveRequestedLicense(payload as LicensesTableDto);
     case "delete":
       return deleteLicense(payload as string);
     case "delete-multiple":
