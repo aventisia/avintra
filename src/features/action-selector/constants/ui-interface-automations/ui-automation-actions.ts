@@ -92,7 +92,7 @@ export const uiAutomationActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "setDrop-downListValueInWindow",
+    name: "setDropDownListValueInWindow",
     label: "Set drop-down list value in window",
     description:
       "Sets or clears the selected options for a drop-down list in a window form",

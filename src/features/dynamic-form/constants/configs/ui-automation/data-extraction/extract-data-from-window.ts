@@ -33,11 +33,35 @@ const extractDataFromWindowFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "excelInstance",
-    type: "switch",
-    label: "ExcelInstance",
+    name: "o_excelInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The Excel instance with the extracted data. Use this instance to manipulate the spreadsheet (or save and close it) by using the dedicated Excel actions.",
+    defaultValue: "ExcelInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_excelInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "storeExtractedDataIn", value: "anExcelSpreadsheet" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_excelInstanceSwitch",
+    type: "output-switch-field",
+    label: "ExcelInstance",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -52,11 +76,36 @@ const extractDataFromWindowFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+
   {
-    name: "dataFromWindow",
-    type: "switch",
-    label: "DataFromWindow",
+    name: "o_dataFromWindowOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The extracted data in the form of a datatable",
+    defaultValue: "DataFromWindow",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_dataFromWindowSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "storeExtractedDataIn", value: "aVariable" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_dataFromWindowSwitch",
+    type: "output-switch-field",
+    label: "DataFromWindow",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -78,10 +127,12 @@ const extractDataFromWindowFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["excelInstance", "dataFromWindow"]],
+    formFieldKeys: [
+      ["o_excelInstanceOutput","o_excelInstanceSwitch"],
+      ["o_dataFromWindowOutput", "o_dataFromWindowSwitch"]],
   },
 ];
-const extractDataFromWindowFieldsToWatch: string[] = ["storeExtractedDataIn"];
+const extractDataFromWindowFieldsToWatch: string[] = ["storeExtractedDataIn", "o_excelInstanceOutput","o_excelInstanceSwitch", "o_dataFromWindowOutput", "o_dataFromWindowSwitch"];
 
 const extractDataFromWindow: ActivityConfig = {
   fieldList: extractDataFromWindowFieldList,
