@@ -22,7 +22,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
     case "read":
       return { heading: "License & Credits", description: "" };
     case "update":
-      return { heading: "Update Request", description: "" };
+      return { heading: "Record Payment", description: "" };
     default:
       return { heading: "", description: "" };
   }
