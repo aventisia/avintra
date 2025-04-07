@@ -1,30 +1,31 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  frequencyTypeProps,
   colaTypeProps,
   currencyTypeProps,
+  frequencyTypeProps,
   idProps,
   isDisabledProps,
   pricingComponentTypeProps,
   tenantNameProps,
   tenantTypeProps,
   unitPriceTypeProps,
-  unitTypeProps,
 } from "../../constants/pricingPlan-form-field-props";
 import { pricingPlanZodSchema } from "../../constants/pricingPlan-zod-schema";
 import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
 import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
-import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
 
 export const PricingPlanCrudForm = () => {
   // Define pricingplan form
@@ -82,11 +83,6 @@ export const PricingPlanCrudForm = () => {
       {/* currency */}
       {form.getValues("currency") || crudAction === "create" ? (
         <SelectField {...currencyTypeProps} />
-      ) : null}
-
-      {/* unit */}
-      {form.getValues("unit") || crudAction === "create" ? (
-        <SelectField {...unitTypeProps} />
       ) : null}
 
       {/* unitPrice */}

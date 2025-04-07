@@ -1,11 +1,15 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
+import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { DATA_QUERY_KEY } from "../constants";
 import { pricingPlanZodSchema } from "../constants/pricingPlan-zod-schema";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
@@ -49,10 +53,9 @@ export const useDefinePricingPlanForm = () => {
       tenantType: "",
       tenantName: "",
       currency: "",
-      unit: "",
-      unitPrice: 0,
+      unitPrice: undefined,
       frequency: "",
-      cola: 0,
+      cola: undefined,
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -84,10 +87,9 @@ export const useDefinePricingPlanForm = () => {
       tenantType: data?.tenantType ?? "",
       tenantName: data?.tenantName ?? "",
       currency: data?.currency ?? "",
-      unit: data?.unit ?? "",
-      unitPrice: data?.unitPrice ?? 0,
-      frequency: data?.frequency ?? "",
-      cola: data?.cola ?? 0,
+      unitPrice: data?.unitPrice,
+      frequency: data?.frequency,
+      cola: data?.cola,
       // Single field
       isDisabled: data?.isDisabled ?? false,
       // Group (read-only)
@@ -107,7 +109,10 @@ export const useDefinePricingPlanForm = () => {
   const refineFormData = (formData: z.infer<typeof pricingPlanZodSchema>) => {
     return {
       ...formData,
-      tenantId: userSession?.tenantId,
+      unit:
+        formData.name == PricingComponentsEnum.GpuCompute
+          ? PricingUnitTypesEnum.Credit
+          : PricingUnitTypesEnum.License,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
