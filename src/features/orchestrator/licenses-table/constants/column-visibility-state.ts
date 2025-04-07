@@ -1,6 +1,6 @@
 /** Column visibility initial state for the licenses table. */
 export const columnVisibilityState = {
-  planName: true,
+  pricingComponent: true,
   unit: true,
   allocated: true,
   consumed: true,

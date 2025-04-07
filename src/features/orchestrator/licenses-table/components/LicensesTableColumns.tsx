@@ -13,13 +13,16 @@ import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
  */
 export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
-    accessorKey: "planName",
+    accessorKey: "pricingComponent",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("planName")} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("pricingComponent")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("planName")}
+        {row.getValue("pricingComponent")}
       </div>
     ),
   },

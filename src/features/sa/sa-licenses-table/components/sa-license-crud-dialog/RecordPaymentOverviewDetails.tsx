@@ -40,7 +40,7 @@ export const RecordPaymentOverviewDetails = ({
         <OverviewDetailDivElement
           label="Pricing Component :"
           isFetching={isFetching}
-          data={myLicenseData?.planName}
+          data={myLicenseData?.pricingComponent}
         />
         <OverviewDetailDivElement
           label="Currency :"

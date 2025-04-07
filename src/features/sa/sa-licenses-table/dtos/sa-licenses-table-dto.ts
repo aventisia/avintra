@@ -37,7 +37,7 @@ export interface LicensesTableDto {
   /**
    * get the plan Name of the license plan
    */
-  planName: string;
+  pricingComponent: string;
 
   /**
    * get the allocated units of the license plan

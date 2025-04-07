@@ -13,7 +13,7 @@ const TABLE_HEADING = "Licenses & Creadits";
 /**
  * The column used for searching in the licenses.
  */
-const SEARCH_COLUMN = "planName";
+const SEARCH_COLUMN = "pricingComponent";
 
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
