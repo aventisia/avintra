@@ -1,5 +1,7 @@
+import * as React from "react";
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+
 import { useFetchLicensesToSelect } from "@/react-toolkit/hooks/useFetchLicense";
-import { ISelectOption } from "@/react-toolkit/types/select-option";
 import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
 import { FormControl } from "@/react-toolkit/ui/form/FormControl";
 import { FormField } from "@/react-toolkit/ui/form/FormField";
@@ -13,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/react-toolkit/ui/select";
-import * as React from "react";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
 interface LicenseSelectFieldProps
   extends React.ComponentPropsWithoutRef<typeof SelectTrigger>,
@@ -40,17 +40,10 @@ const LicenseSelectField = ({
   ...props
 }: LicenseSelectFieldProps) => {
   // Get the form context
-  const [selectOptions, setSelectOptions] = React.useState<ISelectOption[]>();
 
   const { control, setValue } = useFormContext<FieldValues>();
 
   const { data } = useFetchLicensesToSelect();
-
-  React.useEffect(() => {
-    return () => {
-      if (data) setSelectOptions(data.data);
-    };
-  }, [data]);
 
   // Render the LicenseSelectField component
   return (
@@ -79,7 +72,7 @@ const LicenseSelectField = ({
               </SelectTrigger>
 
               <SelectContent>
-                {selectOptions?.map((item) => (
+                {data?.data?.map((item) => (
                   <SelectItem size={size} key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>

@@ -1,20 +1,16 @@
-import { useFetchTenantsToSelect } from "@/react-toolkit/hooks/useFetchTenantsToSelect";
-import { ISelectOption } from "@/react-toolkit/types/select-option";
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
+import * as React from 'react';
+import { FieldPath, FieldValues, useFormContext } from 'react-hook-form';
+
+import { useFetchTenantsToSelect } from '@/react-toolkit/hooks/useFetchTenantsToSelect';
+import { BaseFieldProps } from '@/react-toolkit/ui/form/fields/base-field-props';
+import { FormControl } from '@/react-toolkit/ui/form/FormControl';
+import { FormField } from '@/react-toolkit/ui/form/FormField';
+import { FormItem } from '@/react-toolkit/ui/form/FormItem';
+import { FormMessage } from '@/react-toolkit/ui/form/FormMessage';
+import { FormLabelExt } from '@/react-toolkit/ui/form/non-field/FormLabelExt';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/react-toolkit/ui/select";
-import * as React from "react";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/react-toolkit/ui/select';
 
 interface TenantSelectFieldProps
   extends React.ComponentPropsWithoutRef<typeof SelectTrigger>,
@@ -40,17 +36,10 @@ const TenantSelectField = ({
   ...props
 }: TenantSelectFieldProps) => {
   // Get the form context
-  const [selectOptions, setSelectOptions] = React.useState<ISelectOption[]>();
 
   const { control, setValue } = useFormContext<FieldValues>();
 
-  const { data } = useFetchTenantsToSelect();
-
-  React.useEffect(() => {
-    return () => {
-      if (data) setSelectOptions(data.data);
-    };
-  }, [data]);
+  const { selectOptions } = useFetchTenantsToSelect(!!isRequired);
 
   // Render the TenantSelectField component
   return (
