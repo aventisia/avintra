@@ -19,7 +19,13 @@ public class RequestLicenseCreditDto
     public required Guid PlanId { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique ID of the tenant associated with this pricing plan.
+    /// </summary>
+    public Guid? TenantId { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of additional units requested for the tenant's licensing credits.
     /// </summary>
-    public int AdditionalUnitsRequested { get; set; }
+    [Required]
+    public required int AdditionalUnitsRequested { get; set; }
 }

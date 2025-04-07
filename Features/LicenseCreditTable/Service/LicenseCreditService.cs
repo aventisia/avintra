@@ -235,7 +235,8 @@ public class LicenseCreditService : ILicenseCreditService
             // Check if a similar license credit already exists
             var existingCredit = await _unitOfWork.LicenseCreditRepo
                 .GetByConditionAsync(w =>
-                    w.PlanId == licenseCreditDto.PlanId)
+                    w.PlanId == licenseCreditDto.PlanId &&
+                    (licenseCreditDto.TenantId != null || w.TenantId == licenseCreditDto.TenantId))
                 .FirstOrDefaultAsync();
 
             // Trim string properties
