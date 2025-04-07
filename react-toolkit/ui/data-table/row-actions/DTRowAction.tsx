@@ -1,12 +1,9 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import {
-  ArrowUpRightIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
-import React from "react";
-import { useShallow } from "zustand/react/shallow";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
+import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
+import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { ArrowUpRightIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 
 interface DTEditRowActionProps {
   rowId: string;
@@ -23,9 +20,6 @@ export const DTRowAction: React.FC<DTEditRowActionProps> = ({
   crudAction,
   size = "md",
 }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   // Get store state and actions
   const { setCrudDialogOptions } = useDTCrudDialogStore(
     useShallow((state) => ({
@@ -40,10 +34,6 @@ export const DTRowAction: React.FC<DTEditRowActionProps> = ({
       content={crudAction === "read" ? "View" : "Edit"}
       Icon={crudAction === "read" ? ArrowUpRightIcon : PencilSquareIcon}
       onClick={() => {
-        navigate({
-          pathname: location?.pathname,
-        });
-        console.log(location);
         setCrudDialogOptions({
           showDialog: true,
           rowId,
