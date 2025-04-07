@@ -1,14 +1,14 @@
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from "zustand/react/shallow";
 
-import { useFetchTenants } from '@/features/sa/tenants-table/hooks/useFetchTenants';
-import { DefaultTenantsEnum } from '@/react-toolkit/enums/default-tenants-enum';
-import { useFetchLicenseDetails } from '@/react-toolkit/hooks/useFetchLicense';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { useQueryClient } from '@tanstack/react-query';
+import { useFetchTenants } from "@/features/sa/tenants-table/hooks/useFetchTenants";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { DATA_QUERY_KEY } from '../../constants';
-import { LicensesTableDto } from '../../dtos/sa-licenses-table-dto';
-import { OverviewDetailDivElement } from './RecordPaymentOverviewDetails';
+import { DATA_QUERY_KEY } from "../../constants";
+import { LicensesTableDto } from "../../dtos/sa-licenses-table-dto";
+import { OverviewDetailDivElement } from "./RecordPaymentOverviewDetails";
 
 export const RequestLicenseOverviewDetails = ({
   planId,
@@ -63,11 +63,13 @@ export const RequestLicenseOverviewDetails = ({
           isFetching={isFetching}
           data={data?.data?.unitPrice}
         />
-        <OverviewDetailDivElement
-          label="Billed :"
-          isFetching={isFetching}
-          data={data?.data.frequency}
-        />
+        {data?.data.frequency != "NA" ? (
+          <OverviewDetailDivElement
+            label="Billed :"
+            isFetching={isFetching}
+            data={data?.data.frequency}
+          />
+        ) : null}
         <OverviewDetailDivElement
           label="Current Allocated Units :"
           isFetching={isFetching}

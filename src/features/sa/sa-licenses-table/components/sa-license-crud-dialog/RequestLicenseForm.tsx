@@ -1,11 +1,13 @@
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
 import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { useMutation } from "@tanstack/react-query";
 
 import { requestLicense } from "../../apis/sa-licenses-table-apis";
@@ -49,6 +51,8 @@ export const RequestLicenseForm = () => {
 
   const [planId, id] = watch(["planId", "id"]);
 
+  const { data: licenseDetails, isFetching } = useFetchLicenseDetails(planId);
+
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
@@ -82,7 +86,14 @@ export const RequestLicenseForm = () => {
       </div>
       <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
         <p className="font-light">Additional Payment Due:</p>
-        <p>{0}</p>
+        <div>
+          {isFetching ? (
+            <Skeleton className="h-6 w-32" />
+          ) : (
+            (form.getValues("additionalUnitsRequested") ?? 0) *
+            (licenseDetails?.data?.unitPrice ?? 0)
+          )}
+        </div>
       </div>
 
       {/* Submit button */}
