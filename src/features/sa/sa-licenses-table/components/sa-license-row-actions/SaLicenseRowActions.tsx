@@ -10,17 +10,14 @@ interface SaLicenseRowActionsProps {
   status: LicenseCreditStatusesEnum;
 }
 
-export const SaLicenseRowActions = ({
-  rowId,
-  status,
-}: SaLicenseRowActionsProps) => {
+export const SaLicenseRowActions = ({ rowId }: SaLicenseRowActionsProps) => {
   return (
     // Dropdown menu for license table row action */}
     <DataTableRowActions>
       <RecordPaymentRowAction rowId={rowId} />
-      {status === LicenseCreditStatusesEnum.Requested ? (
-        <ApproveRowAction rowId={rowId} />
-      ) : null}
+      <ApproveRowAction rowId={rowId} />
+      {/* {status === LicenseCreditStatusesEnum.Requested ? (
+      ) : null} */}
     </DataTableRowActions>
   );
 };
