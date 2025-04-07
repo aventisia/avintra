@@ -13,5 +13,10 @@ public enum FrequencyTypesEnum
     /// <summary>
     /// Represents billing that occurs annually.
     /// </summary>
-    Annually
+    Annually,
+
+    /// <summary>
+    /// Represents credits Types not Applicable for credits
+    /// </summary>
+    NA
 }
