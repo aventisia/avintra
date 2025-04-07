@@ -121,47 +121,6 @@ public class PlanTableService : IPlanTableService
         return serviceResponse;
     }
 
-    // Checks if a plan name is available
-    public async Task<ServiceResponse<TrueFalseResultDto>> IsPlanNameAvailableAsync(CheckAvailabilityDto availabilityCheckDto)
-    {
-        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
-        {
-            Data = null,
-            Message = "Failed to check plan name availability. Please try again."
-        };
-
-        try
-        {
-            // Check if the plan name already exists
-            var planAlreadyExists = await _unitOfWork.PlanRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.PricingComponent.ToString().ToLower() == availabilityCheckDto.UserInput.Trim().ToLower())
-                                                     .FirstOrDefaultAsync();
-
-            // Set response based on existence
-            if (planAlreadyExists != null)
-            {
-                serviceResponse.Data = new TrueFalseResultDto { Result = false };
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "The plan name is already taken. Please choose a unique name.";
-                _logger.LogInformation("The plan name '{PlanName}' is not available.", availabilityCheckDto.UserInput);
-                return serviceResponse;
-            }
-
-            serviceResponse.Data = new TrueFalseResultDto { Result = true };
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "The plan name is available.";
-            _logger.LogInformation("The plan name '{PlanName}' is available.", availabilityCheckDto.UserInput);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while checking plan name availability.");
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
     // Inserts a new plan
     public async Task<ServiceResponse<PlanTableDto>> InsertPlanAsync(PlanTableDto planTableDto)
     {

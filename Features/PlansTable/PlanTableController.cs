@@ -33,14 +33,7 @@ public class PlanTableController : BaseApiController
     {
         return ResultHelper(await _planTableService.GetPlanByIdAsync(planId));
     }
-
-    // Checks the availability of a plan name.
-    [HttpPost("is-available")]
-    public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsPlanNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
-    {
-        return ResultHelper(await _planTableService.IsPlanNameAvailableAsync(checkAvailabilityDto));
-    }
-
+    
     // Inserts a new plan.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<PlanTableDto>>> InsertPlan([FromBody] PlanTableDto planTableDto)

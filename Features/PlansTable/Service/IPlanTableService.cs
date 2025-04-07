@@ -25,13 +25,6 @@ public interface IPlanTableService
     Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync();
 
     /// <summary>
-    /// Checks if a specified plan name is available for new entries.
-    /// </summary>
-    /// <param name="availabilityCheckDto">A DTO that includes the plan name to check.</param>
-    /// <returns>A task representing the asynchronous operation, yielding a <see cref="ServiceResponse{T}"/> with a <see cref="TrueFalseResultDto"/> indicating the availability status.</returns>
-    Task<ServiceResponse<TrueFalseResultDto>> IsPlanNameAvailableAsync(CheckAvailabilityDto availabilityCheckDto);
-
-    /// <summary>
     /// Creates a new plan in the system.
     /// </summary>
     /// <param name="planTableDto">The data required to create the new plan.</param>
