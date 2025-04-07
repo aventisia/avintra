@@ -110,7 +110,7 @@ export const LicensesStats = () => {
       />
 
       <StatsCard
-        title={"Creadits"}
+        title={"Annual Billing"}
         description={
           <p
             className={
