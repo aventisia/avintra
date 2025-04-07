@@ -1,5 +1,7 @@
 import { formatDistanceToNow, isValid } from "date-fns";
+import { twMerge } from "tailwind-merge";
 
+import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -91,6 +93,24 @@ export const saLicensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     ),
   },
   {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("status")} />
+    ),
+    cell: ({ row }) => (
+      <div
+        className={twMerge(
+          "w-auto truncate font-medium",
+          row.original.status === LicenseCreditStatusesEnum.Approved
+            ? "text-green-700"
+            : "text-red-700",
+        )}
+      >
+        {row.getValue("status")}
+      </div>
+    ),
+  },
+  {
     accessorKey: "unitPrice",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("unitPrice")} />
@@ -136,7 +156,10 @@ export const saLicensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the licenses row actions component
-      <SaLicenseRowActions rowId={row.original.id ?? "rowId"} />
+      <SaLicenseRowActions
+        rowId={row.original.id ?? "rowId"}
+        status={row.original.status}
+      />
     ),
   },
 ];
