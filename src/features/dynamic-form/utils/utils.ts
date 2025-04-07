@@ -230,7 +230,7 @@ import populateTextFieldInWindow from "../constants/configs/ui-automation/form-f
 import pressButtonInWindow from "../constants/configs/ui-automation/form-filling/press-button-in-window";
 import selectRadioButtonInWindow from "../constants/configs/ui-automation/form-filling/select-radio-button-in-window";
 import setCheckboxStateInWindow from "../constants/configs/ui-automation/form-filling/set-checkbox-state-in-window";
-import setDropdownListValueInWindow from "../constants/configs/ui-automation/form-filling/set-drop-down-list-value-in-window";
+import setDropDownListValueInWindow from "../constants/configs/ui-automation/form-filling/set-drop-down-list-value-in-window";
 import hoverMouseOverUiElementInWindow from "../constants/configs/ui-automation/hover-mouse-over-ui-element";
 import ifWindow from "../constants/configs/ui-automation/if-window";
 import ifWindowContains from "../constants/configs/ui-automation/if-window-contains";
@@ -513,7 +513,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   pressButtonInWindow,
   selectRadioButtonInWindow,
   setCheckboxStateInWindow,
-  setDropdownListValueInWindow,
+  setDropDownListValueInWindow,
   getWindow,
   focusWindow,
   setWindowState,

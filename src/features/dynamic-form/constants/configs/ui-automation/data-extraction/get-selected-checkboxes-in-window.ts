@@ -37,11 +37,35 @@ const getSelectedCheckboxesInWindowFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "selectedCheckboxes",
-    type: "switch",
-    label: "selectedCheckboxes",
+    name: "o_selectedCheckboxesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The names of selected checkboxes inside the specified checkbox group",
+    defaultValue: "selectedCheckboxes",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedCheckboxesSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "operation", value: "namesOfSelectedCheckboxes" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_selectedCheckboxesSwitch",
+    type: "output-switch-field",
+    label: "selectedCheckboxes",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -54,11 +78,36 @@ const getSelectedCheckboxesInWindowFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+
   {
-    name: "isChecked",
-    type: "switch",
-    label: "IsChecked",
+    name: "o_isCheckedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The state of the selected checkbox",
+    defaultValue: "IsChecked",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_isCheckedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "operation", value: "stateOfCheckbox" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_isCheckedSwitch",
+    type: "output-switch-field",
+    label: "IsChecked",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -81,10 +130,13 @@ const getSelectedCheckboxesInWindowFieldCategories: IDynamicFormKeysCategory[] =
     },
     {
       title: "Output",
-      formFieldKeys: [["selectedCheckboxes", "isChecked"]],
+      formFieldKeys: [
+        ["o_selectedCheckboxesOutput", "o_selectedCheckboxesSwitch"],  
+        ["o_isCheckedOutput",  "o_isCheckedSwitch"]
+      ],
     },
   ];
-const getSelectedCheckboxesInWindowFieldsToWatch: string[] = ["operation"];
+const getSelectedCheckboxesInWindowFieldsToWatch: string[] = ["operation", "o_selectedCheckboxesOutput", "o_selectedCheckboxesSwitch", "o_isCheckedOutput",  "o_isCheckedSwitch"];
 
 const getSelectedCheckboxesInWindow: ActivityConfig = {
   fieldList: getSelectedCheckboxesInWindowFieldList,

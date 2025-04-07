@@ -102,6 +102,20 @@ const ifWindowFieldList: IDynamicFieldSchema[] = [
       { label: "Lose focus", value: "loseFocus" },
     ],
     defaultValue: "open",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "getWindow", value: "byWindowUiElement" },
+              { key: "getWindow", value: "byWindowInstanceHandle" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
 ];
 
