@@ -1,13 +1,21 @@
-import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
-import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
-import { DATA_QUERY_KEY } from "../../constants";
-import { useQueryClient } from "@tanstack/react-query";
+import { PricingPlanDto } from "@/react-toolkit/types/pricing-plan-dto";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { useQueryClient } from "@tanstack/react-query";
 
-export const OverviewDetails = ({ planId }: { planId: string }) => {
+import { DATA_QUERY_KEY } from "../../constants";
+import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
+
+export const OverviewDetails = ({
+  planId,
+  licenseDetails,
+  isFetching,
+}: {
+  planId: string;
+  isFetching: boolean;
+  licenseDetails?: PricingPlanDto;
+}) => {
   // Get query client
   const queryClient = useQueryClient();
-  const { data, isFetching } = useFetchLicenseDetails(planId);
   // Get licenses data from query client
   const licensesData = queryClient.getQueryData<{
     data: MyLicensesTableDto[];
@@ -28,7 +36,7 @@ export const OverviewDetails = ({ planId }: { planId: string }) => {
             {isFetching ? (
               <Skeleton className="h-5 w-32" />
             ) : (
-              data?.data.unitPrice
+              licenseDetails?.unitPrice
             )}
           </div>
         </div>
@@ -38,7 +46,7 @@ export const OverviewDetails = ({ planId }: { planId: string }) => {
             {isFetching ? (
               <Skeleton className="h-5 w-32" />
             ) : (
-              data?.data.frequency
+              licenseDetails?.frequency
             )}
           </div>
         </div>

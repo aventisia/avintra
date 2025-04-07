@@ -1,28 +1,27 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { useFetchLicenseDetails } from '@/react-toolkit/hooks/useFetchLicense';
+import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
+import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
+import { LicenseSelectField } from '@/react-toolkit/ui/form/fields/LicenseSelectField';
+import { Form } from '@/react-toolkit/ui/form/Form';
+import { Skeleton } from '@/react-toolkit/ui/skeleton';
 
-import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
+import { licenseOptimisticMutationFn } from '../../apis/licenses-table-apis';
+import { DATA_QUERY_KEY } from '../../constants';
 import {
-  additionalUnitsRequestedProps,
-  idProps,
-  licenseTypesProps,
-} from "../../constants/license-form-field-props";
-import { licenseZodSchema } from "../../constants/license-zod-schema";
-import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
-import { useDefineLicenseForm } from "../../hooks/useDefineLicenseForm";
-import { OverviewDetails } from "./OverviewDetails";
+    additionalUnitsRequestedProps, idProps, licenseTypesProps
+} from '../../constants/license-form-field-props';
+import { licenseZodSchema } from '../../constants/license-zod-schema';
+import { MyLicensesTableDto } from '../../dtos/licenses-table-dto';
+import { useDefineLicenseForm } from '../../hooks/useDefineLicenseForm';
+import { OverviewDetails } from './OverviewDetails';
 
 export const LicenseCrudForm = () => {
   // Define license form
   const {
     form,
-    currentLicenseData,
     watch,
     isDirty,
     rowId,
@@ -50,7 +49,9 @@ export const LicenseCrudForm = () => {
     setShowDialog(false);
   };
 
-  const [planId] = watch(["planId"]);
+  const [planId] = watch(["planId", "additionalUnitsRequested"]);
+
+  const { data: licenseDetails, isFetching } = useFetchLicenseDetails(planId);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -72,7 +73,13 @@ export const LicenseCrudForm = () => {
       ) : null}
 
       {/* overview dtetails */}
-      {planId ? <OverviewDetails planId={planId} /> : null}
+      {planId && licenseDetails ? (
+        <OverviewDetails
+          licenseDetails={licenseDetails.data}
+          isFetching={isFetching}
+          planId={planId}
+        />
+      ) : null}
 
       {/* new quantity */}
       <div className="rounded-md bg-slate-100 p-5">
@@ -81,15 +88,26 @@ export const LicenseCrudForm = () => {
       </div>
       <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
         <p className="font-light">Additional Payment Due:</p>
-        <p>{currentLicenseData?.overdueBalance ?? 0}</p>
+        <div>
+          {isFetching ? (
+            <Skeleton className="h-6 w-32" />
+          ) : (
+            (form.getValues("additionalUnitsRequested") ?? 0) *
+            (licenseDetails?.data?.unitPrice ?? 0)
+          )}
+        </div>
       </div>
 
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-10 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+          <Button
+            type="submit"
+            disabled={!isDirty || isFetching}
+            className="min-w-[5rem]"
+          >
             Submit Request
-          </Button>
+          </Button> 
         </div>
       )}
     </Form>
