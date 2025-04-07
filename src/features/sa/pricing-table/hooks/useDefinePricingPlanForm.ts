@@ -123,6 +123,13 @@ export const useDefinePricingPlanForm = () => {
     };
   };
 
+  const [pricingComponent] = watch(["pricingComponent"]);
+
+  // Save the form dirty state
+  useEffect(() => {
+    if (pricingComponent === "GpuCompute") form.setValue("frequency", "NA");
+  }, [form, isDirty, pricingComponent, toggleFormDirty]);
+
   // Save the form dirty state
   useEffect(() => {
     toggleFormDirty(isDirty);

@@ -8,7 +8,7 @@ const DATA_QUERY_KEY = ["my-licenses"];
 /**
  * The heading for the licenses table.
  */
-const TABLE_HEADING = "Licenses & Creadits";
+const TABLE_HEADING = "Licenses & Credits";
 
 /**
  * The column used for searching in the licenses.

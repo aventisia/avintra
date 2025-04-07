@@ -1,15 +1,17 @@
-import { TbDatabaseDollar } from "react-icons/tb";
-import { GiWallet } from "react-icons/gi";
-import { PiCertificate } from "react-icons/pi";
-import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
-import { BsDot } from "react-icons/bs";
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-import { useQueryClient } from "@tanstack/react-query";
-import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
-import { DATA_QUERY_KEY } from "../constants";
 import IEnumerable from "linq";
+import { BsDot } from "react-icons/bs";
+import { GiWallet } from "react-icons/gi";
+import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
+import { PiCertificate } from "react-icons/pi";
+import { TbDatabaseDollar } from "react-icons/tb";
+
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
+import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { DATA_QUERY_KEY } from "../constants";
+import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
 
 type LicensesStats = {
   dediacted: number;
@@ -120,7 +122,7 @@ export const SaLicensesStats = () => {
         icon={<PiCertificate fill="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
-        title={"Creadits"}
+        title={"Credits"}
         description={
           <span className="flex items-center">
             <p>

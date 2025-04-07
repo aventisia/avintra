@@ -84,7 +84,7 @@ export const LicensesStats = () => {
         icon={<PiCertificate fill="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
-        title={"Creadits"}
+        title={"Credits"}
         description={
           <span className="flex items-center">
             <p>

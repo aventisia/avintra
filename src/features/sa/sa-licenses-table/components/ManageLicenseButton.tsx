@@ -22,7 +22,7 @@ export const ManageLicenseButton = () => {
         })
       }
     >
-      Manage Licenses & Creadits
+      Manage Licenses & Credits
     </Button>
   );
 };

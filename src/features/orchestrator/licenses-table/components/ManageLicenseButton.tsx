@@ -1,7 +1,7 @@
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from "zustand/react/shallow";
 
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 export const ManageLicenseButton = () => {
   // Get store state and actions
@@ -22,7 +22,7 @@ export const ManageLicenseButton = () => {
         })
       }
     >
-      Manage Licenses & Creadits
+      Manage Licenses & Credits
     </Button>
   );
 };
