@@ -12,10 +12,6 @@ export const getLicensesToSelect = () => {
 };
 
 export const getLicenseDetails = (planId?: string) => {
-  if (!planId)
-    return new Promise<IHttpResponse<PricingPlanDto>>((resolve, reject) => {
-      return reject("Plan id is null");
-    });
   return axiosInstance
     .get<IHttpResponse<PricingPlanDto>>(`${baseAPIURL}/${planId}`)
     .then((res) => res.data);
