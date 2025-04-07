@@ -15,11 +15,10 @@ script:pre-request {
   
   req.setBody(
     {
-      tenantId: bru.getGlobalEnvVar("TENANT_ID"),
-     name: "TestP2la1",
+      //tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+     name: "AIAgent",
      currency: "USD",
      unitPrice: 350,
-     unit: "Credit",
      frequency: "Monthly",
      cola : 5
     }
