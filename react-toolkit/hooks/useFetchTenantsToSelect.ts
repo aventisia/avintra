@@ -25,7 +25,7 @@ export const useFetchTenantsToSelect = (isRequired: boolean) => {
   const defaultSelectOption: ISelectOption[] = [
     {
       label: "Default",
-      value: "default",
+      value: "00000000-0000-0000-0000-000000000000",
       disable: true,
     },
   ];
