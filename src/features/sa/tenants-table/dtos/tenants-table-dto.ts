@@ -1,4 +1,5 @@
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+import { DatabaseOptionsEnum } from '@/react-toolkit/enums/database-options-enum'
+import { DeploymentTypeEnum } from '@/react-toolkit/enums/deployment-types-enum'
 
 /**
  * Represents a data transfer object (DTO) for a tenant.
@@ -15,6 +16,11 @@ export interface TenantsTableDto {
    * Gets or sets the unique full name of the tenant. Maximum length is 100 characters.
    */
   name: string;
+
+  /**
+   * Gets or sets the unique full name of the tenant. Maximum length is 100 characters.
+   */
+  type: DeploymentTypeEnum;
 
   /**
    * Gets or sets the contract effective date and time of the tenant's account based on the subscription/trial period.
