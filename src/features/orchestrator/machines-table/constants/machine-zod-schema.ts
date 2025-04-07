@@ -1,9 +1,13 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
-import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
+import {
+  alphaNumericError,
+  maxLenError,
+  reqError,
+} from "@/react-toolkit/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 
-import { ipv4Regex, ipv6Regex } from './';
+import { ipv4Regex, ipv6Regex } from "./";
 
 /**
  * Represents the Zod object's item schema for a machine name.
@@ -18,9 +22,10 @@ export const machineNameSchema = z
 
 const ipAddressSchema = z
   .string()
+  .min(1, { message: reqError("IP Address") })
   .refine(
     (value) => ipv4Regex.test(value) || ipv6Regex.test(value),
-    "Invalid IP address. Must be a valid IPv4 or IPv6 address."
+    "Invalid IP address. Must be a valid IPv4 or IPv6 address.",
   );
 
 /**
@@ -33,7 +38,7 @@ export const machineZodSchema = z.object({
   environment: z.string().min(1, { message: reqError("Environment type") }),
   licenseType: z.string().min(1, { message: reqError("License type") }),
   ipAddress: ipAddressSchema,
-  hostname: z.string({ message: reqError("Host Name") }),
+  hostname: z.string().min(1, { message: reqError("Host Name") }),
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
