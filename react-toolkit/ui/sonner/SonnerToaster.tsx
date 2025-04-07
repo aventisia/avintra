@@ -1,7 +1,7 @@
-import "@/react-toolkit/styles/sonner.css";
+import "@/react-toolkit/ui/sonner/sonner.css";
 import { Toaster } from "sonner";
 
-export const ToasterExt = () => {
+export const SonnerToaster = () => {
   return (
     <Toaster
       position="bottom-right"

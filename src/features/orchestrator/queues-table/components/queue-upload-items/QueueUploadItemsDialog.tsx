@@ -63,7 +63,6 @@ export const QueueUploadItemsDialog = ({
       {children}
       <DialogContent side={"right"} className="w-[50vw] !max-w-[50vw]">
         <DialogDefaultHeader
-          className="px-3.5 py-3 text-lg tracking-wide"
           heading="Upload Items"
         />
         <ScrollArea className="h-[calc(100vh-10rem)] px-2.5 pb-0 pt-4">

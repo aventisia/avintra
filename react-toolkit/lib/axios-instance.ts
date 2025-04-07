@@ -1,16 +1,23 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import {
-  ARTIFICIAL_DELAY,
   DEV_JWT_LS_KEY,
+  INVALID_CREDS,
   REQUEST_TIMEOUT,
 } from "@/react-toolkit/constants";
-import {
-  removeUserSessionLocally,
-  setUserSessionLocally,
-} from "@/react-toolkit/utils/user-session-utils";
+import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+import { sleep } from "@/react-toolkit/utils/sleep-util";
 import axios from "axios";
 import { toast } from "sonner";
 
+/**
+ * Creates an Axios instance with predefined configuration.
+ *
+ * The instance is configured with:
+ * - A timeout specified by the `REQUEST_TIMEOUT` constant.
+ * - Default headers including `Content-Type` set to `application/json`.
+ *
+ * @constant {AxiosInstance} axiosInstance - The configured Axios instance.
+ */
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
   // headers: {
@@ -18,7 +25,7 @@ const axiosInstance = axios.create({
   // },
 });
 
-// Intercept request
+// Intercept request and add JWT token to the header if its DEV env
 axiosInstance.interceptors.request.use(
   (request) => {
     // Attach jwt from LS if its DEV env
@@ -37,22 +44,22 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-// Intercept response
+// Intercept response and handle errors
 axiosInstance.interceptors.response.use(
   async (response) => {
-    // Add artificial delay for DEV env
-    if (import.meta.env.DEV) await sleep(ARTIFICIAL_DELAY);
-    // If success just return the response
+    // Artificial delay for development
+    if (import.meta.env.DEV) await sleep(import.meta.env.VITE_ARTIFICIAL_DELAY);
+
     return response;
   },
   async (error) => {
-    // Keep original request
+    // Set original request
     const originalRequest = error.config;
 
     // If response null
     if (!error.response) return Promise.reject(error);
 
-    // If Access Token was expired
+    // If response status is 401 and request is not login, verify-2fa-code, refresh-session, my-session, logoff
     if (
       !originalRequest.url.includes("/auth/login") &&
       !originalRequest.url.includes("/auth/verify-2fa-code") &&
@@ -62,18 +69,20 @@ axiosInstance.interceptors.response.use(
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
+      // Set original request retry to true
       originalRequest._retry = true;
-      const newSession = await refreshSession();
-      if (newSession) {
-        setUserSessionLocally(newSession.data);
-      }
+
+      // Refresh the session
+      await refreshSession();
+
+      // Return the original request
       return axiosInstance(originalRequest);
     }
 
-    // Define errorMessage variable
+    // Set empty error message
     let errorMessage = "";
 
-    // Error is a string
+    // If error response data is string
     if (typeof error.response.data == "string") {
       errorMessage = error.response.data;
     }
@@ -98,8 +107,8 @@ axiosInstance.interceptors.response.use(
       case 401:
         toast.error(errorMessage);
 
-        // Remove user session from local storage and redirect to login page
-        removeUserSessionLocally(true);
+        // Redirect to login page if error is not "Invalid credentials"
+        if (errorMessage !== INVALID_CREDS) redirectToLoginOn401Util();
         break;
       case 403:
         toast.error(errorMessage);
@@ -120,9 +129,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-function sleep(ms = 2000): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export { axiosInstance };

@@ -2,7 +2,7 @@ import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Loader2 } from "lucide-react";
+import LoadingSpinner from "@/react-toolkit/ui/loading-spinner/LoadingSpinner";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -10,35 +10,59 @@ interface RedirectPageProps {
   className?: string;
 }
 
-/** Default message is Loading... redirect?url=https://domain.com/&msg=Please Wait...*/
+/**
+ * RedirectPage component is responsible for handling redirection to a specified URL
+ * while optionally displaying a loading or wait message. It uses query parameters
+ * from the URL to determine the redirection target and message to display.
+ *
+ * @component
+ * @param {string} [props.className] - Optional additional class names to style the component.
+ *
+ * @remarks
+ * - The component reads the `url` and `msg` query parameters from the URL.
+ * - If the `url` parameter is present, the component redirects the user to the specified URL.
+ * - The `msg` parameter is used to display a loading or wait message alongside a spinner.
+ *
+ * @example
+ * // Example URL: /redirect?url=https://example.com&msg=Please wait...
+ * <RedirectPage className="custom-class" />
+ *
+ * @returns {JSX.Element} A JSX element containing the redirection UI.
+ */
 const RedirectPage = ({ className }: RedirectPageProps) => {
   const [searchParams] = useSearchParams();
   const url = searchParams.get("url");
   const message = searchParams.get("msg"); // loading or wait message
 
   useEffect(() => {
-    url ? window.location.assign(url) : null;
+    if (url) {
+      window.location.assign(url);
+    }
   });
 
   return (
     <div
       className={cn(
-        "flex h-screen w-full flex-col items-center justify-between p-3 lg:w-[100%]",
+        "flex h-screen w-full flex-col items-center justify-between p-3 pb-3 lg:w-[100%]",
         className,
       )}
     >
-      <div className="flex w-full items-center justify-between p-5 xs:p-3">
-        <AppLogo doNotShowAppName={true} />
+      <div className="flex w-full items-center justify-between p-5 xs:p-6">
+        <AppLogo showFullLogo={true} className="h-7" />
         <a
           href="/help?id=redirect"
-          className={cn(buttonVariants({ variant: "link" }), "text-right")}
+          className={cn(
+            buttonVariants({ variant: "link" }),
+            "text-right text-md",
+            "hidden", // TODO: Hide the help link till we have a docs app
+          )}
         >
           Help?
         </a>
       </div>
-      <div className="-mt-4 flex items-center gap-3">
-        <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
-        {message ? message : "Loading..."}
+      <div className="-mt-4 flex items-center gap-3 text-md">
+        <LoadingSpinner className="h-10 w-10" />
+        {message}
       </div>
       <MinimalFooter />
     </div>

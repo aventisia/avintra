@@ -34,7 +34,7 @@ const CheckboxField = ({
       {...{ name, control }}
       render={({ field }) => (
         <FormItem>
-          <div className="ml-0.5 flex items-center gap-2">
+          <div className="ml-0.5 flex items-start gap-2">
             <FormControl>
               <Checkbox
                 disabled={disabled}

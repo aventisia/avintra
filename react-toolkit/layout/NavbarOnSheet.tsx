@@ -5,13 +5,8 @@ import { cn } from "@/react-toolkit/lib/utils";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTrigger,
-} from "@/react-toolkit/ui/sheet";
-import { Bars3BottomLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Sheet, SheetContent, SheetTrigger } from "@/react-toolkit/ui/sheet";
+import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 interface NavbarOnSheetProps {
@@ -33,7 +28,7 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
           variant="outline"
           size="icon8"
           className={cn(
-            "mr-3.5 h-8 w-8 rounded-lg border-none bg-transparent",
+            "mr-3.5 h-8 w-8 rounded-lg border-none bg-transparent text-white/70 shadow-none hover:bg-white/10 hover:text-white/70",
             className,
           )}
           onClick={() => setSidebarExpand(true)}
@@ -43,13 +38,8 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
       </SheetTrigger>
       <SheetContent side="left" className="w-[--sidebar-max-width]">
         <PerfectScrollbar>
-          <div className="flex h-[--header-height] items-center p-4">
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon8" className="mr-3.5">
-                <XMarkIcon className="h-5 w-5" />
-              </Button>
-            </SheetClose>
-            <AppLogo />
+          <div className="flex h-[--header-height] items-center p-[1.1rem]">
+            <AppLogo lightLogo={false} />
           </div>
           <nav className="h-auto">
             <SidebarMenuItems

@@ -131,7 +131,7 @@ const DialogDefaultHeader = ({
 }: DialogDefaultHeaderProps) => (
   <div
     className={cn(
-      "relative flex items-center justify-between border-b px-2 py-2 text-base",
+      "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide",
       className,
     )}
   >
@@ -161,5 +161,15 @@ const DialogDefaultHeader = ({
 DialogDefaultHeader.displayName = "DialogDefaultHeader";
 
 export {
-  Dialog, DialogClose, DialogContent, DialogDefaultHeader, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDefaultHeader,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
 };

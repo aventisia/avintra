@@ -1,5 +1,5 @@
 import { cn } from "@/react-toolkit/lib/utils";
-import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
+import { FormFieldSizeType } from "@/react-toolkit/types/form-field-size-type";
 import { FormItemContext } from "@/react-toolkit/ui/form/FormItemContext";
 import * as React from "react";
 

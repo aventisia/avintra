@@ -27,11 +27,10 @@ export const MachineCrudDialog = ({ children }: React.PropsWithChildren) => {
       {children}
       <DialogContent side={"right"} className="!max-w-[32rem]">
         <DialogDefaultHeader
-          className="px-3.5 py-3 text-lg tracking-wide"
           heading={dialogHeaderOptions.heading}
           description={dialogHeaderOptions.description}
         />
-        <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
+        <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
           <MachineCrudForm />
         </ScrollArea>
       </DialogContent>

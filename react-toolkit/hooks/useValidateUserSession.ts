@@ -4,12 +4,10 @@ import {
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import {
-  removeUserSessionLocally,
   setUserSessionLocally,
 } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
 
 /**
  * Custom hook to validate user session and handle session refresh.
@@ -28,15 +26,11 @@ export const useValidateUserSession = () => {
       // Set authenticated user locally and session obj in store
       setUserSession(setUserSessionLocally(httpResponse.data));
     },
-    onError: (error) => {
-      // Show error toast
-      toast.error(error.toString());
-      
+    onError: () => {
       // Remove user session from store
       setUserSession(null);
 
-      // Remove user session from local storage and redirect to login page
-      removeUserSessionLocally(true); 
+      // Toaster and redirection are not required since axios instance handles 401 error and redirects to login page
     },
   });
 
