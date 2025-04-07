@@ -148,7 +148,7 @@ export const SaLicensesStats = () => {
       />
 
       <StatsCard
-        title={"Creadits"}
+        title={"Annaul Revenue"}
         description={
           <p
             className={
