@@ -13,7 +13,7 @@ const TABLE_HEADING = "Pricing Plans";
 /**
  * The column used for searching in the pricing plans.
  */
-const SEARCH_COLUMN = "name";
+const SEARCH_COLUMN = "pricingComponent";
 
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {

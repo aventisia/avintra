@@ -17,7 +17,7 @@ export const idProps: InputFieldProps = {
 };
 
 export const pricingComponentTypeProps: SelectFieldProps = {
-  name: "name",
+  name: "pricingComponent",
   label: "Pricing Component",
   isRequired: true,
   selectOptions: enumToArray(PricingComponentsEnum),

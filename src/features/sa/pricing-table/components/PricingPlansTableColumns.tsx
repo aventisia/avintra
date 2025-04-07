@@ -1,10 +1,11 @@
+import { dateFormat } from "@/react-toolkit/constants";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
+
 import { getColumnName } from "../constants/column-display-names";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 import { PricingPlanRowActions } from "./pricingPlan-table-actions/PricingPlanRowActions";
-import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the pricingplans table.
@@ -35,12 +36,17 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "pricingComponent",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("pricingComponent")}
+      />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <div className="w-auto truncate font-medium">
+        {row.getValue("pricingComponent")}
+      </div>
     ),
   },
 

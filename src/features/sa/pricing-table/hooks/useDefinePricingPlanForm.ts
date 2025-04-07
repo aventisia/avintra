@@ -49,7 +49,7 @@ export const useDefinePricingPlanForm = () => {
     resolver: zodResolver(pricingPlanZodSchema),
     defaultValues: {
       id: "",
-      name: "",
+      pricingComponent: "",
       tenantType: "",
       tenantName: "",
       currency: "",
@@ -83,7 +83,7 @@ export const useDefinePricingPlanForm = () => {
     form.reset({
       // Single fields
       id: rowId,
-      name: data?.name ?? "",
+      pricingComponent: data?.pricingComponent ?? "",
       tenantType: data?.tenantType ?? "",
       tenantName: data?.tenantName ?? "",
       currency: data?.currency ?? "",
@@ -110,7 +110,7 @@ export const useDefinePricingPlanForm = () => {
     return {
       ...formData,
       unit:
-        formData.name == PricingComponentsEnum.GpuCompute
+        formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? PricingUnitTypesEnum.Credit
           : PricingUnitTypesEnum.License,
       lastModifiedBy: userSession?.email ?? "",

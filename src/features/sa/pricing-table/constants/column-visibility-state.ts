@@ -1,7 +1,7 @@
 /** Column visibility initial state for the pricingplans table. */
 export const columnVisibilityState = {
   id: false,
-  name: true,
+  pricingComponent: true,
   tenantType: true,
   tenantName: true,
   currency: true,

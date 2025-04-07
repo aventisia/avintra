@@ -76,7 +76,7 @@ export const PricingPlanCrudForm = () => {
       ) : null}
 
       {/* pricingComponent name fo the plan */}
-      {form.getValues("name") || crudAction === "create" ? (
+      {form.getValues("pricingComponent") || crudAction === "create" ? (
         <SelectField {...pricingComponentTypeProps} />
       ) : null}
 
