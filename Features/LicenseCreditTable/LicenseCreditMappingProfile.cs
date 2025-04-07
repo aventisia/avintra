@@ -6,7 +6,7 @@ public class LicenseCreditMappingProfile : IRegister
     {
         // Configuration for mapping LicenseCredit to LicenseCreditDto.
         config.NewConfig<LicenseCredit, LicenseCreditDto>()
-            .Map(dest => dest.PlanName, src => src.PlanPricing != null ? src.PlanPricing.Name : null)
+            .Map(dest => dest.PricingComponent, src => src.PlanPricing != null ? src.PlanPricing.PricingComponent.ToString() : null)
             .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
             .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
             .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
@@ -23,13 +23,13 @@ public class LicenseCreditMappingProfile : IRegister
                     : null);
 
         config.NewConfig<LicenseCredit, SelectOptionDto>()
-            .Map(dest => dest.Label, src => src.PlanPricing != null ? $"{src.PlanPricing.Name} - {src.Available}" : null)
+            .Map(dest => dest.Label, src => src.PlanPricing != null ? $"{src.PlanPricing.PricingComponent} - {src.Available}" : null)
             .Map(dest => dest.Disabled, src => src.IsDisabled)
             .Map(dest => dest.Value, src => src.Id);
 
         // Configuration for mapping LicenseCredit to LicenseCreditDto.
         config.NewConfig<LicenseCredit, MyLicenseCreditDto>()
-            .Map(dest => dest.PlanName, src => src.PlanPricing != null ? src.PlanPricing.Name : null)
+            .Map(dest => dest.PricingComponent, src => src.PlanPricing != null ? src.PlanPricing.PricingComponent.ToString() : null)
             .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
             .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
             .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)

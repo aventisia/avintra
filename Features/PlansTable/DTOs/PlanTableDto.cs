@@ -9,7 +9,7 @@ public class PlanTableDto
     /// Unique identifier for the tenant.
     /// </summary>
     public Guid Id { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
@@ -28,8 +28,8 @@ public class PlanTableDto
     /// <summary>
     /// Gets or sets the name of the pricing component.
     /// </summary>
-    [StringLength(256), Required]
-    public required string Name { get; set; }
+    [Required]
+    public required PricingComponentsEnum PricingComponent { get; set; }
 
     /// <summary>
     /// Gets or sets the currency used for the pricing plan, with a default value of USD.
@@ -47,19 +47,19 @@ public class PlanTableDto
     /// Gets or sets the type of unit associated with the pricing plan (e.g., Credit or License).
     /// This indicates the quantity relevant to the specified unit type.
     /// </summary>
-    [Required]
-    public required UnitTypesEnum Unit { get; set; }
+    public UnitTypesEnum? Unit { get; set; }
 
     /// <summary>
     /// Gets or sets the billing frequency for the pricing plan (e.g., monthly, yearly).
     /// </summary>
+    [Required]
     public required FrequencyTypesEnum Frequency { get; set; }
 
     /// <summary>
     /// Gets or sets the Cost of Living Adjustment (COLA) applicable to the pricing plan.
     /// This adjustment is used to account for inflation and changes in living costs.
     /// </summary>
-    [Range(0, 100)]
+    [Required, Range(0, 100)]
     public required double COLA { get; set; }
 
     /// <summary>

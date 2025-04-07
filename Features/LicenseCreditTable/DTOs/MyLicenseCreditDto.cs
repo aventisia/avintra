@@ -20,7 +20,7 @@ public class MyLicenseCreditDto
     /// <summary>
     /// Gets or sets the name of the pricing plan connected to this tenant.
     /// </summary>
-    public string? PlanName { get; set; }
+    public PricingComponentsEnum? PricingComponent { get; set; }
     
     /// <summary>
     /// Gets or sets the price per unit for the pricing plan.

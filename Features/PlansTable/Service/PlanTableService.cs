@@ -121,7 +121,6 @@ public class PlanTableService : IPlanTableService
         return serviceResponse;
     }
 
-
     // Checks if a plan name is available
     public async Task<ServiceResponse<TrueFalseResultDto>> IsPlanNameAvailableAsync(CheckAvailabilityDto availabilityCheckDto)
     {
@@ -136,7 +135,7 @@ public class PlanTableService : IPlanTableService
             // Check if the plan name already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == availabilityCheckDto.UserInput.Trim().ToLower())
+                                                        w.PricingComponent.ToString().ToLower() == availabilityCheckDto.UserInput.Trim().ToLower())
                                                      .FirstOrDefaultAsync();
 
             // Set response based on existence
@@ -177,7 +176,7 @@ public class PlanTableService : IPlanTableService
             // Check if the plan already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == planTableDto.Name.ToLower() &&
+                    w.PricingComponent == planTableDto.PricingComponent &&
                     (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
                     (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
                     w.Currency == planTableDto.Currency &&
@@ -187,7 +186,7 @@ public class PlanTableService : IPlanTableService
 
             if (planAlreadyExists != null)
             {
-                _logger.LogInformation("The plan '{PlanName}' already exists.", planTableDto.Name);
+                _logger.LogInformation("The plan '{PricingComponent}' already exists.", planTableDto.PricingComponent);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A plan with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
@@ -196,6 +195,7 @@ public class PlanTableService : IPlanTableService
             // Trim string properties in the DTO
             planTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(planTableDto);
             var newPlan = planTableDto.Adapt<PlanPricing>();
+            newPlan.Unit = newPlan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.License : UnitTypesEnum.Credit;
             newPlan.CreatedByUserId = _userId;
             newPlan.LastModifiedByUserId = _userId;
 
@@ -212,7 +212,7 @@ public class PlanTableService : IPlanTableService
             serviceResponse.Data = newPlan.Adapt<PlanTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Plan created successfully.";
-            _logger.LogInformation("The plan '{PlanName}' was created successfully.", planTableDto.Name);
+            _logger.LogInformation("The plan '{PricingComponent}' was created successfully.", planTableDto.PricingComponent);
         }
         catch (Exception ex)
         {
@@ -252,7 +252,7 @@ public class PlanTableService : IPlanTableService
             var planAlreadyExists = await _unitOfWork.PlanRepo
                                                      .GetByConditionAsync(w =>
                                                         w.Id != planTableDto.Id &&
-                                                        w.Name.ToLower() == planTableDto.Name.ToLower() &&
+                                                        w.PricingComponent == planTableDto.PricingComponent &&
                                                         (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
                                                         (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
                                                         w.Currency == planTableDto.Currency &&
@@ -261,7 +261,7 @@ public class PlanTableService : IPlanTableService
 
             if (planAlreadyExists != null)
             {
-                _logger.LogInformation("The plan name '{PlanName}' is already in use by another plan.", planTableDto.Name);
+                _logger.LogInformation("The plan name '{PricingComponent}' is already in use by another plan.", planTableDto.PricingComponent);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A plan with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
@@ -271,7 +271,7 @@ public class PlanTableService : IPlanTableService
             planTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(planTableDto);
             planTableDto.Adapt(plan);
             plan.LastModifiedByUserId = _userId;
-
+            plan.Unit = plan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.License : UnitTypesEnum.Credit;
             // Update the plan
             _unitOfWork.PlanRepo.Update(plan);
 
@@ -285,7 +285,7 @@ public class PlanTableService : IPlanTableService
             serviceResponse.Data = plan.Adapt<PlanTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Plan updated successfully.";
-            _logger.LogInformation("The plan '{PlanName}' was updated successfully.", planTableDto.Name);
+            _logger.LogInformation("The plan '{PricingComponent}' was updated successfully.", planTableDto.PricingComponent);
         }
         catch (Exception ex)
         {

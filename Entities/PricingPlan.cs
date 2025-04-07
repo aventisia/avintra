@@ -6,8 +6,11 @@ public class PlanPricing : BaseEntity
     /// <summary>
     /// Gets or sets the name of the pricing component.
     /// </summary>
-    [MaxLength(256), Required]
-    public required string Name { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the pricing component.
+    /// </summary>
+    [Required]
+    public required PricingComponentsEnum PricingComponent { get; set; }
 
     /// <summary>
     /// Gets or sets the currency for the pricing plan, defaulting to USD.

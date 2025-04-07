@@ -86,7 +86,7 @@ public partial class AccountsDbContext
     {
         base.OnModelCreating(builder);
 
-        // Gloabl TenantId filters
+        // Global TenantId filters
         builder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -104,6 +104,7 @@ public partial class AccountsDbContext
         builder.Entity<PlanPricing>().Property(e => e.Unit).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
         builder.Entity<PlanPricing>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<FrequencyTypesEnum>());
         builder.Entity<PlanPricing>().Property(e => e.TenantType).HasConversion(new EnumToStringConverter<TenantTypesEnum>());
+        builder.Entity<PlanPricing>().Property(e => e.PricingComponent).HasConversion(new EnumToStringConverter<PricingComponentsEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
@@ -125,8 +126,8 @@ public partial class AccountsDbContext
         builder.Entity<PlanPricing>().HasMany(p => p.Subscriptions).WithOne(one => one.PlanPricing).HasForeignKey(fKey => fKey.PlanId).IsRequired();
 
         // Configure Many-to-Many relationship between Permission and Custom Role
-        builder.Entity<RolePermission>().HasOne(o => o.Permission).WithMany(r => r.RolePermissions).HasForeignKey(fkey => fkey.PermissionId).IsRequired();
-        builder.Entity<RolePermission>().HasOne(o => o.AccountRole).WithMany(r => r.RolePermissions).HasForeignKey(fkey => fkey.AccountRoleId).IsRequired();
+        builder.Entity<RolePermission>().HasOne(o => o.Permission).WithMany(r => r.RolePermissions).HasForeignKey(fKey => fKey.PermissionId).IsRequired();
+        builder.Entity<RolePermission>().HasOne(o => o.AccountRole).WithMany(r => r.RolePermissions).HasForeignKey(fKey => fKey.AccountRoleId).IsRequired();
 
         // Configure Many-to-Many relationship between AccountUser and AccountRole
         builder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
