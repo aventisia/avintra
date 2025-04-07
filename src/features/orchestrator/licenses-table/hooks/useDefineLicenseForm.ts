@@ -50,11 +50,6 @@ export const useDefineLicenseForm = () => {
       id: "",
       planId: "",
       additionalUnitsRequested: undefined,
-      isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
-      createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: new Date(),
     },
   });
 
@@ -80,21 +75,6 @@ export const useDefineLicenseForm = () => {
       id: rowId,
       planId: licenseData?.planId,
       additionalUnitsRequested: licenseData?.additionalUnitsRequested,
-
-      isDisabled: licenseData?.isDisabled ?? false,
-      // Read (view) only fields
-      createdBy:
-        licenseData?.createdBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      createdOn: licenseData?.createdOn
-        ? new Date(licenseData?.createdOn)
-        : new Date(),
-      lastModifiedBy:
-        licenseData?.lastModifiedBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: licenseData?.lastModifiedOn
-        ? new Date(licenseData?.lastModifiedOn)
-        : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
 

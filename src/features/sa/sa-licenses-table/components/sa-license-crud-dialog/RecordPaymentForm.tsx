@@ -2,12 +2,12 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
 import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { Separator } from "@/react-toolkit/ui/separator";
+import { Tooltip } from "@/react-toolkit/ui/Tooltip";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 

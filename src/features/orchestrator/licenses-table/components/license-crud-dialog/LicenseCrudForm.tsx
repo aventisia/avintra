@@ -3,21 +3,20 @@ import { z } from "zod";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  idProps,
   additionalUnitsRequestedProps,
+  idProps,
   licenseTypesProps,
 } from "../../constants/license-form-field-props";
 import { licenseZodSchema } from "../../constants/license-zod-schema";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
 import { useDefineLicenseForm } from "../../hooks/useDefineLicenseForm";
 import { OverviewDetails } from "./OverviewDetails";
-import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
 
 export const LicenseCrudForm = () => {
   // Define license form
@@ -85,15 +84,6 @@ export const LicenseCrudForm = () => {
         <p>{currentLicenseData?.overdueBalance ?? 0}</p>
       </div>
 
-      {/* AutherCard */}
-      {isReadMode && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
-        />
-      )}
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-10 flex w-full justify-end">
