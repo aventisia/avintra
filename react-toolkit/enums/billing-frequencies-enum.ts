@@ -8,4 +8,9 @@ export enum BillingFrequenciesEnum {
    *  Indicates billing occurs on a annualy basis.
    */
   Annually = "Annually",
+
+  /**
+   *  Indicates no billing occurs for credits
+   */
+  NA = "NA",
 }

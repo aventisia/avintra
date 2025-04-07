@@ -46,7 +46,6 @@ export const unitPriceTypeProps: InputFieldProps = {
 export const frequencyTypeProps: SelectFieldProps = {
   name: "frequency",
   label: "Billing Frequency",
-  isRequired: true,
   selectOptions: enumToArray(BillingFrequenciesEnum),
 };
 export const colaTypeProps: IconInputFieldProps = {

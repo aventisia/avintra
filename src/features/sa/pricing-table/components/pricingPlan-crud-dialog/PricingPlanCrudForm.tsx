@@ -29,8 +29,15 @@ import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
 
 export const PricingPlanCrudForm = () => {
   // Define pricingplan form
-  const { form, isDirty, rowId, crudAction, setShowDialog, refineFormData } =
-    useDefinePricingPlanForm();
+  const {
+    form,
+    isDirty,
+    watch,
+    rowId,
+    crudAction,
+    setShowDialog,
+    refineFormData,
+  } = useDefinePricingPlanForm();
 
   // Define optimistic mutation to crete or update the pricingplan
   const { mutate: mutatePricingPlan } = useListOptimisticMutation<
@@ -53,6 +60,8 @@ export const PricingPlanCrudForm = () => {
 
   // Is form in read mode
   const isReadMode = crudAction === "read";
+
+  const [pricingComponent] = watch(["pricingComponent"]);
 
   // Return the form
   return (
@@ -89,8 +98,12 @@ export const PricingPlanCrudForm = () => {
       <InputField {...unitPriceTypeProps} />
 
       {/* frequency */}
-      {form.getValues("frequency") || crudAction === "create" ? (
-        <SelectField {...frequencyTypeProps} />
+      {(form.getValues("frequency") || crudAction === "create") &&
+      pricingComponent != "GpuCompute" ? (
+        <SelectField
+          {...frequencyTypeProps}
+          isRequired={pricingComponent !== "GpuCompute"}
+        />
       ) : null}
 
       {/* cola */}

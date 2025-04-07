@@ -21,29 +21,37 @@ export const pricingPlanNameSchema = z
 /**
  * Represents the Zod schema for a pricingplan.
  */
-export const pricingPlanZodSchema = z.object({
-  // Single fields
-  id: z.string().optional(),
-  pricingComponent: z.string().min(1, { message: reqError("Tenant Name") }),
-  tenantType: z.string().min(1, { message: reqError("Tenant Type") }),
-  tenantName: z.string().optional(),
-  currency: z.string().min(1, { message: reqError("currency") }),
-  unitPrice: z
-    .string()
-    .min(1, { message: reqError("Unit Price") })
-    .transform((val) => Number(val))
-    .pipe(z.number().positive("unit price must be positive")),
-  frequency: z.string().min(1, { message: reqError("Billing Frequency") }),
-  cola: z
-    .string()
-    .min(1, { message: reqError("COLA") })
-    .transform((val) => Number(val))
-    .pipe(z.number().positive("COLA must be positive")),
-  // Single field
-  isDisabled: z.boolean(),
-  // Group (read-only)
-  createdBy: z.string(),
-  createdOn: z.date(),
-  lastModifiedBy: z.string(),
-  lastModifiedOn: z.date(),
-});
+export const pricingPlanZodSchema = z
+  .object({
+    // Single fields
+    id: z.string().optional(),
+    pricingComponent: z.string().min(1, { message: reqError("Tenant Name") }),
+    tenantType: z.string().min(1, { message: reqError("Tenant Type") }),
+    tenantName: z.string().optional(),
+    currency: z.string().min(1, { message: reqError("currency") }),
+    unitPrice: z
+      .string()
+      .min(1, { message: reqError("Unit Price") })
+      .transform((val) => Number(val))
+      .pipe(z.number().positive("unit price must be positive")),
+    frequency: z.string().optional(),
+    cola: z
+      .string()
+      .min(1, { message: reqError("COLA") })
+      .transform((val) => Number(val))
+      .pipe(z.number().positive("COLA must be positive")),
+    // Single field
+    isDisabled: z.boolean(),
+    // Group (read-only)
+    createdBy: z.string(),
+    createdOn: z.date(),
+    lastModifiedBy: z.string(),
+    lastModifiedOn: z.date(),
+  })
+  .refine(
+    (data) => !(data.pricingComponent && data.pricingComponent != "GpuCompute"),
+    {
+      path: ["frequency"],
+      message: reqError("Billing Frequency"),
+    },
+  );

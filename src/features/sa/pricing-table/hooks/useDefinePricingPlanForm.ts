@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { BillingFrequenciesEnum } from "@/react-toolkit/enums/billing-frequencies-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
@@ -67,6 +68,7 @@ export const useDefinePricingPlanForm = () => {
   // Destructor form values and methods
   const {
     formState: { isSubmitting, isDirty },
+    watch,
   } = form;
 
   // Fetch pricingplan data when rowId changes
@@ -108,11 +110,15 @@ export const useDefinePricingPlanForm = () => {
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof pricingPlanZodSchema>) => {
     return {
-      ...formData,
       unit:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? PricingUnitTypesEnum.Credit
           : PricingUnitTypesEnum.License,
+      frequency:
+        formData.pricingComponent == PricingComponentsEnum.GpuCompute
+          ? BillingFrequenciesEnum.NA
+          : formData.frequency,
+      ...formData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
@@ -126,6 +132,7 @@ export const useDefinePricingPlanForm = () => {
   // Return form and methods
   return {
     form,
+    watch,
     isSubmitting,
     isDirty,
     rowId,
