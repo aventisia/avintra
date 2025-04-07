@@ -1,6 +1,6 @@
 export enum DeploymentTypeEnum {
   Shared = "Shared",
-  OnPrem = "OnPrem",
+  OnPrem = "On-prem",
   Dedicated = "Dedicated",
   MultiTenant = "MultiTenant",
 }
