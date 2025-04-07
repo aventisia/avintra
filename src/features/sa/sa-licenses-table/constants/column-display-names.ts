@@ -1,4 +1,4 @@
-import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type";
+import { KeyValueLookupType } from '@/react-toolkit/types/key-value-lookup-type';
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
@@ -9,6 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "consumed", value: "Consumed" },
   { key: "available", value: "Available" },
   { key: "additionalUnitsRequested", value: "Requested" },
+  { key: "status", value: "Status" },
   { key: "unitPrice", value: "Unit Price" },
   { key: "nextBillingDate", value: "Next Billing Date" },
   { key: "overdueBalance", value: "Overdue Balance" },

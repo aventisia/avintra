@@ -8,5 +8,6 @@ export const columnVisibilityState = {
   unitPrice: true,
   nextBillingDate: true,
   additionalUnitsRequested: true,
+  status: true,
   overdueBalance: true,
 };
