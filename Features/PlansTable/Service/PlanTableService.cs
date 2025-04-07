@@ -137,7 +137,7 @@ public class PlanTableService : IPlanTableService
                 .GetByConditionAsync(w =>
                     w.PricingComponent == planTableDto.PricingComponent &&
                     (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
-                    (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                    (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
                     w.Currency == planTableDto.Currency &&
                     w.Frequency == planTableDto.Frequency
                 )
