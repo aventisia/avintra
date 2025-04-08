@@ -1,10 +1,11 @@
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
+
+import { DataTableSkeleton } from '@/react-toolkit/ui/data-table/DataTableSkeleton';
 
 // Lazy load the UsersTable component.
-const UsersTable = lazy(() =>
-  import("@/features/users-table/components/UsersTable").then((module) => ({
-    default: module.UsersTable,
+const UserManagement = lazy(() =>
+  import("@/features/user-management/UserManagement").then((module) => ({
+    default: module.UserManagement,
   })),
 );
 
@@ -15,7 +16,7 @@ const UsersTable = lazy(() =>
 export const UsersPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <UsersTable />
+      <UserManagement />
     </Suspense>
   );
 };
