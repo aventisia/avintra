@@ -112,7 +112,7 @@ public class PlanTableService : IPlanTableService
 
             if (!_isSuperAdmin)
             {
-                plans = plans.Where(p => p.TenantId == null || p.TenantId == _tenantId).ToList();
+                plans = plans.Where(p => p.TenantId == null || p.TenantId == Guid.Empty || p.TenantId == _tenantId).ToList();
             }
 
             // Map the retrieved plan list to SelectOptionDto and update the response
@@ -170,7 +170,7 @@ public class PlanTableService : IPlanTableService
             newPlan.Unit = newPlan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.License : UnitTypesEnum.Credit;
 
             // Set frequency to null if the pricing component is GPU Compute
-            newPlan.Frequency = newPlan.PricingComponent != PricingComponentsEnum.GPUCompute ? newPlan.Frequency : null;
+            newPlan.Frequency = newPlan.PricingComponent != PricingComponentsEnum.GPUCompute ? newPlan.Frequency : FrequencyTypesEnum.NA;
 
             // Assign the user ID for the creator  and last modifier of the plan
             newPlan.CreatedByUserId = _userId;
