@@ -5,6 +5,8 @@ public class PlanTableService : IPlanTableService
     private readonly ILogger<PlanTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
+    private readonly bool _isSuperAdmin;
 
     public PlanTableService(
         ILogger<PlanTableService> logger,
@@ -13,6 +15,8 @@ public class PlanTableService : IPlanTableService
     {
         // Set _userId from the HTTP context, defaulting to an empty GUID if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _isSuperAdmin = httpContextAccessor.HttpContext?.User.IsInRole("SA") ?? false;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -105,6 +109,11 @@ public class PlanTableService : IPlanTableService
         {
             // Retrieve all plans from the repository
             var plans = await _unitOfWork.PlanRepo.GetAllAsync().ToListAsync();
+
+            if (!_isSuperAdmin)
+            {
+                plans = plans.Where(p => p.TenantId == null || p.TenantId == _tenantId).ToList();
+            }
 
             // Map the retrieved plan list to SelectOptionDto and update the response
             serviceResponse.Data = plans.Adapt<IEnumerable<SelectOptionDto>>();

@@ -25,7 +25,7 @@ public class PlanTableMappingProfile : IRegister
 
         // Get plans in SelectOptionDto format
         config.NewConfig<PlanPricing, SelectOptionDto>()
-            .Map(dest => dest.Label, src => src.PricingComponent)
+            .Map(dest => dest.Label, src => src.PricingComponent == PricingComponentsEnum.GPUCompute ? src.PricingComponent.ToString() : $"{src.PricingComponent} ({src.Frequency})")
             .Map(dest => dest.Value, src => src.Id)
             .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
