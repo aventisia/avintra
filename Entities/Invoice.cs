@@ -8,13 +8,6 @@ public class Invoice : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the Id of a Subscription, this Invoice is associated with
-    /// </summary>
-    public Guid SubscriptionId { get; set; }
-    [ForeignKey("SubscriptionId")]
-    public virtual Subscription? Subscription { get; set; }
-
-    /// <summary>
     /// Gets or sets the Amount
     /// </summary>
     public decimal Amount { get; set; }
@@ -37,4 +30,23 @@ public class Invoice : BaseEntity, IMustHaveTenant
     public DateTime DueDate { get; set; }
     public string? Status { get; set; }   //"unpaid",paid
     public virtual ICollection<Payment>? Payment { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Id of a plan, this LicenseCredit is associated with
+    /// </summary>
+    public Guid LicenseCreditId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the plan, this LicenseCredit is associated with
+    /// </summary>
+    [ForeignKey("LicenseCreditId")]
+    public virtual LicenseCredit? LicenseCredit { get; set; }
+
+    // TODO: This property will be used later
+    // /// <summary>
+    // /// Gets or sets the Id of a Subscription, this Invoice is associated with
+    // /// </summary>
+    // public Guid SubscriptionId { get; set; }
+    // [ForeignKey("SubscriptionId")]
+    // public virtual Subscription? Subscription { get; set; }
 }
