@@ -507,10 +507,13 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("LicenseCreditId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SubscriptionId")
+                    b.Property<Guid?>("SubscriptionId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Tax")
@@ -533,6 +536,8 @@ namespace AccountsAPIs.Data.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("LicenseCreditId");
 
                     b.HasIndex("SubscriptionId");
 
@@ -703,7 +708,6 @@ namespace AccountsAPIs.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Frequency")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDisabled")
@@ -1334,17 +1338,21 @@ namespace AccountsAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AccountsAPIs.Entities.Subscription", "Subscription")
-                        .WithMany("Invoice")
-                        .HasForeignKey("SubscriptionId")
+                    b.HasOne("AccountsAPIs.Enums.LicenseCredit", "LicenseCredit")
+                        .WithMany("Invoices")
+                        .HasForeignKey("LicenseCreditId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AccountsAPIs.Entities.Subscription", null)
+                        .WithMany("Invoice")
+                        .HasForeignKey("SubscriptionId");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
 
-                    b.Navigation("Subscription");
+                    b.Navigation("LicenseCredit");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.ObsoletePwd", b =>
@@ -1629,6 +1637,11 @@ namespace AccountsAPIs.Data.Migrations
             modelBuilder.Entity("AccountsAPIs.Entities.Tenant", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Enums.LicenseCredit", b =>
+                {
+                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }
