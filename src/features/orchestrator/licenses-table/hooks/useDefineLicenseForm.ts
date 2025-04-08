@@ -82,6 +82,7 @@ export const useDefineLicenseForm = () => {
   const refineFormData = (formData: z.infer<typeof licenseZodSchema>) => {
     return {
       ...formData,
+      id: userSession?.tenantId,
       tenantId: userSession?.tenantId,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
