@@ -88,9 +88,10 @@ public class InvoiceService : IInvoiceService
         };
         try
         {
+            //TODO: Update it letter
             // Try to get invoice by subscriptionId
             var invoice = await _unitOfWork.InvoiceRepo
-            .GetByConditionAsync(w => w.SubscriptionId == subscriptionId)
+            .GetByConditionAsync(w => w.Id == subscriptionId)
             .ToListAsync();
 
             if (invoice == null)
@@ -349,7 +350,7 @@ public class InvoiceService : IInvoiceService
             var invoice = invoiceDto.Adapt<Invoice>();
             invoice.CreatedByUserId = _userId;
             invoice.LastModifiedByUserId = _userId;
-          
+
             //Insert the Invoice into the Database
             await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
 
