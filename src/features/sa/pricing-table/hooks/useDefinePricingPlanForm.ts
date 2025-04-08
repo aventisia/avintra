@@ -110,6 +110,10 @@ export const useDefinePricingPlanForm = () => {
   const refineFormData = (formData: z.infer<typeof pricingPlanZodSchema>) => {
     return {
       ...formData,
+      tenantId:
+        formData.tenantId == "00000000-0000-0000-0000-000000000000"
+          ? null
+          : formData.tenantId,
       unit:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? PricingUnitTypesEnum.Credit
