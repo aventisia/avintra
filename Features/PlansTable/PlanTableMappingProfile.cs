@@ -6,7 +6,6 @@ public class PlanTableMappingProfile : IRegister
     {
         // Mapping for flow record or records.
         config.NewConfig<PlanPricing, PlanTableDto>()
-            .Map(dest => dest.PricingComponent, src => GetEnumDescriptionUtil.GetEnumDescription(src.PricingComponent))
             .Map(dest => dest.TenantId, src => src.Tenant != null ? src.Tenant.Id : Guid.Empty)
             .Map(dest => dest.TenantType, src => src.Tenant != null ? src.Tenant.Type : TenantTypesEnum.NA)
             .Map(dest => dest.TenantName, src => src.Tenant != null ? src.Tenant.Name : "Default")
