@@ -13,12 +13,12 @@ public class PlanTableDto
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
-    public Guid TenantId { get; set; } = Guid.Empty;
+    public Guid? TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
-    public string TenantName { get; set; } = "Default";
+    public string? TenantName { get; set; }
 
     /// <summary>
     /// Gets or sets the type of tenant associated with this pricing plan.
@@ -52,7 +52,7 @@ public class PlanTableDto
     /// <summary>
     /// Gets or sets the billing frequency for the pricing plan (e.g., monthly, yearly).
     /// </summary>
-    public FrequencyTypesEnum Frequency { get; set; } = FrequencyTypesEnum.NA;
+    public FrequencyTypesEnum? Frequency { get; set; }
 
     /// <summary>
     /// Gets or sets the Cost of Living Adjustment (COLA) applicable to the pricing plan.

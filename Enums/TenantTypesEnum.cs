@@ -21,5 +21,10 @@ public enum TenantTypesEnum
     /// Indicates a dedicated tenant type, where resources are allocated exclusively to a single user or organization.
     /// </summary>
     [Description("Dedicated tenant type, where resources are allocated exclusively to a single user or organization.")]
-    Dedicated
+    Dedicated,
+
+    /// <summary>
+    /// Represents tenant Types not Applicable for credits
+    /// </summary>
+    NA
 }
