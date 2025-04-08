@@ -1,11 +1,13 @@
-import { dateFormat } from "@/react-toolkit/constants";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
+import { dateFormat } from '@/react-toolkit/constants';
+import { PricingComponentsEnum } from '@/react-toolkit/enums/pricing-components-enum';
+import { Checkbox } from '@/react-toolkit/ui/checkbox';
+import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
+import { getEnumValueByKey } from '@/react-toolkit/utils/enum-to-array';
+import { ColumnDef } from '@tanstack/react-table';
 
-import { getColumnName } from "../constants/column-display-names";
-import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
-import { PricingPlanRowActions } from "./pricingPlan-table-actions/PricingPlanRowActions";
+import { getColumnName } from '../constants/column-display-names';
+import { PricingPlansTableDto } from '../dtos/pricingPlans-table-dto';
+import { PricingPlanRowActions } from './pricingPlan-table-actions/PricingPlanRowActions';
 
 /**
  * Array of table columns for the pricingplans table.
@@ -45,7 +47,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("pricingComponent")}
+        {getEnumValueByKey(PricingComponentsEnum, row.getValue("pricingComponent"))}
       </div>
     ),
   },

@@ -1,13 +1,15 @@
-import { formatDistanceToNow, isValid } from "date-fns";
-import { twMerge } from "tailwind-merge";
+import { formatDistanceToNow, isValid } from 'date-fns';
+import { twMerge } from 'tailwind-merge';
 
-import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
+import { LicenseCreditStatusesEnum } from '@/react-toolkit/enums/license-credit-status-enum';
+import { PricingComponentsEnum } from '@/react-toolkit/enums/pricing-components-enum';
+import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
+import { getEnumValueByKey } from '@/react-toolkit/utils/enum-to-array';
+import { ColumnDef } from '@tanstack/react-table';
 
-import { getColumnName } from "../constants/column-display-names";
-import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
-import { SaLicenseRowActions } from "./sa-license-row-actions/SaLicenseRowActions";
+import { getColumnName } from '../constants/column-display-names';
+import { LicensesTableDto } from '../dtos/sa-licenses-table-dto';
+import { SaLicenseRowActions } from './sa-license-row-actions/SaLicenseRowActions';
 
 /**
  * Array of table columns for the licenses table.
@@ -35,7 +37,7 @@ export const saLicensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("pricingComponent")}
+        {getEnumValueByKey(PricingComponentsEnum, row.getValue("pricingComponent"))}
       </div>
     ),
   },

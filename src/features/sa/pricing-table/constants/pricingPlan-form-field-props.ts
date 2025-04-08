@@ -12,7 +12,7 @@ import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 // PricingPlan Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "PricingPlan Id",
+  label: "Id",
   disabled: true,
 };
 
@@ -61,7 +61,6 @@ export const colaTypeProps: IconInputFieldProps = {
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
-  description:
-    "Disable this record if it's been outdated, or not required anymore",
+  label: "Disable Plan",
+  description: "Disable this plan if it's been outdated, or not in use anymore",
 };

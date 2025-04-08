@@ -1,11 +1,13 @@
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNow, isValid } from 'date-fns';
 
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
+import { PricingComponentsEnum } from '@/react-toolkit/enums/pricing-components-enum';
+import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
+import { getEnumValueByKey } from '@/react-toolkit/utils/enum-to-array';
+import { ColumnDef } from '@tanstack/react-table';
 
-import { getColumnName } from "../constants/column-display-names";
-import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
-import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
+import { getColumnName } from '../constants/column-display-names';
+import { MyLicensesTableDto } from '../dtos/licenses-table-dto';
+import { LicenseRowActions } from './license-row-actions/LicenseRowActions';
 
 /**
  * Array of table columns for the licenses table.
@@ -22,7 +24,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("pricingComponent")}
+        {getEnumValueByKey(PricingComponentsEnum, row.getValue("pricingComponent"))}
       </div>
     ),
   },

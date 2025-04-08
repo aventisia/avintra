@@ -1,9 +1,10 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
+import { IHttpResponse } from '@/react-toolkit/dtos/http-response'
+import { IOptimisticMutation } from '@/react-toolkit/dtos/optimistic-mutation'
+import { CheckAvailabilityDto } from '@/react-toolkit/dtos/request/check-availability-dto'
+import { TrueFalseResultDto } from '@/react-toolkit/dtos/response/true-false-result-dto'
+import { axiosInstance } from '@/react-toolkit/lib/axios-instance'
+
+import { PricingPlansTableDto } from '../dtos/pricingPlans-table-dto'
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/plan`;
 
@@ -59,9 +60,9 @@ const deletePricingPlan = (id: string) => {
 /**
  * Disable multiple pricingplans by their IDs.
  */
-const disablePricingPlans = (ids: string[]) => {
+const deletePricingPlans = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 
@@ -75,7 +76,7 @@ const disablePricingPlans = (ids: string[]) => {
 const pricingPlanOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<PricingPlansTableDto | string>) => {
+}: IOptimisticMutation<PricingPlansTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
       return insertPricingPlan(payload as PricingPlansTableDto);
@@ -94,6 +95,6 @@ export {
   insertPricingPlan,
   updatePricingPlan,
   deletePricingPlan,
-  disablePricingPlans,
+  deletePricingPlans as disablePricingPlans,
   pricingPlanOptimisticMutationFn,
 };

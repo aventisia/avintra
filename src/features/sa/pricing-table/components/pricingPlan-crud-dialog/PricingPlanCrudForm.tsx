@@ -41,6 +41,7 @@ export const PricingPlanCrudForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof pricingPlanZodSchema>) => {
+    console.log(formData);
     // Create or update the pricingplan
     mutatePricingPlan({
       payload: refineFormData(formData) as unknown as PricingPlansTableDto,

@@ -88,9 +88,9 @@ export const useDefinePricingPlanForm = () => {
       tenantType: data?.tenantType ?? "",
       tenantId: data?.tenantId ?? "",
       currency: data?.currency ?? "",
-      unitPrice: data?.unitPrice,
+      unitPrice: data?.unitPrice.toString(),
       frequency: data?.frequency,
-      cola: data?.cola,
+      cola: data?.cola.toString(),
       // Single field
       isDisabled: data?.isDisabled ?? false,
       // Group (read-only)
