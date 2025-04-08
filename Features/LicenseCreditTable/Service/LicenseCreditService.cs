@@ -363,7 +363,6 @@ public class LicenseCreditService : ILicenseCreditService
                 .GetByConditionAsync(w =>
                     w.Id == licenseCreditDto.Id &&
                     w.PlanId == licenseCreditDto.PlanId)
-                .Include(a => a.Invoices)
                 .FirstOrDefaultAsync();
 
             // If no existing credit is found, log and return a message
@@ -403,6 +402,7 @@ public class LicenseCreditService : ILicenseCreditService
             {
                 // Mark the invoice as paid
                 invoice.IsPaid = true;
+                invoice.Status = "Paid";
                 invoice.LastModifiedByUserId = _userId;
 
                 // Update the invoice in the repository
@@ -412,7 +412,6 @@ public class LicenseCreditService : ILicenseCreditService
                 if (!await _unitOfWork.SaveAsync())
                 {
                     _logger.LogInformation("Failed to save changes while invoicing license credit.");
-                    return serviceResponse; // Return appropriate response if save fails
                 }
             }
             else
