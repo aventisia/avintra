@@ -137,7 +137,7 @@ public class PlanTableService : IPlanTableService
                 .GetByConditionAsync(w =>
                     w.PricingComponent == planTableDto.PricingComponent &&
                     (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
-                    (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
+                    (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
                     w.Currency == planTableDto.Currency &&
                     w.Frequency == planTableDto.Frequency
                 )
@@ -151,10 +151,19 @@ public class PlanTableService : IPlanTableService
                 return serviceResponse;
             }
 
-            // Trim string properties in the DTO
+            // Trim string properties in the Data Transfer Object (DTO)
             planTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(planTableDto);
+
+            // Map the trimmed DTO to the PlanPricing model
             var newPlan = planTableDto.Adapt<PlanPricing>();
+
+            // Set the unit based on the pricing component type
             newPlan.Unit = newPlan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.License : UnitTypesEnum.Credit;
+
+            // Set frequency to null if the pricing component is GPU Compute
+            newPlan.Frequency = newPlan.PricingComponent != PricingComponentsEnum.GPUCompute ? newPlan.Frequency : null;
+
+            // Assign the user ID for the creator  and last modifier of the plan
             newPlan.CreatedByUserId = _userId;
             newPlan.LastModifiedByUserId = _userId;
 
@@ -226,13 +235,24 @@ public class PlanTableService : IPlanTableService
                 return serviceResponse;
             }
 
-            // Trim string properties in the DTO
+            // Trim string properties in the Data Transfer Object (DTO)
             planTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(planTableDto);
+
+            // Map the trimmed DTO to the existing plan object
             planTableDto.Adapt(plan);
-            plan.LastModifiedByUserId = _userId;
+
+            // Set the unit based on the pricing component type
             plan.Unit = plan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.License : UnitTypesEnum.Credit;
-            // Update the plan
+
+            // Set frequency to null if the pricing component is GPU Compute
+            plan.Frequency = plan.PricingComponent != PricingComponentsEnum.GPUCompute ? plan.Frequency : null;
+
+            // Assign the user ID of the last modifier
+            plan.LastModifiedByUserId = _userId;
+
+            // Update the plan in the repository
             _unitOfWork.PlanRepo.Update(plan);
+
 
             // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
