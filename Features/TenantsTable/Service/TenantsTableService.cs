@@ -39,8 +39,7 @@ public class TenantsTableService : ITenantsTableService
             // Try to get tenants
             var tenants = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w =>
-                    w.IsEditable == true &&
-                    w.IsDefault == false &&
+                    w.IsEditable && !w.IsDefault &&
                     w.Id != _currentTenantService.CurrentTenantId) //  TODO: Update condition
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
@@ -103,7 +102,7 @@ public class TenantsTableService : ITenantsTableService
         try
         {
             // Retrieve all tenants from the repository
-            var tenants = await _unitOfWork.TenantRepo.GetAllAsync().ToListAsync();
+            var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.IsEditable && !w.IsDefault).ToListAsync();
 
             // If a specific tenant type is provided, filter the tenants accordingly
             if (tenantType.HasValue)
