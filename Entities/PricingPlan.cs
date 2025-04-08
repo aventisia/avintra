@@ -34,7 +34,7 @@ public class PlanPricing : BaseEntity
     /// <summary>
     /// Gets or sets the billing frequency for the pricing plan (e.g., monthly, yearly).
     /// </summary>
-    public required FrequencyTypesEnum Frequency { get; set; }
+    public FrequencyTypesEnum? Frequency { get; set; }
 
     /// <summary>
     /// Gets or sets the Cost of Living Adjustment (COLA) applicable to the pricing plan.
