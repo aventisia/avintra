@@ -250,7 +250,7 @@ public class PlanTableService : IPlanTableService
             planTableDto.Adapt(plan);
 
             // Set the unit based on the pricing component type
-            plan.Unit = plan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.License : UnitTypesEnum.Credit;
+            plan.Unit = plan.PricingComponent == PricingComponentsEnum.GPUCompute ? UnitTypesEnum.Credit : UnitTypesEnum.License;
 
             // Set frequency to null if the pricing component is GPU Compute
             plan.Frequency = plan.PricingComponent != PricingComponentsEnum.GPUCompute ? plan.Frequency : null;
