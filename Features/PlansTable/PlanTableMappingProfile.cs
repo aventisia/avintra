@@ -6,7 +6,7 @@ public class PlanTableMappingProfile : IRegister
     {
         // Mapping for flow record or records.
         config.NewConfig<PlanPricing, PlanTableDto>()
-            .Map(dest => dest.PricingComponent, src => GetEnumDescriptionUtil.GetEnumDescription((Enum)src.PricingComponent))
+            .Map(dest => dest.PricingComponent, src => GetEnumDescriptionUtil.GetEnumDescription(src.PricingComponent))
             .Map(dest => dest.TenantId, src => src.Tenant != null ? src.Tenant.Id : Guid.Empty)
             .Map(dest => dest.TenantType, src => src.Tenant != null ? src.Tenant.Type : TenantTypesEnum.NA)
             .Map(dest => dest.TenantName, src => src.Tenant != null ? src.Tenant.Name : "Default")
@@ -28,7 +28,9 @@ public class PlanTableMappingProfile : IRegister
 
         // Get plans in SelectOptionDto format
         config.NewConfig<PlanPricing, SelectOptionDto>()
-            .Map(dest => dest.Label, src => src.PricingComponent == PricingComponentsEnum.GPUCompute ? GetEnumDescriptionUtil.GetEnumDescription((Enum)src.PricingComponent) : $"{GetEnumDescriptionUtil.GetEnumDescription((Enum)src.PricingComponent)} ({src.Frequency})")
+            .Map(dest => dest.Label, src => src.PricingComponent == PricingComponentsEnum.GPUCompute 
+                                ? GetEnumDescriptionUtil.GetEnumDescription(src.PricingComponent) 
+                                : $"{GetEnumDescriptionUtil.GetEnumDescription(src.PricingComponent)} ({src.Frequency})")
             .Map(dest => dest.Value, src => src.Id)
             .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
