@@ -173,8 +173,6 @@ public class PlanTableService : IPlanTableService
             newPlan.Frequency = newPlan.PricingComponent != PricingComponentsEnum.GPUCompute ? newPlan.Frequency : FrequencyTypesEnum.NA;
 
             // Assign the user ID for the creator  and last modifier of the plan
-            // newPlan.TenantId = planTableDto.TenantId ?? Guid.Empty;
-            // newPlan.TenantType = planTableDto.TenantType ?? TenantTypesEnum.NA;
             newPlan.CreatedByUserId = newPlan.LastModifiedByUserId = _userId;
 
             // Insert the new plan
