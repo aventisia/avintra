@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
 import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useRoleSessionStore } from "@/react-toolkit/stores/role-session-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -22,9 +22,9 @@ export const useDefineRoleForm = () => {
   const [roleEmail, setRoleEmail] = useState("");
 
   // Get role session
-  const { roleSession } = useRoleSessionStore(
+  const { userSession } = useUserSessionStore(
     useShallow((state) => ({
-      roleSession: state.roleSession,
+      userSession: state.userSession,
     })),
   );
 
@@ -60,9 +60,9 @@ export const useDefineRoleForm = () => {
       lockoutEnd: undefined,
       emailConfirmed: false,
       pwdSetOn: undefined,
-      createdBy: roleSession?.firstName + " " + roleSession?.lastName,
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
-      lastModifiedBy: roleSession?.firstName + " " + roleSession?.lastName,
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: new Date(),
     },
   });
@@ -103,18 +103,18 @@ export const useDefineRoleForm = () => {
       pwdSetOn: roleData?.pwdSetOn ? new Date(roleData?.pwdSetOn) : undefined,
       createdBy:
         roleData?.createdBy ??
-        roleSession?.firstName + " " + roleSession?.lastName,
+        userSession?.firstName + " " + userSession?.lastName,
       createdOn: roleData?.createdOn
         ? new Date(roleData?.createdOn)
         : new Date(),
       lastModifiedBy:
         roleData?.lastModifiedBy ??
-        roleSession?.firstName + " " + roleSession?.lastName,
+        userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: roleData?.lastModifiedOn
         ? new Date(roleData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, roleSession]);
+  }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
   const {
@@ -135,7 +135,7 @@ export const useDefineRoleForm = () => {
   const refineFormData = (formData: z.infer<typeof roleZodSchema>) => {
     return {
       ...formData,
-      lastModifiedBy: roleSession?.email ?? "",
+      lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
   };
