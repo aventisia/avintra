@@ -120,7 +120,7 @@ export const useDefinePricingPlanForm = () => {
           : PricingUnitTypesEnum.License,
       frequency:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
-          ? "NA"
+          ? null
           : formData.frequency,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
