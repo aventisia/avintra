@@ -21,11 +21,5 @@ public enum TenantTypesEnum
     /// Indicates a dedicated tenant type, where resources are allocated exclusively to a single user or organization.
     /// </summary>
     [Description("Dedicated tenant type, where resources are allocated exclusively to a single user or organization.")]
-    Dedicated,
-
-    /// <summary>
-    /// Indicates a multi-tenant type, where multiple organizations share the same infrastructure but have isolated data.
-    /// </summary>
-    [Description("Multi-tenant type, where multiple organizations share the same infrastructure but have isolated data.")]
-    MultiTenant
+    Dedicated
 }
