@@ -11,7 +11,7 @@ export const idProps: InputFieldProps = {
 // First Name
 export const nameProps: InputFieldProps = {
   name: "name",
-  label: "Name",
+  label: "Role",
   isRequired: true,
 };
 

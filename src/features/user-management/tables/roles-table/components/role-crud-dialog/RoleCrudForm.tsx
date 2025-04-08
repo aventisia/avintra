@@ -1,18 +1,23 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
-import { Button } from '@/react-toolkit/ui/buttons/Button';
-import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
-import { TextareaField } from '@/react-toolkit/ui/form/fields/TextareaField';
-import { Form } from '@/react-toolkit/ui/form/Form';
-import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
-import { roleOptimisticMutationFn } from '../../apis/roles-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
-import { descriptionProps, idProps, nameProps } from '../../constants/role-form-field-props';
-import { roleZodSchema } from '../../constants/role-zod-schema';
-import { RolesTableDto } from '../../dtos/roles-table-dto';
-import { useDefineRoleForm } from '../../hooks/useDefineRoleForm';
+import { roleOptimisticMutationFn } from "../../apis/roles-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
+import {
+  descriptionProps,
+  idProps,
+  nameProps,
+} from "../../constants/role-form-field-props";
+import { roleZodSchema } from "../../constants/role-zod-schema";
+import { RolesTableDto } from "../../dtos/roles-table-dto";
+import { useDefineRoleForm } from "../../hooks/useDefineRoleForm";
+import { PermissionsTable } from "./permissions-table/PermissionsTable";
 
 export const RoleCrudForm = () => {
   // Define role form
@@ -63,38 +68,40 @@ export const RoleCrudForm = () => {
       className="px-2.5 pb-5"
       disabled={isReadMode}
     >
-      {/* Role Id (Read-only) */}
-      {isReadMode && <InputField {...idProps} />}
+      <div className="w-5/12 space-y-4">
+        {/* Role Id (Read-only) */}
+        {isReadMode && <InputField {...idProps} />}
 
-      {/* Name */}
-      <InputField
-        {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
-      />
-
-      {/* Description */}
-      <TextareaField {...descriptionProps} />
-
-      {/* AutherCard */}
-      {isReadMode && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
+        {/* Name */}
+        <InputField
+          {...nameProps}
+          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+          nonErrorMessage={availabilityMessage}
         />
-      )}
 
+        {/* Description */}
+        <TextareaField {...descriptionProps} />
+
+        {/* AutherCard */}
+        {isReadMode && (
+          <AutherCard
+            createdBy={form.getValues("createdBy")}
+            createdOn={form.getValues("createdOn")}
+            lastModifiedBy={form.getValues("lastModifiedBy")}
+            lastModifiedOn={form.getValues("lastModifiedOn")}
+          />
+        )}
+      </div>
+      <PermissionsTable />
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <div className="!mt-5 flex w-full justify-end self-end">
           <Button
             type="submit"
             disabled={!isDirty || !isAvailable || isCheckPending}
             className="min-w-[5rem]"
           >
-            {crudAction === "create" ? "Create role" : "Save changes"}
+            {crudAction === "create" ? "Create" : "Save changes"}
           </Button>
         </div>
       )}
