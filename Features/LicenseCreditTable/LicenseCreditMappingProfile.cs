@@ -7,12 +7,13 @@ public class LicenseCreditMappingProfile : IRegister
         // Configuration for mapping LicenseCredit to LicenseCreditDto.
         config.NewConfig<LicenseCredit, LicenseCreditDto>()
             .Map(dest => dest.PricingComponent, src => src.PlanPricing != null ? src.PlanPricing.PricingComponent.ToString() : null)
-            .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
+            .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : src.PlanId)
             .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
             .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
             .Map(dest => dest.TenantType, src => src.PlanPricing != null ? src.PlanPricing.TenantType : null)
             .Map(dest => dest.TenantId, src => src.TenantId)
             .Map(dest => dest.TenantName, src => src.Tenant != null ? src.PlanPricing.Tenant.Name : null)
+            .Map(dest => dest.OverdueBalance, src => src.Invoices != null ? src.Invoices.Sum(a => a.Amount) : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}"
@@ -33,6 +34,7 @@ public class LicenseCreditMappingProfile : IRegister
             .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
             .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
             .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
+            .Map(dest => dest.OverdueBalance, src => src.Invoices != null ? src.Invoices.Sum(a => a.Amount) : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}"

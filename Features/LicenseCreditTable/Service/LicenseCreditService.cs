@@ -36,6 +36,7 @@ public class LicenseCreditService : ILicenseCreditService
                                             .OrderByDescending(w => w.CreatedOn)
                                             .Include(a => a.CreatedByUser)
                                             .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.Invoices)
                                             .Include(a => a.Tenant)
                                             .Include(a => a.PlanPricing)
                                                 .ThenInclude(b => b.Tenant)
@@ -106,6 +107,7 @@ public class LicenseCreditService : ILicenseCreditService
                                             .OrderByDescending(w => w.CreatedOn)
                                             .Include(a => a.CreatedByUser)
                                             .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.Invoices)
                                             .Include(a => a.Tenant)
                                             .Include(a => a.PlanPricing)
                                                 .ThenInclude(b => b.Tenant)
@@ -239,51 +241,38 @@ public class LicenseCreditService : ILicenseCreditService
                     (licenseCreditDto.TenantId != null || w.TenantId == licenseCreditDto.TenantId))
                 .FirstOrDefaultAsync();
 
+            // TODO: Add validation
+
             // Trim string properties
             licenseCreditDto = TrimDtoStringPropsUtil.TrimDtoStringProps(licenseCreditDto);
 
-            if (existingCredit != null)
+            var newLicenseCredit = licenseCreditDto.Adapt<LicenseCredit>();
+            newLicenseCredit.AdditionalUnitsRequested = licenseCreditDto.AdditionalUnitsRequested;
+            newLicenseCredit.Status = LicenseCreditStatusesEnum.Requested;
+            newLicenseCredit.CreatedByUserId = _userId;
+            newLicenseCredit.LastModifiedByUserId = _userId;
+
+            await _unitOfWork.LicenseCreditRepo.InsertAsync(newLicenseCredit);
+
+            if (!await _unitOfWork.SaveAsync())
             {
-                // Update the existing credit's AdditionalUnitsRequested
-                existingCredit.AdditionalUnitsRequested = licenseCreditDto.AdditionalUnitsRequested;
-                existingCredit.Status = LicenseCreditStatusesEnum.Requested;
-                existingCredit.LastModifiedByUserId = _userId;
-
-                _unitOfWork.LicenseCreditRepo.Update(existingCredit);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogInformation("Failed to save changes while updating license credit.");
-                    return serviceResponse;
-                }
-
-                serviceResponse.Data = existingCredit.Adapt<LicenseCreditDto>();
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "License credit updated successfully.";
-                _logger.LogInformation("License credit updated successfully for PlanId: '{PlanId}'.", licenseCreditDto.PlanId);
+                _logger.LogInformation("Failed to save changes while updating license credit.");
+                return serviceResponse;
             }
-            else
+
+            // Create invoice with default values
+            var isCreated = await CreateInvoiceAsync(newLicenseCredit);
+
+            if (!isCreated)
             {
-                // Create a new license credit
-                var newCredit = licenseCreditDto.Adapt<LicenseCredit>();
-
-                newCredit.Status = LicenseCreditStatusesEnum.Rejected;
-                newCredit.CreatedByUserId = _userId;
-                newCredit.LastModifiedByUserId = _userId;
-
-                await _unitOfWork.LicenseCreditRepo.InsertAsync(newCredit);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogInformation("Failed to save changes while inserting new license credit.");
-                    return serviceResponse;
-                }
-
-                serviceResponse.Data = newCredit.Adapt<LicenseCreditDto>();
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "License credit created successfully.";
-                _logger.LogInformation("License credit with additional units requested '{AdditionalUnitsRequested}' was created successfully.", licenseCreditDto.AdditionalUnitsRequested);
+                _logger.LogInformation("Failed to save changes while creating invoice for license credit.");
             }
+
+            serviceResponse.Data = newLicenseCredit.Adapt<LicenseCreditDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "License credit updated successfully.";
+            _logger.LogInformation("License credit updated successfully for PlanId: '{PlanId}'.", licenseCreditDto.PlanId);
+
         }
         catch (Exception ex)
         {
@@ -374,6 +363,7 @@ public class LicenseCreditService : ILicenseCreditService
                 .GetByConditionAsync(w =>
                     w.Id == licenseCreditDto.Id &&
                     w.PlanId == licenseCreditDto.PlanId)
+                .Include(a => a.Invoices)
                 .FirstOrDefaultAsync();
 
             // If no existing credit is found, log and return a message
@@ -402,6 +392,33 @@ public class LicenseCreditService : ILicenseCreditService
             {
                 _logger.LogInformation("Failed to save changes while updating license credit.");
                 return serviceResponse;
+            }
+            // Retrieve the invoice associated with the given license credit
+            var invoice = await _unitOfWork.InvoiceRepo
+                .GetByConditionAsync(a => a.LicenseCreditId == existingCredit.Id)
+                .FirstOrDefaultAsync();
+
+            // Check if the invoice was found
+            if (invoice != null)
+            {
+                // Mark the invoice as paid
+                invoice.IsPaid = true;
+                invoice.LastModifiedByUserId = _userId;
+
+                // Update the invoice in the repository
+                _unitOfWork.InvoiceRepo.Update(invoice);
+
+                // Attempt to save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Failed to save changes while invoicing license credit.");
+                    return serviceResponse; // Return appropriate response if save fails
+                }
+            }
+            else
+            {
+                _logger.LogWarning("No invoice found for LicenseCreditId: {LicenseCreditId}", existingCredit.Id);
+                // Handle case where invoice is not found
             }
 
             // Populate the service response with the updated credit information
@@ -574,5 +591,55 @@ public class LicenseCreditService : ILicenseCreditService
         }
 
         return serviceResponse;
+    }
+
+    // Create an invoice for the specified license credit, including calculated amounts and default settings.
+    public async Task<bool> CreateInvoiceAsync(LicenseCredit existingCredit)
+    {
+        try
+        {
+            var planPricing = await _unitOfWork.PlanRepo
+                            .GetByConditionAsync(a => a.Id == existingCredit.PlanId)
+                            .FirstOrDefaultAsync();
+
+            // Ensure the necessary properties are available
+            if (planPricing == null)
+            {
+                _logger.LogWarning("Invalid LicenseCredit: PlanPricing is null for PlanId: {PlanId}", existingCredit?.PlanId);
+                return false;
+            }
+
+            // Calculate the amount and total amount
+            decimal unitPrice = Convert.ToDecimal(planPricing.UnitPrice);
+            int additionalUnits = existingCredit.AdditionalUnitsRequested;
+
+            // Create the invoice object with the necessary details
+            var invoice = new Invoice()
+            {
+                LicenseCreditId = existingCredit.Id,
+                IsPaid = false,
+                Tax = 0,
+                Discount = 0,
+                Amount = Math.Ceiling(unitPrice * additionalUnits),
+                TotalAmount = Math.Ceiling(unitPrice * additionalUnits),
+                GeneratedDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow,
+                Status = "UnPaid",
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            // Insert the invoice into the repository
+            await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
+
+            // Save changes and return the result
+            await _unitOfWork.SaveAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while creating the invoice for PlanId: {PlanId}", existingCredit.PlanId);
+            return false;
+        }
+        return true;
     }
 }
