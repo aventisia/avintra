@@ -7,11 +7,10 @@ import {
 const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
   {
     name: "wordInstance",
-    type: "select",
+    type: "text",
     label: "Word Instance",
     description:
       "The Word instance to work with. This variable must have been previously specified in a Launch Word or Attach to running Word action",
-    selectOptions: [], // Add available Word instances here if needed
     defaultValue: "",
     regOptions: {
       required: true,

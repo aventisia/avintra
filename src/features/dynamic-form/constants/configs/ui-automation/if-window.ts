@@ -37,10 +37,9 @@ const ifWindowFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "windowInstance",
-    type: "select",
+    type: "text",
     label: "Window instance",
     description: "The instance or handle of the window to check",
-    selectOptions: [],
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
@@ -55,10 +54,9 @@ const ifWindowFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "windowTitle",
-    type: "select",
+    type: "text",
     label: "Window title",
     description: "The window title. Wildcards can be used, like '?' or '*'.",
-    selectOptions: [],
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
@@ -73,11 +71,10 @@ const ifWindowFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "windowClass",
-    type: "select",
+    type: "text",
     label: "Window class",
     description:
       "If there are two windows with the same title, window class may help differentiate between them. In this case, enter the class of the window to be used",
-    selectOptions: [],
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {

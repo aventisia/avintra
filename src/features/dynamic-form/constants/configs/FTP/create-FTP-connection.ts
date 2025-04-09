@@ -7,10 +7,8 @@ import {
   const createFTPConnectionFieldList: IDynamicFieldSchema[] = [
     {
       name: "FTPConnection",
-      type: "select",
-      label: "FTP connection",
-      selectOptions: [],
-  
+      type: "text",
+      label: "FTP connection",  
       description:
         "The FTP connection to work with. This variable must have been previously specified in an Open FTP connection action",
       defaultValue: "",
@@ -18,9 +16,8 @@ import {
   
     {
       name: "newDirectory",
-      type: "select",
+      type: "text",
       label: "New directory",
-      selectOptions: [], 
       description: "The new directory. If a path is specified, all of the new folders leading to the new directory will be created",
       defaultValue: "",
     },

@@ -7,11 +7,10 @@ import {
 const saveWordFieldList: IDynamicFieldSchema[] = [
   {
     name: "wordInstance",
-    type: "select",
+    type: "text",
     label: "Word instance",
     description:
       "The Word instance to save. This variable must have been previously specified in a Launch Word or Attach to running Word action",
-    selectOptions: [],
     defaultValue: "",
   },
   {

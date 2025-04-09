@@ -6,10 +6,9 @@ import {
 const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
   {
     name: "terminalSession",
-    type: "select",
+    type: "text",
     label: "Terminal session",
     description: "The terminal session to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {

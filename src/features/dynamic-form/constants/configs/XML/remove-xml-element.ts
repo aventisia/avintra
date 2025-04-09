@@ -7,9 +7,8 @@ import {
 const removeXmlElementFieldList: IDynamicFieldSchema[] = [
   {
     name: "XMLDocument",
-    type: "select",
+    type: "text",
     label: "XML document",
-    selectOptions: [],
     description: "The XML document that contains the XML element(s) to remove",
     defaultValue: "",
   },

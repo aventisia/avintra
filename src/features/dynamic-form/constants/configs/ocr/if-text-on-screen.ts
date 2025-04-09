@@ -92,11 +92,10 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "tolerance",
-    type: "select",
+    type: "text",
     label: "Tolerance",
     description:
       "Specifies how much the image(s) searched for can differ from the originally chosen image",
-    selectOptions: [],
     defaultValue: "10",
   },
   {
@@ -246,7 +245,6 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
     type: "number",
     label: "Image width multiplier",
     description: "The width multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -254,7 +252,6 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
     type: "number",
     label: "Image height multiplier",
     description: "The height multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {

@@ -33,6 +33,8 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
   const [activityConfig, setActivityConfig] = useState<ActivityConfig | null>(
     null,
   );
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+
   // Get ReactFlowExt store state & actions
   const { nodes, setNodes, setFlowVariablesObject, flowVariablesObject } =
     useReactFlowExtStore(
@@ -101,6 +103,7 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
     setFlowVariablesObject(
       updateFlowVariablesObject({ nodeId: id as string, ...formData }),
     );
+    setIsPopoverOpen(false);
   };
 
   // Update the activityConfig for selected node
@@ -111,7 +114,7 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
   return (
     <StopPropagationWrapper className="flex">
       {activityConfig && (
-        <Popover>
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon6" }),

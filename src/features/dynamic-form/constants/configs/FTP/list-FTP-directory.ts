@@ -7,9 +7,8 @@ import {
 const listFtpDirectoryFieldList: IDynamicFieldSchema[] = [
   {
     name: "connection",
-    type: "select",
+    type: "text",
     label: "Connection",
-    selectOptions: [],
     description: "The FTP connection",
     defaultValue: "",
   },

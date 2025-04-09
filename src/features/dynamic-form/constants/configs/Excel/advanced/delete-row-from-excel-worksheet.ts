@@ -7,11 +7,10 @@ import {
 const deleteRowFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "The Excel instance. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   {

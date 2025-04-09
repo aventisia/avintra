@@ -7,10 +7,9 @@ import {
 const resumeServiceFieldList: IDynamicFieldSchema[] = [
   {
     name: "serviceToResume",
-    type: "select",
+    type: "text",
     label: "Service to resume",
     description: "The name of the service to resume",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

@@ -6,11 +6,10 @@ import {
 const populateTextFieldOnWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {

@@ -7,19 +7,17 @@ import {
 const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "	Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
     name: "uIElement",
-    type: "select",
+    type: "ui-element-selector",
     label: "UI element",
     description: "	Select the UI element on web page to capture",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -29,7 +27,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     label: "Extraction parameter",
     description:
       "	The parameters to use when extracting data. Depending on the extraction mode, this parameter accepts different data.",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -37,7 +34,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     type: "number",
     label: "Max web pages to process",
     description: "	The maximum number of web pages to process",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -45,7 +41,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     type: "switch",
     label: "Send physical click for next page",
     description: "",
-    selectOptions: [],
     defaultValue: false,
   },
   {
@@ -53,7 +48,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Page CSS selector",
     description: "The page CSS selector",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -77,7 +71,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     type: "switch",
     label: "Use paging",
     description: "	Specify whether to use paging",
-    selectOptions: [],
     defaultValue: false,
   },
   {
@@ -85,7 +78,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     type: "switch",
     label: "Get all web pages",
     description: "Specify whether to get all web pages",
-    selectOptions: [],
     defaultValue: false,
   },
   {
@@ -94,7 +86,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     label: "Process data upon extraction",
     description:
       "Specify whether to process extracted data to present them exactly as displayed in the webpage. Processing of extracted data includes displaying of the information nested in iframes and filtering through hidden or visible elements. For larger datasets, having this option enabled isn't recommended as it will increase the extraction time.",
-    selectOptions: [],
     defaultValue: false,
   },
   {
@@ -103,7 +94,6 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
     label: "Timeout",
     description:
       "	Set the time in seconds that you want to wait for the extraction to be completed before the action fails",
-    selectOptions: [],
     defaultValue: "60",
   },
   {
