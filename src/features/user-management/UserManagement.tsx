@@ -1,7 +1,12 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/react-toolkit/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/react-toolkit/ui/tabs";
 
-import { RolesTable } from './tables/roles-table/components/RolesTable';
-import { UsersTable } from './tables/users-table/components/UsersTable';
+import { RolesTable } from "./tables/roles-table/components/RolesTable";
+import { UsersTable } from "./tables/users-table/components/UsersTable";
 
 export const UserManagement = () => {
   return (
