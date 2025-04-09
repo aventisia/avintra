@@ -4,7 +4,7 @@ import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuI
 
 import { roleOptimisticMutationFn } from "../../apis/roles-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { RolesTableDto } from "../../dtos/roles-table-dto";
+import { RoleTableDTO } from "../../dtos/roles-table-dto";
 
 interface RoleRowDeleteActionProps {
   rowId: string;
@@ -14,11 +14,11 @@ export const RoleRowDeleteAction = ({ rowId }: RoleRowDeleteActionProps) => {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
-  // Get mutation function to delete the Role
-  const { mutate: deleteRole } = useListOptimisticMutation<
+  // Get mutation function to delete the User
+  const { mutate: deleteUser } = useListOptimisticMutation<
     string,
-    RolesTableDto | boolean,
-    RolesTableDto
+    RoleTableDTO | boolean,
+    RoleTableDTO
   >([rowId], roleOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
@@ -27,12 +27,12 @@ export const RoleRowDeleteAction = ({ rowId }: RoleRowDeleteActionProps) => {
       onClick={() => {
         showDefaultAlertDialog({
           confirmActionFn: () =>
-            deleteRole({
+            deleteUser({
               payload: rowId,
               crudAction: "delete",
             }),
           alertType: "delete-record",
-          additionalText: "role",
+          additionalText: "user",
         });
       }}
     />
