@@ -7,10 +7,9 @@ import {
 const attachToRunningWordFieldList: IDynamicFieldSchema[] = [
   {
     name: "documentName",
-    type: "select",
+    type: "text",
     label: "Document name",
     description: "The name or path of the Word document to attach to",
-    selectOptions: [],
     defaultValue: "",
   },
   // Output

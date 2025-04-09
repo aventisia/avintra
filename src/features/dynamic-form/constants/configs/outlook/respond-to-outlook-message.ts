@@ -23,11 +23,10 @@ const respondToOutlookMailMessageFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "mailMessage",
-    type: "select",
+    type: "text",
     label: "Mail message",
     description:
       "The mail message to act upon. Use a variable populated by a 'Retrieve email messages from Outlook' action",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -107,11 +106,10 @@ const respondToOutlookMailMessageFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "attachments",
-    type: "select",
+    type: "text",
     label: "Attachment(s)",
     description:
       'The full path of any attachment(s). Enclose multiple files in double quotes ("), and separate them by a space character',
-    selectOptions: [],
     defaultValue: "",
   },
 ];

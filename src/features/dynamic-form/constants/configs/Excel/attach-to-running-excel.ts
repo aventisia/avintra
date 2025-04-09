@@ -7,10 +7,9 @@ import {
 const attachToRunningExcelFieldList: IDynamicFieldSchema[] = [
   {
     name: "documentName",
-    type: "select",
+    type: "text",
     label: "Document name",
     description: "The name or path of the Excel document to attach to",
-    selectOptions: [],
     defaultValue: "",
   },
   {

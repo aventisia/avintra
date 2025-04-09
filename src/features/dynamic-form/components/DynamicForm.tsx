@@ -60,15 +60,18 @@ const DynamicForm = ({
     // handleSubmit,
     watch,
     formState: { isSubmitting },
+    getValues,
   } = form;
 
   // Submit handler
-  function submitHandler(formData: any) {
+  function submitHandler(e: any) {
+    e.preventDefault();
+
     // Return if form is only for view information
     if (viewOnly) return;
 
     // Submit data
-    onSubmit(formData);
+    onSubmit(getValues());
   }
 
   // Watch fields to apply changes to registerOptions
@@ -132,7 +135,8 @@ const DynamicForm = ({
     <Form
       methods={form}
       className={cn("space-y-4", className)}
-      onSubmit={form.handleSubmit(submitHandler)}
+      // onSubmit={form.handleSubmit(submitHandler)}
+      noValidate
     >
       {/* <div>
         <VariableSelectorPopover className="max-h-80" />
@@ -224,13 +228,12 @@ const DynamicForm = ({
           </Button>
         </PopoverClose>
         {!viewOnly && (
-          <PopoverClose>
-            <SubmitButton
-              size="xs"
-              isPending={isMutationPending || isSubmitting}
-              primaryText="Save"
-            />
-          </PopoverClose>
+          <SubmitButton
+            size="xs"
+            isPending={isMutationPending || isSubmitting}
+            primaryText="Save"
+            onClick={submitHandler}
+          />
         )}
       </div>
     </Form>

@@ -6,10 +6,9 @@ import {
 const closeTerminalSessionFieldList: IDynamicFieldSchema[] = [
   {
     name: "terminalSessionToClose",
-    type: "select",
+    type: "text",
     label: "Terminal session to close",
     description: "The previously opened terminal session",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

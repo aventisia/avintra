@@ -7,9 +7,8 @@ import {
 const retrieveExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
   {
     name: "exchangeConnection",
-    type: "select",
+    type: "text",
     label: "Exchange connection",
-    selectOptions: [],
     description:
       "The Exchange connection. Create an Exchange connection with the 'Connect to Exchange server' action.",
     defaultValue: "",

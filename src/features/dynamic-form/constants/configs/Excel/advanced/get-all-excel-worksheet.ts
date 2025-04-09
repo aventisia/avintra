@@ -7,11 +7,10 @@ import {
 const getAllExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "Specify the Excel instance. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   // output

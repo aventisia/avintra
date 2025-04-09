@@ -7,10 +7,9 @@ import {
 const runSubFlowFieldList: IDynamicFieldSchema[] = [
   {
     name: "runSubFlowSelect",
-    type: "select",
+    type: "text",
     label: "Run subflow",
     description: "The name of the subflow to call",
-    selectOptions: [], //dynamic options
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {

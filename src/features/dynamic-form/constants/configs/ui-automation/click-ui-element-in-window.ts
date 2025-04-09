@@ -10,7 +10,6 @@ const clickUiELementInWindowFieldList: IDynamicFieldSchema[] = [
     type: "ui-element-selector",
     label: "UI element",
     description: "	Select the UI element to click on",
-    selectOptions: [],
     defaultValue: "",
   },
   {

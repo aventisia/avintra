@@ -76,7 +76,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     label: "Tolerance",
     description:
       "	Specifies how much the image can differ from the originally chosen image",
-    selectOptions: [],
     defaultValue: "10",
   },
   {
@@ -190,7 +189,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Image width multiplier",
     description: "The width multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -198,7 +196,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Image height multiplier",
     description: "The height multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -215,7 +212,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     label: "Timeout",
     description:
       "Specifies the time to wait for the operation to complete before the action fails",
-    selectOptions: [],
     defaultValue: "5",
   },
   {

@@ -7,10 +7,9 @@ import {
 const closeSQLConnectionFieldList: IDynamicFieldSchema[] = [
   {
     name: "connectionString",
-    type: "select",
+    type: "text",
     label: "Connection String",
     description: "The connection string to use to close",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

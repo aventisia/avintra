@@ -7,10 +7,9 @@ import {
 const pauseServicesFieldList: IDynamicFieldSchema[] = [
   {
     name: "serviceToPause",
-    type: "select",
+    type: "text",
     label: "Service to pause",
     description: "The name of the service to pause",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

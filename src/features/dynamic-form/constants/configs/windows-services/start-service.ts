@@ -7,10 +7,9 @@ import {
 const startServiceFieldList: IDynamicFieldSchema[] = [
   {
     name: "serviceToStart",
-    type: "select",
+    type: "text",
     label: "Service to start",
     description: "The name of the service to start",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

@@ -10,7 +10,6 @@ const dragDropUiELementInWindowFieldList: IDynamicFieldSchema[] = [
     type: "ui-element-selector",
     label: "UI element",
     description: "The Ul element to drag",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -18,7 +17,6 @@ const dragDropUiELementInWindowFieldList: IDynamicFieldSchema[] = [
     type: "ui-element-selector",
     label: "UI element",
     description: "The Ul element to drop over",
-    selectOptions: [],
     defaultValue: "",
   },
   {

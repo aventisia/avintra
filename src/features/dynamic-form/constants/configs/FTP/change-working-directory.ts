@@ -7,10 +7,8 @@ import {
   const changeWorkingDirectoryFieldList: IDynamicFieldSchema[] = [
     {
       name: "connection",
-      type: "select",
-      label: "Connection",
-      selectOptions: [],
-  
+      type: "text",
+      label: "Connection",  
       description: "The FTP connection.",
       defaultValue: "",
     },{

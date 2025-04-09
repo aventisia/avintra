@@ -7,11 +7,10 @@ import {
 const processEmailMessagesInOutlookFieldList: IDynamicFieldSchema[] = [
   {
     name: "outlookInstance",
-    type: "select",
+    type: "text",
     label: "Outlook instance",
     description:
       "The Outlook instance to work with. Specify this variable in a 'Launch Outlook' action",
-    selectOptions: [],
     defaultValue: "",
   },
   {

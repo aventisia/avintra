@@ -10,7 +10,6 @@ const writeToCmdSessionFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "CMD session",
     description: "A previously opened CMD session variable",
-    selectOptions: [],
     defaultValue: "",
   },
   {

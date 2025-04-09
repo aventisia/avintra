@@ -7,11 +7,10 @@ import {
 const closeOutLookFieldList: IDynamicFieldSchema[] = [
   {
     name: "outlookInstance",
-    type: "select",
+    type: "text",
     label: "Outlook instance",
     description:
       "The Outlook instance to work with. This variable is specified in a 'Launch Outlook' action",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

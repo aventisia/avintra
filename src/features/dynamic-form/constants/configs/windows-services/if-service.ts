@@ -22,10 +22,9 @@ const ifServiceFieldList: IDynamicFieldSchema[] = [
   // in this below input In UI it is display  as select but in More Info it showing Text Value there are no select options
   {
     name: "serviceName",
-    type: "select",
+    type: "text",
     label: "Service name",
     description: "The name of the service to check",
-    selectOptions: [],
     defaultValue: "",
   },
 ];
