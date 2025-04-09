@@ -1,39 +1,40 @@
-import { useDataTable } from '@/react-toolkit/hooks/useDataTable';
-import { useDocumentTitle } from '@/react-toolkit/hooks/useDocumentTitle';
-import { DataTable } from '@/react-toolkit/ui/data-table';
-import { DataTableSkeleton } from '@/react-toolkit/ui/data-table/DataTableSkeleton';
-import { DTPagination } from '@/react-toolkit/ui/data-table/DTPagination';
-import { DTCreateButton } from '@/react-toolkit/ui/data-table/toolbar/DTCreateButton';
-import { DTHeading } from '@/react-toolkit/ui/data-table/toolbar/DTHeading';
-import { DTSearchBox } from '@/react-toolkit/ui/data-table/toolbar/DTSearchBox';
-import { DTViewOptions } from '@/react-toolkit/ui/data-table/toolbar/DTViewOptions';
-import { Separator } from '@/react-toolkit/ui/separator';
+import { columnDisplayNames } from "@/features/flows-table/constants/column-display-names";
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { DataTable } from "@/react-toolkit/ui/data-table";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
+import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
+import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import { Separator } from "@/react-toolkit/ui/separator";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from '../constants';
-import { columnDisplayNames } from '../constants/column-display-names';
-import { columnVisibilityState } from '../constants/column-visibility-state';
-import { useFetchRoles } from '../hooks/useFetchRoles';
-import { RoleCrudDialog } from './role-crud-dialog/RoleCrudDialog';
-import { RolesBulkActions } from './RolesBulkActions';
-import { rolesTableColumns } from './RolesTableColumns';
+import { usersTableColumns } from "../../users-table/components/UsersTableColumns";
+import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { roleTableColumnvisibilityState } from "../constants/column-visibility-state";
+import { useFetchRoles } from "../hooks/useFetchRoles";
+import { RoleCrudDialog } from "./role-crud-dialog/RoleCrudDialog";
+import { RolesBulkActions } from "./role-row-actions/RolesBulkActions";
+import { RolesTableColumns } from "./RolesTableColumns";
 
 /**
- * Renders a table of roles.
+ * Renders a table of users.
  *
- * @returns The rendered RolesTable component.
+ * @returns The rendered UsersTable component.
  */
 export const RolesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Fetch roles data
+  // Fetch users data
   const { data } = useFetchRoles();
 
-  // Create a React table for roles data
+  // Create a React table for users data
   const table = useDataTable(
-    rolesTableColumns,
+    RolesTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    roleTableColumnvisibilityState,
     true,
   );
 
@@ -52,7 +53,7 @@ export const RolesTable = () => {
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
-                  placeholder="Search roles..."
+                  placeholder="Search users..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
@@ -64,7 +65,7 @@ export const RolesTable = () => {
             <div className="rounded-md border">
               <DataTable
                 table={table}
-                columnsLength={rolesTableColumns.length}
+                columnsLength={usersTableColumns.length}
               />
             </div>
           </RoleCrudDialog>
@@ -76,7 +77,7 @@ export const RolesTable = () => {
           <RolesBulkActions table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the roles data
+        // Show data table skeleton while fetching the users data
         <DataTableSkeleton />
       )}
     </>

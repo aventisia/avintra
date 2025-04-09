@@ -4,14 +4,14 @@ import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
-import { RolesTableDto } from "../dtos/roles-table-dto";
+import { RoleTableDTO } from "../dtos/roles-table-dto";
 import { RoleRowActions } from "./role-row-actions/RoleRowActions";
 
 /**
- * Array of table columns for the roles table.
+ * Array of table columns for the users table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const rolesTableColumns: ColumnDef<RolesTableDto>[] = [
+export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -35,7 +35,6 @@ export const rolesTableColumns: ColumnDef<RolesTableDto>[] = [
     ),
     enableSorting: false,
   },
-
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -45,26 +44,48 @@ export const rolesTableColumns: ColumnDef<RolesTableDto>[] = [
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
     ),
   },
-
   {
     accessorKey: "description",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("description")} />
     ),
     cell: ({ row }) => (
-      <div className="w-7/12 truncate text-pretty font-medium">
+      <div className="w-auto truncate font-medium">
         {row.getValue("description")}
       </div>
     ),
   },
   {
-    accessorKey: "userCount",
+    accessorKey: "users",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("userCount")} />
+      <DTColumnHeader column={column} title={getColumnName("users")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("users")}</div>
+    ),
+  },
+  {
+    accessorKey: "totalPermission",
+    header: ({ column }) => (
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("totalPermission")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue<string[]>("userCount")?.slice(-1)}
+        {row.getValue("totalPermission")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdBy")}
       </div>
     ),
   },
@@ -84,9 +105,46 @@ export const rolesTableColumns: ColumnDef<RolesTableDto>[] = [
     ),
   },
   {
+    accessorKey: "lastUpdatedBy",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("lastUpdatedBy")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("lastUpdatedBy")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "lastUpdatedOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("lastUpdatedOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormat(row.getValue("lastUpdatedOn"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "isDefault",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("isDefault")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("isDefault")}
+      </div>
+    ),
+  },
+  {
     id: "actions",
     cell: ({ row }) => (
-      // Render the roles row actions component
+      // Render the users row actions component
       <RoleRowActions rowId={row.original.id || "rowId"} />
     ),
   },
