@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
@@ -5,106 +6,121 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
 
 import { roleOptimisticMutationFn } from "../../apis/roles-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  descriptionProps,
   idProps,
-  nameProps,
+  roleDescriptionProps,
+  roleNameProps,
 } from "../../constants/role-form-field-props";
-import { roleZodSchema } from "../../constants/role-zod-schema";
-import { RolesTableDto } from "../../dtos/roles-table-dto";
+import {
+  addRoleFormZodSchema,
+  RolePermission,
+} from "../../constants/role-zod-schema";
+import { RoleTableDTO } from "../../dtos/roles-table-dto";
 import { useDefineRoleForm } from "../../hooks/useDefineRoleForm";
-import { PermissionsTable } from "./permissions-table/PermissionsTable";
+import PermissionsGrid from "./PermissionsGird";
 
-export const RoleCrudForm = () => {
-  // Define role form
+const RoleCrudForm = () => {
   const {
     form,
-    isDirty,
+    isSubmitting,
     rowId,
     crudAction,
-    isAvailable,
-    availabilityMessage,
-    setAvailabilityMessage,
-    isCheckPending,
-    handleInputChange,
     setShowDialog,
-    refineFormData,
+    data,
+    availabilityMessage,
+    handleInputChange,
+    isAvailable,
+    isCheckPending,
+    setAvailabilityMessage,
+    setValue,
+    isDirty,
+    errors,
   } = useDefineRoleForm();
 
-  // Define optimistic mutation to crete or update the role
+  const [rolePermissions, setRolePermissions] = useState<RolePermission[]>(
+    data?.data.rolePermissions || [],
+  );
+
+  useEffect(() => {
+    setRolePermissions(data?.data.rolePermissions || []);
+  }, [data?.data.rolePermissions]);
+
+  const handlePermissionsChange = (updatedPermissions: RolePermission[]) => {
+    setRolePermissions(updatedPermissions);
+    setValue("rolePermissions", updatedPermissions, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
+  // Define optimistic mutation to crete or update the document
   const { mutate: mutateRole } = useListOptimisticMutation<
-    RolesTableDto,
-    RolesTableDto | boolean,
-    RolesTableDto
+    RoleTableDTO,
+    RoleTableDTO | boolean,
+    RoleTableDTO
   >([rowId], roleOptimisticMutationFn, DATA_QUERY_KEY);
 
-  // Define submit handler
-  const onSubmit = (formData: z.infer<typeof roleZodSchema>) => {
-    // Create or update the role
+  // Handle form submit
+  const onSubmit = (formData: z.infer<typeof addRoleFormZodSchema>) => {
     mutateRole({
-      payload: refineFormData(formData) as unknown as RolesTableDto,
+      payload: formData as unknown as RoleTableDTO,
       crudAction: crudAction,
     });
 
-    // Reset the availability message
     setAvailabilityMessage(null);
 
-    // Close the dialog
     setShowDialog(false);
   };
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
-  // Return the form
   return (
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting || isReadMode}
       className="px-2.5 pb-5"
-      disabled={isReadMode}
     >
-      <div className="w-5/12 space-y-4">
-        {/* Role Id (Read-only) */}
+      <div className="mb-4 w-6/12 space-y-4">
         {isReadMode && <InputField {...idProps} />}
-
-        {/* Name */}
         <InputField
-          {...nameProps}
+          {...roleNameProps}
           onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
           nonErrorMessage={availabilityMessage}
+          disabled={isReadMode}
         />
-
-        {/* Description */}
-        <TextareaField {...descriptionProps} />
-
-        {/* AutherCard */}
-        {isReadMode && (
-          <AutherCard
-            createdBy={form.getValues("createdBy")}
-            createdOn={form.getValues("createdOn")}
-            lastModifiedBy={form.getValues("lastModifiedBy")}
-            lastModifiedOn={form.getValues("lastModifiedOn")}
-          />
-        )}
+        <TextareaField {...roleDescriptionProps} />
       </div>
-      <PermissionsTable />
-      {/* Submit button */}
-      {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end self-end">
+
+      <PermissionsGrid
+        initialData={rolePermissions}
+        onPermissionsChange={handlePermissionsChange}
+      />
+      {errors.rolePermissions && (
+        <FormMessage customMessageType={"Red"} size={"base"}>
+          {errors.rolePermissions.message}
+        </FormMessage>
+      )}
+      <div className="!mt-5 flex justify-end">
+        {!isReadMode && (
           <Button
             type="submit"
-            disabled={!isDirty || !isAvailable || isCheckPending}
-            className="min-w-[5rem]"
+            className="min-w-[8rem] text-base font-medium"
+            disabled={
+              !isDirty || isSubmitting || !isAvailable || isCheckPending
+            }
           >
-            {crudAction === "create" ? "Create" : "Save changes"}
+            {crudAction === "create" ? "Submit" : "Save"}
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </Form>
   );
 };
+
+export default RoleCrudForm;
