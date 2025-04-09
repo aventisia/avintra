@@ -1,95 +1,99 @@
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ISelectOption } from "@/react-toolkit/types/select-option";
 
-import { RolesTableDto } from "../dtos/roles-table-dto";
+import { RoleTableDTO } from "../dtos/roles-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/role`;
+export const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/user`;
 
 /**
- * Retrieves a list of roles.
+ * Retrieves list of Documents.
  */
-const getRoles = () => {
+export const getRoles = () => {
   return axiosInstance
-    .get<IHttpResponse<RolesTableDto[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<RoleTableDTO[]>>(`${baseAPIURL}`)
     .then((res) => res.data);
 };
 
 /**
- * Retrieves the account roles basis current role (role-manager) top role.
+ * Retrieve a specific Documents.
  */
-const getRoleRoles = () => {
+export const getRole = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/roles-to-select`)
+    .get<IHttpResponse<RoleTableDTO>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
 /**
- * Inserts a new role.
+ * Checks the availability of a project name.
  */
-const insertRole = (newRole: RolesTableDto) => {
+export const isRoleNameAvailable = (roleObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<RolesTableDto>>(`${baseAPIURL}`, newRole)
+    .post<
+      IHttpResponse<TrueFalseResultDto>
+    >(`${baseAPIURL}/is-available`, roleObj)
     .then((res) => res.data);
 };
 
 /**
- * Updates an role.
+ * Inserts a new Document.
  */
-const updateRole = (updatedRole: RolesTableDto) => {
+export const insertRole = (newRole: RoleTableDTO) => {
   return axiosInstance
-    .put<IHttpResponse<RolesTableDto>>(`${baseAPIURL}`, updatedRole)
+    .post<IHttpResponse<RoleTableDTO>>(`${baseAPIURL}`, newRole)
     .then((res) => res.data);
 };
 
 /**
- * Deletes an role.
+ * Updates an existing Document.
  */
-const deleteRole = (id: string) => {
+export const updateRole = (updatedRole: RoleTableDTO) => {
+  return axiosInstance
+    .put<IHttpResponse<RoleTableDTO>>(`${baseAPIURL}`, updatedRole)
+    .then((res) => res.data);
+};
+
+/**
+ * Deletes a document by its ID.
+ */
+export const deleteRole = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
     .then((res) => res.data);
 };
 
 /**
- * Disable multiple roles by their IDs.
+ * Deletes multiple projects by their IDs.
  */
-const disableRoles = (ids: string[]) => {
+export const deleteRoles = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 
 /**
- * Performs an optimistic mutation on a role based on the provided CRUD action.
+ * Performs an optimistic mutation on a project based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<RolesTableDto | string>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<RoleTableDTO | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
-const roleOptimisticMutationFn = ({
+export const roleOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<RolesTableDto | string>) => {
+}: IOptimisticMutation<RoleTableDTO | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertRole(payload as RolesTableDto);
+      return insertRole(payload as RoleTableDTO);
     case "update":
-      return updateRole(payload as RolesTableDto);
+      return updateRole(payload as RoleTableDTO);
     case "delete":
       return deleteRole(payload as string);
+    case "delete-multiple":
+      return deleteRoles(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
-};
-
-export {
-  getRoles,
-  getRoleRoles,
-  insertRole,
-  updateRole,
-  deleteRole,
-  disableRoles,
-  roleOptimisticMutationFn,
 };
