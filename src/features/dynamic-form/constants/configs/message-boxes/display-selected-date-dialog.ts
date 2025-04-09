@@ -75,6 +75,7 @@ const displaySelectDateDialogFieldList: IDynamicFieldSchema[] = [
       "Specify whether the date selection dialog should always remain on top of all other windows",
     defaultValue: false,
   },
+  // Output
   {
     name: "selectedDate",
     type: "switch",
