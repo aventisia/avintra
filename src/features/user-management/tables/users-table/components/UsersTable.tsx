@@ -8,12 +8,13 @@ import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
 import { Separator } from "@/react-toolkit/ui/separator";
+
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { UserCrudDialog } from "./user-crud-dialog/UserCrudDialog";
-import { UsersBulkActions } from "./UsersBulkActions";
+import { UsersBulkActions } from "./user-row-actions/UsersBulkActions";
 import { usersTableColumns } from "./UsersTableColumns";
 
 /**
