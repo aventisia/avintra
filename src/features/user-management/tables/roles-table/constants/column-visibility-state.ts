@@ -1,8 +1,12 @@
-/** Column visibility initial state for the roles table. */
-export const columnVisibilityState = {
+export const roleTableColumnvisibilityState = {
   id: false,
   name: true,
   description: true,
-  userCount: true,
+  users: true,
+  createdBy: false,
+  lastUpdatedBy: false,
+  totalPermission: true,
   createdOn: false,
+  lastUpdatedOn: false,
+  isDefault: true,
 };
