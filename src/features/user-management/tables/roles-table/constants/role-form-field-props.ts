@@ -1,23 +1,57 @@
+import { CheckboxFieldProps } from "@/react-toolkit/ui/form/fields/CheckboxField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
 
-// Role Id
+import { ACCESSES } from "./permissions-and-acesses";
+
+// Project Id
 export const idProps: InputFieldProps = {
   name: "id",
   label: "Role Id",
   disabled: true,
+  className: "text-base",
 };
 
-// First Name
-export const nameProps: InputFieldProps = {
+export const roleNameProps: InputFieldProps = {
   name: "name",
-  label: "Role",
+  label: "Name",
   isRequired: true,
+  type: "text",
+  maxLength: 256,
+  className: "text-base",
 };
 
-// Description
-export const descriptionProps: TextareaFieldProps = {
+export const roleDescriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
-  className: "min-h-[6rem]",
+  isRequired: false,
+  maxLength: 512,
+  minLength: 0,
+  className: "text-base resize-none",
 };
+
+export const permissionFieldProps: CheckboxFieldProps[] = ACCESSES.map(
+  (access) => ({
+    name: access.toLowerCase().replace(/\s+/g, ""),
+    label: access,
+  }),
+);
+
+export const rolePermissionsProps = [
+  {
+    role: "Client",
+    permissions: permissionFieldProps,
+  },
+  {
+    role: "Trade Partner",
+    permissions: permissionFieldProps,
+  },
+  {
+    role: "Trade",
+    permissions: permissionFieldProps,
+  },
+  {
+    role: "Admin",
+    permissions: permissionFieldProps,
+  },
+];

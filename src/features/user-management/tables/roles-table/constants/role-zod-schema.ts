@@ -1,31 +1,32 @@
-import { z } from "zod";
+import * as z from 'zod';
 
-import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+import { maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
+
+import { AccessType, Features } from './permissions-and-acesses';
+
+export const rolePermissionSchema = z.object({
+  permissionType: z.nativeEnum(Features),
+  accesses: z.array(z.nativeEnum(AccessType)),
+});
 
 export const roleNameSchema = z
   .string()
-  .min(1, { message: reqError("Role name") })
-  .max(255, { message: maxLenError("Role name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Role name"),
-  });
+  .min(1, { message: reqError("Role Name") })
+  .max(256, { message: maxLenError("Role Name", 256) });
 
-/**
- * Represents the Zod schema for a role.
- */
-export const roleZodSchema = z.object({
-  id: z.string(),
+export const addRoleFormZodSchema = z.object({
+  id: z.string().optional(),
   name: roleNameSchema,
-
-  isDisabled: z.boolean(),
-  // Read (view) only fields
-  createdBy: z.string(),
-  createdOn: z.date(),
-  lastModifiedBy: z.string(),
-  lastModifiedOn: z.date(),
+  description: z
+    .string()
+    .min(0, { message: reqError("Role Description") })
+    .max(500, { message: maxLenError("Role Description", 500) })
+    .optional(),
+  rolePermissions: z
+    .array(rolePermissionSchema)
+    .refine((permissions) => permissions.some((p) => p.accesses.length > 0), {
+      message: "At least one access must be selected for any permission type",
+    }),
 });
+
+export type RolePermission = z.infer<typeof rolePermissionSchema>;
