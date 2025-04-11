@@ -8,28 +8,28 @@ import { reqError } from "@/react-toolkit/utils/error-message-list";
 export const recordPaymentZodSchema = z.object({
   id: z.string(),
   planId: z
-    .string({ message: reqError("License Type") })
-    .min(1, { message: reqError("License Type") }),
+    .string({ message: reqError("License type") })
+    .min(1, { message: reqError("License type") }),
   dateReceived: z.date(),
   writeOffRemainingDues: z.boolean().optional(),
   additionalUnitsRequested: z.number().optional(),
   amountReceived: z
-    .string({ message: reqError("Amount Received") })
-    .min(1, { message: reqError("Amount Received") })
+    .string({ message: reqError("Amount received") })
+    .min(1, { message: reqError("Amount received") })
     .transform((val) => Number(val))
-    .pipe(z.number().positive("amount must be positive")),
+    .pipe(z.number().positive("Amount must be positive")),
 });
 
 export const requestLicenseZodSchema = z.object({
   id: z
-    .string({ message: reqError("Tenant Name") })
-    .min(1, { message: reqError("Tenant Name") }),
+    .string({ message: reqError("Tenant name") })
+    .min(1, { message: reqError("Tenant name") }),
   planId: z
-    .string({ message: reqError("License Type") })
-    .min(1, { message: reqError("License Type") }),
+    .string({ message: reqError("License type") })
+    .min(1, { message: reqError("License type") }),
   additionalUnitsRequested: z
-    .string({ message: reqError("New Allocated Units") })
-    .min(1, { message: reqError("New Allocated Units") })
+    .string({ message: reqError("New allocated units") })
+    .min(1, { message: reqError("New allocated units") })
     .transform((val) => Number(val))
-    .pipe(z.number().positive("New Allocated Units must be positive")),
+    .pipe(z.number().positive("New allocated units must be positive")),
 });

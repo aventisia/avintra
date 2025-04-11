@@ -14,8 +14,8 @@ import { ipv4Regex, ipv6Regex } from "./";
  */
 export const machineNameSchema = z
   .string()
-  .min(1, { message: reqError("Machine name") })
-  .max(255, { message: maxLenError("Machine name", 255) })
+  .min(1, { message: reqError("Machine Name") })
+  .max(255, { message: maxLenError("Machine Name", 255) })
   .regex(alphaNumericRegex, {
     message: alphaNumericError("Machine name"),
   });
@@ -34,9 +34,9 @@ const ipAddressSchema = z
 export const machineZodSchema = z.object({
   id: z.string(),
   name: machineNameSchema,
-  type: z.string().min(1, { message: reqError("Machine OS type") }),
-  environment: z.string().min(1, { message: reqError("Environment type") }),
-  licenseType: z.string().min(1, { message: reqError("License type") }),
+  type: z.string().min(1, { message: reqError("Machine OS Type") }),
+  environment: z.string().min(1, { message: reqError("Environment Type") }),
+  licenseType: z.string().min(1, { message: reqError("License Type") }),
   ipAddress: ipAddressSchema,
   hostname: z.string().min(1, { message: reqError("Host Name") }),
 

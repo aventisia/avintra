@@ -12,10 +12,10 @@ import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
  */
 export const pricingPlanNameSchema = z
   .string()
-  .min(1, { message: reqError("PricingPlan name") })
-  .max(100, { message: maxLenError("PricingPlan name", 100) })
+  .min(1, { message: reqError("Plan name") })
+  .max(100, { message: maxLenError("Plan name", 100) })
   .regex(alphaNumericRegex, {
-    message: alphaNumericError("PricingPlan name"),
+    message: alphaNumericError("Plan name"),
   });
 
 /**
@@ -27,21 +27,21 @@ export const pricingPlanZodSchema = z
     id: z.string().optional(),
     tenantId: z.string().optional(),
     pricingComponent: z
-      .string({ message: reqError("Pricing Component") })
-      .min(1, { message: reqError("Pricing Component") }),
+      .string({ message: reqError("Pricing component") })
+      .min(1, { message: reqError("Pricing component") }),
     tenantType: z
-      .string({ message: reqError("Tenant Type") })
-      .min(1, { message: reqError("Tenant Type") }),
+      .string({ message: reqError("Tenant type") })
+      .min(1, { message: reqError("Tenant type") }),
     // tenantName: z.string().optional(),
     currency: z
       .string({ message: reqError("Currency") })
       .min(1, { message: reqError("Currency") }),
-    unitPrice: z.string().min(1, { message: reqError("Unit Price") }),
+    unitPrice: z.string().min(1, { message: reqError("Unit price") }),
     // .transform((val) => Number(val))
     // .pipe(z.number().positive("Unit price must be positive"))
     frequency: z
-      .string({ message: reqError("Billing Frequency") })
-      .min(1, { message: reqError("Billing Frequency") }),
+      .string({ message: reqError("Billing frequency") })
+      .min(1, { message: reqError("Billing frequency") }),
     cola: z.string().min(1, { message: reqError("COLA") }),
     // .transform((val) => Number(val))
     // .pipe(z.number().positive("COLA must be positive"))
@@ -54,7 +54,7 @@ export const pricingPlanZodSchema = z
     lastModifiedOn: z.date(),
   })
   .refine((data) => data.unitPrice && Number(data.unitPrice) > 0, {
-    message: "Unit Price must be greater than 0",
+    message: "Unit price must be greater than 0",
     path: ["unitPrice"],
   })
   .refine(

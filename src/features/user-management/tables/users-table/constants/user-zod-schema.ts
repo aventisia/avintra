@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   emailError,
   maxLenError,
@@ -5,7 +7,6 @@ import {
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
 import { nameRegex } from "@/react-toolkit/utils/regex-list";
-import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a email.
@@ -23,17 +24,17 @@ export const userZodSchema = z.object({
   id: z.string(),
   firstName: z
     .string()
-    .min(1, { message: reqError("First Name") })
-    .max(50, { message: maxLenError("First Name", 50) })
+    .min(1, { message: reqError("First name") })
+    .max(50, { message: maxLenError("First name", 50) })
     .regex(nameRegex, {
-      message: nameError("First Name"),
+      message: nameError("First name"),
     }),
   lastName: z
     .string()
-    .min(1, { message: reqError("Last Name") })
-    .max(50, { message: maxLenError("Last Name", 50) })
+    .min(1, { message: reqError("Last name") })
+    .max(50, { message: maxLenError("Last name", 50) })
     .regex(nameRegex, {
-      message: nameError("Last Name"),
+      message: nameError("Last name"),
     }),
   email: userEmailSchema,
   userRoles: z.array(z.string()).min(1, { message: reqError("Role (s)") }),

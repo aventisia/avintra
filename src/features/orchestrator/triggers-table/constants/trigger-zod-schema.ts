@@ -12,8 +12,8 @@ import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
  */
 export const triggerNameSchema = z
   .string()
-  .min(1, { message: reqError("Trigger name") })
-  .max(255, { message: maxLenError("Trigger name", 255) })
+  .min(1, { message: reqError("Trigger Name") })
+  .max(255, { message: maxLenError("Trigger Name", 255) })
   .regex(alphaNumericRegex, {
     message: alphaNumericError("Trigger name"),
   });

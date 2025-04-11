@@ -14,16 +14,16 @@ export const rolePermissionSchema = z.object({
 
 export const roleNameSchema = z
   .string()
-  .min(1, { message: reqError("Role Name") })
-  .max(256, { message: maxLenError("Role Name", 256) });
+  .min(1, { message: reqError("Role name") })
+  .max(256, { message: maxLenError("Role name", 256) });
 
 export const addRoleFormZodSchema = z.object({
   id: z.string().optional(),
   fullName: roleNameSchema,
   description: z
     .string()
-    .min(0, { message: reqError("Role Description") })
-    .max(500, { message: maxLenError("Role Description", 500) })
+    .min(0, { message: reqError("Role description") })
+    .max(500, { message: maxLenError("Role description", 500) })
     .optional(),
   rolePermissions: z
     .array(rolePermissionSchema)
