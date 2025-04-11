@@ -4,6 +4,8 @@ import {
   FormatDistanceToNowOptions,
   isAfter,
 } from "date-fns";
+
+import { CurrencyTypesEnum } from "../enums/currency-types-enum";
 import { CrudActionType } from "../types/literal-types";
 
 /**
@@ -19,7 +21,7 @@ const TWO_FA_ENABLED = "TwoFA is enabled";
 const PWD_EXPIRED = "Your password has been expired";
 
 /**
- * A constant string representing an error message for invalid credentials. 
+ * A constant string representing an error message for invalid credentials.
  * Basis this message flag we don't route user to login page on 401 error
  * Any change to the backend error message should be reflected here.
  */
@@ -125,3 +127,46 @@ export const dateFormatDistanceToNow = (
   isAfter(date, DATE_MIN)
     ? formatDistanceToNow(date, formatToNowOptions)
     : placeholder;
+
+export const popularCurrencies: Partial<
+  Record<keyof typeof CurrencyTypesEnum, string>
+> = {
+  USD: "$", // United States Dollar
+  EUR: "€", // Euro
+  GBP: "£", // British Pound Sterling
+  JPY: "¥", // Japanese Yen
+  CHF: "CHF", // Swiss Franc
+  CAD: "C$", // Canadian Dollar
+  AUD: "A$", // Australian Dollar
+  CNY: "¥", // Chinese Yuan
+  INR: "₹", // Indian Rupee
+  BRL: "R$", // Brazilian Real
+  RUB: "₽", // Russian Ruble
+  MXN: "MX$", // Mexican Peso
+  SGD: "S$", // Singapore Dollar
+  HKD: "HK$", // Hong Kong Dollar
+  KRW: "₩", // South Korean Won
+  ZAR: "R", // South African Rand
+  TRY: "₺", // Turkish Lira
+  NZD: "NZ$", // New Zealand Dollar
+  SEK: "kr", // Swedish Krona
+  NOK: "kr", // Norwegian Krone
+  DKK: "kr", // Danish Krone
+};
+
+export const currencyFormater = (
+  price: number,
+  currency?: keyof typeof CurrencyTypesEnum | string | undefined,
+) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  if (!currency) return `$${formatter.format(price)}`;
+
+  if (popularCurrencies[currency as keyof typeof CurrencyTypesEnum]) {
+    return `${popularCurrencies[currency as keyof typeof CurrencyTypesEnum]} ${formatter.format(price)}`;
+  } else return `${formatter.format(price)} ${currency}`;
+};
