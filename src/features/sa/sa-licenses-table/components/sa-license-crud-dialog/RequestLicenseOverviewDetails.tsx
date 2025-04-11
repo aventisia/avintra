@@ -1,9 +1,10 @@
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchTenants } from "@/features/sa/tenants-table/hooks/useFetchTenants";
+import { currencyFormater } from "@/react-toolkit/constants";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { PricingPlanDto } from "@/react-toolkit/types/pricing-plan-dto";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../../constants";
@@ -13,9 +14,13 @@ import { OverviewDetailDivElement } from "./RecordPaymentOverviewDetails";
 export const RequestLicenseOverviewDetails = ({
   planId,
   tenantId,
+  licenseDetails,
+  isFetching,
 }: {
   planId: string;
   tenantId: string;
+  isFetching: boolean;
+  licenseDetails?: PricingPlanDto;
 }) => {
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -27,7 +32,6 @@ export const RequestLicenseOverviewDetails = ({
   // Get query client
   const queryClient = useQueryClient();
 
-  const { data, isFetching } = useFetchLicenseDetails(planId);
   const { data: tenants } = useFetchTenants();
 
   // Get licenses data from query client
@@ -61,19 +65,19 @@ export const RequestLicenseOverviewDetails = ({
         <OverviewDetailDivElement
           label="Unit Cost :"
           isFetching={isFetching}
-          data={data?.data?.unitPrice}
+          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} /mo`}
         />
-        {data?.data.frequency != "NA" ? (
+        {licenseDetails?.frequency && licenseDetails?.frequency != "NA" ? (
           <OverviewDetailDivElement
             label="Billed :"
             isFetching={isFetching}
-            data={data?.data.frequency}
+            data={licenseDetails?.frequency}
           />
         ) : null}
         <OverviewDetailDivElement
           label="Current Allocated Units :"
           isFetching={isFetching}
-          data={oldTenant?.overdueBalance}
+          data={oldTenant?.allocated ?? 0}
         />
       </div>
     </div>

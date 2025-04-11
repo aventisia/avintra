@@ -1,6 +1,7 @@
 import { formatDistanceToNow, isValid } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
+import { currencyFormater } from "@/react-toolkit/constants";
 import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
@@ -125,7 +126,7 @@ export const saLicensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("unitPrice")}
+        {`${currencyFormater(row.getValue("unitPrice"))}`}
       </div>
     ),
   },
@@ -137,7 +138,7 @@ export const saLicensesTableColumns: ColumnDef<LicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("overdueBalance")}
+        {`${currencyFormater(row.getValue("overdueBalance"))}`}
       </div>
     ),
   },

@@ -1,25 +1,24 @@
-import { toast } from "sonner";
-import { z } from "zod";
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
-import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
-import { useMutation } from "@tanstack/react-query";
+import { currencyFormater } from '@/react-toolkit/constants';
+import { useFetchLicenseDetails } from '@/react-toolkit/hooks/useFetchLicense';
+import { Button } from '@/react-toolkit/ui/buttons/Button';
+import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
+import { LicenseSelectField } from '@/react-toolkit/ui/form/fields/LicenseSelectField';
+import { TenantSelectField } from '@/react-toolkit/ui/form/fields/TenantSelectField';
+import { Form } from '@/react-toolkit/ui/form/Form';
+import { Skeleton } from '@/react-toolkit/ui/skeleton';
+import { useMutation } from '@tanstack/react-query';
 
-import { requestLicense } from "../../apis/sa-licenses-table-apis";
+import { requestLicense } from '../../apis/sa-licenses-table-apis';
 import {
-  additionalUnitsRequestedProps,
-  idProps,
-  saLicenseTypesProps,
-} from "../../constants/saLicense-form-field-props";
-import { requestLicenseZodSchema } from "../../constants/saLicense-zod-schema";
-import { RequestLicensesDto } from "../../dtos/request-license-dto";
-import { useDefineRequestLicenseForm } from "../../hooks/useDefineRequestLicenseForm";
-import { RequestLicenseOverviewDetails } from "./RequestLicenseOverviewDetails";
+    additionalUnitsRequestedProps, idProps, saLicenseTypesProps
+} from '../../constants/saLicense-form-field-props';
+import { requestLicenseZodSchema } from '../../constants/saLicense-zod-schema';
+import { RequestLicensesDto } from '../../dtos/request-license-dto';
+import { useDefineRequestLicenseForm } from '../../hooks/useDefineRequestLicenseForm';
+import { RequestLicenseOverviewDetails } from './RequestLicenseOverviewDetails';
 
 export const RequestLicenseForm = () => {
   // Define license form
@@ -74,10 +73,12 @@ export const RequestLicenseForm = () => {
         <LicenseSelectField {...saLicenseTypesProps} />
       ) : null}
 
-      {/* overview dtetails */}
-      {planId && id ? (
-        <RequestLicenseOverviewDetails planId={planId} tenantId={id} />
-      ) : null}
+      <RequestLicenseOverviewDetails
+        licenseDetails={licenseDetails?.data}
+        isFetching={isFetching}
+        planId={planId}
+        tenantId={id}
+      />
 
       {/* new quantity */}
       <div className="rounded-md bg-slate-100 p-5">
@@ -90,8 +91,12 @@ export const RequestLicenseForm = () => {
           {isFetching ? (
             <Skeleton className="h-6 w-32" />
           ) : (
-            (form.getValues("additionalUnitsRequested") ?? 0) *
-            (licenseDetails?.data?.unitPrice ?? 0)
+            currencyFormater(
+              (form.getValues("additionalUnitsRequested") ?? 0) *
+                12 *
+                (licenseDetails?.data?.unitPrice ?? 0),
+              licenseDetails?.data.currency,
+            )
           )}
         </div>
       </div>

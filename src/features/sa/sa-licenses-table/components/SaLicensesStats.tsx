@@ -5,6 +5,7 @@ import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
 import { PiCertificate } from "react-icons/pi";
 import { TbDatabaseDollar } from "react-icons/tb";
 
+import { currencyFormater } from "@/react-toolkit/constants";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
@@ -157,10 +158,10 @@ export const SaLicensesStats = () => {
               stats.totalOverdue ? "text-destructive" : "text-green-700"
             }
           >
-            {stats.totalOverdue} Overdue
+            {`${currencyFormater(stats.totalOverdue)} Overdue`}
           </p>
         }
-        mainText={stats.annualRevenue}
+        mainText={`${currencyFormater(stats.annualRevenue)}`}
         icon={<GiWallet fill="var(--primary)" className="h-10 w-10" />}
       />
     </div>

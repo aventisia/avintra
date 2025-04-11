@@ -1,3 +1,4 @@
+import { currencyFormater } from "@/react-toolkit/constants";
 import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { useQueryClient } from "@tanstack/react-query";
@@ -35,7 +36,7 @@ export const RecordPaymentOverviewDetails = ({
         <OverviewDetailDivElement
           label="Tenat Name :"
           isFetching={isFetching}
-          data={myLicenseData?.tenantName}
+          data={myLicenseData?.tenantName ?? "Default"}
         />
         <OverviewDetailDivElement
           label="Pricing Component :"
@@ -50,12 +51,15 @@ export const RecordPaymentOverviewDetails = ({
         <OverviewDetailDivElement
           label="Overdue Amount :"
           isFetching={isFetching}
-          data={myLicenseData?.overdueBalance}
+          data={currencyFormater(
+            myLicenseData?.overdueBalance ?? 0,
+            data?.data.currency,
+          )}
         />
         <OverviewDetailDivElement
           label="Overdue Amount (in INR) :"
           isFetching={isFetching}
-          data={myLicenseData?.overdueBalance}
+          data={currencyFormater(myLicenseData?.overdueBalance ?? 0, "INR")}
         />
       </div>
     </div>
@@ -74,7 +78,7 @@ export const OverviewDetailDivElement = ({
   <div className="flex justify-between">
     <p>{label}</p>
     <div className="font-medium">
-      {isFetching ? <Skeleton className="h-5 w-32" /> : data}
+      {isFetching ? <Skeleton className="h-5 w-32" /> : (data ?? "NA")}
     </div>
   </div>
 );
