@@ -25,7 +25,7 @@ export const usePermissionsGird = ({
       const permissionState: Record<string, boolean> = {};
 
       initialData.forEach((rolePermission) => {
-        const { permissionType, accesses } = rolePermission;
+        const { feature: permissionType, accesses } = rolePermission;
 
         // Check if all accesses except FULL_ACCESS are included
         const allAccessesExceptFull = ACCESSES.filter(
@@ -114,7 +114,7 @@ export const usePermissionsGird = ({
       // Only add to the result if there are permissions
       if (accesses.length > 0) {
         rolePermissions.push({
-          permissionType: role.id,
+          feature: role.id,
           accesses,
         });
       }

@@ -41,8 +41,8 @@ const RoleCrudForm = () => {
     errors,
   } = useDefineRoleForm();
 
-  const [rolePermissions, setRolePermissions] = useState<RolePermission[]>(
-    data?.data.rolePermissions || [],
+  const [rolePermissions, setRolePermissions] = useState(
+    data?.data.rolePermissions,
   );
 
   useEffect(() => {
@@ -86,16 +86,14 @@ const RoleCrudForm = () => {
       disabled={isSubmitting || isReadMode}
       className="px-2.5 pb-5"
     >
-      <div className="mb-4 w-6/12 space-y-4">
-        {isReadMode && <InputField {...idProps} />}
-        <InputField
-          {...roleNameProps}
-          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-          nonErrorMessage={availabilityMessage}
-          disabled={isReadMode}
-        />
-        <TextareaField {...roleDescriptionProps} />
-      </div>
+      {isReadMode && <InputField {...idProps} />}
+      <InputField
+        {...roleNameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+        disabled={isReadMode}
+      />
+      <TextareaField {...roleDescriptionProps} />
 
       <PermissionsGrid
         initialData={rolePermissions}

@@ -1,9 +1,9 @@
 import { AccessType, Features } from "../constants/permissions-and-acesses";
 
-export interface IRolePermission {
+export type RolePermission = {
   feature: Features;
   accesses: AccessType[]; // e.g. ["view", "viewDelete"]
-}
+};
 
 export interface RoleTableDTO {
   id: string;
@@ -12,7 +12,7 @@ export interface RoleTableDTO {
   description?: string | null;
   isDisabled: boolean;
   totalPermission: number;
-  rolePermissions: IRolePermission[];
+  rolePermissions: RolePermission[];
   createdBy: string;
   lastUpdatedBy: string;
   createdOn: string | null;

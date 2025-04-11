@@ -8,7 +8,7 @@ import {
 import { AccessType, Features } from "./permissions-and-acesses";
 
 export const rolePermissionSchema = z.object({
-  permissionType: z.nativeEnum(Features),
+  feature: z.nativeEnum(Features),
   accesses: z.array(z.nativeEnum(AccessType)),
 });
 
