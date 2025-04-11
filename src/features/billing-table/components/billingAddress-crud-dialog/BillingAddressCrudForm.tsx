@@ -1,10 +1,13 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { inoviceOptimisticMutationFn } from "../../apis/inovices-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
@@ -24,12 +27,18 @@ import {
 import { billingAddressZodSchema } from "../../constants/billing-address-zod-schema";
 import { InovicesTableDto } from "../../dtos/inovices-table-dto";
 import { useDefineBillingAddressForm } from "../../hooks/useDefineBillingAddressForm";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 
 export const BillingAddressCrudForm = () => {
   // Define billingplan form
-  const { form, isDirty, rowId, crudAction, setShowDialog, refineFormData } =
-    useDefineBillingAddressForm();
+  const {
+    form,
+    userSession,
+    isDirty,
+    rowId,
+    crudAction,
+    setShowDialog,
+    refineFormData,
+  } = useDefineBillingAddressForm();
 
   // Define optimistic mutation to crete or update the billingplan
   const { mutate: mutateBillingPlan } = useListOptimisticMutation<
@@ -67,7 +76,9 @@ export const BillingAddressCrudForm = () => {
       <p className="text-md mb-2 border-b-2 pb-2">Overview</p>
       <div className="!mb-9 ml-1 flex justify-between">
         <p>Company Name</p>
-        <p className="font-semibold">Xyz company</p>
+        <p className="w-6/12 text-pretty text-right text-base font-semibold">
+          {userSession?.tenantName}
+        </p>
       </div>
 
       {/* address line 1 */}
