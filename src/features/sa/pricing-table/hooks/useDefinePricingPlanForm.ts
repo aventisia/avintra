@@ -51,7 +51,7 @@ export const useDefinePricingPlanForm = () => {
       id: "",
       pricingComponent: "",
       tenantType: "",
-      tenantId: "",
+      tenantId: null,
       currency: "",
       unitPrice: undefined,
       frequency: "",
@@ -111,6 +111,7 @@ export const useDefinePricingPlanForm = () => {
     return {
       ...formData,
       tenantId:
+        !!formData.tenantId ||
         formData.tenantId == "00000000-0000-0000-0000-000000000000"
           ? null
           : formData.tenantId,

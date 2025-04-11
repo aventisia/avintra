@@ -25,7 +25,7 @@ export const pricingPlanZodSchema = z
   .object({
     // Single fields
     id: z.string().optional(),
-    tenantId: z.string().optional(),
+    tenantId: z.string().optional().nullable(),
     pricingComponent: z
       .string({ message: reqError("Pricing component") })
       .min(1, { message: reqError("Pricing component") }),
