@@ -1,10 +1,10 @@
-import { dateFormat } from '@/react-toolkit/constants'
-import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader'
-import { ColumnDef } from '@tanstack/react-table'
+import { dateFormat } from "@/react-toolkit/constants";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { ColumnDef } from "@tanstack/react-table";
 
-import { getColumnName } from '../constants/column-display-names'
-import { InovicesTableDto } from '../dtos/inovices-table-dto'
-import { InoviceDownloadRowAction } from './inovice-table-actions/InoviceDownloadRowAction'
+import { getColumnName } from "../constants/column-display-names";
+import { InovicesTableDto } from "../dtos/inovices-table-dto";
+import { InoviceDownloadRowAction } from "./inovice-table-actions/InoviceDownloadRowAction";
 
 /**
  * Array of table columns for the billingplans table.
