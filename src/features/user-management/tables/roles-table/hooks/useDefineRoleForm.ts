@@ -50,7 +50,7 @@ export const useDefineRoleForm = () => {
     resolver: zodResolver(addRoleFormZodSchema),
     defaultValues: {
       id: "",
-      name: "",
+      fullName: "",
       description: "",
       rolePermissions: initialRolePermissions,
     },
@@ -69,7 +69,7 @@ export const useDefineRoleForm = () => {
     // Set document data to form
     form.reset({
       id: rowId,
-      name: roleData?.name ?? "",
+      fullName: roleData?.fullName ?? "",
       description: roleData?.description ?? "",
       rolePermissions: roleData?.rolePermissions ?? [],
     });
