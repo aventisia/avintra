@@ -81,7 +81,7 @@ export const useDefineRoleForm = () => {
     availabilityMessage,
     setAvailabilityMessage,
   } = useCheckAvailability<z.infer<typeof addRoleFormZodSchema>, z.ZodString>({
-    fieldName: "name",
+    fieldName: "fullName",
     form,
     fieldSchema: roleNameSchema,
     checkAvailabilityAPIFn: isRoleNameAvailable,
