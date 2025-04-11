@@ -1,8 +1,11 @@
-import * as z from 'zod';
+import * as z from "zod";
 
-import { maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
+import {
+  maxLenError,
+  reqError,
+} from "@/react-toolkit/utils/error-message-list";
 
-import { AccessType, Features } from './permissions-and-acesses';
+import { AccessType, Features } from "./permissions-and-acesses";
 
 export const rolePermissionSchema = z.object({
   permissionType: z.nativeEnum(Features),
@@ -16,7 +19,7 @@ export const roleNameSchema = z
 
 export const addRoleFormZodSchema = z.object({
   id: z.string().optional(),
-  name: roleNameSchema,
+  fullName: roleNameSchema,
   description: z
     .string()
     .min(0, { message: reqError("Role Description") })

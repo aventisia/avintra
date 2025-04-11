@@ -13,8 +13,8 @@ export const idProps: InputFieldProps = {
 };
 
 export const roleNameProps: InputFieldProps = {
-  name: "name",
-  label: "Name",
+  name: "fullName",
+  label: "Full Name",
   isRequired: true,
   type: "text",
   maxLength: 256,

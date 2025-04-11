@@ -1,11 +1,11 @@
-import { dateFormat } from "@/react-toolkit/constants";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
+import { dateFormat } from '@/react-toolkit/constants';
+import { Checkbox } from '@/react-toolkit/ui/checkbox';
+import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
+import { ColumnDef } from '@tanstack/react-table';
 
-import { getColumnName } from "../constants/column-display-names";
-import { RoleTableDTO } from "../dtos/roles-table-dto";
-import { RoleRowActions } from "./role-row-actions/RoleRowActions";
+import { getColumnName } from '../constants/column-display-names';
+import { RoleTableDTO } from '../dtos/roles-table-dto';
+import { RoleRowActions } from './role-row-actions/RoleRowActions';
 
 /**
  * Array of table columns for the users table.
@@ -36,12 +36,14 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "fullName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader column={column} title={getColumnName("fullName")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <div className="w-auto truncate font-medium">
+        {row.getValue("fullName")}
+      </div>
     ),
   },
   {
