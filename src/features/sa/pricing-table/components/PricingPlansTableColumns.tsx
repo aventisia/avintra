@@ -1,4 +1,5 @@
-import { dateFormat } from '@/react-toolkit/constants';
+import { currencyFormater, dateFormat } from '@/react-toolkit/constants';
+import { CurrencyTypesEnum } from '@/react-toolkit/enums/currency-types-enum';
 import { PricingComponentsEnum } from '@/react-toolkit/enums/pricing-components-enum';
 import { Checkbox } from '@/react-toolkit/ui/checkbox';
 import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
@@ -47,7 +48,10 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(PricingComponentsEnum, row.getValue("pricingComponent"))}
+        {getEnumValueByKey(
+          PricingComponentsEnum,
+          row.getValue("pricingComponent"),
+        )}
       </div>
     ),
   },
@@ -59,7 +63,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("tenantType")}
+        {row.getValue("tenantType") ?? "Default"}
       </div>
     ),
   },
@@ -71,7 +75,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("tenantName")}
+        {row.getValue("tenantName") ?? "Default"}
       </div>
     ),
   },
@@ -104,7 +108,10 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("unitPrice")}
+        {currencyFormater(
+          row.getValue("unitPrice"),
+          row.getValue<keyof typeof CurrencyTypesEnum>("currency"),
+        )}
       </div>
     ),
   },
