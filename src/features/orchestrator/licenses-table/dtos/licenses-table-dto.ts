@@ -1,5 +1,5 @@
-import { LicenseCreditStatusesEnum } from '@/react-toolkit/enums/license-credit-status-enum';
-import { PricingUnitTypesEnum } from '@/react-toolkit/enums/pricing-unit-types-enum';
+import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
+import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 
 /**
  * Represents a data transfer object (DTO) for a license.
@@ -48,6 +48,13 @@ export interface MyLicensesTableDto {
    *
    */
   unitPrice: number;
+
+  /**
+   * Gets  the currency of unit.
+   *
+   */
+
+  currency: string;
 
   /**
    * get the additional requested units for the license plan
