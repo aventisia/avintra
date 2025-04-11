@@ -1,9 +1,12 @@
-import { PricingPlanDto } from "@/react-toolkit/types/pricing-plan-dto";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+  OverviewDetailDivElement
+} from '@/features/sa/sa-licenses-table/components/sa-license-crud-dialog/RecordPaymentOverviewDetails'
+import { currencyFormater } from '@/react-toolkit/constants'
+import { PricingPlanDto } from '@/react-toolkit/types/pricing-plan-dto'
+import { useQueryClient } from '@tanstack/react-query'
 
-import { DATA_QUERY_KEY } from "../../constants";
-import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
+import { DATA_QUERY_KEY } from '../../constants'
+import { MyLicensesTableDto } from '../../dtos/licenses-table-dto'
 
 export const OverviewDetails = ({
   planId,
@@ -30,30 +33,23 @@ export const OverviewDetails = ({
     <div>
       <p className="text-md mb-2 border-b-2 pb-2">Overview</p>
       <div className="mt-4 flex flex-col gap-2 text-sm font-light">
-        <div className="flex justify-between">
-          <p>Unit Cost:</p>
-          <div className="font-medium">
-            {isFetching ? (
-              <Skeleton className="h-5 w-32" />
-            ) : (
-              licenseDetails?.unitPrice
-            )}
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <p>Billed:</p>
-          <div className="font-medium">
-            {isFetching ? (
-              <Skeleton className="h-5 w-32" />
-            ) : (
-              licenseDetails?.frequency
-            )}
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <p>Current Allocated Units:</p>
-          <p className="font-medium">{myLicenseData?.allocated ?? 0}</p>
-        </div>
+        <OverviewDetailDivElement
+          label="Unit Cost :"
+          isFetching={isFetching}
+          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} /mo`}
+        />
+        {licenseDetails?.frequency && licenseDetails?.frequency != "NA" ? (
+          <OverviewDetailDivElement
+            label="Billed :"
+            isFetching={isFetching}
+            data={licenseDetails?.frequency}
+          />
+        ) : null}
+        <OverviewDetailDivElement
+          label="Current Allocated Units :"
+          isFetching={isFetching}
+          data={myLicenseData?.allocated ?? 0}
+        />
       </div>
     </div>
   );

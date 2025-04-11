@@ -1,22 +1,25 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { useFetchLicenseDetails } from '@/react-toolkit/hooks/useFetchLicense';
-import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
-import { Button } from '@/react-toolkit/ui/buttons/Button';
-import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
-import { LicenseSelectField } from '@/react-toolkit/ui/form/fields/LicenseSelectField';
-import { Form } from '@/react-toolkit/ui/form/Form';
-import { Skeleton } from '@/react-toolkit/ui/skeleton';
+import { currencyFormater } from "@/react-toolkit/constants";
+import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
 
-import { licenseOptimisticMutationFn } from '../../apis/licenses-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
+import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
 import {
-    additionalUnitsRequestedProps, idProps, licenseTypesProps
-} from '../../constants/license-form-field-props';
-import { licenseZodSchema } from '../../constants/license-zod-schema';
-import { MyLicensesTableDto } from '../../dtos/licenses-table-dto';
-import { useDefineLicenseForm } from '../../hooks/useDefineLicenseForm';
-import { OverviewDetails } from './OverviewDetails';
+  additionalUnitsRequestedProps,
+  idProps,
+  licenseTypesProps,
+} from "../../constants/license-form-field-props";
+import { licenseZodSchema } from "../../constants/license-zod-schema";
+import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
+import { useDefineLicenseForm } from "../../hooks/useDefineLicenseForm";
+import { OverviewDetails } from "./OverviewDetails";
 
 export const LicenseCrudForm = () => {
   // Define license form
@@ -73,13 +76,11 @@ export const LicenseCrudForm = () => {
       ) : null}
 
       {/* overview dtetails */}
-      {planId && licenseDetails ? (
-        <OverviewDetails
-          licenseDetails={licenseDetails.data}
-          isFetching={isFetching}
-          planId={planId}
-        />
-      ) : null}
+      <OverviewDetails
+        licenseDetails={licenseDetails?.data}
+        isFetching={isFetching}
+        planId={planId}
+      />
 
       {/* new quantity */}
       <div className="rounded-md bg-slate-100 p-5">
@@ -92,8 +93,12 @@ export const LicenseCrudForm = () => {
           {isFetching ? (
             <Skeleton className="h-6 w-32" />
           ) : (
-            (form.getValues("additionalUnitsRequested") ?? 0) *
-            (licenseDetails?.data?.unitPrice ?? 0)
+            currencyFormater(
+              (form.getValues("additionalUnitsRequested") ?? 0) *
+                12 *
+                (licenseDetails?.data?.unitPrice ?? 0),
+              licenseDetails?.data.currency,
+            )
           )}
         </div>
       </div>
@@ -107,7 +112,7 @@ export const LicenseCrudForm = () => {
             className="min-w-[5rem]"
           >
             Submit Request
-          </Button> 
+          </Button>
         </div>
       )}
     </Form>

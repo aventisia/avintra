@@ -4,6 +4,7 @@ import { GiWallet } from "react-icons/gi";
 import { PiCertificate } from "react-icons/pi";
 import { TbDatabaseDollar } from "react-icons/tb";
 
+import { currencyFormater } from "@/react-toolkit/constants";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,6 +25,8 @@ type LicensesStats = {
 
   annualRevenue: number;
   totalOverdue: number;
+
+  currency: string | undefined;
 };
 
 export const LicensesStats = () => {
@@ -54,6 +57,8 @@ export const LicensesStats = () => {
 
     annualRevenue: statsData.sum((x) => x.unitPrice),
     totalOverdue: statsData.sum((x) => x.overdueBalance),
+
+    currency: statsData.firstOrDefault((x) => !!x.currency)?.currency,
   };
 
   return (
@@ -119,10 +124,10 @@ export const LicensesStats = () => {
               stats.totalOverdue ? "text-destructive" : "text-green-700"
             }
           >
-            {stats.totalOverdue} Overdue
+            {currencyFormater(stats.totalOverdue, stats.currency)} Overdue
           </p>
         }
-        mainText={stats.annualRevenue}
+        mainText={currencyFormater(stats.annualRevenue, stats.currency)}
         icon={<GiWallet fill="var(--primary)" className="h-10 w-10" />}
       />
     </div>
