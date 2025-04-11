@@ -1,9 +1,12 @@
+import { Download } from "lucide-react";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+
 import { inoviceOptimisticMutationFn } from "../../apis/inovices-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { InovicesTableDto } from "../../dtos/inovices-table-dto";
-import { ButtonIcon } from "@radix-ui/react-icons";
 
 interface InoviceDownloadRowActionProps {
   rowId: string;
@@ -24,7 +27,7 @@ export const InoviceDownloadRowAction = ({
 
   // Return Delete alert dialog trigger
   return (
-    <ButtonIcon
+    <Button
       onClick={() => {
         showDefaultAlertDialog({
           confirmActionFn: () =>
@@ -36,6 +39,10 @@ export const InoviceDownloadRowAction = ({
           additionalText: "billingplan",
         });
       }}
-    />
+      size="icon5"
+      variant="ghost"
+    >
+      <Download />
+    </Button>
   );
 };
