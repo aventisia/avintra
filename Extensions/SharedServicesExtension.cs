@@ -22,9 +22,9 @@ public static class SharedServicesExtension
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "AVENTISIA APIs",
+                Title = "Aventisia APIs",
                 Version = "v1",
-                Description = "AVENTISIA API Services",
+                Description = "Aventisia API Services",
             });
             c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

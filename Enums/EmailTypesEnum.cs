@@ -11,7 +11,7 @@ public enum EmailTypesEnum
     VerifyEmailAddress,
 
     /// <summary>
-    /// Email type to send welcome email to user (Welcome to AVENTISIA!) on account creation.
+    /// Email type to send welcome email to user (Welcome to Aventisia!) on account creation.
     /// </summary>
     AccountCreated,
 
