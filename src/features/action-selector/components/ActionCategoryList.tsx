@@ -19,6 +19,7 @@ import { NodeDataType } from "@/types/node-data-type";
 import ActionsList from "./ActionsList";
 import { triggersList } from "../constants/trigger-data";
 import { ActionCategoryType } from "../types/action-category-type";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
@@ -43,10 +44,21 @@ export const ActionCategoryList = () => {
   // Is used to render the list of triggers
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
+  const { projectInfo } = useCurrentFlowStore(
+    useShallow((state) => ({
+      projectInfo: state.projectInfo,
+    })),
+  );
+
   const getActionCategories = () => {
     if (query) {
       const result: ActionCategoryType[] = [];
-      actionSelectorData.forEach(({ actionCategories }) => {
+      actionSelectorData.forEach(({ name, actionCategories }) => {
+        if (
+          projectInfo?.type === "AutomationAgent" &&
+          name === "aiIntegrations"
+        )
+          return;
         actionCategories.forEach((category) => {
           const matchingActions = category.actions
             ? category.actions?.filter((action) =>

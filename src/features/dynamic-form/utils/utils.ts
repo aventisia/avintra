@@ -9,7 +9,7 @@ import launchNewChrome from "../constants/configs/browser-automation/launch-new-
 import launchNewMicrosoftEdge from "../constants/configs/browser-automation/launch-new-microsoft-edge";
 import runJavascriptFunctionOnWebPage from "../constants/configs/browser-automation/run-javascript-function-on-web-page";
 import waitForWebPageContent from "../constants/configs/browser-automation/wait-for-web-page-content";
-import extractDataFromWebPage from "../constants/configs/browser-automation/web-data-extraction/extract-data-from-web-page";
+// import extractDataFromWebPage from "../constants/configs/browser-automation/web-data-extraction/extract-data-from-web-page";
 import getDetailsOfElementOnWebPage from "../constants/configs/browser-automation/web-data-extraction/get-details-of-element-on-web-page";
 import getDetailsOfWebPage from "../constants/configs/browser-automation/web-data-extraction/get-details-of-web-page";
 import takeScreenshotOfWebPage from "../constants/configs/browser-automation/web-data-extraction/take-screenshot-of-web-page";
@@ -541,7 +541,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   invokeWebService,
 
   //Browser automation
-  extractDataFromWebPage,
+  // extractDataFromWebPage,
   getDetailsOfWebPage,
   getDetailsOfElementOnWebPage,
   takeScreenshotOfWebPage,

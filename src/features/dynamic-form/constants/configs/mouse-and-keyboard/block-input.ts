@@ -19,10 +19,6 @@ const blockInputFieldCategories: IDynamicFormKeysCategory[] = [
     title: "Basic",
     formFieldKeys: [["blockInput"]],
   },
-  {
-    title: "Output",
-    formFieldKeys: [[""], [""]],
-  },
 ];
 
 const blockInput: ActivityConfig = {

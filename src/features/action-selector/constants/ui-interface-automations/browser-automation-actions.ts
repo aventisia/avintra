@@ -1,14 +1,15 @@
 import { NodeDataType } from "@/types/node-data-type";
 
 export const browserAutomationActions: NodeDataType[] = [
-  {
-    type: "activityNode",
-    name: "extractDataFromWebPage",
-    label: "Extract data from web page",
-    description:
-      "Extract data from specific parts of a web page in the form of single values, lists, rows, or tables",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // TODO - to be implemeted later
+  // {
+  //   type: "activityNode",
+  //   name: "extractDataFromWebPage",
+  //   label: "Extract data from web page",
+  //   description:
+  //     "Extract data from specific parts of a web page in the form of single values, lists, rows, or tables",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "getDetailsOfWebPage",
