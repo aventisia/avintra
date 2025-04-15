@@ -38,23 +38,29 @@ export const pricingPlanZodSchema = z
     currency: z
       .string({ message: reqError("Currency") })
       .min(1, { message: reqError("Currency") }),
-    unitPrice: z
-      .string({ required_error: reqError("Unit price") })
-      .refine(
-        (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
-        numericError("Unit price"),
-      )
-      .transform((val) => parseFloat(val)),
+    unitPrice: z.union([
+      z.number({ required_error: reqError("Unit price") }),
+      z
+        .string({ required_error: reqError("Unit price") })
+        .refine(
+          (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
+          numericError("Unit price"),
+        )
+        .transform((val) => parseFloat(val)),
+    ]),
     frequency: z
       .string({ message: reqError("Billing frequency") })
       .min(1, { message: reqError("Billing frequency") }),
-    cola: z
-      .string({ required_error: reqError("COLA") })
-      .refine(
-        (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
-        numericError("COLA"),
-      )
-      .transform((val) => parseInt(val)),
+    cola: z.union([
+      z.number({ required_error: reqError("COLA") }),
+      z
+        .string({ required_error: reqError("COLA") })
+        .refine(
+          (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
+          numericError("COLA"),
+        )
+        .transform((val) => parseInt(val)),
+    ]),
 
     // Single field
     isDisabled: z.boolean(),
