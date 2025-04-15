@@ -49,6 +49,11 @@ public class LicenseCreditDto
     public UnitTypesEnum? Unit { get; set; }
 
     /// <summary>
+    /// Gets or sets the currency used for the pricing plan, with a default value of USD.
+    /// </summary>
+    public CurrencyTypesEnum? Currency { get; set; }
+
+    /// <summary>
     /// Gets or sets the total number of units allocated to the tenant or user.
     /// </summary>
     public int Allocated { get; set; }

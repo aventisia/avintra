@@ -21,7 +21,7 @@ public class MyLicenseCreditDto
     /// Gets or sets the name of the pricing plan connected to this tenant.
     /// </summary>
     public PricingComponentsEnum? PricingComponent { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the price per unit for the pricing plan.
     /// </summary>
@@ -32,6 +32,11 @@ public class MyLicenseCreditDto
     /// This indicates the quantity relevant to the specified unit type.
     /// </summary>
     public UnitTypesEnum? Unit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the currency used for the pricing plan, with a default value of USD.
+    /// </summary>
+    public CurrencyTypesEnum? Currency { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of units allocated to the tenant or user.
