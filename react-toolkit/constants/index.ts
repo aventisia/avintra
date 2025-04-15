@@ -1,12 +1,4 @@
-import {
-  format,
-  formatDistanceToNow,
-  FormatDistanceToNowOptions,
-  isAfter,
-} from "date-fns";
-
-import { CurrencyTypesEnum } from "../enums/currency-types-enum";
-import { CrudActionType } from "../types/literal-types";
+import { CrudActionType } from '../types/literal-types';
 
 /**
  * A constant string representing an message which user will get from backend when 2FA is enabled.
@@ -91,82 +83,4 @@ export const CrudActionTypeShort: {
   update: "u",
   delete: "d",
   "delete-multiple": "m",
-};
-
-export const DATE_MIN = new Date(1, 1, 1);
-
-/**
- * returns a formatted date
- *
- * @param {(Date | undefined | null)} date
- * @param {string} [dateFormat="dd MMM yyyy"]
- * @param {string} [placeholder="NA"]
- * @return placeholder
- */
-export const dateFormat = (
-  date: Date,
-  dateFormat: string = "dd MMM yyyy",
-  placeholder: string = "NA",
-) => (isAfter(date, DATE_MIN) ? format(date, dateFormat) : placeholder);
-
-/**
- * return a human distace time
- *
- * @param {(Date | undefined | null)} date
- * @param {string} [placeholder="NA"]
- * @param {FormatDistanceToNowOptions} [formatToNowOptions={addSuffix: true,}]
- * @return placeholder
- */
-export const dateFormatDistanceToNow = (
-  date: Date,
-  placeholder: string = "NA",
-  formatToNowOptions: FormatDistanceToNowOptions = {
-    addSuffix: true,
-  },
-) =>
-  isAfter(date, DATE_MIN)
-    ? formatDistanceToNow(date, formatToNowOptions)
-    : placeholder;
-
-export const popularCurrencies: Partial<
-  Record<keyof typeof CurrencyTypesEnum, string>
-> = {
-  USD: "$", // United States Dollar
-  EUR: "€", // Euro
-  GBP: "£", // British Pound Sterling
-  JPY: "¥", // Japanese Yen
-  CHF: "CHF", // Swiss Franc
-  CAD: "C$", // Canadian Dollar
-  AUD: "A$", // Australian Dollar
-  CNY: "¥", // Chinese Yuan
-  INR: "₹", // Indian Rupee
-  BRL: "R$", // Brazilian Real
-  RUB: "₽", // Russian Ruble
-  MXN: "MX$", // Mexican Peso
-  SGD: "S$", // Singapore Dollar
-  HKD: "HK$", // Hong Kong Dollar
-  KRW: "₩", // South Korean Won
-  ZAR: "R", // South African Rand
-  TRY: "₺", // Turkish Lira
-  NZD: "NZ$", // New Zealand Dollar
-  SEK: "kr", // Swedish Krona
-  NOK: "kr", // Norwegian Krone
-  DKK: "kr", // Danish Krone
-};
-
-export const currencyFormater = (
-  price: number,
-  currency?: keyof typeof CurrencyTypesEnum | string | undefined,
-) => {
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "decimal",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-  if (!currency) return `$${formatter.format(price)}`;
-
-  if (popularCurrencies[currency as keyof typeof CurrencyTypesEnum]) {
-    return `${popularCurrencies[currency as keyof typeof CurrencyTypesEnum]} ${formatter.format(price)}`;
-  } else return `${formatter.format(price)} ${currency}`;
 };
