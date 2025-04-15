@@ -47,12 +47,12 @@ export const messageBoxesActions: NodeDataType[] = [
       "Displays the select folder dialog and prompts the user to select a folder",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
-  {
-    type: "activityNode",
-    name: "displayCustomForm",
-    label: "Display custom form",
-    description:
-      "Display a customized form that can include multiple types of elements, like text, number or file inputs etc",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // {
+  //   type: "activityNode",
+  //   name: "displayCustomForm",
+  //   label: "Display custom form",
+  //   description:
+  //     "Display a customized form that can include multiple types of elements, like text, number or file inputs etc",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
 ];
