@@ -1,8 +1,10 @@
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { z } from "zod";
 
 import {
   alphaNumericError,
   maxLenError,
+  numericError,
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
 import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
@@ -36,15 +38,24 @@ export const pricingPlanZodSchema = z
     currency: z
       .string({ message: reqError("Currency") })
       .min(1, { message: reqError("Currency") }),
-    unitPrice: z.string().min(1, { message: reqError("Unit price") }),
-    // .transform((val) => Number(val))
-    // .pipe(z.number().positive("Unit price must be positive"))
+    unitPrice: z
+      .string({ required_error: reqError("Unit price") })
+      .refine(
+        (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
+        numericError("Unit price"),
+      )
+      .transform((val) => parseFloat(val)),
     frequency: z
       .string({ message: reqError("Billing frequency") })
       .min(1, { message: reqError("Billing frequency") }),
-    cola: z.string().min(1, { message: reqError("COLA") }),
-    // .transform((val) => Number(val))
-    // .pipe(z.number().positive("COLA must be positive"))
+    cola: z
+      .string({ required_error: reqError("COLA") })
+      .refine(
+        (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
+        numericError("COLA"),
+      )
+      .transform((val) => parseInt(val)),
+
     // Single field
     isDisabled: z.boolean(),
     // Group (read-only)
@@ -53,14 +64,7 @@ export const pricingPlanZodSchema = z
     lastModifiedBy: z.string(),
     lastModifiedOn: z.date(),
   })
-  .refine((data) => data.unitPrice && Number(data.unitPrice) > 0, {
-    message: "Unit price must be greater than 0",
-    path: ["unitPrice"],
-  })
-  .refine(
-    (data) => data.cola && Number(data.cola) > 0 && Number(data.cola) < 100,
-    {
-      message: "COLA must between 0 to 100",
-      path: ["cola"],
-    },
-  );
+  .refine((data) => data.cola >= 0 && data.cola <= 100, {
+    message: "COLA must between 0 to 100",
+    path: ["cola"],
+  });

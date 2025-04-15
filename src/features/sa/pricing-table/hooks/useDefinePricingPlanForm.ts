@@ -88,9 +88,9 @@ export const useDefinePricingPlanForm = () => {
       tenantType: data?.tenantType ?? "",
       tenantId: data?.tenantId ?? "",
       currency: data?.currency ?? "",
-      unitPrice: data?.unitPrice.toString(),
+      unitPrice: data?.unitPrice,
       frequency: data?.frequency,
-      cola: data?.cola.toString(),
+      cola: data?.cola,
       // Single field
       isDisabled: data?.isDisabled ?? false,
       // Group (read-only)
@@ -111,10 +111,10 @@ export const useDefinePricingPlanForm = () => {
     return {
       ...formData,
       tenantId:
-        !!formData.tenantId ||
-        formData.tenantId == "00000000-0000-0000-0000-000000000000"
-          ? null
-          : formData.tenantId,
+        formData.tenantId && !formData.tenantId?.includes("00000000")
+          ? formData.tenantId
+          : null,
+
       unit:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? PricingUnitTypesEnum.Credit
