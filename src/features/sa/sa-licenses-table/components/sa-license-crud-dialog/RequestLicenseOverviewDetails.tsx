@@ -1,10 +1,10 @@
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchTenants } from "@/features/sa/tenants-table/hooks/useFetchTenants";
-import { currencyFormater } from "@/react-toolkit/constants";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { PricingPlanDto } from "@/react-toolkit/types/pricing-plan-dto";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../../constants";

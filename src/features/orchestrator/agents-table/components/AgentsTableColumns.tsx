@@ -1,11 +1,11 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableActions } from "./table-actions/TableActions";
-import { dateFormat } from "@/react-toolkit/constants"
 
 /**
  * Array of table columns for the agents table.
@@ -101,7 +101,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("createdOn"))}
+        {dateFormater(row.getValue("createdOn"))}
       </div>
     ),
   },

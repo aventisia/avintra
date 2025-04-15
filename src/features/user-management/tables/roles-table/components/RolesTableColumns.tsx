@@ -1,6 +1,6 @@
-import { dateFormat } from "@/react-toolkit/constants";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
@@ -106,7 +106,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("createdOn"))}
+        {dateFormater(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -132,7 +132,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("lastUpdatedOn"))}
+        {dateFormater(row.getValue("lastUpdatedOn"))}
       </div>
     ),
   },

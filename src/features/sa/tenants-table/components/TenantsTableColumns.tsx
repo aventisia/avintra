@@ -1,10 +1,11 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
 import { ColumnDef } from "@tanstack/react-table";
+
 import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
-import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the tenants table.
@@ -59,7 +60,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("effectiveDate"))}
+        {dateFormater(row.getValue("effectiveDate"))}
       </div>
     ),
   },
@@ -70,7 +71,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue<Date>("renewalDate"))}
+        {dateFormater(row.getValue<Date>("renewalDate"))}
       </div>
     ),
   },
@@ -81,7 +82,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue<Date>("expiresOn"))}
+        {dateFormater(row.getValue<Date>("expiresOn"))}
       </div>
     ),
   },
@@ -107,7 +108,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("createdOn"))}
+        {dateFormater(row.getValue("createdOn"))}
       </div>
     ),
   },

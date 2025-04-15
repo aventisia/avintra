@@ -1,10 +1,11 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
 import { ColumnDef } from "@tanstack/react-table";
+
 import { getColumnName } from "../constants/column-display-names";
 import { UsersTableDto } from "../dtos/users-table-dto";
 import { UserRowActions } from "./user-row-actions/UserRowActions";
-import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the users table.
@@ -88,7 +89,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("createdOn"))}
+        {dateFormater(row.getValue("createdOn"))}
       </div>
     ),
   },

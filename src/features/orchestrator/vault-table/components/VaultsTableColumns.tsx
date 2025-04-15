@@ -1,11 +1,11 @@
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
-import { dateFormat } from "@/react-toolkit/constants"
 
 /**
  * Array of table columns for the configs table.
@@ -66,7 +66,7 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("createdOn"))}
+        {dateFormater(row.getValue("createdOn"))}
       </div>
     ),
   },

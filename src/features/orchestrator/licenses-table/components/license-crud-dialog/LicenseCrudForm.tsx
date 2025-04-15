@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { currencyFormater } from "@/react-toolkit/constants";
 import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
@@ -8,6 +7,7 @@ import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";

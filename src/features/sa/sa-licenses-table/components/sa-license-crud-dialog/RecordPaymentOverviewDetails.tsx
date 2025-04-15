@@ -1,6 +1,6 @@
-import { currencyFormater } from "@/react-toolkit/constants";
 import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../../constants";

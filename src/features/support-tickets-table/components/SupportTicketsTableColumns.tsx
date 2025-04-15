@@ -1,11 +1,13 @@
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
+import { Key } from "react";
+
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
+import { ColumnDef } from "@tanstack/react-table";
+
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
-import { Key } from "react";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the support tickets table.
@@ -82,7 +84,7 @@ export const supportTicketsTableColumns: ColumnDef<SupportTicketsTableDto>[] = [
       <DTColumnHeader className="hidden" column={column} title="Created On" />
     ),
     cell: ({ row }) => (
-      <div className="hidden">{dateFormat(row.getValue("createdOn"))}</div>
+      <div className="hidden">{dateFormater(row.getValue("createdOn"))}</div>
     ),
   },
   {

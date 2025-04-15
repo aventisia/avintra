@@ -2,13 +2,13 @@ import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-e
 import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { dateFormater } from "@/react-toolkit/utils/date-formater";
 import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
-import { dateFormat } from "@/react-toolkit/constants";
 
 /**
  * Array of table columns for the keystores table.
@@ -102,7 +102,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormat(row.getValue("createdOn"))}
+        {dateFormater(row.getValue("createdOn"))}
       </div>
     ),
   },

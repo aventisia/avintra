@@ -4,9 +4,9 @@ import { GiWallet } from "react-icons/gi";
 import { PiCertificate } from "react-icons/pi";
 import { TbDatabaseDollar } from "react-icons/tb";
 
-import { currencyFormater } from "@/react-toolkit/constants";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../constants";
