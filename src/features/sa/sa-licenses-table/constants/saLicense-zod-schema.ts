@@ -1,6 +1,7 @@
-import { z } from "zod";
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { z } from 'zod';
 
-import { reqError } from "@/react-toolkit/utils/error-message-list";
+import { numericError, reqError } from '@/react-toolkit/utils/error-message-list';
 
 /**
  * Represents the Zod schema for a request license units.
@@ -28,8 +29,10 @@ export const requestLicenseZodSchema = z.object({
     .string({ message: reqError("License type") })
     .min(1, { message: reqError("License type") }),
   additionalUnitsRequested: z
-    .string({ message: reqError("New allocated units") })
-    .min(1, { message: reqError("New allocated units") })
-    .transform((val) => Number(val))
-    .pipe(z.number().positive("New allocated units must be positive")),
+    .string({ required_error: reqError("New Allocated Units") })
+    .refine(
+      (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
+      numericError("New Allocated Units"),
+    )
+    .transform((val) => parseInt(val)),
 });
