@@ -1,4 +1,4 @@
-import { CurrencyTypesEnum } from '../enums/currency-types-enum';
+import { CurrencyTypesEnum } from "../enums/currency-types-enum";
 
 export const popularCurrencies: Partial<
   Record<keyof typeof CurrencyTypesEnum, string>
@@ -35,12 +35,13 @@ export const currencyFormater = (
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  
-  if (isNaN(price)) price = 0;
-  
-  if (!currency) return `$${formatter.format(price)}`;
 
-  if (popularCurrencies[currency as keyof typeof CurrencyTypesEnum]) {
-    return `${popularCurrencies[currency as keyof typeof CurrencyTypesEnum]} ${formatter.format(price)}`;
-  } else return `${formatter.format(price)} ${currency}`;
+  if (isNaN(price)) price = 0;
+
+  if (!currency) return `USD ${formatter.format(price)}`;
+
+  // if (popularCurrencies[currency as keyof typeof CurrencyTypesEnum]) {
+  //   return `${popularCurrencies[currency as keyof typeof CurrencyTypesEnum]} ${formatter.format(price)}`;
+  // } else
+  return `${currency} ${formatter.format(price)}`;
 };
