@@ -140,7 +140,7 @@ public class PlanTableService : IPlanTableService
             var planAlreadyExists = await _unitOfWork.PlanRepo
                 .GetByConditionAsync(w =>
                     w.PricingComponent == planTableDto.PricingComponent &&
-                    (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                    (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
                     w.Frequency == planTableDto.Frequency
                 )
                 .FirstOrDefaultAsync();
@@ -223,7 +223,7 @@ public class PlanTableService : IPlanTableService
                                                         w.Id != planTableDto.Id &&
                                                         w.PricingComponent == planTableDto.PricingComponent &&
                                                         (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
-                                                        (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                                                        (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
                                                         w.Currency == planTableDto.Currency &&
                                                         w.Frequency == planTableDto.Frequency)
                                                      .FirstOrDefaultAsync();
