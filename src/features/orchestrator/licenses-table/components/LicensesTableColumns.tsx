@@ -1,14 +1,13 @@
-import { formatDistanceToNow, isValid } from "date-fns";
+import { PricingComponentsEnum } from '@/react-toolkit/enums/pricing-components-enum';
+import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
+import { currencyFormater } from '@/react-toolkit/utils/currency-formatter';
+import { dateFormater } from '@/react-toolkit/utils/date-formater';
+import { getEnumValueByKey } from '@/react-toolkit/utils/enum-to-array';
+import { ColumnDef } from '@tanstack/react-table';
 
-import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
-import { ColumnDef } from "@tanstack/react-table";
-
-import { getColumnName } from "../constants/column-display-names";
-import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
-import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
+import { getColumnName } from '../constants/column-display-names';
+import { MyLicensesTableDto } from '../dtos/licenses-table-dto';
+import { LicenseRowActions } from './license-row-actions/LicenseRowActions';
 
 /**
  * Array of table columns for the licenses table.
@@ -95,7 +94,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {currencyFormater(row.getValue("unitPrice"), row.getValue("currency"))}
+        {currencyFormater(row.getValue("unitPrice"), row.original.currency)}
       </div>
     ),
   },
@@ -109,7 +108,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
       <div className="w-auto truncate font-medium">
         {currencyFormater(
           row.getValue("overdueBalance"),
-          row.getValue("currency"),
+          row.original.currency,
         )}
       </div>
     ),
@@ -125,11 +124,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {!isValid(row.getValue<Date>("nextBillingDate"))
-          ? "NA"
-          : formatDistanceToNow(row.getValue<Date>("nextBillingDate"), {
-              addSuffix: true,
-            })}
+        {dateFormater(row.getValue<Date>("nextBillingDate"))}
       </div>
     ),
   },
