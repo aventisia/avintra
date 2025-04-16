@@ -1,5 +1,6 @@
-import { DataTableRowActions } from '@/react-toolkit/ui/data-table/row-actions/DataTableRowActions';
-import { DTRowAction } from '@/react-toolkit/ui/data-table/row-actions/DTRowAction';
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+
+import { LicenseRowCancelAction } from "./LicenseRowCancelAction";
 
 interface LicenseRowActionsProps {
   rowId: string;
@@ -10,7 +11,7 @@ export const LicenseRowActions = ({ rowId }: LicenseRowActionsProps) => {
     // Dropdown menu for license table row action */}
     <DataTableRowActions>
       {/* View the license details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <LicenseRowCancelAction rowId={rowId} />
     </DataTableRowActions>
   );
 };
