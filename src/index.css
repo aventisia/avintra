@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TODO: For now --secondary color is set as primary. we'll have to decide on the secondary color */
-
 @layer base {
   :root {
     --background: hsl(0 0% 100%);
