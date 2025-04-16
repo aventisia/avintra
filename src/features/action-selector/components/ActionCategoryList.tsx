@@ -23,12 +23,11 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
-  const { origin, originId, query, setQuery } = useNodeSelectorStore(
+  const { origin, originId, query } = useNodeSelectorStore(
     useShallow((state) => ({
       origin: state.origin,
       originId: state.originId,
       query: state.query,
-      setQuery: state.setQuery,
     })),
   );
 
@@ -129,22 +128,23 @@ export const ActionCategoryList = () => {
         </>
       ) : (
         <>
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size="icon8"
-              className="min-w-[2rem]"
-              onClick={() => {
-                setPrimaryCategoryLabel(null);
-                setQuery("");
-              }}
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-            </Button>
-            <h2 className="ml-2 w-full truncate text-sm">
-              {!query && primaryCategoryLabel}
-            </h2>
-          </div>
+          {!query && (
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon8"
+                className="min-w-[2rem]"
+                onClick={() => {
+                  setPrimaryCategoryLabel(null);
+                }}
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+              </Button>
+              <h2 className="ml-2 w-full truncate text-sm">
+                {primaryCategoryLabel}
+              </h2>
+            </div>
+          )}
           {actionCategories?.map((item, index) => (
             <>
               <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
