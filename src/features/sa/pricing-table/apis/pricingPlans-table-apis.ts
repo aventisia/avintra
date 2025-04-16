@@ -1,10 +1,10 @@
-import { IHttpResponse } from '@/react-toolkit/dtos/http-response'
-import { IOptimisticMutation } from '@/react-toolkit/dtos/optimistic-mutation'
-import { CheckAvailabilityDto } from '@/react-toolkit/dtos/request/check-availability-dto'
-import { TrueFalseResultDto } from '@/react-toolkit/dtos/response/true-false-result-dto'
-import { axiosInstance } from '@/react-toolkit/lib/axios-instance'
+import { IHttpResponse } from '@/react-toolkit/dtos/http-response';
+import { IOptimisticMutation } from '@/react-toolkit/dtos/optimistic-mutation';
+import { CheckAvailabilityDto } from '@/react-toolkit/dtos/request/check-availability-dto';
+import { TrueFalseResultDto } from '@/react-toolkit/dtos/response/true-false-result-dto';
+import { axiosInstance } from '@/react-toolkit/lib/axios-instance';
 
-import { PricingPlansTableDto } from '../dtos/pricingPlans-table-dto'
+import { PricingPlansTableDto } from '../dtos/pricingPlans-table-dto';
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/plan`;
 
@@ -84,6 +84,8 @@ const pricingPlanOptimisticMutationFn = ({
       return updatePricingPlan(payload as PricingPlansTableDto);
     case "delete":
       return deletePricingPlan(payload as string);
+    case "delete-multiple":
+      return deletePricingPlans(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
