@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useShallow } from 'zustand/react/shallow';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { DATA_QUERY_KEY } from '../constants';
-import { recordPaymentZodSchema } from '../constants/saLicense-zod-schema';
-import { LicensesTableDto } from '../dtos/sa-licenses-table-dto';
+import { DATA_QUERY_KEY } from "../constants";
+import { recordPaymentZodSchema } from "../constants/saLicense-zod-schema";
+import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
 
 /**
  * Custom hook for defining a license form.
@@ -45,7 +45,7 @@ export const useDefineRecordPaymentForm = () => {
     defaultValues: {
       id: "",
       planId: "",
-      dateReceived: new Date(),
+      dateReceived: undefined,
       writeOffRemainingDues: false,
       amountReceived: undefined,
     },
