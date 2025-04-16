@@ -1,5 +1,6 @@
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { LicenseSelectFieldProps } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
+
 // License Id
 export const idProps: InputFieldProps = {
   name: "id",
@@ -19,4 +20,5 @@ export const additionalUnitsRequestedProps: InputFieldProps = {
   name: "additionalUnitsRequested",
   label: "New Allocated Units",
   isRequired: true,
+  placeholder: "8",
 };
