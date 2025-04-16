@@ -42,6 +42,7 @@ export const unitPriceTypeProps: InputFieldProps = {
   name: "unitPrice",
   label: "Unit Price",
   isRequired: true,
+  placeholder: "99",
 };
 export const frequencyTypeProps: SelectFieldProps = {
   name: "frequency",
@@ -56,6 +57,7 @@ export const colaTypeProps: IconInputFieldProps = {
     icon: "Percent",
     position: "end",
   },
+  placeholder: "2",
 };
 
 // Is Disabled
