@@ -1,6 +1,7 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+
 import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
@@ -33,7 +34,7 @@ export const PricingPlanRowDeleteAction = ({
               crudAction: "delete",
             }),
           alertType: "delete-record",
-          additionalText: "pricingplan",
+          additionalText: "plan",
         });
       }}
     />
