@@ -1,20 +1,16 @@
-import * as React from "react";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+import * as React from 'react';
+import { FieldPath, FieldValues, useFormContext } from 'react-hook-form';
 
-import { useFetchTenantsToSelect } from "@/react-toolkit/hooks/useFetchTenantsToSelect";
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
+import { useFetchTenantsToSelect } from '@/react-toolkit/hooks/useFetchTenantsToSelect';
+import { BaseFieldProps } from '@/react-toolkit/ui/form/fields/base-field-props';
+import { FormControl } from '@/react-toolkit/ui/form/FormControl';
+import { FormField } from '@/react-toolkit/ui/form/FormField';
+import { FormItem } from '@/react-toolkit/ui/form/FormItem';
+import { FormMessage } from '@/react-toolkit/ui/form/FormMessage';
+import { FormLabelExt } from '@/react-toolkit/ui/form/non-field/FormLabelExt';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/react-toolkit/ui/select";
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/react-toolkit/ui/select';
 
 interface TenantSelectFieldProps
   extends React.ComponentPropsWithoutRef<typeof SelectTrigger>,
@@ -40,11 +36,11 @@ const TenantSelectField = ({
   ...props
 }: TenantSelectFieldProps) => {
   // Get the form context
+  console.log(placeholder);
 
   const { control, setValue } = useFormContext<FieldValues>();
 
   const { selectOptions } = useFetchTenantsToSelect(!!isRequired);
-
   // Render the TenantSelectField component
   return (
     <FormField
@@ -67,8 +63,8 @@ const TenantSelectField = ({
             >
               <SelectTrigger size={size} {...field} {...props} ref={field.ref}>
                 <SelectValue
-                  placeholder={placeholder ? "Select" : placeholder}
-                />
+                  placeholder={placeholder ?? `Select ${label}`}
+                ></SelectValue>
               </SelectTrigger>
 
               <SelectContent>
