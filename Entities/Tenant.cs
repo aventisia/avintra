@@ -134,4 +134,9 @@ public class Tenant : BaseEntity
     /// Gets or sets the type of tenant.
     /// </summary>
     public required TenantTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the currency for the pricing plan, defaulting to USD.
+    /// </summary>
+    public required CurrencyTypesEnum Currency { get; set; }
 }

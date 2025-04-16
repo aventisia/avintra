@@ -107,8 +107,13 @@ public class PlanTableService : IPlanTableService
 
         try
         {
+
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(t => t.Id == _tenantId).FirstOrDefaultAsync();
+
             // Retrieve all plans from the repository
-            var plans = await _unitOfWork.PlanRepo.GetByConditionAsync(p => p.TenantId == null || p.TenantId == Guid.Empty || p.TenantId == _tenantId).ToListAsync();
+            var plans = await _unitOfWork.PlanRepo.GetByConditionAsync(p => p.TenantId == null || p.TenantId == Guid.Empty ||
+            (p.TenantId == _tenantId && p.TenantType == tenant.Type && p.Currency == tenant.Currency)
+            ).ToListAsync();
 
             // Map the retrieved plan list to SelectOptionDto and update the response
             serviceResponse.Data = plans.Adapt<IEnumerable<SelectOptionDto>>();
@@ -138,11 +143,12 @@ public class PlanTableService : IPlanTableService
         {
             // Check if the plan already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
-                .GetByConditionAsync(w =>
-                    w.PricingComponent == planTableDto.PricingComponent &&
-                    (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
-                    w.Frequency == planTableDto.Frequency
-                )
+            .GetByConditionAsync(w =>
+                w.Id != planTableDto.Id &&
+                w.PricingComponent == planTableDto.PricingComponent &&
+                (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
+                (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
+                w.Currency == planTableDto.Currency && w.Frequency == planTableDto.Frequency)
                 .FirstOrDefaultAsync();
 
             if (planAlreadyExists != null)

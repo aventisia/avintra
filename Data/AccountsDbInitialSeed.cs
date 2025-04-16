@@ -185,6 +185,7 @@ public static class AccountsDbInitialSeed
                 var newTenant = new Tenant()
                 {
                     Type = TenantTypesEnum.Shared,
+                    Currency = CurrencyTypesEnum.USD,
                     Name = GetEnumDescriptionUtil.GetEnumDescription(defaultTenant),
                     ExpiresOn = DateTimeOffset.UtcNow.AddDays(tenantDefaultConfig.InactiveDaysBeforeDataExpires),
                     IsSSOEnabled = false,

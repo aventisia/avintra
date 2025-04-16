@@ -91,13 +91,14 @@ public partial class AccountsDbContext
         builder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        
+
         // Unique property
         builder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         builder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
 
         // Enum to string conversion
         builder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
+        builder.Entity<Tenant>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
         builder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         builder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());
         builder.Entity<PlanPricing>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());

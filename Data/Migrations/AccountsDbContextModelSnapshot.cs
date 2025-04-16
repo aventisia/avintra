@@ -926,6 +926,10 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("DaysBeforePwdExpires")
                         .HasColumnType("integer");
 
