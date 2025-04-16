@@ -108,12 +108,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Retrieve all plans from the repository
-            var plans = await _unitOfWork.PlanRepo.GetAllAsync().ToListAsync();
-
-            if (!_isSuperAdmin)
-            {
-                plans = plans.Where(p => p.TenantId == null || p.TenantId == Guid.Empty || p.TenantId == _tenantId).ToList();
-            }
+            var plans = await _unitOfWork.PlanRepo.GetByConditionAsync(p => p.TenantId == null || p.TenantId == Guid.Empty || p.TenantId == _tenantId).ToListAsync();
 
             // Map the retrieved plan list to SelectOptionDto and update the response
             serviceResponse.Data = plans.Adapt<IEnumerable<SelectOptionDto>>();
@@ -145,9 +140,7 @@ public class PlanTableService : IPlanTableService
             var planAlreadyExists = await _unitOfWork.PlanRepo
                 .GetByConditionAsync(w =>
                     w.PricingComponent == planTableDto.PricingComponent &&
-                    (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
                     (w.TenantId == null || w.TenantId == planTableDto.TenantId) &&
-                    w.Currency == planTableDto.Currency &&
                     w.Frequency == planTableDto.Frequency
                 )
                 .FirstOrDefaultAsync();
