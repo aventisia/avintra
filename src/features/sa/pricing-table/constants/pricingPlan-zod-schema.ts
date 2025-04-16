@@ -1,13 +1,10 @@
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { z } from "zod";
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { z } from 'zod';
 
 import {
-  alphaNumericError,
-  maxLenError,
-  numericError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+    alphaNumericError, maxLenError, numericError, reqError
+} from '@/react-toolkit/utils/error-message-list';
+import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
 
 /**
  * Represents the Zod object's item schema for a pricingplan name.
@@ -25,7 +22,6 @@ export const pricingPlanNameSchema = z
  */
 export const pricingPlanZodSchema = z
   .object({
-    // Single fields
     id: z.string().optional(),
     tenantId: z.string().optional().nullable(),
     pricingComponent: z
@@ -34,7 +30,6 @@ export const pricingPlanZodSchema = z
     tenantType: z
       .string({ message: reqError("Tenant type") })
       .min(1, { message: reqError("Tenant type") }),
-    // tenantName: z.string().optional(),
     currency: z
       .string({ message: reqError("Currency") })
       .min(1, { message: reqError("Currency") }),
@@ -70,7 +65,11 @@ export const pricingPlanZodSchema = z
     lastModifiedBy: z.string(),
     lastModifiedOn: z.date(),
   })
-  .refine((data) => data.cola >= 0 && data.cola <= 100, {
-    message: "COLA must between 0 to 100",
+  .refine((data) => data.unitPrice > 0 && data.unitPrice <= 100000000, {
+    message: "Unit price must be above 0",
+    path: ["unitPrice"],
+  })
+  .refine((data) => data.cola > 0 && data.cola <= 100, {
+    message: "COLA must between 1 to 100",
     path: ["cola"],
   });
