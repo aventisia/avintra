@@ -1,17 +1,12 @@
+import { z } from "zod";
+
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import {
-  alphaNumericError,
-  maxLenError,
-  noWhitespaceError,
-  reqError,
-  variableError,
+    alphaNumericError, maxLenError, noWhitespaceError, reqError, variableError
 } from "@/react-toolkit/utils/error-message-list";
 import {
-  alphaNumericRegex,
-  noWhitespaceRegex,
-  variableRegex,
+    alphaNumericRegex, noWhitespaceRegex, variableRegex
 } from "@/react-toolkit/utils/regex-list";
-import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a tenant name.
@@ -38,6 +33,12 @@ export const tenantZodSchema = z
       .regex(alphaNumericRegex, {
         message: alphaNumericError("Tenant name"),
       }),
+    type: z
+      .string({ required_error: reqError("Deployment type") })
+      .min(1, { message: reqError("Deployment type") }),
+    currency: z
+      .string({ required_error: reqError("Currency") })
+      .min(1, { message: reqError("Currency") }),
     effectiveDate: z.date(),
     renewalDate: z.date(),
     expiresOn: z.date().optional(),
