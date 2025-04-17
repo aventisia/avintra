@@ -24,6 +24,11 @@ public class AccountRole : IdentityRole<Guid>
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this instance is the default option.
+    /// The default value is <c>false</c>.
+    /// </summary>
+    public bool IsDefault { get; set; } = false;
+    /// <summary>
     /// Gets or sets the virtual property to attach a list of UserRole with Role.
     /// </summary>
     public virtual ICollection<AccountUserRole>? UserRoles { get; set; }
@@ -83,7 +88,7 @@ public class AccountRole : IdentityRole<Guid>
     /// <summary>
     /// Gets or sets the list of role permissions associated with the user's account role.
     /// </summary>
-    public virtual ICollection<RolePermission>? RolePermissions { get; set;}
+    public virtual ICollection<RolePermission>? RolePermissions { get; set; }
 
     // /// <summary>
     // /// Gets or sets the list of custom user roles associated with the user.
