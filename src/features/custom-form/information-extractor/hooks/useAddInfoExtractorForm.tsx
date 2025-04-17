@@ -33,15 +33,6 @@ export const useAddInformationExtractorForm = ({
     setValue,
   } = form;
 
-  useEffect(() => {
-    if (
-      formFieldValuesToFill &&
-      Object.keys(formFieldValuesToFill).length > 0
-    ) {
-      form.reset(formFieldValuesToFill);
-    }
-  }, [formFieldValuesToFill, form]);
-
   // useFieldArray for handling the dynamic array of dataToBeExtracted
   const {
     fields: dataFields,
@@ -123,6 +114,15 @@ export const useAddInformationExtractorForm = ({
       setValue("tables", updatedTables);
     }
   };
+
+  useEffect(() => {
+    if (
+      formFieldValuesToFill &&
+      Object.keys(formFieldValuesToFill).length > 0
+    ) {
+      form.reset(formFieldValuesToFill);
+    }
+  }, [formFieldValuesToFill, form]);
 
   return {
     form,

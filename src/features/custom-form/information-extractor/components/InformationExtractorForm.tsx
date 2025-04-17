@@ -121,8 +121,6 @@ const InformationExtractorForm = ({
   // Submit handler
   function submitHandler(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    console.log(getValues());
-
     setNodes(updateNodeFieldValues(nodeId, { ...getValues() }));
     setFlowVariablesObject(
       updateFlowVariablesObject({ nodeId: nodeId as string, ...getValues() }),
