@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -8,22 +9,24 @@ import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Tooltip } from "@/react-toolkit/ui/Tooltip";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { recordPaymnet } from "../../apis/sa-licenses-table-apis";
-import {
-  amountReceivedProps,
-  dateReceivedProps,
-} from "../../constants/saLicense-form-field-props";
+import { DATA_QUERY_KEY } from "../../constants";
+import { amountReceivedProps, dateReceivedProps } from "../../constants/saLicense-form-field-props";
 import { recordPaymentZodSchema } from "../../constants/saLicense-zod-schema";
 import { RecordPaymentDto } from "../../dtos/record-payment-dto";
+import { LicensesTableDto } from "../../dtos/sa-licenses-table-dto";
 import { useDefineRecordPaymentForm } from "../../hooks/useDefineRecordPaymentForm";
 import { RecordPaymentOverviewDetails } from "./RecordPaymentOverviewDetails";
 
 export const RecordPaymentForm = () => {
+  // Get query client
+  const queryClient = useQueryClient();
   // Define license form
-  const { form, watch, isDirty, crudAction, setShowDialog, refineFormData } =
+  const { form, isDirty, crudAction, setShowDialog, refineFormData } =
     useDefineRecordPaymentForm();
 
   const { isPending, mutate: mutateLicense } = useMutation({
@@ -40,6 +43,28 @@ export const RecordPaymentForm = () => {
     },
   });
 
+  const [_varience, set_varience] = useState(0);
+
+  const [amountReceived] = form.watch(["amountReceived"]);
+
+  // Get licenses data from query client
+  const licensesData = queryClient.getQueryData<{
+    data: LicensesTableDto[];
+  }>(DATA_QUERY_KEY);
+
+  // Get license data by id
+  const myLicenseData = licensesData?.data.find(
+    (item) => item.planId === form.getValues("planId"),
+  );
+
+  useEffect(() => {
+    set_varience(
+      ((amountReceived - (myLicenseData?.overdueBalance ?? 0)) /
+        (myLicenseData?.overdueBalance ?? 0)) *
+        100,
+    );
+  }, [amountReceived, myLicenseData?.overdueBalance]);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof recordPaymentZodSchema>) => {
     // Create or update the license
@@ -48,8 +73,6 @@ export const RecordPaymentForm = () => {
     // Close the dialog
     setShowDialog(false);
   };
-
-  const [planId] = watch(["planId"]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -63,7 +86,7 @@ export const RecordPaymentForm = () => {
       disabled={isReadMode}
     >
       {/* overview dtetails */}
-      {planId ? <RecordPaymentOverviewDetails planId={planId} /> : null}
+      <RecordPaymentOverviewDetails details={myLicenseData} />
 
       {/* record paymnet */}
       <div className="!mt-4 space-y-2 rounded-md bg-slate-100 p-5">
@@ -74,12 +97,17 @@ export const RecordPaymentForm = () => {
 
         <div className="ml-1 flex justify-between text-sm">
           <p className="font-light">Variance:</p>
-          <p>{0}</p>
+          <p>{`${isNaN(_varience) ? 0 : _varience.toFixed(2)}%`}</p>
         </div>
 
         <div className="ml-1 flex justify-between text-sm">
           <p className="font-light">Balance Due:</p>
-          <p>{0}</p>
+          <p>
+            {currencyFormater(
+              myLicenseData?.overdueBalance ?? 0,
+              myLicenseData?.currency,
+            )}
+          </p>
         </div>
 
         <div className="ml-1 flex justify-between">

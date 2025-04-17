@@ -1,28 +1,34 @@
-import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
+import { Convert } from "easy-currencies";
+import { useEffect, useState } from "react";
+
+import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
+import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-import { useQueryClient } from "@tanstack/react-query";
+import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 
-import { DATA_QUERY_KEY } from "../../constants";
 import { LicensesTableDto } from "../../dtos/sa-licenses-table-dto";
 
 export const RecordPaymentOverviewDetails = ({
-  planId,
+  details,
+  isFetching = false,
 }: {
-  planId: string;
+  details?: LicensesTableDto;
+  isFetching?: boolean;
 }) => {
-  // Get query client
-  const queryClient = useQueryClient();
-  const { data, isFetching } = useFetchLicenseDetails(planId);
-  // Get licenses data from query client
-  const licensesData = queryClient.getQueryData<{
-    data: LicensesTableDto[];
-  }>(DATA_QUERY_KEY);
+  // TODO add this to allow list https://api.exchangerate-api.com/v4/latest/
+  const [amountInINR, setAmountInINR] = useState(0);
 
-  // Get license data by id
-  const myLicenseData = licensesData?.data.find(
-    (item) => item.planId === planId,
-  );
+  useEffect(() => {
+    const fetchAmount = async () => {
+      const value = await Convert(details?.overdueBalance)
+        .from(details?.currency ?? "")
+        .to("INR");
+
+      setAmountInINR(value);
+    };
+    fetchAmount();
+  }, [details?.currency, details?.overdueBalance]);
 
   return (
     <div>
@@ -31,35 +37,41 @@ export const RecordPaymentOverviewDetails = ({
         <OverviewDetailDivElement
           label="Tenant Type :"
           isFetching={isFetching}
-          data={myLicenseData?.tenantType}
+          data={getEnumValueByKey(
+            DeploymentTypeEnum,
+            details?.tenantType ?? "",
+          )}
         />
         <OverviewDetailDivElement
           label="Tenat Name :"
           isFetching={isFetching}
-          data={myLicenseData?.tenantName ?? "Default"}
+          data={details?.tenantName ?? "Default"}
         />
         <OverviewDetailDivElement
           label="Pricing Component :"
           isFetching={isFetching}
-          data={myLicenseData?.pricingComponent}
+          data={getEnumValueByKey(
+            PricingComponentsEnum,
+            details?.pricingComponent ?? "",
+          )}
         />
         <OverviewDetailDivElement
           label="Currency :"
           isFetching={isFetching}
-          data={data?.data.currency}
+          data={details?.currency}
         />
         <OverviewDetailDivElement
           label="Overdue Amount :"
           isFetching={isFetching}
           data={currencyFormater(
-            myLicenseData?.overdueBalance ?? 0,
-            data?.data.currency,
+            details?.overdueBalance ?? 0,
+            details?.currency,
           )}
         />
         <OverviewDetailDivElement
           label="Overdue Amount (in INR) :"
           isFetching={isFetching}
-          data={currencyFormater(myLicenseData?.overdueBalance ?? 0, "INR")}
+          data={currencyFormater(amountInINR, "INR")}
         />
       </div>
     </div>
