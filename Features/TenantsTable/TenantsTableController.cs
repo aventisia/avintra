@@ -18,7 +18,14 @@ public class TenantsTableController : BaseApiController
     {
         return ResultHelper(await _tenantsTableService.GetTenantsAsync());
     }
-    
+
+    // Retrieves all tenants.
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ServiceResponse<TenantsTableDto>>> GetTenant(Guid? id)
+    {
+        return ResultHelper(await _tenantsTableService.GetTenantAsync(id));
+    }
+
     // Retrieves a list of tenant options.
     [HttpGet("tenants-to-select")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)

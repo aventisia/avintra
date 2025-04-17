@@ -89,6 +89,57 @@ public class TenantsTableService : ITenantsTableService
         return serviceResponse;
     }
 
+
+    // Retrieves all tenants.
+    public async Task<ServiceResponse<TenantsTableDto>> GetTenantAsync(Guid? id)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TenantsTableDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Try to get tenants
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w =>
+                    w.IsEditable && !w.IsDefault && w.Id == (id ?? _currentTenantService.CurrentTenantId))
+                .SingleOrDefaultAsync();
+
+            // Get tenant manager's full name list
+            var tenantManager = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w =>
+                    tenant.CreatedByUserId == w.Id ||
+                    tenant.LastModifiedByUserId == w.Id)
+                .Select(s => new { s.Id, UserFullName = s.FirstName + " " + s.LastName })
+                .SingleOrDefaultAsync();
+
+
+            // Default mapping
+            var tenantsTableDto = tenant.Adapt<TenantsTableDto>();
+
+            // Get CreatedBy user full name
+            tenantsTableDto.CreatedBy = tenantManager.UserFullName;
+
+            // Get LastModifiedBy user full name
+            tenantsTableDto.LastModifiedBy = tenantManager.UserFullName;
+
+            // Task successful
+            serviceResponse.Data = tenantsTableDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenants retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves a list of tenant options.
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)
     {

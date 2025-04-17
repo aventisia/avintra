@@ -9,12 +9,17 @@ public interface ITenantsTableService
     Task<ServiceResponse<IEnumerable<TenantsTableDto>>> GetTenantsAsync();
 
     /// <summary>
+    /// Retrieves all tenants.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> with the tenant.</returns>
+    Task<ServiceResponse<TenantsTableDto>> GetTenantAsync(Guid? id);
+
+    /// <summary>
     /// Asynchronously retrieves a collection of tenant options based on the specified tenant type.
     /// </summary>
     /// <param name="tenantType">The type of tenant to filter the results. If null, all tenant types are included.</param>
     /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
     Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType);
-
 
     /// <summary>
     /// Checks the availability of a tenant name.
