@@ -28,6 +28,9 @@ public static class AccountsDbInitialSeed
 
                 // Seed Roles
                 if (!await SeedRolesAsync(_roleManager)) return app;
+                
+                 // Seed Permissions
+                if (!await SeedPermissionsAsync(_accountsDbContext)) return app;
 
                 // Seed Super User without tenant
                 var superUser = await SeedSuperUserAsync(_userManager, defaultUsersConfig.SuperUser);
@@ -282,6 +285,39 @@ public static class AccountsDbInitialSeed
         }
     }
 
+    // Seed permissions
+    private async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext)
+    {
+        try
+        {
+            foreach (var permission in Enum.GetValues(typeof(PermissionTypesEnum)))
+            {
+                // Get permission description
+                var userPermissionDescription = GetEnumDescriptionUtil.GetEnumDescription((Enum)permission);
+
+                // Split permission description using semicolon (;)
+                string[] splitContent = userPermissionDescription.Split(';');
+
+                await dbContext.Permissions.AddAsync(new Permission()
+                {
+                    Name = permission.ToString(),
+                    FullName = splitContent[1].Trim(),
+                    Description = splitContent[2].Trim()
+                });
+
+            }
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: Error occurred while trying to seed permissions: " + ex.Message);
+            return false;
+        }
+
+        // Roles seeded successfully
+        return true;
+    }
+    
     private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid superUserId)
     {
         try
