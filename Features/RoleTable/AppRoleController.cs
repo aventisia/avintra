@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("api/role")]
+[Route("account-role")]
 [ApiController]
 [Authorize]
 public class RoleController : BaseApiController
