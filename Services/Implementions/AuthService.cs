@@ -410,7 +410,13 @@ public class AuthService : IAuthService
             _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.UserName.ToString(), out var signedInEmail);
             var requestType = createVerificationCodeDto.RequestType;
 
-            var userName = requestType == VerificationCodeRequestTypesEnum.VerifyEmailAddress ? createVerificationCodeDto.Email : signedInEmail;
+            var userName = requestType switch
+            {
+                VerificationCodeRequestTypesEnum.VerifyEmailAddress or
+                VerificationCodeRequestTypesEnum.ResetPwd or
+                VerificationCodeRequestTypesEnum.UnlockAccount => createVerificationCodeDto.Email,
+                _ => signedInEmail
+            };
 
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
