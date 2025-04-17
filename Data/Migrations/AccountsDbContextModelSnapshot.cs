@@ -477,6 +477,12 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<decimal>("AmountReceived")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("AmountReceivedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -487,9 +493,6 @@ namespace AccountsAPIs.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("GeneratedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InvoiceNumber")
@@ -521,9 +524,6 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
