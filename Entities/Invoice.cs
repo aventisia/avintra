@@ -13,9 +13,9 @@ public class Invoice : BaseEntity, IMustHaveTenant
     public decimal Amount { get; set; }
 
     /// <summary>
-    /// Gets or sets the GeneratedDate
+    /// Gets or sets the AmountReceivedOn
     /// </summary>
-    public DateTime GeneratedDate { get; set; }
+    public DateTime AmountReceivedOn { get; set; }
 
     /// <summary>
     /// Gets or sets the IsPaid
@@ -26,7 +26,7 @@ public class Invoice : BaseEntity, IMustHaveTenant
     //public DateTime InvoiceDate {get;set;}
     public decimal Tax { get; set; }
     public decimal Discount { get; set; }
-    public decimal TotalAmount { get; set; }
+    public decimal AmountReceived { get; set; }
     public DateTime DueDate { get; set; }
     public string? Status { get; set; }   //"unpaid",paid
     public virtual ICollection<Payment>? Payment { get; set; }
