@@ -381,7 +381,7 @@ public class InvoiceService : IInvoiceService
     private string GenerateInvoiceNumber(Guid tenantId)
     {
         var lastInvoice = _unitOfWork.InvoiceRepo.GetByConditionAsync(i => i.TenantId == tenantId)
-                                   .OrderByDescending(i => i.GeneratedDate)
+                                   .OrderByDescending(i => i.CreatedOn)
                                    .FirstOrDefault();
 
         int nextInvoiceNumber = lastInvoice == null ? 1 : int.Parse(lastInvoice.InvoiceNumber.Split('-').Last()) + 1;
