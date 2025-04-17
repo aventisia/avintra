@@ -144,4 +144,9 @@ public class TenantsTableDto
     /// Gets or sets the type of tenant.
     /// </summary>
     public required TenantTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the currency of tenant.
+    /// </summary>
+    public required CurrencyTypesEnum Currency { get; set; }
 }
