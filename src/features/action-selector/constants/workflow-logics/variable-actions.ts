@@ -146,5 +146,6 @@ export const variableActions: NodeDataType[] = [
     description:
       "Set the value of a new or existing variable, create a new variable or overwrite a previously created variable",
     img: `${import.meta.env.BASE_URL}function.png`,
+    formType: "custom",
   },
 ];

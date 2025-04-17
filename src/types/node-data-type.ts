@@ -24,6 +24,7 @@ type NodeDataType = {
   outputs?: NodeDataInputsOutputs[];
   disabled?: boolean;
   hidden?: boolean;
+  formType?: "custom" | "dynamic"
 };
 
 export type { NodeTypeAndCategory, NodeDataType };

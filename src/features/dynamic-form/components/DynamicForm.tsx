@@ -10,7 +10,7 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { PopoverClose } from "@radix-ui/react-popover";
+// import { PopoverClose } from "@radix-ui/react-popover";
 // import OnErrorTabs from "./OnErrorTabs";
 
 interface DynamicFormProps {
@@ -28,6 +28,8 @@ interface DynamicFormProps {
   viewOnly?: boolean;
   /** A function to be called when the form is submitted. This function will receive an object containing the form data as its argument. */
   onSubmit: (formData: any) => void;
+  /** A function to close the dialog. */
+  closeDialog: () => void;
 }
 
 /** A React component that renders a dynamic form based on the provided configuration */
@@ -39,6 +41,7 @@ const DynamicForm = ({
   className,
   viewOnly = false,
   onSubmit,
+  closeDialog,
 }: DynamicFormProps) => {
   const outputRegex = /^o_/i;
   const finalFormFieldValuesToFill = formFieldValuesToFill
@@ -142,7 +145,7 @@ const DynamicForm = ({
         <VariableSelectorPopover className="max-h-80" />
       </div> */}
       {/* Scrollable input fields container using ScrollArea */}
-      <ScrollArea className="mt-4 max-h-[calc(60vh-4rem)] flex-grow px-4">
+      <ScrollArea className="mt-4 flex-grow px-4">
         <FormProvider {...form}>
           {/*Form basic category */}
           <div className="mt-2.5">
@@ -222,11 +225,14 @@ const DynamicForm = ({
       </ScrollArea>
       <Separator className="my-0 h-[0.5px] w-full" />
       <div className="flex w-full items-center justify-end gap-2 px-4 pb-4">
-        <PopoverClose>
-          <Button size="xs" type="button" variant={"outline"}>
-            Cancel
-          </Button>
-        </PopoverClose>
+        <Button
+          onClick={closeDialog}
+          size="xs"
+          type="button"
+          variant={"outline"}
+        >
+          Cancel
+        </Button>
         {!viewOnly && (
           <SubmitButton
             size="xs"

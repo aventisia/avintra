@@ -148,26 +148,33 @@ export const ActionCategoryList = () => {
           {actionCategories?.map((item, index) => (
             <>
               <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
-                <Accordion
-                  value={query ? item.name : undefined}
-                  type="single"
-                  collapsible
-                  className="w-full"
-                >
-                  <AccordionItem value={item.name} className="border-none">
-                    <AccordionTrigger className="px-1.5 py-2">
-                      <div className="flex w-full gap-3 text-sm">
-                        {item.label}
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ActionsList
-                        item={item?.actions}
-                        nodeSelectionHandler={nodeSelectionHandler}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                {item.listType === "list" ? (
+                  <ActionsList
+                    item={item?.actions}
+                    nodeSelectionHandler={nodeSelectionHandler}
+                  />
+                ) : (
+                  <Accordion
+                    value={query ? item.name : undefined}
+                    type="single"
+                    collapsible
+                    className="w-full"
+                  >
+                    <AccordionItem value={item.name} className="border-none">
+                      <AccordionTrigger className="px-1.5 py-2">
+                        <div className="flex w-full gap-3 text-sm">
+                          {item.label}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ActionsList
+                          item={item?.actions}
+                          nodeSelectionHandler={nodeSelectionHandler}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
               </CommandItem>
               {/* Separator */}
               {index < actionSelectorData.length - 1 && (

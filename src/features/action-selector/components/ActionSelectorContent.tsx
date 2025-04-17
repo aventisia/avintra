@@ -58,6 +58,7 @@ export const ActionSelectorContent = () => {
           placeholder="Search..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          autoFocus
         />
         <div className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded-md bg-muted px-1.5 font-mono text-sm font-medium text-muted-foreground opacity-100">
           <span className="text-xs">⌘</span>K

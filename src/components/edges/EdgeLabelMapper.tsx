@@ -15,7 +15,7 @@ export const edgeLabelMapper = (
       return <FalseEdgeLabel />;
     case "plus":
       return (
-        <NodeSelector sideOffset={10} alignOffset={-12}>
+        <NodeSelector>
           <PlusEdgeLabel edgeId={edgeId} />
         </NodeSelector>
       );

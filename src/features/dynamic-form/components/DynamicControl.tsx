@@ -246,7 +246,7 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
               <Command className="w-full">
                 <CommandInput placeholder={fData.placeholder} />
                 <CommandEmpty>No result found</CommandEmpty>
