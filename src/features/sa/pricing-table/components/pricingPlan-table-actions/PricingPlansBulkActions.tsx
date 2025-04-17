@@ -54,7 +54,7 @@ export function PricingPlansBulkActions({
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "configs" : "config"}`,
+                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "plans" : "plan"}`,
               });
             }}
           />
