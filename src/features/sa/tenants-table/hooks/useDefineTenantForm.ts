@@ -1,19 +1,18 @@
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
+
 import { isTenantNameAvailable } from "../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import {
-  tenantNameSchema,
-  tenantZodSchema,
-} from "../constants/tenant-zod-schema";
+import { tenantNameSchema, tenantZodSchema } from "../constants/tenant-zod-schema";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 /**
@@ -55,6 +54,8 @@ export const useDefineTenantForm = () => {
     defaultValues: {
       id: "",
       name: "",
+      type: "",
+      currency: "",
       effectiveDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       renewalDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       expiresOn: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -104,6 +105,8 @@ export const useDefineTenantForm = () => {
       // Single fields
       id: rowId,
       name: tenantData?.name ?? "",
+      type: tenantData?.type ?? "",
+      currency: tenantData?.currency ?? "",
       effectiveDate: tenantData?.effectiveDate
         ? new Date(tenantData?.effectiveDate)
         : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
