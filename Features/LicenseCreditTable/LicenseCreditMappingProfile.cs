@@ -14,7 +14,7 @@ public class LicenseCreditMappingProfile : IRegister
             .Map(dest => dest.TenantType, src => src.PlanPricing != null ? src.PlanPricing.TenantType : null)
             .Map(dest => dest.TenantId, src => src.TenantId)
             .Map(dest => dest.TenantName, src => src.Tenant != null ? src.PlanPricing.Tenant.Name : null)
-            .Map(dest => dest.OverdueBalance, src => src.Invoices != null ? src.Invoices.Where(a => !a.IsPaid).Sum(a => a.Amount) : 0)
+            .Map(dest => dest.OverdueBalance, src => src.Invoices != null ? src.Invoices.Sum(a => a.Amount - a.AmountReceived) : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}"

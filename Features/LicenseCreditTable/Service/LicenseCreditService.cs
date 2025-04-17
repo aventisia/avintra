@@ -277,7 +277,6 @@ public class LicenseCreditService : ILicenseCreditService
 
                     // Update the invoice totals
                     invoice.Amount += proRataAmount;
-                    invoice.TotalAmount += proRataAmount;
                     invoice.LastModifiedByUserId = _userId;
 
                     _unitOfWork.InvoiceRepo.Update(invoice);
@@ -456,6 +455,8 @@ public class LicenseCreditService : ILicenseCreditService
                 // Mark the invoice as paid
                 invoice.IsPaid = true;
                 invoice.Status = "Paid";
+                invoice.AmountReceived = licenseCreditDto.AmountReceived;
+                invoice.AmountReceivedOn = licenseCreditDto.DateReceived;
                 invoice.LastModifiedByUserId = _userId;
 
                 // Update the invoice in the repository
@@ -690,8 +691,6 @@ public class LicenseCreditService : ILicenseCreditService
                 Tax = 0,
                 Discount = 0,
                 Amount = proRataAmount,
-                TotalAmount = proRataAmount,
-                GeneratedDate = today,
                 DueDate = today,
                 Status = "UnPaid",
                 CreatedByUserId = _userId,
