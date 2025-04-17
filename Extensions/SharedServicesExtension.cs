@@ -90,4 +90,11 @@ public static class SharedServicesExtension
         // Register UploadFileService as a singleton for IUploadFileService
         services.AddSingleton<IUploadFileService, UploadFileService>();
     }
+
+    // Method to add the permission validator service to the service collection
+    public static void AddSPermissionValidatorService(this IServiceCollection services)
+    {
+        // Register PermissionValidator as a singleton implementation of IPermissionValidator
+        services.AddSingleton<IPermissionValidator, PermissionValidator>();
+    }
 }
