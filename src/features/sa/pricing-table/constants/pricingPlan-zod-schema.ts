@@ -1,10 +1,10 @@
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import { z } from 'zod';
+import { REGEX_POSITIVE_FLOAT } from "input-otp";
+import { z } from "zod";
 
 import {
-    alphaNumericError, maxLenError, numericError, reqError
-} from '@/react-toolkit/utils/error-message-list';
-import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
+    alphaNumericError, maxLenError, positiveNumericError, reqError
+} from "@/react-toolkit/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 
 /**
  * Represents the Zod object's item schema for a pricingplan name.
@@ -38,8 +38,8 @@ export const pricingPlanZodSchema = z
       z
         .string({ required_error: reqError("Unit price") })
         .refine(
-          (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
-          numericError("Unit price"),
+          (check) => RegExp(REGEX_POSITIVE_FLOAT).test(check),
+          positiveNumericError("Unit price"),
         )
         .transform((val) => parseFloat(val)),
     ]),
@@ -51,8 +51,8 @@ export const pricingPlanZodSchema = z
       z
         .string({ required_error: reqError("COLA") })
         .refine(
-          (check) => RegExp(REGEXP_ONLY_DIGITS).test(check),
-          numericError("COLA"),
+          (check) => RegExp(REGEX_POSITIVE_FLOAT).test(check),
+          positiveNumericError("COLA"),
         )
         .transform((val) => parseInt(val)),
     ]),
