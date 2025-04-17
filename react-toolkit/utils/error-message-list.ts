@@ -12,6 +12,9 @@ const nameError = (label: string) =>
 /** Output: ${label} can only contain digits */
 const numericError = (label: string) => `${label} can only contain digits`;
 
+export const positiveNumericError = (label: string) =>
+  `${label} must be positive`;
+
 /** Output: ${label} can only contain letters, number and a single space between words */
 const alphaNumericError = (label: string) =>
   `${label} can only contain letters, number and a single space between words`;
