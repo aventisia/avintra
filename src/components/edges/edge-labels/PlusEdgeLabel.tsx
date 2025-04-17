@@ -1,9 +1,10 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+// import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+import { DialogTrigger } from "@/react-toolkit/ui/dialog";
 
 interface PlusEdgeLabelProps {
   edgeId?: string;
@@ -18,7 +19,7 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
   );
 
   return (
-    <PopoverTrigger
+    <DialogTrigger
       className={cn(
         buttonVariants({ variant: "outline", size: "icon5" }),
         "group z-10 rounded-full opacity-50",
@@ -35,6 +36,6 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
           "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
         )}
       />
-    </PopoverTrigger>
+    </DialogTrigger>
   );
 };

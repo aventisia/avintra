@@ -7,8 +7,9 @@ import { useShallow } from "zustand/react/shallow";
 import { NoActionsMessage } from "./NoActionsMessage";
 import { PrimaryCategoryList } from "./PrimaryCategoryList";
 import { ActionCategoryList } from "./ActionCategoryList";
-import { Search } from "lucide-react";
+import { ArrowLeftIcon, Search } from "lucide-react";
 import { Input } from "@/react-toolkit/ui/input";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 export const ActionSelectorContent = () => {
   // Get the origin and originId from the store
@@ -37,12 +38,27 @@ export const ActionSelectorContent = () => {
   return (
     <>
       <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
-        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+        {query ? (
+          <Button
+            variant="ghost"
+            size="icon8"
+            className="m-0 mr-2 h-4 w-4 p-0"
+            onClick={() => {
+              setQuery("");
+            }}
+          >
+            <ArrowLeftIcon className="h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        ) : (
+          <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+        )}
         <Input
           name="query"
           className="border-none px-0 pr-1.5 placeholder:text-xs focus-visible:border-none focus-visible:ring-0"
           placeholder="Search..."
+          value={query}
           onChange={(e) => setQuery(e.target.value)}
+          autoFocus
         />
         <div className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded-md bg-muted px-1.5 font-mono text-sm font-medium text-muted-foreground opacity-100">
           <span className="text-xs">⌘</span>K

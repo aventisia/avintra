@@ -7,12 +7,12 @@ import {
 import { dynamicActionMapper } from "@/features/dynamic-form/utils/utils";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import {
-  Popover,
-  PopoverContent,
-  PopoverDefaultHeader,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverDefaultHeader,
+//   PopoverTrigger,
+// } from "@/react-toolkit/ui/popover";
 import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -22,6 +22,14 @@ import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import filterFieldValues from "../utils/filterFieldValues";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import { customActionMapper } from "@/features/custom-form/utils/utils";
+import CustomForm from "@/features/custom-form/CustomForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogDefaultHeader,
+  DialogTrigger,
+} from "@/react-toolkit/ui/dialog";
 
 interface OpenNodeConfigProps {
   data: NodeDataType;
@@ -33,7 +41,7 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
   const [activityConfig, setActivityConfig] = useState<ActivityConfig | null>(
     null,
   );
-  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   // Get ReactFlowExt store state & actions
   const { nodes, setNodes, setFlowVariablesObject, flowVariablesObject } =
@@ -103,19 +111,26 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
     setFlowVariablesObject(
       updateFlowVariablesObject({ nodeId: id as string, ...formData }),
     );
-    setIsPopoverOpen(false);
+    setIsDialogOpen(false);
+  };
+
+  // Close the dialog
+  const closeDialog = () => {
+    setIsDialogOpen(false);
   };
 
   // Update the activityConfig for selected node
   useEffect(() => {
-    setActivityConfig(dynamicActionMapper[data.name]);
+    setActivityConfig(
+      dynamicActionMapper[data.name] || (customActionMapper[data.name] && true),
+    );
   }, [data.name]);
 
   return (
     <StopPropagationWrapper className="flex">
       {activityConfig && (
-        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon6" }),
               "group z-10",
@@ -128,17 +143,12 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
                 "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
               )}
             />
-          </PopoverTrigger>
+          </DialogTrigger>
           {/* Popover content */}
-          <PopoverContent
-            collisionPadding={10}
-            align="start"
-            side="right"
-            variant={"responsive"}
-            className="max-h-fit min-w-[30vw]"
-          >
-            <PopoverDefaultHeader heading={data.label} />
-            {activityConfig && (
+          <DialogContent side="right" className="min-w-[34rem] overflow-y-auto">
+            <DialogDefaultHeader heading={data.label} />
+            {(data.formType === undefined || data.formType === "dynamic") &&
+            activityConfig ? (
               <DynamicForm
                 className="flex h-full flex-col"
                 formFieldCategories={getFormFields(
@@ -153,10 +163,21 @@ export const OpenNodeConfig = ({ data, id }: OpenNodeConfigProps) => {
                   ...(data.inputs ?? []),
                   ...(data.outputs ?? []),
                 ]}
+                closeDialog={closeDialog}
+              />
+            ) : (
+              <CustomForm
+                closeDialog={closeDialog}
+                nodeId={id}
+                name={data.name}
+                formFieldValuesToFill={[
+                  ...(data.inputs ?? []),
+                  ...(data.outputs ?? []),
+                ]}
               />
             )}
-          </PopoverContent>
-        </Popover>
+          </DialogContent>
+        </Dialog>
       )}
     </StopPropagationWrapper>
   );

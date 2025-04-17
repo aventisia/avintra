@@ -1,4 +1,5 @@
 import { PrimaryCategoryType } from "../types/primary-category-type";
+import { aiIntegrationActions } from "./ai-integrations/ai-integrations-action-categories";
 import { appIntegrationActions } from "./app-integrations/app-integrations-action-categoires";
 import { dataTransformationsActions } from "./data-transformations/data-transformations-action-categories";
 import { uiAutomationAndUserActions } from "./ui-interface-automations/ui-interface-automations-action-categories";
@@ -40,6 +41,6 @@ export const actionSelectorData: PrimaryCategoryType[] = [
     label: "AI Integrations",
     description: "AI-powered advanced actions for smarter, dynamic automation",
     icon: "IntelligentAutomationIcon",
-    actionCategories: [],
+    actionCategories: aiIntegrationActions,
   },
 ];

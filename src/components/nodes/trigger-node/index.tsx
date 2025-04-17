@@ -23,7 +23,7 @@ export const TriggerNode = ({
 
   return (
     <>
-      <NodeSelector sideOffset={10} alignOffset={-12}>
+      <NodeSelector>
         <ReplaceFlowTrigger onClick={() => setOrigin("ReplaceTrigger", "NA")} />
       </NodeSelector>
       <BaseNode

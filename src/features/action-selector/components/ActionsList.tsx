@@ -1,7 +1,7 @@
 import { CommandItem } from "@/react-toolkit/ui/command";
 import { ActionToSelect } from "./ActionToSelect";
 import { NodeDataType } from "@/types/node-data-type";
-import { PopoverClose } from "@/react-toolkit/ui/popover";
+import { DialogClose } from "@/react-toolkit/ui/dialog";
 
 interface ActionsListProps {
   item: NodeDataType[] | undefined;
@@ -22,9 +22,9 @@ const ActionsList = ({ item, nodeSelectionHandler }: ActionsListProps) => {
               onSelect={() => nodeSelectionHandler(action)}
             >
               {/* Action item */}
-              <PopoverClose className="text-left">
+              <DialogClose className="text-left">
                 <ActionToSelect data={action} />
-              </PopoverClose>
+              </DialogClose>
             </CommandItem>
           )
         );

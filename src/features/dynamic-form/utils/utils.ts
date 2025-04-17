@@ -276,7 +276,6 @@ import removeItemFromList from "../constants/configs/variables/remove-items-from
 import removeDuplicateItemsFromList from "../constants/configs/variables/reomve-duplicate-items-from-list";
 import retrieveDataTableColumnIntoList from "../constants/configs/variables/retrieve-data-table-column-into-list";
 import reverseList from "../constants/configs/variables/reverse-list";
-import setVariable from "../constants/configs/variables/set-variable";
 import shuffleList from "../constants/configs/variables/shuffle-list";
 import sortList from "../constants/configs/variables/sort-list";
 import subtractLists from "../constants/configs/variables/subtract-lists";
@@ -361,7 +360,6 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   increaseVariable,
   decreaseVariable,
   // runPowerFxExpression,
-  setVariable,
 
   //Conditional
   conditionalCase,
