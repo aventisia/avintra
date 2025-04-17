@@ -1,3 +1,4 @@
+import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
@@ -26,6 +27,14 @@ export const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
   selectOptions: enumToArray(DeploymentTypeEnum),
+  isRequired: true,
+};
+
+export const currencyProps: SelectFieldProps = {
+  name: "currency",
+  label: "Currency",
+  selectOptions: enumToArray(CurrencyTypesEnum),
+  isRequired: true,
 };
 
 export const effectiveOnProps: DatePickerFieldProps = {
