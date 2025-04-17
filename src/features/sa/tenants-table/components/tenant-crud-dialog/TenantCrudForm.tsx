@@ -1,42 +1,29 @@
+import { z } from "zod";
+
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { RadioGroupField } from "@/react-toolkit/ui/form/fields/RadioGroupField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  daysBeforePwdExpiresProps,
-  dbHostProps,
-  dbNamePrefixProps,
-  dbOptionProps,
-  dbPortProps,
-  dbPwdProps,
-  dbUserIdProps,
-  effectiveOnProps,
-  idleSessionTimeoutMinutesProps,
-  idProps,
-  isDisabledProps,
-  isIdleSessionTimeoutEnabledProps,
-  isPwdEnabledProps,
-  isPwdNeverExpiresEnabledProps,
-  isSSOEnabledProps,
-  isTwoFAEnabledProps,
-  nameProps,
-  renewsOnProps,
-  ssoConfigJsonProps,
-  typeProps,
+    currencyProps, daysBeforePwdExpiresProps, dbHostProps, dbNamePrefixProps, dbOptionProps,
+    dbPortProps, dbPwdProps, dbUserIdProps, effectiveOnProps, idleSessionTimeoutMinutesProps,
+    idProps, isDisabledProps, isIdleSessionTimeoutEnabledProps, isPwdEnabledProps,
+    isPwdNeverExpiresEnabledProps, isSSOEnabledProps, isTwoFAEnabledProps, nameProps, renewsOnProps,
+    ssoConfigJsonProps, typeProps
 } from "../../constants/tenant-form-field-props";
 import { tenantZodSchema } from "../../constants/tenant-zod-schema";
 import { TenantsTableDto } from "../../dtos/tenants-table-dto";
 import { useDefineTenantForm } from "../../hooks/useDefineTenantForm";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 
 export const TenantCrudForm = () => {
   // Define tenant form
@@ -111,7 +98,17 @@ export const TenantCrudForm = () => {
         nonErrorMessage={availabilityMessage}
       />
 
-      <SelectField {...typeProps} />
+      {form.getValues("type") || crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        <SelectField {...typeProps} />
+      )}
+
+      {form.getValues("currency") || crudAction === "create" ? (
+        <SelectField {...currencyProps} />
+      ) : (
+        <SelectField {...currencyProps} />
+      )}
 
       {/* Effective date */}
       <DatePickerField {...effectiveOnProps} />
