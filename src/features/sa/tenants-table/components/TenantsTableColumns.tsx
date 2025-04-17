@@ -1,6 +1,8 @@
+import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { dateFormater } from "@/react-toolkit/utils/date-formater";
+import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
@@ -72,6 +74,17 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {dateFormater(row.getValue<Date>("renewalDate"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "currency",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("currency")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {getEnumValueByKey(CurrencyTypesEnum, row.getValue("currency"))}
       </div>
     ),
   },
