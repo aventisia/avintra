@@ -42,12 +42,12 @@ export const ActionSelectorContent = () => {
           <Button
             variant="ghost"
             size="icon8"
-            className="mr-0.5 px-2"
+            className="m-0 mr-2 h-4 w-4 p-0"
             onClick={() => {
               setQuery("");
             }}
           >
-            <ArrowLeftIcon className="h-4 w-4 shrink-0 opacity-80" />
+            <ArrowLeftIcon className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         ) : (
           <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
