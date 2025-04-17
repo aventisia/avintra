@@ -103,6 +103,7 @@ public static class AppServicesExtension
         services.AddScoped<IPlanTableService, PlanTableService>();
         services.AddScoped<ILicenseCreditService, LicenseCreditService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IRoleService, RoleService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
