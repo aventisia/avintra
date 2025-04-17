@@ -1,4 +1,5 @@
 import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
+import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
@@ -64,7 +65,9 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("tenantType") ?? "Default"}
+        {row.getValue("tenantType")
+          ? getEnumValueByKey(DeploymentTypeEnum, row.getValue("tenantType"))
+          : "Default"}
       </div>
     ),
   },
