@@ -173,7 +173,7 @@ public class PlanTableService : IPlanTableService
             // Fetch default plans (e.g., from IndividualUsers) that match pricing component and frequency
             var defaultPlans = allPlans
                 .Where(p =>
-                    p.TenantId != currentTenant.Id &&
+                    p.TenantId == null &&
                     p.Currency == currentTenant.Currency &&
                     currentTenantPlans.Any(cp =>
                         cp.PricingComponent == p.PricingComponent &&
