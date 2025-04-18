@@ -35,7 +35,7 @@ public class PlanTableService : IPlanTableService
         {
             // Fetch plans from the repository and order by creation date
             var plans = await _unitOfWork.PlanRepo
-                                          .GetAllAsync()
+                                          .GetByConditionAsync(w => w.TenantId == null)
                                           .OrderByDescending(w => w.CreatedOn)
                                           .Include(a => a.Tenant)
                                           .ProjectToType<PlanTableDto>()
@@ -162,7 +162,7 @@ public class PlanTableService : IPlanTableService
             // Fetch all plans associated with the current tenant or the default tenant
             var tenantIds = tenants.Select(t => t.Id);
             var allPlans = await _unitOfWork.PlanRepo
-                .GetByConditionAsync(p => tenantIds.Contains(p.TenantId!.Value))
+                .GetByConditionAsync(w => w.TenantId == null || tenantIds.Contains(w.TenantId!.Value))
                 .ToListAsync();
 
             // Filter out plans specific to the current tenant and matching its currency
@@ -175,7 +175,7 @@ public class PlanTableService : IPlanTableService
                     p.TenantId == null &&
                     p.Currency == currentTenant.Currency &&
                     p.TenantType == currentTenant.Type &&
-                    currentTenantPlans.Any(cp =>
+                    !currentTenantPlans.Any(cp =>
                         cp.PricingComponent == p.PricingComponent &&
                         cp.Frequency == p.Frequency));
 
@@ -213,11 +213,11 @@ public class PlanTableService : IPlanTableService
             // Check if the plan already exists
             var planAlreadyExists = await _unitOfWork.PlanRepo
             .GetByConditionAsync(w =>
-                w.Id != planTableDto.Id &&
-                w.PricingComponent == planTableDto.PricingComponent &&
-                (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
-                (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
-                w.Currency == planTableDto.Currency && w.Frequency == planTableDto.Frequency)
+                    w.PricingComponent == planTableDto.PricingComponent &&
+                    (planTableDto.TenantType == null || w.TenantType == planTableDto.TenantType) &&
+                    (planTableDto.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                    w.Currency == planTableDto.Currency &&
+                    w.Frequency == planTableDto.Frequency)
                 .FirstOrDefaultAsync();
 
             if (planAlreadyExists != null)
