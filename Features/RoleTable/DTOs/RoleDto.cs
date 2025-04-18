@@ -26,6 +26,16 @@ public class RoleDto
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
+    /// </summary>
+    public Guid? TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
+    /// </summary>
+    public string? TenantName { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the role record is disabled.
     /// </summary>
     public bool IsDisabled { get; set; }
@@ -44,12 +54,12 @@ public class RoleDto
     /// <summary>
     /// Gets or sets the ID of the user who created the record.
     /// </summary>
-    public Guid CreatedByUserId { get; set; }
+    public Guid? CreatedByUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the user who modified the record.
     /// </summary>
-    public Guid LastModifiedByUserId { get; set; }
+    public Guid? LastModifiedByUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the username of the user who created the role record. 
