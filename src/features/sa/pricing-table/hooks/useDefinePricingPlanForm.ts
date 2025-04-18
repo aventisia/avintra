@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { useFetchTenantDetails } from "@/hooks/useFetchTenantsToSelect";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
@@ -64,6 +65,12 @@ export const useDefinePricingPlanForm = () => {
     },
   });
 
+  const [pricingComponent, tenantId] = form.watch([
+    "pricingComponent",
+    "tenantId",
+  ]);
+  const { tenantDetails } = useFetchTenantDetails(tenantId ?? "");
+
   // Destructor form values and methods
   const {
     formState: { isSubmitting, isDirty },
@@ -119,6 +126,7 @@ export const useDefinePricingPlanForm = () => {
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? PricingUnitTypesEnum.Credit
           : PricingUnitTypesEnum.License,
+      currency: tenantDetails?.data.currency ?? formData.currency,
       frequency:
         formData.pricingComponent == PricingComponentsEnum.GpuCompute
           ? null
@@ -127,8 +135,6 @@ export const useDefinePricingPlanForm = () => {
       lastModifiedOn: new Date().toISOString(),
     };
   };
-
-  const [pricingComponent] = watch(["pricingComponent"]);
 
   // Save the form dirty state
   useEffect(() => {
@@ -144,6 +150,7 @@ export const useDefinePricingPlanForm = () => {
   return {
     form,
     watch,
+    tenantDetails,
     isSubmitting,
     isDirty,
     rowId,
