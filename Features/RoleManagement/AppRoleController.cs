@@ -14,11 +14,17 @@ public class RoleController : BaseApiController
 
     // Gets a list of roles
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<RoleDto>>>> GetARoleList()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<RoleDto>>>> GetRoleList()
     {
         return ResultHelper(await _roleService.GetRoleListAsync());
     }
 
+    // Gets a list of roles
+    [HttpGet("my-list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantRoleDto>>>> GetMyRoleList()
+    {
+        return ResultHelper(await _roleService.GetMyRoleListAsync());
+    }
     // Checks Role with the specified Name is available.
     [HttpPost("is-available")]    
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsRoleAvailableAsync(CheckAvailabilityDto checkAvailability)

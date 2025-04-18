@@ -5,6 +5,7 @@ public class RoleService : IRoleService
     private readonly ILogger<RoleService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public RoleService(
         ILogger<RoleService> logger,
@@ -13,6 +14,7 @@ public class RoleService : IRoleService
     {
         // Retrieves the User ID from HTTP context or assigns a default GUID if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -38,6 +40,43 @@ public class RoleService : IRoleService
                 .OrderByDescending(o => o.Seq)
                 .AsNoTracking()
                 .ProjectToType<RoleDto>()
+                .ToListAsync();
+
+            // Setting success response
+            serviceResponse.Data = roleList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Roles retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse; // Return failure if exception occurs
+        }
+
+        return serviceResponse;
+    }
+
+    // Method to get the list of my roles
+    public async Task<ServiceResponse<IEnumerable<TenantRoleDto>>> GetMyRoleListAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<TenantRoleDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve roles. Please try again"
+        };
+
+        try
+        {
+            // Fetches roles with associated entities, ordering by sequence and projecting into TenantRoleDto
+            var roleList = await _unitOfWork.AccountRoleRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.LastModifiedByUser)
+                .Include(a => a.RolePermissions)
+                    .ThenInclude(b => b.Permission)
+                .OrderByDescending(o => o.Seq)
+                .AsNoTracking()
+                .ProjectToType<TenantRoleDto>()
                 .ToListAsync();
 
             // Setting success response

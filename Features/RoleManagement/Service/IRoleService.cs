@@ -9,6 +9,12 @@ public interface IRoleService
     Task<ServiceResponse<IEnumerable<RoleDto>>> GetRoleListAsync();
 
     /// <summary>
+    /// Get a list of my roles
+    /// </summary>
+    /// <returns>List of roles</returns>
+    Task<ServiceResponse<IEnumerable<TenantRoleDto>>> GetMyRoleListAsync();
+
+    /// <summary>
     /// Checks if a Role with the specified Name is available.
     /// </summary>
     /// <param name="checkAvailability">The DTO containing the Name to check.</param>
