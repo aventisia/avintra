@@ -1,28 +1,27 @@
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useFetchLicenseDetails } from "@/react-toolkit/hooks/useFetchLicense";
+import { useFetchLicenseDetails, useFetchLicensesToSelect } from "@/hooks/useFetchLicense";
+import { useFetchTenantsToSelect } from "@/hooks/useFetchTenantsToSelect";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { LicenseSelectField } from "@/react-toolkit/ui/form/fields/LicenseSelectField";
-import { TenantSelectField } from "@/react-toolkit/ui/form/fields/TenantSelectField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { useMutation } from "@tanstack/react-query";
 
 import { requestLicense } from "../../apis/sa-licenses-table-apis";
-import {
-  additionalUnitsRequestedProps,
-  idProps,
-  saLicenseTypesProps,
-} from "../../constants/saLicense-form-field-props";
+import { additionalUnitsRequestedProps } from "../../constants/saLicense-form-field-props";
 import { requestLicenseZodSchema } from "../../constants/saLicense-zod-schema";
 import { RequestLicensesDto } from "../../dtos/request-license-dto";
 import { useDefineRequestLicenseForm } from "../../hooks/useDefineRequestLicenseForm";
 import { RequestLicenseOverviewDetails } from "./RequestLicenseOverviewDetails";
 
 export const RequestLicenseForm = () => {
+  const { data: lisencesToselectResponse } = useFetchLicensesToSelect();
+  const { selectOptions: tenantsToselect } = useFetchTenantsToSelect(true);
+
   // Define license form
   const { form, watch, isDirty, crudAction, setShowDialog, refineFormData } =
     useDefineRequestLicenseForm();
@@ -67,12 +66,22 @@ export const RequestLicenseForm = () => {
     >
       {/* tenant name id */}
       {form.getValues("id") || crudAction === "create" ? (
-        <TenantSelectField {...idProps} />
+        <SelectField
+          name="id"
+          label="Tenant Name"
+          isRequired={true}
+          selectOptions={tenantsToselect ?? []}
+        />
       ) : null}
 
       {/* license type */}
       {form.getValues("planId") || crudAction === "create" ? (
-        <LicenseSelectField {...saLicenseTypesProps} />
+        <SelectField
+          name="planId"
+          label="License Type"
+          isRequired={true}
+          selectOptions={lisencesToselectResponse?.data ?? []}
+        />
       ) : null}
 
       <RequestLicenseOverviewDetails

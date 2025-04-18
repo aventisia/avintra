@@ -1,26 +1,29 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
-import { Button } from '@/react-toolkit/ui/buttons/Button';
-import { IconInputField } from '@/react-toolkit/ui/form/fields/IconInputField';
-import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
-import { SelectField } from '@/react-toolkit/ui/form/fields/SelectField';
-import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
-import { TenantSelectField } from '@/react-toolkit/ui/form/fields/TenantSelectField';
-import { Form } from '@/react-toolkit/ui/form/Form';
-import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
+import { useFetchTenantsToSelect } from "@/hooks/useFetchTenantsToSelect";
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
-import { pricingPlanOptimisticMutationFn } from '../../apis/pricingPlans-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
+import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
 import {
     colaTypeProps, currencyTypeProps, frequencyTypeProps, idProps, isDisabledProps,
-    pricingComponentTypeProps, tenantNameProps, tenantTypeProps, unitPriceTypeProps
-} from '../../constants/pricingPlan-form-field-props';
-import { pricingPlanZodSchema } from '../../constants/pricingPlan-zod-schema';
-import { PricingPlansTableDto } from '../../dtos/pricingPlans-table-dto';
-import { useDefinePricingPlanForm } from '../../hooks/useDefinePricingPlanForm';
+    pricingComponentTypeProps, tenantTypeProps, unitPriceTypeProps
+} from "../../constants/pricingPlan-form-field-props";
+import { pricingPlanZodSchema } from "../../constants/pricingPlan-zod-schema";
+import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
+import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
 
 export const PricingPlanCrudForm = () => {
+  const { selectOptions: tenantsToSelect } =
+    useFetchTenantsToSelect(false);
+
   // Define pricingplan form
   const {
     form,
@@ -29,8 +32,10 @@ export const PricingPlanCrudForm = () => {
     rowId,
     crudAction,
     setShowDialog,
+    tenantDetails,
     refineFormData,
   } = useDefinePricingPlanForm();
+  const [pricingComponent] = watch(["pricingComponent"]);
 
   // Define optimistic mutation to crete or update the pricingplan
   const { mutate: mutatePricingPlan } = useListOptimisticMutation<
@@ -55,8 +60,6 @@ export const PricingPlanCrudForm = () => {
   // Is form in read mode
   const isReadMode = crudAction === "read";
 
-  const [pricingComponent] = watch(["pricingComponent"]);
-
   // Return the form
   return (
     <Form
@@ -75,7 +78,11 @@ export const PricingPlanCrudForm = () => {
 
       {/* name of tenant */}
       {form.getValues("tenantId") || crudAction === "create" ? (
-        <TenantSelectField {...tenantNameProps} />
+        <SelectField
+          name="tenantId"
+          label="Tenant Name"
+          selectOptions={tenantsToSelect ?? []}
+        />
       ) : null}
 
       {/* pricingComponent name fo the plan */}
@@ -84,7 +91,8 @@ export const PricingPlanCrudForm = () => {
       ) : null}
 
       {/* currency */}
-      {form.getValues("currency") || crudAction === "create" ? (
+      {!tenantDetails?.data.currency &&
+      (form.getValues("currency") || crudAction === "create") ? (
         <SelectField {...currencyTypeProps} />
       ) : null}
 
