@@ -6,7 +6,6 @@ import { IconInputFieldProps } from "@/react-toolkit/ui/form/fields/IconInputFie
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TenantSelectFieldProps } from "@/react-toolkit/ui/form/fields/TenantSelectField";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
 // PricingPlan Id
@@ -28,10 +27,7 @@ export const tenantTypeProps: SelectFieldProps = {
   isRequired: true,
   selectOptions: enumToArray(DeploymentTypeEnum),
 };
-export const tenantNameProps: TenantSelectFieldProps = {
-  name: "tenantId",
-  label: "Tenant Name",
-};
+
 export const currencyTypeProps: SelectFieldProps = {
   name: "currency",
   label: "Currency",
