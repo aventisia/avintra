@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { useFetchCurrenciesToSelect } from "@/hooks/useFetchLicense";
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
@@ -15,9 +16,9 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-    currencyProps, daysBeforePwdExpiresProps, dbHostProps, dbNamePrefixProps, dbOptionProps,
-    dbPortProps, dbPwdProps, dbUserIdProps, effectiveOnProps, idleSessionTimeoutMinutesProps,
-    idProps, isDisabledProps, isIdleSessionTimeoutEnabledProps, isPwdEnabledProps,
+    daysBeforePwdExpiresProps, dbHostProps, dbNamePrefixProps, dbOptionProps, dbPortProps,
+    dbPwdProps, dbUserIdProps, effectiveOnProps, idleSessionTimeoutMinutesProps, idProps,
+    isDisabledProps, isIdleSessionTimeoutEnabledProps, isPwdEnabledProps,
     isPwdNeverExpiresEnabledProps, isSSOEnabledProps, isTwoFAEnabledProps, nameProps, renewsOnProps,
     ssoConfigJsonProps, typeProps
 } from "../../constants/tenant-form-field-props";
@@ -26,6 +27,7 @@ import { TenantsTableDto } from "../../dtos/tenants-table-dto";
 import { useDefineTenantForm } from "../../hooks/useDefineTenantForm";
 
 export const TenantCrudForm = () => {
+  const { currenciesToselect } = useFetchCurrenciesToSelect();
   // Define tenant form
   const {
     form,
@@ -100,15 +102,16 @@ export const TenantCrudForm = () => {
 
       {form.getValues("type") || crudAction === "create" ? (
         <SelectField {...typeProps} />
-      ) : (
-        <SelectField {...typeProps} />
-      )}
+      ) : null}
 
       {form.getValues("currency") || crudAction === "create" ? (
-        <SelectField {...currencyProps} />
-      ) : (
-        <SelectField {...currencyProps} />
-      )}
+        <SelectField
+          name="currency"
+          label="Currency"
+          isRequired={true}
+          selectOptions={currenciesToselect ?? []}
+        />
+      ) : null}
 
       {/* Effective date */}
       <DatePickerField {...effectiveOnProps} />
