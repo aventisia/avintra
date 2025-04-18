@@ -1,10 +1,9 @@
-import { REGEX_POSITIVE_FLOAT } from "input-otp";
 import { z } from "zod";
 
 import {
     alphaNumericError, maxLenError, positiveNumericError, reqError
 } from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+import { alphaNumericRegex, positiveFloatNumber } from "@/react-toolkit/utils/regex-list";
 
 /**
  * Represents the Zod object's item schema for a pricingplan name.
@@ -38,7 +37,7 @@ export const pricingPlanZodSchema = z
       z
         .string({ required_error: reqError("Unit price") })
         .refine(
-          (check) => RegExp(REGEX_POSITIVE_FLOAT).test(check),
+          (check) => RegExp(positiveFloatNumber).test(check),
           positiveNumericError("Unit price"),
         )
         .transform((val) => parseFloat(val)),
@@ -51,7 +50,7 @@ export const pricingPlanZodSchema = z
       z
         .string({ required_error: reqError("COLA") })
         .refine(
-          (check) => RegExp(REGEX_POSITIVE_FLOAT).test(check),
+          (check) => RegExp(positiveFloatNumber).test(check),
           positiveNumericError("COLA"),
         )
         .transform((val) => parseInt(val)),
