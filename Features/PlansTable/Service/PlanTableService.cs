@@ -132,7 +132,7 @@ public class PlanTableService : IPlanTableService
     }
 
     // Retrieves a list of plan options.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync(Guid? tenantId)
     {
         // Initialize the service response with a default error message and 500 status code
         var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
@@ -146,7 +146,7 @@ public class PlanTableService : IPlanTableService
             // Retrieve both the current tenant and the default "IndividualUsers" tenant
             var tenants = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t =>
-                    t.Id == _tenantId ||
+                    t.Id == (tenantId ?? _tenantId) ||
                     t.Name.Equals(DefaultTenantsEnum.IndividualUsers.ToString()))
                 .ToListAsync();
 
@@ -155,37 +155,35 @@ public class PlanTableService : IPlanTableService
                 return response;
 
             // Get the current tenant object based on the ID
-            var currentTenant = tenants.FirstOrDefault(t => t.Id == _tenantId);
+            var currentTenant = tenants.FirstOrDefault(t => t.Id == (tenantId ?? _tenantId));
             if (currentTenant == null)
                 return response;
 
             // Fetch all plans associated with the current tenant or the default tenant
-            var tenantIds = tenants.Select(t => t.Id).ToList();
+            var tenantIds = tenants.Select(t => t.Id);
             var allPlans = await _unitOfWork.PlanRepo
                 .GetByConditionAsync(p => tenantIds.Contains(p.TenantId!.Value))
                 .ToListAsync();
 
             // Filter out plans specific to the current tenant and matching its currency
             var currentTenantPlans = allPlans
-                .Where(p => p.TenantId == currentTenant.Id && p.Currency == currentTenant.Currency)
-                .ToList();
+                .Where(p => p.TenantId == currentTenant.Id);
 
             // Fetch default plans (e.g., from IndividualUsers) that match pricing component and frequency
             var defaultPlans = allPlans
                 .Where(p =>
                     p.TenantId == null &&
                     p.Currency == currentTenant.Currency &&
+                    p.TenantType == currentTenant.Type &&
                     currentTenantPlans.Any(cp =>
                         cp.PricingComponent == p.PricingComponent &&
-                        cp.Frequency == p.Frequency))
-                .ToList();
+                        cp.Frequency == p.Frequency));
 
             // Step 6: Merge the current tenant's plans with the default plans, distinct by PricingComponent and Frequency
             var resultPlans = currentTenantPlans
                 .Concat(defaultPlans)
                 .GroupBy(p => new { p.PricingComponent, p.Frequency })
-                .Select(g => g.First())
-                .ToList();
+                .Select(g => g.First()).ToList();
 
             // Map the result plans to DTOs and update the service response
             response.Data = resultPlans.Adapt<IEnumerable<SelectOptionDto>>();

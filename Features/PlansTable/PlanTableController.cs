@@ -20,10 +20,10 @@ public class PlanTableController : BaseApiController
     }
 
     // Retrieves a list of plan options.
-    [HttpGet("plans-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionList()
+    [HttpGet("plans-to-select/{tenantId?}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionList(Guid? tenantId)
     {
-        return ResultHelper(await _planTableService.GetPlanOptionListAsync());
+        return ResultHelper(await _planTableService.GetPlanOptionListAsync(tenantId));
     }
 
 

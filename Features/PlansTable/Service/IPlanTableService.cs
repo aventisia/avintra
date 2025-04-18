@@ -22,7 +22,7 @@ public interface IPlanTableService
     /// Asynchronously retrieves a list of plan options without filtering by tenant type.
     /// </summary>
     /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync();
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync(Guid? tenantId);
 
     /// <summary>
     /// Creates a new plan in the system.
@@ -54,7 +54,7 @@ public interface IPlanTableService
     /// This method is intended to optimize performance by allowing multiple deletions in a single request.
     /// </remarks>
     Task<ServiceResponse<bool>> DeletePlansAsync(List<Guid> planIds);
-    
+
     /// <summary>
     /// Retrieves a list of currency options from available plans, mapping each to a <see cref="SelectOptionDto"/>.
     /// Each option includes a label, value, description, and whether it should be disabled based on the plan status.
