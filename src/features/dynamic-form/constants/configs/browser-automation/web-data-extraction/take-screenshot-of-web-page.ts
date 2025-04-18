@@ -30,6 +30,16 @@ const takeScreenshotOfWebPageFieldList: IDynamicFieldSchema[] = [
     label: "UI element",
     description: "	Select the UI element on web page to capture",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "capture", value: "specific element" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "saveMode",
@@ -49,6 +59,16 @@ const takeScreenshotOfWebPageFieldList: IDynamicFieldSchema[] = [
     label: "Image file",
     description: "Set the full path for the file to save the image capture",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "saveMode", value: "file" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "fileFormat",
@@ -66,6 +86,16 @@ const takeScreenshotOfWebPageFieldList: IDynamicFieldSchema[] = [
       { label: "WMF", value: "wmf" },
     ],
     defaultValue: "bmp",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "saveMode", value: "file" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -85,7 +115,7 @@ const takeScreenshotOfWebPageFieldCategories: IDynamicFormKeysCategory[] = [
 const takeScreenshotOfWebPage: ActivityConfig = {
   fieldList: takeScreenshotOfWebPageFieldList,
   fieldCategories: takeScreenshotOfWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["capture"],
 };
 
 export default takeScreenshotOfWebPage;

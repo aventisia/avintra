@@ -36,11 +36,28 @@ const getDetailsOfWindowFieldList: IDynamicFieldSchema[] = [
       "Specify whether the window containing the Ul element should be brought to the front during execution. If this option is disabled, the action will be executed in the background. Note that not all Ul elements may be compatible with having the option disabled. Additionally, if execution of the action requires scrolling, disabling this option may not extract all elements.",
     defaultValue: true,
   },
+  // Output
   {
-    name: "windowProperty",
-    type: "switch",
-    label: "WindowProperty",
+    name: "o_windowPropertyOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The retrieved information of the window",
+    defaultValue: "WindowProperty",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_windowPropertySwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_windowPropertySwitch",
+    type: "output-switch-field",
+    label: "WindowProperty",
     defaultValue: true,
   },
 ];
@@ -52,15 +69,14 @@ const getDetailsOfWindowFieldCategories: IDynamicFormKeysCategory[] = [
       ["window"],
       ["windowPropertySelect"],
       ["bringToFront"],
-      ["windowProperty"],
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["windowProperty"]],
+    formFieldKeys: [["o_windowPropertyOutput", "o_windowPropertySwitch"]],
   },
 ];
-const getDetailsOfWindowFieldsToWatch: string[] = [];
+const getDetailsOfWindowFieldsToWatch: string[] = ["o_windowPropertyOutput", "o_windowPropertySwitch"];
 
 const getDetailsOfWindow: ActivityConfig = {
   fieldList: getDetailsOfWindowFieldList,

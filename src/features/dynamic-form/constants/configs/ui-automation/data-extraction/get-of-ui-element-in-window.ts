@@ -35,10 +35,26 @@ const getDetailsOfAUiElementInWindowFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "attributeValue",
-    type: "switch",
+    name: "o_attributeValueOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The value of the web element's attribute",
+    defaultValue: "AttributeValue",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_attributeValueSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_attributeValueSwitch",
+    type: "output-switch-field",
     label: "AttributeValue",
-    description: "The value of the UI element's text",
     defaultValue: true,
   },
 ];
@@ -51,10 +67,10 @@ const getDetailsOfAUiElementInWindowFieldCategories: IDynamicFormKeysCategory[] 
     },
     {
       title: "Output",
-      formFieldKeys: [["attributeValue"]],
+      formFieldKeys: [["o_attributeValueOutput", "o_attributeValueSwitch"]],
     },
   ];
-const getDetailsOfAUiElementInWindowFieldsToWatch: string[] = [];
+const getDetailsOfAUiElementInWindowFieldsToWatch: string[] = ["o_attributeValueOutput", "o_attributeValueSwitch"];
 
 const getDetailsOfAUiElementInWindow: ActivityConfig = {
   fieldList: getDetailsOfAUiElementInWindowFieldList,

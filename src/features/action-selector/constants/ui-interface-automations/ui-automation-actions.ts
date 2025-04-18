@@ -163,14 +163,15 @@ export const uiAutomationActions: NodeDataType[] = [
       "Suspends the execution of the automation until a specific piece of text or UI element appears or disappears from a Window",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
-  {
-    type: "activityNode",
-    name: "ifImage",
-    label: "If image",
-    description:
-      "This action marks the beginning of a conditional block of actions depending on whether a selected image is found on the screen or not",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  //TODO - to be implemented later.
+  // {
+  //   type: "activityNode",
+  //   name: "ifImage",
+  //   label: "If image",
+  //   description:
+  //     "This action marks the beginning of a conditional block of actions depending on whether a selected image is found on the screen or not",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "useDesktop",
@@ -185,14 +186,15 @@ export const uiAutomationActions: NodeDataType[] = [
     description: "Selects a tab from a group of tabs",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
-  {
-    type: "activityNode",
-    name: "waitForImage",
-    label: "Wait for image",
-    description:
-      "This action waits until a specific image appears on the screen or on the foreground window",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+    //TODO - to be implemented later.
+  // {
+  //   type: "activityNode",
+  //   name: "waitForImage",
+  //   label: "Wait for image",
+  //   description:
+  //     "This action waits until a specific image appears on the screen or on the foreground window",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "hoverMouseOverUiElementInWindow",

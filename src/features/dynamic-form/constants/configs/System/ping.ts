@@ -25,18 +25,51 @@ import {
     },
     // output 
     {
-      name: "pingResult",
-      type: "switch",
-      label: "PingResult",
+      name: "o_pingResultOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The status of the ping message (success or failure)",
-      defaultValue: "",
+      defaultValue: "PingResult",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_pingResultSwitch", value: false }],
+            },
+          ],
+          initialState: true,
+        },
+      },
     },
     {
-      name: "roundTripTime",
-      type: "switch",
-      label: "RoundTripTime",
+      name: "o_pingResultSwitch",
+      type: "output-switch-field",
+      label: "PingResult",
+      defaultValue: true,
+    },
+
+    {
+      name: "o_roundTripTimeOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The number of milliseconds taken for the Ping to complete",
-      defaultValue: "",
+      defaultValue: "RoundTripTime",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_roundTripTimeSwitch", value: false }],
+            },
+          ],
+          initialState: true,
+        },
+      },
+    },
+    {
+      name: "o_roundTripTimeSwitch",
+      type: "output-switch-field",
+      label: "RoundTripTime",
+      defaultValue: true,
     },
   ];
   
@@ -51,8 +84,8 @@ import {
     {
       title: "Output",
       formFieldKeys: [
-        ["pingResult"],
-        ["roundTripTime"],
+        ["o_pingResultOutput", "o_pingResultSwitch"],
+        ["o_roundTripTimeOutput", "o_roundTripTimeSwitch"],
       ],
     },
   ];
@@ -60,7 +93,7 @@ import {
   const ping: ActivityConfig = {
     fieldList: pingFieldList,
     fieldCategories: pingFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["o_pingResultOutput", "o_pingResultSwitch", "o_roundTripTimeOutput", "o_roundTripTimeSwitch"],
   };
   
   export default ping;

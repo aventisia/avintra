@@ -144,11 +144,27 @@ const openCmdSessionFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "cmdSession",
-    type: "switch",
-    label: "CmdSession",
+    name: "o_cmdSessionOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The CMD session for use with later CMD actions",
-    defaultValue: "",
+    defaultValue: "CmdSession",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_cmdSessionSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_cmdSessionSwitch",
+    type: "output-switch-field",
+    label: "CmdSession",
+    defaultValue: true,
   },
 ];
 
@@ -164,14 +180,14 @@ const openCmdSessionFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["cmdSession"]],
+    formFieldKeys: [["o_cmdSessionOutput", "o_cmdSessionSwitch"]],
   },
 ];
 
 const openCmdSession: ActivityConfig = {
   fieldList: openCmdSessionFieldList,
   fieldCategories: openCmdSessionFieldCategories,
-  fieldsToWatch: ["changeCodePage"],
+  fieldsToWatch: ["changeCodePage", "o_cmdSessionOutput", "o_cmdSessionSwitch"],
 };
 
 export default openCmdSession;

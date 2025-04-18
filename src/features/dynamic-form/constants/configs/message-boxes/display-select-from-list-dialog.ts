@@ -101,11 +101,40 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  // Output
   {
-    name: "selectedItem",
-    type: "switch",
-    label: "SelectedItem",
+    name: "o_selectedItemOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The item selected from the list as text",
+    defaultValue: "SelectedItem",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedItemSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "allowMultipleSelections", value: false },
+              { key: "limitToList", value: false },
+            ],
+            logicalOperator: "OR",
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_selectedItemSwitch",
+    type: "output-switch-field",
+    label: "SelectedItem",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -122,11 +151,40 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "selectedItems",
-    type: "switch",
-    label: "SelectedItems",
+    name: "o_selectedItemsOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The items selected from the list as a list of text",
+    defaultValue: "SelectedItems",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedItemsSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "limitToList", value: true },
+              { key: "allowMultipleSelections", value: true },
+            ],
+            logicalOperator: "AND",
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_selectedItemsSwitch",
+    type: "output-switch-field",
+    label: "SelectedItems",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -143,12 +201,41 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "selectedIndex",
-    type: "switch",
-    label: "SelectedIndex",
+    name: "o_selectedIndexOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "The index number of the item selected from the list. You can use the item number instead of the full text of your choice",
+    "The index number of the item selected from the list. You can use the item number instead of the full text of your choice",    
+    defaultValue: "SelectedIndex",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedIndexSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "allowMultipleSelections", value: false },
+              { key: "limitToList", value: false },
+            ],
+            logicalOperator: "OR",
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_selectedIndexSwitch",
+    type: "output-switch-field",
+    label: "SelectedIndex",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -165,12 +252,41 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "selectedIndexes",
-    type: "switch",
-    label: "SelectedIndexes",
+    name: "o_selectedIndexesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "The index number of the items selected from the list. This parameter allows you to use the item number instead of the full text of your choice",
+    "The index number of the items selected from the list. This parameter allows you to use the item number instead of the full text of your choice",  
+    defaultValue: "SelectedIndexes",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedIndexesSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "limitToList", value: true },
+              { key: "allowMultipleSelections", value: true },
+            ],
+            logicalOperator: "AND",
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_selectedIndexesSwitch",
+    type: "output-switch-field",
+    label: "SelectedIndexes",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -187,11 +303,28 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "buttonPressed",
-    type: "switch",
-    label: "ButtonPressed",
+    name: "o_buttonPressedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The name of the button pressed by the user (OK or Cancel)",
+    defaultValue: "ButtonPressed",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_buttonPressedSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      }
+    },
+  },
+  {
+    name: "o_buttonPressedSwitch",
+    type: "output-switch-field",
+    label: "ButtonPressed",
     defaultValue: true,
   },
 ];
@@ -213,11 +346,11 @@ const displaySelectFromListDialogFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["selectedItem"],
-      ["selectedItems"],
-      ["selectedIndex"],
-      ["selectedIndexes"],
-      ["buttonPressed"],
+      ["o_selectedItemOutput", "o_selectedItemSwitch"],
+      ["o_selectedItemsOutput", "o_selectedItemsSwitch"],
+      ["o_selectedIndexOutput", "o_selectedIndexSwitch"],
+      ["o_selectedIndexesOutput", "o_selectedIndexesSwitch"],
+      ["o_buttonPressedOutput", "o_buttonPressedSwitch"],
     ],
   },
 ];
@@ -225,6 +358,16 @@ const displaySelectFromListDialogFieldCategories: IDynamicFormKeysCategory[] = [
 const displaySelectFromListDialogFieldsToWatch: string[] = [
   "limitToList",
   "allowMultipleSelections",
+  "o_selectedItemOutput", 
+  "o_selectedItemSwitch",
+  "o_selectedItemsOutput", 
+  "o_selectedItemsSwitch",
+  "o_selectedIndexOutput", 
+  "o_selectedIndexSwitch",
+  "o_selectedIndexesOutput", 
+  "o_selectedIndexesSwitch",
+  "o_buttonPressedOutput", 
+  "o_buttonPressedSwitch"
 ];
 const displaySelectFromListDialog: ActivityConfig = {
   fieldList: displaySelectFromListDialogFieldList,

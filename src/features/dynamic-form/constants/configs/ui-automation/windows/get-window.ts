@@ -94,10 +94,34 @@ const getWindowFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "windowTitle",
-    type: "switch",
-    label: "WindowTitle",
+    name: "o_windowTitleOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The title of the foreground window",
+    defaultValue: "WindowTitle",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_windowTitleSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "getWindow", value: "foregroundWindow" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_windowTitleSwitch",
+    type: "output-switch-field",
+    label: "WindowTitle",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -110,12 +134,29 @@ const getWindowFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "automationWindow",
-    type: "switch",
-    label: "AutomationWindow",
+    name: "o_automationWindowOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The specific window instance for use with later Ul Automation actions",
+    defaultValue: "AutomationWindow",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_automationWindowSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_automationWindowSwitch",
+    type: "output-switch-field",
+    label: "AutomationWindow",
     defaultValue: true,
   },
 ];
@@ -131,10 +172,10 @@ const getWindowFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["windowTitle"], ["automationWindow"]],
+    formFieldKeys: [["o_windowTitleOutput", "o_windowTitleSwitch"], ["o_automationWindowOutput", "o_automationWindowSwitch"]],
   },
 ];
-const getWindowFieldsToWatch: string[] = ["getWindow", "failIfWindowNotFound"];
+const getWindowFieldsToWatch: string[] = ["getWindow", "failIfWindowNotFound", "o_windowTitleOutput", "o_windowTitleSwitch", "o_automationWindowOutput", "o_automationWindowSwitch"];
 
 const getWindow: ActivityConfig = {
   fieldList: getWindowFieldList,

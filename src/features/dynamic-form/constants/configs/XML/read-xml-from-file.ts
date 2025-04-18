@@ -26,12 +26,29 @@ const readXmlFromFileFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "systemDefault",
   },
+  // Output
   {
-    name: "xmlDocument",
-    type: "switch",
-    label: "XmlDocument",
+    name: "o_xmlDocumentOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The variable that holds the read XML document",
-    defaultValue: false,
+    defaultValue: "XmlDocument",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_xmlDocumentSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_xmlDocumentSwitch",
+    type: "output-switch-field",
+    label: "XmlDocument",
+    defaultValue: true,
   },
 ];
 
@@ -43,14 +60,14 @@ const readXmlFromFileFieldCategories: IDynamicFormKeysCategory[] = [
 
   {
     title: "Output",
-    formFieldKeys: [["xmlDocument"]],
+    formFieldKeys: [["o_xmlDocumentOutput", "o_xmlDocumentSwitch"]],
   },
 ];
 
 const readXmlFromFile: ActivityConfig = {
   fieldList: readXmlFromFileFieldList,
   fieldCategories: readXmlFromFileFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_xmlDocumentOutput", "o_xmlDocumentSwitch"],
 };
 
 export default readXmlFromFile;

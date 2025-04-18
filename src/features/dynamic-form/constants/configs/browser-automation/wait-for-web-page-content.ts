@@ -26,11 +26,41 @@ const waitForWebPageContentFieldList: IDynamicFieldSchema[] = [
     defaultValue: "contain element",
   },
   {
+    name: "checkUiElementState",
+    type: "switch",
+    label: "Check UI element state",
+    description: "Check whether a specific UI element is enabled or disabled",
+    defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForWebPageTo", value: "contain element" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
     name: "uIElement",
     type: "ui-element-selector",
     label: "UI element",
     description: "	Select the UI element on web page to check for",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForWebPageTo", value: "contain element" }, 
+              { key: "waitForWebPageTo", value: "not contain element" }, 
+            ],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "text",
@@ -38,6 +68,44 @@ const waitForWebPageContentFieldList: IDynamicFieldSchema[] = [
     label: "Text",
     description: "Enter the text on web page to check for",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForWebPageTo", value: "contain text" }, 
+              { key: "waitForWebPageTo", value: "not contain text" }, 
+            ],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "state",
+    type: "select",
+    label: "State",
+    description: "The UI element state to check for",
+    selectOptions: [
+      { label: "Enabled", value: "enabled" },
+      { label: "Disabled", value: "disabled" },
+    ],
+    defaultValue: "enabled",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForWebPageTo", value: "contain element" },
+              {key: "checkUiElementState", value: true}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name:"failWithTimeoutError",
@@ -71,8 +139,10 @@ const waitForWebPageContentFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["webBrowserInstance"],
       ["waitForWebPageTo"],
+      ["checkUiElementState"],
       ["uIElement"],
       ["text"],
+      ["state"],
       ["failWithTimeoutError"],
       ["duration"]
     ],
@@ -82,7 +152,7 @@ const waitForWebPageContentFieldCategories: IDynamicFormKeysCategory[] = [
 const waitForWebPageContent: ActivityConfig = {
   fieldList: waitForWebPageContentFieldList,
   fieldCategories: waitForWebPageContentFieldCategories,
-  fieldsToWatch: ["failWithTimeoutError"],
+  fieldsToWatch: ["failWithTimeoutError", "waitForWebPageTo", "checkUiElementState"],
 };
 
 export default waitForWebPageContent;

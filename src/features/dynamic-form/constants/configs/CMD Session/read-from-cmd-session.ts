@@ -27,17 +27,58 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
     },
     // output
     {
-      name: "cmdOutput",
-      type: "switch",
-      label: "CmdOutput",
+      name: "o_cmdOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The CMD session's standard output",
-      defaultValue: "",
+      defaultValue: "CmdOutput",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_cmdOutputSwitch", value: false }],
+            },
+          ],
+          initialState: true,
+        },
+      },
     },
     {
-      name: "cmdError",
-      type: "switch",
-      label: "CmdError",
+      name: "o_cmdOutputSwitch",
+      type: "output-switch-field",
+      label: "CmdOutput",
+      defaultValue: true,
+    },
+    // 
+    {
+      name: "o_cmdErrorOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The CMD session's standard error",
+      defaultValue: "CmdError",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_cmdErrorSwitch", value: false }],
+            },
+          ],
+          initialState: true,
+        },
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "separateOutputFromError", value: true }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    {
+      name: "o_cmdErrorSwitch",
+      type: "output-switch-field",
+      label: "CmdError",
       defaultValue: "",
       regOptions: {
         requiredBasedOnFields: {
@@ -59,13 +100,13 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
     },
     {
       title: "Output",
-      formFieldKeys: [["cmdOutput"], ["cmdError"]],
+      formFieldKeys: [["o_cmdOutput", "o_cmdOutputSwitch"], ["o_cmdErrorOutput", "o_cmdErrorSwitch"]],
     },
   ];
   const readFromCmdSession:ActivityConfig = {
     fieldList: readFromCmdSessionFieldList,
     fieldCategories: readFromCmdSessionFieldCategories,
-    fieldsToWatch: ["separateOutputFromError"],
+    fieldsToWatch: ["separateOutputFromError", "o_cmdOutput", "o_cmdOutputSwitch", "o_cmdErrorOutput", "o_cmdErrorSwitch"],
   };
   
   export default readFromCmdSession;
