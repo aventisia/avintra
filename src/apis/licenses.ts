@@ -1,7 +1,7 @@
-import { IHttpResponse } from "../dtos/http-response";
-import { axiosInstance } from "../lib/axios-instance";
-import { PricingPlanDto } from "../types/pricing-plan-dto";
-import { ISelectOption } from "../types/select-option";
+import { IHttpResponse } from "../../react-toolkit/dtos/http-response";
+import { axiosInstance } from "../../react-toolkit/lib/axios-instance";
+import { PricingPlanDto } from "../../react-toolkit/types/pricing-plan-dto";
+import { ISelectOption } from "../../react-toolkit/types/select-option";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/plan`;
 

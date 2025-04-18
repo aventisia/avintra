@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 
+import { getTenantDetails, getTenantsToSelect } from "@/apis/tenants";
+import { ISelectOption } from "@/react-toolkit/types/select-option";
 import { useQuery } from "@tanstack/react-query";
-
-import { getTenantsToSelect } from "../apis/tenants";
-import { ISelectOption } from "../types/select-option";
 
 /**
  * Custom hook to fetch tenants to select using react query.
@@ -36,4 +35,20 @@ export const useFetchTenantsToSelect = (isRequired: boolean) => {
 
   // Return isFetching and isLoading flag
   return { selectOptions, isFetching, refetch, isLoading };
+};
+
+export const useFetchTenantDetails = (id?: string) => {
+  // Get tenant using react query
+  const { data, isFetching, isLoading, isError, error } = useQuery({
+    queryKey: ["tenant-details", id ?? ""],
+    queryFn: () => getTenantDetails(id),
+  });
+
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error.toString());
+  }, [error, isError]);
+
+  // Return isFetching and isLoading flag
+  return { tenantDetails: data, isFetching, isLoading };
 };
