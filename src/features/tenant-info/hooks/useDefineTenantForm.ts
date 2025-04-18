@@ -1,14 +1,16 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { DATA_QUERY_KEY } from "../constants";
 import { tenantZodSchema } from "../constants/tenant-zod-schema";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { TenantDto } from "../dtos/tenant-dto";
 
 /**
  * Custom hook for defining a tenant form.
@@ -74,7 +76,7 @@ export const useDefineTenantForm = () => {
   useEffect(() => {
     // Get tenants data from query client
     const tenantsData = queryClient.getQueryData<{
-      data: TenantsTableDto[];
+      data: TenantDto[];
     }>(DATA_QUERY_KEY);
 
     // Get tenant data by id

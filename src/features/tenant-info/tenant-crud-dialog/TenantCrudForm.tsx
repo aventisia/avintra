@@ -1,33 +1,25 @@
+import { z } from "zod";
+
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
-import { z } from "zod";
+
 import { tenantOptimisticMutationFn } from "../apis/tenant-info-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
-  daysBeforePwdExpiresProps,
-  effectiveOnProps,
-  idleSessionTimeoutMinutesProps,
-  idProps,
-  isIdleSessionTimeoutEnabledProps,
-  isPwdEnabledProps,
-  isPwdNeverExpiresEnabledProps,
-  isSSOEnabledProps,
-  isTwoFAEnabledProps,
-  nameProps,
-  renewsOnProps,
-  ssoConfigJsonProps,
-  typeProps,
+    daysBeforePwdExpiresProps, effectiveOnProps, idleSessionTimeoutMinutesProps, idProps,
+    isIdleSessionTimeoutEnabledProps, isPwdEnabledProps, isPwdNeverExpiresEnabledProps,
+    isSSOEnabledProps, isTwoFAEnabledProps, nameProps, renewsOnProps, ssoConfigJsonProps, typeProps
 } from "../constants/tenant-form-field-props";
 import { tenantZodSchema } from "../constants/tenant-zod-schema";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { TenantDto } from "../dtos/tenant-dto";
 import { useDefineTenantForm } from "../hooks/useDefineTenantForm";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 
 export const TenantCrudForm = () => {
   // Define tenant form
@@ -43,16 +35,16 @@ export const TenantCrudForm = () => {
 
   // Define optimistic mutation to crete or update the tenant
   const { mutate: mutateTenant } = useListOptimisticMutation<
-    TenantsTableDto,
-    TenantsTableDto | boolean,
-    TenantsTableDto
+    TenantDto,
+    TenantDto | boolean,
+    TenantDto
   >([rowId], tenantOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof tenantZodSchema>) => {
     // Create or update the tenant
     mutateTenant({
-      payload: refineFormData(formData) as unknown as TenantsTableDto,
+      payload: refineFormData(formData) as unknown as TenantDto,
       crudAction: crudAction,
     });
 

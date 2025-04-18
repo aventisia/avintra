@@ -3,7 +3,8 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
+
+import { TenantDto } from "../dtos/tenant-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 
@@ -12,7 +13,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
  */
 const getTenants = () => {
   return axiosInstance
-    .get<IHttpResponse<TenantsTableDto[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<TenantDto[]>>(`${baseAPIURL}`)
     .then((res) => res.data);
 };
 
@@ -30,18 +31,18 @@ const isTenantNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new tenant.
  */
-const insertTenant = (newTenant: TenantsTableDto) => {
+const insertTenant = (newTenant: TenantDto) => {
   return axiosInstance
-    .post<IHttpResponse<TenantsTableDto>>(`${baseAPIURL}`, newTenant)
+    .post<IHttpResponse<TenantDto>>(`${baseAPIURL}`, newTenant)
     .then((res) => res.data);
 };
 
 /**
  * Updates an existing tenant.
  */
-const updateTenant = (updatedTenant: TenantsTableDto) => {
+const updateTenant = (updatedTenant: TenantDto) => {
   return axiosInstance
-    .put<IHttpResponse<TenantsTableDto>>(`${baseAPIURL}`, updatedTenant)
+    .put<IHttpResponse<TenantDto>>(`${baseAPIURL}`, updatedTenant)
     .then((res) => res.data);
 };
 
@@ -66,19 +67,19 @@ const disableTenants = (ids: string[]) => {
 /**
  * Performs an optimistic mutation on a tenant based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<TenantsTableDto | string>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<TenantDto | string>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
 const tenantOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<TenantsTableDto | string>) => {
+}: IOptimisticMutation<TenantDto | string>) => {
   switch (crudAction) {
     case "create":
-      return insertTenant(payload as TenantsTableDto);
+      return insertTenant(payload as TenantDto);
     case "update":
-      return updateTenant(payload as TenantsTableDto);
+      return updateTenant(payload as TenantDto);
     case "delete":
       return deleteTenant(payload as string);
     default:
