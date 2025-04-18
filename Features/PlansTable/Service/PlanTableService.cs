@@ -98,36 +98,71 @@ public class PlanTableService : IPlanTableService
     // Retrieves a list of plan options.
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync()
     {
-        // Initialize the service response with a default null data and an error message
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        // Initialize the service response with a default error message and 500 status code
+        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
         {
             Data = null,
-            Message = "Failed to retrieve plans. Please try again."
+            Message = "Failed to retrieve plans. Please try again.",
         };
 
         try
         {
+            // Retrieve both the current tenant and the default "IndividualUsers" tenant
+            var tenants = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t =>
+                    t.Id == _tenantId ||
+                    t.Name.Equals(DefaultTenantsEnum.IndividualUsers.ToString()))
+                .ToListAsync();
 
-            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(t => t.Id == _tenantId).FirstOrDefaultAsync();
+            // If no tenants were found, return the default error response
+            if (!tenants.Any())
+                return response;
 
-            // Retrieve all plans from the repository
-            var plans = await _unitOfWork.PlanRepo.GetByConditionAsync(p => p.TenantId == null || p.TenantId == Guid.Empty ||
-            (p.TenantId == _tenantId && p.TenantType == tenant.Type && p.Currency == tenant.Currency)
-            ).ToListAsync();
+            // Get the current tenant object based on the ID
+            var currentTenant = tenants.FirstOrDefault(t => t.Id == _tenantId);
+            if (currentTenant == null)
+                return response;
 
-            // Map the retrieved plan list to SelectOptionDto and update the response
-            serviceResponse.Data = plans.Adapt<IEnumerable<SelectOptionDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Plans retrieved successfully.";
+            // Fetch all plans associated with the current tenant or the default tenant
+            var tenantIds = tenants.Select(t => t.Id).ToList();
+            var allPlans = await _unitOfWork.PlanRepo
+                .GetByConditionAsync(p => tenantIds.Contains(p.TenantId!.Value))
+                .ToListAsync();
+
+            // Filter out plans specific to the current tenant and matching its currency
+            var currentTenantPlans = allPlans
+                .Where(p => p.TenantId == currentTenant.Id && p.Currency == currentTenant.Currency)
+                .ToList();
+
+            // Fetch default plans (e.g., from IndividualUsers) that match pricing component and frequency
+            var defaultPlans = allPlans
+                .Where(p =>
+                    p.TenantId != currentTenant.Id &&
+                    p.Currency == currentTenant.Currency &&
+                    currentTenantPlans.Any(cp =>
+                        cp.PricingComponent == p.PricingComponent &&
+                        cp.Frequency == p.Frequency))
+                .ToList();
+
+            // Step 6: Merge the current tenant's plans with the default plans, distinct by PricingComponent and Frequency
+            var resultPlans = currentTenantPlans
+                .Concat(defaultPlans)
+                .GroupBy(p => new { p.PricingComponent, p.Frequency })
+                .Select(g => g.First())
+                .ToList();
+
+            // Map the result plans to DTOs and update the service response
+            response.Data = resultPlans.Adapt<IEnumerable<SelectOptionDto>>();
+            response.StatusCode = 200;
+            response.Message = "Plans retrieved successfully.";
         }
         catch (Exception ex)
         {
-            // Log the error and return the service response with the default message
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
+            // Log the error and return the default failure response
+            _logger.LogError(ex, "Error retrieving plan options.");
         }
 
-        return serviceResponse;
+        return response;
     }
 
     // Inserts a new plan
