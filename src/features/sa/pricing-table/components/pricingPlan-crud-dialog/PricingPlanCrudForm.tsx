@@ -103,10 +103,10 @@ export const PricingPlanCrudForm = () => {
 
       {/* frequency */}
       {(form.getValues("frequency") || crudAction === "create") &&
-      pricingComponent != "GpuCompute" ? (
+      pricingComponent != "GPUCompute" ? (
         <SelectField
           {...frequencyTypeProps}
-          isRequired={pricingComponent !== "GpuCompute"}
+          isRequired={pricingComponent !== "GPUCompute"}
         />
       ) : null}
 
