@@ -46,6 +46,9 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
                     b.Property<bool?>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -659,6 +662,10 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("FullName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -758,6 +765,10 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Access")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("AccountRoleId")
                         .HasColumnType("uuid");
