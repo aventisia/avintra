@@ -11,6 +11,12 @@ export const getLicensesToSelect = () => {
     .then((res) => res.data);
 };
 
+export const getCurrenciesToSelect = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/currencies-to-select`)
+    .then((res) => res.data);
+};
+
 export const getLicenseDetails = (planId?: string) => {
   if (!planId)
     return Promise.resolve<IHttpResponse<PricingPlanDto>>({
