@@ -21,22 +21,22 @@ export interface TenantsTableDto {
   /**
    * Gets or sets the type of the tenant
    */
-  type: DeploymentTypeEnum;
+  type?: DeploymentTypeEnum;
 
   /**
    * Gets or sets the currency of the tenant
    */
-  currency: CurrencyTypesEnum;
+  currency?: CurrencyTypesEnum;
 
   /**
    * Gets or sets the contract effective date and time of the tenant's account based on the subscription/trial period.
    */
-  effectiveDate: Date;
+  effectiveDate?: Date;
 
   /**
    * Gets or sets the contract renewal date and time of the tenant's account based on the subscription/trial period.
    */
-  renewalDate: Date;
+  renewalDate?: Date;
 
   /**
    * Gets or sets the expiry date and time of the tenant's account based on the subscription/trial period.
