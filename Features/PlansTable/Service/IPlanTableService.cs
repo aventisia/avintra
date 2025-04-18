@@ -54,4 +54,13 @@ public interface IPlanTableService
     /// This method is intended to optimize performance by allowing multiple deletions in a single request.
     /// </remarks>
     Task<ServiceResponse<bool>> DeletePlansAsync(List<Guid> planIds);
+    
+    /// <summary>
+    /// Retrieves a list of currency options from available plans, mapping each to a <see cref="SelectOptionDto"/>.
+    /// Each option includes a label, value, description, and whether it should be disabled based on the plan status.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing an enumerable of <see cref="SelectOptionDto"/> representing currency options.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanCurrenciesOptionListAsync();
 }

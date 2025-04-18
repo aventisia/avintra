@@ -19,9 +19,9 @@ public class PlanTableController : BaseApiController
         return ResultHelper(await _planTableService.GetPlansAsync());
     }
 
-    // Retrieves a list of tenant options.
+    // Retrieves a list of plan options.
     [HttpGet("plans-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetTenantOptionListAsync()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionList()
     {
         return ResultHelper(await _planTableService.GetPlanOptionListAsync());
     }
@@ -33,7 +33,7 @@ public class PlanTableController : BaseApiController
     {
         return ResultHelper(await _planTableService.GetPlanByIdAsync(planId));
     }
-    
+
     // Inserts a new plan.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<PlanTableDto>>> InsertPlan([FromBody] PlanTableDto planTableDto)
@@ -60,5 +60,12 @@ public class PlanTableController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> DeletePlans([FromBody] List<Guid> planIds)
     {
         return ResultHelper(await _planTableService.DeletePlansAsync(planIds));
+    }
+
+    // Retrieves a list of plan currencies options.
+    [HttpGet("currencies-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanCurrenciesOptionListAsync()
+    {
+        return ResultHelper(await _planTableService.GetPlanCurrenciesOptionListAsync());
     }
 }

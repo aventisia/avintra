@@ -95,6 +95,42 @@ public class PlanTableService : IPlanTableService
         return serviceResponse;
     }
 
+    // Retrieves a list of plan currency options.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanCurrenciesOptionListAsync()
+    {
+        // Initialize the response object with a default failure message
+        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve plans. Please try again."
+        };
+
+        try
+        {
+            // Fetch all plans from the repository asynchronously
+            var currencies = await _unitOfWork.PlanRepo
+                .GetAllAsync()
+                .Select(s => new SelectOptionDto()
+                {
+                    Label = GetEnumDescriptionUtil.GetEnumDescription(s.Currency),
+                    Value = s.Currency.ToString(),
+                    Description = GetEnumDescriptionUtil.GetEnumDescription(s.Currency),
+                    Disabled = s.IsDisabled
+                })
+                .ToListAsync();
+
+            // Populate the response with the successfully retrieved data
+            response.Data = currencies;
+            response.StatusCode = 200;
+            response.Message = "Plan currencies retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving plan currency options.");
+        }
+        return response;
+    }
+
     // Retrieves a list of plan options.
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync()
     {
