@@ -33,10 +33,11 @@ public class RoleService : IRoleService
             // Fetches roles with associated entities, ordering by sequence and projecting into RoleDto
             var roleList = await _unitOfWork.AccountRoleRepo
                 .GetAllAsync()
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.LastModifiedByUser)
-                .Include(a => a.RolePermissions)
-                    .ThenInclude(b => b.Permission)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Tenant)
+                .Include(i => i.RolePermissions)
+                    .ThenInclude(i1 => i1.Permission)
                 .OrderByDescending(o => o.Seq)
                 .AsNoTracking()
                 .ProjectToType<RoleDto>()
@@ -50,7 +51,7 @@ public class RoleService : IRoleService
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            return serviceResponse; // Return failure if exception occurs
+            return serviceResponse;
         }
 
         return serviceResponse;
@@ -70,10 +71,10 @@ public class RoleService : IRoleService
             // Fetches roles with associated entities, ordering by sequence and projecting into TenantRoleDto
             var roleList = await _unitOfWork.AccountRoleRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId)
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.LastModifiedByUser)
-                .Include(a => a.RolePermissions)
-                    .ThenInclude(b => b.Permission)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.RolePermissions)
+                    .ThenInclude(i1 => i1.Permission)
                 .OrderByDescending(o => o.Seq)
                 .AsNoTracking()
                 .ProjectToType<TenantRoleDto>()
@@ -108,7 +109,9 @@ public class RoleService : IRoleService
 
             // Check if role already exists by comparing case-insensitive role name
             var role = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(c => c.FullName.ToLower() == checkAvailability.UserInput.ToLower())
+                .GetByConditionAsync(w =>
+                    w.FullName.ToLower() == checkAvailability.UserInput.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
             if (role != null)
@@ -128,7 +131,7 @@ public class RoleService : IRoleService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while checking Role Name availability: {Name}.", checkAvailability.UserInput);
-            return serviceResponse; // Return failure if exception occurs
+            return serviceResponse;
         }
 
         return serviceResponse;
@@ -147,7 +150,7 @@ public class RoleService : IRoleService
         {
             // Check if the role already exists by comparing role names
             var existingRoles = await _unitOfWork.AccountRoleRepo.GetAllAsync().ToListAsync();
-            if (existingRoles.Any(role => role.FullName == roleDto.FullName))
+            if (existingRoles.Any(a => a.FullName == roleDto.FullName && (roleDto.TenantId == null || a.TenantId == roleDto.TenantId)))
             {
                 _logger.LogInformation("Role already exists, please select another role name.");
                 serviceResponse.Message = "Role already exists, please select another role name.";
@@ -156,6 +159,7 @@ public class RoleService : IRoleService
 
             // Create a new role entity
             var newRole = roleDto.Adapt<AccountRole>();
+            newRole.TenantId = roleDto.TenantId != null ? roleDto.TenantId : null;
             newRole.CreatedByUserId = _userId;
             newRole.LastModifiedByUserId = _userId;
             newRole.CreatedOn = DateTimeOffset.UtcNow;
@@ -180,7 +184,7 @@ public class RoleService : IRoleService
                 var permissionsList = await _unitOfWork.PermissionRepo.GetAllAsync().AsNoTracking().ToListAsync();
                 foreach (var rolePermission in roleDto.RolePermissions)
                 {
-                    var permission = permissionsList.FirstOrDefault(p => p.Name.Equals(rolePermission.PermissionType.ToString()));
+                    var permission = permissionsList.FirstOrDefault(f => f.Name.Equals(rolePermission.PermissionType.ToString()));
                     if (permission != null && rolePermission.Accesses.Contains(PermissionAccessTypesEnum.FullAccess))
                     {
                         newRolePermissions.Add(new RolePermission()
@@ -247,11 +251,11 @@ public class RoleService : IRoleService
         {
             // Fetch the role by ID and include related entities (CreatedBy, LastModifiedBy, Permissions)
             var existingRole = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(role => role.Id == accountRoleId)
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.LastModifiedByUser)
-                .Include(a => a.RolePermissions)
-                    .ThenInclude(b => b.Permission)
+                .GetByConditionAsync(w => w.Id == accountRoleId)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.RolePermissions)
+                    .ThenInclude(i1 => i1.Permission)
                 .SingleOrDefaultAsync();
 
             if (existingRole == null)
@@ -263,15 +267,15 @@ public class RoleService : IRoleService
 
             // Map the role entity to RoleDto
             var roleDto = existingRole.Adapt<RoleDto>();
-            if (existingRole.RolePermissions?.Any() == true)
+            if (existingRole.RolePermissions?.Count != 0)
             {
                 // Map the permissions into the role DTO
                 roleDto.RolePermissions = existingRole.RolePermissions
-                    .GroupBy(arp => arp.Permission.Name)
-                    .Select(g => new AccountPermissionDto
+                    .GroupBy(g => g.Permission.Name)
+                    .Select(s => new AccountPermissionDto
                     {
-                        PermissionType = (PermissionTypesEnum)Enum.Parse(typeof(PermissionTypesEnum), g.Key),
-                        Accesses = g.Select(a => (PermissionAccessTypesEnum)Enum.Parse(typeof(PermissionAccessTypesEnum), a.Access.ToString()))
+                        PermissionType = (PermissionTypesEnum)Enum.Parse(typeof(PermissionTypesEnum), s.Key),
+                        Accesses = s.Select(s1 => (PermissionAccessTypesEnum)Enum.Parse(typeof(PermissionAccessTypesEnum), s1.Access.ToString()))
                                     .Distinct()
                                     .ToList()
                     })
@@ -303,7 +307,7 @@ public class RoleService : IRoleService
         {
             // Fetch the existing role from the repository
             var existingRole = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(role => role.Id == roleDto.Id)
+                .GetByConditionAsync(w => w.Id == roleDto.Id)
                 .SingleOrDefaultAsync();
 
             if (existingRole == null)
@@ -315,7 +319,11 @@ public class RoleService : IRoleService
 
             // Check if another role exists with the same name
             var duplicateRole = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(role => role.Id != roleDto.Id && role.FullName == roleDto.FullName)
+                .GetByConditionAsync(w =>
+                    w.Id != roleDto.Id &&
+                    w.FullName.ToLower() == roleDto.FullName.ToLower() &&
+                    roleDto.TenantId == null || w.TenantId == roleDto.TenantId
+                )
                 .FirstOrDefaultAsync();
 
             if (duplicateRole != null)
@@ -347,7 +355,7 @@ public class RoleService : IRoleService
 
             // Fetch current permissions associated with the role
             var currentPermissions = await _unitOfWork.RolePermissionRepo
-                .GetByConditionAsync(arp => arp.AccountRoleId == existingRole.Id)
+                .GetByConditionAsync(w => w.AccountRoleId == existingRole.Id)
                 .ToListAsync();
 
             // Add new permissions
@@ -358,7 +366,7 @@ public class RoleService : IRoleService
 
                 foreach (var rolePermission in roleDto.RolePermissions)
                 {
-                    var permission = permissionsList.FirstOrDefault(p => p.Name.Equals(rolePermission.PermissionType.ToString()));
+                    var permission = permissionsList.FirstOrDefault(f => f.Name.Equals(rolePermission.PermissionType.ToString()));
                     if (permission != null && rolePermission.Accesses.Contains(PermissionAccessTypesEnum.FullAccess))
                     {
                         newRolePermissions.Add(new RolePermission()
@@ -373,9 +381,9 @@ public class RoleService : IRoleService
                     }
                     if (permission != null && !rolePermission.Accesses.Contains(PermissionAccessTypesEnum.FullAccess))
                     {
-                        newRolePermissions.AddRange(rolePermission.Accesses.Select(access => new RolePermission()
+                        newRolePermissions.AddRange(rolePermission.Accesses.Select(s => new RolePermission()
                         {
-                            Access = access,
+                            Access = s,
                             AccountRoleId = existingRole.Id,
                             PermissionId = permission.Id,
                             CreatedByUserId = _userId,
@@ -418,7 +426,7 @@ public class RoleService : IRoleService
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            return serviceResponse; // Return failure if exception occurs
+            return serviceResponse;
         }
 
         return serviceResponse;
@@ -437,9 +445,9 @@ public class RoleService : IRoleService
         {
             // Fetch the role by ID with related entities
             var roleToDelete = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(role => role.Id == accountRoleId)
-                .Include(a => a.RolePermissions)
-                .Include(a => a.UserRoles)
+                .GetByConditionAsync(w => w.Id == accountRoleId)
+                .Include(i => i.RolePermissions)
+                .Include(i => i.UserRoles)
                 .SingleOrDefaultAsync();
 
             if (roleToDelete == null)
@@ -473,7 +481,7 @@ public class RoleService : IRoleService
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            return serviceResponse; // Return failure if exception occurs
+            return serviceResponse;
         }
 
         return serviceResponse;
@@ -500,8 +508,8 @@ public class RoleService : IRoleService
             // Fetch the roles to delete
             var roles = await _unitOfWork.AccountRoleRepo
                 .GetByConditionAsync(w => accountRoleIds.Contains(w.Id))
-                .Include(a => a.RolePermissions)
-                .Include(a => a.UserRoles)
+                .Include(i => i.RolePermissions)
+                .Include(i => i.UserRoles)
                 .ToListAsync();
 
             if (roles.Count == 0)
@@ -512,7 +520,7 @@ public class RoleService : IRoleService
             }
 
             // Check if any role is default, which cannot be deleted
-            if (roles.Any(r => r.IsDefault))
+            if (roles.Any(a => a.IsDefault))
             {
                 _logger.LogInformation("Cannot delete the default role.");
                 serviceResponse.Message = "Cannot delete the default role.";
