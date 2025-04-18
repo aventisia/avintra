@@ -21,8 +21,7 @@ import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
 import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
 
 export const PricingPlanCrudForm = () => {
-  const { selectOptions: tenantsToSelect } =
-    useFetchTenantsToSelect(false);
+  const { selectOptions: tenantsToSelect } = useFetchTenantsToSelect(false);
 
   // Define pricingplan form
   const {
@@ -59,6 +58,9 @@ export const PricingPlanCrudForm = () => {
 
   // Is form in read mode
   const isReadMode = crudAction === "read";
+
+  if (tenantDetails?.data.currency)
+    form.setValue("currency", tenantDetails?.data.currency);
 
   // Return the form
   return (
