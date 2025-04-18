@@ -5,9 +5,12 @@ import { ISelectOption } from "../../react-toolkit/types/select-option";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/plan`;
 
-export const getLicensesToSelect = () => {
+export const getLicensesToSelect = (tenantId?: string) => {
+  tenantId = tenantId && !tenantId?.includes("00000000") ? tenantId : "";
   return axiosInstance
-    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/plans-to-select`)
+    .get<
+      IHttpResponse<ISelectOption[]>
+    >(`${baseAPIURL}/plans-to-select/${tenantId}`)
     .then((res) => res.data);
 };
 

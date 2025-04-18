@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -19,7 +20,6 @@ import { useDefineRequestLicenseForm } from "../../hooks/useDefineRequestLicense
 import { RequestLicenseOverviewDetails } from "./RequestLicenseOverviewDetails";
 
 export const RequestLicenseForm = () => {
-  const { data: lisencesToselectResponse } = useFetchLicensesToSelect();
   const { selectOptions: tenantsToselect } = useFetchTenantsToSelect(true);
 
   // Define license form
@@ -50,6 +50,13 @@ export const RequestLicenseForm = () => {
   };
 
   const [planId, id] = watch(["planId", "id"]);
+
+  const { data: lisencesToselectResponse, refetch } =
+    useFetchLicensesToSelect(id);
+
+  useEffect(() => {
+    refetch();
+  }, [id, refetch]);
 
   const { data: licenseDetails, isFetching } = useFetchLicenseDetails(planId);
 

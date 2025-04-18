@@ -9,11 +9,11 @@ import { getCurrenciesToSelect, getLicenseDetails, getLicensesToSelect } from ".
  * Custom hook to fetch licenses to select using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchLicensesToSelect = () => {
+export const useFetchLicensesToSelect = (tenantId?: string) => {
   // Get licenses using react query
   const { data, isFetching, refetch, isLoading, isError, error } = useQuery({
     queryKey: ["licenses-to-select"],
-    queryFn: () => getLicensesToSelect(),
+    queryFn: () => getLicensesToSelect(tenantId),
   });
 
   // Show toast on fetch error
