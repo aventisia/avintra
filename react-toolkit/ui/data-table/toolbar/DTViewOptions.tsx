@@ -28,14 +28,15 @@ export function DTViewOptions<TData>({
       <DropdownMenuTrigger
         className={cn(
           buttonVariants({ variant: "outline", size: "xs" }),
-          "hidden gap-2 data-[state=open]:bg-muted lg:flex",
+          "hidden gap-2 lg:flex",
+          "data-[state=open]:ring-[3px] data-[state=open]:border-primary data-[state=open]:ring-ring"
         )}
       >
         <AdjustmentsHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
         View
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="p-2">
+        <DropdownMenuLabel className="whitespace-nowrap">Toggle columns</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -50,6 +51,7 @@ export function DTViewOptions<TData>({
                 className="w-full text-nowrap capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                onSelect={(event) => event?.preventDefault()}
               >
                 {columnDisplayNames.find((item) => item.key === column.id)
                   ?.value ?? column.id}

@@ -14,15 +14,11 @@ import { toast } from "sonner";
  *
  * The instance is configured with:
  * - A timeout specified by the `REQUEST_TIMEOUT` constant.
- * - Default headers including `Content-Type` set to `application/json`.
  *
  * @constant {AxiosInstance} axiosInstance - The configured Axios instance.
  */
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  // headers: {
-  //   "Content-Type": "application/json",
-  // },
 });
 
 // Intercept request and add JWT token to the header if its DEV env

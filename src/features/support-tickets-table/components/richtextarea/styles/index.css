@@ -198,10 +198,10 @@
 .minimal-tiptap-editor .ProseMirror .selection,
 .minimal-tiptap-editor .ProseMirror *::selection,
 ::selection {
-  background: rgba(var(--primary-color), 0.25);
+  /* background: rgba(var(--primary-color), 0.25); */
 }
 
 /* Override native selection when custom selection is present */
 .minimal-tiptap-editor .ProseMirror .selection::selection {
-  background: transparent;
+  /* background: transparent; */
 }
