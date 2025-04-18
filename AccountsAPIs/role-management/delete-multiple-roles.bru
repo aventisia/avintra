@@ -1,0 +1,28 @@
+meta {
+  name: Delete multiple roles
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/account-role/delete-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  let roleId = bru.getGlobalEnvVar("ROLE_ID");
+  
+  req.setBody(
+    JSON.parse(`[ "${roleId}" ]`)
+  );
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "ROLE_ID",
+          []
+      );
+  }
+}

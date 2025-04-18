@@ -1,0 +1,28 @@
+meta {
+  name: Update role
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/account-role
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("ROLE_ID"),
+    fullName: "Super administrator",//faker.person.jobType(),
+    description: "This role should have access to everything.",//faker.lorem.lines(),
+    rolePermissions: [
+      {
+        permissionType: "Roles",
+        accesses: ["FullAccess", "Delete","Edit"]
+      },
+    ]
+  })
+  
+}
