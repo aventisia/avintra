@@ -16,7 +16,7 @@ script:pre-request {
   req.setBody(
     {
      id: bru.getGlobalEnvVar("PLAN_ID"),
-     name: "AIAgent",
+     pricingComponent: "AIAgent",
      currency: "USD",
      unitPrice: 450,
      unit: "Credit",

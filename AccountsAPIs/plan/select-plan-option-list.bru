@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/tenants-to-select
+  url: {{ACCOUNTS_APIS_BASE_URL}}/plan/plans-to-select
   body: none
   auth: none
 }
@@ -13,22 +13,5 @@ get {
 body:json {
   {
     "name": "{{$randomCompanyName}}"
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    name: faker.company.name(),
-  })
-}
-
-script:post-response {
-  if(res.getStatus() == 200){
-      bru.setGlobalEnvVar(
-          "TENANT_ID",
-          res.getBody().data.id
-      );
   }
 }
