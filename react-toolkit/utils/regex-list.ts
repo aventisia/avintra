@@ -24,7 +24,7 @@ const pwdRegex = new RegExp(
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
 );
 
-export const positiveFloatNumber = "^d*.?d+$";
+export const positiveFloatNumber = new RegExp(/^\d*\.?\d+$/);
 
 export {
   emailRegex,

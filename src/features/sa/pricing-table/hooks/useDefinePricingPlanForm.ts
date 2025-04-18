@@ -123,12 +123,12 @@ export const useDefinePricingPlanForm = () => {
           : null,
 
       unit:
-        formData.pricingComponent == PricingComponentsEnum.GpuCompute
+        formData.pricingComponent == PricingComponentsEnum.GPUCompute
           ? PricingUnitTypesEnum.Credit
           : PricingUnitTypesEnum.License,
       currency: tenantDetails?.data.currency ?? formData.currency,
       frequency:
-        formData.pricingComponent == PricingComponentsEnum.GpuCompute
+        formData.pricingComponent == PricingComponentsEnum.GPUCompute
           ? null
           : formData.frequency,
       lastModifiedBy: userSession?.email ?? "",
