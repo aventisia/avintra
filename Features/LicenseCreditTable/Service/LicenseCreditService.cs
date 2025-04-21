@@ -30,27 +30,27 @@ public class LicenseCreditService : ILicenseCreditService
 
         try
         {
-            // Fetch license credits, order them by creation date, and project to DTO
-            var credits = await _unitOfWork.LicenseCreditRepo
-                                            .GetAllAsync()
+            // Fetch my license credits, order them by creation date, and project to DTO
+            var licenseCredits = await _unitOfWork.LicenseCreditRepo
+                                            .GetByConditionAsync(w => w.TenantId == _tenantId)
                                             .OrderByDescending(w => w.CreatedOn)
-                                            .Include(a => a.CreatedByUser)
-                                            .Include(a => a.LastModifiedByUser)
-                                            .Include(a => a.Invoices)
-                                            .Include(a => a.Tenant)
-                                            .Include(a => a.PlanPricing)
-                                                .ThenInclude(b => b.Tenant)
+                                            .Include(i => i.CreatedByUser)
+                                            .Include(i => i.LastModifiedByUser)
+                                            .Include(i => i.Invoices)
+                                            .Include(i => i.Tenant)
+                                            .Include(i => i.PlanPricing)
+                                                .ThenInclude(i1 => i1.Tenant)
                                             .ProjectToType<LicenseCreditDto>()
                                             .ToListAsync();
 
-            serviceResponse.Data = credits;
+            serviceResponse.Data = licenseCredits;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved license credits.";
-            _logger.LogInformation("Retrieved {Count} license credits.", credits.Count);
+            _logger.LogInformation("Retrieved {Count} license credits.", licenseCredits.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving license credits.");
+            _logger.LogError(ex, "An error occurred while retrieving my license credits.");
             return serviceResponse;
         }
 
@@ -69,17 +69,17 @@ public class LicenseCreditService : ILicenseCreditService
         try
         {
             // Fetch and order license credits by creation date, then project to DTO
-            var credits = await _unitOfWork.LicenseCreditRepo
-                                            .GetByConditionAsync(a => a.CreatedByUserId == _userId || a.TenantId == _tenantId)
+            var licenseCredits = await _unitOfWork.LicenseCreditRepo
+                                            .GetByConditionAsync(a => a.TenantId == _tenantId)
                                             .OrderByDescending(w => w.CreatedOn)
                                             .Include(a => a.PlanPricing)
                                             .ProjectToType<SelectOptionDto>()
                                             .ToListAsync();
 
-            response.Data = credits;
+            response.Data = licenseCredits;
             response.StatusCode = 200;
             response.Message = "License credits retrieved successfully.";
-            _logger.LogInformation("Retrieved {Count} license credits.", credits.Count);
+            _logger.LogInformation("Retrieved {Count} license credits.", licenseCredits.Count);
         }
         catch (Exception ex)
         {
@@ -91,45 +91,9 @@ public class LicenseCreditService : ILicenseCreditService
     }
 
     /// Retrieves all my license credits asynchronously.
-    public async Task<ServiceResponse<IEnumerable<MyLicenseCreditDto>>> GetMyLicenseCreditsAsync()
-    {
-        var serviceResponse = new ServiceResponse<IEnumerable<MyLicenseCreditDto>>
-        {
-            Data = null,
-            Message = "Unable to retrieve license credits. Please try again."
-        };
-
-        try
-        {
-            // Fetch my license credits, order them by creation date, and project to DTO
-            var credits = await _unitOfWork.LicenseCreditRepo
-                                            .GetByConditionAsync(a => a.CreatedByUserId == _userId || a.TenantId == _tenantId)
-                                            .OrderByDescending(w => w.CreatedOn)
-                                            .Include(a => a.CreatedByUser)
-                                            .Include(a => a.LastModifiedByUser)
-                                            .Include(a => a.Invoices)
-                                            .Include(a => a.Tenant)
-                                            .Include(a => a.PlanPricing)
-                                                .ThenInclude(b => b.Tenant)
-                                            .ProjectToType<MyLicenseCreditDto>()
-                                            .ToListAsync();
-
-            serviceResponse.Data = credits;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Successfully retrieved license credits.";
-            _logger.LogInformation("Retrieved {Count} license credits.", credits.Count);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving my license credits.");
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
 
     /// Retrieves a license credit by its ID asynchronously.
-    public async Task<ServiceResponse<LicenseCreditDto>> GetLicenseCreditByIdAsync(Guid creditId)
+    public async Task<ServiceResponse<LicenseCreditDto>> GetLicenseCreditByIdAsync(Guid licenseCreditId)
     {
         var serviceResponse = new ServiceResponse<LicenseCreditDto>
         {
@@ -140,8 +104,8 @@ public class LicenseCreditService : ILicenseCreditService
         try
         {
             // Find the license credit by ID and include plan pricing
-            var credit = await _unitOfWork.LicenseCreditRepo
-                            .GetByConditionAsync(w => w.Id == creditId)
+            var licenseCredit = await _unitOfWork.LicenseCreditRepo
+                            .GetByConditionAsync(w => w.Id == licenseCreditId)
                             .Include(a => a.CreatedByUser)
                             .Include(a => a.LastModifiedByUser)
                             .Include(a => a.PlanPricing)
@@ -149,82 +113,27 @@ public class LicenseCreditService : ILicenseCreditService
                             .Include(a => a.Tenant)
                             .FirstOrDefaultAsync();
 
-            if (credit == null)
+            if (licenseCredit == null)
             {
-                _logger.LogInformation("No license credit found with ID: {CreditId}", creditId);
+                _logger.LogInformation("No license credit found with ID: {CreditId}", licenseCreditId);
                 return serviceResponse;
             }
 
-            serviceResponse.Data = credit.Adapt<LicenseCreditDto>();
+            serviceResponse.Data = licenseCredit.Adapt<LicenseCreditDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved license credit.";
-            _logger.LogInformation("Successfully retrieved license credit with ID: {CreditId}", creditId);
+            _logger.LogInformation("Successfully retrieved license credit with ID: {LicenseCreditId}", licenseCreditId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving the license credit with ID: {CreditId}", creditId);
-            serviceResponse.StatusCode = 500;
-        }
-
-        return serviceResponse;
-    }
-
-    /// Inserts a new license credit asynchronously.
-    public async Task<ServiceResponse<LicenseCreditDto>> InsertLicenseCreditAsync(LicenseCreditDto licenseCreditDto)
-    {
-        var serviceResponse = new ServiceResponse<LicenseCreditDto>
-        {
-            Data = null,
-            Message = "Unable to insert license credit. Please try again."
-        };
-
-        try
-        {
-            // Check if a similar license credit already exists
-            var existingCredit = await _unitOfWork.LicenseCreditRepo
-                .GetByConditionAsync(w =>
-                    w.PlanId == licenseCreditDto.PlanId &&
-                    w.TenantId == licenseCreditDto.TenantId)
-                .FirstOrDefaultAsync();
-
-            if (existingCredit != null)
-            {
-                _logger.LogInformation("License credit '{AdditionalUnitsRequested}' already exists.", licenseCreditDto.AdditionalUnitsRequested);
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A license credit with this configuration already exists. Please choose a unique name.";
-                return serviceResponse;
-            }
-
-            // Trim string properties and create a new license credit
-            licenseCreditDto = TrimDtoStringPropsUtil.TrimDtoStringProps(licenseCreditDto);
-            var newCredit = licenseCreditDto.Adapt<LicenseCredit>();
-            newCredit.CreatedByUserId = _userId;
-            newCredit.LastModifiedByUserId = _userId;
-
-            await _unitOfWork.LicenseCreditRepo.InsertAsync(newCredit);
-
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Failed to save changes while inserting new license credit.");
-                return serviceResponse;
-            }
-
-            serviceResponse.Data = newCredit.Adapt<LicenseCreditDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "License credit created successfully.";
-            _logger.LogInformation("License credit with additional units requested '{AdditionalUnitsRequested}' was created successfully.", licenseCreditDto.AdditionalUnitsRequested);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while inserting license credit.");
-            return serviceResponse;
+            _logger.LogError(ex, "An error occurred while retrieving the license credit with ID: {LicenseCreditId}", licenseCreditId);
         }
 
         return serviceResponse;
     }
 
     // Requests a new license credit.
-    public async Task<ServiceResponse<LicenseCreditDto>> RequestLicenseCreditAsync(RequestLicenseCreditDto licenseCreditDto)
+    public async Task<ServiceResponse<LicenseCreditDto>> RequestLicenseCreditAsync(AddRequestLicenseCreditDto licenseCreditDto)
     {
         var serviceResponse = new ServiceResponse<LicenseCreditDto>
         {
@@ -239,7 +148,7 @@ public class LicenseCreditService : ILicenseCreditService
                 .GetByConditionAsync(w =>
                     w.PlanId == licenseCreditDto.PlanId &&
                     w.Status == LicenseCreditStatusesEnum.Requested &&
-                    (licenseCreditDto.TenantId == null ? w.TenantId == _tenantId : w.TenantId == licenseCreditDto.TenantId))
+                    w.TenantId == _tenantId)
                 .Include(a => a.PlanPricing)
                 .FirstOrDefaultAsync();
 

@@ -5,7 +5,7 @@ namespace AccountsAPIs.DTOs;
 /// including allocation, consumption, billing information, and tenant metadata.
 /// This object is used to request or approve license credits for tenants.
 /// </summary>
-public class RequestLicenseCreditDto
+public class AddRequestLicenseCreditDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the related license credit.
@@ -17,11 +17,6 @@ public class RequestLicenseCreditDto
     /// </summary>
     [Required]
     public required Guid PlanId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unique ID of the tenant associated with this pricing plan.
-    /// </summary>
-    public Guid? TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the number of additional units requested for the tenant's licensing credits.

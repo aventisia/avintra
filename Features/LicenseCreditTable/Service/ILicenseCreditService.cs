@@ -12,12 +12,6 @@ public interface ILicenseCreditService
     Task<ServiceResponse<IEnumerable<LicenseCreditDto>>> GetLicenseCreditsAsync();
 
     /// <summary>
-    /// Retrieves my all available license credits.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{T}"/> with a collection of <see cref="MyLicenseCreditDto"/>.</returns>
-    Task<ServiceResponse<IEnumerable<MyLicenseCreditDto>>> GetMyLicenseCreditsAsync();
-
-    /// <summary>
     /// Asynchronously retrieves a list of all license credit options for the current user.
     /// </summary>
     /// <returns>A <see cref="ServiceResponse{IEnumerable{SelectOptionDto}}"/> containing the license credit options.</returns>
@@ -31,33 +25,11 @@ public interface ILicenseCreditService
     Task<ServiceResponse<LicenseCreditDto>> GetLicenseCreditByIdAsync(Guid licenseCreditId);
 
     /// <summary>
-    /// Creates a new license credit in the system.
-    /// </summary>
-    /// <param name="licenseCreditDto">The data required to create the new license credit.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{T}"/> with the details of the newly created license credit.</returns>
-    Task<ServiceResponse<LicenseCreditDto>> InsertLicenseCreditAsync(LicenseCreditDto licenseCreditDto);
-
-    /// <summary>
     /// Requests a new license credit.
     /// </summary>
     /// <param name="licenseCreditDto">Details for the license credit request.</param>
     /// <returns>A task with the response containing the license credit information.</returns>
-    Task<ServiceResponse<LicenseCreditDto>> RequestLicenseCreditAsync(RequestLicenseCreditDto licenseCreditDto);
-
-    /// <summary> 
-    /// Approve exiting license credit request.
-    /// </summary> 
-    /// <param name="licenseCreditDto">Information related to the license credit approval.</param> 
-    /// <returns>A task that yields a response with the license credit details.</returns>   
-    Task<ServiceResponse<LicenseCreditDto>> ApproveLicenseCreditAsync(RequestLicenseCreditDto licenseCreditDto);
-
-    /// <summary> 
-    /// Records a license credit request and returns the updated details.
-    /// </summary> 
-    /// <param name="licenseCreditDto">The data transfer object containing information required for recording the license credit.</param> 
-    /// <returns>A task that yields a <see cref="ServiceResponse{LicenseCreditDto}"/> containing the details of the recorded license credit.</returns>   
-    Task<ServiceResponse<LicenseCreditDto>> RecordLicenseCreditAsync(RecordLicenseCreditDto licenseCreditDto);
-
+    Task<ServiceResponse<LicenseCreditDto>> RequestLicenseCreditAsync(AddRequestLicenseCreditDto licenseCreditDto);
 
     /// <summary>
     /// Updates the details of an existing license credit.

@@ -12,16 +12,6 @@ public class LicenseCreditDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique ID of the tenant associated with this pricing plan.
-    /// </summary>
-    public Guid? TenantId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the tenant linked to this pricing plan.
-    /// </summary>
-    public string? TenantName { get; set; }
-
-    /// <summary>
     /// Gets or sets the type of tenant associated with this pricing plan.
     /// </summary>
     public TenantTypesEnum? TenantType { get; set; }

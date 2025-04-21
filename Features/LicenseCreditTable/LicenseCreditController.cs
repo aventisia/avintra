@@ -19,13 +19,6 @@ public class LicenseCreditController : BaseApiController
         return ResultHelper(await _licenseCreditService.GetLicenseCreditsAsync());
     }
 
-    // Retrieves my all license credits created by the user.
-    [HttpGet("my")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MyLicenseCreditDto>>>> GetMyLicenseCredits()
-    {
-        return ResultHelper(await _licenseCreditService.GetMyLicenseCreditsAsync());
-    }
-
     // Retrieves a list of license credit options for the current user.
     [HttpGet("license-to-select")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetLicenseCreditOptionListAsync()
@@ -40,32 +33,11 @@ public class LicenseCreditController : BaseApiController
         return ResultHelper(await _licenseCreditService.GetLicenseCreditByIdAsync(licenseCreditId));
     }
 
-    // Inserts a new license credit.
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> InsertLicenseCredit([FromBody] LicenseCreditDto licenseCreditDto)
-    {
-        return ResultHelper(await _licenseCreditService.InsertLicenseCreditAsync(licenseCreditDto));
-    }
-
     // Request a new license credit.
     [HttpPost("request")]
-    public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> RequestLicenseCredit([FromBody] RequestLicenseCreditDto licenseCreditDto)
+    public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> RequestLicenseCredit([FromBody] AddRequestLicenseCreditDto licenseCreditDto)
     {
         return ResultHelper(await _licenseCreditService.RequestLicenseCreditAsync(licenseCreditDto));
-    }
-
-    // Approve a new license credit.
-    [HttpPost("approve")]
-    public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> ApproveLicenseCredit([FromBody] RequestLicenseCreditDto licenseCreditDto)
-    {
-        return ResultHelper(await _licenseCreditService.ApproveLicenseCreditAsync(licenseCreditDto));
-    }
-
-    // Record a new license credit.
-    [HttpPost("record")]
-    public async Task<ActionResult<ServiceResponse<LicenseCreditDto>>> RecordLicenseCredit([FromBody] RecordLicenseCreditDto licenseCreditDto)
-    {
-        return ResultHelper(await _licenseCreditService.RecordLicenseCreditAsync(licenseCreditDto));
     }
 
     // Updates an existing license credit.

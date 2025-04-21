@@ -12,8 +12,6 @@ public class LicenseCreditMappingProfile : IRegister
             .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
             .Map(dest => dest.Currency, src => src.PlanPricing != null ? src.PlanPricing.Currency : 0)
             .Map(dest => dest.TenantType, src => src.PlanPricing != null ? src.PlanPricing.TenantType : null)
-            .Map(dest => dest.TenantId, src => src.TenantId)
-            .Map(dest => dest.TenantName, src => src.Tenant != null ? src.PlanPricing.Tenant.Name : null)
             .Map(dest => dest.OverdueBalance, src => src.Invoices != null ? src.Invoices.Sum(a => a.Amount - a.AmountReceived) : 0)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
@@ -29,23 +27,6 @@ public class LicenseCreditMappingProfile : IRegister
             .Map(dest => dest.Disabled, src => src.IsDisabled)
             .Map(dest => dest.Value, src => src.Id);
 
-        // Configuration for mapping LicenseCredit to LicenseCreditDto.
-        config.NewConfig<LicenseCredit, MyLicenseCreditDto>()
-            .Map(dest => dest.PricingComponent, src => src.PlanPricing != null ? src.PlanPricing.PricingComponent.ToString() : null)
-            .Map(dest => dest.PlanId, src => src.PlanPricing != null ? src.PlanPricing.Id : Guid.Empty)
-            .Map(dest => dest.Unit, src => src.PlanPricing != null ? (UnitTypesEnum?)src.PlanPricing.Unit : null)
-            .Map(dest => dest.UnitPrice, src => src.PlanPricing != null ? src.PlanPricing.UnitPrice : 0)
-            .Map(dest => dest.Currency, src => src.PlanPricing != null ? src.PlanPricing.Currency : 0)
-            .Map(dest => dest.OverdueBalance, src => src.Invoices != null ? src.Invoices.Where(a => !a.IsPaid).Sum(a => a.Amount) : 0)
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}"
-                    : null)
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
-                    : null);
-
         // Configuration for mapping LicenseCreditDto to LicenseCredit during insertion or update.
         config.NewConfig<LicenseCreditDto, LicenseCredit>()
             .Ignore(dest => dest.Id)
@@ -53,7 +34,7 @@ public class LicenseCreditMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
-        config.NewConfig<RequestLicenseCreditDto, LicenseCredit>()
+        config.NewConfig<AddRequestLicenseCreditDto, LicenseCredit>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)

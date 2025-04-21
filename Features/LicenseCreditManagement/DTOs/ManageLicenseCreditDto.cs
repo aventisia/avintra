@@ -4,12 +4,27 @@ namespace AccountsAPIs.DTOs;
 /// Defines a data transfer object that encapsulates information about a tenant's licensing credits, 
 /// including allocation, consumption, billing details, and metadata about the tenant.
 /// </summary>
-public class MyLicenseCreditDto
+public class ManageLicenseCreditDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the associated license credit.
     /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique ID of the tenant associated with this pricing plan.
+    /// </summary>
+    public Guid? TenantId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the tenant linked to this pricing plan.
+    /// </summary>
+    public string? TenantName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of tenant associated with this pricing plan.
+    /// </summary>
+    public TenantTypesEnum? TenantType { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the pricing plan related to this tenant.
