@@ -29,11 +29,27 @@ const createFolderFieldList: IDynamicFieldSchema[] = [
   },
   //  output
   {
-    name: "newFolder",
-    type: "switch",
-    label: "NewFolder",
+    name: "o_newFolderOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The created folder object",
-    defaultValue: false,
+    defaultValue: "NewFolder",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_newFolderSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_newFolderSwitch",
+    type: "output-switch-field",
+    label: "NewFolder",
+    defaultValue: true,
   },
 ];
 
@@ -44,7 +60,7 @@ const createFolderFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["newFolder"]],
+    formFieldKeys: [["o_newFolderOutput", "o_newFolderSwitch"]],
   },
 ];
 
@@ -52,7 +68,7 @@ const createFolderFieldCategories: IDynamicFormKeysCategory[] = [
 const createFolder: ActivityConfig = {
   fieldList: createFolderFieldList,
   fieldCategories: createFolderFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_newFolderOutput", "o_newFolderSwitch"],
 };
 
 export default createFolder;

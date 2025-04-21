@@ -44,11 +44,27 @@ const copyFolderFieldList: IDynamicFieldSchema[] = [
   },
   // output 
   {
-    name: "copiedFolder",
-    type: "switch",
-    label: "CopiedFolder",
+    name: "o_copiedFolderOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The copied folder object",
-    defaultValue: "",
+    defaultValue: "CopiedFolder",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_copiedFolderSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_copiedFolderSwitch",
+    type: "output-switch-field",
+    label: "CopiedFolder",
+    defaultValue: true,
   },
 ];
 
@@ -63,14 +79,14 @@ const copyFolderFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["copiedFolder"]],
+    formFieldKeys: [["o_copiedFolderOutput", "o_copiedFolderSwitch"]],
   },
 ];
 
 const copyFolder: ActivityConfig = {
   fieldList: copyFolderFieldList,
   fieldCategories: copyFolderFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_copiedFolderOutput", "o_copiedFolderSwitch"],
 };
 
 export default copyFolder;

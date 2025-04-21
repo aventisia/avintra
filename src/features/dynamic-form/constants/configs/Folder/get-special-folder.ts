@@ -51,11 +51,27 @@ const getSpecialFolderFieldList: IDynamicFieldSchema[] = [
   },
   //   output 
   {
-    name: "specialFolderPath",
-    type: "switch",
-    label: "SpecialFolderPath",
+    name: "o_specialFolderPathOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The special folder object",
-    defaultValue: "",
+    defaultValue: "SpecialFolderPath",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_specialFolderPathSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_specialFolderPathSwitch",
+    type: "output-switch-field",
+    label: "SpecialFolderPath",
+    defaultValue:true,
   },
 ];
 
@@ -66,14 +82,14 @@ const getSpecialFolderFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["specialFolderPath"]],
+    formFieldKeys: [["o_specialFolderPathOutput", "o_specialFolderPathSwitch"]],
   },
 ];
 
 const getSpecialFolder: ActivityConfig = {
   fieldList: getSpecialFolderFieldList,
   fieldCategories: getSpecialFolderFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_specialFolderPathOutput", "o_specialFolderPathSwitch"],
 };
 
 export default getSpecialFolder;

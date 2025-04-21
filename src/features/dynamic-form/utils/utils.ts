@@ -280,6 +280,7 @@ import shuffleList from "../constants/configs/variables/shuffle-list";
 import sortList from "../constants/configs/variables/sort-list";
 import subtractLists from "../constants/configs/variables/subtract-lists";
 import truncateNumber from "../constants/configs/variables/truncate-number";
+import runPowerFxExpression from "../constants/configs/variables/run-power-fx-expression";
 import ifService from "../constants/configs/windows-services/if-service";
 import pauseService from "../constants/configs/windows-services/pause-service";
 import resumeService from "../constants/configs/windows-services/resume-service";
@@ -359,7 +360,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   createNewList,
   increaseVariable,
   decreaseVariable,
-  // runPowerFxExpression,
+  runPowerFxExpression,
 
   //Conditional
   conditionalCase,

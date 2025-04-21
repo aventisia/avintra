@@ -15,9 +15,9 @@ const uploadFoldersToFtpFieldList: IDynamicFieldSchema[] = [
   },
 
   {
-    name: "file(s)ToUpload",
+    name: "folder(s)ToUpload",
     type: "text",
-    label: "File(s) to download",
+    label: "Folder(s) to download",
 
     description:
       "The folder(s) to upload. The folders being uploaded shouldn't already exist within the active directory of the FTP server",
@@ -36,7 +36,7 @@ const uploadFoldersToFtpFieldList: IDynamicFieldSchema[] = [
 const uploadFoldersToFtpFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["FTPConnection"], ["file(s)ToUpload"], ["remoteLocation"]],
+    formFieldKeys: [["FTPConnection"], ["folder(s)ToUpload"], ["remoteLocation"]],
   },
 ];
 

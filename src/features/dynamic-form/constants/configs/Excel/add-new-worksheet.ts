@@ -33,13 +33,6 @@ const addNewWorksheetFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "last",
   },
-  {
-    name: "worksheetName",
-    type: "text",
-    label: "Worksheet name",
-    description: "The name of the worksheet to activate",
-    defaultValue: "",
-  },
 ];
 
 const addNewWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
@@ -50,10 +43,6 @@ const addNewWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
       ["newWorksheetName"],
       ["addWorksheetAs"],
     ],
-  },
-  {
-    title: "Advanced",
-    formFieldKeys: [["worksheetName"]],
   },
 ];
 

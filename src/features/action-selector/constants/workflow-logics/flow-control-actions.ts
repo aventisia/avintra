@@ -52,13 +52,14 @@ export const flowControlActions: NodeDataType[] = [
     description: "Acts as the destination of a 'go to' statement",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
-  {
-    type: "activityNode",
-    name: "onBlockError",
-    label: "On block error",
-    description: "Marks the beginning of a block to handle actions errors",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // TODO - to be done later
+  // {
+  //   type: "activityNode",
+  //   name: "onBlockError",
+  //   label: "On block error",
+  //   description: "Marks the beginning of a block to handle actions errors",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "region",

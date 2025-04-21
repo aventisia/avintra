@@ -192,11 +192,27 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "terminalText",
-    type: "text",
-    label: "TerminalText",
+    name: "o_terminalTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The text retrieved from the terminal session",
-    defaultValue: "",
+    defaultValue: "TerminalText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_terminalTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_terminalTextSwitch", //to watch
+    type: "output-switch-field",
+    label: "TerminalText",
+    defaultValue: true,
   },
 ];
 
@@ -218,13 +234,13 @@ const getTextFromTerminalSessionFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["terminalText"]],
+    formFieldKeys: [["o_terminalTextOutput", "o_terminalTextSwitch"]],
   },
 ];
 const getTextFromTerminalSession: ActivityConfig = {
   fieldList: getTextFromTerminalSessionFieldList,
   fieldCategories: getTextFromTerminalSessionFieldCategories,
-  fieldsToWatch: ["GetTextFrom", "getFieldBy"],
+  fieldsToWatch: ["GetTextFrom", "getFieldBy", "o_terminalTextOutput", "o_terminalTextSwitch"],
 };
 
 export default getTextFromTerminalSession;

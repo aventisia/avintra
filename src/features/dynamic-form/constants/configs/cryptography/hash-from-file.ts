@@ -38,6 +38,30 @@ const hashFromFileFieldList: IDynamicFieldSchema[] = [
     description: "The file to hash the contents of",
     defaultValue: "",
   },
+  // Output
+  {
+    name: "o_hashedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The hashed text for later processing",
+    defaultValue: "HashedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_hashedTextSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_hashedTextSwitch", //to watch
+    type: "output-switch-field",
+    label: "HashedText",
+    defaultValue: true,
+  },
 ];
 
 const hashFromFileFieldCategories: IDynamicFormKeysCategory[] = [
@@ -45,12 +69,16 @@ const hashFromFileFieldCategories: IDynamicFormKeysCategory[] = [
     title: "Basic",
     formFieldKeys: [["hashAlgorithm"], ["encoding"], ["fileToHash"]],
   },
+  {
+    title: "Output",
+    formFieldKeys: [["o_hashedTextOutput", "o_hashedTextSwitch"]]
+  }
 ];
 
 const hashFromFile: ActivityConfig = {
   fieldList: hashFromFileFieldList,
   fieldCategories: hashFromFileFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_hashedTextOutput", "o_hashedTextSwitch"],
 };
 
 export default hashFromFile;

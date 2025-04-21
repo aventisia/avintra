@@ -53,7 +53,7 @@ const launchExcelFieldList: IDynamicFieldSchema[] = [
         initialState: false,
         conditionList: [
           {
-            fields: [{ key: "launchExcel", value: "withBlankDocument" }],
+            fields: [{ key: "launchExcel", value: "openDocument" }],
           },
         ],
       },
