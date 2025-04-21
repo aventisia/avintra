@@ -34,7 +34,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Fetch plans from the repository and order by creation date
-            var plans = await _unitOfWork.PlanPricingRepo
+            var plans = await _unitOfWork.PricingPlanRepo
                                           .GetByConditionAsync(w => w.TenantId == null)
                                           .OrderByDescending(w => w.CreatedOn)
                                           .Include(a => a.Tenant)
@@ -69,7 +69,7 @@ public class PlanTableService : IPlanTableService
         {
             // Fetch the plan by ID
             var plan = await _unitOfWork
-                .PlanPricingRepo.GetByConditionAsync(w => w.Id == planId)
+                .PricingPlanRepo.GetByConditionAsync(w => w.Id == planId)
                 .Include(a => a.Tenant)
                 .FirstOrDefaultAsync();
 
@@ -108,7 +108,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Fetch all plans from the repository asynchronously
-            var currencies = await _unitOfWork.PlanPricingRepo
+            var currencies = await _unitOfWork.PricingPlanRepo
                 .GetAllAsync()
                 .Select(s => new SelectOptionDto()
                 {
@@ -161,7 +161,7 @@ public class PlanTableService : IPlanTableService
 
             // Fetch all plans associated with the current tenant or the default tenant
             var tenantIds = tenants.Select(t => t.Id);
-            var allPlans = await _unitOfWork.PlanPricingRepo
+            var allPlans = await _unitOfWork.PricingPlanRepo
                 .GetByConditionAsync(w => w.TenantId == null || tenantIds.Contains(w.TenantId!.Value))
                 .ToListAsync();
 
@@ -211,7 +211,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Check if the plan already exists
-            var planAlreadyExists = await _unitOfWork.PlanPricingRepo
+            var planAlreadyExists = await _unitOfWork.PricingPlanRepo
             .GetByConditionAsync(w =>
                     w.PricingComponent == planTableDto.PricingComponent &&
                     (planTableDto.TenantType == null || w.TenantType == planTableDto.TenantType) &&
@@ -244,7 +244,7 @@ public class PlanTableService : IPlanTableService
             newPlan.CreatedByUserId = newPlan.LastModifiedByUserId = _userId;
 
             // Insert the new plan
-            await _unitOfWork.PlanPricingRepo.InsertAsync(newPlan);
+            await _unitOfWork.PricingPlanRepo.InsertAsync(newPlan);
 
             // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -279,7 +279,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Fetch the plan to update
-            var plan = await _unitOfWork.PlanPricingRepo
+            var plan = await _unitOfWork.PricingPlanRepo
                                          .GetByConditionAsync(w =>
                                              w.Id == planTableDto.Id)
                                          .SingleOrDefaultAsync();
@@ -293,7 +293,7 @@ public class PlanTableService : IPlanTableService
             }
 
             // Check if another plan with the same name exists
-            var planAlreadyExists = await _unitOfWork.PlanPricingRepo
+            var planAlreadyExists = await _unitOfWork.PricingPlanRepo
                                                      .GetByConditionAsync(w =>
                                                         w.Id != planTableDto.Id &&
                                                         w.PricingComponent == planTableDto.PricingComponent &&
@@ -327,7 +327,7 @@ public class PlanTableService : IPlanTableService
             plan.LastModifiedByUserId = _userId;
 
             // Update the plan in the repository
-            _unitOfWork.PlanPricingRepo.Update(plan);
+            _unitOfWork.PricingPlanRepo.Update(plan);
 
 
             // Save changes to the database
@@ -363,7 +363,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Fetch the plan to delete
-            var plan = await _unitOfWork.PlanPricingRepo
+            var plan = await _unitOfWork.PricingPlanRepo
                                          .GetByConditionAsync(w =>
                                              w.Id == planId)
                                          .SingleOrDefaultAsync();
@@ -377,7 +377,7 @@ public class PlanTableService : IPlanTableService
             }
 
             // Delete the plan
-            _unitOfWork.PlanPricingRepo.Delete(plan);
+            _unitOfWork.PricingPlanRepo.Delete(plan);
 
             // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -412,7 +412,7 @@ public class PlanTableService : IPlanTableService
         try
         {
             // Fetch the plans to delete
-            var plans = await _unitOfWork.PlanPricingRepo
+            var plans = await _unitOfWork.PricingPlanRepo
                                           .GetByConditionAsync(w =>
                                               planIds.Contains(w.Id))
                                           .ToListAsync();
@@ -426,7 +426,7 @@ public class PlanTableService : IPlanTableService
             }
 
             // Delete the plans
-            _unitOfWork.PlanPricingRepo.Delete(plans);
+            _unitOfWork.PricingPlanRepo.Delete(plans);
 
             // Save changes to the database
             if (!await _unitOfWork.SaveAsync())

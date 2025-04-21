@@ -651,7 +651,7 @@ public class LicenseCreditService : ILicenseCreditService
     {
         try
         {
-            var planPricing = await _unitOfWork.PlanPricingRepo
+            var planPricing = await _unitOfWork.PricingPlanRepo
                             .GetByConditionAsync(a => a.Id == existingCredit.PlanId)
                             .FirstOrDefaultAsync();
 

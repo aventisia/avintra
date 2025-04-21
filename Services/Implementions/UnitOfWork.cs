@@ -22,7 +22,7 @@ public class UnitOfWork : IUnitOfWork
     public IRolePermissionRepo RolePermissionRepo => new RolePermissionRepo(_accountsDbContext);
     public IInvoiceRepo InvoiceRepo => new InvoiceRepo(_accountsDbContext);
     public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
-    public IPlanPricingRepo PlanPricingRepo => new PlanPricingRepo(_accountsDbContext);
+    public IPricingPlanRepo PricingPlanRepo => new PricingPlanRepo(_accountsDbContext);
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingAccountRepo BillingAccountRepo => new BillingAccountRepo(_accountsDbContext);
     public IAddressRepo AddressRepo => new AddressRepo(_accountsDbContext);
