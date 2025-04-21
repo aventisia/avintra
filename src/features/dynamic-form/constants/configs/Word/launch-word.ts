@@ -70,6 +70,16 @@ const launchWordFieldList: IDynamicFieldSchema[] = [
     description:
       "The read protection password on the Word document, if it's password protected",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchWord", value: "and open the following document" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "writeProtectionPassword",
@@ -78,6 +88,16 @@ const launchWordFieldList: IDynamicFieldSchema[] = [
     description:
       "The write protection password on the Word document, if it's password protected",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchWord", value: "and open the following document" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   
   // Output

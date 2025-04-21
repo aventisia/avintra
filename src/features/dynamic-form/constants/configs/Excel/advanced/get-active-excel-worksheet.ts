@@ -15,17 +15,50 @@ const getActiveCellOnExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "sheetName",
-    type: "switch",
-    label: "SheetName",
+    name: "o_activeCellColumnIndexOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The name of the active worksheet",
-    defaultValue: true,
+    defaultValue: "ActiveCellColumnIndex",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_activeCellColumnIndexSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "sheetIndex",
-    type: "switch",
-    label: "SheetIndex",
+    name: "o_activeCellColumnIndexSwitch",
+    type: "output-switch-field",
+    label: "SheetName",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_activeCellRowIndexOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The index of the active worksheet",
+    defaultValue: "ActiveCellRowIndex",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_activeCellRowIndexSwitch", value: false }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_activeCellRowIndexSwitch",
+    type: "output-switch-field",
+    label: "SheetIndex",
     defaultValue: true,
   },
 ];
@@ -38,14 +71,14 @@ const getActiveCellOnExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] =
     },
     {
       title: "Output",
-      formFieldKeys: [["sheetName"], ["sheetIndex"]],
+      formFieldKeys: [["o_activeCellColumnIndexOutput", "o_activeCellColumnIndexSwitch"], ["o_activeCellRowIndexOutput", "o_activeCellRowIndexSwitch"]],
     },
   ];
 
 const getActiveCellOnExcelWorksheet: ActivityConfig = {
   fieldList: getActiveCellOnExcelWorksheetFieldList,
   fieldCategories: getActiveCellOnExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_activeCellColumnIndexOutput", "o_activeCellColumnIndexSwitch", "o_activeCellRowIndexOutput", "o_activeCellRowIndexSwitch"],
 };
 
 export default getActiveCellOnExcelWorksheet;

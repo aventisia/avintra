@@ -8,7 +8,7 @@ const closeSQLConnectionFieldList: IDynamicFieldSchema[] = [
   {
     name: "connectionString",
     type: "text",
-    label: "Connection String",
+    label: "SQL connection",
     description: "The connection string to use to close",
     defaultValue: "",
   },

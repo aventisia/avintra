@@ -31,6 +31,16 @@ const renameExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The index of the worksheet to rename. The numbering starts from 1, meaning that the index of the first worksheet is 1, the second is 2, and so on.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "renameWorksheetWth", value: "index" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "worksheetName",
@@ -38,6 +48,16 @@ const renameExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Worksheet name",
     description: "	The name of the worksheet to rename",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "renameWorksheetWth", value: "name" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "worksheetNewName",
@@ -64,7 +84,7 @@ const renameExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
 const renameExcelWorksheet: ActivityConfig = {
   fieldList: renameExcelWorksheetFieldList,
   fieldCategories: renameExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["renameWorksheetWth"],
 };
 
 export default renameExcelWorksheet;

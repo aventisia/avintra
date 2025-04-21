@@ -29,24 +29,13 @@ const ifFolderExistFieldList: IDynamicFieldSchema[] = [
       "Enter or choose the full path of the folder, or the variable containing the folder, to check its state",
     defaultValue: "",
   },
-  //output
-  {
-    name: "exists",
-    type: "switch",
-    label: "Exists",
-    description: "True if the folder exists, false otherwise",
-    defaultValue: false,
-  },
+
 ];
 
 const ifFolderExistFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
     formFieldKeys: [["ifFolder"], ["folderPath"]],
-  },
-  {
-    title: "Output",
-    formFieldKeys: [["exists"]],
   },
 ];
 

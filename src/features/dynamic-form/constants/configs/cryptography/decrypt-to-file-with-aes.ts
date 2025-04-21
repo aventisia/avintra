@@ -34,6 +34,13 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
   },
   {
+    name: "decryptToFile",
+    type: "text",
+    label: "Decrypt to file",
+    description: "The file to save the decrypted text into",
+    defaultValue: "",
+  },
+  {
     name: "ifFileExists",
     type: "select",
     label: "If file exists",
@@ -44,7 +51,7 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
       { label: "Don't decrypt to file", value: "don't decrypt to file" },
       { label: "Add sequential suffix", value: "add sequential suffix" },
     ],
-    defaultValue: "",
+    defaultValue: "add sequential suffix",
   },
   {
     name: "padding",
@@ -196,6 +203,7 @@ const decryptToFileWithAesFieldCategories: IDynamicFormKeysCategory[] = [
       ["encoding"],
       ["TextToDecrypt"],
       ["decryptionKey"],
+      ["decryptToFile"],
       ["ifFileExists"],
     ],
   },

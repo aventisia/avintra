@@ -83,7 +83,7 @@ const convertTextToDatetimeFieldCategories: IDynamicFormKeysCategory[] = [
 const convertTextToDatetime: ActivityConfig = {
   fieldList: convertTextToDatetimeFieldList,
   fieldCategories: convertTextToDatetimeFieldCategories,
-  fieldsToWatch: ["o_textAsDateTimeOutput", "o_textAsDateTimeSwitch"],
+  fieldsToWatch: ["dateInCustomFormat","o_textAsDateTimeOutput", "o_textAsDateTimeSwitch"],
 };
 
 export default convertTextToDatetime;
