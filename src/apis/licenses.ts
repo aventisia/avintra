@@ -28,7 +28,7 @@ export const getLicenseDetails = (planId?: string) => {
       data: {
         id: "",
         tenantId: "",
-        name: "-",
+        pricingComponent: "-",
         tenantType: "-",
         tenantName: "-",
         currency: "USD",

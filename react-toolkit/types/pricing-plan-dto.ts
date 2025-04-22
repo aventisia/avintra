@@ -19,7 +19,7 @@ export interface PricingPlanDto {
    * Gets or sets the plan pricing Component.
    *
    */
-  name: string;
+  pricingComponent: string;
 
   /**
    * Gets or sets the plan Type.
