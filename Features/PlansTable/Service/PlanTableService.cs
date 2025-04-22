@@ -35,11 +35,9 @@ public class PlanTableService : IPlanTableService
         {
             // Fetch plans from the repository and order by creation date
             var plans = await _unitOfWork.PlanRepo
-                                          .GetByConditionAsync(w => w.TenantId == null)
-                                          .OrderByDescending(w => w.CreatedOn)
-                                          .Include(a => a.Tenant)
-                                          .ProjectToType<PlanTableDto>()
-                                          .ToListAsync();
+            .GetAllAsync().OrderByDescending(w => w.CreatedOn)
+            .Include(a => a.Tenant)
+            .ProjectToType<PlanTableDto>().ToListAsync();
 
             // Set success response
             serviceResponse.Data = plans;
