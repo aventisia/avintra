@@ -1,11 +1,11 @@
 meta {
-  name: Approve license and credits
+  name: Record license and credits
   type: http
-  seq: 4
+  seq: 5
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/license-credit/approve
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-license-credit/record
   body: none
   auth: none
 }
@@ -19,6 +19,8 @@ script:pre-request {
       tenantId: bru.getGlobalEnvVar("TENANT_ID"),
       planId: bru.getGlobalEnvVar("PLAN_ID"),
       additionalUnitsRequested: 10,
+      dateReceived: faker.date.anytime(),
+      amountReceived: 120
     }
   )
     

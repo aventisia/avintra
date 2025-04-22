@@ -1,7 +1,7 @@
 meta {
-  name: Request license and credits
+  name: Request license credits
   type: http
-  seq: 3
+  seq: 2
 }
 
 post {
@@ -15,7 +15,7 @@ script:pre-request {
   
   req.setBody(
     {
-      tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+      //tenantId: bru.getGlobalEnvVar("TENANT_ID"),
       planId: bru.getGlobalEnvVar("PLAN_ID"),
       additionalUnitsRequested: 10,
     }

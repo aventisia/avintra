@@ -1,0 +1,33 @@
+meta {
+  name: Repeat - Request license credits
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-license-credit
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody(
+    {
+      tenantId: bru.getGlobalEnvVar("TENANT_ID"),
+      planId: bru.getGlobalEnvVar("PLAN_ID"),
+      additionalUnitsRequested: 10,
+    }
+  )
+    
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "LICENSE_CREDIT_ID",
+    res.getBody().data.id
+    );
+  }
+}

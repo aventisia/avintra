@@ -15,8 +15,8 @@ script:pre-request {
   
   req.setBody({
     id: bru.getGlobalEnvVar("ROLE_ID"),
-    fullName: "Super administrator",//faker.person.jobType(),
-    description: "This role should have access to everything.",//faker.lorem.lines(),
+    fullName: faker.person.jobType(),
+    description: faker.lorem.lines(),
     rolePermissions: [
       {
         permissionType: "Roles",

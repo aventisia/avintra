@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/plan
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-pricing-plan
   body: none
   auth: none
 }
@@ -17,8 +17,8 @@ script:pre-request {
     {
      //tenantId: bru.getGlobalEnvVar("TENANT_ID"),
      planType: "OnPrem",
-     pricingComponent: "AIAgent",
-     currency: "USD",
+     pricingComponent: "GPUCompute",
+     currency: "INR",
      unitPrice: 350,
      unit: "Credit",
      frequency: "Annually",

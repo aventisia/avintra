@@ -1,11 +1,11 @@
 meta {
-  name: Record license and credits
+  name: Request license and credits
   type: http
-  seq: 13
+  seq: 3
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/license-credit/record
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-license-credit/request
   body: none
   auth: none
 }
@@ -15,12 +15,9 @@ script:pre-request {
   
   req.setBody(
     {
-      id: bru.getGlobalEnvVar("LICENSE_CREDIT_ID"),
       tenantId: bru.getGlobalEnvVar("TENANT_ID"),
       planId: bru.getGlobalEnvVar("PLAN_ID"),
       additionalUnitsRequested: 10,
-      dateReceived: faker.date.anytime(),
-      amountReceived: 120
     }
   )
     
@@ -29,7 +26,7 @@ script:pre-request {
 script:post-response {
   if(res.getStatus() == 200){
     bru.setGlobalEnvVar(
-    "LICENSEC_REDIT_ID",
+    "LICENSE_CREDIT_ID",
     res.getBody().data.id
     );
   }
