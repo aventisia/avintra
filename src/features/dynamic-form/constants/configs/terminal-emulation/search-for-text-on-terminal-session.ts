@@ -49,7 +49,7 @@ const searchForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_findResultsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

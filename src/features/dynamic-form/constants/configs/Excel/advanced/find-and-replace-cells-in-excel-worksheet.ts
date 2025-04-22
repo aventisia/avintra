@@ -99,7 +99,7 @@ const findsAndReplaceCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_foundColumnIndexSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields:{
         conditionList: [
@@ -145,7 +145,7 @@ const findsAndReplaceCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_foundRowIndexSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields:{
         conditionList: [
@@ -191,7 +191,7 @@ const findsAndReplaceCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_cellsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields:{
         conditionList: [

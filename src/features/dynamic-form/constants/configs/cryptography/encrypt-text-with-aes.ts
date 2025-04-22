@@ -130,7 +130,7 @@ const encryptTextWithAesFieldList: IDynamicFieldSchema[] = [
           fields: [{ key: "o_encryptedTextSwitch", value: false }],
         },
       ],
-      initialState: true,
+      initialState: false,
     },
   },
 },
@@ -153,7 +153,7 @@ const encryptTextWithAesFieldList: IDynamicFieldSchema[] = [
           fields: [{ key: "o_saltSwitch", value: false }],
         },
       ],
-      initialState: true,
+      initialState: false,
     },
     requiredBasedOnFields: {
         conditionList: [
@@ -195,7 +195,7 @@ const encryptTextWithAesFieldList: IDynamicFieldSchema[] = [
           fields: [{ key: "o_initializationVectorSwitch", value: false }],
         },
       ],
-      initialState: true,
+      initialState: false,
     },
     requiredBasedOnFields: {
       conditionList: [

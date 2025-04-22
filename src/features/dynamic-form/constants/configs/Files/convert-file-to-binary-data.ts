@@ -17,11 +17,27 @@ import {
     },
     // output 
     {
-      name: "binaryData",
-      type: "switch",
-      label: "Binary Data",
+      name: "o_binaryDataOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The binary data to write.",
-      defaultValue: "",
+      defaultValue: "binaryData",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_binaryDataSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    {
+      name: "o_binaryDataSwitch",
+      type: "output-switch-field",
+      label: "binaryData",
+      defaultValue: true,
     },
   ];
   
@@ -32,14 +48,14 @@ import {
     },
     {
       title: "Output",
-      formFieldKeys: [["binaryData"]],
+      formFieldKeys: [["o_binaryDataOutput", "o_binaryDataSwitch"]],
     },
   ];
   
   const convertFileToBinaryData: ActivityConfig = {
     fieldList: convertFileToBinaryDataFieldList,
     fieldCategories: convertFileToBinaryDataFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["o_binaryDataOutput", "o_binaryDataSwitch"],
   };
   
   export default convertFileToBinaryData;

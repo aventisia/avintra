@@ -18,7 +18,7 @@ const getKeyboardIdentifierFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_keyboardLayoutIdSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

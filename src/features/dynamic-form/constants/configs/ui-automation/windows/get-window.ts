@@ -106,7 +106,7 @@ const getWindowFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_windowTitleSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -149,7 +149,7 @@ const getWindowFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_automationWindowSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

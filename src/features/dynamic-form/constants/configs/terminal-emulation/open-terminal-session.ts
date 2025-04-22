@@ -215,7 +215,7 @@ const openTerminalSessionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_terminalSessionSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

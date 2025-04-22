@@ -64,7 +64,7 @@ const replaceTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_replacedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

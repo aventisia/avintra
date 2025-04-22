@@ -27,7 +27,7 @@ const attachToRunningExcelFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_excelInstanceSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

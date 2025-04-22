@@ -49,7 +49,7 @@ const addToDataTimeFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_resultedDateSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

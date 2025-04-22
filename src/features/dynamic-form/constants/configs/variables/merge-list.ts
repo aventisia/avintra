@@ -39,7 +39,7 @@ const mergeListsFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_outputListSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

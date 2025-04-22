@@ -204,7 +204,7 @@ const getTextFromTerminalSessionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_terminalTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

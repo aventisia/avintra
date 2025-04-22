@@ -26,7 +26,7 @@ const escapeTextForRegularExpressionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_escapedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

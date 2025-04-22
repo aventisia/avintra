@@ -170,7 +170,7 @@ const getFilesInFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_filesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

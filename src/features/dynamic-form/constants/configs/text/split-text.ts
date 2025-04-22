@@ -129,7 +129,7 @@ const splitTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_splitTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -110,7 +110,7 @@ const extractTextFromPdfFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_extractedPDFTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

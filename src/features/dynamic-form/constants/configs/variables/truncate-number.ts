@@ -63,7 +63,7 @@ const truncateNumberFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_truncateValueSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

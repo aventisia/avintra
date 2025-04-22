@@ -60,7 +60,7 @@ const createHtmlContentFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_htmlContentSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

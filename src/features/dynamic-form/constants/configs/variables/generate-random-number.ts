@@ -81,7 +81,7 @@ const generateRandomNumberFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_randomNumbersSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -123,7 +123,7 @@ const generateRandomNumberFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_randomNumberSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

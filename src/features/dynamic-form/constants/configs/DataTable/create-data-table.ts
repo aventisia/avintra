@@ -29,7 +29,7 @@ import {
                 fields: [{ key: "o_dataTableSwitch", value: false }],
             },
             ],
-            initialState: true,
+            initialState: false,
         },
         },
     },

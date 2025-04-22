@@ -123,7 +123,7 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_excelInstanceSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -172,7 +172,7 @@ const extractDataFromWebPageFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_dataFromWebPageSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

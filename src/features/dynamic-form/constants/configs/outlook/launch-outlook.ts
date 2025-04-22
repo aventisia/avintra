@@ -19,7 +19,7 @@ const launchOutlookFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_outlookInstanceSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

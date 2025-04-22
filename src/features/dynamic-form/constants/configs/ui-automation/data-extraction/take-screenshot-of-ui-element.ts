@@ -79,7 +79,7 @@ const takeScreenshotOfUiElementFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_imageFileSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

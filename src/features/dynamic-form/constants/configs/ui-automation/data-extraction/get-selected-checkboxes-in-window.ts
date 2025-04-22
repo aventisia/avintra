@@ -50,7 +50,7 @@ const getSelectedCheckboxesInWindowFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedCheckboxesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

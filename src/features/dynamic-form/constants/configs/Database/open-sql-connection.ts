@@ -27,7 +27,7 @@ const openSQLConnectionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_SQLConnectionSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

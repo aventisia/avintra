@@ -50,7 +50,7 @@ const getDetailsOfWindowFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_windowPropertySwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

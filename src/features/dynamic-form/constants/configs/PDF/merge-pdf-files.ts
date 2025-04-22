@@ -50,11 +50,27 @@ const mergePdfFilesFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "mergedPDF",
-    type: "switch",
-    label: "MergedPDF",
+    name: "o_mergedPDFOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The merged PDF file",
-    defaultValue: "",
+    defaultValue: "MergedPDF",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_mergedPDFSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_mergedPDFSwitch",
+    type: "output-switch-field",
+    label: "MergedPDF",
+    defaultValue: true,
   },
 ];
 
@@ -70,13 +86,13 @@ const mergePdfFilesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["mergedPDF"]],
+    formFieldKeys: [["o_mergedPDFOutput", "o_mergedPDFSwitch"]],
   },
 ];
 const mergePdfFiles: ActivityConfig = {
   fieldList: mergePdfFilesFieldList,
   fieldCategories: mergePdfFilesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_mergedPDFOutput", "o_mergedPDFSwitch"],
 };
 
 export default mergePdfFiles;

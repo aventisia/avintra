@@ -19,7 +19,7 @@ const createNewListFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_listSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -47,7 +47,7 @@ const subtractDatesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_timeDifferenceSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

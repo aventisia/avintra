@@ -41,7 +41,7 @@ const getDetailsOfElementOnWebPageFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_attributeValueSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

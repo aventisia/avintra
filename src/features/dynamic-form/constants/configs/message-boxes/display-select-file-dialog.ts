@@ -65,7 +65,7 @@ const displaySelectFileDialogFieldList: IDynamicFieldSchema[] = [
           fields: [{ key: "o_selectedFileSwitch", value: false }],
         },
       ],
-      initialState: true,
+      initialState: false,
     },
     requiredBasedOnFields: {
       conditionList: [
@@ -107,7 +107,7 @@ const displaySelectFileDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedFilesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -150,7 +150,7 @@ const displaySelectFileDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_buttonPressedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

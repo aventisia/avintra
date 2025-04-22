@@ -39,7 +39,7 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
               fields: [{ key: "o_cmdOutputSwitch", value: false }],
             },
           ],
-          initialState: true,
+          initialState: false,
         },
       },
     },
@@ -63,7 +63,7 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
               fields: [{ key: "o_cmdErrorSwitch", value: false }],
             },
           ],
-          initialState: true,
+          initialState: false,
         },
         requiredBasedOnFields: {
           conditionList: [

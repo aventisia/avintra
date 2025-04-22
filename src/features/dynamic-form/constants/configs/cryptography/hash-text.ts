@@ -52,7 +52,7 @@ const hashTextList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_hashedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

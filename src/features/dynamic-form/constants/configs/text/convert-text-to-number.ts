@@ -27,7 +27,7 @@ const ConvertTextToNumberFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_textAsNumberSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

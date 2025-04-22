@@ -81,7 +81,7 @@ const executeSQLStatementFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_queryResultSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

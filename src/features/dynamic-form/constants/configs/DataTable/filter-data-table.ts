@@ -36,7 +36,7 @@ import {
                 fields: [{ key: "o_filterDataTableSwitch", value: false }],
             },
             ],
-            initialState: true,
+            initialState: false,
         },
         },
     },

@@ -41,7 +41,7 @@ const moveFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_movedFolderSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

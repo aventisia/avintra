@@ -52,7 +52,7 @@ const executexPathExpressionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_XPathResultsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

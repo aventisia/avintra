@@ -54,7 +54,7 @@ const padTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_paddedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

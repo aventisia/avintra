@@ -115,7 +115,7 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedItemSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -165,7 +165,7 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedItemsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -216,7 +216,7 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedIndexSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -267,7 +267,7 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedIndexesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -317,7 +317,7 @@ const displaySelectFromListDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_buttonPressedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       }
     },
   },

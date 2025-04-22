@@ -102,7 +102,7 @@ const readFormulaFromExcelFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_cellFormulaSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -39,7 +39,7 @@ const findCommonListItemsFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_intersectionListSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

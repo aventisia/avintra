@@ -63,7 +63,7 @@ import {
             fields: [{ key: "o_joinTablesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

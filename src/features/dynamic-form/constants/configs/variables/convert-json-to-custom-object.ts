@@ -28,7 +28,7 @@ const convertJSONToCustomObjectFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_jsonAsCustomObjectSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

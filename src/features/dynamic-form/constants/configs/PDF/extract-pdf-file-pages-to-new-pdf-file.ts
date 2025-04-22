@@ -63,7 +63,7 @@ const extractPdfFilePagesToNewPdfFileFieldList:IDynamicFieldSchema[] = [
             fields: [{ key: "o_extractedPDFSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -44,7 +44,7 @@ const trimTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_trimmedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -62,7 +62,7 @@ const readTextFromFileFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_fileContentSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList : [
@@ -104,7 +104,7 @@ const readTextFromFileFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_fileContentsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList : [

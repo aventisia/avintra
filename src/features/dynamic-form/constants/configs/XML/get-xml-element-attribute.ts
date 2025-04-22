@@ -74,7 +74,7 @@ import {
                 fields: [{ key: "o_XmlAttributeValueSwitch", value: false }],
               },
             ],
-            initialState: true,
+            initialState: false,
           },
         },
       },

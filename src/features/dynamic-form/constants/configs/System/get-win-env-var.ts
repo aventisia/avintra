@@ -72,7 +72,7 @@ const getWindowsEnvironmentVariableFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_environmentVariableValueSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

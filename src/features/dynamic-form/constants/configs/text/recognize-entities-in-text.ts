@@ -75,7 +75,7 @@ const recognizeEntitiesInTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_recognizeEntitiesInTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

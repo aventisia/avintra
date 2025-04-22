@@ -19,7 +19,7 @@ const getDefaultPrinterFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_printerNameSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

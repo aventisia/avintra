@@ -41,7 +41,7 @@ const createFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_newFolderSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

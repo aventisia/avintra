@@ -46,7 +46,7 @@ const extractDataFromTableFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_excelInstanceSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -91,7 +91,7 @@ const extractDataFromTableFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_dataFromTableSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

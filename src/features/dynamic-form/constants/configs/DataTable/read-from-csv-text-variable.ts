@@ -122,7 +122,7 @@ const readFromCsvTextVariableFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_csvTableSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },
