@@ -148,10 +148,10 @@ public class PricingPlanManagementService : IPricingPlanManagementService
 
         try
         {
-            // Split the string based on the '-' character
+            // Parse the pricingComponent string (e.g., "AIAgent-Monthly" or "GPUCompute")
             var splitResult = pricingComponent.Split('-');
 
-            // Ensure the array has the correct length (either component name or component name + frequency)
+            // Validate the split result format: must be 1 or 2 parts
             if (splitResult.Length < 1 || splitResult.Length > 2)
             {
                 _logger.LogError("Invalid pricing component format. Expected format: 'PricingComponent' or 'PricingComponent-Frequency'.");
@@ -159,7 +159,7 @@ public class PricingPlanManagementService : IPricingPlanManagementService
                 return response;
             }
 
-            // Parse the first part into PricingComponentsEnum
+            // Try parsing the first part into PricingComponentsEnum
             if (!Enum.TryParse(splitResult[0], out PricingComponentsEnum pricingPlanName))
             {
                 _logger.LogError("Invalid pricing component name.");
@@ -167,10 +167,10 @@ public class PricingPlanManagementService : IPricingPlanManagementService
                 return response;
             }
 
-            // Initialize frequency as null, since GPUCompute doesn't have a frequency
+            // Parse frequency if applicable
             FrequencyTypesEnum? frequency = null;
 
-            // If the component is not GPUCompute, parse the second part as frequency
+            // If the component is not GPUCompute, parse the frequency from the second part
             if (pricingPlanName != PricingComponentsEnum.GPUCompute && splitResult.Length == 2)
             {
                 if (!Enum.TryParse(splitResult[1], out FrequencyTypesEnum parsedFrequency))
@@ -182,77 +182,79 @@ public class PricingPlanManagementService : IPricingPlanManagementService
                 frequency = parsedFrequency;
             }
 
-            // Retrieve both the current tenant and the default "IndividualUsers" tenant.
+            // Retrieve the current tenant and the default "IndividualUsers" tenant
             var tenants = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t =>
-                    t.Id == tenantId ||
-                    t.Name.Equals(DefaultTenantsEnum.IndividualUsers.ToString()))
+                    (tenantId.HasValue && t.Id == tenantId) ||
+                    (!tenantId.HasValue && t.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)))
+                )
                 .ToListAsync();
 
-            // If no tenants were found, return the default error response
+            // If no tenants were found, exit early
             if (!tenants.Any())
             {
                 _logger.LogError("No tenants found.");
                 response.Message = "No tenants found.";
                 return response;
             }
-
-            // Get the current tenant object based on the provided or default tenantId
-            var currentTenant = tenants.FirstOrDefault(t => t.Id == tenantId);
-            if (currentTenant == null)
-            {
-                _logger.LogError("Current tenant not found.");
-                response.Message = "Current tenant not found.";
-                return response;
-            }
-
-            // Fetch all plans associated with the current tenant or the default "IndividualUsers" tenant
+            // Get all plans for this tenant or the default tenant
             var tenantIds = tenants.Select(t => t.Id);
             var allPlans = await _unitOfWork.PricingPlanRepo
                 .GetByConditionAsync(w => w.TenantId == null || tenantIds.Contains(w.TenantId!.Value))
                 .ToListAsync();
 
-            // Filter out plans that are specifically associated with the current tenant
-            var currentTenantPlans = allPlans
-                .Where(p => p.TenantId == currentTenant.Id);
+            // Initialize the result plan variable
+            PlanPricing? resultPlan = null;
 
-            // Fetch default plans (those not associated with any tenant) that match the current tenant's currency and type
-            var defaultPlans = allPlans
-                .Where(p =>
-                    p.TenantId == null &&
-                    p.Currency == currentTenant.Currency &&
-                    p.TenantType == currentTenant.Type &&
-                    !currentTenantPlans.Any(cp =>
-                        cp.PricingComponent == p.PricingComponent &&
-                        cp.Frequency == p.Frequency));
+            // Try to find a matching plan for the current tenant
+            if (tenantId.HasValue)
+            {
+                // Get the current tenant from the list based on the tenantId
+                var currentTenant = tenants.FirstOrDefault(t => t.Id == tenantId);
 
-            // Merge current tenant's plans with the default plans, ensuring no duplicates by PricingComponent and Frequency
-            var resultPlan = currentTenantPlans
-                .Where(a => a.PricingComponent == pricingPlanName && (a.Frequency == frequency || pricingPlanName == PricingComponentsEnum.GPUCompute))
-                .Concat(defaultPlans)
-                .GroupBy(p => new { p.PricingComponent, p.Frequency })
-                .Select(g => g.First())
-                .FirstOrDefault();
+                resultPlan = allPlans.FirstOrDefault(f =>
+                    f.TenantId == tenantId &&
+                    f.Currency == currentTenant.Currency &&
+                    f.TenantType == currentTenant.Type &&
+                    f.PricingComponent == pricingPlanName &&
+                    (pricingPlanName == PricingComponentsEnum.GPUCompute || f.Frequency == frequency)
+                );
+            }
 
-            // If no plans were found, return a message indicating so
+            // If no tenant-specific plan was found, fall back to the default tenant
+            if (resultPlan == null)
+            {
+                var defaultTenant = tenants.FirstOrDefault(f =>
+                    f.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)));
+
+                resultPlan = allPlans.FirstOrDefault(f =>
+                    f.TenantId == null &&
+                    f.Currency == defaultTenant.Currency &&
+                    f.TenantType == defaultTenant.Type &&
+                    f.PricingComponent == pricingPlanName &&
+                    (pricingPlanName == PricingComponentsEnum.GPUCompute || f.Frequency == frequency)
+                );
+            }
+
+            // If no plan was found after both checks, return an appropriate message
             if (resultPlan == null)
             {
                 response.Message = "No matching pricing plans found.";
                 return response;
             }
 
-            // Map the resulting plan to a DTO
+            // Map the result to the DTO and return a success response
             response.Data = resultPlan.Adapt<PricingPlanTableDto>();
             response.StatusCode = 200;
             response.Message = "Pricing plan retrieved successfully.";
         }
         catch (Exception ex)
         {
-            // Log any errors encountered during the process
+            // Log unexpected errors
             _logger.LogError(ex, "Error retrieving pricing plan options.");
         }
 
-        // Return the response object containing the data (or error message)
+        // Return the final response (either data or error message)
         return response;
     }
 
