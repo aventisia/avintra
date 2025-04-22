@@ -47,13 +47,6 @@ public interface IPricingPlanManagementService
     /// <returns>A task representing the asynchronous operation, containing a service response indicating success or failure.</returns>
     Task<ServiceResponse<bool>> DeleteMultiplePricingPlansAsync(List<Guid> pricingPlanIds);
 
-
-    /// <summary>
-    /// Asynchronously retrieves a list of available currencies used in pricing plans, formatted as selectable options.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation, containing a service response with currency options.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPricingPlanCurrencySelectOptionsAsync();
-
     /// <summary>
     /// Asynchronously retrieves a list of pricing plans formatted as selectable options.
     /// </summary>

@@ -531,4 +531,42 @@ public class TenantsTableService : ITenantsTableService
 
         return serviceResponse;
     }
+
+
+    // Retrieves a list of available currency options used in pricing plans, formatted as selectable options.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPricingPlanCurrencySelectOptionsAsync()
+    {
+        // Initialize the response object with a default failure message in case of errors
+        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,  // Data will be populated later with currency options
+            Message = "Failed to retrieve pricing plan currencies. Please try again."
+        };
+
+        try
+        {
+            // Fetch all pricing plans from the repository asynchronously
+            var currencies = await _unitOfWork.PricingPlanRepo
+                .GetAllAsync()
+                .Select(s => new SelectOptionDto()
+                {
+                    // Map each plan's currency to a selectable option DTO
+                    Label = GetEnumDescriptionUtil.GetEnumDescription(s.Currency),
+                    Value = s.Currency.ToString(),
+                    Description = GetEnumDescriptionUtil.GetEnumDescription(s.Currency),
+                })
+                .ToListAsync();
+
+            // Populate the response with the successfully retrieved currency options
+            response.Data = currencies;
+            response.StatusCode = 200;
+            response.Message = "Pricing plan currencies retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any errors that occur during the retrieval process
+            _logger.LogError(ex, "An error occurred while retrieving plan currency options.");
+        }
+        return response;
+    }
 }

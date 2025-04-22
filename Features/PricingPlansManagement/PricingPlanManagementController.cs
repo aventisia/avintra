@@ -61,14 +61,6 @@ public class PricingPlanManagementController : BaseApiController
         return ResultHelper(await _pricingPlanManagementService.DeleteMultiplePricingPlansAsync(pricingPlanIds));
     }
 
-    // Retrieves a list of available currency options for pricing plans.
-    [HttpGet("currencies-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPricingPlanCurrencySelectOptionsAsync()
-    {
-        // Calls the service method to fetch currency options for pricing plans.
-        return ResultHelper(await _pricingPlanManagementService.GetPricingPlanCurrencySelectOptionsAsync());
-    }
-
     // Retrieves a list of pricing plan options for the user to select from.
     [HttpGet("options-to-select")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPricingPlanSelectOptionsAsync()

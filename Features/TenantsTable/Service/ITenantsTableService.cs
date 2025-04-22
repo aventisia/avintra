@@ -65,4 +65,10 @@ public interface ITenantsTableService
     /// It is recommended to use this method to disable multiple tenants at once to reduce the number of requests to the server.
     /// </remarks>
     Task<ServiceResponse<bool>> DisableTenantsAsync(List<Guid> ids);
+
+    /// <summary>
+    /// Asynchronously retrieves a list of available currencies used in pricing plans, formatted as selectable options.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing a service response with currency options.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPricingPlanCurrencySelectOptionsAsync();
 }
