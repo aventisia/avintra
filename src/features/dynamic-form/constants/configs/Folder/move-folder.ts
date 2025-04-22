@@ -32,7 +32,7 @@ const moveFolderFieldList: IDynamicFieldSchema[] = [
     name: "o_movedFolderOutput", //to watch
     type: "output-text-field",
     label: "",
-    description: "The moved folder object",
+    description: "The moved folder object(which is a representation and can access the folder and all its information)",
     defaultValue: "MovedFolder",
     regOptions: {
       disabledBasedOnFields: {

@@ -11,7 +11,7 @@ const ifFolderExistFieldList: IDynamicFieldSchema[] = [
     label: "If folder",
     description: "Choose the state of folder to check",
 
-    defaultValue: "",
+    defaultValue: "exists",
     selectOptions: [
       { label: "Exists", value: "exists" },
       { label: "Does not exists", value: "does not exists" },

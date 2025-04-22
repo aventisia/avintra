@@ -31,7 +31,7 @@ const renameFolderFieldList: IDynamicFieldSchema[] = [
     name: "o_renamedFolderOutput", //to watch
     type: "output-text-field",
     label: "",
-    description: "The renamed folder object",
+    description: "The renamed folder object(which is a representation and can access the folder and all its information)",
     defaultValue: "RenamedFolder",
     regOptions: {
       disabledBasedOnFields: {

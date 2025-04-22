@@ -25,7 +25,7 @@ import {
       type: "text",
       label: "Attribute name",
       description: "The name of the attribute to retrieve its value",
-      defaultValue: false,
+      defaultValue: "",
     },
     {
         name: "getValueAs",
