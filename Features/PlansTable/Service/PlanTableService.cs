@@ -6,7 +6,6 @@ public class PlanTableService : IPlanTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
-    private readonly bool _isSuperAdmin;
 
     public PlanTableService(
         ILogger<PlanTableService> logger,
@@ -16,14 +15,13 @@ public class PlanTableService : IPlanTableService
         // Set _userId from the HTTP context, defaulting to an empty GUID if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
-        _isSuperAdmin = httpContextAccessor.HttpContext?.User.IsInRole("SA") ?? false;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
 
     // Retrieves all plans created by the user
-    public async Task<ServiceResponse<IEnumerable<PlanTableDto>>> GetPlansAsync()
+    public async Task<ServiceResponse<IEnumerable<PlanTableDto>>> GetAllPricingPlansAsync()
     {
         var serviceResponse = new ServiceResponse<IEnumerable<PlanTableDto>>
         {
@@ -35,7 +33,7 @@ public class PlanTableService : IPlanTableService
         {
             // Fetch plans from the repository and order by creation date
             var plans = await _unitOfWork.PricingPlanRepo
-                                          .GetByConditionAsync(w => w.TenantId == null)
+                                          .GetByConditionAsync(w => w.TenantId == _tenantId)
                                           .OrderByDescending(w => w.CreatedOn)
                                           .Include(a => a.Tenant)
                                           .ProjectToType<PlanTableDto>()
@@ -57,7 +55,7 @@ public class PlanTableService : IPlanTableService
     }
 
     // Retrieves a plan by its ID
-    public async Task<ServiceResponse<PlanTableDto>> GetPlanByIdAsync(Guid planId)
+    public async Task<ServiceResponse<PlanTableDto>> GetPricingPlanByIdAsync(Guid pricingPlanId)
     {
         var serviceResponse = new ServiceResponse<PlanTableDto>
         {
@@ -69,14 +67,14 @@ public class PlanTableService : IPlanTableService
         {
             // Fetch the plan by ID
             var plan = await _unitOfWork
-                .PricingPlanRepo.GetByConditionAsync(w => w.Id == planId)
+                .PricingPlanRepo.GetByConditionAsync(w => w.Id == pricingPlanId)
                 .Include(a => a.Tenant)
                 .FirstOrDefaultAsync();
 
             // Check if the plan was found
             if (plan == null)
             {
-                _logger.LogInformation("No plan found with ID: {PlanId}", planId);
+                _logger.LogInformation("No plan found with ID: {PricingPlanId}", pricingPlanId);
                 return serviceResponse;
             }
 
@@ -84,123 +82,18 @@ public class PlanTableService : IPlanTableService
             serviceResponse.Data = plan.Adapt<PlanTableDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Plan retrieved successfully.";
-            _logger.LogInformation("Plan retrieved successfully with ID: {PlanId}", planId);
+            _logger.LogInformation("Plan retrieved successfully with ID: {PricingPlanId}", pricingPlanId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving the plan with ID: {PlanId}", planId);
-            serviceResponse.StatusCode = 500;
+            _logger.LogError(ex, "An error occurred while retrieving the plan with ID: {PricingPlanId}", pricingPlanId);
         }
 
         return serviceResponse;
     }
 
-    // Retrieves a list of plan currency options.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanCurrenciesOptionListAsync()
-    {
-        // Initialize the response object with a default failure message
-        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve plans. Please try again."
-        };
-
-        try
-        {
-            // Fetch all plans from the repository asynchronously
-            var currencies = await _unitOfWork.PricingPlanRepo
-                .GetAllAsync()
-                .Select(s => new SelectOptionDto()
-                {
-                    Label = GetEnumDescriptionUtil.GetEnumDescription(s.Currency),
-                    Value = s.Currency.ToString(),
-                    Description = GetEnumDescriptionUtil.GetEnumDescription(s.Currency),
-                    Disabled = s.IsDisabled
-                })
-                .ToListAsync();
-
-            // Populate the response with the successfully retrieved data
-            response.Data = currencies;
-            response.StatusCode = 200;
-            response.Message = "Plan currencies retrieved successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving plan currency options.");
-        }
-        return response;
-    }
-
-    // Retrieves a list of plan options.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync(Guid? tenantId)
-    {
-        // Initialize the service response with a default error message and 500 status code
-        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve plans. Please try again.",
-        };
-
-        try
-        {
-            // Retrieve both the current tenant and the default "IndividualUsers" tenant
-            var tenants = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(t =>
-                    t.Id == (tenantId ?? _tenantId) ||
-                    t.Name.Equals(DefaultTenantsEnum.IndividualUsers.ToString()))
-                .ToListAsync();
-
-            // If no tenants were found, return the default error response
-            if (!tenants.Any())
-                return response;
-
-            // Get the current tenant object based on the ID
-            var currentTenant = tenants.FirstOrDefault(t => t.Id == (tenantId ?? _tenantId));
-            if (currentTenant == null)
-                return response;
-
-            // Fetch all plans associated with the current tenant or the default tenant
-            var tenantIds = tenants.Select(t => t.Id);
-            var allPlans = await _unitOfWork.PricingPlanRepo
-                .GetByConditionAsync(w => w.TenantId == null || tenantIds.Contains(w.TenantId!.Value))
-                .ToListAsync();
-
-            // Filter out plans specific to the current tenant and matching its currency
-            var currentTenantPlans = allPlans
-                .Where(p => p.TenantId == currentTenant.Id);
-
-            // Fetch default plans (e.g., from IndividualUsers) that match pricing component and frequency
-            var defaultPlans = allPlans
-                .Where(p =>
-                    p.TenantId == null &&
-                    p.Currency == currentTenant.Currency &&
-                    p.TenantType == currentTenant.Type &&
-                    !currentTenantPlans.Any(cp =>
-                        cp.PricingComponent == p.PricingComponent &&
-                        cp.Frequency == p.Frequency));
-
-            // Step 6: Merge the current tenant's plans with the default plans, distinct by PricingComponent and Frequency
-            var resultPlans = currentTenantPlans
-                .Concat(defaultPlans)
-                .GroupBy(p => new { p.PricingComponent, p.Frequency })
-                .Select(g => g.First()).ToList();
-
-            // Map the result plans to DTOs and update the service response
-            response.Data = resultPlans.Adapt<IEnumerable<SelectOptionDto>>();
-            response.StatusCode = 200;
-            response.Message = "Plans retrieved successfully.";
-        }
-        catch (Exception ex)
-        {
-            // Log the error and return the default failure response
-            _logger.LogError(ex, "Error retrieving plan options.");
-        }
-
-        return response;
-    }
-
     // Inserts a new plan
-    public async Task<ServiceResponse<PlanTableDto>> InsertPlanAsync(PlanTableDto planTableDto)
+    public async Task<ServiceResponse<PlanTableDto>> CreatePricingPlanAsync(PlanTableDto planTableDto)
     {
         var serviceResponse = new ServiceResponse<PlanTableDto>
         {
@@ -215,7 +108,7 @@ public class PlanTableService : IPlanTableService
             .GetByConditionAsync(w =>
                     w.PricingComponent == planTableDto.PricingComponent &&
                     (planTableDto.TenantType == null || w.TenantType == planTableDto.TenantType) &&
-                    (planTableDto.TenantId == null || w.TenantId == planTableDto.TenantId) &&
+                     w.TenantId == _tenantId &&
                     w.Currency == planTableDto.Currency &&
                     w.Frequency == planTableDto.Frequency)
                 .FirstOrDefaultAsync();
@@ -268,7 +161,7 @@ public class PlanTableService : IPlanTableService
     }
 
     // Updates an existing plan
-    public async Task<ServiceResponse<PlanTableDto>> UpdatePlanAsync(PlanTableDto planTableDto)
+    public async Task<ServiceResponse<PlanTableDto>> UpdatePricingPlanAsync(PlanTableDto planTableDto)
     {
         var serviceResponse = new ServiceResponse<PlanTableDto>
         {
@@ -298,7 +191,7 @@ public class PlanTableService : IPlanTableService
                                                         w.Id != planTableDto.Id &&
                                                         w.PricingComponent == planTableDto.PricingComponent &&
                                                         (w.TenantType == null || w.TenantType == planTableDto.TenantType) &&
-                                                        (w.TenantId == null || w.TenantId == Guid.Empty || w.TenantId == planTableDto.TenantId) &&
+                                                        (w.TenantId == null || w.TenantId == _tenantId) &&
                                                         w.Currency == planTableDto.Currency &&
                                                         w.Frequency == planTableDto.Frequency)
                                                      .FirstOrDefaultAsync();
@@ -352,7 +245,7 @@ public class PlanTableService : IPlanTableService
     }
 
     // Deletes a plan by its ID
-    public async Task<ServiceResponse<bool>> DeletePlanAsync(Guid planId)
+    public async Task<ServiceResponse<bool>> DeletePricingPlanAsync(Guid planId)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -401,7 +294,7 @@ public class PlanTableService : IPlanTableService
     }
 
     // Deletes multiple plans by their IDs
-    public async Task<ServiceResponse<bool>> DeletePlansAsync(List<Guid> planIds)
+    public async Task<ServiceResponse<bool>> DeletePricingPlansAsync(List<Guid> planIds)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -447,5 +340,224 @@ public class PlanTableService : IPlanTableService
         }
 
         return serviceResponse;
+    }
+    // Retrieves a list of plan options.
+    public Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPricingPlansOptionListAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve pricing plans. Please try again."
+        };
+
+        try
+        {
+            // Retrieve pricing plans based on the enum values
+            var pricingPlans = Enum.GetValues(typeof(PricingComponentsEnum))
+                                   .Cast<PricingComponentsEnum>()
+                                   .SelectMany(p => GetPricingPlansForComponent(p))
+                                   .ToList();
+
+            // Set success response with retrieved plans
+            serviceResponse.Data = pricingPlans;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Pricing plans retrieved successfully.";
+            _logger.LogInformation("Successfully retrieved {Count} plans.", pricingPlans.Count);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception and return failure response
+            _logger.LogError(ex, "An error occurred while retrieving plans.");
+        }
+
+        return Task.FromResult(serviceResponse); ;
+    }
+
+    // Helper method to generate pricing plans for a given pricing component
+    private IEnumerable<SelectOptionDto> GetPricingPlansForComponent(PricingComponentsEnum pricingComponent)
+    {
+        // Return different options based on the pricing component
+        switch (pricingComponent)
+        {
+            case PricingComponentsEnum.AIAgent:
+                return new List<SelectOptionDto>
+                {
+                    new SelectOptionDto
+                    {
+                        Label = $"{pricingComponent} (Monthly)",
+                        Value = $"{pricingComponent}-Monthly",
+                        Description = "Monthly pricing component for AIAgent",
+                        Disabled = false,
+                        Fixed = false
+                    },
+                    new SelectOptionDto
+                    {
+                        Label = $"{pricingComponent} (Annually)",
+                        Value = $"{pricingComponent}-Annually",
+                        Description = "Annually pricing component for AIAgent",
+                        Disabled = false,
+                        Fixed = false
+                    }
+                };
+
+            case PricingComponentsEnum.AutomationAgent:
+                return new List<SelectOptionDto>
+                {
+                    new SelectOptionDto
+                    {
+                        Label = $"{pricingComponent} (Monthly)",
+                        Value = $"{pricingComponent}-Monthly",
+                        Description = "Monthly pricing component for AutomationAgent",
+                        Disabled = false,
+                        Fixed = false
+                    },
+                    new SelectOptionDto
+                    {
+                        Label = $"{pricingComponent} (Annually)",
+                        Value = $"{pricingComponent}-Annually",
+                        Description = "Annually pricing component for AutomationAgent",
+                        Disabled = false,
+                        Fixed = false
+                    }
+                };
+
+            case PricingComponentsEnum.GPUCompute:
+                return new List<SelectOptionDto>
+                {
+                    new SelectOptionDto
+                    {
+                        Label = $"{pricingComponent}",
+                        Value = $"{pricingComponent}",
+                        Description = "Pricing component for GPUCompute",
+                        Disabled = false,
+                        Fixed = false
+                    }
+                };
+
+            default:
+                // Return an empty list if the component is unrecognized
+                return new List<SelectOptionDto>();
+        }
+    }
+
+    public async Task<ServiceResponse<PricingPlanTableDto>> GetPricingPlanByComponentAsync(string pricingComponent)
+    {
+        // Initialize the service response with a default failure message
+        var response = new ServiceResponse<PricingPlanTableDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve pricing plans. Please try again.",
+        };
+
+        try
+        {
+            // Parse the pricingComponent string (e.g., "AIAgent-Monthly" or "GPUCompute")
+            var splitResult = pricingComponent.Split('-');
+
+            // Validate the split result format: must be 1 or 2 parts
+            if (splitResult.Length < 1 || splitResult.Length > 2)
+            {
+                _logger.LogError("Invalid pricing component format. Expected format: 'PricingComponent' or 'PricingComponent-Frequency'.");
+                response.Message = "Invalid pricing component format.";
+                return response;
+            }
+
+            // Try parsing the first part into PricingComponentsEnum
+            if (!Enum.TryParse(splitResult[0], out PricingComponentsEnum pricingPlanName))
+            {
+                _logger.LogError("Invalid pricing component name.");
+                response.Message = "Invalid pricing component name.";
+                return response;
+            }
+
+            // Parse frequency if applicable
+            FrequencyTypesEnum? frequency = null;
+
+            // If the component is not GPUCompute, parse the frequency from the second part
+            if (pricingPlanName != PricingComponentsEnum.GPUCompute && splitResult.Length == 2)
+            {
+                if (!Enum.TryParse(splitResult[1], out FrequencyTypesEnum parsedFrequency))
+                {
+                    _logger.LogError("Invalid frequency value. Must be 'Monthly' or 'Annually'.");
+                    response.Message = "Invalid frequency value. Must be 'Monthly' or 'Annually'.";
+                    return response;
+                }
+                frequency = parsedFrequency;
+            }
+
+            // Retrieve the current tenant and the default "IndividualUsers" tenant
+            var tenants = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t =>
+                     t.Id == _tenantId ||
+                    t.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers))
+                )
+                .ToListAsync();
+
+            // If no tenants were found, exit early
+            if (!tenants.Any())
+            {
+                _logger.LogError("No tenants found.");
+                response.Message = "No tenants found.";
+                return response;
+            }
+            // Get all plans for this tenant or the default tenant
+            var tenantIds = tenants.Select(t => t.Id);
+            var allPlans = await _unitOfWork.PricingPlanRepo
+                .GetByConditionAsync(w => w.TenantId == null || tenantIds.Contains(w.TenantId!.Value))
+                .ToListAsync();
+
+            // Initialize the result plan variable
+            PlanPricing? resultPlan = null;
+
+            // Try to find a matching plan for the current tenant
+            if (_tenantId != Guid.Empty)
+            {
+                // Get the current tenant from the list based on the _tenantId
+                var currentTenant = tenants.FirstOrDefault(t => t.Id == _tenantId);
+
+                resultPlan = allPlans.FirstOrDefault(f =>
+                    f.TenantId == _tenantId &&
+                    f.Currency == currentTenant.Currency &&
+                    f.TenantType == currentTenant.Type &&
+                    f.PricingComponent == pricingPlanName &&
+                    (pricingPlanName == PricingComponentsEnum.GPUCompute || f.Frequency == frequency)
+                );
+            }
+
+            // If no tenant-specific plan was found, fall back to the default tenant
+            if (resultPlan == null)
+            {
+                var defaultTenant = tenants.FirstOrDefault(f =>
+                    f.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)));
+
+                resultPlan = allPlans.FirstOrDefault(f =>
+                    f.TenantId == null &&
+                    f.Currency == defaultTenant.Currency &&
+                    f.TenantType == defaultTenant.Type &&
+                    f.PricingComponent == pricingPlanName &&
+                    (pricingPlanName == PricingComponentsEnum.GPUCompute || f.Frequency == frequency)
+                );
+            }
+
+            // If no plan was found after both checks, return an appropriate message
+            if (resultPlan == null)
+            {
+                response.Message = "No matching pricing plans found.";
+                return response;
+            }
+
+            // Map the result to the DTO and return a success response
+            response.Data = resultPlan.Adapt<PricingPlanTableDto>();
+            response.StatusCode = 200;
+            response.Message = "Pricing plan retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected errors
+            _logger.LogError(ex, "Error retrieving pricing plan options.");
+        }
+
+        // Return the final response (either data or error message)
+        return response;
     }
 }

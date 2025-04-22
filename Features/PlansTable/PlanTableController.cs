@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("plan")]
+[Route("pricing-plan")]
 [ApiController]
 [Authorize]
 public class PlanTableController : BaseApiController
@@ -16,56 +16,57 @@ public class PlanTableController : BaseApiController
     [HttpGet("list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<PlanTableDto>>>> GetPlans()
     {
-        return ResultHelper(await _planTableService.GetPlansAsync());
+        return ResultHelper(await _planTableService.GetAllPricingPlansAsync());
     }
 
     // Retrieves a list of plan options.
-    [HttpGet("plans-to-select/{tenantId?}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionList(Guid? tenantId)
+    [HttpGet("option-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionList()
     {
-        return ResultHelper(await _planTableService.GetPlanOptionListAsync(tenantId));
+        return ResultHelper(await _planTableService.GetPricingPlansOptionListAsync());
+    }
+
+    // Retrieves a specific pricing plan by its unique identifier.
+    [HttpGet("component/{pricingComponent}")]
+    public async Task<ActionResult<ServiceResponse<PricingPlanTableDto>>> GetByComponent(string pricingComponent)
+    {
+        // Calls the service method to fetch pricing plan details by ID.
+        return ResultHelper(await _planTableService.GetPricingPlanByComponentAsync(pricingComponent));
     }
 
 
     // Retrieves plan by the Id.
-    [HttpGet("{planId}")]
-    public async Task<ActionResult<ServiceResponse<PlanTableDto>>> GetPlanByIdAsync(Guid planId)
+    [HttpGet("{pricingPlanId}")]
+    public async Task<ActionResult<ServiceResponse<PlanTableDto>>> GetPlanByIdAsync(Guid pricingPlanId)
     {
-        return ResultHelper(await _planTableService.GetPlanByIdAsync(planId));
+        return ResultHelper(await _planTableService.GetPricingPlanByIdAsync(pricingPlanId));
     }
 
     // Inserts a new plan.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<PlanTableDto>>> InsertPlan([FromBody] PlanTableDto planTableDto)
     {
-        return ResultHelper(await _planTableService.InsertPlanAsync(planTableDto));
+        return ResultHelper(await _planTableService.CreatePricingPlanAsync(planTableDto));
     }
 
     // Updates an existing plan.
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<PlanTableDto>>> UpdatePlan([FromBody] PlanTableDto planTableDto)
     {
-        return ResultHelper(await _planTableService.UpdatePlanAsync(planTableDto));
+        return ResultHelper(await _planTableService.UpdatePricingPlanAsync(planTableDto));
     }
 
     // Deletes a plan by its ID.
-    [HttpDelete("{planId}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeletePlan(Guid planId)
+    [HttpDelete("{pricingPlanId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeletePlan(Guid pricingPlanId)
     {
-        return ResultHelper(await _planTableService.DeletePlanAsync(planId));
+        return ResultHelper(await _planTableService.DeletePricingPlanAsync(pricingPlanId));
     }
 
     // Deletes multiple plans by their IDs.
     [HttpPost("delete-multiple")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeletePlans([FromBody] List<Guid> planIds)
+    public async Task<ActionResult<ServiceResponse<bool>>> DeletePlans([FromBody] List<Guid> pricingPlanIds)
     {
-        return ResultHelper(await _planTableService.DeletePlansAsync(planIds));
-    }
-
-    // Retrieves a list of plan currencies options.
-    [HttpGet("currencies-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanCurrenciesOptionListAsync()
-    {
-        return ResultHelper(await _planTableService.GetPlanCurrenciesOptionListAsync());
+        return ResultHelper(await _planTableService.DeletePricingPlansAsync(pricingPlanIds));
     }
 }

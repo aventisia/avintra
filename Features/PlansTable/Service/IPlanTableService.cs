@@ -1,66 +1,78 @@
 namespace AccountsAPIs.Services;
 
 /// <summary>
-/// Defines a service for managing plans within a multi-tenant system.
+/// Provides operations for managing subscription or pricing plans in a multi-tenant environment.
 /// </summary>
 public interface IPlanTableService
 {
     /// <summary>
-    /// Retrieves all available plans.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{T}"/> with a collection of <see cref="PlanTableDto"/>.</returns>
-    Task<ServiceResponse<IEnumerable<PlanTableDto>>> GetPlansAsync();
-
-    /// <summary>
-    /// Retrieves a plan by its ID.
-    /// </summary>
-    /// <param name="planId">The ID of the plan to retrieve.</param>
-    /// <returns>A <see cref="ServiceResponse{PlanTableDto}"/> containing the plan data if found, otherwise an error message.</returns>
-    Task<ServiceResponse<PlanTableDto>> GetPlanByIdAsync(Guid planId);
-
-    /// <summary>
-    /// Asynchronously retrieves a list of plan options without filtering by tenant type.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync(Guid? tenantId);
-
-    /// <summary>
-    /// Creates a new plan in the system.
-    /// </summary>
-    /// <param name="planTableDto">The data required to create the new plan.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{T}"/> with the details of the newly created plan.</returns>
-    Task<ServiceResponse<PlanTableDto>> InsertPlanAsync(PlanTableDto planTableDto);
-
-    /// <summary>
-    /// Updates the details of an existing plan.
-    /// </summary>
-    /// <param name="planTableDto">The updated data for the plan.</param>
-    /// <returns>A task that represents the asynchronous operation, yielding a <see cref="ServiceResponse{T}"/> with the updated plan details.</returns>
-    Task<ServiceResponse<PlanTableDto>> UpdatePlanAsync(PlanTableDto planTableDto);
-
-    /// <summary>
-    /// Deletes a plan identified by its ID.
-    /// </summary>
-    /// <param name="planId">The ID of the plan to delete.</param>
-    /// <returns>A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{T}"/> indicating whether the deletion was successful.</returns>
-    Task<ServiceResponse<bool>> DeletePlanAsync(Guid planId);
-
-    /// <summary>
-    /// Deletes multiple plans based on their IDs.
-    /// </summary>
-    /// <param name="planIds">A list of IDs of the plans to delete.</param>
-    /// <returns>A task that represents the asynchronous operation, yielding a <see cref="ServiceResponse{T}"/> indicating the success of the deletion operation.</returns>
-    /// <remarks>
-    /// This method is intended to optimize performance by allowing multiple deletions in a single request.
-    /// </remarks>
-    Task<ServiceResponse<bool>> DeletePlansAsync(List<Guid> planIds);
-
-    /// <summary>
-    /// Retrieves a list of currency options from available plans, mapping each to a <see cref="SelectOptionDto"/>.
-    /// Each option includes a label, value, description, and whether it should be disabled based on the plan status.
+    /// Retrieves all available plans in the system.
     /// </summary>
     /// <returns>
-    /// A <see cref="ServiceResponse{T}"/> containing an enumerable of <see cref="SelectOptionDto"/> representing currency options.
+    /// A task representing the asynchronous operation. The result contains a collection of all <see cref="PlanTableDto"/>.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanCurrenciesOptionListAsync();
+    Task<ServiceResponse<IEnumerable<PlanTableDto>>> GetAllPricingPlansAsync();
+
+    /// <summary>
+    /// Retrieves the details of a specific plan by its unique identifier.
+    /// </summary>
+    /// <param name="planId">The unique identifier of the plan.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains the <see cref="PlanTableDto"/> if found.
+    /// </returns>
+    Task<ServiceResponse<PlanTableDto>> GetPricingPlanByIdAsync(Guid planId);
+
+    /// <summary>
+    /// Creates a new plan with the provided details.
+    /// </summary>
+    /// <param name="planTableDto">The data required to create the new plan.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains the newly created <see cref="PlanTableDto"/>.
+    /// </returns>
+    Task<ServiceResponse<PlanTableDto>> CreatePricingPlanAsync(PlanTableDto planTableDto);
+
+    /// <summary>
+    /// Updates the information of an existing plan.
+    /// </summary>
+    /// <param name="planTableDto">The updated plan data.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains the updated <see cref="PlanTableDto"/>.
+    /// </returns>
+    Task<ServiceResponse<PlanTableDto>> UpdatePricingPlanAsync(PlanTableDto planTableDto);
+
+    /// <summary>
+    /// Deletes a specific plan by its unique identifier.
+    /// </summary>
+    /// <param name="planId">The unique identifier of the plan to delete.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result indicates whether the deletion was successful.
+    /// </returns>
+    Task<ServiceResponse<bool>> DeletePricingPlanAsync(Guid planId);
+
+    /// <summary>
+    /// Deletes multiple plans identified by a list of unique identifiers.
+    /// </summary>
+    /// <param name="planIds">A list of plan IDs to delete.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result indicates the success of the batch deletion.
+    /// </returns>
+    Task<ServiceResponse<bool>> DeletePricingPlansAsync(List<Guid> planIds);
+
+    /// <summary>
+    /// Retrieves a list of selectable plan options for use in UI components such as dropdowns.
+    /// Includes tenant-specific and default plans, grouped by pricing component and frequency.
+    /// </summary>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOptionDto"/>.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPricingPlansOptionListAsync();
+
+    /// <summary>
+    /// Retrieves the details of a pricing plan based on its pricing component name.
+    /// </summary>
+    /// <param name="pricingComponent">The unique name of the pricing component.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains the <see cref="PricingPlanTableDto"/> if found.
+    /// </returns>
+    Task<ServiceResponse<PricingPlanTableDto>> GetPricingPlanByComponentAsync(string pricingComponent);
 }
