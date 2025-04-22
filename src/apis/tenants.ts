@@ -12,6 +12,22 @@ export const getTenantsToSelect = () => {
     .then((res) => res.data);
 };
 
+export const searchTenantsToSelect = (query?: string) => {
+  return axiosInstance
+    .post<IHttpResponse<ISelectOption[]>>(
+      `${baseAPIURL}/tenants-to-search-select`,
+      {
+        userInput: query ?? null,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    .then((res) => res.data);
+};
+
 export const getTenantDetails = (id?: string) => {
   if (!id)
     return Promise.resolve<IHttpResponse<TenantsTableDto>>({
