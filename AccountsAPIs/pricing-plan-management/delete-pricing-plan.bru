@@ -1,11 +1,11 @@
 meta {
-  name: Delete plan
+  name: Delete pricing plan
   type: http
   seq: 6
 }
 
 delete {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/plan/{{PLAN_ID}}
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-pricing-plan/{{PLAN_ID}}
   body: none
   auth: none
 }

@@ -1,0 +1,17 @@
+meta {
+  name: Select pricing plan by pricing plan name
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-pricing-plan/component/AIAgent-Monthly
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}

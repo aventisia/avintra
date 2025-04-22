@@ -1,0 +1,11 @@
+meta {
+  name: Get pricing plan
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/pricing-plan/{{PLAN_ID}}
+  body: none
+  auth: none
+}

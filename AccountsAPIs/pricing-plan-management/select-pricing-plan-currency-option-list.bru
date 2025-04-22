@@ -1,0 +1,17 @@
+meta {
+  name: Select plan currency option list
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-pricing-plan/currencies-to-select
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}
