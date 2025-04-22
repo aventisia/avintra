@@ -86,7 +86,7 @@ public class ManageLicenseCreditDto
     /// <summary>
     /// Gets or sets the amount of any overdue balance related to this pricing entity.
     /// </summary>
-    public decimal OverdueBalance { get; set; }
+    public decimal? OverdueBalance { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user account is disabled.

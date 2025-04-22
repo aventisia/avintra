@@ -102,22 +102,23 @@ public class LicenseCreditManagementService : ILicenseCreditManagementService
         try
         {
             // Find the license credit by ID and include plan pricing
-            var credit = await _unitOfWork.LicenseCreditRepo
+            var licenseCredit = await _unitOfWork.LicenseCreditRepo
                             .GetByConditionAsync(w => w.Id == licenseCreditId)
-                            .Include(a => a.CreatedByUser)
-                            .Include(a => a.LastModifiedByUser)
-                            .Include(a => a.PlanPricing)
+                            .Include(i => i.CreatedByUser)
+                            .Include(i => i.LastModifiedByUser)
+                            .Include(i => i.Invoices)
+                            .Include(i => i.PlanPricing)
                             .ThenInclude(b => b.Tenant)
-                            .Include(a => a.Tenant)
+                            .Include(i => i.Tenant)
                             .FirstOrDefaultAsync();
 
-            if (credit == null)
+            if (licenseCredit == null)
             {
                 _logger.LogInformation("No license credit found with ID: {LicenseCreditId}", licenseCreditId);
                 return serviceResponse;
             }
 
-            serviceResponse.Data = credit.Adapt<ManageLicenseCreditDto>();
+            serviceResponse.Data = licenseCredit.Adapt<ManageLicenseCreditDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved license credit.";
             _logger.LogInformation("Successfully retrieved license credit with ID: {LicenseCreditId}", licenseCreditId);

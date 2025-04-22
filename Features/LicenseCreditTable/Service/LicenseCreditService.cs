@@ -70,7 +70,7 @@ public class LicenseCreditService : ILicenseCreditService
         {
             // Fetch and order license credits by creation date, then project to DTO
             var licenseCredits = await _unitOfWork.LicenseCreditRepo
-                                            .GetByConditionAsync(a => a.TenantId == _tenantId)
+                                            .GetByConditionAsync(a => a.CreatedByUserId == _userId || a.TenantId == _tenantId)
                                             .OrderByDescending(w => w.CreatedOn)
                                             .Include(a => a.PlanPricing)
                                             .ProjectToType<SelectOptionDto>()
