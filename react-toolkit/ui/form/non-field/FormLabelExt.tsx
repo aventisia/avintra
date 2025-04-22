@@ -1,10 +1,10 @@
 import { FormFieldSizeType } from "@/react-toolkit/types/form-field-size-type";
-import { Tooltip } from "@/react-toolkit/ui/Tooltip";
 import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
+import { Tooltip } from "@/react-toolkit/ui/Tooltip";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 interface FormLabelExtProps {
-  size?: FormFieldSizeType
+  size?: FormFieldSizeType;
   label?: string;
   disabled?: boolean;
   isRequired?: boolean;
