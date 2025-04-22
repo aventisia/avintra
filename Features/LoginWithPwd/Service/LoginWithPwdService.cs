@@ -48,7 +48,7 @@ public class LoginWithPwdService : ILoginWithPwdService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"Account not found for email {pwdLoginDto.Email}");
+                _logger.LogWarning($"Account not found for email {pwdLoginDto.Email}");
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
@@ -56,19 +56,19 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Try to Sign In
             var result = await _signInManager.CheckPasswordSignInAsync(user, pwdLoginDto.Pwd, true);
 
-            // Signing in failed
-            if (!result.Succeeded)
-            {
-                _logger.LogInformation($"Incorrect password entered for username/email {pwdLoginDto.Email}");
-                serviceResponse.Message = "Invalid credentials";
-                return serviceResponse;
-            }
-
             // Account is locked
             if (result.IsLockedOut)
             {
-                _logger.LogInformation($"{pwdLoginDto.Email} account is locked");
+                _logger.LogWarning($"{pwdLoginDto.Email} account is locked");
                 serviceResponse.Message = "Your account is locked. Please unlock it first";
+                return serviceResponse;
+            }
+
+            // Signing in failed
+            if (!result.Succeeded)
+            {
+                _logger.LogError($"Error while signing in user {pwdLoginDto.Email} with password. Error: {result}");
+                serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
 
