@@ -148,7 +148,7 @@ const readFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_excelDataSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

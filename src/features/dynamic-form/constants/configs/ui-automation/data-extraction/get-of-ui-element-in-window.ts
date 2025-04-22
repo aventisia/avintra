@@ -47,7 +47,7 @@ const getDetailsOfAUiElementInWindowFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_attributeValueSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

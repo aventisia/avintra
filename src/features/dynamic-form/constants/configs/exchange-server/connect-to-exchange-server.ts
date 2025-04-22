@@ -153,7 +153,7 @@ const connectToExchangeServerFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_exchangeConnectionSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

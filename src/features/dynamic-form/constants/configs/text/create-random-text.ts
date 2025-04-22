@@ -68,7 +68,7 @@ const createRandomTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_randomTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

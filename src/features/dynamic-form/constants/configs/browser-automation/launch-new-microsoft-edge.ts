@@ -296,7 +296,7 @@ const launchNewIMicrosoftEdgeFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_browserSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

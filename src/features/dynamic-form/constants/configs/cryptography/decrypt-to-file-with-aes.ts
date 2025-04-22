@@ -184,7 +184,7 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_decryptedFileSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

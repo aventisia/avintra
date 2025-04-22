@@ -26,7 +26,7 @@ const reverseTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_reversedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -84,7 +84,7 @@ const getSubtextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_subtextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

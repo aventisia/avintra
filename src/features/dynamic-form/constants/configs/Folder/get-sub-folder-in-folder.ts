@@ -170,7 +170,7 @@ const getSubFoldersInFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_foldersSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

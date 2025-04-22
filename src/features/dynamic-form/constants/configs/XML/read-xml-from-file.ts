@@ -40,7 +40,7 @@ const readXmlFromFileFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_xmlDocumentSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

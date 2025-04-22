@@ -27,7 +27,7 @@ const getAllExcelWorksheetFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_sheetNamesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

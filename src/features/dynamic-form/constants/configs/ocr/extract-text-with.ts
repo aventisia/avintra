@@ -239,7 +239,7 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_ocrTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

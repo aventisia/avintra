@@ -194,7 +194,7 @@ const retrieveExchangeEmailMessagesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_retrievedEmailsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

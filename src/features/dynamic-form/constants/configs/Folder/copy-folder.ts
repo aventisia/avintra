@@ -56,7 +56,7 @@ const copyFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_copiedFolderSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

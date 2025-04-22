@@ -148,7 +148,7 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_filesAddedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -191,7 +191,7 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_filesModifiedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -234,7 +234,7 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_filesDeletedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -278,7 +278,7 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_ftpFilesAddedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -321,7 +321,7 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_ftpFilesModifiedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -364,7 +364,7 @@ const synchronizeDirectoriesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_ftpFilesDeletedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

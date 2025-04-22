@@ -55,7 +55,7 @@ const moveFilesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_movedFilesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

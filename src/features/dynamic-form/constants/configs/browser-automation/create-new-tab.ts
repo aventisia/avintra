@@ -108,7 +108,7 @@ const createNewTabFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_newBrowserSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

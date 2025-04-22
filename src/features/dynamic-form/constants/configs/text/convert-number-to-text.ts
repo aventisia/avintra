@@ -42,7 +42,7 @@ const convertNumberToTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_formattedNumberSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

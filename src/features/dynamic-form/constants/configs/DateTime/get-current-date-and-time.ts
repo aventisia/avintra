@@ -135,7 +135,7 @@ const getCurrentDateAndTimeFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_currentDateTimeSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

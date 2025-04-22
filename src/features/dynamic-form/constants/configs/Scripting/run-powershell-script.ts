@@ -77,7 +77,7 @@ import {
               fields: [{ key: "o_scriptErrorSwitch", value: false }],
             },
           ],
-          initialState: true,
+          initialState: false,
         },
       },
     },

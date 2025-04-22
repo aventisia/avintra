@@ -75,7 +75,7 @@ const readFromWordDocumentFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_wordDataSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -118,7 +118,7 @@ const extractTablesFromPdfFieldList:IDynamicFieldSchema[] = [
               fields: [{ key: "o_extractedPDFTablesSwitch", value: false }],
             },
           ],
-          initialState: true,
+          initialState: false,
         },
       },
     },

@@ -66,7 +66,7 @@ const parseTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_positionSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
        requiredBasedOnFields: {
         conditionList: [
@@ -109,7 +109,7 @@ const parseTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_positionsSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -151,7 +151,7 @@ const parseTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_matchesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

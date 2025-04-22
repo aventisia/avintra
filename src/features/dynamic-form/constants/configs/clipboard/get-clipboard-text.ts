@@ -19,7 +19,7 @@ const getClipboardTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_clipboardTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
   },},
   {

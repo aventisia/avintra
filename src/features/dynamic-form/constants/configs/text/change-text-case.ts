@@ -39,7 +39,7 @@ const changeTextCaseFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_textWithNewCaseSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

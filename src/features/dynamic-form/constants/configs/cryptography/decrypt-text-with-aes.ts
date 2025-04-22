@@ -164,7 +164,7 @@ const decryptTextWithAesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_decryptedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -43,7 +43,7 @@ const clickDownloadLinkOnWebPageFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_downloadedFileSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

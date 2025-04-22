@@ -90,7 +90,7 @@ import {
               fields: [{ key: "o_dateTimetoTextSwitch", value: false }],
             },
           ],
-          initialState: true,
+          initialState: false,
         },
       },
     },

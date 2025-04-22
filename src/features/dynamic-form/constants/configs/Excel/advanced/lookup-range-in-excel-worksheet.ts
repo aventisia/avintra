@@ -236,10 +236,26 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "lookupResult",
-    type: "switch",
-    label: "LookupResult",
+    name: "o_lookupResultOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The value returned by the LOOKUP function",
+    defaultValue: "LookupResult",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_lookupResultSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_lookupResultSwitch",
+    type: "output-switch-field",
+    label: "LookupResult",
     defaultValue: true,
   },
 ];
@@ -266,14 +282,14 @@ const lookupRangeInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["lookupResult"]],
+    formFieldKeys: [["o_lookupResultOutput", "o_lookupResultSwitch"]],
   },
 ];
 
 const lookupRangeInExcelWorksheet: ActivityConfig = {
   fieldList: lookupRangeInExcelWorksheetFieldList,
   fieldCategories: lookupRangeInExcelWorksheetFieldCategories,
-  fieldsToWatch: ["rangesFormat", "arrayForm"],
+  fieldsToWatch: ["rangesFormat", "arrayForm", "o_lookupResultOutput", "o_lookupResultSwitch"],
 };
 
 export default lookupRangeInExcelWorksheet;

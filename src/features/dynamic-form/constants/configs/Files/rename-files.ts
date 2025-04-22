@@ -501,7 +501,7 @@ const renameFilesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_RenamedFilesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -105,7 +105,7 @@ const saveOutlookEmailMessagesFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_storedMessagesFilesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

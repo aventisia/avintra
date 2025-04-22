@@ -40,7 +40,7 @@ const renameFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_renamedFolderSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

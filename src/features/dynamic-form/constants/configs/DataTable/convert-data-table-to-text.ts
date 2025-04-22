@@ -84,7 +84,7 @@ const convertDataTableToTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_csvTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

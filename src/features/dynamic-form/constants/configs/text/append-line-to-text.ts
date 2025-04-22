@@ -34,7 +34,7 @@ const appendLineToTextFieldList: IDynamicFieldSchema[] = [
               fields: [{ key: "o_resultSwitch", value: false }],
             },
           ],
-          initialState: true,
+          initialState: false,
         },
       },
     },

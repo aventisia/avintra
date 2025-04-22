@@ -49,7 +49,7 @@ const getSelectedRadioButtonInWindowFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedRadioButtonSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [

@@ -156,7 +156,7 @@ const openCmdSessionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_cmdSessionSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

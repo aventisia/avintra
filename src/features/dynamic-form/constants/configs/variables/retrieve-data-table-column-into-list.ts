@@ -35,7 +35,7 @@ const retrieveDataTableColumnIntoListFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_columnAsListSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

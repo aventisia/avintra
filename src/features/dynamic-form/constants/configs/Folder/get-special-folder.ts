@@ -63,7 +63,7 @@ const getSpecialFolderFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_specialFolderPathSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

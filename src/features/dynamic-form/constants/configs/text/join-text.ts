@@ -99,7 +99,7 @@ const joinTextFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_joinedTextSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

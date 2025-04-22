@@ -50,7 +50,7 @@ const getXMLElementValueFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_XmlElementValueSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

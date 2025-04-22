@@ -39,7 +39,7 @@ const subtractListsFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_listDifferenceSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

@@ -143,7 +143,7 @@ const findOrReplaceInDataTableFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_dataTableMatchesSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

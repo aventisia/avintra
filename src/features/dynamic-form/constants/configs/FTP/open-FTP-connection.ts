@@ -62,7 +62,7 @@ const openFtpConnectionFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_ftpConnectionSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

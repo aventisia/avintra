@@ -109,7 +109,7 @@ const displayMessageFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_buttonPressedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

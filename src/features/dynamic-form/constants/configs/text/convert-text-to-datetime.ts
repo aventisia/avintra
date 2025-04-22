@@ -53,7 +53,7 @@ const convertTextToDatetimeFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_textAsDateTimeSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },

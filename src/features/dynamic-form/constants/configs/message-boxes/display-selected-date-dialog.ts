@@ -89,7 +89,7 @@ const displaySelectDateDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_selectedDateSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },
@@ -113,7 +113,7 @@ const displaySelectDateDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_secondSelectedDateSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
       requiredBasedOnFields: {
         conditionList: [
@@ -155,7 +155,7 @@ const displaySelectDateDialogFieldList: IDynamicFieldSchema[] = [
             fields: [{ key: "o_buttonPressedSwitch", value: false }],
           },
         ],
-        initialState: true,
+        initialState: false,
       },
     },
   },
