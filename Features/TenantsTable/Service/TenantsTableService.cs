@@ -189,7 +189,8 @@ public class TenantsTableService : ITenantsTableService
         try
         {
             // Retrieve all tenants from the repository
-            var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(t => t.IsEditable && !t.IsDefault && (string.IsNullOrWhiteSpace(searchOption.UserInput) || EF.Functions.ILike(t.Name, searchOption.UserInput))).ToListAsync();
+            var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(t =>
+            t.IsEditable && !t.IsDefault && (string.IsNullOrWhiteSpace(searchOption.UserInput) || t.Name.ToLower().Contains(searchOption.UserInput.ToLower()))).ToListAsync();
 
             // Map the filtered tenant list to SelectOptionDto and update the response
             serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOptionDto>>();
