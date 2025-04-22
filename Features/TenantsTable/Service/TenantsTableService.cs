@@ -176,6 +176,36 @@ public class TenantsTableService : ITenantsTableService
         return serviceResponse;
     }
 
+    // Retrieves a list of tenant options.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchTenantOptionListAsync(string? query)
+    {
+        // Initialize the service response with a default null data and an error message
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve tenants. Please try again."
+        };
+
+        try
+        {
+            // Retrieve all tenants from the repository
+            var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(t => t.IsEditable && !t.IsDefault && (string.IsNullOrWhiteSpace(query) || t.Name.Contains(query))).ToListAsync();
+
+            // Map the filtered tenant list to SelectOptionDto and update the response
+            serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenants retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return the service response with the default message
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Checks the availability of a tenant name.
     public async Task<ServiceResponse<TrueFalseResultDto>> IsTenantNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
