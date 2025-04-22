@@ -47,7 +47,7 @@ const copyFolderFieldList: IDynamicFieldSchema[] = [
     name: "o_copiedFolderOutput", //to watch
     type: "output-text-field",
     label: "",
-    description: "The copied folder object",
+    description: "The copied folder object(which is a representation and can access the folder and all its information)",
     defaultValue: "CopiedFolder",
     regOptions: {
       disabledBasedOnFields: {

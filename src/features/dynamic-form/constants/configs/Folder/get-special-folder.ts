@@ -54,7 +54,7 @@ const getSpecialFolderFieldList: IDynamicFieldSchema[] = [
     name: "o_specialFolderPathOutput", //to watch
     type: "output-text-field",
     label: "",
-    description: "The special folder object",
+    description: "The special folder object(which is a representation and can access the folder and all its information)",
     defaultValue: "SpecialFolderPath",
     regOptions: {
       disabledBasedOnFields: {

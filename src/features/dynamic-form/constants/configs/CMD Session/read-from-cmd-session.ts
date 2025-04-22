@@ -79,7 +79,7 @@ const readFromCmdSessionFieldList:IDynamicFieldSchema[] = [
       name: "o_cmdErrorSwitch",
       type: "output-switch-field",
       label: "CmdError",
-      defaultValue: "",
+      defaultValue: true,
       regOptions: {
         requiredBasedOnFields: {
           conditionList: [

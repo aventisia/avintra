@@ -32,7 +32,7 @@ const createFolderFieldList: IDynamicFieldSchema[] = [
     name: "o_newFolderOutput", //to watch
     type: "output-text-field",
     label: "",
-    description: "The created folder object",
+    description: "The created folder object(which is a representation and can access the folder and all its information)",
     defaultValue: "NewFolder",
     regOptions: {
       disabledBasedOnFields: {

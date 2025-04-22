@@ -10,7 +10,7 @@ import {
       type: "text",
       label: "Environment variable name",
       description: "The name of the environment variable to delete",
-      defaultValue: "Path",
+      defaultValue: "",
     },
     {
       name: "type",

@@ -23,7 +23,7 @@ const getMousePositionFieldList: IDynamicFieldSchema[] = [
     type: "output-text-field",
     label: "",
       description: "The horizontal (X) value of the mouse position",
-    defaultValue: "Mouse X Position",
+    defaultValue: "MousePosX",
     regOptions: {
       disabledBasedOnFields: {
         conditionList: [
@@ -47,7 +47,7 @@ const getMousePositionFieldList: IDynamicFieldSchema[] = [
     type: "output-text-field",
     label: "",
     description: "The vertical (Y) value of the mouse position",
-    defaultValue: "Mouse Y Position",
+    defaultValue: "MousePosY",
     regOptions: {
       disabledBasedOnFields: {
         conditionList: [
