@@ -40,10 +40,9 @@ public class LicenseCreditService : ILicenseCreditService
                                             .Include(i => i.Tenant)
                                             .Include(i => i.PlanPricing)
                                                 .ThenInclude(i1 => i1.Tenant)
-                                            .ProjectToType<LicenseCreditDto>()
                                             .ToListAsync();
 
-            serviceResponse.Data = licenseCredits;
+            serviceResponse.Data = licenseCredits.Adapt<IEnumerable<LicenseCreditDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved license credits.";
             _logger.LogInformation("Retrieved {Count} license credits.", licenseCredits.Count);
@@ -147,14 +146,14 @@ public class LicenseCreditService : ILicenseCreditService
             var existingCredit = await _unitOfWork.LicenseCreditRepo
                 .GetByConditionAsync(w =>
                     w.PlanId == licenseCreditDto.PlanId &&
-                    w.Status == LicenseCreditStatusesEnum.Requested &&
                     w.TenantId == _tenantId)
                 .Include(a => a.PlanPricing)
                 .FirstOrDefaultAsync();
 
             if (existingCredit != null)
             {
-                existingCredit.AdditionalUnitsRequested += licenseCreditDto.AdditionalUnitsRequested;
+                existingCredit.Allocated += licenseCreditDto.AdditionalUnitsRequested;
+                existingCredit.Available += licenseCreditDto.AdditionalUnitsRequested;
                 existingCredit.LastModifiedByUserId = _userId;
 
                 _unitOfWork.LicenseCreditRepo.Update(existingCredit);
@@ -169,23 +168,9 @@ public class LicenseCreditService : ILicenseCreditService
                             .FirstOrDefaultAsync();
                 if (invoice != null)
                 {
-                    // Pro-rata calculation for the additional units
-                    decimal unitPrice = Convert.ToDecimal(existingCredit.PlanPricing.UnitPrice);
-                    int newUnits = licenseCreditDto.AdditionalUnitsRequested;
-
-                    decimal fullPrice = unitPrice * newUnits;
-
-                    DateTime today = DateTime.UtcNow.Date;
-                    DateTime firstOfNextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
-
-                    int totalDaysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
-                    int remainingDays = (firstOfNextMonth - today).Days;
-
-                    decimal proRataFactor = (decimal)remainingDays / totalDaysInMonth;
-                    decimal proRataAmount = Math.Ceiling(fullPrice * proRataFactor);
 
                     // Update the invoice totals
-                    invoice.Amount += proRataAmount;
+                    invoice.Amount += CalculateProRataAmount(existingCredit.PlanPricing.UnitPrice, licenseCreditDto.AdditionalUnitsRequested, existingCredit.NextBillingDate);
                     invoice.LastModifiedByUserId = _userId;
 
                     _unitOfWork.InvoiceRepo.Update(invoice);
@@ -207,9 +192,10 @@ public class LicenseCreditService : ILicenseCreditService
             licenseCreditDto = TrimDtoStringPropsUtil.TrimDtoStringProps(licenseCreditDto);
 
             var newLicenseCredit = licenseCreditDto.Adapt<LicenseCredit>();
-            newLicenseCredit.AdditionalUnitsRequested = licenseCreditDto.AdditionalUnitsRequested;
-            newLicenseCredit.NextBillingDate = DateTime.SpecifyKind(new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(1), DateTimeKind.Utc);
-            newLicenseCredit.Status = LicenseCreditStatusesEnum.Requested;
+            newLicenseCredit.Allocated = licenseCreditDto.AdditionalUnitsRequested;
+            newLicenseCredit.Available = licenseCreditDto.AdditionalUnitsRequested;
+            newLicenseCredit.NextBillingDate = DateTime.UtcNow.AddMonths(1);
+            newLicenseCredit.Status = LicenseCreditStatusesEnum.Approved;
             newLicenseCredit.CreatedByUserId = _userId;
             newLicenseCredit.LastModifiedByUserId = _userId;
 
@@ -222,7 +208,7 @@ public class LicenseCreditService : ILicenseCreditService
             }
 
             // Create invoice with default values
-            var isCreated = await CreateInvoiceAsync(newLicenseCredit);
+            var isCreated = await CreateInvoiceAsync(newLicenseCredit, licenseCreditDto.AdditionalUnitsRequested);
 
             if (!isCreated)
             {
@@ -556,7 +542,7 @@ public class LicenseCreditService : ILicenseCreditService
     }
 
     // Create an invoice for the specified license credit, including calculated amounts and default settings.
-    public async Task<bool> CreateInvoiceAsync(LicenseCredit existingCredit)
+    public async Task<bool> CreateInvoiceAsync(LicenseCredit existingCredit, int additionalUnitsRequested)
     {
         try
         {
@@ -571,27 +557,7 @@ public class LicenseCreditService : ILicenseCreditService
                 return false;
             }
 
-            // Calculate the amount and total amount (pro-rata)
-            decimal unitPrice = Convert.ToDecimal(planPricing.UnitPrice);
-            int additionalUnits = existingCredit.AdditionalUnitsRequested;
-
-            // Full price for the month
-            decimal fullPrice = unitPrice * additionalUnits;
-
-            // Get today's date and first day of next month
-            DateTime today = DateTime.UtcNow.Date;
-            DateTime firstOfNextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
-
-            // Get the total days in the current month and the remaining days from today
-            int totalDaysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
-            int remainingDays = (firstOfNextMonth - today).Days;
-
-            // Pro-rata factor
-            decimal proRataFactor = (decimal)remainingDays / totalDaysInMonth;
-
-            // Pro-rata amount
-            decimal proRataAmount = Math.Ceiling(fullPrice * proRataFactor);
-
+            // Calculate the amount and total a
             // Create the invoice object
             var invoice = new Invoice()
             {
@@ -599,8 +565,8 @@ public class LicenseCreditService : ILicenseCreditService
                 IsPaid = false,
                 Tax = 0,
                 Discount = 0,
-                Amount = proRataAmount,
-                DueDate = today,
+                Amount = CalculateProRataAmount(planPricing.UnitPrice, additionalUnitsRequested, existingCredit.NextBillingDate),
+                DueDate = DateTime.UtcNow,
                 Status = "UnPaid",
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
@@ -618,5 +584,32 @@ public class LicenseCreditService : ILicenseCreditService
             return false;
         }
         return true;
+    }
+
+    // Calculates the pro-rata amount based on the unit price, number of units, and the next billing date.
+    private decimal CalculateProRataAmount(double unitPerPrice, int newUnits, DateTime? nextBillingDate)
+    {
+        decimal unitPrice = Convert.ToDecimal(unitPerPrice);
+
+        // Use today's date
+        DateTime today = DateTime.UtcNow.Date;
+
+        // Default to the 1st of next month if no billing date is provided
+        DateTime effectiveBillingDate = nextBillingDate ?? new DateTime(today.Year, today.Month, 1).AddMonths(1);
+
+        // Calculate full price for the new units
+        decimal fullPrice = unitPrice * newUnits;
+
+        // Total number of days in the current month
+        int totalDaysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
+
+        // Remaining days until next billing cycle
+        int remainingDays = (effectiveBillingDate - today).Days;
+
+        // Calculate pro-rata based on time left in the billing cycle
+        decimal proRataFactor = (decimal)remainingDays / totalDaysInMonth;
+        decimal proRataAmount = Math.Ceiling(fullPrice * proRataFactor);
+
+        return proRataAmount;
     }
 }
