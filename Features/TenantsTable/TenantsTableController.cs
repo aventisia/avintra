@@ -35,9 +35,9 @@ public class TenantsTableController : BaseApiController
 
     // Retrieves a list of tenant options.
     [HttpPost("tenants-to-search-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> SearchTenantOptionList([FromBody] string? query)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> SearchTenantOptionList(SearchSelectOptionDto searchOptionDto)
     {
-        return ResultHelper(await _tenantsTableService.SearchTenantOptionListAsync(query));
+        return ResultHelper(await _tenantsTableService.SearchTenantOptionListAsync(searchOptionDto));
     }
 
     // Checks the availability of a tenant name.

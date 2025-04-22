@@ -177,7 +177,7 @@ public class TenantsTableService : ITenantsTableService
     }
 
     // Retrieves a list of tenant options.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchTenantOptionListAsync(string? query)
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchTenantOptionListAsync(SearchSelectOptionDto searchOption)
     {
         // Initialize the service response with a default null data and an error message
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
@@ -189,7 +189,7 @@ public class TenantsTableService : ITenantsTableService
         try
         {
             // Retrieve all tenants from the repository
-            var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(t => t.IsEditable && !t.IsDefault && (string.IsNullOrWhiteSpace(query) || t.Name.Contains(query))).ToListAsync();
+            var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(t => t.IsEditable && !t.IsDefault && (searchOption.UserInput == null || EF.Functions.ILike(t.Name, searchOption.UserInput))).ToListAsync();
 
             // Map the filtered tenant list to SelectOptionDto and update the response
             serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOptionDto>>();
