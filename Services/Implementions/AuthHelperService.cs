@@ -289,7 +289,8 @@ public class AuthHelperService : IAuthHelperService
         // Failed to Create or Update user in Workspace database
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError($"Failed to {crudType} user in Workspace database for {user.UserName}. Response: {response.StatusCode} - {response.ReasonPhrase}");
+            string errorContent = await response.Content.ReadAsStringAsync();
+            _logger.LogError($"Failed to {crudType} user in Workspace database for {user.UserName}. Response: {response.StatusCode} - {errorContent}");
             return false;
         }
 
@@ -298,7 +299,8 @@ public class AuthHelperService : IAuthHelperService
 
         if (!response2.IsSuccessStatusCode)
         {
-            _logger.LogError($"Failed to {crudType} user in ML Model Builder database for {user.UserName}. Response: {response.StatusCode} - {response.ReasonPhrase}");
+            string errorContent = await response2.Content.ReadAsStringAsync();
+            _logger.LogError($"Failed to {crudType} user in ML Model Builder database for {user.UserName}. Response: {response2.StatusCode} - {errorContent}");
             return false;
         }
 
