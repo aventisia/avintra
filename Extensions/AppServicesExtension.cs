@@ -35,6 +35,8 @@ public static class AppServicesExtension
         config.Apply(new LicenseCreditMappingProfile());
         config.Apply(new PricingPlanManagementMappingProfile());
         config.Apply(new LicenseCreditManagementMappingProfile());
+        config.Apply(new RoleManagementMappingProfile());
+        config.Apply(new TenantRoleManagementMappingProfile());
         config.Apply(new AuditLogMappingProfile());
         config.Apply(new ActiveSessionMappingProfile());
         services.AddSingleton(config);
@@ -103,7 +105,8 @@ public static class AppServicesExtension
         services.AddScoped<IPlanTableService, PlanTableService>();
         services.AddScoped<ILicenseCreditService, LicenseCreditService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
-        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IRoleManagementService, RoleManagementService>();
+        services.AddScoped<ITenantRoleManagementService, TenantRoleManagementService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

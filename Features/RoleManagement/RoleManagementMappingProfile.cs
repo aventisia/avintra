@@ -1,11 +1,11 @@
 namespace AccountsAPIs.MappingProfiles;
 
-public class RoleMappingProfile : IRegister
+public class RoleManagementMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // Mapping to get role record or list of roles
-        config.NewConfig<AccountRole, RoleDto>()
+        config.NewConfig<AccountRole, RoleManagementDto>()
             .Map(dest => dest.TenantId, src => src.Tenant != null ? src.TenantId : Guid.Empty)
             .Map(dest => dest.TenantName, src => src.Tenant != null ? src.Tenant.Name : null)
             .Map(dest => dest.TotalPermission, src => src.RolePermissions != null ? src.RolePermissions.Count() : 0)
@@ -30,7 +30,7 @@ public class RoleMappingProfile : IRegister
                 : null);
 
         // Mapping for inserting or updating user record
-        config.NewConfig<RoleDto, AccountRole>()
+        config.NewConfig<RoleManagementDto, AccountRole>()
             .Ignore(dest => dest.RolePermissions)
             .Ignore(dest => dest.Seq)
             .IgnoreNullValues(true);

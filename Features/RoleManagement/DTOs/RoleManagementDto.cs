@@ -3,7 +3,7 @@ namespace AccountsAPIs.DTOs;
 /// <summary>
 /// Represents an account role in the system.
 /// </summary>
-public class RoleDto
+public class RoleManagementDto
 {
     /// <summary>
     /// Gets or sets the primary key of the role record. 
@@ -28,7 +28,8 @@ public class RoleDto
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.
     /// </summary>
-    public Guid? TenantId { get; set; }
+    [Required]
+    public Guid TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the tenant associated with this pricing plan.

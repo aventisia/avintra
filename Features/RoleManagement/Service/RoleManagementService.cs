@@ -1,28 +1,26 @@
 namespace AccountsAPIs.Services;
 
-public class RoleService : IRoleService
+public class RoleManagementService : IRoleManagementService
 {
-    private readonly ILogger<RoleService> _logger;
+    private readonly ILogger<RoleManagementService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
-    private readonly Guid _tenantId;
 
-    public RoleService(
-        ILogger<RoleService> logger,
+    public RoleManagementService(
+        ILogger<RoleManagementService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
         // Retrieves the User ID from HTTP context or assigns a default GUID if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
 
     // Method to get the list of roles
-    public async Task<ServiceResponse<IEnumerable<RoleDto>>> GetRoleListAsync()
+    public async Task<ServiceResponse<IEnumerable<RoleManagementDto>>> GetRoleListAsync(Guid? tenantId)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<RoleDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<RoleManagementDto>>
         {
             Data = null,
             Message = "Failed to retrieve roles. Please try again"
@@ -40,62 +38,28 @@ public class RoleService : IRoleService
                     .ThenInclude(i1 => i1.Permission)
                 .OrderByDescending(o => o.Seq)
                 .AsNoTracking()
-                .ProjectToType<RoleDto>()
                 .ToListAsync();
 
+            if (tenantId.HasValue)
+            {
+                roleList = roleList.Where(w => w.TenantId == tenantId).ToList();
+            }
+
             // Setting success response
-            serviceResponse.Data = roleList;
+            serviceResponse.Data = roleList.Adapt<IEnumerable<RoleManagementDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Roles retrieved successfully";
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
-    // Method to get the list of my roles
-    public async Task<ServiceResponse<IEnumerable<TenantRoleDto>>> GetMyRoleListAsync()
-    {
-        var serviceResponse = new ServiceResponse<IEnumerable<TenantRoleDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve roles. Please try again"
-        };
-
-        try
-        {
-            // Fetches roles with associated entities, ordering by sequence and projecting into TenantRoleDto
-            var roleList = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .Include(i => i.RolePermissions)
-                    .ThenInclude(i1 => i1.Permission)
-                .OrderByDescending(o => o.Seq)
-                .AsNoTracking()
-                .ProjectToType<TenantRoleDto>()
-                .ToListAsync();
-
-            // Setting success response
-            serviceResponse.Data = roleList;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Roles retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return serviceResponse; // Return failure if exception occurs
         }
 
         return serviceResponse;
     }
 
     // Method to check if a role is available based on its name
-    public async Task<ServiceResponse<TrueFalseResultDto>> IsRoleAvailableAsync(CheckAvailabilityDto checkAvailability)
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsRoleAvailableAsync(Guid tenantId, CheckAvailabilityDto checkAvailability)
     {
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
         {
@@ -110,6 +74,7 @@ public class RoleService : IRoleService
             // Check if role already exists by comparing case-insensitive role name
             var role = await _unitOfWork.AccountRoleRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == tenantId &&
                     w.FullName.ToLower() == checkAvailability.UserInput.ToLower()
                 )
                 .FirstOrDefaultAsync();
@@ -138,9 +103,9 @@ public class RoleService : IRoleService
     }
 
     // Method to insert a new role
-    public async Task<ServiceResponse<RoleDto>> InsertRoleAsync(RoleDto roleDto)
+    public async Task<ServiceResponse<RoleManagementDto>> InsertRoleAsync(RoleManagementDto roleManagementDto)
     {
-        var serviceResponse = new ServiceResponse<RoleDto>
+        var serviceResponse = new ServiceResponse<RoleManagementDto>
         {
             Data = null,
             Message = "Failed to insert new role. Please try again"
@@ -150,7 +115,7 @@ public class RoleService : IRoleService
         {
             // Check if the role already exists by comparing role names
             var existingRoles = await _unitOfWork.AccountRoleRepo.GetAllAsync().ToListAsync();
-            if (existingRoles.Any(a => a.FullName == roleDto.FullName && (roleDto.TenantId == null || a.TenantId == roleDto.TenantId)))
+            if (existingRoles.Any(a => a.FullName == roleManagementDto.FullName && a.TenantId == roleManagementDto.TenantId))
             {
                 _logger.LogInformation("Role already exists, please select another role name.");
                 serviceResponse.Message = "Role already exists, please select another role name.";
@@ -158,13 +123,13 @@ public class RoleService : IRoleService
             }
 
             // Create a new role entity
-            var newRole = roleDto.Adapt<AccountRole>();
-            newRole.TenantId = roleDto.TenantId != null ? roleDto.TenantId : null;
+            var newRole = roleManagementDto.Adapt<AccountRole>();
+            newRole.TenantId = roleManagementDto.TenantId;
             newRole.CreatedByUserId = _userId;
             newRole.LastModifiedByUserId = _userId;
             newRole.CreatedOn = DateTimeOffset.UtcNow;
-            newRole.Name = roleDto.FullName;
-            newRole.NormalizedName = roleDto.FullName;
+            newRole.Name = roleManagementDto.FullName;
+            newRole.NormalizedName = roleManagementDto.FullName;
             newRole.Seq = existingRoles.Count;
             newRole.IsDefault = false;
 
@@ -179,10 +144,10 @@ public class RoleService : IRoleService
 
             // Insert permissions for the new role
             var newRolePermissions = new List<RolePermission>();
-            if (roleDto.RolePermissions != null)
+            if (roleManagementDto.RolePermissions != null)
             {
                 var permissionsList = await _unitOfWork.PermissionRepo.GetAllAsync().AsNoTracking().ToListAsync();
-                foreach (var rolePermission in roleDto.RolePermissions)
+                foreach (var rolePermission in roleManagementDto.RolePermissions)
                 {
                     var permission = permissionsList.FirstOrDefault(f => f.Name.Equals(rolePermission.PermissionType.ToString()));
                     if (permission != null && rolePermission.Accesses.Contains(PermissionAccessTypesEnum.FullAccess))
@@ -225,7 +190,7 @@ public class RoleService : IRoleService
             }
 
             // Set success response
-            serviceResponse.Data = newRole.Adapt<RoleDto>();
+            serviceResponse.Data = newRole.Adapt<RoleManagementDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Role added successfully";
         }
@@ -239,9 +204,9 @@ public class RoleService : IRoleService
     }
 
     // Method to get a role by its ID
-    public async Task<ServiceResponse<RoleDto>> GetRoleByIdAsync(Guid accountRoleId)
+    public async Task<ServiceResponse<RoleManagementDto>> GetRoleByIdAsync(Guid roleId)
     {
-        var serviceResponse = new ServiceResponse<RoleDto>
+        var serviceResponse = new ServiceResponse<RoleManagementDto>
         {
             Data = null,
             Message = "Failed to retrieve role. Please try again"
@@ -251,9 +216,10 @@ public class RoleService : IRoleService
         {
             // Fetch the role by ID and include related entities (CreatedBy, LastModifiedBy, Permissions)
             var existingRole = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(w => w.Id == accountRoleId)
+                .GetByConditionAsync(w => w.Id == roleId)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Tenant)
                 .Include(i => i.RolePermissions)
                     .ThenInclude(i1 => i1.Permission)
                 .SingleOrDefaultAsync();
@@ -266,7 +232,7 @@ public class RoleService : IRoleService
             }
 
             // Map the role entity to RoleDto
-            var roleDto = existingRole.Adapt<RoleDto>();
+            var roleDto = existingRole.Adapt<RoleManagementDto>();
             if (existingRole.RolePermissions?.Count != 0)
             {
                 // Map the permissions into the role DTO
@@ -295,9 +261,9 @@ public class RoleService : IRoleService
     }
 
     // Method to update an existing role
-    public async Task<ServiceResponse<RoleDto>> UpdateRoleAsync(RoleDto roleDto)
+    public async Task<ServiceResponse<RoleManagementDto>> UpdateRoleAsync(RoleManagementDto roleManagementDto)
     {
-        var serviceResponse = new ServiceResponse<RoleDto>
+        var serviceResponse = new ServiceResponse<RoleManagementDto>
         {
             Data = null,
             StatusCode = 400
@@ -307,7 +273,7 @@ public class RoleService : IRoleService
         {
             // Fetch the existing role from the repository
             var existingRole = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(w => w.Id == roleDto.Id)
+                .GetByConditionAsync(w => w.Id == roleManagementDto.Id)
                 .SingleOrDefaultAsync();
 
             if (existingRole == null)
@@ -320,9 +286,9 @@ public class RoleService : IRoleService
             // Check if another role exists with the same name
             var duplicateRole = await _unitOfWork.AccountRoleRepo
                 .GetByConditionAsync(w =>
-                    w.Id != roleDto.Id &&
-                    w.FullName.ToLower() == roleDto.FullName.ToLower() &&
-                    roleDto.TenantId == null || w.TenantId == roleDto.TenantId
+                    w.Id != roleManagementDto.Id &&
+                    w.FullName.ToLower() == roleManagementDto.FullName.ToLower() &&
+                    w.TenantId == roleManagementDto.TenantId
                 )
                 .FirstOrDefaultAsync();
 
@@ -342,7 +308,7 @@ public class RoleService : IRoleService
             }
 
             // Update the role entity
-            roleDto.Adapt(existingRole);
+            roleManagementDto.Adapt(existingRole);
             existingRole.LastModifiedByUserId = _userId;
 
             _unitOfWork.AccountRoleRepo.Update(existingRole);
@@ -360,11 +326,11 @@ public class RoleService : IRoleService
 
             // Add new permissions
             var newRolePermissions = new List<RolePermission>();
-            if (roleDto.RolePermissions != null)
+            if (roleManagementDto.RolePermissions != null)
             {
                 var permissionsList = await _unitOfWork.PermissionRepo.GetAllAsync().AsNoTracking().ToListAsync();
 
-                foreach (var rolePermission in roleDto.RolePermissions)
+                foreach (var rolePermission in roleManagementDto.RolePermissions)
                 {
                     var permission = permissionsList.FirstOrDefault(f => f.Name.Equals(rolePermission.PermissionType.ToString()));
                     if (permission != null && rolePermission.Accesses.Contains(PermissionAccessTypesEnum.FullAccess))
@@ -419,7 +385,7 @@ public class RoleService : IRoleService
             }
 
             // Return the updated role as response
-            serviceResponse.Data = existingRole.Adapt<RoleDto>();
+            serviceResponse.Data = existingRole.Adapt<RoleManagementDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Role updated successfully";
         }
@@ -433,7 +399,7 @@ public class RoleService : IRoleService
     }
 
     // Method to delete a role by its ID
-    public async Task<ServiceResponse<bool>> DeleteRoleAsync(Guid accountRoleId)
+    public async Task<ServiceResponse<bool>> DeleteRoleAsync(Guid roleId)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -445,7 +411,7 @@ public class RoleService : IRoleService
         {
             // Fetch the role by ID with related entities
             var roleToDelete = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(w => w.Id == accountRoleId)
+                .GetByConditionAsync(w => w.Id == roleId)
                 .Include(i => i.RolePermissions)
                 .Include(i => i.UserRoles)
                 .SingleOrDefaultAsync();
@@ -488,7 +454,7 @@ public class RoleService : IRoleService
     }
 
     // Method to delete multiple roles
-    public async Task<ServiceResponse<bool>> DeleteMultipleRolesAsync(IEnumerable<Guid> accountRoleIds)
+    public async Task<ServiceResponse<bool>> DeleteMultipleRolesAsync(IEnumerable<Guid> roleIds)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -497,7 +463,7 @@ public class RoleService : IRoleService
         };
 
         // Check if role IDs were provided
-        if (accountRoleIds == null || !accountRoleIds.Any())
+        if (roleIds == null || !roleIds.Any())
         {
             serviceResponse.Message = "No Role IDs provided for deletion.";
             return serviceResponse;
@@ -507,14 +473,14 @@ public class RoleService : IRoleService
         {
             // Fetch the roles to delete
             var roles = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(w => accountRoleIds.Contains(w.Id))
+                .GetByConditionAsync(w => roleIds.Contains(w.Id))
                 .Include(i => i.RolePermissions)
                 .Include(i => i.UserRoles)
                 .ToListAsync();
 
             if (roles.Count == 0)
             {
-                _logger.LogInformation($"Role not found for Ids {accountRoleIds}");
+                _logger.LogInformation($"Role not found for Ids {roleIds}");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -534,7 +500,7 @@ public class RoleService : IRoleService
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Failed to save changes while deleting the roles with IDs {accountRoleIds}.");
+                _logger.LogInformation($"Failed to save changes while deleting the roles with IDs {roleIds}.");
                 return serviceResponse;
             }
 
@@ -545,6 +511,39 @@ public class RoleService : IRoleService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while deleting multiple roles.");
+        }
+
+        return serviceResponse;
+    }
+
+    //Retrieves a list of account roles formatted as select options
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetRoleOptionListAsync(Guid tenantId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+
+            // Get all roles after filtration
+            var roles = await _unitOfWork.AccountRoleRepo
+                        .GetByConditionAsync(w => w.TenantId == tenantId)
+                        .OrderBy(o => o.Seq)
+                        .ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = roles.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Roles retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
         }
 
         return serviceResponse;
