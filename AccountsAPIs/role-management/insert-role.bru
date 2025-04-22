@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/account-role
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role
   body: none
   auth: none
 }
@@ -14,6 +14,7 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
+    tenantId: bru.getGlobalEnvVar("TENANT_ID"),
     fullName: faker.person.jobType(),
     description: faker.lorem.lines(),
     rolePermissions: [

@@ -1,11 +1,11 @@
 meta {
   name: Check role availability
   type: http
-  seq: 7
+  seq: 2
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/account-role/is-available
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role/is-available/{{TENANT_ID}}
   body: none
   auth: none
 }

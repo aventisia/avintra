@@ -1,11 +1,11 @@
 meta {
   name: Update role
   type: http
-  seq: 3
+  seq: 4
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/account-role
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role
   body: none
   auth: none
 }
@@ -15,6 +15,7 @@ script:pre-request {
   
   req.setBody({
     id: bru.getGlobalEnvVar("ROLE_ID"),
+    tenantId: bru.getGlobalEnvVar("TENANT_ID"),
     fullName: faker.person.jobType(),
     description: faker.lorem.lines(),
     rolePermissions: [
