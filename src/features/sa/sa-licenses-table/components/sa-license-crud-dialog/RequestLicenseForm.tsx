@@ -1,27 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useFetchLicenseDetails, useFetchLicensesToSelect } from "@/hooks/useFetchLicense";
-import { useFetchTenantsToSelect } from "@/hooks/useFetchTenantsToSelect";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { useMutation } from "@tanstack/react-query";
 
-import { requestLicense } from "../../apis/sa-licenses-table-apis";
-import { additionalUnitsRequestedProps } from "../../constants/saLicense-form-field-props";
+import {
+  getLicensesToSelect,
+  requestLicense,
+} from "../../apis/sa-licenses-table-apis";
+import {
+  additionalUnitsRequestedProps,
+  licenseSelectProps,
+  tenantSelectProps,
+} from "../../constants/saLicense-form-field-props";
 import { requestLicenseZodSchema } from "../../constants/saLicense-zod-schema";
 import { RequestLicensesDto } from "../../dtos/request-license-dto";
 import { useDefineRequestLicenseForm } from "../../hooks/useDefineRequestLicenseForm";
+import { useFetchPricingPlanDetails } from "../../hooks/useFetchSaLicenses";
 import { RequestLicenseOverviewDetails } from "./RequestLicenseOverviewDetails";
 
 export const RequestLicenseForm = () => {
-  const { selectOptions: tenantsToselect } = useFetchTenantsToSelect(true);
-
   // Define license form
   const { form, watch, isDirty, crudAction, setShowDialog, refineFormData } =
     useDefineRequestLicenseForm();
@@ -40,6 +44,8 @@ export const RequestLicenseForm = () => {
     },
   });
 
+  const [additionalPaymentDue, setAdditionalPaymentDue] = useState(0);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof requestLicenseZodSchema>) => {
     // Create or update the license
@@ -49,16 +55,24 @@ export const RequestLicenseForm = () => {
     setShowDialog(false);
   };
 
-  const [planId, id] = watch(["planId", "id"]);
+  const [planId, id, additionalUnitsRequested] = watch([
+    "planId",
+    "id",
+    "additionalUnitsRequested",
+  ]);
 
-  const { data: lisencesToselectResponse, refetch } =
-    useFetchLicensesToSelect(id);
-
+  const { data: planDetails, isFetching } = useFetchPricingPlanDetails(planId);
   useEffect(() => {
-    refetch();
-  }, [id, refetch]);
-
-  const { data: licenseDetails, isFetching } = useFetchLicenseDetails(planId);
+    setAdditionalPaymentDue(
+      (additionalUnitsRequested ?? 0) *
+        (planDetails?.data?.pricingComponent == "GPUCompute" ? 1 : 12) *
+        (planDetails?.data?.unitPrice ?? 0),
+    );
+  }, [
+    additionalUnitsRequested,
+    planDetails?.data?.pricingComponent,
+    planDetails?.data?.unitPrice,
+  ]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -72,27 +86,21 @@ export const RequestLicenseForm = () => {
       disabled={isReadMode}
     >
       {/* tenant name id */}
-      {form.getValues("id") || crudAction === "create" ? (
-        <SelectField
-          name="id"
-          label="Tenant Name"
-          isRequired={true}
-          selectOptions={tenantsToselect ?? []}
-        />
-      ) : null}
+      <AsyncSelectField {...tenantSelectProps} />
 
       {/* license type */}
-      {form.getValues("planId") || crudAction === "create" ? (
-        <SelectField
-          name="planId"
-          label="License Type"
-          isRequired={true}
-          selectOptions={lisencesToselectResponse?.data ?? []}
-        />
-      ) : null}
+      <AsyncSelectField
+        {...licenseSelectProps}
+        disabled={!id}
+        fetcher={() =>
+          !id
+            ? Promise.resolve([])
+            : getLicensesToSelect(id).then((data) => data.data)
+        }
+      />
 
       <RequestLicenseOverviewDetails
-        licenseDetails={licenseDetails?.data}
+        licenseDetails={planDetails?.data}
         isFetching={isFetching}
         planId={planId}
         tenantId={id}
@@ -103,18 +111,13 @@ export const RequestLicenseForm = () => {
         <p className="text-md mb-2 pb-2">New Quantity</p>
         <InputField {...additionalUnitsRequestedProps} />
       </div>
-      <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
+      <div className="flex flex-row justify-between rounded-md bg-primary-50 p-[.6rem] px-3">
         <p className="font-light">Additional Payment Due:</p>
         <div>
           {isFetching ? (
             <Skeleton className="h-6 w-32" />
           ) : (
-            currencyFormater(
-              (form.getValues("additionalUnitsRequested") ?? 0) *
-                12 *
-                (licenseDetails?.data?.unitPrice ?? 0),
-              licenseDetails?.data.currency,
-            )
+            currencyFormater(additionalPaymentDue, planDetails?.data.currency)
           )}
         </div>
       </div>
