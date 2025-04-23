@@ -199,6 +199,14 @@ public class AuthHelperService : IAuthHelperService
 
             // Add session id
             claims.Add("sid", sessionId.ToString());
+
+            // Add permission access
+            claims["permissions"] = user.UserRoles
+                    .SelectMany(u => u.Role.RolePermissions)
+                    .GroupBy(a => a.Permission.Name)
+                    .ToDictionary(
+                        g => (int)Enum.Parse(typeof(PermissionTypesEnum), g.Key),
+                        g => JsonSerializer.Serialize(g.Select(a => (int)a.Access).ToList())                    );
         }
 
         // SigningCredentials
