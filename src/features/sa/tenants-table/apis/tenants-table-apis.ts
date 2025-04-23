@@ -24,6 +24,12 @@ export const getTenantsToSelect = () => {
     .then((res) => res.data);
 };
 
+export const getCurrenciesToSelect = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/currencies-to-select`)
+    .then((res) => res.data);
+};
+
 export const searchTenantsToSelect = (query?: string) => {
   return axiosInstance
     .post<IHttpResponse<ISelectOption[]>>(
