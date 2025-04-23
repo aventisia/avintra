@@ -55,6 +55,7 @@ public class MyAccountService(
                             .ThenInclude(i2 => i2.RolePermissions)
                                 .ThenInclude(i3 => i3.Permission)
                     .AsNoTracking()
+                    .AsSplitQuery()
                     .SingleOrDefaultAsync();
 
             // User doesn't exist
@@ -226,7 +227,9 @@ public class MyAccountService(
                         .ThenInclude(i1 => i1.Role)
                             .ThenInclude(i2 => i2.RolePermissions)
                                 .ThenInclude(i3 => i3.Permission)
-                    .AsNoTracking()                .SingleOrDefaultAsync();
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .SingleOrDefaultAsync();
 
             // User doesn't exist
             if (user == null)

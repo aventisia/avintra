@@ -241,6 +241,7 @@ public class LoginWithPwdService : ILoginWithPwdService
                             .ThenInclude(i2 => i2.RolePermissions)
                                 .ThenInclude(i3 => i3.Permission)
                     .AsNoTracking()
+                    .AsSplitQuery()
                     .SingleOrDefaultAsync();
 
             // User doesn't exist
