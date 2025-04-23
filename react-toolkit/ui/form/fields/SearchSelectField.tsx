@@ -1,4 +1,4 @@
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+import { FieldValues, useFormContext } from "react-hook-form";
 
 import { cn } from "@/react-toolkit/lib/utils";
 import { ISelectOption } from "@/react-toolkit/types/select-option";
@@ -10,23 +10,16 @@ import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
 import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
 
 import { AsyncSelect } from "../../async-select";
+import {
+  AsyncSelectFieldProps,
+  DefaultAsyncSelectFieldgetDisplayValue,
+  DefaultAsyncSelectFieldRenderOption,
+} from "./AsyncSelectField";
 
 export type SearchSelectFieldProps = {
-  /** The name of the form field. */
-  name: FieldPath<FieldValues>;
-
-  label: string;
-
   selectOptions: ISelectOption[];
-
-  size: "base" | "xs" | "sm";
-
-  className?: string;
-
-  riggerClassName?: string;
-
-  disabled?: boolean;
-} & BaseFieldProps;
+} & Omit<AsyncSelectFieldProps, "fetcher"> &
+  BaseFieldProps;
 
 /**
  * A custom select form field component with label (if provided)
@@ -34,13 +27,19 @@ export type SearchSelectFieldProps = {
 export const SearchSelectField = ({
   name,
   label,
+  placeholder = "Select...",
   disabled,
   size = "base",
   isRequired,
   selectOptions,
   description,
   className,
-  riggerClassName,
+  renderOption = DefaultAsyncSelectFieldRenderOption,
+  getDisplayValue = DefaultAsyncSelectFieldgetDisplayValue,
+  notFound = (
+    <div className="py-2 text-center text-sm lowercase">No {label} Found</div>
+  ),
+  triggerClassName: riggerClassName,
 }: SearchSelectFieldProps) => {
   // Get the form context
   const { control, setValue } = useFormContext<FieldValues>();
@@ -74,40 +73,19 @@ export const SearchSelectField = ({
               <AsyncSelect
                 label={label}
                 value={field.value.toLowerCase()}
+                placeholder={placeholder}
                 onChange={(value) => {
                   setValue(name, value, {
                     shouldDirty: true,
                   });
                   field.onChange(value);
                 }}
-                disabled={field.disabled}
+                disabled={disabled || field.disabled}
                 fetcher={searchOptions}
-                renderOption={(option) => (
-                  <div className="flex items-center gap-2">
-                    <div className="flex flex-col">
-                      <div className="font-medium">{option.label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {option.description}
-                      </div>
-                    </div>
-                  </div>
-                )}
                 getOptionValue={(option) => option.value.toLowerCase()}
-                getDisplayValue={(option) => (
-                  <div className="flex items-center gap-2 text-left">
-                    <div className="flex flex-col leading-tight">
-                      <div className="font-medium">{option.label}</div>
-                      <div className="text-2xs text-muted-foreground">
-                        {option.description}
-                      </div>
-                    </div>
-                  </div>
-                )}
-                notFound={
-                  <div className="py-2 text-center text-sm">
-                    {label} Not found
-                  </div>
-                }
+                renderOption={renderOption}
+                getDisplayValue={getDisplayValue}
+                notFound={notFound}
                 className={cn("!w-[28rem]", className)}
                 triggerClassName={cn("!w-full", riggerClassName)}
               />
