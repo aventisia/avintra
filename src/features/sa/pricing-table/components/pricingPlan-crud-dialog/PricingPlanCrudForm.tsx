@@ -1,10 +1,14 @@
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import { useFetchTenantsToSelect } from "@/hooks/useFetchTenantsToSelect";
+import { getTenantDetails } from "@/features/sa/tenants-table/apis/tenants-table-apis";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { cn } from "@/react-toolkit/lib/utils";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SearchSelectField } from "@/react-toolkit/ui/form/fields/SearchSelectField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
@@ -13,16 +17,21 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-    colaTypeProps, currencyTypeProps, frequencyTypeProps, idProps, isDisabledProps,
-    pricingComponentTypeProps, tenantTypeProps, unitPriceTypeProps
+  colaTypeProps,
+  currencyTypeProps,
+  frequencyTypeProps,
+  idProps,
+  isDisabledProps,
+  pricingComponentTypeProps,
+  tenantSelectProps,
+  tenantTypeProps,
+  unitPriceTypeProps,
 } from "../../constants/pricingPlan-form-field-props";
 import { pricingPlanZodSchema } from "../../constants/pricingPlan-zod-schema";
 import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
 import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
 
 export const PricingPlanCrudForm = () => {
-  const { selectOptions: tenantsToSelect } = useFetchTenantsToSelect(false);
-
   // Define pricingplan form
   const {
     form,
@@ -31,7 +40,6 @@ export const PricingPlanCrudForm = () => {
     rowId,
     crudAction,
     setShowDialog,
-    tenantDetails,
     refineFormData,
   } = useDefinePricingPlanForm();
   const [pricingComponent] = watch(["pricingComponent"]);
@@ -43,9 +51,10 @@ export const PricingPlanCrudForm = () => {
     PricingPlansTableDto
   >([rowId], pricingPlanOptimisticMutationFn, DATA_QUERY_KEY);
 
+  const [currency, setCurrency] = useState<string>();
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof pricingPlanZodSchema>) => {
-    console.log(formData);
     // Create or update the pricingplan
     mutatePricingPlan({
       payload: refineFormData(formData) as unknown as PricingPlansTableDto,
@@ -56,11 +65,26 @@ export const PricingPlanCrudForm = () => {
     setShowDialog(false);
   };
 
+  const [tenantId] = watch(["tenantId"]);
+
+  useEffect(() => {
+    const getTenant = async () => {
+      if (!tenantId) {
+        form.setValue("currency", "");
+        setCurrency(undefined);
+        return;
+      }
+      const tenantDetails = await getTenantDetails(tenantId);
+      if (tenantDetails?.data.currency) {
+        form.setValue("currency", tenantDetails?.data.currency);
+        setCurrency(tenantDetails?.data.currency);
+      }
+    };
+    getTenant();
+  }, [form, tenantId]);
+
   // Is form in read mode
   const isReadMode = crudAction === "read";
-
-  if (tenantDetails?.data.currency)
-    form.setValue("currency", tenantDetails?.data.currency);
 
   // Return the form
   return (
@@ -79,27 +103,43 @@ export const PricingPlanCrudForm = () => {
       ) : null}
 
       {/* name of tenant */}
-      {form.getValues("tenantId") || crudAction === "create" ? (
-        <SelectField
-          name="tenantId"
-          label="Tenant Name"
-          selectOptions={tenantsToSelect ?? []}
-        />
-      ) : null}
-
+      <AsyncSelectField {...tenantSelectProps} />
       {/* pricingComponent name fo the plan */}
       {form.getValues("pricingComponent") || crudAction === "create" ? (
         <SelectField {...pricingComponentTypeProps} />
       ) : null}
 
-      {/* currency */}
-      {!tenantDetails?.data.currency &&
-      (form.getValues("currency") || crudAction === "create") ? (
-        <SelectField {...currencyTypeProps} />
-      ) : null}
-
-      {/* unitPrice */}
-      <InputField {...unitPriceTypeProps} />
+      <div className="relative grid grid-cols-3 items-center rounded-lg shadow-sm">
+        <span className="col-span-2">
+          {/* unitPrice */}
+          <InputField
+            className="col-span-2 rounded-r-none"
+            {...unitPriceTypeProps}
+          />
+        </span>
+        <span
+          className={cn(
+            form.getFieldState("unitPrice").invalid ? "mt-0" : "mt-5",
+          )}
+        >
+          {/* currency */}
+          <SearchSelectField
+            {...currencyTypeProps}
+            className="mr-4 !w-fit"
+            disabled={!!currency}
+            getDisplayValue={(option) => (
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <div className="font-medium">{option.value}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {option.description}
+                  </div>
+                </div>
+              </div>
+            )}
+          />
+        </span>
+      </div>
 
       {/* frequency */}
       {(form.getValues("frequency") || crudAction === "create") &&
