@@ -1,26 +1,28 @@
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import { useFetchLicenseDetails, useFetchLicensesToSelect } from "@/hooks/useFetchLicense";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { additionalUnitsRequestedProps, idProps } from "../../constants/license-form-field-props";
+import {
+  additionalUnitsRequestedProps,
+  idProps,
+  licenseSelectProps,
+} from "../../constants/license-form-field-props";
 import { licenseZodSchema } from "../../constants/license-zod-schema";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
 import { useDefineLicenseForm } from "../../hooks/useDefineLicenseForm";
+import { useFetchPricingPlanDetails } from "../../hooks/useFetchLicenses";
 import { OverviewDetails } from "./OverviewDetails";
 
 export const LicenseCrudForm = () => {
-  // fetch licenses for the tenant
-  const { data: lisencesToSelectResponse } = useFetchLicensesToSelect();
-
   // Define license form
   const {
     form,
@@ -39,6 +41,8 @@ export const LicenseCrudForm = () => {
     MyLicensesTableDto
   >([rowId], licenseOptimisticMutationFn, DATA_QUERY_KEY);
 
+  const [additionalPaymentDue, setAdditionalPaymentDue] = useState(0);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof licenseZodSchema>) => {
     // Create or update the license
@@ -51,9 +55,24 @@ export const LicenseCrudForm = () => {
     setShowDialog(false);
   };
 
-  const [planId] = watch(["planId", "additionalUnitsRequested"]);
+  const [planId, additionalUnitsRequested] = watch([
+    "planId",
+    "additionalUnitsRequested",
+  ]);
 
-  const { data: licenseDetails, isFetching } = useFetchLicenseDetails(planId);
+  const { data: planDetails, isFetching } = useFetchPricingPlanDetails(planId);
+
+  useEffect(() => {
+    setAdditionalPaymentDue(
+      (additionalUnitsRequested ?? 0) *
+        (planDetails?.data?.pricingComponent == "GPUCompute" ? 1 : 12) *
+        (planDetails?.data?.unitPrice ?? 0),
+    );
+  }, [
+    additionalUnitsRequested,
+    planDetails?.data?.pricingComponent,
+    planDetails?.data?.unitPrice,
+  ]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -70,18 +89,11 @@ export const LicenseCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       {/* license type */}
-      {form.getValues("planId") || crudAction === "create" ? (
-        <SelectField
-          name="planId"
-          label="License Type"
-          isRequired={true}
-          selectOptions={lisencesToSelectResponse?.data ?? []}
-        />
-      ) : null}
+      <AsyncSelectField {...licenseSelectProps} />
 
       {/* overview dtetails */}
       <OverviewDetails
-        licenseDetails={licenseDetails?.data}
+        licenseDetails={planDetails?.data}
         isFetching={isFetching}
         planId={planId}
       />
@@ -91,18 +103,13 @@ export const LicenseCrudForm = () => {
         <p className="text-md mb-2 pb-2">New Quantity</p>
         <InputField {...additionalUnitsRequestedProps} />
       </div>
-      <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
+      <div className="flex flex-row justify-between rounded-md bg-primary-50 p-[.6rem] px-3">
         <p className="font-light">Additional Payment Due:</p>
         <div>
           {isFetching ? (
             <Skeleton className="h-6 w-32" />
           ) : (
-            currencyFormater(
-              (form.getValues("additionalUnitsRequested") ?? 0) *
-                12 *
-                (licenseDetails?.data?.unitPrice ?? 0),
-              licenseDetails?.data.currency,
-            )
+            currencyFormater(additionalPaymentDue, planDetails?.data.currency)
           )}
         </div>
       </div>
