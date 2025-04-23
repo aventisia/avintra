@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
+import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlans";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
@@ -19,7 +20,6 @@ import {
 import { licenseZodSchema } from "../../constants/license-zod-schema";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
 import { useDefineLicenseForm } from "../../hooks/useDefineLicenseForm";
-import { useFetchPricingPlanDetails } from "../../hooks/useFetchLicenses";
 import { OverviewDetails } from "./OverviewDetails";
 
 export const LicenseCrudForm = () => {
