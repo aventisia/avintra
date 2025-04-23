@@ -1,7 +1,9 @@
 import IEnumerable from "linq";
-import { GiWallet } from "react-icons/gi";
-import { PiCertificate } from "react-icons/pi";
-import { TbDatabaseDollar } from "react-icons/tb";
+import {
+  CalendarFoldIcon,
+  CircleEqualIcon,
+  SquareFunctionIcon,
+} from "lucide-react";
 
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
@@ -31,7 +33,7 @@ export const InvoicesStats = () => {
     last12MonthExpense: statsData
       .orderByDescending((x) => x.dueDate)
       .take(12)
-      .sum((x) => x.totalAmount),
+      .sum((x) => x.amount),
     overdueBalance: statsData.sum((x) => x.discount),
     nextPayableAmount: statsData
       .orderByDescending((x) => x.dueDate)
@@ -43,21 +45,23 @@ export const InvoicesStats = () => {
     <div className="my-4 grid grid-cols-3 gap-10 gap-x-8">
       <StatsCard
         title={"Last 12 Month Expense"}
-        mainText={stats.last12MonthExpense}
-        icon={<PiCertificate fill="var(--primary)" className="h-10 w-10" />}
+        mainText={currencyFormater(stats.last12MonthExpense, "USD")}
+        icon={
+          <CalendarFoldIcon stroke="var(--primary)" className="h-10 w-10" />
+        }
       />
       <StatsCard
         title={"Total Overdue"}
-        mainText={stats.overdueBalance}
-        icon={
-          <TbDatabaseDollar stroke="var(--primary)" className="h-10 w-10" />
-        }
+        mainText={currencyFormater(stats.overdueBalance, "USD")}
+        icon={<CircleEqualIcon stroke="var(--primary)" className="h-10 w-10" />}
       />
 
       <StatsCard
-        title={"Annual Billing"}
+        title={"Next Payable Amount"}
         mainText={currencyFormater(stats.nextPayableAmount ?? 0, "USD")}
-        icon={<GiWallet fill="var(--primary)" className="h-10 w-10" />}
+        icon={
+          <SquareFunctionIcon stroke="var(--primary)" className="h-10 w-10" />
+        }
       />
     </div>
   );
