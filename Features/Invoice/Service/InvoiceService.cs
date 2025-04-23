@@ -2,390 +2,343 @@ namespace AccountsAPIs.Services;
 
 public class InvoiceService : IInvoiceService
 {
-    private readonly UserManager<AccountUser> _userManager;
-    private readonly SignInManager<AccountUser> _signInManager;
-    private readonly HttpContext _httpContext;
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthService _authService;
-    private readonly IAuthHelperService _authHelperService;
-    private readonly IEmailService _emailService;
-    private readonly IdentityConfig _identityConfig;
-    private readonly JwtConfig _jwtConfig;
-    private readonly string _userName;
-    private readonly Guid _sessionId;
     private readonly Guid _userId;
 
     public InvoiceService(
-        UserManager<AccountUser> userManager,
-        SignInManager<AccountUser> signInManager,
         IHttpContextAccessor httpContextAccessor,
         ILogger<AuthService> logger,
-        IUnitOfWork unitOfWork,
-        IAuthHelperService authHelperService,
-        IAuthService authService,
-        JwtConfig jwtConfig,
-        IdentityConfig identityConfig,
-        IEmailService emailService)
+        IUnitOfWork unitOfWork)
     {
-        // Set _userName, _sessionId & _userId
-        _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
-        _sessionId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("sid") ?? Guid.Empty.ToString());
+        // Extract the current user's ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _httpContext = Guard.Against.Null(httpContextAccessor.HttpContext, "HttpContext cannot be null");
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _authService = authService;
-        _authHelperService = authHelperService;
-        _jwtConfig = jwtConfig;
-        _identityConfig = identityConfig;
-        _emailService = emailService;
     }
 
-    // Retrive all Invoices list.
-    public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetAllInvoiceAsync()
+    // Retrieve all invoices
+    public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetAllInvoicesAsync()
     {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>
+        var response = new ServiceResponse<IEnumerable<InvoiceDto>>
         {
-            Data = null,
             StatusCode = 400,
-            Message = "Failed to retrive all invoices, please try again"
+            Message = "Failed to retrieve invoices, please try again."
         };
 
         try
         {
-            // Try to get Invoice
-            var invoice = await _unitOfWork.InvoiceRepo.GetAllAsync().ToListAsync();
+            // Fetch all invoice entities from the database
+            var invoices = await _unitOfWork.InvoiceRepo
+                            .GetAllAsync()
+                            .Include(i => i.LicenseCredit)
+                            .ToListAsync();
 
-            // Task Successful
-            serviceResponse.Data = invoice.Adapt<IEnumerable<InvoiceDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice list retrived successfully";
-
+            // Map to DTO and return success
+            response.Data = invoices.Adapt<IEnumerable<InvoiceDto>>();
+            response.StatusCode = 200;
+            response.Message = "Invoices retrieved successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            serviceResponse.Message = "An error occurs while retriving list of invoice";
-            return serviceResponse;
+            _logger.LogError(ex, "Error retrieving all invoices.");
         }
-        return serviceResponse;
+
+        return response;
     }
 
-    //Retrieves all invoices associated with a specific subscription.
-    public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetInvoiceBySubscriptionAsync(Guid subscriptionId)
+    // Retrieve invoices by subscription (or pricing plan) ID
+    public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetInvoicesByPricingPlanAsync(Guid pricingPlanId)
     {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>
+        var response = new ServiceResponse<IEnumerable<InvoiceDto>>
         {
-            Data = null,
             StatusCode = 400,
-            Message = "Failed to retrive all invoices subscription, please try again"
+            Message = "Unable to retrieve invoices by pricing plan. Please try again."
         };
+
         try
         {
-            //TODO: Update it letter
-            // Try to get invoice by subscriptionId
-            var invoice = await _unitOfWork.InvoiceRepo
-            .GetByConditionAsync(w => w.Id == subscriptionId)
-            .ToListAsync();
+            // Retrieve the pricing plan and its associated license credits
+            var pricingPlan = await _unitOfWork.PricingPlanRepo
+                .GetByConditionAsync(w => w.Id == pricingPlanId)
+                .Include(i => i.LicenseCredits)
+                .FirstOrDefaultAsync();
 
-            if (invoice == null)
+            if (pricingPlan == null)
             {
-                _logger.LogInformation($"Invoice by subscriptionId does not found");
-                serviceResponse.Message = "Invoice by subscriptionId  not exist";
-                return serviceResponse;
+                _logger.LogInformation("Pricing plan with the provided ID not found.");
+                response.Message = "Pricing plan not found.";
+                return response;
             }
 
-            // Task Successful
-            serviceResponse.Data = invoice.Adapt<IEnumerable<InvoiceDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice list by subscriptionId retrived successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            serviceResponse.Message = "An error occurs while retriving list of invoice by subscription";
-            return serviceResponse;
-        }
-        return serviceResponse;
-    }
+            // Retrieve invoices associated with the pricing plan's license credits
+            var invoices = await _unitOfWork.InvoiceRepo
+                .GetByConditionAsync(w => pricingPlan.LicenseCredits.Select(s => s.Id).Contains(w.LicenseCreditId))
+                .Include(i => i.LicenseCredit)
+                .ToListAsync();
 
-    // Retrive Invoice by Id
-    public async Task<ServiceResponse<InvoiceDto>> GetInvoiceAsync(Guid id)
-    {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<InvoiceDto>
-        {
-            Data = null,
-            StatusCode = 400,
-            Message = "Failed to retrive invoice, please try again"
-        };
-        try
-        {
-            // Try to get invoice by Id
-            var invoice = await _unitOfWork.InvoiceRepo
-            .GetByConditionAsync(w => w.Id == id).FirstOrDefaultAsync();
-
-            if (invoice == null)
+            // Check if any invoices were found
+            if (invoices == null || !invoices.Any())
             {
-                _logger.LogInformation($"Invoice by Id does not found");
-                serviceResponse.Message = "Invoice does not exist";
-                return serviceResponse;
+                _logger.LogInformation("No invoices found for the given pricing plan.");
+                response.Message = "No invoices found for the provided pricing plan.";
+                return response;
             }
 
-            // Task Successful
-            serviceResponse.Data = invoice.Adapt<InvoiceDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice retrived successfully";
+            // Map invoices to DTOs and return success response
+            response.Data = invoices.Adapt<IEnumerable<InvoiceDto>>();
+            response.StatusCode = 200;
+            response.Message = "Invoices retrieved successfully for the provided pricing plan.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            serviceResponse.Message = "An error occurs while retrive invoice by Id";
-            return serviceResponse;
+            // Log the exception in case of an error
+            _logger.LogError(ex, "Error occurred while retrieving invoices for pricing plan.");
         }
-        return serviceResponse;
+
+        return response;
     }
 
-    // Insert a new Invoice
-    public async Task<ServiceResponse<InvoiceDto>> InsertInvoiceAsync(InvoiceDto invoiceDto)
+    // Retrieve a specific invoice by ID
+    public async Task<ServiceResponse<InvoiceDto>> GetInvoiceByIdAsync(Guid invoiceId)
     {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<InvoiceDto>
+        var response = new ServiceResponse<InvoiceDto>
         {
-            Data = null,
             StatusCode = 400,
-            Message = "Failed to insert invoice, please try again"
+            Message = "Failed to retrieve invoice, please try again."
         };
+
         try
         {
-            // Default mapping
-            var newInvoice = invoiceDto.Adapt<Invoice>();
-            newInvoice.CreatedByUserId = _userId;
-            newInvoice.LastModifiedByUserId = _userId;
-            // Insert Invoice
-            await _unitOfWork.InvoiceRepo.InsertAsync(newInvoice);
+            // Fetch invoice entity by ID
+            var invoice = await _unitOfWork.InvoiceRepo
+                .GetByConditionAsync(i => i.Id == invoiceId)
+                .Include(i=>i.LicenseCredit)
+                .FirstOrDefaultAsync();
 
-            // Insert-Job failed
+            // Handle not found case
+            if (invoice == null)
+            {
+                _logger.LogInformation("Invoice not found.");
+                response.Message = "Invoice not found.";
+                return response;
+            }
+
+            response.Data = invoice.Adapt<InvoiceDto>();
+            response.StatusCode = 200;
+            response.Message = "Invoice retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving invoice by ID.");
+        }
+
+        return response;
+    }
+
+    // Create a new invoice into the database
+    public async Task<ServiceResponse<InvoiceDto>> CreateInvoiceAsync(InvoiceDto invoiceDto)
+    {
+        var response = new ServiceResponse<InvoiceDto>
+        {
+            StatusCode = 400,
+            Message = "Failed to insert invoice, please try again."
+        };
+
+        try
+        {
+            // Map DTO to entity and set audit fields
+            var invoice = invoiceDto.Adapt<Invoice>();
+            invoice.CreatedByUserId = _userId;
+            invoice.LastModifiedByUserId = _userId;
+
+            await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
+
+            // Save changes and validate success
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new Invoice.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save new invoice to database.");
+                return response;
             }
 
-            // Task Successful
-            serviceResponse.Data = newInvoice.Adapt<InvoiceDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice inserted successfully";
-
+            response.Data = invoice.Adapt<InvoiceDto>();
+            response.StatusCode = 200;
+            response.Message = "Invoice inserted successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            serviceResponse.Message = "An error occurs while inserting invoice";
-            return serviceResponse;
+            _logger.LogError(ex, "Error inserting invoice.");
         }
-        return serviceResponse;
 
+        return response;
     }
 
-    // Update Invoice
+    // Update an existing invoice
     public async Task<ServiceResponse<GenerateInvoiceDto>> UpdateInvoiceAsync(GenerateInvoiceDto invoiceDto)
     {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<GenerateInvoiceDto>
+        var response = new ServiceResponse<GenerateInvoiceDto>
         {
-            Data = null,
             StatusCode = 400,
-            Message = "Failed to update invoice, please try again"
+            Message = "Failed to update invoice, please try again."
         };
+
         try
         {
-            // validate Invoice existence
-            var invoice = await _unitOfWork.InvoiceRepo
-            .GetByConditionAsync(w => w.Id == invoiceDto.Id)
-            .FirstOrDefaultAsync();
+            // Get the existing invoice
+            var existingInvoice = await _unitOfWork.InvoiceRepo
+                .GetByConditionAsync(i => i.Id == invoiceDto.Id)
+                .FirstOrDefaultAsync();
 
-            // Invoice does not exist
-            if (invoice == null)
+            if (existingInvoice == null)
             {
-                _logger.LogInformation($"Invoice does not exist");
-                serviceResponse.Message = "Invoice not exist";
-                return serviceResponse;
+                _logger.LogInformation("Invoice not found for update.");
+                response.Message = "Invoice not found.";
+                return response;
             }
 
-            // Calculate Tax
-            decimal taxRate = 0.10m; // 10% tax (this could vary based on location)
-            decimal taxAmount = invoiceDto.Amount * taxRate;
-
-            // Apply Discount 
-            decimal discount = invoiceDto.Discount;
-
-            // Calculate Total Amount
-            decimal totalAmount = (invoiceDto.Amount + taxAmount) - discount;
-
-            // Generate Invoice Number (can be customized)
+            // Calculate tax and total
+            decimal tax = invoiceDto.Amount * 0.10m;
+            decimal total = (invoiceDto.Amount + tax) - invoiceDto.Discount;
             string invoiceNumber = GenerateInvoiceNumber(invoiceDto.TenantId);
 
+            // Update invoice fields
+            var updatedInvoice = invoiceDto.Adapt(existingInvoice);
+            updatedInvoice.InvoiceNumber = invoiceNumber;
+            updatedInvoice.CreatedByUserId = _userId;
+            updatedInvoice.LastModifiedByUserId = _userId;
 
-            // Default mapping
-            var newInvoice = invoiceDto.Adapt(invoice);
+            _unitOfWork.InvoiceRepo.Update(updatedInvoice);
 
-            // update invoice
-            _unitOfWork.InvoiceRepo.Update(newInvoice);
-            newInvoice.CreatedByUserId = _userId;
-            newInvoice.LastModifiedByUserId = _userId;
-
-            // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating Invoice.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save invoice update to database.");
+                return response;
             }
 
-            // Task Successful
-            serviceResponse.Data = newInvoice.Adapt<GenerateInvoiceDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice updated sucessfully";
+            response.Data = updatedInvoice.Adapt<GenerateInvoiceDto>();
+            response.StatusCode = 200;
+            response.Message = "Invoice updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            serviceResponse.Message = "An error occurs while updating invoice";
-            return serviceResponse;
+            _logger.LogError(ex, "Error updating invoice.");
         }
-        return serviceResponse;
+
+        return response;
     }
 
-    // Delete Invoice by Id
-    public async Task<ServiceResponse<bool>> DeleteInvoiceAsync(Guid id)
+    // Delete an invoice by ID
+    public async Task<ServiceResponse<bool>> DeleteInvoiceAsync(Guid invoiceId)
     {
-        // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<bool>
+        var response = new ServiceResponse<bool>
         {
             Data = false,
             StatusCode = 400,
-            Message = "Failed to delete invoice, please try again"
+            Message = "Failed to delete invoice, please try again."
         };
+
         try
         {
-            // validate Invoice existence
+            // Fetch invoice for deletion
             var invoice = await _unitOfWork.InvoiceRepo
-            .GetByConditionAsync(w => w.Id == id)
-            .FirstOrDefaultAsync();
+                .GetByConditionAsync(i => i.Id == invoiceId)
+                .FirstOrDefaultAsync();
 
-            // Invoice does not exist
             if (invoice == null)
             {
-                _logger.LogInformation($"Invoice does not exist");
-                serviceResponse.Message = "Invoice not exist";
-                return serviceResponse;
+                _logger.LogInformation("Invoice not found for deletion.");
+                response.Message = "Invoice not found.";
+                return response;
             }
 
-            // Delete Invoice
             _unitOfWork.InvoiceRepo.Delete(invoice);
 
-            //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting invoice.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save invoice deletion to database.");
+                return response;
             }
 
-            // Task successful
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice deleted successfully";
+            response.Data = true;
+            response.StatusCode = 200;
+            response.Message = "Invoice deleted successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            serviceResponse.Message = "An error occurs while deleting invoice";
-            return serviceResponse;
+            _logger.LogError(ex, "Error deleting invoice.");
         }
-        return serviceResponse;
+
+        return response;
     }
 
+    // Generate a new invoice based on business rules
     public async Task<ServiceResponse<GenerateInvoiceDto>> GenerateInvoiceAsync(GenerateInvoiceDto invoiceDto)
     {
-        var serviceResponse = new ServiceResponse<GenerateInvoiceDto>
+        var response = new ServiceResponse<GenerateInvoiceDto>
         {
-            Data = null,
             StatusCode = 400,
             Message = "Failed to generate invoice, please try again."
         };
 
         try
         {
-            // Validate Subscription existence
+            // Validate subscription existence
             var subscription = await _unitOfWork.SubscriptionRepo
-            .GetByConditionAsync(w => w.Id == invoiceDto.SubscriptionId)
-           .FirstOrDefaultAsync();
+                .GetByConditionAsync(s => s.Id == invoiceDto.PlanId)
+                .FirstOrDefaultAsync();
 
             if (subscription == null)
             {
-                serviceResponse.Message = "Invalid subscription or tenant mismatch.";
-                return serviceResponse;
+                response.Message = "Invalid subscription or tenant mismatch.";
+                return response;
             }
 
-            // Calculate Tax
-            decimal taxRate = 0.10m; // 10% tax (this could vary based on location)
-            decimal taxAmount = invoiceDto.Amount * taxRate;
+            // Calculate total cost
+            decimal tax = invoiceDto.Amount * 0.10m;
+            decimal total = (invoiceDto.Amount + tax) - invoiceDto.Discount;
 
-            // Apply Discount 
-            decimal discount = invoiceDto.Discount;
-
-            // Calculate Total Amount
-            decimal totalAmount = (invoiceDto.Amount + taxAmount) - discount;
-
-            // Generate Invoice Number (can be customized)
+            // Generate unique invoice number
             string invoiceNumber = GenerateInvoiceNumber(invoiceDto.TenantId);
 
-            // Default mapping
+            // Create invoice entity
             var invoice = invoiceDto.Adapt<Invoice>();
+            invoice.InvoiceNumber = invoiceNumber;
             invoice.CreatedByUserId = _userId;
             invoice.LastModifiedByUserId = _userId;
 
-            //Insert the Invoice into the Database
+            // Save to database
             await _unitOfWork.InvoiceRepo.InsertAsync(invoice);
 
-            // Check if SaveAsync was successful
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new Invoice.");
-                return serviceResponse;
+                _logger.LogInformation("Failed to save generated invoice to database.");
+                return response;
             }
 
-            // Task Successful
-            serviceResponse.Data = invoice.Adapt<GenerateInvoiceDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Invoice generated and inserted successfully.";
-
+            response.Data = invoice.Adapt<GenerateInvoiceDto>();
+            response.StatusCode = 200;
+            response.Message = "Invoice generated and saved successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite.Name);
-
-            serviceResponse.Message = "An error occurred while generating and inserting the invoice.";
+            _logger.LogError(ex, Constants.ERROR_OCCURRED_MESSAGE_TEMPLATE, ex.TargetSite?.Name);
         }
 
-        return serviceResponse;
+        return response;
     }
 
-    // Helper function to generate a unique Invoice Number
+    // Generate a unique invoice number for the tenant
     private string GenerateInvoiceNumber(Guid tenantId)
     {
-        var lastInvoice = _unitOfWork.InvoiceRepo.GetByConditionAsync(i => i.TenantId == tenantId)
-                                   .OrderByDescending(i => i.CreatedOn)
-                                   .FirstOrDefault();
+        var lastInvoice = _unitOfWork.InvoiceRepo
+            .GetByConditionAsync(i => i.TenantId == tenantId)
+            .OrderByDescending(i => i.CreatedOn)
+            .FirstOrDefault();
 
-        int nextInvoiceNumber = lastInvoice == null ? 1 : int.Parse(lastInvoice.InvoiceNumber.Split('-').Last()) + 1;
+        // Increment the last number or start from 1
+        int nextNumber = lastInvoice == null ? 1 : int.Parse(lastInvoice.InvoiceNumber.Split('-').Last()) + 1;
 
-        return $"INV-{DateTime.UtcNow.Year}-{nextInvoiceNumber:D3}"; //INV-2025-001
+        return $"INV-{DateTime.UtcNow.Year}-{nextNumber:D3}";
     }
 }
