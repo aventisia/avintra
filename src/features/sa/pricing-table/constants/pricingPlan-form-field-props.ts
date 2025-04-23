@@ -2,17 +2,32 @@ import { BillingFrequenciesEnum } from "@/react-toolkit/enums/billing-frequencie
 import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { IconInputFieldProps } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { SearchSelectFieldProps } from "@/react-toolkit/ui/form/fields/SearchSelectField";
 import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+
+import { searchTenantsToSelect } from "../../tenants-table/apis/tenants-table-apis";
 
 // PricingPlan Id
 export const idProps: InputFieldProps = {
   name: "id",
   label: "Id",
   disabled: true,
+};
+
+export const tenantSelectProps: AsyncSelectFieldProps = {
+  name: "tenantId",
+  fetcher: (search?: string) =>
+    searchTenantsToSelect(search).then((data) => data.data),
+  label: "Tenant Name",
+  placeholder: "Select tenant",
+  className: "!w-[28rem]",
+  triggerClassName: "!w-full",
+  size: "base",
 };
 
 export const pricingComponentTypeProps: SelectFieldProps = {
@@ -28,11 +43,14 @@ export const tenantTypeProps: SelectFieldProps = {
   selectOptions: enumToArray(DeploymentTypeEnum),
 };
 
-export const currencyTypeProps: SelectFieldProps = {
+export const currencyTypeProps: SearchSelectFieldProps = {
   name: "currency",
-  label: "Currency",
+  label: "",
+  size: "base",
+  placeholder: "Currency",
   isRequired: true,
   selectOptions: enumToArray(CurrencyTypesEnum),
+  triggerClassName: "rounded-l-none",
 };
 export const unitPriceTypeProps: InputFieldProps = {
   name: "unitPrice",
