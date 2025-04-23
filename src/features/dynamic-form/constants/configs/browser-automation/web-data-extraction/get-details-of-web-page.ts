@@ -33,11 +33,27 @@ const getDetailsOfWebPageFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "webPageProperty",
-    type: "switch",
-    label: "WebPageProperty",
+    name: "o_webPagePropertyOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The details retrieved from the web page",
-    defaultValue: "",
+    defaultValue: "WebPageProperty",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_webPagePropertySwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_webPagePropertySwitch",
+    type: "output-switch-field",
+    label: "WebPageProperty",
+    defaultValue: true,
   },
 ];
 
@@ -48,14 +64,14 @@ const getDetailsOfWebPageFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["webPageProperty"]],
+    formFieldKeys: [["o_webPagePropertyOutput", "o_webPagePropertySwitch"]],
   },
 ];
 
 const getDetailsOfWebPage: ActivityConfig = {
   fieldList: getDetailsOfWebPageFieldList,
   fieldCategories: getDetailsOfWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_webPagePropertyOutput", "o_webPagePropertySwitch"],
 };
 
 export default getDetailsOfWebPage;

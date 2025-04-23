@@ -514,34 +514,37 @@ const DynamicControl = ({ field, fData, form }: DynamicControlProps) => {
     case "output-text-field":
       return (
         <>
-          <div className="group relative">
+          <div>
             <FormControl>
-              <Input
-                fieldSize="xs"
-                className={cn(
-                  fData.className,
-                  "inline h-6 w-fit cursor-pointer rounded-lg bg-secondary-light px-2 py-1 font-semibold text-secondary placeholder:text-white hover:ring-1 focus-visible:cursor-auto focus-visible:border-none focus-visible:ring-1 disabled:opacity-70",
-                )}
-                readOnly={fData.readonly}
-                type={fData.type}
-                placeholder={fData.placeholder}
-                {...field}
-                onFocus={handleFocus}
-                autoComplete="off"
-              />
+              <span className="group relative">
+                <Input
+                  fieldSize="xs"
+                  className={cn(
+                    fData.className,
+                    "inline h-6 w-fit cursor-pointer rounded-lg bg-secondary-light px-2 py-1 font-semibold text-secondary placeholder:text-white hover:ring-1 focus-visible:cursor-auto focus-visible:border-none focus-visible:ring-1 disabled:opacity-70",
+                  )}
+                  readOnly={fData.readonly}
+                  type={fData.type}
+                  placeholder={fData.placeholder}
+                  {...field}
+                  onFocus={handleFocus}
+                  autoComplete="off"
+                />
+
+                <div
+                  className="z-100 absolute bottom-[90%] right-0 hidden transition-opacity duration-300 ease-in-out group-focus-within:block"
+                  onFocus={(e) => e.currentTarget.classList.remove("hidden")}
+                  onBlur={(e) => e.currentTarget.classList.add("hidden")}
+                >
+                  <VariableSelectorPopover />
+                </div>
+              </span>
             </FormControl>
             {fData.description && (
               <FormDescription className="text-xs">
                 {fData.description}
               </FormDescription>
             )}
-            <div
-              className="z-100 absolute bottom-[90%] right-0 hidden transition-opacity duration-300 ease-in-out group-focus-within:block"
-              onFocus={(e) => e.currentTarget.classList.remove("hidden")}
-              onBlur={(e) => e.currentTarget.classList.add("hidden")}
-            >
-              <VariableSelectorPopover />
-            </div>
           </div>
         </>
       );
