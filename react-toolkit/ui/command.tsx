@@ -1,9 +1,10 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Dialog, DialogContent } from "@/react-toolkit/ui/dialog";
-import { DialogProps } from "@radix-ui/react-dialog";
-import { Command as CommandPrimitive } from "cmdk";
-import { Search } from "lucide-react";
-import * as React from "react";
+import { Command as CommandPrimitive } from "cmdk"
+import { Search } from "lucide-react"
+import * as React from "react"
+
+import { cn } from "@/react-toolkit/lib/utils"
+import { Dialog, DialogContent } from "@/react-toolkit/ui/dialog"
+import { DialogProps } from "@radix-ui/react-dialog"
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -20,7 +21,7 @@ const Command = React.forwardRef<
 ));
 Command.displayName = CommandPrimitive.displayName;
 
-interface CommandDialogProps extends DialogProps {}
+export type CommandDialogProps = {} & DialogProps;
 
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
@@ -34,10 +35,15 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   );
 };
 
+export type CommandInputProps = {
+  showShortcut?: boolean;
+};
+
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> &
+    CommandInputProps
+>(({ className, showShortcut = false, ...props }, ref) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
     <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
@@ -48,9 +54,11 @@ const CommandInput = React.forwardRef<
       )}
       {...props}
     />
-    <CommandShortcut>
-      <span className="text-xs">⌘</span>K
-    </CommandShortcut>
+    {showShortcut ? (
+      <CommandShortcut>
+        <span className="text-xs">⌘</span>K
+      </CommandShortcut>
+    ) : null}
   </div>
 ));
 
@@ -152,6 +160,5 @@ export {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut
+  CommandShortcut,
 };
-
