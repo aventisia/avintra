@@ -65,7 +65,7 @@ export const RequestLicenseOverviewDetails = ({
         <OverviewDetailDivElement
           label="Unit Cost :"
           isFetching={isFetching}
-          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} ${licenseDetails?.pricingComponent == "GPUCompute" ? "/30 sec" : "/mo"}`}
+          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} ${licenseDetails?.pricingComponent == "GPUCompute" ? "/unit" : "/mo"}`}
         />
         {licenseDetails?.frequency && licenseDetails?.frequency != "NA" ? (
           <OverviewDetailDivElement
