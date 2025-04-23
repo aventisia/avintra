@@ -5,12 +5,14 @@ import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkelet
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchInovices } from "../hooks/useFetchInovices";
+import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
 import { InovicesBulkActions } from "./inovice-table-actions/InovicesBulkActions";
 import { inovicesTableColumns } from "./InovicesTableColumns";
-import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
+import { InvoicesStats } from "./InvoicesStats";
 
 /**
  * Renders a table of billing.
@@ -54,13 +56,17 @@ export const InovicesTable = () => {
                 <DTViewOptions {...{ table, columnDisplayNames }} />
               </div>
             </div>
-
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={inovicesTableColumns.length}
-              />
+
+            <div className="flex flex-col gap-2">
+              <InvoicesStats />
+
+              <div className="rounded-md border">
+                <DataTable
+                  table={table}
+                  columnsLength={inovicesTableColumns.length}
+                />
+              </div>
             </div>
           </BillingAddressCrudDialog>
 
