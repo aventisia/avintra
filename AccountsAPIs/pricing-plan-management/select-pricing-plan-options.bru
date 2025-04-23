@@ -1,0 +1,17 @@
+meta {
+  name: Select pricing plan options
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-pricing-plan/plans-to-select/{{TENANT_ID}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}
