@@ -1,5 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
+
 [Route("invoice")]
 [ApiController]
 [Authorize]
@@ -12,46 +13,46 @@ public class InvoiceController : BaseApiController
     _invoiceService = invoiceService;
   }
 
-  // Retrive all Invoices list.
-  [HttpGet("invoice-list")]
+  // Retrieve all Invoices list.
+  [HttpGet("list")]
   public async Task<ActionResult<ServiceResponse<IEnumerable<InvoiceDto>>>> GetAllInvoice()
   {
-    return ResultHelper(await _invoiceService.GetAllInvoiceAsync());
+    return ResultHelper(await _invoiceService.GetAllInvoicesAsync());
   }
 
-  //Retrieves all invoices list associated with a specific subscription.
-  [HttpGet("list/{subscriptionId}")]
-  public async Task<ActionResult<IEnumerable<InvoiceDto>>> GetInvoiceBySubscription (Guid subscriptionId)
+  //Retrieves all invoices list associated with a specific pricing plan.
+  [HttpGet("list/{pricingPlanId}")]
+  public async Task<ActionResult<IEnumerable<InvoiceDto>>> GetInvoiceBySubscription (Guid pricingPlanId)
   {
-    return ResultHelper(await _invoiceService.GetInvoiceBySubscriptionAsync(subscriptionId));
+    return ResultHelper(await _invoiceService.GetInvoicesByPricingPlanAsync(pricingPlanId));
   }
 
-  // Retrive invoice by Id
-  [HttpGet("{id}")]
-  public async Task<ActionResult<ServiceResponse<InvoiceDto>>> GetInvoice(Guid id)
+  // Retrieve invoice by Id
+  [HttpGet("{invoiceId}")]
+  public async Task<ActionResult<ServiceResponse<InvoiceDto>>> GetInvoice(Guid invoiceId)
   {
-    return ResultHelper(await _invoiceService.GetInvoiceAsync(id));
+    return ResultHelper(await _invoiceService.GetInvoiceByIdAsync(invoiceId));
   }
 
   // Create a new Invoice
-  [HttpPost("insert-invoice")]
+  [HttpPost]
   public async Task<ActionResult<ServiceResponse<InvoiceDto>>> InsertInvoice([FromBody] InvoiceDto invoiceDto)
   {
-    return ResultHelper(await _invoiceService.InsertInvoiceAsync(invoiceDto));
+    return ResultHelper(await _invoiceService.CreateInvoiceAsync(invoiceDto));
   }
 
   // Update Invoice
-  [HttpPut("update-invoice")]
+  [HttpPut]
   public async Task<ActionResult<ServiceResponse<GenerateInvoiceDto>>> UpdateInvoice([FromBody] GenerateInvoiceDto invoiceDto)
   {
     return ResultHelper(await _invoiceService.UpdateInvoiceAsync(invoiceDto));
   }
 
   // Delete Invoice by Id
-  [HttpDelete("delete/{id}")]
-  public async Task<ActionResult<ServiceResponse<bool>>> DeleteInvoice (Guid id)
+  [HttpDelete("delete/{invoiceId}")]
+  public async Task<ActionResult<ServiceResponse<bool>>> DeleteInvoice (Guid invoiceId)
   {
-    return ResultHelper(await _invoiceService.DeleteInvoiceAsync(id));
+    return ResultHelper(await _invoiceService.DeleteInvoiceAsync(invoiceId));
   }
 
   // Generate a new Invoice

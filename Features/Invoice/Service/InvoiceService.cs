@@ -114,7 +114,7 @@ public class InvoiceService : IInvoiceService
             // Fetch invoice entity by ID
             var invoice = await _unitOfWork.InvoiceRepo
                 .GetByConditionAsync(i => i.Id == invoiceId)
-                .Include(i=>i.LicenseCredit)
+                .Include(i => i.LicenseCredit)
                 .FirstOrDefaultAsync();
 
             // Handle not found case
@@ -283,17 +283,6 @@ public class InvoiceService : IInvoiceService
 
         try
         {
-            // Validate subscription existence
-            var subscription = await _unitOfWork.SubscriptionRepo
-                .GetByConditionAsync(s => s.Id == invoiceDto.PlanId)
-                .FirstOrDefaultAsync();
-
-            if (subscription == null)
-            {
-                response.Message = "Invalid subscription or tenant mismatch.";
-                return response;
-            }
-
             // Calculate total cost
             decimal tax = invoiceDto.Amount * 0.10m;
             decimal total = (invoiceDto.Amount + tax) - invoiceDto.Discount;
