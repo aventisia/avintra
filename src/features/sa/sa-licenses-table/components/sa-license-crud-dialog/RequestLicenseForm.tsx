@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
@@ -22,7 +23,6 @@ import {
 import { requestLicenseZodSchema } from "../../constants/saLicense-zod-schema";
 import { RequestLicensesDto } from "../../dtos/request-license-dto";
 import { useDefineRequestLicenseForm } from "../../hooks/useDefineRequestLicenseForm";
-import { useFetchPricingPlanDetails } from "../../hooks/useFetchSaLicenses";
 import { RequestLicenseOverviewDetails } from "./RequestLicenseOverviewDetails";
 
 export const RequestLicenseForm = () => {
