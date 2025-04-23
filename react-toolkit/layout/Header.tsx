@@ -13,6 +13,7 @@ interface HeaderProps {
   extraContentLeft?: React.ReactNode;
   extraContentRight?: React.ReactNode;
   className?: string;
+  isDesktop?: boolean;
 }
 
 /**
@@ -25,6 +26,7 @@ const Header = ({
   extraContentLeft,
   extraContentRight,
   className,
+  isDesktop,
 }: HeaderProps) => {
   const { userSession } = useUserSessionStore();
   return (
@@ -40,7 +42,12 @@ const Header = ({
         )}
       >
         <div className="flex flex-grow items-center">
-          <Sidebar className={cn(["hidden md:block"])} appConfig={appConfig} />
+          {!isDesktop && (
+            <Sidebar
+              className={cn(["hidden md:block"])}
+              appConfig={appConfig}
+            />
+          )}
           <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />
           <AppLogo />
           {/* Extra content to render on left side */}
