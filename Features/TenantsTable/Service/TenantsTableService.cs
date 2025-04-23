@@ -547,7 +547,7 @@ public class TenantsTableService : ITenantsTableService
         {
             // Fetch all pricing plans from the repository asynchronously
             var currencies = await _unitOfWork.PricingPlanRepo
-                .GetAllAsync().DistinctBy(d => d.Currency)
+                .GetAllAsync()
                 .Select(s => new SelectOptionDto()
                 {
                     // Map each plan's currency to a selectable option DTO
@@ -558,7 +558,7 @@ public class TenantsTableService : ITenantsTableService
                 .ToListAsync();
 
             // Populate the response with the successfully retrieved currency options
-            response.Data = currencies;
+            response.Data = currencies.DistinctBy(d => d.Value);
             response.StatusCode = 200;
             response.Message = "Pricing plan currencies retrieved successfully.";
         }
