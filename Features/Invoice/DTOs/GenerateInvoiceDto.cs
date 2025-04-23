@@ -10,9 +10,9 @@ public class GenerateInvoiceDto
     public Guid TenantId {get;set;}
 
     /// <summary>
-    /// Gets or sets the Id of a Subscription, this Invoice is associated with
+    /// Gets or sets the PricingPlanId of a pricing plan, this Invoice is associated with
     /// </summary>
-    public Guid SubscriptionId { get; set; }
+    public Guid PricingPlanId { get; set; }
     
     /// <summary>
     /// Gets or sets the Amount

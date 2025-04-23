@@ -8,9 +8,9 @@ public class InvoiceDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the Id of a payment with subscription is associated with.
+    /// Gets or sets the PricingPlanId of a payment with pricing plan is associated with.
     /// </summary>
-    public Guid SubscriptionId { get; set; }
+    public Guid PricingPlanId { get; set; }
     /// <summary>
     /// Gets or sets the Amount
     /// </summary>
@@ -25,6 +25,11 @@ public class InvoiceDto
     /// Gets or sets the IsPaid
     /// </summary>
     public bool IsPaid { get; set; }
+
+    /// <summary>
+    /// Gets or sets the AmountReceivedOn
+    /// </summary>
+    public DateTime AmountReceivedOn { get; set; }
 
     public string? InvoiceNumber {get;set;}
     //public DateTime InvoiceDate {get;set;}
