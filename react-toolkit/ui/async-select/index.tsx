@@ -1,22 +1,13 @@
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
 import { cn } from "@/react-toolkit/lib/utils";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
+    Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList
 } from "@/react-toolkit/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/react-toolkit/ui/popover";
 
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */
@@ -194,7 +185,7 @@ export function AsyncSelect<T>({
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>
           )}
-          <ChevronsUpDown className="opacity-50" size={10} />
+          <ChevronDown className="opacity-50" size={18} />
         </Button>
       </PopoverTrigger>
       <PopoverContent className={cn("p-0", className)}>
