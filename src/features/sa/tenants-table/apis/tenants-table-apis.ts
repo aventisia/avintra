@@ -3,6 +3,8 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { ISelectOption } from "@/react-toolkit/types/select-option";
+
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
@@ -13,6 +15,44 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 const getTenants = () => {
   return axiosInstance
     .get<IHttpResponse<TenantsTableDto[]>>(`${baseAPIURL}`)
+    .then((res) => res.data);
+};
+
+export const getTenantsToSelect = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/tenants-to-select`)
+    .then((res) => res.data);
+};
+
+export const searchTenantsToSelect = (query?: string) => {
+  return axiosInstance
+    .post<IHttpResponse<ISelectOption[]>>(
+      `${baseAPIURL}/tenants-to-search-select`,
+      {
+        userInput: query ?? null,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    .then((res) => res.data);
+};
+
+export const getTenantDetails = (id?: string) => {
+  if (!id)
+    return Promise.resolve<IHttpResponse<TenantsTableDto>>({
+      statusCode: 201,
+      message: "",
+      data: {
+        name: "id not provided",
+        effectiveDate: new Date(),
+        renewalDate: new Date(),
+      },
+    });
+  return axiosInstance
+    .get<IHttpResponse<TenantsTableDto>>(`${baseAPIURL}/${id ?? ""}`)
     .then((res) => res.data);
 };
 
