@@ -1,10 +1,24 @@
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+
+import { getLicensesToSelect } from "../apis/licenses-table-apis";
 
 // License Id
 export const idProps: InputFieldProps = {
   name: "id",
   label: "License Id",
   disabled: true,
+};
+
+export const licenseSelectProps: AsyncSelectFieldProps = {
+  name: "planId",
+  fetcher: () => getLicensesToSelect().then((data) => data.data),
+  label: "License Type",
+  placeholder: "Select License",
+  className: "!w-[30rem]",
+  triggerClassName: "!w-full",
+  size: "base",
+  isRequired: true,
 };
 
 // New Allocated Units
