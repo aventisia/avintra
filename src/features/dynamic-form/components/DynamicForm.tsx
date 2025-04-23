@@ -99,6 +99,7 @@ const DynamicForm = ({
                 className={cn(
                   "w-full",
                   fData.containerClassName ? fData.containerClassName : "grow",
+                  "h-auto",
                 )}
                 key={index}
               >
@@ -151,7 +152,9 @@ const DynamicForm = ({
           <div className="mt-2.5">
             {formFieldCategories[0].formFields?.map((fItem, index) => (
               <div key={index} className="mb-4 mt-3 px-0.5 first:mt-0">
-                {renderFieldInFlexView(fItem)}
+                {outputRegex.test(fItem[0].name)
+                  ? renderOutputFields(fItem)
+                  : renderFieldInFlexView(fItem)}
               </div>
             ))}
           </div>
@@ -186,7 +189,7 @@ const DynamicForm = ({
                   </label>
 
                   <div
-                    className={`max-h-0 w-full overflow-hidden rounded-b-lg border-none bg-muted shadow-none transition-all duration-700 ease-in-out peer-checked:max-h-[1000px]`}
+                    className={`max-h-0 w-full overflow-hidden rounded-b-lg border-none bg-muted shadow-none transition-all duration-700 ease-in-out peer-checked:max-h-[1250px]`}
                   >
                     <div className="space-y-4 p-3 pb-4">
                       {/* Accordion Content */}

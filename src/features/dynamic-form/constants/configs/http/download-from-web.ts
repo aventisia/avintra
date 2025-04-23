@@ -273,7 +273,6 @@ const downloadFromWebFieldCategories: IDynamicFormKeysCategory[] = [
       ["url"],
       ["method"],
       ["postParams"],
-      ["postTest"],
       ["saveResponse"],
       ["fileName"],
       ["destinationFolder"],
