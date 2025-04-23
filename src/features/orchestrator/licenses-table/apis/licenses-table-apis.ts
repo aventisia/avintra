@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { ISelectOption } from "@/react-toolkit/types/select-option";
 
 import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
 
@@ -11,7 +12,23 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/license-cre
  */
 export const getMyLicenses = () => {
   return axiosInstance
-    .get<IHttpResponse<MyLicensesTableDto[]>>(`${baseAPIURL}/my`)
+    .get<IHttpResponse<MyLicensesTableDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves list of license by id.
+ */
+export const getLicense = (id?: string) => {
+  id = id && !id?.includes("00000000") ? id : "";
+  return axiosInstance
+    .get<IHttpResponse<MyLicensesTableDto>>(`${baseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
+
+export const getLicensesToSelect = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/license-to-select`)
     .then((res) => res.data);
 };
 
