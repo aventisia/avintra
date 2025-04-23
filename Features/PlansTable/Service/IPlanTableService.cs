@@ -75,4 +75,11 @@ public interface IPlanTableService
     /// A task representing the asynchronous operation. The result contains the <see cref="PricingPlanTableDto"/> if found.
     /// </returns>
     Task<ServiceResponse<PricingPlanTableDto>> GetPricingPlanByComponentAsync(string pricingComponent);
+
+    /// <summary>
+    /// Asynchronously retrieves a list of pricing plan options.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync();
+
 }

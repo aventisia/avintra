@@ -560,4 +560,73 @@ public class PlanTableService : IPlanTableService
         // Return the final response (either data or error message)
         return response;
     }
+
+
+    // Retrieves a list of plan options.
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync()
+    {
+        // Initialize the service response with a default error message and 500 status code
+        var response = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve plans. Please try again.",
+        };
+
+        try
+        {
+            // Retrieve both the current tenant and the default "IndividualUsers" tenant
+            var tenants = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t =>
+                    t.Id == _tenantId ||
+                    t.Name.Equals(DefaultTenantsEnum.IndividualUsers.ToString()))
+                .ToListAsync();
+
+            // If no tenants were found, return the default error response
+            if (!tenants.Any())
+                return response;
+
+            // Get the current tenant object based on the ID
+            var currentTenant = tenants.FirstOrDefault(t => t.Id == _tenantId);
+            if (currentTenant == null)
+                return response;
+
+            // Fetch all plans associated with the current tenant or the default tenant
+            var tenantIds = tenants.Select(t => t.Id);
+            var allPlans = await _unitOfWork.PricingPlanRepo
+                .GetByConditionAsync(w => w.TenantId == null || tenantIds.Contains(w.TenantId!.Value))
+                .ToListAsync();
+
+            // Filter out plans specific to the current tenant and matching its currency
+            var currentTenantPlans = allPlans
+                .Where(p => p.TenantId == currentTenant.Id);
+
+            // Fetch default plans (e.g., from IndividualUsers) that match pricing component and frequency
+            var defaultPlans = allPlans
+                .Where(p =>
+                    p.TenantId == null &&
+                    p.Currency == currentTenant.Currency &&
+                    p.TenantType == currentTenant.Type &&
+                    !currentTenantPlans.Any(cp =>
+                        cp.PricingComponent == p.PricingComponent &&
+                        cp.Frequency == p.Frequency));
+
+            // Step 6: Merge the current tenant's plans with the default plans, distinct by PricingComponent and Frequency
+            var resultPlans = currentTenantPlans
+                .Concat(defaultPlans)
+                .GroupBy(p => new { p.PricingComponent, p.Frequency })
+                .Select(g => g.First()).ToList();
+
+            // Map the result plans to DTOs and update the service response
+            response.Data = resultPlans.Adapt<IEnumerable<SelectOptionDto>>();
+            response.StatusCode = 200;
+            response.Message = "Plans retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return the default failure response
+            _logger.LogError(ex, "Error retrieving plan options.");
+        }
+
+        return response;
+    }
 }

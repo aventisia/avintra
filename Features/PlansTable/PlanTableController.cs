@@ -69,4 +69,11 @@ public class PlanTableController : BaseApiController
     {
         return ResultHelper(await _planTableService.DeletePricingPlansAsync(pricingPlanIds));
     }
+    
+    // Retrieves a list of plan options.
+    [HttpGet("plans-to-select/{tenantId?}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionListAsync()
+    {
+        return ResultHelper(await _planTableService.GetPlanOptionListAsync());
+    }
 }

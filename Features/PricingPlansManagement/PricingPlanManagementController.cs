@@ -77,4 +77,11 @@ public class PricingPlanManagementController : BaseApiController
         // Calls the service method to fetch pricing plan details by ID.
         return ResultHelper(await _pricingPlanManagementService.GetPricingPlanByComponentAsync(pricingComponent, tenantId));
     }
+    
+    // Retrieves a list of plan options.
+    [HttpGet("plans-to-select/{tenantId?}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPlanOptionListAsync(Guid tenantId)
+    {
+        return ResultHelper(await _pricingPlanManagementService.GetPlanOptionListAsync(tenantId));
+    }
 }

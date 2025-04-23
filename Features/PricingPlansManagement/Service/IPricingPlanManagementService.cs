@@ -60,4 +60,11 @@ public interface IPricingPlanManagementService
     /// <param name="tenantId">An optional tenant ID to filter pricing plans. If null, all tenant pricing plans for the component are returned.</param>
     /// <returns>A task representing the asynchronous operation, containing a service response with the retrieved pricing plan details.</returns>
     Task<ServiceResponse<PricingPlanTableDto>> GetPricingPlanByComponentAsync(string pricingComponent, Guid? tenantId);
+
+    /// <summary>
+    /// Asynchronously retrieves a list of pricing plan options.
+    /// <param name="tenantId">An tenant ID to filter pricing plans.</param>
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPlanOptionListAsync(Guid tenantId);
 }
