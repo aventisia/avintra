@@ -14,7 +14,7 @@ export const additionalUnitsRequestedProps: InputFieldProps = {
 
 export const tenantSelectProps: AsyncSelectFieldProps = {
   name: "id",
-  fetcher: (search?: string) =>
+  selectOptions: (search?: string) =>
     searchTenantsToSelect(search).then((data) => data.data),
   label: "Tenant Name",
   placeholder: "Select tenant",
@@ -26,7 +26,7 @@ export const tenantSelectProps: AsyncSelectFieldProps = {
 
 export const licenseSelectProps: AsyncSelectFieldProps = {
   name: "planId",
-  fetcher: () => Promise.resolve([]),
+  selectOptions: () => Promise.resolve([]),
   label: "License Type",
   placeholder: "Select License",
   className: "!w-[30rem]",

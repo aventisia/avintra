@@ -92,7 +92,7 @@ export const RequestLicenseForm = () => {
       <AsyncSelectField
         {...licenseSelectProps}
         disabled={!id}
-        fetcher={() =>
+        selectOptions={() =>
           !id
             ? Promise.resolve([])
             : getLicensesToSelect(id).then((data) => data.data)
