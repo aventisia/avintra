@@ -38,7 +38,7 @@ export const currencyProps: AsyncSelectFieldProps = {
   size: "base",
   placeholder: "Currency",
   isRequired: true,
-  fetcher: async () => await getCurrenciesToSelect().then((data) => data?.data),
+  selectOptions: async () => await getCurrenciesToSelect().then((data) => data?.data),
 };
 
 export const effectiveOnProps: DatePickerFieldProps = {

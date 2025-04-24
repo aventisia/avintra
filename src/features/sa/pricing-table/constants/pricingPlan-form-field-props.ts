@@ -5,9 +5,9 @@ import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-
 import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { IconInputFieldProps } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SearchSelectFieldProps } from "@/react-toolkit/ui/form/fields/SearchSelectField";
 import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { getSearchOptionsForAsyncSelect } from "@/react-toolkit/utils";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
 import { searchTenantsToSelect } from "../../tenants-table/apis/tenants-table-apis";
@@ -21,7 +21,7 @@ export const idProps: InputFieldProps = {
 
 export const tenantSelectProps: AsyncSelectFieldProps = {
   name: "tenantId",
-  fetcher: (search?: string) =>
+  selectOptions: (search?: string) =>
     searchTenantsToSelect(search).then((data) => data.data),
   label: "Tenant Name",
   placeholder: "Select tenant",
@@ -43,13 +43,15 @@ export const tenantTypeProps: SelectFieldProps = {
   selectOptions: enumToArray(DeploymentTypeEnum),
 };
 
-export const currencyTypeProps: SearchSelectFieldProps = {
+export const currencyTypeProps: AsyncSelectFieldProps = {
   name: "currency",
   label: "",
   size: "base",
   placeholder: "Currency",
+
   isRequired: true,
-  selectOptions: enumToArray(CurrencyTypesEnum),
+  selectOptions: (search) =>
+    getSearchOptionsForAsyncSelect(enumToArray(CurrencyTypesEnum), search),
   triggerClassName: "rounded-l-none",
 };
 export const unitPriceTypeProps: InputFieldProps = {

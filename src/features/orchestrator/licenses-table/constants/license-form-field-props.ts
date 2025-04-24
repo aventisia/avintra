@@ -12,7 +12,7 @@ export const idProps: InputFieldProps = {
 
 export const licenseSelectProps: AsyncSelectFieldProps = {
   name: "planId",
-  fetcher: () => getLicensesToSelect().then((data) => data.data),
+  selectOptions: () => getLicensesToSelect().then((data) => data.data),
   label: "License Type",
   placeholder: "Select License",
   className: "!w-[30rem]",
