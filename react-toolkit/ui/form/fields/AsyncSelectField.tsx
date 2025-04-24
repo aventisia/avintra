@@ -18,13 +18,19 @@ export type AsyncSelectOptionalProps =
   | "value"
   | "notFound";
 
+export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = {
+  [K in Keys]-?: Required<Pick<T, K>> & Partial<Omit<T, K>>;
+}[Keys];
+
 export type AsyncSelectFieldProps = {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
+  selectOptions: (query?: string) => Promise<ISelectOption[]>;
+
   size: "base" | "xs" | "sm";
 } & Partial<Pick<AsyncSelectProps<ISelectOption>, AsyncSelectOptionalProps>> &
-  Omit<AsyncSelectProps<ISelectOption>, AsyncSelectOptionalProps> &
+  Omit<AsyncSelectProps<ISelectOption>, AsyncSelectOptionalProps | "fetcher"> &
   BaseFieldProps;
 
 /**
@@ -36,6 +42,7 @@ export const AsyncSelectField = ({
   disabled,
   size = "base",
   isRequired,
+  selectOptions,
   description,
   renderOption = DefaultAsyncSelectFieldRenderOption,
   getDisplayValue = DefaultAsyncSelectFieldgetDisplayValue,
@@ -62,6 +69,7 @@ export const AsyncSelectField = ({
           <FormControl>
             <AsyncSelect
               {...props}
+              fetcher={selectOptions}
               label={label}
               value={field.value}
               disabled={disabled || field.disabled}
