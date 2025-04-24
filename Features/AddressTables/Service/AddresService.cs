@@ -50,6 +50,8 @@ public class AddressService : IAddressService
                         .GetByConditionAsync(w =>
                             w.AddressRefId == (tenant.Name == DefaultTenantsEnum.IndividualUsers.ToString() ? _userId : _tenantId)
                         )
+                        .Include(i => i.CreatedByUser)
+                        .Include(i => i.LastModifiedByUser)
                         .ToListAsync();
 
             // Map to DTO and return success response
@@ -81,8 +83,10 @@ public class AddressService : IAddressService
             _logger.LogInformation("Fetching address by ID: {AddressId}", addressId);
 
             var address = await _unitOfWork.AddressRepo
-                .GetByConditionAsync(x => x.Id == addressId)
-                .SingleOrDefaultAsync();
+                        .GetByConditionAsync(x => x.Id == addressId)
+                        .Include(i => i.CreatedByUser)
+                        .Include(i => i.LastModifiedByUser)
+                        .SingleOrDefaultAsync();
 
             if (address == null)
             {
