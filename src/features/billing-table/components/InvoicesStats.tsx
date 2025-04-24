@@ -44,20 +44,20 @@ export const InvoicesStats = () => {
   return (
     <div className="my-4 grid grid-cols-3 gap-10 gap-x-8">
       <StatsCard
-        title={"Last 12 Month Expense"}
+        title={"Last 12 Month Spend"}
         mainText={currencyFormater(stats.last12MonthExpense, "USD")}
         icon={
           <CalendarFoldIcon stroke="var(--primary)" className="h-10 w-10" />
         }
       />
       <StatsCard
-        title={"Total Overdue"}
+        title={"Amount Overdue"}
         mainText={currencyFormater(stats.overdueBalance, "USD")}
         icon={<CircleEqualIcon stroke="var(--primary)" className="h-10 w-10" />}
       />
 
       <StatsCard
-        title={"Next Payable Amount"}
+        title={"Billing Amount"}
         mainText={currencyFormater(stats.nextPayableAmount ?? 0, "USD")}
         icon={
           <SquareFunctionIcon stroke="var(--primary)" className="h-10 w-10" />
