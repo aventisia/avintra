@@ -24,10 +24,26 @@ const runJavascriptFunctionOnWebPageFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "result",
-    type: "switch",
-    label: "Result",
+    name: "o_resultOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The result of the JavaScript function that ran",
+    defaultValue: "Result",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_resultSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_resultSwitch",
+    type: "output-switch-field",
+    label: "Result",
     defaultValue: true,
   },
 ];
@@ -40,14 +56,14 @@ const runJavascriptFunctionOnWebPageFieldCategories: IDynamicFormKeysCategory[] 
     },
     {
       title: "Output",
-      formFieldKeys: [["result"]],
+      formFieldKeys: [["o_resultOutput", "o_resultSwitch"]],
     },
   ];
 
 const runJavascriptFunctionOnWebPage: ActivityConfig = {
   fieldList: runJavascriptFunctionOnWebPageFieldList,
   fieldCategories: runJavascriptFunctionOnWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_resultOutput", "o_resultSwitch"],
 };
 
 export default runJavascriptFunctionOnWebPage;
