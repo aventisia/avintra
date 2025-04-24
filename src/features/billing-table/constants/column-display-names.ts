@@ -7,6 +7,12 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "amount", value: "Amount" },
   { key: "dueDate", value: "Due Date" },
   { key: "paidOn", value: "Paid On" },
+  { key: "invoiceNumber", value: "Invoice Number" },
+  { key: "subscriptionId", value: "Subscription Id" },
+  { key: "tax", value: "Tax" },
+  { key: "totalAmount", value: "Total Amount" },
+  { key: "generatedDate", value: "Generated Date" },
+  { key: "invoiceDate", value: "Invoice Date" },
 ];
 
 // Get the column display name for the given column key.

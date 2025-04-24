@@ -5,4 +5,11 @@ export const columnVisibilityState = {
   amount: true,
   dueDate: true,
   paidOn: true,
+
+  invoiceNumber: true,
+  subscriptionId: false,
+  tax: true,
+  totalAmount: true,
+  generatedDate: true,
+  invoiceDate: false,
 };
