@@ -13,7 +13,7 @@ export const WorkspaceUILayout = () => {
   const location = useLocation();
 
   const isOnAgentsPage = location.pathname === "/agents";
-  const isDesktop = isOnAgentsPage && searchParams.get("desktop") === "true";
+  const isDesktop = isOnAgentsPage && searchParams.get("isDesktop") === "true";
 
   // Validate user session
   const { isPending } = useValidateUserSession();
