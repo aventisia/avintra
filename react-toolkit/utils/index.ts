@@ -1,7 +1,3 @@
-import clsx, { ClassValue } from "clsx";
-import { KeyboardEvent, SyntheticEvent } from "react";
-import { twMerge } from "tailwind-merge";
-
 import { ISelectOption } from "@/react-toolkit/types/select-option";
 
 export function when<T>(
@@ -12,22 +8,6 @@ export function when<T>(
   const key = String(value);
   return cases[key] ? cases[key]() : defaultValue();
 }
-export const clsxMerge = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
-
-export const joinClassNames = (...classNames: string[]) => classNames.join(" ");
-
-export const handleKeyboardEvent =
-  <Type = Element>(
-    key: KeyboardEvent["key"] | Array<KeyboardEvent["key"]>,
-    callback: (event: SyntheticEvent<Type>) => void,
-  ) =>
-  (event: KeyboardEvent<Type>) => {
-    const keys = Array.isArray(key) ? key : [key];
-
-    if (keys.includes(event.key)) {
-      callback(event);
-    }
-  };
 
 /**
  * get search options from the enum or static array for async select field
@@ -50,3 +30,10 @@ export const getSearchOptionsForAsyncSelect = async (
 
   return selectOptions.slice(0, 10);
 };
+
+export function areStringsEqualCaseInsensitive(
+  str1: string,
+  str2: string,
+): boolean {
+  return str1.localeCompare(str2, undefined, { sensitivity: "case" }) === 0;
+}
