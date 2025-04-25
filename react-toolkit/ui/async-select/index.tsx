@@ -38,6 +38,7 @@ export interface AsyncSelectProps<T> {
   loadingSkeleton?: React.ReactNode;
   /** Currently selected value */
   value: string;
+
   /** Callback when selection changes */
   onChange: (value: string) => void;
   /** Label for the select field */
@@ -178,6 +179,7 @@ export function AsyncSelect<T>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          onClick={() => callFetcher("")}
           className={cn(
             "justify-between",
             disabled && "cursor-not-allowed opacity-50",
