@@ -1,8 +1,8 @@
-import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField"
+import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField"
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField"
 
-import { searchTenantsToSelect } from "../../tenants-table/apis/tenants-table-apis";
+import { searchTenantsToSearchSelect } from "../../tenants-table/apis/tenants-table-apis"
 
 // New Allocated Units
 export const additionalUnitsRequestedProps: InputFieldProps = {
@@ -15,7 +15,7 @@ export const additionalUnitsRequestedProps: InputFieldProps = {
 export const tenantSelectProps: AsyncSelectFieldProps = {
   name: "id",
   selectOptions: (search?: string) =>
-    searchTenantsToSelect(search).then((data) => data.data),
+    searchTenantsToSearchSelect(search, true).then((data) => data),
   label: "Tenant Name",
   placeholder: "Select tenant",
   className: "!w-[30rem]",
