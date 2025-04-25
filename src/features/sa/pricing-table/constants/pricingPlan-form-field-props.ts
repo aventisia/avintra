@@ -6,6 +6,7 @@ import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelec
 import { IconInputFieldProps } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
 import { RadioCardGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioCardGroupField";
+import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { getSearchOptionsForAsyncSelect } from "@/react-toolkit/utils";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
@@ -29,21 +30,15 @@ export const tenantSelectProps: AsyncSelectFieldProps = {
   size: "base",
 };
 
-export const pricingComponentTypeProps: AsyncSelectFieldProps = {
+export const pricingComponentTypeProps: SelectFieldProps = {
   name: "pricingComponent",
   label: "Pricing Component",
-  className: "!w-[28rem]",
-  triggerClassName: "w-full",
-  getOptionValue: (option) => option.value,
-  size: "base",
   isRequired: true,
-  selectOptions: (search) =>
-    getSearchOptionsForAsyncSelect(enumToArray(PricingComponentsEnum), search),
+  selectOptions: enumToArray(PricingComponentsEnum),
 };
 export const deploymentTypeProps: RadioCardGroupFieldProps = {
   name: "tenantType",
   label: "Depoyment Type",
-  isRequired: true,
   selectOptions: enumToArray(DeploymentTypeEnum),
 };
 
