@@ -11,6 +11,7 @@ public class InvoiceDto
     /// Gets or sets the PricingPlanId of a payment with pricing plan is associated with.
     /// </summary>
     public Guid PricingPlanId { get; set; }
+    
     /// <summary>
     /// Gets or sets the Amount
     /// </summary>

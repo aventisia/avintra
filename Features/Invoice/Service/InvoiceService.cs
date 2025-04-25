@@ -44,18 +44,16 @@ public class InvoiceService : IInvoiceService
         {
             _logger.LogError(ex, "Error retrieving all invoices.");
         }
-
         return response;
     }
-
     // Retrieve invoices by subscription (or pricing plan) ID
     public async Task<ServiceResponse<IEnumerable<InvoiceDto>>> GetInvoicesByPricingPlanAsync(Guid pricingPlanId)
     {
         var response = new ServiceResponse<IEnumerable<InvoiceDto>>
         {
-            StatusCode = 400,
             Message = "Unable to retrieve invoices by pricing plan. Please try again."
         };
+
 
         try
         {
@@ -105,15 +103,15 @@ public class InvoiceService : IInvoiceService
     {
         var response = new ServiceResponse<InvoiceDto>
         {
-            StatusCode = 400,
             Message = "Failed to retrieve invoice, please try again."
         };
+
 
         try
         {
             // Fetch invoice entity by ID
             var invoice = await _unitOfWork.InvoiceRepo
-                .GetByConditionAsync(i => i.Id == invoiceId)
+                .GetByConditionAsync(w => w.Id == invoiceId)
                 .Include(i => i.LicenseCredit)
                 .FirstOrDefaultAsync();
 
@@ -125,6 +123,9 @@ public class InvoiceService : IInvoiceService
                 return response;
             }
 
+            response.Data = invoice.Adapt<InvoiceDto>();
+            response.StatusCode = 200;
+            response.Message = "Invoice retrieved successfully.";
             response.Data = invoice.Adapt<InvoiceDto>();
             response.StatusCode = 200;
             response.Message = "Invoice retrieved successfully.";
@@ -142,9 +143,9 @@ public class InvoiceService : IInvoiceService
     {
         var response = new ServiceResponse<InvoiceDto>
         {
-            StatusCode = 400,
             Message = "Failed to insert invoice, please try again."
         };
+
 
         try
         {
@@ -179,9 +180,9 @@ public class InvoiceService : IInvoiceService
     {
         var response = new ServiceResponse<GenerateInvoiceDto>
         {
-            StatusCode = 400,
             Message = "Failed to update invoice, please try again."
         };
+
 
         try
         {
@@ -191,11 +192,12 @@ public class InvoiceService : IInvoiceService
                 .FirstOrDefaultAsync();
 
             if (existingInvoice == null)
-            {
-                _logger.LogInformation("Invoice not found for update.");
-                response.Message = "Invoice not found.";
-                return response;
-            }
+                if (existingInvoice == null)
+                {
+                    _logger.LogInformation("Invoice not found for update.");
+                    response.Message = "Invoice not found.";
+                    return response;
+                }
 
             // Calculate tax and total
             decimal tax = invoiceDto.Amount * 0.10m;
@@ -227,22 +229,21 @@ public class InvoiceService : IInvoiceService
 
         return response;
     }
-
     // Delete an invoice by ID
     public async Task<ServiceResponse<bool>> DeleteInvoiceAsync(Guid invoiceId)
     {
         var response = new ServiceResponse<bool>
         {
             Data = false,
-            StatusCode = 400,
             Message = "Failed to delete invoice, please try again."
         };
+
 
         try
         {
             // Fetch invoice for deletion
             var invoice = await _unitOfWork.InvoiceRepo
-                .GetByConditionAsync(i => i.Id == invoiceId)
+                .GetByConditionAsync(w => w.Id == invoiceId)
                 .FirstOrDefaultAsync();
 
             if (invoice == null)
@@ -259,7 +260,6 @@ public class InvoiceService : IInvoiceService
                 _logger.LogInformation("Failed to save invoice deletion to database.");
                 return response;
             }
-
             response.Data = true;
             response.StatusCode = 200;
             response.Message = "Invoice deleted successfully.";
@@ -277,7 +277,6 @@ public class InvoiceService : IInvoiceService
     {
         var response = new ServiceResponse<GenerateInvoiceDto>
         {
-            StatusCode = 400,
             Message = "Failed to generate invoice, please try again."
         };
 
@@ -292,6 +291,7 @@ public class InvoiceService : IInvoiceService
 
             // Create invoice entity
             var invoice = invoiceDto.Adapt<Invoice>();
+            invoice.InvoiceNumber = invoiceNumber;
             invoice.InvoiceNumber = invoiceNumber;
             invoice.CreatedByUserId = _userId;
             invoice.LastModifiedByUserId = _userId;
@@ -321,8 +321,8 @@ public class InvoiceService : IInvoiceService
     private string GenerateInvoiceNumber(Guid tenantId)
     {
         var lastInvoice = _unitOfWork.InvoiceRepo
-            .GetByConditionAsync(i => i.TenantId == tenantId)
-            .OrderByDescending(i => i.CreatedOn)
+            .GetByConditionAsync(w => w.TenantId == tenantId)
+            .OrderByDescending(o => o.CreatedOn)
             .FirstOrDefault();
 
         // Increment the last number or start from 1
@@ -331,3 +331,4 @@ public class InvoiceService : IInvoiceService
         return $"INV-{DateTime.UtcNow.Year}-{nextNumber:D3}";
     }
 }
+
