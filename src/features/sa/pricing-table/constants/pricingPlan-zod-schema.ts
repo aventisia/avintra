@@ -27,34 +27,32 @@ export const pricingPlanNameSchema = z
 export const pricingPlanZodSchema = z
   .object({
     id: z.string().optional(),
+    type: z.string().min(1, { message: reqError("Pricing type") }),
+
     tenantId: z.string().optional().nullable(),
-    type: z.string({ required_error: reqError("Pricing type") }),
+    tenantType: z.string().optional().nullable(),
+
     pricingComponent: z
-      .string({ message: reqError("Pricing component") })
+      .string()
       .min(1, { message: reqError("Pricing component") }),
-    tenantType: z
-      .string({ message: reqError("Deployment type") })
-      .min(1, { message: reqError("Deployment type") }),
-    currency: z
-      .string({ message: reqError("Currency") })
-      .min(1, { message: reqError("Currency") }),
+    currency: z.string().min(1, { message: reqError("Currency") }),
     unitPrice: z.union([
       z.number({ required_error: reqError("Unit price") }),
       z
-        .string({ required_error: reqError("Unit price") })
+        .string()
+        .min(1, { message: reqError("Unit price") })
         .refine(
           (check) => positiveFloatNumber.test(check),
           "Enter correct value for Unit price",
         )
         .transform((val) => parseFloat(val)),
     ]),
-    frequency: z
-      .string({ message: reqError("Billing frequency") })
-      .min(1, { message: reqError("Billing frequency") }),
+    frequency: z.string().min(1, { message: reqError("Billing frequency") }),
     cola: z.union([
       z.number({ required_error: reqError("COLA") }),
       z
-        .string({ required_error: reqError("COLA") })
+        .string()
+        .min(1, { message: reqError("COLA") })
         .refine(
           (check) => positiveFloatNumber.test(check),
           "Enter correct value for COLA",
@@ -71,9 +69,13 @@ export const pricingPlanZodSchema = z
     lastModifiedOn: z.date(),
   })
 
-  .refine((data) => data.type != "default", {
+  .refine((data) => data.type == "tenant" && data.tenantId, {
     path: ["tenantId"],
     message: reqError("Tenant Name"),
+  })
+  .refine((data) => data.type == "tenant" || data.tenantType, {
+    path: ["tenantType"],
+    message: reqError("Deployment type"),
   })
   .refine((data) => data.unitPrice > 0 && data.unitPrice <= 100000000, {
     message: "Unit price must be above 0",
