@@ -1,0 +1,35 @@
+meta {
+  name: Insert address
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/address
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    addressType: "Personal",
+    addressLine1: faker.address.streetAddress(),
+    addressLine2: faker.address.secondaryAddress(),
+    country: faker.address.country(),
+    stateOrProvince: faker.address.state(),
+    city: faker.address.city(),
+    zipOrPostalCode: faker.address.zipCode(),
+  });
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "ADDRESS_ID",
+    res.getBody().data.id
+    );
+  }
+}

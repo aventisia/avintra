@@ -14,11 +14,12 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
+    tenantId: bru.getGlobalEnvVar("TENANT_ID"),
     fullName: faker.person.jobType(),
     description: faker.lorem.lines(),
     rolePermissions: [
       {
-        permissionType: "Trade",
+        permissionType: "Roles",
         accesses: ["View", "Delete"]
       },
     ]

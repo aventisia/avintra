@@ -1,0 +1,20 @@
+meta {
+  name: Get address by Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/address/{{ADDRESS_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "INVOICE_ID",
+    res.getBody().data.invoiceId
+    );
+  }
+}

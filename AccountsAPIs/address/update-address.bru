@@ -1,0 +1,26 @@
+meta {
+  name: Update address
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/address
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const {faker} = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("ADDRESS_ID"),
+    addressType: "Personal",
+    addressLine1: faker.address.streetAddress(),
+    addressLine2: faker.address.secondaryAddress(),
+    country: faker.address.country(),
+    stateOrProvince: faker.address.state(),
+    city: faker.address.city(),
+    zipOrPostalCode: faker.address.zipCode(),
+  })
+}
