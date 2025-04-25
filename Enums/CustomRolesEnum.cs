@@ -67,8 +67,8 @@ public enum CustomRolesEnum
     IU,
 
     /// <summary>
-    /// AVENTISIA employee. Role for an AVENTISIA Employee to access internal apps only as a normal user.
+    /// Aventisia employee. Role for an Aventisia Employee to access internal apps only as a normal user.
     /// </summary>
-    [Description("9; AVENTISIA employee; Role for an AVENTISIA Employee to access internal apps only as a normal user.")]
+    [Description("9; Aventisia employee; Role for an Aventisia Employee to access internal apps only as a normal user.")]
     AE,
 }

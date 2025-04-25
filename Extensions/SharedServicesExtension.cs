@@ -22,9 +22,9 @@ public static class SharedServicesExtension
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "AVENTISIA APIs",
+                Title = "Aventisia APIs",
                 Version = "v1",
-                Description = "AVENTISIA API Services",
+                Description = "Aventisia API Services",
             });
             c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -65,13 +65,16 @@ public static class SharedServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), "TenantResolverConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), "FileUploadConfig cannot be null"));
 
+
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
         services.AddScoped<IUserManagementGuardService, UserManagementGuardService>();
     }
 
+    // Method to add the email service to the service collection
     public static void AddEmailService(this IServiceCollection services)
     {
+        // Register EmailService as a singleton for IEmailService
         services.AddSingleton<IEmailService, EmailService>();
     }
 
