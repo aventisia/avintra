@@ -9,6 +9,7 @@ import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectFiel
 import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { RadioCardGroupField } from "@/react-toolkit/ui/form/fields/RadioCardGroupField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
@@ -55,6 +56,7 @@ export const PricingPlanCrudForm = () => {
     currency?: string;
     tenantType?: string;
     pricingCreateType?: pricingType;
+    fetchingData?: boolean;
   }>();
 
   // Define submit handler
@@ -80,6 +82,10 @@ export const PricingPlanCrudForm = () => {
         return;
       }
       const tenantDetails = await getTenantDetails(tenantId);
+      setformStateData({
+        ...formStateData,
+        fetchingData: true,
+      });
       if (tenantDetails?.data.currency) {
         form.setValue(
           "currency",
@@ -93,8 +99,6 @@ export const PricingPlanCrudForm = () => {
           ...formStateData,
           currency: tenantDetails?.data.currency,
         });
-
-        console.log(tenantDetails?.data.currency);
       }
 
       if (tenantDetails?.data.type) {
@@ -107,9 +111,13 @@ export const PricingPlanCrudForm = () => {
           tenantType: tenantDetails?.data.type,
         });
       }
+      setformStateData({
+        ...formStateData,
+        fetchingData: false,
+      });
     };
     getTenant();
-  }, [form, tenantId]);
+  }, [form, tenantId, type]);
 
   // Is form in read mode
   const isReadMode = crudAction === "read";
@@ -124,23 +132,22 @@ export const PricingPlanCrudForm = () => {
     >
       {/* PricingPlan Id */}
       {isReadMode && <InputField {...idProps} />}
-      {crudAction === "create" ? (
-        <RadioCardGroupField
-          name="type"
-          label="Plan Type"
-          isRequired={crudAction === "create"}
-          selectOptions={[
-            {
-              label: "Tenant",
-              value: "tenant",
-            },
-            {
-              label: "Default",
-              value: "default",
-            },
-          ]}
-        />
-      ) : null}
+      <RadioCardGroupField
+        name="type"
+        label="Plan Type"
+        isRequired={true}
+        selectOptions={[
+          {
+            label: "Tenant",
+            value: "tenant",
+          },
+          {
+            label: "Default",
+            value: "default",
+          },
+        ]}
+      />
+
       {/* name of tenant */}
       {!type || type === "tenant" ? (
         <AsyncSelectField
@@ -151,10 +158,13 @@ export const PricingPlanCrudForm = () => {
       {/* deployment type */}
       <RadioCardGroupField
         disabled={type === "tenant"}
+        isRequired={type === "tenant"}
         {...deploymentTypeProps}
       />
       {/* pricingComponent name fo the plan */}
-      <AsyncSelectField {...pricingComponentTypeProps} />
+      {crudAction === "create" || form.getValues("pricingComponent") ? (
+        <SelectField {...pricingComponentTypeProps} />
+      ) : null}
 
       <div className="relative grid grid-cols-3 items-center rounded-lg shadow-sm">
         <span>
@@ -162,7 +172,7 @@ export const PricingPlanCrudForm = () => {
           <AsyncSelectField
             {...currencyTypeProps}
             className="ml-28 !w-fit"
-            disabled={!!formStateData?.currency}
+            disabled={type === "tenant"}
             getDisplayValue={(option) => (
               <div className="flex items-center gap-2">
                 <div className="flex flex-col">
@@ -208,7 +218,11 @@ export const PricingPlanCrudForm = () => {
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+          <Button
+            type="submit"
+            disabled={formStateData?.fetchingData || !isDirty}
+            className="min-w-[5rem]"
+          >
             {crudAction === "create" ? "Create Plan" : "Save changes"}
           </Button>
         </div>
