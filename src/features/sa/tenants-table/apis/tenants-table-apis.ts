@@ -30,8 +30,8 @@ export const getCurrenciesToSelect = () => {
     .then((res) => res.data);
 };
 
-export const searchTenantsToSelect = (query?: string) => {
-  return axiosInstance
+export const searchTenantsToSearchSelect = async (query?: string) => {
+  const data = await axiosInstance
     .post<IHttpResponse<ISelectOption[]>>(
       `${baseAPIURL}/tenants-to-search-select`,
       {
@@ -44,6 +44,7 @@ export const searchTenantsToSelect = (query?: string) => {
       },
     )
     .then((res) => res.data);
+  return Promise.resolve(data.data);
 };
 
 export const getTenantDetails = (id?: string) => {
