@@ -48,6 +48,7 @@ export const useDefinePricingPlanForm = () => {
   const form = useForm<z.infer<typeof pricingPlanZodSchema>>({
     resolver: zodResolver(pricingPlanZodSchema),
     defaultValues: {
+      type: "",
       id: "",
       pricingComponent: "",
       tenantType: "",
@@ -84,7 +85,12 @@ export const useDefinePricingPlanForm = () => {
 
     // Set pricingplan data to form
     form.reset({
-      // Single fields
+      type:
+        crudAction === "create"
+          ? undefined
+          : data?.tenantId
+            ? "tenant"
+            : "default",
       id: rowId,
       pricingComponent: data?.pricingComponent ?? "",
       tenantType: data?.tenantType ?? "",
