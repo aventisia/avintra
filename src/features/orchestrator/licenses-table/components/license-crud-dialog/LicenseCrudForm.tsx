@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
+import {
+    useFetchPricingPlanDetails
+} from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
@@ -13,9 +15,7 @@ import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  additionalUnitsRequestedProps,
-  idProps,
-  licenseSelectProps,
+    additionalUnitsRequestedProps, idProps, licenseSelectProps
 } from "../../constants/license-form-field-props";
 import { licenseZodSchema } from "../../constants/license-zod-schema";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
@@ -99,11 +99,11 @@ export const LicenseCrudForm = () => {
       />
 
       {/* new quantity */}
-      <div className="rounded-md bg-slate-100 p-5">
+      <div className="rounded-lg bg-slate-100 p-5">
         <p className="text-md mb-2 pb-2">New Quantity</p>
         <InputField {...additionalUnitsRequestedProps} />
       </div>
-      <div className="flex flex-row justify-between rounded-md bg-primary-50 p-[.6rem] px-3">
+      <div className="flex flex-row justify-between rounded-lg bg-primary-50 p-[.6rem] px-3">
         <p className="font-light">Additional Payment Due:</p>
         <div>
           {isFetching ? (

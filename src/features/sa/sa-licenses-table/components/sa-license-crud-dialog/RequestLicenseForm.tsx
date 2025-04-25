@@ -107,11 +107,11 @@ export const RequestLicenseForm = () => {
       />
 
       {/* new quantity */}
-      <div className="rounded-md bg-slate-100 p-5">
+      <div className="rounded-lg bg-slate-100 p-5">
         <p className="text-md mb-2 pb-2">New Quantity</p>
         <InputField {...additionalUnitsRequestedProps} />
       </div>
-      <div className="flex flex-row justify-between rounded-md bg-primary-50 p-[.6rem] px-3">
+      <div className="flex flex-row justify-between rounded-lg bg-primary-50 p-[.6rem] px-3">
         <p className="font-light">Additional Payment Due:</p>
         <div>
           {isFetching ? (
