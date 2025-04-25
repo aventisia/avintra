@@ -46,7 +46,7 @@ export const AsyncSelectField = ({
   description,
   renderOption = DefaultAsyncSelectFieldRenderOption,
   getDisplayValue = DefaultAsyncSelectFieldgetDisplayValue,
-  getOptionValue = (option) => option.value?.toLocaleLowerCase(),
+  getOptionValue = (option) => option.value,
   notFound = (
     <div className="py-2 text-center text-sm lowercase">No {label} Found</div>
   ),
