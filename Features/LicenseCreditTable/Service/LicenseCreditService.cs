@@ -566,7 +566,7 @@ public class LicenseCreditService : ILicenseCreditService
                 Tax = 0,
                 Discount = 0,
                 Amount = CalculateProRataAmount(planPricing.UnitPrice, additionalUnitsRequested, existingCredit.NextBillingDate),
-                DueDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(3),
                 Status = "UnPaid",
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId

@@ -605,6 +605,7 @@ public class LicenseCreditManagementService : ILicenseCreditManagementService
                 _logger.LogWarning("Invalid LicenseCredit: PlanPricing is null for PlanId: {PlanId}", existingCredit?.PlanId);
                 return false;
             }
+            
             // Create the invoice object
             var invoice = new Invoice()
             {
@@ -613,7 +614,7 @@ public class LicenseCreditManagementService : ILicenseCreditManagementService
                 Tax = 0,
                 Discount = 0,
                 Amount = CalculateProRataAmount(planPricing.UnitPrice, additionalUnitsRequested, existingCredit.NextBillingDate),
-                DueDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(3),
                 Status = "UnPaid",
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
