@@ -5,9 +5,19 @@ import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
 import { cn } from "@/react-toolkit/lib/utils";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
-    Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@/react-toolkit/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/react-toolkit/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/react-toolkit/ui/popover";
+import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
 
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */
@@ -77,15 +87,33 @@ export function AsyncSelect<T>({
   const debouncedSearchTerm = useDebounce(searchTerm, preload ? 0 : 300);
   const [originalOptions, setOriginalOptions] = useState<T[]>([]);
 
+  const callFetcher = async (search?: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      // If we have a value, use it for the initial search
+      const data = await fetcher(search);
+      setOriginalOptions(data);
+      setOptions(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch options");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
+    callFetcher(value);
     setSelectedValue(value);
   }, [value]);
 
   // Initialize selectedOption when options are loaded and value exists
   useEffect(() => {
     if (value && options.length > 0) {
-      const option = options.find((opt) => getOptionValue(opt) === value);
+      const option = options.find((opt) =>
+        areStringsEqualCaseInsensitive(getOptionValue(opt), value),
+      );
       if (option) {
         setSelectedOption(option);
       }
@@ -95,20 +123,7 @@ export function AsyncSelect<T>({
   // Effect for initial fetch
   useEffect(() => {
     const initializeOptions = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        // If we have a value, use it for the initial search
-        const data = await fetcher(value);
-        setOriginalOptions(data);
-        setOptions(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch options",
-        );
-      } finally {
-        setLoading(false);
-      }
+      callFetcher(value);
     };
 
     if (!mounted) {
@@ -118,19 +133,7 @@ export function AsyncSelect<T>({
 
   useEffect(() => {
     const fetchOptions = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetcher(debouncedSearchTerm);
-        setOriginalOptions(data);
-        setOptions(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch options",
-        );
-      } finally {
-        setLoading(false);
-      }
+      callFetcher(debouncedSearchTerm);
     };
 
     if (!mounted) {
@@ -158,7 +161,9 @@ export function AsyncSelect<T>({
       setSelectedValue(newValue);
 
       setSelectedOption(
-        options.find((option) => getOptionValue(option) === newValue) ?? null,
+        options.find((option) =>
+          areStringsEqualCaseInsensitive(getOptionValue(option), newValue),
+        ) ?? null,
       );
       onChange(newValue);
       setOpen(false);
