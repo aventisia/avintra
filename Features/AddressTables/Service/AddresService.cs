@@ -83,7 +83,7 @@ public class AddressService : IAddressService
             _logger.LogInformation("Fetching address by ID: {AddressId}", addressId);
 
             var address = await _unitOfWork.AddressRepo
-                        .GetByConditionAsync(x => x.Id == addressId)
+                        .GetByConditionAsync(w => w.Id == addressId)
                         .Include(i => i.CreatedByUser)
                         .Include(i => i.LastModifiedByUser)
                         .SingleOrDefaultAsync();
@@ -174,7 +174,7 @@ public class AddressService : IAddressService
             _logger.LogInformation("Updating address with ID: {AddressId} for UserId: {UserId}", addressDto.Id, _userId);
 
             var address = await _unitOfWork.AddressRepo
-                .GetByConditionAsync(v => v.Id == addressDto.Id)
+                .GetByConditionAsync(w => w.Id == addressDto.Id)
                 .SingleOrDefaultAsync();
 
             if (address == null)
@@ -223,7 +223,7 @@ public class AddressService : IAddressService
             _logger.LogInformation("Deleting address with ID: {AddressId} for UserId: {UserId}", addressId, _userId);
 
             var address = await _unitOfWork.AddressRepo
-                .GetByConditionAsync(v => v.Id == addressId)
+                .GetByConditionAsync(w => w.Id == addressId)
                 .SingleOrDefaultAsync();
 
             if (address == null)

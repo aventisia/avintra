@@ -188,7 +188,7 @@ public class InvoiceService : IInvoiceService
         {
             // Get the existing invoice
             var existingInvoice = await _unitOfWork.InvoiceRepo
-                .GetByConditionAsync(i => i.Id == invoiceDto.Id)
+                .GetByConditionAsync(w => w.Id == invoiceDto.Id)
                 .FirstOrDefaultAsync();
 
             if (existingInvoice == null)
