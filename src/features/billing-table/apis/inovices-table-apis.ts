@@ -3,8 +3,9 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { InovicesTableDto } from "../dtos/inovices-table-dto";
+
 import { BillingAddressDto } from "../dtos/billing-address-dto";
+import { InovicesTableDto } from "../dtos/inovices-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/invoice`;
 
@@ -22,7 +23,7 @@ export const getBillingAddresses = () => {
  */
 export const getInovices = () => {
   return axiosInstance
-    .get<IHttpResponse<InovicesTableDto[]>>(`${baseAPIURL}/invoice-list`)
+    .get<IHttpResponse<InovicesTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
