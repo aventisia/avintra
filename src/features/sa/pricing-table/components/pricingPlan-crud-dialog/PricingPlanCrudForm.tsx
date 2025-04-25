@@ -8,8 +8,7 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SearchSelectField } from "@/react-toolkit/ui/form/fields/SearchSelectField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { RadioCardGroupField } from "@/react-toolkit/ui/form/fields/RadioCardGroupField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
@@ -19,18 +18,19 @@ import { DATA_QUERY_KEY } from "../../constants";
 import {
   colaTypeProps,
   currencyTypeProps,
+  deploymentTypeProps,
   frequencyTypeProps,
   idProps,
   isDisabledProps,
   pricingComponentTypeProps,
   tenantSelectProps,
-  tenantTypeProps,
   unitPriceTypeProps,
 } from "../../constants/pricingPlan-form-field-props";
 import { pricingPlanZodSchema } from "../../constants/pricingPlan-zod-schema";
 import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
 import { useDefinePricingPlanForm } from "../../hooks/useDefinePricingPlanForm";
 
+export type pricingType = "default" | "tenant";
 export const PricingPlanCrudForm = () => {
   // Define pricingplan form
   const {
@@ -51,7 +51,11 @@ export const PricingPlanCrudForm = () => {
     PricingPlansTableDto
   >([rowId], pricingPlanOptimisticMutationFn, DATA_QUERY_KEY);
 
-  const [currency, setCurrency] = useState<string>();
+  const [formStateData, setformStateData] = useState<{
+    currency?: string;
+    tenantType?: string;
+    pricingCreateType?: pricingType;
+  }>();
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof pricingPlanZodSchema>) => {
@@ -65,19 +69,43 @@ export const PricingPlanCrudForm = () => {
     setShowDialog(false);
   };
 
-  const [tenantId] = watch(["tenantId"]);
+  const [tenantId, type] = watch(["tenantId", "type"]);
 
   useEffect(() => {
     const getTenant = async () => {
-      if (!tenantId) {
+      if (!tenantId || type === "default") {
         form.setValue("currency", "");
-        setCurrency(undefined);
+        form.setValue("tenantType", "");
+        setformStateData({ ...formStateData, currency: "", tenantType: "" });
         return;
       }
       const tenantDetails = await getTenantDetails(tenantId);
       if (tenantDetails?.data.currency) {
-        form.setValue("currency", tenantDetails?.data.currency);
-        setCurrency(tenantDetails?.data.currency);
+        form.setValue(
+          "currency",
+          tenantDetails?.data.currency.toLocaleLowerCase(),
+          {
+            shouldDirty: true,
+            shouldValidate: true,
+          },
+        );
+        setformStateData({
+          ...formStateData,
+          currency: tenantDetails?.data.currency,
+        });
+
+        console.log(tenantDetails?.data.currency);
+      }
+
+      if (tenantDetails?.data.type) {
+        form.setValue("tenantType", tenantDetails?.data.type, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+        setformStateData({
+          ...formStateData,
+          tenantType: tenantDetails?.data.type,
+        });
       }
     };
     getTenant();
@@ -96,37 +124,45 @@ export const PricingPlanCrudForm = () => {
     >
       {/* PricingPlan Id */}
       {isReadMode && <InputField {...idProps} />}
-
-      {/* type */}
-      {form.getValues("tenantType") || crudAction === "create" ? (
-        <SelectField {...tenantTypeProps} />
+      {crudAction === "create" ? (
+        <RadioCardGroupField
+          name="type"
+          label="Plan Type"
+          isRequired={crudAction === "create"}
+          selectOptions={[
+            {
+              label: "Tenant",
+              value: "tenant",
+            },
+            {
+              label: "Default",
+              value: "default",
+            },
+          ]}
+        />
       ) : null}
-
       {/* name of tenant */}
-      <AsyncSelectField {...tenantSelectProps} />
-      {/* pricingComponent name fo the plan */}
-      {form.getValues("pricingComponent") || crudAction === "create" ? (
-        <SelectField {...pricingComponentTypeProps} />
+      {!type || type === "tenant" ? (
+        <AsyncSelectField
+          isRequired={type === "tenant"}
+          {...tenantSelectProps}
+        />
       ) : null}
+      {/* deployment type */}
+      <RadioCardGroupField
+        disabled={type === "tenant"}
+        {...deploymentTypeProps}
+      />
+      {/* pricingComponent name fo the plan */}
+      <AsyncSelectField {...pricingComponentTypeProps} />
 
       <div className="relative grid grid-cols-3 items-center rounded-lg shadow-sm">
-        <span className="col-span-2">
-          {/* unitPrice */}
-          <InputField
-            className="col-span-2 rounded-r-none"
-            {...unitPriceTypeProps}
-          />
-        </span>
-        <span
-          className={cn(
-            form.getFieldState("unitPrice").invalid ? "mt-0" : "mt-5",
-          )}
-        >
+        <span>
           {/* currency */}
-          <SearchSelectField
+          <AsyncSelectField
             {...currencyTypeProps}
-            className="mr-4 !w-fit"
-            disabled={!!currency}
+            className="ml-28 !w-fit"
+            disabled={!!formStateData?.currency}
             getDisplayValue={(option) => (
               <div className="flex items-center gap-2">
                 <div className="flex flex-col">
@@ -139,23 +175,27 @@ export const PricingPlanCrudForm = () => {
             )}
           />
         </span>
+        <span
+          className={cn(
+            "col-span-2",
+            // form.getFieldState("currency").invalid ? "mt-5" : "mt-0",
+          )}
+        >
+          {/* unitPrice */}
+          <InputField className="rounded-l-none" {...unitPriceTypeProps} />
+        </span>
       </div>
-
       {/* frequency */}
-      {(form.getValues("frequency") || crudAction === "create") &&
-      pricingComponent != "GPUCompute" ? (
-        <SelectField
+      {pricingComponent != "GPUCompute" ? (
+        <RadioCardGroupField
           {...frequencyTypeProps}
           isRequired={pricingComponent !== "GPUCompute"}
         />
       ) : null}
-
       {/* cola */}
       <IconInputField {...colaTypeProps} />
-
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
       {/* AutherCard */}
       {isReadMode && (
         <AutherCard
@@ -165,7 +205,6 @@ export const PricingPlanCrudForm = () => {
           lastModifiedOn={form.getValues("lastModifiedOn")}
         />
       )}
-
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
