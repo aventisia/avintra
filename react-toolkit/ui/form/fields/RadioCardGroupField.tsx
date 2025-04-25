@@ -29,6 +29,7 @@ export interface RadioCardGroupFieldProps
 
   renderOptions?: (options: ISelectOption[]) => RenderOptionProps;
 
+  onValueChange?: (value: string) => void;
   hideRadioButton?: boolean;
 }
 
@@ -41,6 +42,7 @@ export const RadioCardGroupField = ({
   size = "base",
   isRequired,
   description,
+  onValueChange,
   disabled,
   selectOptions,
   hideRadioButton = false,
@@ -74,7 +76,10 @@ export const RadioCardGroupField = ({
               {...field}
               ref={field.ref}
               disabled={disabled}
-              onValueChange={field.onChange}
+              onValueChange={(value) => {
+                onValueChange?.(value);
+                field.onChange(value);
+              }}
               defaultValue={field.value}
               className={cn(
                 "flex !flex-row !justify-items-stretch",
