@@ -47,7 +47,7 @@ export const searchTenantsToSearchSelect = async (query?: string) => {
   return Promise.resolve(data.data);
 };
 
-export const getTenantDetails = (id?: string) => {
+export const getTenantDetails = (id?: string | null) => {
   if (!id)
     return Promise.resolve<IHttpResponse<TenantsTableDto>>({
       statusCode: 201,
