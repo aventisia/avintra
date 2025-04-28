@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
 import { cn } from "@/react-toolkit/lib/utils";
+import { ISelectOption } from "@/react-toolkit/types/select-option";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   Command,
@@ -21,19 +22,19 @@ import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
 
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */
-  fetcher: (query?: string) => Promise<T[]>;
+  selectOptions: (query?: string) => Promise<T[]>;
   /** Preload all data ahead of time */
   preload?: boolean;
   /** Function to filter options */
   filterFn?: (option: T, query: string) => boolean;
   /** Function to render each option */
-  renderOption: (option: T) => React.ReactNode;
+  renderOption?: (option: T) => React.ReactNode;
   /** Function to get the value from an option */
-  getOptionValue: (option: T) => string;
+  getOptionValue?: (option: T) => string;
   /** Function to get the display value for the selected option */
-  getDisplayValue: (option: T) => React.ReactNode;
+  getDisplayValue?: (option: T) => React.ReactNode;
   /** Custom not found message */
-  notFound?: React.ReactNode;
+  notFound?: (query?: string) => React.ReactNode;
   /** Custom loading skeleton */
   loadingSkeleton?: React.ReactNode;
   /** Currently selected value */
@@ -58,16 +59,16 @@ export interface AsyncSelectProps<T> {
   clearable?: boolean;
 }
 
-export function AsyncSelect<T>({
-  fetcher,
+export function AsyncSelect<T extends ISelectOption>({
+  selectOptions: fetcher,
+  label,
   preload,
   filterFn,
-  renderOption,
-  getOptionValue,
-  getDisplayValue,
-  notFound,
+  renderOption = DefaultAsyncSelectFieldRenderOption,
+  getDisplayValue = DefaultAsyncSelectFieldgetDisplayValue,
+  getOptionValue = (option) => option.value,
+  notFound = () => DefaultNotFoundComponent(label),
   loadingSkeleton,
-  label,
   placeholder = "Select...",
   value,
   onChange,
@@ -176,25 +177,23 @@ export function AsyncSelect<T>({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          onClick={() => callFetcher("")}
-          className={cn(
-            "justify-between",
-            disabled && "cursor-not-allowed opacity-50",
-            triggerClassName,
-          )}
-          disabled={disabled}
-        >
-          {selectedOption ? (
-            getDisplayValue(selectedOption)
-          ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
-          )}
-          <ChevronDown className="opacity-50" size={18} />
-        </Button>
+        <span className={cn(disabled && "!cursor-not-allowed")}>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            onClick={() => callFetcher("")}
+            className={cn("justify-between", triggerClassName)}
+            disabled={disabled}
+          >
+            {selectedOption ? (
+              getDisplayValue(selectedOption)
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
+            <ChevronDown className="opacity-50" size={18} />
+          </Button>
+        </span>
       </PopoverTrigger>
       <PopoverContent className={cn("p-0", className)}>
         <Command shouldFilter={false}>
@@ -222,7 +221,7 @@ export function AsyncSelect<T>({
             {!loading &&
               !error &&
               options.length === 0 &&
-              (notFound || (
+              (notFound?.(debouncedSearchTerm) || (
                 <CommandEmpty>
                   {noResultsMessage ?? `No ${label.toLowerCase()} found.`}
                 </CommandEmpty>
@@ -253,7 +252,7 @@ export function AsyncSelect<T>({
   );
 }
 
-function DefaultLoadingSkeleton() {
+export function DefaultLoadingSkeleton() {
   return (
     <CommandGroup>
       {[1, 2, 3].map((i) => (
@@ -270,3 +269,31 @@ function DefaultLoadingSkeleton() {
     </CommandGroup>
   );
 }
+
+export const DefaultAsyncSelectFieldRenderOption = (option: ISelectOption) => (
+  <div className="flex items-center gap-2">
+    <div className="flex flex-col">
+      <div className="font-medium">{option.label}</div>
+      <div className="text-xs text-muted-foreground">{option.description}</div>
+    </div>
+  </div>
+);
+
+export const DefaultAsyncSelectFieldgetDisplayValue = (
+  option: ISelectOption,
+) => (
+  <div className="flex items-center gap-2 text-left">
+    <div className="flex flex-col leading-tight">
+      <div className="font-medium">{option.label}</div>
+      <div className="text-xxs text-muted-foreground">{option.description}</div>
+    </div>
+  </div>
+);
+
+export const DefaultAsyncSelectFieldgetNotFoundComponent = () => (
+  <div className="py-2 text-center text-sm">Not found</div>
+);
+
+export const DefaultNotFoundComponent = (message?: string) => (
+  <div className="py-2 text-center text-sm lowercase">No {message} Found</div>
+);
