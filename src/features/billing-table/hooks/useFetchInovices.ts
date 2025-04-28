@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { getInovices } from "../apis/inovices-table-apis";
+
+import { useQuery } from "@tanstack/react-query";
+
+import { getInovices } from "../apis/address-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
 /**

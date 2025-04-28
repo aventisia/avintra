@@ -1,8 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
+
+import { useQuery } from "@tanstack/react-query";
+
+import { getAddresses } from "../apis/address-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import { getBillingAddresses } from "../apis/inovices-table-apis";
 
 /**
  * Custom hook to fetch billing addresses using react query.
@@ -12,7 +14,7 @@ export const useFetchBillingAddresses = () => {
   // Get billing addresses using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
-    queryFn: () => getBillingAddresses(),
+    queryFn: () => getAddresses(),
   });
 
   // Show toast on fetch error
