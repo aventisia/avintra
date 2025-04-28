@@ -3,9 +3,9 @@ import { z } from "zod";
 
 import { getTenantDetails } from "@/features/sa/tenants-table/apis/tenants-table-apis";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { cn } from "@/react-toolkit/lib/utils";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { SelectAndInputComboField } from "@/react-toolkit/ui/form/fields/combo/SelectAndInputComboField";
 import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { RadioCardGroupField } from "@/react-toolkit/ui/form/fields/RadioCardGroupField";
@@ -157,7 +157,6 @@ export const PricingPlanCrudForm = () => {
       });
     };
     setFields();
-    console.log(123);
   }, []);
 
   // Return the form
@@ -204,35 +203,24 @@ export const PricingPlanCrudForm = () => {
         <SelectField {...pricingComponentTypeProps} />
       ) : null}
 
-      <div className="relative grid grid-cols-3 items-center rounded-lg shadow-sm">
-        <span>
-          {/* currency */}
-          <AsyncSelectField
-            {...currencyTypeProps}
-            className="ml-28 !w-fit"
-            disabled={type === "tenant"}
-            getDisplayValue={(option) => (
-              <div className="flex items-center gap-2">
-                <div className="flex flex-col">
-                  <div className="font-medium">{option.value}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {option.description}
-                  </div>
+      <SelectAndInputComboField
+        inputFieldProps={unitPriceTypeProps}
+        selectFieldProps={{
+          ...currencyTypeProps,
+          disabled: type === "tenant",
+          getDisplayValue: (option) => (
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col">
+                <div className="font-medium">{option.value}</div>
+                <div className="text-xs text-muted-foreground">
+                  {option.description}
                 </div>
               </div>
-            )}
-          />
-        </span>
-        <span
-          className={cn(
-            "col-span-2",
-            // form.getFieldState("currency").invalid ? "mt-5" : "mt-0",
-          )}
-        >
-          {/* unitPrice */}
-          <InputField className="rounded-l-none" {...unitPriceTypeProps} />
-        </span>
-      </div>
+            </div>
+          ),
+        }}
+      />
+
       {/* frequency */}
       {pricingComponent != "GPUCompute" ? (
         <RadioCardGroupField
