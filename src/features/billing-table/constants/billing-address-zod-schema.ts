@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { reqError } from '@/react-toolkit/utils/error-message-list';
+import { reqError } from "@/react-toolkit/utils/error-message-list";
 
 /**
  * Represents the Zod schema for a billingplan.
@@ -14,8 +14,7 @@ export const billingAddressZodSchema = z.object({
     .min(1, { message: reqError("Email") })
     .email(),
   addressLine1: z.string().min(1, { message: reqError("Address line 1") }),
-  addressLine2: z.string().min(1, { message: reqError("Address line 2") }),
-  addressLine3: z.string().optional(),
+  addressLine2: z.string().optional(),
   city: z.string().min(1, { message: reqError("City") }),
   state: z.string().min(1, { message: reqError("State") }),
   country: z.string().min(1, { message: reqError("Country") }),
