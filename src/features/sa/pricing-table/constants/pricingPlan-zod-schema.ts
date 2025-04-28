@@ -69,7 +69,7 @@ export const pricingPlanZodSchema = z
     lastModifiedOn: z.date(),
   })
 
-  .refine((data) => data.type == "tenant" && data.tenantId, {
+  .refine((data) => data.type == "tenant" && !!data.tenantId, {
     path: ["tenantId"],
     message: reqError("Tenant Name"),
   })
