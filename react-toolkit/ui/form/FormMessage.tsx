@@ -1,15 +1,12 @@
+import * as React from "react";
+
 import { cn } from "@/react-toolkit/lib/utils";
 import { CustomMessageType } from "@/react-toolkit/types/custom-form-message";
 import { FormFieldSizeType } from "@/react-toolkit/types/form-field-size-type";
 import { useFormField } from "@/react-toolkit/ui/form/useFormField";
-import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/solid";
-import * as React from "react";
+import { CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 
-interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
+export interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
   customMessageType?: CustomMessageType;
   size?: FormFieldSizeType;
 }
