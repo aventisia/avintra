@@ -6,14 +6,14 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { RoleTableDTO } from "../dtos/roles-table-dto";
 
-export const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/role`;
+export const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-role`;
 
 /**
  * Retrieves list of Documents.
  */
 export const getRoles = () => {
   return axiosInstance
-    .get<IHttpResponse<RoleTableDTO[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<RoleTableDTO[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
