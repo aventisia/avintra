@@ -44,7 +44,7 @@ export const deploymentTypeProps: RadioCardGroupFieldProps = {
 
 export const currencyTypeProps: AsyncSelectFieldProps = {
   name: "currency",
-  label: "Currency",
+  label: "Unit Price",
   size: "base",
   placeholder: "Currency",
   getOptionValue: (option) => option.value.toLowerCase(),
@@ -55,7 +55,7 @@ export const currencyTypeProps: AsyncSelectFieldProps = {
 };
 export const unitPriceTypeProps: InputFieldProps = {
   name: "unitPrice",
-  label: "Unit Price",
+  label: "",
   isRequired: true,
   placeholder: "99",
 };
