@@ -9,6 +9,8 @@ export interface RoleTableDTO {
   id: string;
   seq?: string;
   fullName: string;
+  tenantId?: string;
+  tenantName?: string;
   description?: string | null;
   isDisabled: boolean;
   totalPermission: number;
