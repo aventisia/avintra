@@ -119,6 +119,7 @@ export function AsyncSelect<T>({
         setSelectedOption(option);
       }
     }
+    //  else setSelectedOption(null);
   }, [value, options, getOptionValue]);
 
   // Effect for initial fetch
