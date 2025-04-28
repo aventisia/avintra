@@ -76,6 +76,7 @@ export const PricingPlanCrudForm = () => {
   useEffect(() => {
     const getTenant = async () => {
       if (!tenantId || type === "default") {
+        console.log(tenantId);
         form.setValue("currency", "");
         form.setValue("tenantType", "");
         setformStateData({ ...formStateData, currency: "", tenantType: "" });
@@ -121,6 +122,43 @@ export const PricingPlanCrudForm = () => {
 
   // Is form in read mode
   const isReadMode = crudAction === "read";
+
+  useEffect(() => {
+    if (crudAction !== "update") return;
+
+    const setFields = async () => {
+      const tenantDetails = await getTenantDetails(tenantId);
+      setformStateData({
+        ...formStateData,
+        fetchingData: true,
+      });
+      if (tenantDetails?.data.currency) {
+        form.resetField("currency", {
+          defaultValue: tenantDetails?.data.currency.toLocaleLowerCase(),
+        });
+        setformStateData({
+          ...formStateData,
+          currency: tenantDetails?.data.currency,
+        });
+      }
+
+      if (tenantDetails?.data.type) {
+        form.resetField("tenantType", {
+          defaultValue: tenantDetails?.data.type,
+        });
+        setformStateData({
+          ...formStateData,
+          tenantType: tenantDetails?.data.type,
+        });
+      }
+      setformStateData({
+        ...formStateData,
+        fetchingData: false,
+      });
+    };
+    setFields();
+    console.log(123);
+  }, []);
 
   // Return the form
   return (
