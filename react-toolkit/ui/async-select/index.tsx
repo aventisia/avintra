@@ -176,8 +176,8 @@ export function AsyncSelect<T extends ISelectOption>({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <span className={cn(disabled && "!cursor-not-allowed")}>
+      <span className={cn(disabled && "!cursor-not-allowed")}>
+        <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
@@ -193,8 +193,8 @@ export function AsyncSelect<T extends ISelectOption>({
             )}
             <ChevronDown className="opacity-50" size={18} />
           </Button>
-        </span>
-      </PopoverTrigger>
+        </PopoverTrigger>
+      </span>
       <PopoverContent className={cn("p-0", className)}>
         <Command shouldFilter={false}>
           <div className="relative w-full border-b">
