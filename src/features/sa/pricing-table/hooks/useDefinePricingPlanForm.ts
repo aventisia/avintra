@@ -119,9 +119,8 @@ export const useDefinePricingPlanForm = () => {
     return {
       ...formData,
       tenantId:
-        formData.tenantId && !formData.tenantId?.includes("00000000")
-          ? formData.tenantId
-          : null,
+        // (formData.tenantId && !formData.tenantId?.includes("00000000")) ||
+        formData.type == "tenant" ? formData.tenantId : null,
 
       unit:
         formData.pricingComponent == PricingComponentsEnum.GPUCompute
