@@ -114,6 +114,8 @@ export const useDefineBillingAddressForm = () => {
   ) => {
     return {
       ...formData,
+      id: crudAction === "create" ? rowId : formData.id,
+      addressType: "official",
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
