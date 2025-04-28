@@ -16,7 +16,7 @@ export const getInovices = () => {
   return axiosInstance
     .get<
       IHttpResponse<InovicesTableDto[]>
-    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/inovoice/list`)
+    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/invoice/list`)
     .then((res) => res.data);
 };
 
