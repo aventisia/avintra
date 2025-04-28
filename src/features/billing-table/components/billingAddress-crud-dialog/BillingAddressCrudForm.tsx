@@ -8,21 +8,11 @@ import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
-import { inoviceOptimisticMutationFn } from "../../apis/inovices-table-apis";
+import { inoviceOptimisticMutationFn } from "../../apis/address-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  addressLine1Props,
-  addressLine2Props,
-  addressLine3Props,
-  cityProps,
-  countryProps,
-  emailProps,
-  idProps,
-  isDisabledProps,
-  nameProps,
-  pinCodeProps,
-  stateProps,
-  taxIdProps,
+    addressLine1Props, addressLine2Props, cityProps, countryProps, emailProps, idProps,
+    isDisabledProps, nameProps, pinCodeProps, stateProps, taxIdProps
 } from "../../constants/billing-address-form-field-props";
 import { billingAddressZodSchema } from "../../constants/billing-address-zod-schema";
 import { InovicesTableDto } from "../../dtos/inovices-table-dto";
@@ -75,8 +65,10 @@ export const BillingAddressCrudForm = () => {
 
       <p className="text-md mb-2 border-b-2 pb-2">Overview</p>
       <div className="!mb-9 ml-1 flex justify-between">
-        <p>Company Name</p>
-        <p className="w-6/12 text-pretty text-right text-base font-semibold">
+        <p className="text-sm text-muted-foreground opacity-100">
+          Company Name
+        </p>
+        <p className="w-6/12 text-pretty text-right text-sm font-semibold">
           {userSession?.tenantName}
         </p>
       </div>
@@ -92,9 +84,6 @@ export const BillingAddressCrudForm = () => {
 
       {/* address line 2 */}
       <InputField {...addressLine2Props} />
-
-      {/* address line 3 */}
-      <InputField {...addressLine3Props} />
 
       <div className="grid grid-cols-2 gap-4">
         {/* pin code */}
