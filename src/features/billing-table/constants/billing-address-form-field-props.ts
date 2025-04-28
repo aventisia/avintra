@@ -30,7 +30,6 @@ export const addressLine1Props: InputFieldProps = {
 export const addressLine2Props: InputFieldProps = {
   name: "addressLine2",
   label: "Address Line 2",
-  isRequired: true,
 };
 export const addressLine3Props: InputFieldProps = {
   name: "addressLine3",
