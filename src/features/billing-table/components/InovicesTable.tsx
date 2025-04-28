@@ -10,7 +10,6 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchInovices } from "../hooks/useFetchInovices";
 import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
-import { InovicesBulkActions } from "./inovice-table-actions/InovicesBulkActions";
 import { inovicesTableColumns } from "./InovicesTableColumns";
 import { InvoicesStats } from "./InvoicesStats";
 
@@ -50,7 +49,7 @@ export const InovicesTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumn="name"
+                  searchColumn="invoiceNumber"
                   placeholder="Search  invoices..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
@@ -72,9 +71,6 @@ export const InovicesTable = () => {
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <InovicesBulkActions table={table} />
         </div>
       ) : (
         // Show data table skeleton while fetching the billing plans data
