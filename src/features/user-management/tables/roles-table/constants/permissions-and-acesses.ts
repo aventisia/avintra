@@ -1,19 +1,20 @@
 export enum Features {
-  PROJECTS = "Projects",
-  TEMPLATES = "Templates",
-  CLIENTS = "Clients",
-  AGENTS_MANAGER = "Agent Manager",
-  USER_MANAGER = "User Manager",
-  BILLING_MANAGER = "Billing Manager",
-  TENANT_MANAGER = "Tenant Manager",
+  Roles = "Roles",
+  Projects = "Projects",
+  Templates = "Templates",
+  Clients = "Clients",
+  AgentsManager = "Agents Manager",
+  UserManager = "User Manager",
+  BillingManager = "Billing Manager",
+  TenantManager = "Tenant Manager",
 }
 
 export enum AccessType {
-  FULL = "Full",
-  VIEW = "View",
-  CREATE = "Create",
-  EDIT = "Edit",
-  DELETE = "Delete",
+  FullAccess = "Full",
+  View = "View",
+  Create = "Create",
+  Edit = "Edit",
+  Delete = "Delete",
 }
 interface RoleInfo {
   id: Features;
@@ -29,49 +30,54 @@ interface PermissionInfo {
 // Define the roles and permissions
 export const roles: RoleInfo[] = [
   {
-    id: Features.PROJECTS,
-    name: Features.PROJECTS,
-    tooltip: "Feature of projects.",
+    id: Features.Roles,
+    name: Features.Roles,
+    tooltip: "Roles; Represents user roles in the system.",
   },
   {
-    id: Features.TEMPLATES,
-    name: Features.TEMPLATES,
-    tooltip: "Feature of project templates.",
+    id: Features.Projects,
+    name: Features.Projects,
+    tooltip: "Projects; Represents project-related data.",
   },
   {
-    id: Features.CLIENTS,
-    name: Features.CLIENTS,
-    tooltip: "Feature of client management.",
+    id: Features.Templates,
+    name: Features.Templates,
+    tooltip: "Templates; Represents reusable templates for various modules.",
   },
   {
-    id: Features.AGENTS_MANAGER,
-    name: Features.AGENTS_MANAGER,
-    tooltip: "Feature of ai agents management.",
+    id: Features.Clients,
+    name: Features.Clients,
+    tooltip: "Clients; Represents client data and related access.",
+  },
+  {
+    id: Features.AgentsManager,
+    name: Features.AgentsManager,
+    tooltip: "Agents Manager; Manages agent-related permissions and data.",
   },
 
   {
-    id: Features.USER_MANAGER,
-    name: Features.USER_MANAGER,
-    tooltip: "Feature of User management.",
+    id: Features.UserManager,
+    name: Features.UserManager,
+    tooltip: "User Manager; Manages user accounts and roles.",
   },
   {
-    id: Features.BILLING_MANAGER,
-    name: Features.BILLING_MANAGER,
-    tooltip: "Feature of billing management.",
+    id: Features.BillingManager,
+    name: Features.BillingManager,
+    tooltip: "Billing Manager; Handles billing and payment-related access.",
   },
   {
-    id: Features.TENANT_MANAGER,
-    name: Features.TENANT_MANAGER,
-    tooltip: "Feature of tenants management.",
+    id: Features.TenantManager,
+    name: Features.TenantManager,
+    tooltip: "Tenant Manager; Manages tenant-specific configurations and data.",
   },
 ];
 
 export const permissionTypes: PermissionInfo[] = [
-  { id: AccessType.FULL, name: AccessType.FULL },
-  { id: AccessType.VIEW, name: AccessType.VIEW },
-  { id: AccessType.CREATE, name: AccessType.CREATE },
-  { id: AccessType.EDIT, name: AccessType.EDIT },
-  { id: AccessType.DELETE, name: AccessType.DELETE },
+  { id: AccessType.FullAccess, name: AccessType.FullAccess },
+  { id: AccessType.View, name: AccessType.View },
+  { id: AccessType.Create, name: AccessType.Create },
+  { id: AccessType.Edit, name: AccessType.Edit },
+  { id: AccessType.Delete, name: AccessType.Delete },
 ];
 
 export const PERMISSIONS = Object.values(Features);
