@@ -35,6 +35,7 @@ export const pricingPlanZodSchema = z
     pricingComponent: z
       .string()
       .min(1, { message: reqError("Pricing component") }),
+
     currency: z.string().min(1, { message: reqError("Currency") }),
     unitPrice: z.union([
       z.number({ required_error: reqError("Unit price") }),
@@ -47,7 +48,8 @@ export const pricingPlanZodSchema = z
         )
         .transform((val) => parseFloat(val)),
     ]),
-    frequency: z.string().min(1, { message: reqError("Billing frequency") }),
+
+    frequency: z.string().optional().nullable(),
     cola: z.union([
       z.number({ required_error: reqError("COLA") }),
       z
@@ -69,7 +71,7 @@ export const pricingPlanZodSchema = z
     lastModifiedOn: z.date(),
   })
 
-  .refine((data) => data.type == "tenant" && !!data.tenantId, {
+  .refine((data) => data.type == "default" || !!data.tenantId, {
     path: ["tenantId"],
     message: reqError("Tenant Name"),
   })
@@ -80,6 +82,10 @@ export const pricingPlanZodSchema = z
   .refine((data) => data.unitPrice > 0 && data.unitPrice <= 100000000, {
     message: "Unit price must be above 0",
     path: ["unitPrice"],
+  })
+  .refine((data) => data.pricingComponent == "GPUCompute" || data.frequency, {
+    path: ["frequency"],
+    message: reqError("Billing frequency"),
   })
   .refine((data) => data.cola > 0 && data.cola <= 100, {
     message: "COLA must between 1 to 100",

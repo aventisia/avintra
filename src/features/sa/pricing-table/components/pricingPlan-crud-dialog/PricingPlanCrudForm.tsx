@@ -5,7 +5,9 @@ import { getTenantDetails } from "@/features/sa/tenants-table/apis/tenants-table
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { SelectAndInputComboField } from "@/react-toolkit/ui/form/fields/combo/SelectAndInputComboField";
+import {
+    SelectAndInputComboField
+} from "@/react-toolkit/ui/form/fields/combo/SelectAndInputComboField";
 import { IconInputField } from "@/react-toolkit/ui/form/fields/IconInputField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { RadioCardGroupField } from "@/react-toolkit/ui/form/fields/RadioCardGroupField";
@@ -17,15 +19,8 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { pricingPlanOptimisticMutationFn } from "../../apis/pricingPlans-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  colaTypeProps,
-  currencyTypeProps,
-  deploymentTypeProps,
-  frequencyTypeProps,
-  idProps,
-  isDisabledProps,
-  pricingComponentTypeProps,
-  tenantSelectProps,
-  unitPriceTypeProps,
+    colaTypeProps, currencyTypeProps, deploymentTypeProps, frequencyTypeProps, idProps,
+    isDisabledProps, pricingComponentTypeProps, tenantSelectProps, unitPriceTypeProps
 } from "../../constants/pricingPlan-form-field-props";
 import { pricingPlanZodSchema } from "../../constants/pricingPlan-zod-schema";
 import { PricingPlansTableDto } from "../../dtos/pricingPlans-table-dto";
@@ -61,6 +56,12 @@ export const PricingPlanCrudForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof pricingPlanZodSchema>) => {
+    console.log(formData);
+
+    const p = pricingPlanZodSchema.parse(formData);
+
+    console.log(p);
+
     // Create or update the pricingplan
     mutatePricingPlan({
       payload: refineFormData(formData) as unknown as PricingPlansTableDto,
@@ -76,7 +77,6 @@ export const PricingPlanCrudForm = () => {
   useEffect(() => {
     const getTenant = async () => {
       if (!tenantId || type === "default") {
-        console.log(tenantId);
         form.setValue("currency", "");
         form.setValue("tenantType", "");
         setformStateData({ ...formStateData, currency: "", tenantType: "" });
@@ -169,6 +169,7 @@ export const PricingPlanCrudForm = () => {
     >
       {/* PricingPlan Id */}
       {isReadMode && <InputField {...idProps} />}
+
       <RadioCardGroupField
         name="type"
         label="Plan Type"
