@@ -29,7 +29,7 @@ export const usePermissionsGird = ({
 
         // Check if all accesses except FULL_ACCESS are included
         const allAccessesExceptFull = ACCESSES.filter(
-          (access) => access !== AccessType.FULL,
+          (access) => access !== AccessType.FullAccess,
         );
         const hasAllAccesses = allAccessesExceptFull.every((access) =>
           accesses.includes(access as AccessType),
@@ -37,7 +37,7 @@ export const usePermissionsGird = ({
 
         // If all accesses are included, mark FULL_ACCESS as checked
         if (hasAllAccesses) {
-          permissionState[`${permissionType}-${AccessType.FULL}`] = true;
+          permissionState[`${permissionType}-${AccessType.FullAccess}`] = true;
         }
 
         // For each access type that's enabled for this permission type
@@ -55,14 +55,14 @@ export const usePermissionsGird = ({
     const updatedPermissions = { ...permissions };
 
     // Special handling for FULL_ACCESS
-    if (permission === AccessType.FULL) {
+    if (permission === AccessType.FullAccess) {
       const newState = !permissions[`${role}-${permission}`];
       updatedPermissions[`${role}-${permission}`] = newState;
 
       // If FULL_ACCESS is checked, check all other permissions for this role
       // If FULL_ACCESS is unchecked, uncheck all other permissions for this role
       permissionTypes.forEach((pt) => {
-        if (pt.id !== AccessType.FULL) {
+        if (pt.id !== AccessType.FullAccess) {
           updatedPermissions[`${role}-${pt.id}`] = newState;
         }
       });
@@ -73,10 +73,10 @@ export const usePermissionsGird = ({
 
       // Check if all permissions are now checked/unchecked to update FULL_ACCESS
       const allOtherPermissionsChecked = permissionTypes
-        .filter((pt) => pt.id !== AccessType.FULL)
+        .filter((pt) => pt.id !== AccessType.FullAccess)
         .every((pt) => updatedPermissions[`${role}-${pt.id}`]);
 
-      updatedPermissions[`${role}-${AccessType.FULL}`] =
+      updatedPermissions[`${role}-${AccessType.FullAccess}`] =
         allOtherPermissionsChecked;
     }
 
@@ -104,7 +104,7 @@ export const usePermissionsGird = ({
       permissionTypes.forEach((permission) => {
         // Skip FULL_ACCESS in the actual data since it's just a UI concept
         if (
-          permission.id !== AccessType.FULL &&
+          permission.id !== AccessType.FullAccess &&
           permissionsState[`${role.id}-${permission.id}`]
         ) {
           accesses.push(permission.id);
