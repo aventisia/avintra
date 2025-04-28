@@ -44,12 +44,7 @@ export const AsyncSelectField = ({
   isRequired,
   selectOptions,
   description,
-  renderOption = DefaultAsyncSelectFieldRenderOption,
-  getDisplayValue = DefaultAsyncSelectFieldgetDisplayValue,
-  getOptionValue = (option) => option.value,
-  notFound = (
-    <div className="py-2 text-center text-sm lowercase">No {label} Found</div>
-  ),
+
   ...props
 }: AsyncSelectFieldProps) => {
   // Get the form context
@@ -69,14 +64,10 @@ export const AsyncSelectField = ({
           <FormControl>
             <AsyncSelect
               {...props}
-              fetcher={selectOptions}
+              selectOptions={selectOptions}
               label={label}
               value={field.value}
               disabled={disabled || field.disabled}
-              renderOption={renderOption}
-              getDisplayValue={getDisplayValue}
-              getOptionValue={getOptionValue}
-              notFound={notFound}
               onChange={(value) => {
                 setValue(name, value, {
                   shouldDirty: true,
@@ -92,27 +83,3 @@ export const AsyncSelectField = ({
     />
   );
 };
-
-export const DefaultAsyncSelectFieldRenderOption = (option: ISelectOption) => (
-  <div className="flex items-center gap-2">
-    <div className="flex flex-col">
-      <div className="font-medium">{option.label}</div>
-      <div className="text-xs text-muted-foreground">{option.description}</div>
-    </div>
-  </div>
-);
-
-export const DefaultAsyncSelectFieldgetDisplayValue = (
-  option: ISelectOption,
-) => (
-  <div className="flex items-center gap-2 text-left">
-    <div className="flex flex-col leading-tight">
-      <div className="font-medium">{option.label}</div>
-      <div className="text-xxs text-muted-foreground">{option.description}</div>
-    </div>
-  </div>
-);
-
-export const DefaultAsyncSelectFieldgetNotFoundComponent = () => (
-  <div className="py-2 text-center text-sm">Not found</div>
-);
