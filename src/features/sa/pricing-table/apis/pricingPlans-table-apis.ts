@@ -3,6 +3,7 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { ISelectOption } from "@/react-toolkit/types/select-option";
 
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 
@@ -14,6 +15,17 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/manage-pric
 export const getPricingPlans = () => {
   return axiosInstance
     .get<IHttpResponse<PricingPlansTableDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves list of pricingplans.
+ */
+export const getPricingPlansToSelect = (tenantId?: string) => {
+  return axiosInstance
+    .get<
+      IHttpResponse<ISelectOption[]>
+    >(`${baseAPIURL}/plans-to-select/${tenantId}`)
     .then((res) => res.data);
 };
 

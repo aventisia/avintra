@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { getPricingPlansToSelect } from "@/features/sa/pricing-table/apis/pricingPlans-table-apis";
 import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
@@ -11,10 +12,7 @@ import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 import { useMutation } from "@tanstack/react-query";
 
-import {
-  getLicensesToSelect,
-  requestLicense,
-} from "../../apis/sa-licenses-table-apis";
+import { requestLicense } from "../../apis/sa-licenses-table-apis";
 import {
   additionalUnitsRequestedProps,
   licenseSelectProps,
@@ -95,7 +93,7 @@ export const RequestLicenseForm = () => {
         selectOptions={() =>
           !id
             ? Promise.resolve([])
-            : getLicensesToSelect(id).then((data) => data.data)
+            : getPricingPlansToSelect(id).then((data) => data.data)
         }
       />
 

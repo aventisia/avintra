@@ -17,6 +17,17 @@ export const getMyLicenses = () => {
 };
 
 /**
+ * Retrieves list of licenses.
+ */
+export const getMyPricingPlans = () => {
+  return axiosInstance
+    .get<
+      IHttpResponse<MyLicensesTableDto[]>
+    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/pricing-plan/plans-to-select`)
+    .then((res) => res.data);
+};
+
+/**
  * Retrieves list of license by id.
  */
 export const getLicense = (id?: string) => {
