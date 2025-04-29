@@ -28,8 +28,8 @@ public static class AccountsDbInitialSeed
 
                 // Seed Roles
                 if (!await SeedRolesAsync(_roleManager)) return app;
-                
-                 // Seed Permissions
+
+                // Seed Permissions
                 if (!await SeedPermissionsAsync(_accountsDbContext)) return app;
 
                 // Seed Super User without tenant
@@ -317,7 +317,7 @@ public static class AccountsDbInitialSeed
         // Roles seeded successfully
         return true;
     }
-    
+
     private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid superUserId)
     {
         try
