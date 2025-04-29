@@ -20,7 +20,7 @@ public class UploadFileService : IUploadFileService
         _fileUploadConfig = fileUploadConfig;
         _webHostEnvironment = webHostEnvironment;
     }
-    
+
     // Uploads a single file and returns the result in a service response.
     public async Task<ServiceResponse<FileUploadResponseDto>> UploadSingleFileAsync(IFormFile file)
     {
@@ -38,16 +38,13 @@ public class UploadFileService : IUploadFileService
             return serviceResponse;
         }
 
-        // Create a list containing the single file for bulk upload processing
-        var files = new List<IFormFile> { file };
-
         // Attempt to upload the file(s) and get the response
-        var response = await UploadFilesAsync(files);
+        var response = await UploadFilesAsync([file]);
 
         // Update the service response based on the upload result
         serviceResponse.Message = response.Message;
         serviceResponse.StatusCode = response.StatusCode;
-        serviceResponse.Data = response.Data != null ? response.Data.First() : null;
+        serviceResponse.Data = response.Data?.FirstOrDefault();
 
         // Return the service response with the upload result
         return serviceResponse;
