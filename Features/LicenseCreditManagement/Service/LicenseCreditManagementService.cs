@@ -72,7 +72,7 @@ public class LicenseCreditManagementService : ILicenseCreditManagementService
             var licenseCreditOptions = await _unitOfWork.LicenseCreditRepo
                                             .GetByConditionAsync(w => w.TenantId == tenantId)
                                             .OrderByDescending(w => w.CreatedOn)
-                                            // .Include(a => a.PlanPricing)
+                                            .Include(a => a.PlanPricing)
                                             .ProjectToType<SelectOptionDto>()
                                             .ToListAsync();
 
