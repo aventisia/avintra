@@ -92,7 +92,7 @@ public class CreateAccountService : ICreateAccountService
 
             // Get default Tenant 
             var defaultTenant = await _unitOfWork.TenantRepo
-                                        .GetByConditionAsync(w => w.IsDefault == true && w.Name == tenantName)
+                                        .GetByConditionAsync(w => w.IsDefault && EF.Functions.ILike(w.Name, tenantName))
                                         .SingleOrDefaultAsync();
 
             // Default Tenant not found
