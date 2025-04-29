@@ -13,18 +13,13 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  descriptionProps,
-  idProps,
-  inputJsonSchemaProps,
-  isDisabledProps,
-  maxRetriesProps,
-  nameProps,
-  outputJsonSchemaProps,
+    descriptionProps, idProps, inputJsonSchemaProps, isDisabledProps, maxRetriesProps, nameProps,
+    outputJsonSchemaProps
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
+import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
-import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 
 export const QueueCrudForm = () => {
   // Define queue form
@@ -120,8 +115,8 @@ export const QueueCrudForm = () => {
             Failed Items
           </label>
           <CheckboxField
-            id="shouldRetryFailedItems"
-            name="retryFailed"
+            name="shouldRetryFailedItems"
+            id="retryFailed"
             label=""
           />
         </div>
@@ -130,15 +125,18 @@ export const QueueCrudForm = () => {
             Abandoned Items
           </label>
           <CheckboxField
-            id="shouldRetryAbandonedItems"
-            name="retryAbandoned"
+            name="shouldRetryAbandonedItems"
+            id="retryAbandoned"
             label=""
           />
         </div>
 
-        <div className="mt-4">
-          <InputField {...maxRetriesProps} />
-        </div>
+        {form.getValues("shouldRetryAbandonedItems") ||
+        form.getValues("shouldRetryFailedItems") ? (
+          <div className="mt-4">
+            <InputField {...maxRetriesProps} />
+          </div>
+        ) : null}
       </div>
 
       {/* additional options */}
