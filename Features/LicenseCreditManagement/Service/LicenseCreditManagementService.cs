@@ -72,7 +72,7 @@ public class LicenseCreditManagementService : ILicenseCreditManagementService
             var licenseCreditOptions = await _unitOfWork.LicenseCreditRepo
                                             .GetByConditionAsync(w => w.TenantId == tenantId)
                                             .OrderByDescending(w => w.CreatedOn)
-                                            .Include(a => a.PlanPricing)
+                                            // .Include(a => a.PlanPricing)
                                             .ProjectToType<SelectOptionDto>()
                                             .ToListAsync();
 
@@ -605,7 +605,7 @@ public class LicenseCreditManagementService : ILicenseCreditManagementService
                 _logger.LogWarning("Invalid LicenseCredit: PlanPricing is null for PlanId: {PlanId}", existingCredit?.PlanId);
                 return false;
             }
-            
+
             // Create the invoice object
             var invoice = new Invoice()
             {
