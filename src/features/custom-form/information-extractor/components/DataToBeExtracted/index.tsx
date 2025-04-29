@@ -30,21 +30,29 @@ const DataToBeExtracted = ({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm font-semibold">
-        Data to be extracted <span className="text-destructive">*</span>
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-base">Fields</p>
+        <Button
+          type="button"
+          variant="ghost"
+          className="text-primary"
+          onClick={addDataToExtracted}
+        >
+          <Plus size={20} />
+        </Button>
+      </div>
       <div className="!mt-0.5 inline-block rounded-lg border">
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto] text-center text-sm">
-          <div className="border-b border-r p-2">Field Name</div>
-          <div className="border-b border-r p-2">Type</div>
-          <div className="border-b p-2">Instructions</div>
-          <div className="border-b p-2"></div>
+        <div className="grid grid-cols-[1fr_1fr_1fr_auto] bg-accent text-center text-sm">
+          <div className="border-b border-r px-2 py-2.5">Field Name</div>
+          <div className="border-b border-r px-2 py-2.5">Type</div>
+          <div className="border-b px-2 py-2.5">Instructions</div>
+          <div className="border-b px-2 py-2.5"></div>
         </div>
 
         {dataFields.map((field, index) => (
           <div
             key={field.id}
-            className={`grid grid-cols-[1fr_1fr_1fr_auto] justify-center gap-2 ${index !== dataFields.length - 1 && "border-b"} p-2`}
+            className={`grid grid-cols-[1fr_1fr_1fr_auto] justify-center gap-2 ${index !== dataFields.length - 1 && "border-b"} px-2 py-2.5`}
           >
             {/* Field Name */}
             <Controller
@@ -97,7 +105,7 @@ const DataToBeExtracted = ({
                 type="button"
                 onClick={() => removeDataToExtracted(index)}
                 className="m-0 p-0"
-                variant="caution"
+                variant="ghost"
               >
                 <TrashIcon className="h-4 w-4" />
               </Button>
@@ -105,16 +113,6 @@ const DataToBeExtracted = ({
           </div>
         ))}
       </div>
-
-      <Button
-        size="xs"
-        variant="outline"
-        className="w-full space-x-0.5 bg-muted text-sm text-primary"
-        type="button"
-        onClick={addDataToExtracted}
-      >
-        <Plus size={18} /> <span>Add Field</span>
-      </Button>
     </div>
   );
 };

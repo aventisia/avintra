@@ -54,7 +54,7 @@ const AddModel = ({ form }: AddModelProps) => {
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
-                className="h-4 w-4 p-0 text-destructive"
+                className="h-4 w-4 p-0"
                 onClick={() => form.setValue("selectedModel", null)}
               >
                 <Trash2 size={16} />

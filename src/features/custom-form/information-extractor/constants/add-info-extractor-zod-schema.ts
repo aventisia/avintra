@@ -11,6 +11,7 @@ export const dataToBeExtractedSchema = z.object({
 
 const tableSchema = z.object({
     tableContext: z.string().min(1, {message: reqError("Table Context")}),
+    tableName: z.string(),
     tableData: z.array(
       z.object({
         headerName: z.string().min(1, {message: reqError("Header Name")}),

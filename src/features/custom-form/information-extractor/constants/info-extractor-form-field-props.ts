@@ -9,7 +9,7 @@ const documentContextProps: TextareaFieldProps = {
     name: "documentContext",
     label: "Document Context",
     placeholder: "We need to pass Document Context to LLM",
-    isRequired: true,
+    isRequired: false,
     className: "text-sm resize-none"
 } 
 
@@ -17,13 +17,13 @@ const inputTextProps: TextareaFieldProps = {
     name: "inputText",
     label: "Input Text",
     placeholder: "It could be hard coded or a variable",
-    isRequired: true,
+    isRequired: false,
     className: "text-sm resize-none"
 } 
 
 const fieldNameProps : InputFieldProps = {
     name: "",
-    isRequired: true,
+    isRequired: false,
     type: "text",
     className: "text-sm",
     placeholder: "Field Name"
@@ -31,7 +31,7 @@ const fieldNameProps : InputFieldProps = {
 
 const typeProps: SelectFieldProps = {
     name: "",
-    isRequired: true,
+    isRequired: false,
     placeholder: "Select",
     selectOptions: enumToArray(DataTypeEnum),
     className: "text-sm"
@@ -47,15 +47,22 @@ const instructionsProps: InputFieldProps = {
 const tableContextProps: InputFieldProps = {
     name: "tableContext",
     label: "Table Context",
-    isRequired: true,
+    isRequired: false,
     type: "text",
     className: "text-sm",
     placeholder: "Table context"
 }
 
+const tableNameProps: InputFieldProps = {
+    name: "tableName",
+    fieldSize: "sm",
+    maxLength: 20,
+    className: "h-7 w-24 bg-transparent",
+}
+
 const headerNameProps: InputFieldProps = {
-    name: "headerName",
-    isRequired: true,
+    name: "",
+    isRequired: false,
     type: "text",
     className: "text-sm",
     placeholder: "Header Name"
@@ -64,8 +71,9 @@ const headerNameProps: InputFieldProps = {
 const nodePropmptProps: TextareaFieldProps = {
     name: "nodePrompt",
     label: "Node Prompt",
-    isRequired: true,
-    className: "text-sm resize-none"
+    isRequired: false,
+    className: "text-sm resize-none",
+    rows: 4
 }
 
 const saveInModelLibraryProps: CheckboxFieldProps = {
@@ -78,13 +86,14 @@ const modelNameProps: InputFieldProps = {
     name: "modelName",
     label: "Model Name",
     placeholder: "Enter Model Name",
-    className: "text-sm"
+    className: "text-sm",
 }
 
 export {
     documentContextProps,
     inputTextProps,
     fieldNameProps,
+    tableNameProps,
     typeProps,
     instructionsProps,
     tableContextProps,

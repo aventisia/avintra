@@ -24,7 +24,6 @@ import { useShallow } from "zustand/react/shallow";
 import { Node } from "@xyflow/react";
 import filterFieldValues from "@/components/node-container/utils/filterFieldValues";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
-
 interface InformationExtractorFormProps {
   /** A function to close the dialog. */
   closeDialog: () => void;
@@ -143,6 +142,7 @@ const InformationExtractorForm = ({
             {/* Input Text */}
             <TextareaField {...inputTextProps} />
 
+            {/* Separator */}
             <Separator />
 
             {/* Data to be extracted */}
@@ -152,6 +152,9 @@ const InformationExtractorForm = ({
               form={form}
               removeDataToExtracted={removeDataToExtracted}
             />
+
+            {/* Separator */}
+            <Separator />
 
             {/* Context Table */}
             <ContextTables

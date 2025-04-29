@@ -4,6 +4,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useInformationExtractorTableStore } from "../stores/info-extractor-table-store";
 
 interface useAddInformationExtractorFormProps {
   /** Form fields values mainly getting as response from an api and to fill the form to view or update data */
@@ -20,12 +22,18 @@ export const useAddInformationExtractorForm = ({
       inputText: "",
       dataToBeExtracted: [{ fieldName: "", type: "", instructions: "" }],
       tables: null,
-      nodePrompt: "",
+      nodePrompt:
+        "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.",
       saveInModelLibrary: false,
       modelName: "",
       selectedModel: null,
     },
   });
+  const { setActiveTab } = useInformationExtractorTableStore(
+    useShallow((state) => ({
+      setActiveTab: state.setActiveTab,
+    })),
+  );
 
   const {
     formState: { isSubmitting, isDirty },
@@ -67,13 +75,32 @@ export const useAddInformationExtractorForm = ({
   const addTableHandler = () => {
     appendTable({
       tableContext: "",
+      tableName: `Table ${tableFields.length + 1}`,
       tableData: [{ headerName: "", type: "", instructions: "" }],
     });
   };
 
   // Function to remove a table from the tables array
-  const removeTableHandler = (index: number) => {
+  const removeTableHandler = (index: number | null) => {
+    if (index === null) return;
+
     removeTable(index);
+
+    // Check how many tabs are left after removal
+    const remainingTabs = tableFields.length - 1;
+
+    if (remainingTabs <= 0) {
+      // If only one tab was present and it was deleted, set active tab to null
+      setActiveTab(undefined);
+    } else {
+      // If the last tab is deleted, set the active tab to the previous one
+      if (index === remainingTabs) {
+        setActiveTab(`Table ${remainingTabs}`);
+      } else {
+        // Otherwise, set the active tab to the next tab
+        setActiveTab(`Table ${index + 1}`);
+      }
+    }
   };
 
   // Function to add a new table header (row) to a specific table
