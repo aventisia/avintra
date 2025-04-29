@@ -5,78 +5,76 @@ public static class AccountsDbInitialSeed
 {
     public async static Task<WebApplication> SeedInitialData(this WebApplication app)
     {
-        using (var scope = app.Services.CreateScope())
+        using var scope = app.Services.CreateScope();
+        // Get TenantDefaultConfig
+        var tenantDefaultConfig = scope.ServiceProvider.GetRequiredService<TenantDefaultConfig>();
+
+        // Get DefaultUsersConfig
+        var defaultUsersConfig = scope.ServiceProvider.GetRequiredService<DefaultUsersConfig>();
+
+        // Get accountsDbContext
+        using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
+
+        // Get RoleManager and UserManager
+        using var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AccountRole>>();
+        using var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<AccountUser>>();
+
+        // Try to seed data
+        try
         {
-            // Get TenantDefaultConfig
-            var tenantDefaultConfig = scope.ServiceProvider.GetRequiredService<TenantDefaultConfig>();
+            // Seeding is not required
+            if (!await IsSeedingRequired(_accountsDbContext)) return app;
 
-            // Get DefaultUsersConfig
-            var defaultUsersConfig = scope.ServiceProvider.GetRequiredService<DefaultUsersConfig>();
+            // Seed Roles
+            if (!await SeedRolesAsync(_roleManager)) return app;
 
-            // Get accountsDbContext
-            using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
+            // Seed Permissions
+            if (!await SeedPermissionsAsync(_accountsDbContext)) return app;
 
-            // Get RoleManager and UserManager
-            using var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AccountRole>>();
-            using var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<AccountUser>>();
+            // Seed Super User without tenant
+            var superUser = await SeedSuperUserAsync(_userManager, defaultUsersConfig.SuperUser);
 
-            // Try to seed data
-            try
-            {
-                // Seeding is not required
-                if (!await IsSeedingRequired(_accountsDbContext)) return app;
+            // Super user not seeded
+            if (superUser == null) return app;
 
-                // Seed Roles
-                if (!await SeedRolesAsync(_roleManager)) return app;
+            // Seed default tenants
+            if (!await SeedDefaultTenantsAsync(_accountsDbContext, tenantDefaultConfig, superUser.Id)) return app;
 
-                // Seed Permissions
-                if (!await SeedPermissionsAsync(_accountsDbContext)) return app;
+            // Seed default IndividualUser
+            if (!await SeedIndividualUserAsync(_accountsDbContext, _userManager, defaultUsersConfig.IndividualUser, superUser.Id)) return app;
 
-                // Seed Super User without tenant
-                var superUser = await SeedSuperUserAsync(_userManager, defaultUsersConfig.SuperUser);
+            // Update Super user tenant Id
+            if (!await UpdateSuperUserTenantId(_accountsDbContext, superUser.Id)) return app;
 
-                // Super user not seeded
-                if (superUser == null) return app;
-
-                // Seed default tenants
-                if (!await SeedDefaultTenantsAsync(_accountsDbContext, tenantDefaultConfig, superUser.Id)) return app;
-
-                // Seed default IndividualUser
-                if (!await SeedIndividualUserAsync(_accountsDbContext, _userManager, defaultUsersConfig.IndividualUser, superUser.Id)) return app;
-
-                // Update Super user tenant Id
-                if (!await UpdateSuperUserTenantId(_accountsDbContext, superUser.Id)) return app;
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: Error occurred while tyring to seed data: " + ex.Message);
-            }
-            return app;
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: Error occurred while tyring to seed data: " + ex.Message);
+        }
+        return app;
     }
 
     // Check if data already exists
-    private static async Task<bool> IsSeedingRequired(AccountsDbContext accountsDbContext)
+    static async Task<bool> IsSeedingRequired(AccountsDbContext accountsDbContext)
     {
         try
         {
             // Role already exists
-            if (await accountsDbContext.Roles.CountAsync() > 0)
+            if (await accountsDbContext.Roles.AnyAsync())
             {
                 Console.WriteLine("Info: Role's data already exists, so, skipping data seed process");
                 return false;
             }
 
             // Tenant already exists
-            if (await accountsDbContext.Tenants.Where(w => w.IsDefault).CountAsync() > 0)
+            if (await accountsDbContext.Tenants.Where(w => w.IsDefault).AnyAsync())
             {
                 Console.WriteLine("Info: Tenant's data already exists, so, skipping data seed process");
                 return false;
             }
 
             // User already exists
-            if (await accountsDbContext.Users.Where(w => w.IsDefault).CountAsync() > 0)
+            if (await accountsDbContext.Users.Where(w => w.IsDefault).AnyAsync())
             {
                 Console.WriteLine("Info: User's data already exists, so, skipping data seed process");
                 return false;
@@ -93,7 +91,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed roles
-    private async static Task<bool> SeedRolesAsync(RoleManager<AccountRole> roleManager)
+    async static Task<bool> SeedRolesAsync(RoleManager<AccountRole> roleManager)
     {
         try
         {
@@ -125,7 +123,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed super user without tenant
-    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, DefaultUser defaultSuperUser)
+    async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, DefaultUser defaultSuperUser)
     {
         try
         {
@@ -178,7 +176,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed default tenants
-    private async static Task<bool> SeedDefaultTenantsAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, Guid superUserId)
+    async static Task<bool> SeedDefaultTenantsAsync(AccountsDbContext accountsDbContext, TenantDefaultConfig tenantDefaultConfig, Guid superUserId)
     {
         try
         {
@@ -224,7 +222,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed Individual User
-    private async static Task<bool> SeedIndividualUserAsync(AccountsDbContext accountsDbContext, UserManager<AccountUser> userManager, DefaultUser defaultIndividualUser, Guid superUserId)
+    async static Task<bool> SeedIndividualUserAsync(AccountsDbContext accountsDbContext, UserManager<AccountUser> userManager, DefaultUser defaultIndividualUser, Guid superUserId)
     {
         try
         {
@@ -286,7 +284,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed permissions
-    private async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext)
+    async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext)
     {
         try
         {
@@ -318,7 +316,7 @@ public static class AccountsDbInitialSeed
         return true;
     }
 
-    private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid superUserId)
+    static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid superUserId)
     {
         try
         {
