@@ -17,7 +17,7 @@ export const LicenseDiv = ({ isReadOnly, value }: LicenseDivProps) => {
         />
       )}
       <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
-        <p className="font-light">Availabel Licenses:</p>
+        <p className="font-light">Available Licenses:</p>
         <p>20</p>
       </div>
     </div>
