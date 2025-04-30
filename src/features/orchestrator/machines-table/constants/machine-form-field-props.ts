@@ -56,7 +56,7 @@ export const environmentTypeProps: SelectFieldProps = {
 };
 
 export const licenseSelectProps: AsyncSelectFieldProps = {
-  name: "licenseType",
+  name: "licenseId",
   selectOptions: () => getLicensesToSelect().then((data) => data.data),
   label: "License Type",
   placeholder: "Select License",
