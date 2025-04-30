@@ -1,6 +1,7 @@
+import { toast } from "sonner";
+
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 /**
  * Custom hook for performing an optimistic mutation.
@@ -19,7 +20,7 @@ import { toast } from "sonner";
 export const useOptimisticMutation = <TData, TResponseResult, TQueryData>(
   mutationFn: (data: TData) => Promise<IHttpResponse<TResponseResult>>,
   queryKey: string[],
-  updatedQueryData: TQueryData[] | undefined,
+  updatedQueryData?: TQueryData[],
   showSuccessToast: boolean = true,
 ) => {
   // Get query client
