@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
-import colors from 'tailwindcss/colors';
-import { parseColor } from 'tailwindcss/lib/util/color';
-import plugin from 'tailwindcss/plugin';
+import colors from "tailwindcss/colors";
+import { parseColor } from "tailwindcss/lib/util/color";
+import plugin from "tailwindcss/plugin";
 
 const toRGB = (value) => {
   return parseColor(value).color.join(" ");
@@ -73,16 +73,16 @@ const config = {
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
-          50: 'hsl(224.3, 76.3%, 95%)',
-          100: 'hsl(224.3, 76.3%, 90%)',
-          200: 'hsl(224.3, 76.3%, 80%)',
-          300: 'hsl(224.3, 76.3%, 70%)',
-          400: 'hsl(224.3, 76.3%, 60%)',
-          500: 'hsl(224.3, 76.3%, 48%)', // Base color
-          600: 'hsl(224.3, 76.3%, 40%)',
-          700: 'hsl(224.3, 76.3%, 30%)',
-          800: 'hsl(224.3, 76.3%, 20%)',
-          900: 'hsl(224.3, 76.3%, 10%)',
+          50: "hsl(224.3, 76.3%, 95%)",
+          100: "hsl(224.3, 76.3%, 90%)",
+          200: "hsl(224.3, 76.3%, 80%)",
+          300: "hsl(224.3, 76.3%, 70%)",
+          400: "hsl(224.3, 76.3%, 60%)",
+          500: "hsl(224.3, 76.3%, 48%)", // Base color
+          600: "hsl(224.3, 76.3%, 40%)",
+          700: "hsl(224.3, 76.3%, 30%)",
+          800: "hsl(224.3, 76.3%, 20%)",
+          900: "hsl(224.3, 76.3%, 10%)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
@@ -115,6 +115,9 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "rotate-border": {
+          to: { "--border-angle": "360deg" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -129,6 +132,7 @@ const config = {
         },
       },
       animation: {
+        "rotate-border": "border 4s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite", // Required for OTP field
