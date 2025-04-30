@@ -3,8 +3,10 @@ import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { QueuesTableDto } from "../dtos/queues-table-dto";
+
 import { QueueCreateUpdateDto } from "../dtos/queue-create-update-dto";
+import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+import { QueuesTableDto } from "../dtos/queues-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
 
@@ -38,6 +40,17 @@ export const insertQueue = (newqueue: QueueCreateUpdateDto) => {
         "Content-Type": "multipart/form-data",
       },
     })
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new work item.
+ */
+export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<QueueWorkItemDto>
+    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/queue-transaction`, workitem)
     .then((res) => res.data);
 };
 
