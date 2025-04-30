@@ -1,4 +1,4 @@
-import { Loader2, UploadCloud } from "lucide-react";
+import { UploadCloud } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { read, utils } from "xlsx";
@@ -44,7 +44,6 @@ export const QueueUploadItemsDialog = ({
   );
 
   useEffect(() => {
-    setShowDialog(!isSuccess);
     setData(undefined);
   }, [isSuccess, setShowDialog]);
 
@@ -72,7 +71,7 @@ export const QueueUploadItemsDialog = ({
     reader.readAsArrayBuffer(file);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: false,
     accept: {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [], // .xlsx
@@ -94,6 +93,12 @@ export const QueueUploadItemsDialog = ({
       refineFormData(formData) as unknown as QueueWorkItemDto,
     );
   };
+
+  useEffect(() => {
+    if (isPending && !isSuccess) {
+      setShowDialog(false);
+    }
+  });
   // Return dialog
   return (
     <QueueUploadItemsDialogWrapper>
@@ -110,7 +115,11 @@ export const QueueUploadItemsDialog = ({
               <input {...getInputProps()} />
               <div
                 {...getRootProps()}
-                className="flex h-[calc(50vh-15rem)] border-separate border-spacing-1 !items-center justify-center rounded-lg border-2 border-dashed"
+                className={cn(
+                  "flex h-[calc(50vh-15rem)]",
+                  "border-separate border-spacing-1 cursor-pointer !items-center justify-center rounded-lg border-2 border-dashed",
+                  isDragActive && "animation-rotate-border",
+                )}
               >
                 <p className="flex gap-2 text-muted-foreground">
                   <UploadCloud /> Drop spreadsheet file here
@@ -123,12 +132,7 @@ export const QueueUploadItemsDialog = ({
                 isPending={isPending}
                 className={cn("min-w-[5rem]")}
               >
-                <span className="group flex gap-2">
-                  {isPending && (
-                    <Loader2 className={cn("h-5 w-5", "animate-spin")} />
-                  )}
-                  <span>Upload</span>
-                </span>
+                Upload
               </SubmitButton>
             </div>
           </Form>

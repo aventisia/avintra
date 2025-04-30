@@ -3,6 +3,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import {
@@ -32,8 +33,17 @@ export function UploadedItemsTable<TData extends object>({
     const sampleObject = data[0];
     return Object.keys(sampleObject).map((key) => ({
       accessorKey: key as keyof TData,
-      header: () => key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the key name
-      cell: (info) => String(info.getValue()), // Convert all values to strings for display
+      header: ({ column }) => (
+        <DTColumnHeader
+          column={column}
+          title={key.charAt(0).toUpperCase() + key.slice(1)}
+        />
+      ), // Capitalize the key name
+      cell: (info) => (
+        <div className="w-auto truncate font-medium">
+          {String(info.getValue())}
+        </div>
+      ),
     }));
   }, [data]);
 
