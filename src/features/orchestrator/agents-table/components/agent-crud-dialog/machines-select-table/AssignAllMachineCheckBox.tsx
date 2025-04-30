@@ -1,9 +1,12 @@
-import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import type { Column, Table } from "@tanstack/react-table";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
 
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+
+import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
+
+import type { Column, Table } from "@tanstack/react-table";
 interface AssignAllMachineCheckBoxProps<TData, TValue> {
   table: Table<TData>;
   column: Column<TData, TValue>;
@@ -12,12 +15,14 @@ export function AssignAllMachineCheckBox<TData, TValue>({
   table,
   column,
 }: Readonly<AssignAllMachineCheckBoxProps<TData, TValue>>) {
-  const { setAllAssigned, allAssigned, isReadOnly } =
+  const { setAllAssigned, allAssigned,availableLicenses, isReadOnly, currentMachines } =
     useMachinesSelectTableStore(
       useShallow((state) => ({
         setAllAssigned: state.setAllAssigned,
         allAssigned: state.allAssigned,
+        availableLicenses: state.availableLicenses,
         isReadOnly: state.isReadOnly,
+        currentMachines: state.currentMachines,
       })),
     );
   return (
@@ -27,6 +32,18 @@ export function AssignAllMachineCheckBox<TData, TValue>({
           allAssigned || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => {
+          if (
+            currentMachines.filter((a) => a.isAssigned).length >=
+            availableLicenses
+          ) {
+            toast.error(
+              !availableLicenses
+                ? "you don't have any license or not selected any."
+                : "You can only add agents upto " + availableLicenses,
+            );
+            return;
+          }
+          
           setAllAssigned(!!value);
           table.toggleAllPageRowsSelected(!!value);
         }}
