@@ -4,6 +4,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/react-toolkit/ui/hover-card";
+
 import { NavLink } from "react-router-dom";
 
 interface MenuItemProps {
@@ -37,4 +38,3 @@ const CollapsedMenuItem = ({ Icon, name, route }: MenuItemProps) => {
 };
 
 export { CollapsedMenuItem };
-

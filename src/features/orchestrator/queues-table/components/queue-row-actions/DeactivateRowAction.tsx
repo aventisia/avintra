@@ -1,7 +1,7 @@
-import { RouteOffIcon } from 'lucide-react';
-import React from 'react';
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { RouteOffIcon } from "lucide-react";
+import React from "react";
 
 interface DeactivateRowActionProps {
   rowId: string;

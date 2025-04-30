@@ -1,9 +1,9 @@
-import { useShallow } from "zustand/react/shallow";
-
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper";
 import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+
+import { useShallow } from "zustand/react/shallow";
 
 import { getDialogHeadingDescription } from "../../constants";
 import { RecordPaymentForm } from "./RecordPaymentForm";

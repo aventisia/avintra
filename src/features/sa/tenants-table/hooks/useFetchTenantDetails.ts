@@ -1,7 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-
-import { useQuery } from "@tanstack/react-query";
 
 import { getTenantDetails } from "../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../constants";

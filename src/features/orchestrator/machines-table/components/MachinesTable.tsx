@@ -1,8 +1,9 @@
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
@@ -13,12 +14,11 @@ import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchMachines } from "../hooks/useFetchMachines";
+import { MachineStats } from "./MachineStats";
+import { MachineTabsList } from "./MachineTabs";
+import { machinesTableColumns } from "./MachinesTableColumns";
 import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
-import { machinesTableColumns } from "./MachinesTableColumns";
-import { MachineStats } from "./MachineStats";
-import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
-import { MachineTabsList } from "./MachineTabs";
 
 /**
  * Renders a table of machines.

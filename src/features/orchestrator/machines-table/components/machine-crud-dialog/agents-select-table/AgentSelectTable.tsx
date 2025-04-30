@@ -1,9 +1,9 @@
-import { useShallow } from "zustand/react/shallow";
-
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+
+import { useShallow } from "zustand/react/shallow";
 
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";

@@ -1,9 +1,12 @@
-import React from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
-import { ArrowUpRightIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowUpRightIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import React from "react";
+import { useShallow } from "zustand/react/shallow";
 
 interface DTEditRowActionProps {
   rowId: string;

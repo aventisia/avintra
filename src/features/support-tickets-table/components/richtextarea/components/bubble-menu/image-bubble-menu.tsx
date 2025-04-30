@@ -1,7 +1,8 @@
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react";
-import { ImagePopoverBlock } from "../image/image-popover-block";
+
 import { ShouldShowProps } from "../../types/types";
+import { ImagePopoverBlock } from "../image/image-popover-block";
 
 const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
   const shouldShow = ({ editor, from, to }: ShouldShowProps) => {

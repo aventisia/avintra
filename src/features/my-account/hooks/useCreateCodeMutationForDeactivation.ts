@@ -1,7 +1,9 @@
 import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
+
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
+
 import { useAccountDeactivationStore } from "../stores/account-deactivation-store";
 
 export const useCreateCodeMutationForDeactivation = () => {

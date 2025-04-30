@@ -1,11 +1,12 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response"
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation"
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto"
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto"
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance"
-import { TriggersTableDto } from "../dtos/triggers-table-dto"
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`
+import { TriggersTableDto } from "../dtos/triggers-table-dto";
+
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
 
 /**
  * Retrieves list of triggers.
@@ -13,8 +14,8 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`
 export const getTriggers = () => {
   return axiosInstance
     .get<IHttpResponse<TriggersTableDto[]>>(`${baseAPIURL}/list`)
-    .then((res) => res.data)
-}
+    .then((res) => res.data);
+};
 
 /**
  * Checks the availability of a trigger name.
@@ -24,8 +25,8 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
     .post<
       IHttpResponse<TrueFalseResultDto>
     >(`${baseAPIURL}/is-available`, postObj)
-    .then((res) => res.data)
-}
+    .then((res) => res.data);
+};
 
 /**
  * Inserts a new trigger.
@@ -33,8 +34,8 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 export const insertTrigger = (newtrigger: TriggersTableDto) => {
   return axiosInstance
     .post<IHttpResponse<TriggersTableDto>>(`${baseAPIURL}`, newtrigger)
-    .then((res) => res.data)
-}
+    .then((res) => res.data);
+};
 
 /**
  * Updates an existing trigger.
@@ -42,8 +43,8 @@ export const insertTrigger = (newtrigger: TriggersTableDto) => {
 export const updateTrigger = (updatedtrigger: TriggersTableDto) => {
   return axiosInstance
     .put<IHttpResponse<TriggersTableDto>>(`${baseAPIURL}`, updatedtrigger)
-    .then((res) => res.data)
-}
+    .then((res) => res.data);
+};
 
 /**
  * Deletes a trigger by its ID.
@@ -51,8 +52,8 @@ export const updateTrigger = (updatedtrigger: TriggersTableDto) => {
 export const deleteTrigger = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
-    .then((res) => res.data)
-}
+    .then((res) => res.data);
+};
 
 /**
  * Deletes multiple triggers by their IDs.
@@ -60,8 +61,8 @@ export const deleteTrigger = (id: string) => {
 export const deleteTriggers = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
-    .then((res) => res.data)
-}
+    .then((res) => res.data);
+};
 
 /**
  * Performs an optimistic mutation on a trigger based on the provided CRUD action.
@@ -76,15 +77,14 @@ export const triggerOptimisticMutationFn = ({
 }: IOptimisticMutation<TriggersTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertTrigger(payload as TriggersTableDto)
+      return insertTrigger(payload as TriggersTableDto);
     case "update":
-      return updateTrigger(payload as TriggersTableDto)
+      return updateTrigger(payload as TriggersTableDto);
     case "delete":
-      return deleteTrigger(payload as string)
+      return deleteTrigger(payload as string);
     case "delete-multiple":
-      return deleteTriggers(payload as string[])
+      return deleteTriggers(payload as string[]);
     default:
-      throw new Error("Invalid action type")
+      throw new Error("Invalid action type");
   }
 };
-

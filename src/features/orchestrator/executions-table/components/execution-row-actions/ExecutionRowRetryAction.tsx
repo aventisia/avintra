@@ -1,8 +1,8 @@
-import { useOptimisticMutation } from '@/react-toolkit/hooks/useOptimisticMutation';
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
-import { retryExecution } from '../../apis/executions-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
+import { retryExecution } from "../../apis/executions-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
 
 interface ExecutionRowRetryActionProps {
   id: string;

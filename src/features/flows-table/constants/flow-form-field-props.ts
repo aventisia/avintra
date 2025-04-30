@@ -42,10 +42,4 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
-export {
-  descriptionProps,
-  idProps,
-  isDisabledProps,
-  nameProps,
-  typeProps,
-};
+export { descriptionProps, idProps, isDisabledProps, nameProps, typeProps };

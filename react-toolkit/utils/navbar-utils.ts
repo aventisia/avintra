@@ -1,4 +1,7 @@
-import { INavDataType, ITopNavMenuItem } from "@/react-toolkit/types/nav-data-types";
+import {
+  INavDataType,
+  ITopNavMenuItem,
+} from "@/react-toolkit/types/nav-data-types";
 
 /**
  * It converts navigation links/routes to a format which work with

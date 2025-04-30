@@ -1,7 +1,7 @@
-import { BotIcon } from 'lucide-react';
-import React from 'react';
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { BotIcon } from "lucide-react";
+import React from "react";
 
 interface AssignAgentsRowActionProps {
   rowId: string;

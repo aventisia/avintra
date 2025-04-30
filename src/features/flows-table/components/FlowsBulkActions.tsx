@@ -4,7 +4,9 @@ import { DTBulkActions } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulk
 import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkDeleteAction";
 import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
 import { Separator } from "@/react-toolkit/ui/separator";
+
 import { Table } from "@tanstack/react-table";
+
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
@@ -31,7 +33,7 @@ export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
   >(selectedRowIds, flowOptimisticMutationFn, FLOWS_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
-  
+
   return (
     <>
       {selectedRowIds.length > 0 && (

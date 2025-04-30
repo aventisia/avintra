@@ -1,6 +1,3 @@
-import { Check, ChevronDown, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
 import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
 import { cn } from "@/react-toolkit/lib/utils";
 import { ISelectOption } from "@/react-toolkit/types/select-option";
@@ -19,6 +16,9 @@ import {
   PopoverTrigger,
 } from "@/react-toolkit/ui/popover";
 import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
+
+import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */

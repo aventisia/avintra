@@ -1,9 +1,9 @@
-import { Info } from "lucide-react";
-import React from "react";
-
 import { Toggle } from "@/react-toolkit/ui/Toggle";
 import { Tooltip, TooltipProvider } from "@/react-toolkit/ui/Tooltip";
+
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
+import { Info } from "lucide-react";
+import React from "react";
 
 import {
   permissionTypes,

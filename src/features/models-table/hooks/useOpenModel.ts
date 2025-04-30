@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+
 import { MODELS_QUERY_KEY } from "../constants";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelStagesType } from "../types/model-stages-type";
@@ -23,7 +24,7 @@ export const useOpenModel = () => {
     const modelData = modelsData?.data.find((item) => item.id === rowId);
 
     // Open model in studio
-    let url = '';
+    let url = "";
     switch (stage) {
       case "Label":
         url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/label?mid=${rowId}&mn=${modelData?.name}`;
@@ -36,7 +37,7 @@ export const useOpenModel = () => {
         break;
     }
 
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   // Return the handle open model action function

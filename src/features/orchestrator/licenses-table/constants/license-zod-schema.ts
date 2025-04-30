@@ -1,10 +1,10 @@
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { z } from "zod";
-
 import {
   numericError,
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
+
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { z } from "zod";
 
 /**
  * Represents the Zod schema for a request license units.

@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useShallow } from 'zustand/react/shallow';
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { useCheckAvailability } from '@/react-toolkit/hooks/useCheckAvailability';
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { isVaultNameAvailable } from '../apis/vaults-table-apis';
-import { DATA_QUERY_KEY } from '../constants';
-import { vaultNameSchema, vaultZodSchema } from '../constants/vault-zod-schema';
-import { VaultsTableDto } from '../dtos/vaults-table-dto';
+import { isVaultNameAvailable } from "../apis/vaults-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
+import { vaultNameSchema, vaultZodSchema } from "../constants/vault-zod-schema";
+import { VaultsTableDto } from "../dtos/vaults-table-dto";
 
 /**
  * Custom hook for defining a config form.
@@ -40,7 +40,6 @@ export const useDefineVaultForm = () => {
       toggleFormDirty: state.toggleFormDirty,
     })),
   );
-
 
   // Get query client
   const queryClient = useQueryClient();
@@ -86,8 +85,8 @@ export const useDefineVaultForm = () => {
       id: rowId,
       name: configData?.name ?? "",
 
-      userName:configData?.userName,
-      password:configData?.password,
+      userName: configData?.userName,
+      password: configData?.password,
       description: configData?.description,
 
       isDisabled: configData?.isDisabled ?? false,

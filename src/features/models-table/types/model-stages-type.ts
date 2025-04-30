@@ -1,1 +1,1 @@
-export type ModelStagesType = 'Label' | 'Test' | 'View';
+export type ModelStagesType = "Label" | "Test" | "View";

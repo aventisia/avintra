@@ -5,11 +5,12 @@ import {
   CustomFormMessage,
   CustomMessageType,
 } from "@/react-toolkit/types/custom-form-message";
+
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny, z } from "zod";
 
 type CheckAvailabilityParams<
   T extends FieldValues,

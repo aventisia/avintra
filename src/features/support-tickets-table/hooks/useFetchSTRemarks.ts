@@ -1,10 +1,12 @@
-import { useQuery, QueryObserverResult } from "@tanstack/react-query";
-import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { getSupportTicketRemarks } from "../apis/suport-ticket-remarks-apis";
+
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { getSupportTicketRemarks } from "../apis/suport-ticket-remarks-apis";
+import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
+import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 
 type FetchSTRemarksReturnType = {
   data: IHttpResponse<SupportTicketRemarksDto[]> | undefined;
@@ -22,15 +24,14 @@ type FetchSTRemarksReturnType = {
 export const useFetchSTRemarks = (): FetchSTRemarksReturnType => {
   // Get support ticket id from URL params
   const location = useLocation();
-  const id = new URLSearchParams(location.search).get("st") ?? ""; 
-  
+  const id = new URLSearchParams(location.search).get("st") ?? "";
+
   // Get support tickets store state and actions
-  const { remarksQueryKey } =
-    useSupportTicketsTableStore(
-      useShallow((state) => ({
-        remarksQueryKey: state.remarksQueryKey,
-      })),
-    );
+  const { remarksQueryKey } = useSupportTicketsTableStore(
+    useShallow((state) => ({
+      remarksQueryKey: state.remarksQueryKey,
+    })),
+  );
 
   // Get support ticket remarks using react query
   const { data, isFetching, isLoading, refetch } = useQuery({

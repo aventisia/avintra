@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import {
   emailError,
   maxLenError,
@@ -7,6 +5,8 @@ import {
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
 import { nameRegex } from "@/react-toolkit/utils/regex-list";
+
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a email.

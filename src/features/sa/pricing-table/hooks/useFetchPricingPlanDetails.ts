@@ -1,7 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-
-import { useQuery } from "@tanstack/react-query";
 
 import { getPricingPlan } from "../apis/pricingPlans-table-apis";
 

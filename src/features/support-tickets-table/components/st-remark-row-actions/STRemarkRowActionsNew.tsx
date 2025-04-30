@@ -1,6 +1,7 @@
 import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
-import { DTRemarkEditAction } from "./DTRemarkEditAction";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
+
+import { DTRemarkEditAction } from "./DTRemarkEditAction";
 import { STRemarkDeleteActionNew } from "./STRemarkDeleteActionNew";
 
 interface STRemarkRowActionsNewProps {

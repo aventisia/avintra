@@ -1,6 +1,7 @@
+import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
+
 import { SupportTicketCrudForm } from "../support-ticket-crud-dialog/SupportTicketCrudForm";
 import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideComponent";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 
 /**
  * Support ticket create page.

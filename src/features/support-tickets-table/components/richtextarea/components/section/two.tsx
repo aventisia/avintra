@@ -1,5 +1,3 @@
-import * as React from "react";
-import type { Editor } from "@tiptap/react";
 import {
   CodeIcon,
   DotsHorizontalIcon,
@@ -8,10 +6,13 @@ import {
   StrikethroughIcon,
   TextNoneIcon,
 } from "@radix-ui/react-icons";
-import type { FormatAction } from "../../types/types";
-import { ToolbarSection } from "../toolbar-section";
-import type { toggleVariants } from "../toggle";
+import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";
+import * as React from "react";
+
+import type { FormatAction } from "../../types/types";
+import type { toggleVariants } from "../toggle";
+import { ToolbarSection } from "../toolbar-section";
 
 type TextStyleAction =
   | "bold"

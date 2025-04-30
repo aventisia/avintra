@@ -4,7 +4,9 @@ import { DTBulkActions } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulk
 import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkDeleteAction";
 import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
 import { Separator } from "@/react-toolkit/ui/separator";
+
 import { Table } from "@tanstack/react-table";
+
 import { modelOptimisticMutationFn } from "../apis/models-table-apis";
 import { MODELS_QUERY_KEY } from "../constants";
 import { ModelsTableDto } from "../dtos/models-table-dto";

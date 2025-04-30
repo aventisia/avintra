@@ -1,4 +1,12 @@
-import { TbCertificate } from "react-icons/tb";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
+
+import {
+  IdentificationIcon,
+  QuestionMarkCircleIcon,
+  QueueListIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
+import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   BotIcon,
   FileBoxIcon,
@@ -8,15 +16,8 @@ import {
   TagIcon,
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
-import { IAppConfig } from "@/react-toolkit/types/app-config";
-import {
-  IdentificationIcon,
-  QuestionMarkCircleIcon,
-  QueueListIcon,
-  UsersIcon,
-} from "@heroicons/react/24/outline";
-import { DesktopIcon } from "@radix-ui/react-icons";
 import { PiScrollLight } from "react-icons/pi";
+import { TbCertificate } from "react-icons/tb";
 
 const workspaceAppConfig: IAppConfig = {
   showUpgradeCard: false,

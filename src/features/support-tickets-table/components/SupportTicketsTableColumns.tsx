@@ -1,10 +1,10 @@
-import { formatDistanceToNow } from "date-fns";
-import { Key } from "react";
-
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { dateFormater } from "@/react-toolkit/utils/date-formater";
+
 import { ColumnDef } from "@tanstack/react-table";
+import { formatDistanceToNow } from "date-fns";
+import { Key } from "react";
 
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";

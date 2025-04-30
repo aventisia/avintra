@@ -1,11 +1,11 @@
-import { twMerge } from "tailwind-merge"
-
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/react-toolkit/ui/card/card"
+} from "@/react-toolkit/ui/card/card";
+
+import { twMerge } from "tailwind-merge";
 
 type StatsCardProps = {
   icon: JSX.Element;

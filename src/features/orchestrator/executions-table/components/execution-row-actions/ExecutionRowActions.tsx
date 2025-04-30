@@ -1,12 +1,12 @@
-import { ExecutionStatusTypesEnum } from '@/react-toolkit/enums/execution-status-type-enum';
-import { DataTableRowActions } from '@/react-toolkit/ui/data-table/row-actions/DataTableRowActions';
-import { DTRowAction } from '@/react-toolkit/ui/data-table/row-actions/DTRowAction';
-import { DropdownMenuSeparator } from '@/react-toolkit/ui/dropdown-menu';
+import { ExecutionStatusTypesEnum } from "@/react-toolkit/enums/execution-status-type-enum";
+import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 
-import { ExecutionsTableDto } from '../../dtos/executions-table-dto';
-import { ExecutionRowCancelAction } from './ExecutionRowCancelAction';
-import { ExecutionRowDeleteAction } from './ExecutionRowDeleteAction';
-import { ExecutionRowRetryAction } from './ExecutionRowRetryAction';
+import { ExecutionsTableDto } from "../../dtos/executions-table-dto";
+import { ExecutionRowCancelAction } from "./ExecutionRowCancelAction";
+import { ExecutionRowDeleteAction } from "./ExecutionRowDeleteAction";
+import { ExecutionRowRetryAction } from "./ExecutionRowRetryAction";
 
 interface ExecutionRowActionsProps {
   rowId: string;

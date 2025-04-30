@@ -1,24 +1,26 @@
-import * as React from "react";
-import { StarterKit } from "@tiptap/starter-kit";
-import type { Content, UseEditorOptions } from "@tiptap/react";
-import { useEditor } from "@tiptap/react";
+import { cn } from "@/react-toolkit/lib/utils";
+
 import type { Editor } from "@tiptap/core";
-import { Typography } from "@tiptap/extension-typography";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { TextStyle } from "@tiptap/extension-text-style";
+import { Typography } from "@tiptap/extension-typography";
+import type { Content, UseEditorOptions } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
+import { StarterKit } from "@tiptap/starter-kit";
+import * as React from "react";
+
 import {
-  Link,
-  Image,
-  HorizontalRule,
   CodeBlockLowlight,
-  Selection,
   Color,
-  UnsetAllMarks,
+  HorizontalRule,
+  Image,
+  Link,
   ResetMarksOnEnter,
+  Selection,
+  UnsetAllMarks,
 } from "../extensions";
-import { cn } from "@/react-toolkit/lib/utils";
-import { getOutput } from "../utils/utils";
 import { useThrottle } from "../hooks/use-throttle";
+import { getOutput } from "../utils/utils";
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
   value?: Content;

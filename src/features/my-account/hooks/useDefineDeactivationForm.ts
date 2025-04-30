@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { AccountDeactivationZodSchema } from "../components/account-deactivation-tab/AccountDeactivation";
-import { useEffect, useState } from "react";
 import { getDeactivationStatus } from "../apis/my-account-apis";
+import { AccountDeactivationZodSchema } from "../components/account-deactivation-tab/AccountDeactivation";
 import type { DeactivationStatusDto } from "../dtos/deactivation-status-user-account-dto";
 
 export const useDefineDeactivationForm = () => {
@@ -17,14 +17,17 @@ export const useDefineDeactivationForm = () => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [deactivationStatusData, setDeactivationStatusData] = useState<DeactivationStatusDto>();
+  const [deactivationStatusData, setDeactivationStatusData] =
+    useState<DeactivationStatusDto>();
 
   useEffect(() => {
     const fetchDeactivationStatus = async () => {
       setIsLoading(true);
       try {
         const { data: deactivationStatusData } = await getDeactivationStatus();
-        deactivationStatusData.timeRemains = new Date(deactivationStatusData?.timeRemains as unknown as string);
+        deactivationStatusData.timeRemains = new Date(
+          deactivationStatusData?.timeRemains as unknown as string,
+        );
         setDeactivationStatusData(deactivationStatusData);
       } catch (error) {
         console.error(error);

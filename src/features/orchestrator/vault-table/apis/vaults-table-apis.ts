@@ -1,10 +1,10 @@
-import { IHttpResponse } from '@/react-toolkit/dtos/http-response';
-import { IOptimisticMutation } from '@/react-toolkit/dtos/optimistic-mutation';
-import { CheckAvailabilityDto } from '@/react-toolkit/dtos/request/check-availability-dto';
-import { TrueFalseResultDto } from '@/react-toolkit/dtos/response/true-false-result-dto';
-import { axiosInstance } from '@/react-toolkit/lib/axios-instance';
+import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { VaultsTableDto } from '../dtos/vaults-table-dto';
+import { VaultsTableDto } from "../dtos/vaults-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/vault`;
 
@@ -97,4 +97,3 @@ export const vaultOptimisticMutationFn = ({
       throw new Error("Invalid action type");
   }
 };
-

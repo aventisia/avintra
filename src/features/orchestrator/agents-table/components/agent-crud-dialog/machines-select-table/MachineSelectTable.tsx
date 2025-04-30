@@ -1,12 +1,14 @@
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { machineSelectTableColumns } from "./MachineSelectTableColumns";
-import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { DataTable } from "@/react-toolkit/ui/data-table";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+
+import { useShallow } from "zustand/react/shallow";
+
 import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { machineSelectTableColumns } from "./MachineSelectTableColumns";
+import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
 
 interface MachineSelectTableProps {
   isRowSelectionEnabled?: boolean;

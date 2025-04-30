@@ -1,19 +1,20 @@
-import * as React from "react";
-import "./styles/index.css";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Separator } from "@/react-toolkit/ui/separator";
 
 import { EditorContent } from "@tiptap/react";
 import type { Content, Editor } from "@tiptap/react";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { cn } from "@/react-toolkit/lib/utils";
-import { SectionOne } from "./components/section/one";
-import { SectionTwo } from "./components/section/two";
-import { SectionThree } from "./components/section/three";
-import { SectionFour } from "./components/section/four";
-import { SectionFive } from "./components/section/five";
-import { LinkBubbleMenu } from "./components/bubble-menu/link-bubble-menu";
+import * as React from "react";
+
 import { ImageBubbleMenu } from "./components/bubble-menu/image-bubble-menu";
+import { LinkBubbleMenu } from "./components/bubble-menu/link-bubble-menu";
+import { SectionFive } from "./components/section/five";
+import { SectionFour } from "./components/section/four";
+import { SectionOne } from "./components/section/one";
+import { SectionThree } from "./components/section/three";
+import { SectionTwo } from "./components/section/two";
 import type { UseMinimalTiptapEditorProps } from "./hooks/use-minimal-tiptap";
 import { useMinimalTiptapEditor } from "./hooks/use-minimal-tiptap";
+import "./styles/index.css";
 
 export interface MinimalTiptapProps
   extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {

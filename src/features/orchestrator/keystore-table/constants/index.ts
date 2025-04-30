@@ -1,4 +1,4 @@
-import { CrudActionType } from '@/react-toolkit/types/literal-types';
+import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
 /**
  * The unique key for the keystores query to be used in the query client. ["keystores"]

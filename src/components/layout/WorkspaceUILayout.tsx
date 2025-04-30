@@ -5,6 +5,7 @@ import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { workspaceAppConfig } from "@/workspace-app-config";
+
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 
 export const WorkspaceUILayout = () => {

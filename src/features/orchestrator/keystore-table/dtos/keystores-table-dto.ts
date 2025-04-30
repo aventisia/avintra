@@ -23,10 +23,9 @@ export interface KeystoresTableDto {
   name: string;
 
   /**
- * Gets or sets the type of the keystore.
- */
+   * Gets or sets the type of the keystore.
+   */
   type: KeyStoreTypesEnum;
-
 
   /**
    * Gets or sets the value of the keystore.
@@ -44,13 +43,13 @@ export interface KeystoresTableDto {
   accessLevel: AccessLevelTypesEnum;
 
   /**
- * Gets or sets the description of the key.
- */
+   * Gets or sets the description of the key.
+   */
   description: string;
 
   /**
-* Gets or sets the tags of the key.
-*/
+   * Gets or sets the tags of the key.
+   */
   tags: string;
 
   /**

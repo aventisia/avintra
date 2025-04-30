@@ -1,10 +1,10 @@
-import { Command as CommandPrimitive } from "cmdk"
-import { Search } from "lucide-react"
-import * as React from "react"
+import { cn } from "@/react-toolkit/lib/utils";
+import { Dialog, DialogContent } from "@/react-toolkit/ui/dialog";
 
-import { cn } from "@/react-toolkit/lib/utils"
-import { Dialog, DialogContent } from "@/react-toolkit/ui/dialog"
-import { DialogProps } from "@radix-ui/react-dialog"
+import { DialogProps } from "@radix-ui/react-dialog";
+import { Command as CommandPrimitive } from "cmdk";
+import { Search } from "lucide-react";
+import * as React from "react";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,

@@ -1,10 +1,11 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
+import { QueuesTableDto } from "../../dtos/queues-table-dto";
 
 interface QueueRowDeleteActionProps {
   rowId: string;

@@ -1,11 +1,13 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
-import { supportTicketsOptimisticMutationFn } from "../../apis/suport-tickets-table-apis";
-import { DATA_QUERY_KEY } from "../../constants/constants";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+
+import { supportTicketsOptimisticMutationFn } from "../../apis/suport-tickets-table-apis";
+import { DATA_QUERY_KEY } from "../../constants/constants";
+import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
 
 interface STRowDeleteActionProps {
   rowId: string;

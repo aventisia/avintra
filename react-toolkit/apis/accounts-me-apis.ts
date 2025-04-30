@@ -2,6 +2,7 @@ import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+
 import { toast } from "sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;

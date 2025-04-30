@@ -1,5 +1,6 @@
-import { ToolbarButton } from "../toolbar-button";
 import { TrashIcon } from "@radix-ui/react-icons";
+
+import { ToolbarButton } from "../toolbar-button";
 
 const ImagePopoverBlock = ({
   onRemove,

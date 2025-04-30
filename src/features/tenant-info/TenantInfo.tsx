@@ -1,3 +1,6 @@
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   Card,
@@ -7,14 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/react-toolkit/ui/card/card";
-import Lucide from "@/react-toolkit/ui/Lucide";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { Switch } from "@/react-toolkit/ui/switch";
-import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
 
 export const TenantInfo = () => {
   const navigate = useNavigate();

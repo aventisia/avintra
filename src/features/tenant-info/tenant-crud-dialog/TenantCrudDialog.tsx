@@ -1,11 +1,10 @@
-import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper"
-import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog"
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area"
-import { TenantCrudForm } from "./TenantCrudForm"
+import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper";
+import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+
+import { TenantCrudForm } from "./TenantCrudForm";
 
 export const TenantCrudDialog = ({ children }: React.PropsWithChildren) => {
- 
-
   // Return dialog
   return (
     <DTCrudDialogWrapper>

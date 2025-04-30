@@ -1,12 +1,14 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useShallow } from "zustand/react/shallow";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { z } from "zod";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { useDefineDeactivationForm } from "../../hooks/useDefineDeactivationForm";
-import { useCreateCodeMutationForDeactivation } from "../../hooks/useCreateCodeMutationForDeactivation";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
+
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCreateCodeMutationForDeactivation } from "../../hooks/useCreateCodeMutationForDeactivation";
+import { useDefineDeactivationForm } from "../../hooks/useDefineDeactivationForm";
 
 export const AccountDeactivationZodSchema = z.object({
   confirmDelete: z.boolean({

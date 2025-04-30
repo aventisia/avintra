@@ -4,8 +4,8 @@ import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuI
 
 import { AgentOptimisticMutationFn } from "../../apis/agents-table-apis";
 import { DATA_QUERY_KEY } from "../../constants/index";
-
 import type { AgentsTableDto } from "../../dtos/agents-table-dto";
+
 interface AgentRowDeleteActionProps {
   rowId: string;
 }

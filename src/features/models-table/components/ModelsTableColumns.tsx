@@ -2,13 +2,14 @@ import { Badge } from "@/react-toolkit/ui/badge";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { dateFormater } from "@/react-toolkit/utils/date-formater";
+
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelStatusEnum } from "../enums/model-status-enum";
-import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
+import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 
 /**
  * Array of table columns for the model table.

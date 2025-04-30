@@ -1,33 +1,33 @@
-import { z } from "zod";
-
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { Form } from "@/react-toolkit/ui/form/Form";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+
+import { z } from "zod";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
+  generateFailedAlert,
+  generateStuckAlert,
   idProps,
   isDisabledProps,
   nameProps,
-  selectProcessProps,
+  scheduleAutoDisabling,
+  scheduleEnding,
+  selectFrequencyProps,
   selectJobPriorityProps,
+  selectProcessProps,
+  selectRepetationProps,
   selectRuntimeTypeProps,
   selectTimeZoneProps,
-  selectFrequencyProps,
-  selectRepetationProps,
-  scheduleEnding,
-  scheduleAutoDisabling,
-  generateStuckAlert,
-  generateFailedAlert,
 } from "../../constants/trigger-form-field-props";
 import { triggerZodSchema } from "../../constants/trigger-zod-schema";
 import { TriggersTableDto } from "../../dtos/triggers-table-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 
 export const TriggerCrudForm = () => {
   // Define trigger form

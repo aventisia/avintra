@@ -14,4 +14,4 @@ export const getEnumValueByKey = <T extends { [key: string]: string }>(
   key: string,
 ): string => {
   return enumObj[key];
-}
+};

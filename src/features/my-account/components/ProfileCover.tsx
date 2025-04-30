@@ -1,5 +1,6 @@
-import clsx from "clsx";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import clsx from "clsx";
 import { useShallow } from "zustand/react/shallow";
 
 export const ProfileCover = () => {

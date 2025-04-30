@@ -7,8 +7,9 @@ const browserImagesPath = "/src/features/my-account/assets/browsers";
 
 const imageAssets = import.meta.glob<{
   default: string;
-}>("/src/features/my-account/assets/browsers/*.{jpg,jpeg,png,svg}", { eager: true });
-
+}>("/src/features/my-account/assets/browsers/*.{jpg,jpeg,png,svg}", {
+  eager: true,
+});
 
 export const browserImages: Array<Browser> = [
   {

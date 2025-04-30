@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import { z } from "zod";
-
-import {
-    useFetchPricingPlanDetails
-} from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
+import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Form } from "@/react-toolkit/ui/form/Form";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { Form } from "@/react-toolkit/ui/form/Form";
 import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
+
+import { useEffect, useState } from "react";
+import { z } from "zod";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-    additionalUnitsRequestedProps, idProps, licenseSelectProps
+  additionalUnitsRequestedProps,
+  idProps,
+  licenseSelectProps,
 } from "../../constants/license-form-field-props";
 import { licenseZodSchema } from "../../constants/license-zod-schema";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";

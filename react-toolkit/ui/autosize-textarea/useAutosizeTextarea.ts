@@ -1,5 +1,4 @@
 // Code available at: https://shadcnui-expansions.typeart.cc/docs/autosize-textarea
-
 import { useEffect, useState } from "react";
 
 interface UseAutosizeTextAreaProps {

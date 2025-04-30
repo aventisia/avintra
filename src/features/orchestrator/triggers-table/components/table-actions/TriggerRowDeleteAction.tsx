@@ -1,6 +1,7 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { TriggersTableDto } from "../../dtos/triggers-table-dto";

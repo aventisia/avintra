@@ -1,8 +1,8 @@
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
@@ -13,9 +13,9 @@ import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchVaults } from "../hooks/useFetchVaults";
+import { vaultsTableColumns } from "./VaultsTableColumns";
 import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
-import { vaultsTableColumns } from "./VaultsTableColumns";
 
 /**
  * Renders a table of configs.

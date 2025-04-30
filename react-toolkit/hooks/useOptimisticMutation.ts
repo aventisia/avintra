@@ -1,7 +1,7 @@
-import { toast } from "sonner";
-
 import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /**
  * Custom hook for performing an optimistic mutation.

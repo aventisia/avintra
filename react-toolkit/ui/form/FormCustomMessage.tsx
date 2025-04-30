@@ -1,11 +1,11 @@
-import { FieldError } from "react-hook-form";
-
 import { cn } from "@/react-toolkit/lib/utils";
+
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
+import { FieldError } from "react-hook-form";
 
 import { FormMessageProps } from "./FormMessage";
 

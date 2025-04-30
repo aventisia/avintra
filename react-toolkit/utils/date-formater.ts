@@ -1,4 +1,9 @@
-import { format, formatDistanceToNow, FormatDistanceToNowOptions, isAfter } from 'date-fns';
+import {
+  FormatDistanceToNowOptions,
+  format,
+  formatDistanceToNow,
+  isAfter,
+} from "date-fns";
 
 export const DATE_MIN = new Date(1, 1, 1);
 

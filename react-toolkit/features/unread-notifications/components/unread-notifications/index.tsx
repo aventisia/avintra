@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
 } from "@/react-toolkit/ui/dialog";
+
 import { useShallow } from "zustand/react/shallow";
 
 interface UnreadNotificationsProps {
@@ -44,10 +45,7 @@ export const UnreadNotifications = ({
       {/* Custom notification Dialog trigger */}
       <UNDialogTrigger triggerSize={triggerSize} />
       {/* Dialog content */}
-      <DialogContent
-        side={"right"}
-        className={cn("!max-w-[26rem]", className)}
-      >
+      <DialogContent side={"right"} className={cn("!max-w-[26rem]", className)}>
         {/* Notification default header */}
         <DialogDefaultHeader
           className="px-3.5 py-4 text-lg tracking-wide"

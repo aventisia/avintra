@@ -3,6 +3,7 @@ import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { Separator } from "@/react-toolkit/ui/separator";
+
 import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const NotFoundWithLayoutPage = () => {

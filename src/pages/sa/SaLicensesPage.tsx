@@ -1,6 +1,6 @@
-import { lazy, Suspense } from "react";
-
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+
+import { Suspense, lazy } from "react";
 
 // Lazy load the SaLicensesTable component.
 const SaLicensesTable = lazy(() =>

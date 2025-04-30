@@ -1,9 +1,9 @@
-import React from 'react';
-import { MdAddTask } from 'react-icons/md';
-import { useShallow } from 'zustand/react/shallow';
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import React from "react";
+import { MdAddTask } from "react-icons/md";
+import { useShallow } from "zustand/react/shallow";
 
 interface DTEditRowActionProps {
   rowId: string;

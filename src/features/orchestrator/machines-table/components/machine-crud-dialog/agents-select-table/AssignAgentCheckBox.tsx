@@ -1,12 +1,12 @@
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
+
+import type { Row } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-
+import type { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 
-import type { Row } from "@tanstack/react-table";
-import type { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 interface AssignAgentCheckBoxProps {
   row: Row<SelectAgentTableDto>;
 }

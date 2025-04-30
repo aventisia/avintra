@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { Component, ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -16,15 +16,15 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   static getDerivedStateFromError(error: Error) {
     // Log the error to an error reporting service
-    console.error('ErrorBoundary caught an error', error);
-    
+    console.error("ErrorBoundary caught an error", error);
+
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // You can also log the error to an error reporting service
-    console.error('ErrorBoundary caught an error', error, errorInfo);
+    console.error("ErrorBoundary caught an error", error, errorInfo);
 
     // Update state to show the fallback UI
     this.setState({ hasError: true });

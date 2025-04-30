@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/react-toolkit/ui/dropdown-menu";
 import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
 
@@ -29,14 +30,16 @@ export function DTViewOptions<TData>({
         className={cn(
           buttonVariants({ variant: "outline", size: "xs" }),
           "hidden gap-2 lg:flex",
-          "data-[state=open]:ring-[3px] data-[state=open]:border-primary data-[state=open]:ring-ring"
+          "data-[state=open]:ring-[3px] data-[state=open]:border-primary data-[state=open]:ring-ring",
         )}
       >
         <AdjustmentsHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
         View
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="p-2">
-        <DropdownMenuLabel className="whitespace-nowrap">Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel className="whitespace-nowrap">
+          Toggle columns
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

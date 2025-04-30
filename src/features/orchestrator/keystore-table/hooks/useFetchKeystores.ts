@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
-import { useQuery } from '@tanstack/react-query';
-
-import { getKeystore } from '../apis/keystores-table-apis';
-import { DATA_QUERY_KEY } from '../constants';
+import { getKeystore } from "../apis/keystores-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook to fetch keystores using react query.

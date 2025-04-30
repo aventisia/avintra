@@ -13,4 +13,4 @@ export type CustomMessageType = "None" | "Gray" | "Yellow" | "Red" | "Green";
 export type CustomFormMessage = {
   type: CustomMessageType;
   message: string;
-}
+};

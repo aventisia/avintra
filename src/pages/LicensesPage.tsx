@@ -1,14 +1,14 @@
-import { lazy, Suspense } from 'react';
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 
-import { DataTableSkeleton } from '@/react-toolkit/ui/data-table/DataTableSkeleton';
+import { Suspense, lazy } from "react";
 
 // Lazy load the LicensesTable component.
 const LicensesTable = lazy(() =>
-  import("@/features/orchestrator/licenses-table/components/LicensesTable").then(
-    (module) => ({
-      default: module.LicensesTable,
-    }),
-  ),
+  import(
+    "@/features/orchestrator/licenses-table/components/LicensesTable"
+  ).then((module) => ({
+    default: module.LicensesTable,
+  })),
 );
 
 /**

@@ -1,10 +1,12 @@
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
-import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
-import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
-import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
+
 import { useShallow } from "zustand/react/shallow";
+
+import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
+import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
+import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
 
 interface STRemarkDeleteActionNewProps {
   rowId: string;

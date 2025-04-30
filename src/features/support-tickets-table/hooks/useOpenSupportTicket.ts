@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+
 import { DATA_QUERY_KEY } from "../constants/constants";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";

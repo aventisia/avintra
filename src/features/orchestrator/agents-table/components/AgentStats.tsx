@@ -1,11 +1,12 @@
-import Enumerable from 'linq';
-import { BotIcon, Monitor } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { BsRobot } from 'react-icons/bs';
+import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
-import { StatsCard } from '@/react-toolkit/ui/card/StatsCard';
+import Enumerable from "linq";
+import { BotIcon, Monitor } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BsRobot } from "react-icons/bs";
 
 import type { AgentsTableDto } from "../dtos/agents-table-dto";
+
 type StatsProps = {
   data: AgentsTableDto[];
 };

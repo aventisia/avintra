@@ -1,14 +1,20 @@
 import { useAlertDialogStore } from "@/react-toolkit/stores/alert-dialog-store";
+
 import { useShallow } from "zustand/react/shallow";
 
 interface DefaultOptions {
   confirmActionFn: () => void;
-  alertType: "delete" | "delete-record" | "delete-multiple" | "disable-multiple" | "unsaved";
+  alertType:
+    | "delete"
+    | "delete-record"
+    | "delete-multiple"
+    | "disable-multiple"
+    | "unsaved";
 
   /**
    * Additional text to be displayed in the alert dialog.
    * This is used to display the name of the record or item being deleted.
-   * 
+   *
    * @example for alertType "delete-record" title will be "Delete {additionalText}?".
    * and description will be "This action cannot be undone. Are you sure you want to delete this {additionalText}?"
    * @example for alertType "delete-multiple" title will be "Delete {additionalText}?".

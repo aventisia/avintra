@@ -1,4 +1,5 @@
 import { cn } from "@/react-toolkit/lib/utils";
+
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 interface SearchBoxProps {
@@ -32,4 +33,3 @@ const SearchBox = ({
 };
 
 export { SearchBox };
-

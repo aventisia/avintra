@@ -1,30 +1,32 @@
+import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { Form } from "@/react-toolkit/ui/form/Form";
+import { Separator } from "@/react-toolkit/ui/separator";
+
+import { useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import parse from "html-react-parser";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
+import { getTicketQueryKey } from "../../constants/constants";
 import { descriptionProps } from "../../constants/st-remark-form-field-props";
 import { supportTicketRemarksZodSchema } from "../../constants/support-ticket-zod-schema";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
-import { useLocation } from "react-router-dom";
-import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
-import { formatDistanceToNow } from "date-fns";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-import parse from "html-react-parser";
-import { useState, useEffect } from "react";
-import { Separator } from "@/react-toolkit/ui/separator";
 import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { STRemarkRowActionsNew } from "../st-remark-row-actions/STRemarkRowActionsNew";
 import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
-import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
+import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
+import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
+import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
+import { STRemarkRowActionsNew } from "../st-remark-row-actions/STRemarkRowActionsNew";
 import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideComponent";
 import { STStatusUpdateAction } from "./STStatusUpdateAction";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useShallow } from "zustand/react/shallow";
-import { useQueryClient } from "@tanstack/react-query";
-import { getTicketQueryKey } from "../../constants/constants";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
 
 export const SupportTicketEditForm = () => {
   // Define support ticket edit form with support ticket remark form
@@ -56,7 +58,7 @@ export const SupportTicketEditForm = () => {
   );
 
   // Get store isSelectedSTDataChanged and setSupportTicketsState action
-  const { setSupportTicketsState, isSelectedSTDataChanged} =
+  const { setSupportTicketsState, isSelectedSTDataChanged } =
     useSupportTicketsTableStore(
       useShallow((state) => ({
         setSupportTicketsState: state.setSupportTicketsState,
@@ -67,11 +69,11 @@ export const SupportTicketEditForm = () => {
   // Initialize states storing remarks and reamrks count
   const [remarks, setRemarks] = useState<SupportTicketRemarksDto[]>([]);
   const [remarkCount, setRemarkCount] = useState<number>(0);
-  
+
   // Destructuring fetched support ticket data
   const { subject, ticketNumber, status, createdOn, description } =
     data?.data ?? {};
-  
+
   // State for tracking which comment is being edited
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
@@ -87,8 +89,7 @@ export const SupportTicketEditForm = () => {
 
   // function to handle update remark
   const handleEditRemark = () => {
-    refetch().then(() => console.log("Refetching after editing...")
-    )
+    refetch().then(() => console.log("Refetching after editing..."));
   };
 
   // function to handle delete remark
@@ -96,7 +97,7 @@ export const SupportTicketEditForm = () => {
     setRemarks(remarks.filter((remark) => remark.id !== deletedRemarkId));
     setRemarkCount(remarkCount - 1);
     // Invalidate query to refetch data after deletion
-    queryClient.invalidateQueries({queryKey: getTicketQueryKey(id)});
+    queryClient.invalidateQueries({ queryKey: getTicketQueryKey(id) });
   };
 
   const onSubmit = async (
@@ -117,14 +118,14 @@ export const SupportTicketEditForm = () => {
 
   // Update remarks and remarkCount when data changes and refetch data
   useEffect(() => {
-    if(isSelectedSTDataChanged){
-    refetch();
-    setSupportTicketsState([], null, false);
-  }
-  if (data?.data && (crudAction === "create" || crudAction === "update")) {
-    setRemarks(data.data.supportTicketRemarks ?? []);
-    setRemarkCount(data.data.remarkCount ?? 0);
-  }
+    if (isSelectedSTDataChanged) {
+      refetch();
+      setSupportTicketsState([], null, false);
+    }
+    if (data?.data && (crudAction === "create" || crudAction === "update")) {
+      setRemarks(data.data.supportTicketRemarks ?? []);
+      setRemarkCount(data.data.remarkCount ?? 0);
+    }
   }, [data, crudAction, refetch, isSelectedSTDataChanged]);
 
   // Show loading skeleton while loading or fetching data
@@ -254,15 +255,18 @@ export const SupportTicketEditForm = () => {
               onUpdate={refetch}
             />
           )}
-          <Button 
-            type="submit" 
-            onClick={() => {setCrudDialogOptions({
-              showDialog: false,
-              rowId,
-              crudAction: "create",
-              });}} 
-            disabled={!isDirty} 
-            className="min-w-[5rem]">
+          <Button
+            type="submit"
+            onClick={() => {
+              setCrudDialogOptions({
+                showDialog: false,
+                rowId,
+                crudAction: "create",
+              });
+            }}
+            disabled={!isDirty}
+            className="min-w-[5rem]"
+          >
             Add Comment
           </Button>
         </div>

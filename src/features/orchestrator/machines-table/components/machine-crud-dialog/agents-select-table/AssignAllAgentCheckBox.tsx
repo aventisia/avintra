@@ -1,12 +1,12 @@
-import { toast } from "sonner";
-import { useShallow } from "zustand/react/shallow";
-
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 
+import type { Column, Table } from "@tanstack/react-table";
+import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
+
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 
-import type { Column, Table } from "@tanstack/react-table";
 interface AssignAllAgentCheckBoxProps<TData, TValue> {
   table: Table<TData>;
   column: Column<TData, TValue>;

@@ -13,10 +13,9 @@ export const columnVisibilityState = {
   createdOn: false,
 };
 
-
 export const agentSelectTableColumnVisibilityState = {
   id: true,
   name: false,
   versionNumber: true,
-  isAssigned: false
-}
+  isAssigned: false,
+};

@@ -1,5 +1,4 @@
 export interface DeactivationStatusDto {
-
   /// shows the status of the is account in deactivation
   deactivating: boolean;
 

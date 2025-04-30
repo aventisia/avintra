@@ -4,10 +4,9 @@ import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availab
 import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { MachinesTableDto } from "../dtos/machines-table-dto";
-
-import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import type { AssignAgentDto } from "../dtos/assign-agent-dto";
+import { MachinesTableDto } from "../dtos/machines-table-dto";
+import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/machine`;
 

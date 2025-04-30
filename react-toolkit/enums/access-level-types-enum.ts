@@ -6,5 +6,5 @@
  */
 export enum AccessLevelTypesEnum {
   PUBLIC = "PUBLIC",
-  PRIVATE = "PRIVATE"
+  PRIVATE = "PRIVATE",
 }

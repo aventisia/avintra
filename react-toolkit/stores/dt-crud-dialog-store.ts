@@ -1,6 +1,7 @@
-import { subscribeWithSelector } from "zustand/middleware";
 import { CrudActionType } from "@/react-toolkit/types/literal-types";
+
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 interface ICrudDialogOptions {
   /** Whether to show the crud dialog */

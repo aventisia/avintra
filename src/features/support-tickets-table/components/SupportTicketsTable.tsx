@@ -1,24 +1,26 @@
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { cn } from "@/react-toolkit/lib/utils";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { Separator } from "@/react-toolkit/ui/separator";
+
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { columnVisibilityState } from "../constants/column-visibility-state";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
-import { SupportTicketCrudDialog } from "./support-ticket-crud-dialog/SupportTicketCrudDialog";
-import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
 import { StFilterByStatusOptions } from "./StFilterByStatusOptions";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/react-toolkit/lib/utils";
-import { useNavigate } from "react-router-dom";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
+import { SupportTicketCrudDialog } from "./support-ticket-crud-dialog/SupportTicketCrudDialog";
 
 /**
  * Renders a table of support tickets.
@@ -33,13 +35,12 @@ export const SupportTicketsTable = () => {
   const { data, refetch } = useFetchSupportTickets();
 
   // Get store setSupportTicketsState action
-  const { filteredData, setSupportTicketsState } =
-    useSupportTicketsTableStore(
-      useShallow((state) => ({
-        filteredData: state.filteredData,
-        setSupportTicketsState: state.setSupportTicketsState,
-      })),
-    );
+  const { filteredData, setSupportTicketsState } = useSupportTicketsTableStore(
+    useShallow((state) => ({
+      filteredData: state.filteredData,
+      setSupportTicketsState: state.setSupportTicketsState,
+    })),
+  );
 
   // Sync data with store
   useEffect(() => {

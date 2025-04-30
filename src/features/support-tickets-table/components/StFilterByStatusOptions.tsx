@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
-import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
-import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
+
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+
+import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
+import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
+import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 
 export const StFilterByStatusOptions = () => {
   // Fetch support tickets data

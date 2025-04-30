@@ -1,10 +1,10 @@
-import Enumerable from "linq";
-import { BiCheckDouble } from "react-icons/bi";
-
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+
 import { useQueryClient } from "@tanstack/react-query";
+import Enumerable from "linq";
+import { BiCheckDouble } from "react-icons/bi";
 
 import { saLicenseOptimisticMutationFn } from "../../apis/sa-licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";

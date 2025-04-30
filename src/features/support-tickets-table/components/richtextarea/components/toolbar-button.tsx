@@ -1,7 +1,9 @@
-import * as React from "react";
-import { Toggle } from "../components/toggle";
 import { cn } from "@/react-toolkit/lib/utils";
 import { Tooltip } from "@/react-toolkit/ui/Tooltip";
+
+import * as React from "react";
+
+import { Toggle } from "../components/toggle";
 
 interface ToolbarButtonProps
   extends React.ComponentPropsWithoutRef<typeof Toggle> {

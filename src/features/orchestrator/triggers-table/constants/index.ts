@@ -1,36 +1,36 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types"
+import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
 /**
  * The unique key for the triggers query to be used in the query client. ["triggers"]
  */
-const DATA_QUERY_KEY = ["triggers"]
+const DATA_QUERY_KEY = ["triggers"];
 
 /**
  * The heading for the triggers table.
  */
-const TABLE_HEADING = "Triggers"
+const TABLE_HEADING = "Triggers";
 
 /**
  * The column used for searching in the triggers.
  */
-const SEARCH_COLUMN = "name"
+const SEARCH_COLUMN = "name";
 
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Trigger", description: "" }
+      return { heading: "Create Trigger", description: "" };
     case "read":
-      return { heading: "Trigger", description: "" }
+      return { heading: "Trigger", description: "" };
     case "update":
-      return { heading: "Edit Trigger", description: "" }
+      return { heading: "Edit Trigger", description: "" };
     default:
-      return { heading: "", description: "" }
+      return { heading: "", description: "" };
   }
-}
+};
 
 export {
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
-}
+};

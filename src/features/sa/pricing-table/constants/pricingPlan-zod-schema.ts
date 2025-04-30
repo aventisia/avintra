@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import {
   alphaNumericError,
   maxLenError,
@@ -9,6 +7,8 @@ import {
   alphaNumericRegex,
   positiveFloatNumber,
 } from "@/react-toolkit/utils/regex-list";
+
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a pricingplan name.

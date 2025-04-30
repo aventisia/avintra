@@ -7,6 +7,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/react-toolkit/ui/command";
+
 import { Command as CommandPrimitive } from "cmdk";
 import { Check, X as RemoveIcon } from "lucide-react";
 import React, {
@@ -179,48 +180,50 @@ const MultiSelectorTrigger = forwardRef<
       )}
       {...props}
     >
-      {Array.isArray(value) ? value?.map((item, index) => (
-        <Badge
-          key={index}
-          className={cn(
-            "flex h-6 cursor-default items-center gap-1 rounded-xl py-0 pl-2 pr-1.5",
-            activeIndex === index && "ring-2 ring-muted-foreground",
-            disabled ? "cursor-not-allowed" : "cursor-auto",
-          )}
-          variant={"secondary"}
-        >
-          <span
-            className={cn(
-              size === "xs" && "text-3xs",
-              size === "sm" && "text-2xs",
-              size === "base" && "text-xs",
-            )}
-          >
-            {item}
-          </span>
-          <button
-            aria-label={`Remove ${item} option`}
-            aria-roledescription="button to remove option"
-            type="button"
-            onMouseDown={mousePreventDefault}
-            onClick={() => onValueChange(item)}
-            disabled={disabled}
-            className={cn(disabled ? "cursor-not-allowed" : "cursor-auto")}
-          >
-            <span className="sr-only">Remove {item} option</span>
-            <RemoveIcon
+      {Array.isArray(value)
+        ? value?.map((item, index) => (
+            <Badge
+              key={index}
               className={cn(
-                size === "xs" && "h-3 w-3 stroke-[2.5]",
-                size === "sm" && "h-3.5 w-3.5",
-                size === "base" && "h-4 w-4",
-                disabled
-                  ? "cursor-not-allowed"
-                  : "cursor-auto hover:stroke-destructive",
+                "flex h-6 cursor-default items-center gap-1 rounded-xl py-0 pl-2 pr-1.5",
+                activeIndex === index && "ring-2 ring-muted-foreground",
+                disabled ? "cursor-not-allowed" : "cursor-auto",
               )}
-            />
-          </button>
-        </Badge>
-      )): null}
+              variant={"secondary"}
+            >
+              <span
+                className={cn(
+                  size === "xs" && "text-3xs",
+                  size === "sm" && "text-2xs",
+                  size === "base" && "text-xs",
+                )}
+              >
+                {item}
+              </span>
+              <button
+                aria-label={`Remove ${item} option`}
+                aria-roledescription="button to remove option"
+                type="button"
+                onMouseDown={mousePreventDefault}
+                onClick={() => onValueChange(item)}
+                disabled={disabled}
+                className={cn(disabled ? "cursor-not-allowed" : "cursor-auto")}
+              >
+                <span className="sr-only">Remove {item} option</span>
+                <RemoveIcon
+                  className={cn(
+                    size === "xs" && "h-3 w-3 stroke-[2.5]",
+                    size === "sm" && "h-3.5 w-3.5",
+                    size === "base" && "h-4 w-4",
+                    disabled
+                      ? "cursor-not-allowed"
+                      : "cursor-auto hover:stroke-destructive",
+                  )}
+                />
+              </button>
+            </Badge>
+          ))
+        : null}
       {children}
     </div>
   );
@@ -354,6 +357,5 @@ export {
   MultiSelectorInput,
   MultiSelectorItem,
   MultiSelectorList,
-  MultiSelectorTrigger
+  MultiSelectorTrigger,
 };
-

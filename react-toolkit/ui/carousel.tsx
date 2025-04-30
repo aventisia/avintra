@@ -1,11 +1,11 @@
+import { cn } from "@/react-toolkit/lib/utils";
+import { Button } from "@/react-toolkit/ui/buttons/Button";
+
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import * as React from "react";
-
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -253,5 +253,8 @@ CarouselNext.displayName = "CarouselNext";
 export {
   Carousel,
   CarouselContent,
-  CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
 };

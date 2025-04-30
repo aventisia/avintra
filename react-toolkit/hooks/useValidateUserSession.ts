@@ -3,9 +3,8 @@ import {
   refreshSession,
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import {
-  setUserSessionLocally,
-} from "@/react-toolkit/utils/user-session-utils";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -22,7 +21,7 @@ export const useValidateUserSession = () => {
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;
-      
+
       // Set authenticated user locally and session obj in store
       setUserSession(setUserSessionLocally(httpResponse.data));
     },

@@ -4,6 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/react-toolkit/ui/popover";
+
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 interface ChatAssistantProps {

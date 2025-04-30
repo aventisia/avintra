@@ -1,5 +1,7 @@
 import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
 import { useOpenFlow } from "../../hooks/useOpenFlow";
 
 interface FlowRowOpenActionProps {

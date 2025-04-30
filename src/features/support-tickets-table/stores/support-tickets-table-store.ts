@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
 type State = {

@@ -1,5 +1,6 @@
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { lazy, Suspense } from "react";
+
+import { Suspense, lazy } from "react";
 
 // Lazy load the QueuesTable component.
 const QueuesTable = lazy(() =>

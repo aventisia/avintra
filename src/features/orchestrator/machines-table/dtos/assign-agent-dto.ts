@@ -1,4 +1,4 @@
 export interface AssignAgentDto {
-    machineId: string
-    agentIds: string[]
+  machineId: string;
+  agentIds: string[];
 }

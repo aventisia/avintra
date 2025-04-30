@@ -1,5 +1,5 @@
-import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
 import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 
 import { TriggerRowDeleteAction } from "./TriggerRowDeleteAction";

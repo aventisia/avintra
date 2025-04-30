@@ -1,19 +1,21 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability"
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store"
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useShallow } from "zustand/react/shallow"
-import { isNameAvailable } from "../apis/triggers-table-apis"
-import { DATA_QUERY_KEY } from "../constants"
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { isNameAvailable } from "../apis/triggers-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
 import {
   triggerNameSchema,
   triggerZodSchema,
-} from "../constants/trigger-zod-schema"
-import { TriggersTableDto } from "../dtos/triggers-table-dto"
+} from "../constants/trigger-zod-schema";
+import { TriggersTableDto } from "../dtos/triggers-table-dto";
 
 /**
  * Custom hook for defining a trigger form.

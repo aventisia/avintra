@@ -1,8 +1,8 @@
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
@@ -13,9 +13,9 @@ import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchKeystores } from "../hooks/useFetchKeystores";
+import { keystoresTableColumns } from "./KeystoresTableColumns";
 import { KeystoreCrudDialog } from "./keystore-crud-dialog/KeystoreCrudDialog";
 import { KeystoresBulkActions } from "./keystore-row-actions/KeystoresBulkActions";
-import { keystoresTableColumns } from "./KeystoresTableColumns";
 
 /**
  * Renders a table of keystores.

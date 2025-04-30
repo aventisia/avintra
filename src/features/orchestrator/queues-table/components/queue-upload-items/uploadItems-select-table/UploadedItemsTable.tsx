@@ -1,17 +1,17 @@
-import { useMemo } from "react";
-import { useShallow } from "zustand/react/shallow";
-
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+
 import {
   ColumnDef,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
 import { UploadedItemsTablePagination } from "./UploadedItemsTablePagination";

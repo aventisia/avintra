@@ -6,6 +6,7 @@ import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Sheet, SheetContent, SheetTrigger } from "@/react-toolkit/ui/sheet";
+
 import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
@@ -54,4 +55,3 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
 };
 
 export { NavbarOnSheet };
-

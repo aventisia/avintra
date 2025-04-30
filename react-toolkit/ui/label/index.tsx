@@ -1,9 +1,9 @@
+import { cn } from "@/react-toolkit/lib/utils";
+import { labelVariants } from "@/react-toolkit/ui/label/label-variants";
+
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { type VariantProps } from "class-variance-authority";
 import * as React from "react";
-
-import { cn } from "@/react-toolkit/lib/utils";
-import { labelVariants } from "@/react-toolkit/ui/label/label-variants";
 
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,

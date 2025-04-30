@@ -2,8 +2,8 @@ import { columnDisplayNames } from "@/features/flows-table/constants/column-disp
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
 import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
@@ -14,9 +14,9 @@ import { usersTableColumns } from "../../users-table/components/UsersTableColumn
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { roleTableColumnvisibilityState } from "../constants/column-visibility-state";
 import { useFetchRoles } from "../hooks/useFetchRoles";
+import { RolesTableColumns } from "./RolesTableColumns";
 import { RoleCrudDialog } from "./role-crud-dialog/RoleCrudDialog";
 import { RolesBulkActions } from "./role-row-actions/RolesBulkActions";
-import { RolesTableColumns } from "./RolesTableColumns";
 
 /**
  * Renders a table of users.

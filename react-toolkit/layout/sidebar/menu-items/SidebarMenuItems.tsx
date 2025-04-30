@@ -86,9 +86,7 @@ const SidebarMenuItems = ({
                 )}
               </Accordion>
             </>
-          ) : (
-            null
-          )}
+          ) : null}
         </div>
       ))}
     </div>
