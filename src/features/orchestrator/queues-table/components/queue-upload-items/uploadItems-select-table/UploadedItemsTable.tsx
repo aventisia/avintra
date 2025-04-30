@@ -1,15 +1,18 @@
+import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import {
   ColumnDef,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo } from "react";
+
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
-import { useShallow } from "zustand/react/shallow";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { UploadedItemsTablePagination } from "./UploadedItemsTablePagination";
 
 type UploadedItemsTableProps<TData extends object> = {
@@ -39,6 +42,7 @@ export function UploadedItemsTable<TData extends object>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return isProcessiong ? (
@@ -53,14 +57,14 @@ export function UploadedItemsTable<TData extends object>({
         <div className="flex items-center gap-2">
           <DTSearchBox
             table={table}
-            searchColumn="name"
-            placeholder="Search machines..."
+            searchColumn={table.getAllColumns()[0].id}
+            placeholder="Search data..."
           />
         </div>
       </div>
 
       {/* Data table to render data */}
-      <div className="rounded-md border">
+      <div className="rounded-lg border">
         <ScrollArea className="h-[calc(60vh-15rem)] w-[48vw]">
           <DataTable table={table} columnsLength={columns.length} />
         </ScrollArea>
