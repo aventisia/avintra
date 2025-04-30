@@ -1,12 +1,12 @@
-import { toast } from "sonner"
-import { useShallow } from "zustand/react/shallow"
+import { toast } from "sonner";
+import { useShallow } from "zustand/react/shallow";
 
-import { Checkbox } from "@/react-toolkit/ui/checkbox"
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
 
-import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store"
+import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 
-import type { Row } from "@tanstack/react-table"
-import type { AssignMachineDto } from "../../../dtos/assign-machine-dto"
+import type { Row } from "@tanstack/react-table";
+import type { AssignMachineDto } from "../../../dtos/assign-machine-dto";
 interface AssignMachineCheckBoxProps {
   row: Row<AssignMachineDto>;
 }
@@ -41,7 +41,7 @@ export function AssignMachineCheckBox({
             toast.error(
               !availableLicenses
                 ? "you don't have any license or not selected any."
-                : "You can only add agents upto " + availableLicenses,
+                : "You can only assign machines upto " + availableLicenses,
             );
             return;
           }

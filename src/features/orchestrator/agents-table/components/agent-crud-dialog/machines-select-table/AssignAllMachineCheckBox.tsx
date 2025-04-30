@@ -39,7 +39,7 @@ export function AssignAllMachineCheckBox<TData, TValue>({
             toast.error(
               !availableLicenses
                 ? "you don't have any license or not selected any."
-                : "You can only add agents upto " + availableLicenses,
+                : "You can only assign machines upto " + availableLicenses,
             );
             return;
           }
