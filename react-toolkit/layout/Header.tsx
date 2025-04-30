@@ -48,7 +48,9 @@ const Header = ({
               appConfig={appConfig}
             />
           )}
-          <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />
+          {!isDesktop && (
+            <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />
+          )}
           <AppLogo />
           {/* Extra content to render on left side */}
           {extraContentLeft}
@@ -60,7 +62,7 @@ const Header = ({
           {userSession ? (
             <>
               <UnreadNotifications />
-              <UserAccountModal />
+              <UserAccountModal isDesktop={isDesktop} />
             </>
           ) : null}
         </div>

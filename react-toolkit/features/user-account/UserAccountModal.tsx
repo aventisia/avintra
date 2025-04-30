@@ -26,11 +26,15 @@ interface UserAccountModalProps {
 
   /** Additional class name to override avatar size. Only pass h-,w- */
   sizeClassName?: string;
+
+  /** Check if application is in desktop mode */
+  isDesktop?: boolean;
 }
 
 const UserAccountModal = ({
   className,
   sizeClassName = "h-8 w-8",
+  isDesktop,
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
@@ -106,39 +110,45 @@ const UserAccountModal = ({
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
-        <Button
-          variant={"ghost"}
-          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-          onClick={() => {
-            navigate("/account");
-            setisPopOverOpen(false);
-          }}
-        >
-          <Lucide icon="User" className="h-4 w-4" />
-          My Account
-        </Button>
-        <Button
-          variant={"ghost"}
-          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-          onClick={() => {
-            navigate("/account/email-settings");
-            setisPopOverOpen(false);
-          }}
-        >
-          <Lucide icon="MailCheck" className="h-4 w-4" />
-          Email settings
-        </Button>
-        <Button
-          variant={"ghost"}
-          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-          onClick={() => {
-            navigate("/account/device-history");
-            setisPopOverOpen(false);
-          }}
-        >
-          <Lucide icon="Smartphone" className="h-4 w-4" />
-          Device history
-        </Button>
+        {!isDesktop && (
+          <Button
+            variant={"ghost"}
+            className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+            onClick={() => {
+              navigate("/account");
+              setisPopOverOpen(false);
+            }}
+          >
+            <Lucide icon="User" className="h-4 w-4" />
+            My Account
+          </Button>
+        )}
+        {!isDesktop && (
+          <Button
+            variant={"ghost"}
+            className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+            onClick={() => {
+              navigate("/account/email-settings");
+              setisPopOverOpen(false);
+            }}
+          >
+            <Lucide icon="MailCheck" className="h-4 w-4" />
+            Email settings
+          </Button>
+        )}
+        {!isDesktop && (
+          <Button
+            variant={"ghost"}
+            className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+            onClick={() => {
+              navigate("/account/device-history");
+              setisPopOverOpen(false);
+            }}
+          >
+            <Lucide icon="Smartphone" className="h-4 w-4" />
+            Device history
+          </Button>
+        )}
         <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
