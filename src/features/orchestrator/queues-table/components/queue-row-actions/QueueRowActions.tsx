@@ -1,12 +1,12 @@
-import { DataTableRowActions } from '@/react-toolkit/ui/data-table/row-actions/DataTableRowActions';
-import { DTRowAction } from '@/react-toolkit/ui/data-table/row-actions/DTRowAction';
-import { DropdownMenuSeparator } from '@/react-toolkit/ui/dropdown-menu';
+import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
+import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
 
-import { AddTriggerRowAction } from './AddTriggerRowAction';
-import { AssignAgentsRowAction } from './AssignAgentsRowAction';
-import { DeactivateRowAction } from './DeactivateRowAction';
-import { QueueRowDeleteAction } from './QueueRowDeleteAction';
-import { UploadItemsRowAction } from './UploadItemsRowAction';
+import { AddTriggerRowAction } from "./AddTriggerRowAction";
+import { AssignAgentsRowAction } from "./AssignAgentsRowAction";
+import { DeactivateRowAction } from "./DeactivateRowAction";
+import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
+import { UploadItemsRowAction } from "./UploadItemsRowAction";
 
 interface QueueRowActionsProps {
   rowId: string;
