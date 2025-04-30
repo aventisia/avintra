@@ -1,8 +1,10 @@
-import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+
+
+import { CountriesEnum } from "@aventisia/ui/enums";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
 // BillingPlan Id
 export const idProps: InputFieldProps = {

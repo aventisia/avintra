@@ -1,7 +1,7 @@
 import "@/react-toolkit/styles/react-perfect-scrollbar.css";
-import { TooltipProvider } from "@/react-toolkit/ui/Tooltip";
-import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper";
-import { SonnerToaster } from "@/react-toolkit/ui/sonner/SonnerToaster";
+import { TooltipProvider } from "@aventisia/ui/tooltip";
+import { AlertDialogWrapper } from "@aventisia/ui/alert-dialog";
+import { SonnerToaster } from "@aventisia/ui/sonner";
 
 import React from "react";
 import ReactDOM from "react-dom/client";

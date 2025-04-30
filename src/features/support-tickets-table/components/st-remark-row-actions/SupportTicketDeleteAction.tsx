@@ -1,7 +1,6 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-
+import { Button } from "@aventisia/ui/buttons";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 

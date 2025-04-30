@@ -1,4 +1,5 @@
-import { CrudActionType } from "../types/literal-types";
+import { CrudActionType } from "@aventisia/ui/types";
+
 
 /**
  * A constant string representing an message which user will get from backend when 2FA is enabled.

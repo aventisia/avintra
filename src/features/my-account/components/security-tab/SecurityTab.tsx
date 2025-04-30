@@ -1,8 +1,7 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { CheckboxField } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
 import type { z } from "zod";
 
 import { useDefineProfilePasswordForm } from "../../hooks/useDefineProfilePasswordForm";

@@ -5,8 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog";
-
+} from "@aventisia/ui/dialog";
 import { ImageIcon } from "@radix-ui/react-icons";
 import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";

@@ -1,6 +1,5 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Separator } from "@/react-toolkit/ui/separator";
-
+import { Separator } from "@aventisia/ui";
+import { cn } from "@aventisia/ui/lib";
 import { EditorContent } from "@tiptap/react";
 import type { Content, Editor } from "@tiptap/react";
 import * as React from "react";

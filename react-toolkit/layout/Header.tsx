@@ -3,10 +3,11 @@ import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAcco
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { NavbarOnSheet } from "@/react-toolkit/layout/NavbarOnSheet";
 import { Sidebar } from "@/react-toolkit/layout/sidebar";
-import { cn } from "@/react-toolkit/lib/utils";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
-import { SearchBox } from "@/react-toolkit/ui/custom/SearchBox";
+
+import { SearchBox } from "@aventisia/ui";
+import { cn } from "@aventisia/ui/lib";
 
 interface HeaderProps {
   appConfig: IAppConfig;

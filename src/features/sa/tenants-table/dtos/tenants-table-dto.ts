@@ -1,6 +1,7 @@
-import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
+
+import { CurrenciesEnum } from "@aventisia/ui/enums";
 
 /**
  * Represents a data transfer object (DTO) for a tenant.
@@ -26,7 +27,7 @@ export interface TenantsTableDto {
   /**
    * Gets or sets the currency of the tenant
    */
-  currency?: CurrencyTypesEnum;
+  currency?: CurrenciesEnum;
 
   /**
    * Gets or sets the contract effective date and time of the tenant's account based on the subscription/trial period.

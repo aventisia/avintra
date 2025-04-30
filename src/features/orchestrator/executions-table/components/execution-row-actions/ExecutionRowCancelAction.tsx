@@ -1,5 +1,6 @@
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { BanIcon } from "lucide-react";
 
 import { cancelExecution } from "../../apis/executions-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -23,7 +24,7 @@ export const ExecutionRowCancelAction = ({
   return (
     <SimpleDDMenuItem
       content="Cancel"
-      lucidIconName="Ban"
+      Icon={BanIcon}
       className="fonr stroke-2"
       disabled={isPending}
       onClick={() => mutate(id)}

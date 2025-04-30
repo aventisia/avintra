@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from "@aventisia/ui/types";
 
 export const DATA_QUERY_KEY = ["roles"];
 export const SEARCH_COLUMN = "fullName";

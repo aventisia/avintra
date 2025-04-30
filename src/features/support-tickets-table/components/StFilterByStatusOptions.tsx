@@ -1,7 +1,7 @@
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
 
+import { Button } from "@aventisia/ui/buttons";
+import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 

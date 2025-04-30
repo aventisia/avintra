@@ -2,8 +2,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+} from "@aventisia/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
 
 import { updateSupportTicketStatus } from "../../apis/suport-tickets-table-apis";
 

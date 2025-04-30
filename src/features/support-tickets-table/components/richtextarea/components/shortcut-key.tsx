@@ -1,5 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
-
+import { cn } from "@aventisia/ui/lib";
 import * as React from "react";
 
 import { getShortcutKey } from "../utils/utils";

@@ -2,9 +2,9 @@ import { markNotificationAsRead } from "@/react-toolkit/features/unread-notifica
 import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import { useQueryData } from "@/react-toolkit/hooks/useQueryData";
 
+import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { useQueryData } from "@aventisia/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
 /**

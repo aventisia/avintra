@@ -1,4 +1,4 @@
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 
 import { InovicesTable } from "./InovicesTable";
 import { AddressTable } from "./address-table/AddressTable";

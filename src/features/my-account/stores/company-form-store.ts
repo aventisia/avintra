@@ -1,5 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
-
+import { CrudActionType } from "@aventisia/ui/types";
 import { create } from "zustand";
 
 type State = {

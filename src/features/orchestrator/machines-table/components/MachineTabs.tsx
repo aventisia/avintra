@@ -1,5 +1,4 @@
-import { Tabs, TabsContent, TabsList } from "@/react-toolkit/ui/tabs";
-
+import { Tabs, TabsContent, TabsList } from "@aventisia/ui/tabs";
 import { TabsTrigger } from "@radix-ui/react-tabs";
 import { lazy } from "react";
 import { twMerge } from "tailwind-merge";

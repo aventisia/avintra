@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/react-toolkit/ui/card/card";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@aventisia/ui/cards";
 import { twMerge } from "tailwind-merge";
 
 type StatsCardProps = {

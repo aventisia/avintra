@@ -1,5 +1,4 @@
-import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
-
+import { DTCreateButton } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { BillingAddressDto } from "../../dtos/billing-address-dto";

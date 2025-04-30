@@ -1,11 +1,11 @@
 import { UpgradeCard } from "@/react-toolkit/layout/sidebar/UpgradeCard";
 import { SidebarMenuItems } from "@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItems";
-import { cn } from "@/react-toolkit/lib/utils";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { IAppConfig } from "@/react-toolkit/types/app-config";
-import { Tooltip } from "@/react-toolkit/ui/Tooltip";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
 import {
   ArrowLeftCircleIcon,
   ArrowRightCircleIcon,

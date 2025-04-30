@@ -1,5 +1,4 @@
-import type { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-
+import type { CountriesEnum } from "@aventisia/ui/enums";
 /**
  * Represents a data transfer object (DTO) for a my account.
  */

@@ -2,8 +2,8 @@ import { CrudActionTypeLong } from "@/react-toolkit/constants";
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
 import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";

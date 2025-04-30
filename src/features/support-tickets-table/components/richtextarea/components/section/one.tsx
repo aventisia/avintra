@@ -1,11 +1,10 @@
-import { cn } from "@/react-toolkit/lib/utils";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
-
+} from "@aventisia/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
 import { CaretDownIcon, LetterCaseCapitalizeIcon } from "@radix-ui/react-icons";
 import type { Level } from "@tiptap/extension-heading";
 import type { Editor } from "@tiptap/react";

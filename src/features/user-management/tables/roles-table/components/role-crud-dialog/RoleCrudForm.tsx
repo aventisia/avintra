@@ -1,10 +1,9 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { TextareaField } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 

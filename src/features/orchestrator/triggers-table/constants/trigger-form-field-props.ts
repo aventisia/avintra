@@ -1,6 +1,6 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
 
 // trigger Id
 export const idProps: InputFieldProps = {

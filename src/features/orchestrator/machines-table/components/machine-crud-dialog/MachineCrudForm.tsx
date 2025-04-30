@@ -1,14 +1,14 @@
 import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
 import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { Separator } from "@/react-toolkit/ui/separator";
 
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
+import { SwitchField } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";

@@ -1,5 +1,4 @@
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-
+import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";

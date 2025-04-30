@@ -1,10 +1,10 @@
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
 import { useState } from "react";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";

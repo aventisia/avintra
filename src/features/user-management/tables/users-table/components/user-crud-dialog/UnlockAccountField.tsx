@@ -1,6 +1,5 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-
+import { SwitchField } from "@aventisia/ui/form";
+import { CrudActionType } from "@aventisia/ui/types";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 

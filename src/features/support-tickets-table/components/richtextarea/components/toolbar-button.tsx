@@ -1,6 +1,5 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Tooltip } from "@/react-toolkit/ui/Tooltip";
-
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import * as React from "react";
 
 import { Toggle } from "../components/toggle";

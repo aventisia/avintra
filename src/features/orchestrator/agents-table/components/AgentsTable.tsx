@@ -1,10 +1,10 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTHeading } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
+import { DTViewOptions } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
 
 import { MachineTabsList } from "../../machines-table/components/MachineTabs";
 import { SEARCH_COLUMN } from "../constants";

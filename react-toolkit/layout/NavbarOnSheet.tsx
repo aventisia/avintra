@@ -1,12 +1,12 @@
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { UpgradeCard } from "@/react-toolkit/layout/sidebar/UpgradeCard";
 import { SidebarMenuItems } from "@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItems";
-import { cn } from "@/react-toolkit/lib/utils";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { IAppConfig } from "@/react-toolkit/types/app-config";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Sheet, SheetContent, SheetTrigger } from "@/react-toolkit/ui/sheet";
+import { Dialog, DialogContent, DialogTrigger } from "@aventisia/ui/dialog";
 
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
@@ -20,11 +20,11 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
     useBaseLayoutStore();
 
   return (
-    <Sheet
+    <Dialog
       open={navbarOnSheetOpen}
       onOpenChange={() => setNavbarOnSheetOpen(!navbarOnSheetOpen)}
     >
-      <SheetTrigger asChild>
+      <DialogTrigger asChild>
         <Button
           variant="outline"
           size="icon8"
@@ -36,8 +36,8 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
         >
           <Bars3BottomLeftIcon className="h-7 w-7" />
         </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[--sidebar-max-width]">
+      </DialogTrigger>
+      <DialogContent side="left" className="w-[--sidebar-max-width]">
         <PerfectScrollbar>
           <div className="flex h-[--header-height] items-center p-[1.1rem]">
             <AppLogo lightLogo={false} />
@@ -49,8 +49,8 @@ const NavbarOnSheet = ({ appConfig, className }: NavbarOnSheetProps) => {
             {appConfig.showUpgradeCard && <UpgradeCard />}
           </nav>
         </PerfectScrollbar>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
 

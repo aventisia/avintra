@@ -1,11 +1,10 @@
-import { cn } from "@/react-toolkit/lib/utils";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
-
+} from "@aventisia/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";

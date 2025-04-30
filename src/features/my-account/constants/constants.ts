@@ -1,8 +1,9 @@
-import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import type { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import type { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
-import type { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { CountriesEnum } from "@aventisia/ui/enums";
+
+import type { InputFieldProps } from "@aventisia/ui/form";
+import type { InputOtpFieldProps } from "@aventisia/ui/form";
+import type { SelectFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
 export const UN_QUERY_KEY_UPDATE_EMAIL = ["update-email"];
 export const UN_QUERY_KEY_UPDATE_PASSWORD = ["update-pwd"];

@@ -1,5 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
-
+import { cn } from "@aventisia/ui/lib";
 import { NodeViewProps, NodeViewWrapper, isNumber } from "@tiptap/react";
 import { useMemo } from "react";
 

@@ -1,9 +1,4 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { Link2Icon } from "@radix-ui/react-icons";
 import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";

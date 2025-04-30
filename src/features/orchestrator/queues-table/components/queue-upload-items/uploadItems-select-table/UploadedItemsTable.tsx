@@ -1,9 +1,8 @@
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import {
   ColumnDef,
   getCoreRowModel,

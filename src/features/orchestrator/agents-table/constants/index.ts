@@ -1,4 +1,4 @@
-import type { CrudActionType } from "@/react-toolkit/types/literal-types";
+import type { CrudActionType } from "@aventisia/ui/types";
 
 /**
  * The column used for searching in the agents.

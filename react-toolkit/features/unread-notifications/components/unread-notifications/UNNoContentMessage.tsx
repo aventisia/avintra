@@ -1,5 +1,4 @@
-import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
-
+import { NoContentMessage } from "@aventisia/ui";
 import { BellSlashIcon } from "@heroicons/react/24/outline";
 
 /**

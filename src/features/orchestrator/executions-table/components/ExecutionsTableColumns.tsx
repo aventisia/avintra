@@ -1,10 +1,6 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import {
-  dateFormater,
-  dateFormaterDistanceToNow,
-} from "@/react-toolkit/utils/date-formater";
-
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
@@ -68,7 +64,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormaterDistanceToNow(row.getValue("startTime"))}
+        {dateFormatter(row.getValue("startTime"))}
       </div>
     ),
   },
@@ -84,7 +80,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormaterDistanceToNow(row.getValue("endTime"))}
+        {dateFormatter(row.getValue("endTime"))}
       </div>
     ),
   },
@@ -168,7 +164,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("createdOn"))}
+        {dateFormatter(row.getValue("createdOn"))}
       </div>
     ),
   },

@@ -1,7 +1,7 @@
-import { CurrencyTypesEnum } from "../enums/currency-types-enum";
+import { CurrenciesEnum } from "@aventisia/ui/enums";
 
 export const popularCurrencies: Partial<
-  Record<keyof typeof CurrencyTypesEnum, string>
+  Record<keyof typeof CurrenciesEnum, string>
 > = {
   USD: "$", // United States Dollar
   EUR: "€", // Euro
@@ -28,7 +28,7 @@ export const popularCurrencies: Partial<
 
 export const currencyFormater = (
   price: number,
-  currency?: keyof typeof CurrencyTypesEnum | string | undefined,
+  currency?: keyof typeof CurrenciesEnum | string | undefined,
 ) => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "decimal",
@@ -40,8 +40,8 @@ export const currencyFormater = (
 
   if (!currency) return `USD ${formatter.format(price)}`;
 
-  // if (popularCurrencies[currency as keyof typeof CurrencyTypesEnum]) {
-  //   return `${popularCurrencies[currency as keyof typeof CurrencyTypesEnum]} ${formatter.format(price)}`;
+  // if (popularCurrencies[currency as keyof typeof CurrenciesEnum]) {
+  //   return `${popularCurrencies[currency as keyof typeof CurrenciesEnum]} ${formatter.format(price)}`;
   // } else
   return `${currency} ${formatter.format(price)}`;
 };

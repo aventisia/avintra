@@ -1,11 +1,11 @@
-import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { CountriesEnum } from "@aventisia/ui/enums";
 
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { DatePickerField } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 import type { z } from "zod";
 
 import type { MyAccountDto } from "../../dtos/my-account-profile-dto";

@@ -1,12 +1,12 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { Separator } from "@/react-toolkit/ui/separator";
 
+import { DotSeparator } from "@aventisia/ui";
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { Form } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import parse from "html-react-parser";

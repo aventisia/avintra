@@ -1,5 +1,4 @@
-import { Separator } from "@/react-toolkit/ui/separator";
-
+import { Separator } from "@aventisia/ui";
 import {
   CopyIcon,
   ExternalLinkIcon,

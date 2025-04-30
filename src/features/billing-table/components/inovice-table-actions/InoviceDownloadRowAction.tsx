@@ -1,5 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-
+import { Button } from "@aventisia/ui/buttons";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 

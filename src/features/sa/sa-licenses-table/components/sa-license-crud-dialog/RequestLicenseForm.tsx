@@ -1,12 +1,12 @@
 import { getPricingPlansToSelect } from "@/features/sa/pricing-table/apis/pricingPlans-table-apis";
 import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
+import { Skeleton } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";

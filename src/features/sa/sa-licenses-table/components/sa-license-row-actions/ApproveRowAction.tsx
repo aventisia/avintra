@@ -1,7 +1,6 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import Enumerable from "linq";
 import { BiCheckDouble } from "react-icons/bi";

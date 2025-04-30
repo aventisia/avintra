@@ -1,5 +1,6 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import type { ActiveSessionDto } from "../dtos/active-session-dto";
 import type { DeactivateUserAccountDto } from "../dtos/deactivate-user-account-dto";

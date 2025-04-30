@@ -15,7 +15,7 @@ export const DATE_MIN = new Date(1, 1, 1);
  * @param {string} [placeholder="NA"]
  * @return placeholder
  */
-export const dateFormater = (
+export const dateFormatter = (
   date: Date,
   dateFormat: string = "dd MMM yyyy",
   placeholder: string = "NA",
@@ -29,7 +29,7 @@ export const dateFormater = (
  * @param {FormatDistanceToNowOptions} [formatToNowOptions={addSuffix: true,}]
  * @return placeholder
  */
-export const dateFormaterDistanceToNow = (
+export const dateFormatterDistanceToNow = (
   date: Date,
   placeholder: string = "NA",
   formatToNowOptions: FormatDistanceToNowOptions = {

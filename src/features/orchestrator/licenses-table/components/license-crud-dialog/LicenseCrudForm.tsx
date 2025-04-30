@@ -1,12 +1,12 @@
 import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { Skeleton } from "@aventisia/ui";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { InputField } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 

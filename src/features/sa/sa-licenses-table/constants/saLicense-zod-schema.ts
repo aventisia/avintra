@@ -1,8 +1,4 @@
-import {
-  numericError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-
+import { numericError, reqError } from "@aventisia/ui/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { z } from "zod";
 

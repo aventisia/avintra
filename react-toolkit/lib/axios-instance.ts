@@ -5,8 +5,8 @@ import {
   REQUEST_TIMEOUT,
 } from "@/react-toolkit/constants";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
-import { sleep } from "@/react-toolkit/utils/sleep-util";
 
+import { sleep } from "@aventisia/ui/utils";
 import axios from "axios";
 import { toast } from "sonner";
 

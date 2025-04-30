@@ -1,13 +1,5 @@
-import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import {
-  alphaNumericRegex,
-  positiveFloatNumber,
-} from "@/react-toolkit/utils/regex-list";
-
+import { alphaNumericError, maxLenError, reqError } from "@aventisia/ui/utils";
+import { alphaNumericRegex, positiveFloatNumberRegex } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**
@@ -43,7 +35,7 @@ export const pricingPlanZodSchema = z
         .string()
         .min(1, { message: reqError("Unit price") })
         .refine(
-          (check) => positiveFloatNumber.test(check),
+          (check) => positiveFloatNumberRegex.test(check),
           "Enter correct value for Unit price",
         )
         .transform((val) => parseFloat(val)),
@@ -56,7 +48,7 @@ export const pricingPlanZodSchema = z
         .string()
         .min(1, { message: reqError("COLA") })
         .refine(
-          (check) => positiveFloatNumber.test(check),
+          (check) => positiveFloatNumberRegex.test(check),
           "Enter correct value for COLA",
         )
         .transform((val) => parseInt(val)),

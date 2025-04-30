@@ -1,5 +1,4 @@
-import { reqError } from "@/react-toolkit/utils/error-message-list";
-
+import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**

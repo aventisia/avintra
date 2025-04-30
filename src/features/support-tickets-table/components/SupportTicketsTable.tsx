@@ -1,14 +1,13 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { Separator } from "@/react-toolkit/ui/separator";
-
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTHeading } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

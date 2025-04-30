@@ -1,7 +1,8 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ISelectOption } from "@/react-toolkit/types/select-option";
+
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { ISelectOption } from "@aventisia/ui/types";
 
 import { UsersTableDto } from "../dtos/users-table-dto";
 

@@ -1,5 +1,4 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";

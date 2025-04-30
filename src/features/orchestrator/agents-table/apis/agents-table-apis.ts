@@ -1,6 +1,7 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import type { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import type { IOptimisticMutation } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
 import { AgentsTableDto } from "../dtos/agents-table-dto";

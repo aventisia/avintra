@@ -1,6 +1,5 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { MonitorCheck } from "lucide-react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";

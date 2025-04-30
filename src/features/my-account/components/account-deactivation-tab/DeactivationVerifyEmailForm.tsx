@@ -1,12 +1,12 @@
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import Lucide from "@/react-toolkit/ui/Lucide";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { ResendCodeButton } from "@/react-toolkit/ui/buttons/ResendCodeButton";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
 
+import { Button } from "@aventisia/ui/buttons";
+import { ResendCodeButton } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { InputOtpField } from "@aventisia/ui/form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";

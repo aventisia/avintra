@@ -1,5 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
-
+import { cn } from "@aventisia/ui/lib";
 import type { Editor } from "@tiptap/core";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { TextStyle } from "@tiptap/extension-text-style";

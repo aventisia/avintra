@@ -1,10 +1,9 @@
-import { IconProps } from "@/react-toolkit/types/icon-props";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/react-toolkit/ui/hover-card";
-
+} from "@aventisia/ui/hover-card";
+import { IconProps } from "@aventisia/ui/types";
 import { NavLink } from "react-router-dom";
 
 interface MenuItemProps {

@@ -1,4 +1,4 @@
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { Skeleton } from "@aventisia/ui";
 
 interface InputDivElementProps
   extends React.DetailedHTMLProps<

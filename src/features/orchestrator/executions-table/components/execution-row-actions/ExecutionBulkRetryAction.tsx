@@ -1,7 +1,7 @@
-import { cn } from "@/react-toolkit/lib/utils";
 import Lucide from "@/react-toolkit/ui/Lucide";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import React from "react";
 
 const ExecutionBulkRetryAction = React.forwardRef<

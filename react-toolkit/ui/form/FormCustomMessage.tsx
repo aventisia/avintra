@@ -1,5 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
-
+import { cn } from "@aventisia/ui/lib";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -7,7 +6,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { FieldError } from "react-hook-form";
 
-import { FormMessageProps } from "./FormMessage";
+import { FormMessageProps } from "@aventisia/ui/form";
 
 export type FormCustomMessageProps = {
   fieldStates?: { formMessageId?: string; error?: FieldError }[];

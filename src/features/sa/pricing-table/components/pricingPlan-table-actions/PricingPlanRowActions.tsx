@@ -1,6 +1,6 @@
-import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
-import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
-import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
+import { DTRowAction } from "@aventisia/ui/data-table";
+import { DataTableRowActions } from "@aventisia/ui/data-table";
+import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
 import { PricingPlanRowDeleteAction } from "./PricingPlanRowDeleteAction";
 

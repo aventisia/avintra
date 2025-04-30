@@ -1,8 +1,7 @@
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { Separator } from "@/react-toolkit/ui/separator";
-
+import { DotSeparator } from "@aventisia/ui";
+import { Separator } from "@aventisia/ui";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { formatDistanceToNow } from "date-fns";
 import parse from "html-react-parser";
 import { useEffect, useState } from "react";

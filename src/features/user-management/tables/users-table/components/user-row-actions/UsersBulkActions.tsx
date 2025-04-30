@@ -1,11 +1,11 @@
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import { useQueryData } from "@/react-toolkit/hooks/useQueryData";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { DTBulkActions } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkActions";
-import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 
+import { Button } from "@aventisia/ui/buttons";
+import { DTBulkActions } from "@aventisia/ui/data-table";
+import { DTSelectionInfo } from "@aventisia/ui/data-table";
+import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { useQueryData } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 import { CircleOff } from "lucide-react";
 

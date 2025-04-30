@@ -1,4 +1,4 @@
-import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
+import { DataTableRowActions } from "@aventisia/ui/data-table";
 
 import { LicenseRowCancelAction } from "./LicenseRowCancelAction";
 

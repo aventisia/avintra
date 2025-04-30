@@ -1,10 +1,10 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
+import { DTViewOptions } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";

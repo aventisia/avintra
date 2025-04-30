@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from "@aventisia/ui/types";
 
 const MODELS_QUERY_KEY = ["models"];
 

@@ -1,5 +1,4 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-
+import { Checkbox } from "@aventisia/ui";
 import type { Row } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";

@@ -1,6 +1,6 @@
-import { CheckboxFieldProps } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { CheckboxFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { TextareaFieldProps } from "@aventisia/ui/form";
 
 import { ACCESSES } from "./permissions-and-acesses";
 

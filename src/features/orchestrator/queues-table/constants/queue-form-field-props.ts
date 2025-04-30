@@ -1,6 +1,6 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import type { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
+import type { TextareaFieldProps } from "@aventisia/ui/form";
 
 // queue Id
 export const idProps: InputFieldProps = {

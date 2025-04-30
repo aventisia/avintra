@@ -1,5 +1,5 @@
-import { IconProps } from "@/react-toolkit/types/icon-props";
-import { AccordionTrigger } from "@/react-toolkit/ui/accordion";
+import { AccordionTrigger } from "@aventisia/ui/accordion";
+import { IconProps } from "@aventisia/ui/types";
 
 interface MultiLevelMenuButtonProps {
   Icon: React.ComponentType<IconProps>;

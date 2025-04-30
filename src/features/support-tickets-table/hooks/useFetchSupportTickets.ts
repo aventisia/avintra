@@ -1,5 +1,4 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 
 import { getSupportTickets } from "../apis/suport-tickets-table-apis";

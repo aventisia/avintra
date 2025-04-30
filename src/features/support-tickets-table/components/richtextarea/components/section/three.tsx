@@ -1,9 +1,4 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { CaretDownIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   Tooltip,

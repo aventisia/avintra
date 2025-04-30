@@ -1,5 +1,4 @@
-import { maxLenError } from "@/react-toolkit/utils/error-message-list";
-
+import { maxLenError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 export const BillingAddressZodSchema = z.object({

@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from "@aventisia/ui/types";
 
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 

@@ -1,7 +1,7 @@
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Separator } from "@/react-toolkit/ui/separator";
 
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
