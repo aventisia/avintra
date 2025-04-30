@@ -63,7 +63,12 @@ export const queueZodSchema = z.object({
   lastModifiedOn: z.date(),
 });
 
-export  const queueUploadFileZodSchema = z.object({
-  id: z.string(),
-  data: z.string(),
+export const queueUploadFileZodSchema = z.object({
+  payloadData: z.string(),
+
+  // Read (view) only fields
+  createdBy: z.string(),
+  createdOn: z.date(),
+  lastModifiedBy: z.string(),
+  lastModifiedOn: z.date(),
 });
