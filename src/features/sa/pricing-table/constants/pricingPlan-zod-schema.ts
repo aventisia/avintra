@@ -1,5 +1,8 @@
 import { alphaNumericError, maxLenError, reqError } from "@aventisia/ui/utils";
-import { alphaNumericRegex, positiveFloatNumberRegex } from "@aventisia/ui/utils";
+import {
+  alphaNumericRegex,
+  positiveFloatNumberRegex,
+} from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**

@@ -1,7 +1,7 @@
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
-
 import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+
 import { InputFieldProps } from "@aventisia/ui/form";
 import { SelectFieldProps } from "@aventisia/ui/form";
 import { SwitchFieldProps } from "@aventisia/ui/form";

@@ -1,3 +1,4 @@
+import { FormMessageProps } from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
 import {
   CheckCircleIcon,
@@ -5,8 +6,6 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { FieldError } from "react-hook-form";
-
-import { FormMessageProps } from "@aventisia/ui/form";
 
 export type FormCustomMessageProps = {
   fieldStates?: { formMessageId?: string; error?: FieldError }[];

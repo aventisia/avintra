@@ -5,7 +5,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
-
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,

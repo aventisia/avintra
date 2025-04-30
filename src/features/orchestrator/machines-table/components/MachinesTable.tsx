@@ -1,3 +1,5 @@
+import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
+
 import { Separator } from "@aventisia/ui";
 import { DataTable } from "@aventisia/ui/data-table";
 import { DTPagination } from "@aventisia/ui/data-table";
@@ -9,7 +11,6 @@ import { DTViewOptions } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 import { useDocumentTitle } from "@aventisia/ui/hooks";
 
-
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -19,7 +20,6 @@ import { MachineTabsList } from "./MachineTabs";
 import { machinesTableColumns } from "./MachinesTableColumns";
 import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
-import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
 
 /**
  * Renders a table of machines.

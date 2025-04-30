@@ -1,5 +1,4 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
-
 import { Suspense, lazy } from "react";
 
 // Lazy load the TenantsTable component.

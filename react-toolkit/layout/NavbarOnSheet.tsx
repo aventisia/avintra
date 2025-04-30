@@ -2,11 +2,11 @@ import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { UpgradeCard } from "@/react-toolkit/layout/sidebar/UpgradeCard";
 import { SidebarMenuItems } from "@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItems";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { Dialog, DialogContent, DialogTrigger } from "@aventisia/ui/dialog";
+import { IAppConfig } from "@/react-toolkit/types/app-config";
 
 import { Button } from "@aventisia/ui/buttons";
+import { Dialog, DialogContent, DialogTrigger } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
-import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 

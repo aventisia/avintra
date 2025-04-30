@@ -1,8 +1,8 @@
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useNavigation, useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { CrudActionTypeLong } from "../constants";
-import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 
 export const useDtCrudQueryAction = <TData extends { id?: string }>(
   data: TData[] | undefined,

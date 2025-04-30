@@ -1,5 +1,4 @@
 import { Toggle } from "@aventisia/ui/toggle";
-
 import { Tooltip, TooltipProvider } from "@aventisia/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { Info } from "lucide-react";

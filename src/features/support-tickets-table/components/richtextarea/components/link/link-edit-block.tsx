@@ -1,9 +1,8 @@
-import { Input } from "@aventisia/ui/";
-import { Label } from "@aventisia/ui/label";
-
-import { Button } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
+import { Input } from "@aventisia/ui";
 import { Switch } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { Label } from "@aventisia/ui/label";
+import { cn } from "@aventisia/ui/lib";
 import * as React from "react";
 
 export interface LinkEditorProps extends React.HTMLAttributes<HTMLDivElement> {

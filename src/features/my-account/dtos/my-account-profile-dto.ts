@@ -1,4 +1,5 @@
 import type { CountriesEnum } from "@aventisia/ui/enums";
+
 /**
  * Represents a data transfer object (DTO) for a my account.
  */

@@ -1,11 +1,11 @@
 import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { BanIcon } from "lucide-react";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
-import { BanIcon } from "lucide-react";
 
 interface LicenseRowCancelActionProps {
   rowId: string;

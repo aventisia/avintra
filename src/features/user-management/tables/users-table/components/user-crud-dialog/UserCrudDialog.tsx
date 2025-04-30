@@ -1,7 +1,6 @@
-import { ScrollArea } from "@aventisia/ui/scroll";
-
 import { DTCrudDialogWrapper } from "@aventisia/ui/data-table";
 import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 

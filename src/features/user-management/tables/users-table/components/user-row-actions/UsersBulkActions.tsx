@@ -1,5 +1,4 @@
 import { Separator } from "@aventisia/ui";
-
 import { Button } from "@aventisia/ui/buttons";
 import { DTBulkActions } from "@aventisia/ui/data-table";
 import { DTSelectionInfo } from "@aventisia/ui/data-table";

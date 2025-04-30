@@ -1,8 +1,8 @@
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
+import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
-import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 import { useQueryClient } from "@tanstack/react-query";
 import IEnumerable from "linq";
 import { BsDot } from "react-icons/bs";

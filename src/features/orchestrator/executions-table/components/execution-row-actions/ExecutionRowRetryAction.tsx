@@ -1,9 +1,9 @@
 import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { RotateCwIcon } from "lucide-react";
 
 import { retryExecution } from "../../apis/executions-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { RotateCwIcon } from "lucide-react";
 
 interface ExecutionRowRetryActionProps {
   id: string;
