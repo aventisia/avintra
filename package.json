@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3002",
+    "pregit": "tsc -b && prettier --write .",
     "build": "tsc -b && vite build",
+    "format": "prettier --write .",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -88,6 +90,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -102,7 +105,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
     "postcss": "^8.4.39",
-    "prettier": "^3.3.3",
+    "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.2.2",
