@@ -1,9 +1,12 @@
-import { MachineEnvironmentTypesEnum } from '@/react-toolkit/enums/machine-environment-types-enum';
-import { MachineOsTypesEnum } from '@/react-toolkit/enums/machine-os-types-enum';
-import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
-import { SelectFieldProps } from '@/react-toolkit/ui/form/fields/SelectField';
-import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
-import { enumToArray } from '@/react-toolkit/utils/enum-to-array';
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
+import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+
+import { getLicensesToSelect } from "../../licenses-table/apis/licenses-table-apis";
 
 // Machine Id
 export const idProps: InputFieldProps = {
@@ -41,7 +44,7 @@ export const ipAddressProps: InputFieldProps = {
   name: "ipAddress",
   label: "IP Address",
   isRequired: true,
-  placeholder: "123.2.12.123"
+  placeholder: "123.2.12.123",
 };
 
 // Type of Environmnet
@@ -50,6 +53,17 @@ export const environmentTypeProps: SelectFieldProps = {
   label: "Environment Type",
   isRequired: true,
   selectOptions: enumToArray(MachineEnvironmentTypesEnum),
+};
+
+export const licenseSelectProps: AsyncSelectFieldProps = {
+  name: "licenseType",
+  selectOptions: () => getLicensesToSelect().then((data) => data.data),
+  label: "License Type",
+  placeholder: "Select License",
+  className: "!w-[30rem]",
+  triggerClassName: "!w-full",
+  size: "base",
+  isRequired: true,
 };
 
 // Is Disabled
