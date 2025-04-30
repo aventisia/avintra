@@ -1,27 +1,52 @@
-import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { QueueUploadItemsDialogWrapper } from "./QueueUploadItemsDialogWrapper";
+import { Loader2, UploadCloud } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { useDefineFileUploadForm } from "../../hooks/useDefineFileUploadForm";
+import { read, utils } from "xlsx";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
+import { cn } from "@/react-toolkit/lib/utils";
+import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
+import { Form } from "@/react-toolkit/ui/form/Form";
+import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+
+import { uploadWorkItem } from "../../apis/queues-table-apis";
 import { queueUploadFileZodSchema } from "../../constants/queue-zod-schema";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { useState } from "react";
+import { QueueWorkItemDto } from "../../dtos/queue-work-item-dto";
+import { useDefineFileUploadForm } from "../../hooks/useDefineFileUploadForm";
+import { useQueueUploadItemsStore } from "../../stores/queues-upload-item-store";
+import { QueueUploadItemsDialogWrapper } from "./QueueUploadItemsDialogWrapper";
 import { UploadedItemsTable } from "./uploadItems-select-table/UploadedItemsTable";
 
-import { read, utils } from "xlsx";
 export const QueueUploadItemsDialog = ({
   children,
 }: React.PropsWithChildren) => {
   // Define queue form
-  const { form } = useDefineFileUploadForm();
+  const { form, rowId, refineFormData } = useDefineFileUploadForm();
   const [data, setData] = useState<object[]>(); // State to store parsed data
 
-  // Define submit handler
-  const onSubmit = (formData: z.infer<typeof queueUploadFileZodSchema>) => {
-    console.log(formData);
-  };
+  // Use optimistic mutation to mark notification as read
+  const {
+    mutate: mutateUploadWorkItem,
+    isPending,
+    isSuccess,
+  } = useOptimisticMutation<QueueWorkItemDto, QueueWorkItemDto, boolean>(
+    uploadWorkItem,
+    ["work-item", rowId],
+  );
+
+  const { setShowDialog } = useQueueUploadItemsStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
+    })),
+  );
+
+  useEffect(() => {
+    setShowDialog(!isSuccess);
+    setData(undefined);
+  }, [isSuccess, setShowDialog]);
 
   // Handle file upload
   const handleFileUpload = (file: File) => {
@@ -56,15 +81,25 @@ export const QueueUploadItemsDialog = ({
     onDrop: (e) => handleFileUpload(e[0] as File),
   });
 
-  console.log(data);
+  useEffect(() => {
+    form.setValue("payloadData", JSON.stringify(data), {
+      shouldDirty: true,
+    });
+  }, [data, form]);
+
+  // Define submit handler
+  const onSubmit = (formData: z.infer<typeof queueUploadFileZodSchema>) => {
+    // Create or update the queue
+    mutateUploadWorkItem(
+      refineFormData(formData) as unknown as QueueWorkItemDto,
+    );
+  };
   // Return dialog
   return (
     <QueueUploadItemsDialogWrapper>
       {children}
       <DialogContent side={"right"} className="w-[50vw] !max-w-[50vw]">
-        <DialogDefaultHeader
-          heading="Upload Items"
-        />
+        <DialogDefaultHeader heading="Upload Items" />
         <ScrollArea className="h-[calc(100vh-10rem)] px-2.5 pb-0 pt-4">
           <Form
             methods={form}
@@ -75,18 +110,26 @@ export const QueueUploadItemsDialog = ({
               <input {...getInputProps()} />
               <div
                 {...getRootProps()}
-                className="flex h-[calc(50vh-15rem)] !items-center justify-center rounded-md border"
+                className="flex h-[calc(50vh-15rem)] border-separate border-spacing-1 !items-center justify-center rounded-lg border-2 border-dashed"
               >
-                <p className="text-muted-foreground">
-                  Drop spreadsheet file here
+                <p className="flex gap-2 text-muted-foreground">
+                  <UploadCloud /> Drop spreadsheet file here
                 </p>
               </div>
             </div>
             {data && <UploadedItemsTable data={data} />}
             <div className="!mt-10 flex w-full justify-end">
-              <Button type="submit" className="min-w-[5rem]">
-                Upload
-              </Button>
+              <SubmitButton
+                isPending={isPending}
+                className={cn("min-w-[5rem]")}
+              >
+                <span className="group flex gap-2">
+                  {isPending && (
+                    <Loader2 className={cn("h-5 w-5", "animate-spin")} />
+                  )}
+                  <span>Upload</span>
+                </span>
+              </SubmitButton>
             </div>
           </Form>
         </ScrollArea>
