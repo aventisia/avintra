@@ -1,8 +1,10 @@
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
 import { Form } from "@/react-toolkit/ui/form/Form";
+import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
+
 import { toast } from "sonner";
 import * as z from "zod";
+
 import { verificationCodeProps } from "../../constants/form-field-props";
 import { verifyEmailZodSchema } from "../../constants/verify-email-zod-schema";
 import { useCreateAccountMutation } from "../../hooks/useCreateAccountMutation";

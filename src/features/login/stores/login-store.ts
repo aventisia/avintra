@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { ILoginData } from "../types/login-data";
 import { ITwoFACodeData } from "../types/two-fa-code-data";
 

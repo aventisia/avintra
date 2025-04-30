@@ -1,7 +1,8 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { twoFAZodSchema } from "../constants/two-fa-zod-schema";
 import { useLoginStore } from "../stores/login-store";
 

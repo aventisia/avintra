@@ -41,4 +41,3 @@ const confirmNewPwdProps: FloatingLabelInputFieldProps = {
 };
 
 export { confirmNewPwdProps, emailProps, newPwdProps, verificationCodeProps };
-

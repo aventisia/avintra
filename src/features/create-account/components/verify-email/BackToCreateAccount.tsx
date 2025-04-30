@@ -1,7 +1,9 @@
 import { ContentFooter } from "@/components/ui/ContentFooter";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
+
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
 import { useCreateAccountStore } from "../../stores/create-account-store";
 
 export const BackToCreateAccount = () => {

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { IVerifyCodeData } from "../types/verify-code-data";
 
 type State = {

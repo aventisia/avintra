@@ -1,4 +1,5 @@
 import "@/react-toolkit/ui/sonner/sonner.css";
+
 import { Toaster } from "sonner";
 
 export const SonnerToaster = () => {

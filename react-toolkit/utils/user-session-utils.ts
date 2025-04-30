@@ -1,9 +1,13 @@
-import { DEV_JWT_LS_KEY, SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
+import {
+  DEV_JWT_LS_KEY,
+  SESSION_EXPIRED_LS_KEY,
+} from "@/react-toolkit/constants";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import {
   IJwtPayload,
   IUserSessionStore,
 } from "@/react-toolkit/types/user-session-types";
+
 import { jwtDecode } from "jwt-decode";
 
 const setUserSessionLocally = (
@@ -37,6 +41,4 @@ const setUserSessionLocally = (
   };
 };
 
-export {
-  setUserSessionLocally,
-};
+export { setUserSessionLocally };

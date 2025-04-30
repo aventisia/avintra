@@ -6,7 +6,9 @@ import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+
 import { useShallow } from "zustand/react/shallow";
+
 import { useCreateAccountStore } from "../stores/create-account-store";
 import { CreateAccount } from "./create-account/CreateAccount";
 import { VerifyEmail } from "./verify-email/VerifyEmail";

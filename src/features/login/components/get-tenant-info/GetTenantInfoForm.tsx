@@ -1,7 +1,9 @@
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { Form } from "@/react-toolkit/ui/form/Form";
+import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+
 import * as z from "zod";
+
 import { emailProps } from "../../constants/form-field-props";
 import { tenantInfoZodSchema } from "../../constants/tenant-info-zod-schema";
 import { useDefineGetTenantInfoForm } from "../../hooks/useDefineGetTenantInfoForm";

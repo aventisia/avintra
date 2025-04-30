@@ -3,7 +3,7 @@
 .fadeInLTR,
 .fadeOutRTL,
 .fadeOutLTR {
-  animation-duration: .5s;
+  animation-duration: 0.5s;
 }
 
 /*Fade in from right-to-left*/

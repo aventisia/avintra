@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { ICreateAccountData } from "../types/create-account-data";
 import { IVerifyEmailData } from "../types/verify-email-data";
 

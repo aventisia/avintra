@@ -1,9 +1,11 @@
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { Form } from "@/react-toolkit/ui/form/Form";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
 import { FloatingLabelInputField } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
-import { Form } from "@/react-toolkit/ui/form/Form";
+
 import * as z from "zod";
+
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
 import {
   confirmPwdProps,
@@ -86,10 +88,7 @@ export const CreateAccountForm = () => {
       </div>
 
       {/* Terms and Conditions */}
-      <CheckboxField
-        name="termsAgreement"
-        label={<TermsOfServiceLabel />}
-      />
+      <CheckboxField name="termsAgreement" label={<TermsOfServiceLabel />} />
 
       {/* Submit form */}
       <SubmitButton

@@ -1,8 +1,9 @@
-
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
 import { provideEmailZodSchema } from "../constants/provide-email-zod-schema";
 
 export const useDefineProvideEmailForm = () => {
@@ -23,6 +24,6 @@ export const useDefineProvideEmailForm = () => {
   return {
     form,
     isSubmitting,
-    isDirty
+    isDirty,
   };
 };

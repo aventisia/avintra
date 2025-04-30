@@ -1,8 +1,9 @@
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { PwdLoginHeader } from "./PwdLoginHeader";
+
 import { GoToResetPwd } from "./GoToResetPwd";
 import { PwdLoginForm } from "./PwdLoginForm";
+import { PwdLoginHeader } from "./PwdLoginHeader";
 
 export const PwdLogin = () => {
   // Set dcoument title

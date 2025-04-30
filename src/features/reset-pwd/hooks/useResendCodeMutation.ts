@@ -1,17 +1,15 @@
 import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
+
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
+
 import { useResetPwdStore } from "../stores/reset-pwd-store";
 
 export const useResendCodeMutation = () => {
   // Get store state and actions
-  const {
-    verifyCodeData,
-    setStepNo,
-    setVerifyCodeData,
-  } = useResetPwdStore(
+  const { verifyCodeData, setStepNo, setVerifyCodeData } = useResetPwdStore(
     useShallow((state) => ({
       verifyCodeData: state.verifyCodeData,
       setStepNo: state.setStepNo,

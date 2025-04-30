@@ -6,7 +6,9 @@ import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+
 import { useShallow } from "zustand/react/shallow";
+
 import { useResetPwdStore } from "../stores/reset-pwd-store";
 import { ProvideEmail } from "./provide-email/ProvideEmail";
 import { ResetPwd } from "./reset-pwd/ResetPwd";

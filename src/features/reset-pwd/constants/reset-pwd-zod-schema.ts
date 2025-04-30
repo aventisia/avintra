@@ -5,6 +5,7 @@ import {
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
 import { pwdRegex } from "@/react-toolkit/utils/regex-list";
+
 import * as z from "zod";
 
 export const resetPwdZodSchema = z

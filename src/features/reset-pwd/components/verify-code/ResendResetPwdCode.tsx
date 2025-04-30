@@ -1,5 +1,6 @@
 import { ContentFooter } from "@/components/ui/ContentFooter";
 import { ResendCodeButton } from "@/components/ui/ResendCodeButton";
+
 import { useResendCodeMutation } from "../../hooks/useResendCodeMutation";
 
 export const ResendResetPwdCode = () => {

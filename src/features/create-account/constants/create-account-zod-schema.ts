@@ -6,6 +6,7 @@ import {
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
 import { nameRegex, pwdRegex } from "@/react-toolkit/utils/regex-list";
+
 import * as z from "zod";
 
 export const emailSchema = z
