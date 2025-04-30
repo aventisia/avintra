@@ -1,8 +1,9 @@
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
+
 import { AssignMachineDto } from "../../../dtos/assign-machine-dto";
-import { AssignMachineCheckBox } from "./AssignMachineCheckBox";
 import { AssignAllMachineCheckBox } from "./AssignAllMachineCheckBox";
+import { AssignMachineCheckBox } from "./AssignMachineCheckBox";
 
 /**
  * Array of table columns for the machine table.
@@ -21,7 +22,7 @@ export const machineSelectTableColumns: ColumnDef<AssignMachineDto>[] = [
     accessorKey: "name",
     header: ({ column }) => <DTColumnHeader column={column} title="Name" />,
     cell: ({ row }) => (
-      <div className="w-auto truncate">{row.getValue("name")}</div>
+      <div className="!w-2 text-ellipsis truncate">{row.getValue("name")}</div>
     ),
   },
 

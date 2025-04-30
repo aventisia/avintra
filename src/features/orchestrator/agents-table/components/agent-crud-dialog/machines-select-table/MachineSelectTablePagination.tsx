@@ -1,13 +1,12 @@
+import { useShallow } from "zustand/react/shallow";
+
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
+    ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronLeftIcon, ChevronRightIcon
 } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
+
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
-import { useShallow } from "zustand/react/shallow";
 
 interface MachineSelectTablePaginationProps<TData> {
   table: Table<TData>;

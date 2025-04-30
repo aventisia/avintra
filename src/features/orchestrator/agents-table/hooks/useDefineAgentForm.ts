@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useShallow } from 'zustand/react/shallow';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { DATA_QUERY_KEY } from '../constants';
-import { agentZodSchema } from '../constants/agent-zod-schema';
-import { AgentsTableDto } from '../dtos/agents-table-dto';
-import { useMachinesSelectTableStore } from '../stores/machines-select-table-store';
-import { useFetchMachines } from './useFetchMachines';
+import { DATA_QUERY_KEY } from "../constants";
+import { agentZodSchema } from "../constants/agent-zod-schema";
+import { AgentsTableDto } from "../dtos/agents-table-dto";
+import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
+import { useFetchMachines } from "./useFetchMachines";
 
 /**
  * Custom hook for defining a agent form.
@@ -65,7 +65,7 @@ export const useDefineAgentForm = () => {
       id: "",
       flowId: "",
       name: "",
-      licenseType: "",
+      licenseId: "",
       machineCount: 0,
       versionNumber: 0,
 
@@ -93,7 +93,9 @@ export const useDefineAgentForm = () => {
 
     setIsFetching(isFetching);
     setIsReadOnly(crudAction === "read");
-    setCurrentMachines(data?.data.filter(m => crudAction !== "read" || m.isAssigned) ?? []);
+    setCurrentMachines(
+      data?.data.filter((m) => crudAction !== "read" || m.isAssigned) ?? [],
+    );
     if (data?.data)
       setAllAssigned(
         data?.data.some((x) => x.isAssigned)
@@ -112,7 +114,7 @@ export const useDefineAgentForm = () => {
       id: rowId,
       flowId: agentData?.flowId,
       name: agentData?.name ?? "",
-      licenseType: agentData?.licenseType ?? " ",//TODO - romve the whitespace after the licenses selection is ready from backened
+      licenseId: agentData?.licenseId ?? "",
       versionNumber: agentData?.versionNumber,
       machineCount: agentData?.machineCount,
 
@@ -135,8 +137,19 @@ export const useDefineAgentForm = () => {
         : new Date(),
     });
     setIsFetching(isFetching);
-  }, [rowId, form, queryClient, userSession, setIsFetching, isFetching, setCurrentMachines, data?.data, setAllAssigned, setIsReadOnly, crudAction]);
-
+  }, [
+    rowId,
+    form,
+    queryClient,
+    userSession,
+    setIsFetching,
+    isFetching,
+    setCurrentMachines,
+    data?.data,
+    setAllAssigned,
+    setIsReadOnly,
+    crudAction,
+  ]);
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof agentZodSchema>) => {
@@ -152,7 +165,6 @@ export const useDefineAgentForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
-
   // Return form and methods
   return {
     form,
@@ -162,6 +174,6 @@ export const useDefineAgentForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    toggleFormDirty
+    toggleFormDirty,
   };
 };

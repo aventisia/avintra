@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Represents the Zod schema for a agent.
@@ -7,7 +7,7 @@ export const agentZodSchema = z.object({
   id: z.string(),
   flowId: z.string(),
   name: z.string(),
-  licenseType: z.string(),
+  licenseId: z.string(),
   versionNumber: z.number(),
   machineCount: z.number(),
 
