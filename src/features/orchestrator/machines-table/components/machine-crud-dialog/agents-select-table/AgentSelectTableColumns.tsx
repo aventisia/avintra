@@ -1,8 +1,9 @@
 import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 import { AssignAgentCheckBox } from "./AssignAgentCheckBox";
 import { AssignAllAgentCheckBox } from "./AssignAllAgentCheckBox";
-import { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 
 /**
  * Array of table columns for the machine table.

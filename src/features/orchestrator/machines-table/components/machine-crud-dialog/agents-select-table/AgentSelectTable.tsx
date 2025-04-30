@@ -1,11 +1,19 @@
+import { useCallback, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import {
+  getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
-import { agentSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";
 import { AgentSelectTablePagination } from "./AgentSelectTablePagination";
@@ -25,13 +33,36 @@ export function AgentSelectTable({
       currentAgents: state.currentAgents,
     })),
   );
+
+  // Initialize the row selection state.
+  const [rowSelection, setRowSelection] = useState({});
+
   // Create a React table for agents data
-  const table = useDataTable(
-    agentSelectTableColumns,
-    currentAgents,
-    agentSelectTableColumnVisibilityState,
-    true,
-  );
+  const table = useReactTable({
+    data: currentAgents,
+    columns: agentSelectTableColumns,
+    state: {
+      rowSelection,
+      columnVisibility: {
+        versionNumber: true,
+        isAssigned: false,
+        name: false,
+      },
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+  });
+
+  useCallback(() => {
+    console.log(table.getSelectedRowModel().rows);
+  }, [table, rowSelection]);
+
   return isFetching ? (
     <DataTableSkeleton />
   ) : (

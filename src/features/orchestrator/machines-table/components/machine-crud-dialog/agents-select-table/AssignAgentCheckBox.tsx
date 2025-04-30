@@ -1,20 +1,24 @@
-import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import type { Row } from "@tanstack/react-table";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import type { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 
+import { Checkbox } from "@/react-toolkit/ui/checkbox";
+
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
+
+import type { Row } from "@tanstack/react-table";
+import type { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";
 interface AssignAgentCheckBoxProps {
   row: Row<SelectAgentTableDto>;
 }
 export function AssignAgentCheckBox({
   row,
 }: Readonly<AssignAgentCheckBoxProps>) {
-  const { currentAgents, isReadOnly, setIsAssigned } =
+  const { currentAgents, isReadOnly, setIsAssigned, availableLicenses } =
     useAgentsSelectTableStore(
       useShallow((state) => ({
         setIsAssigned: state.setIsAssigned,
         currentAgents: state.currentAgents,
+        availableLicenses: state.availableLicenses,
         isReadOnly: state.isReadOnly,
       })),
     );
@@ -28,6 +32,18 @@ export function AssignAgentCheckBox({
       <Checkbox
         checked={row.getValue<boolean>("isAssigned")}
         onCheckedChange={(value) => {
+          if (
+            currentAgents.filter((a) => a.isAssigned).length >=
+            availableLicenses
+          ) {
+            toast.error(
+              !availableLicenses
+                ? "you don't have any license or not selected any."
+                : "You can only add agents upto " + availableLicenses,
+            );
+            return;
+          }
+
           setIsAssigned(row.original.id, !!value);
           row.toggleSelected(!!value);
         }}
