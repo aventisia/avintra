@@ -4,6 +4,7 @@ import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimist
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
@@ -21,7 +22,6 @@ import {
 import { vaultZodSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useDefineVaultForm } from "../../hooks/useDefineVaultForm";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 
 export const VaultCrudForm = () => {
   // Define config form
@@ -65,7 +65,7 @@ export const VaultCrudForm = () => {
   const isReadMode = crudAction === "read";
 
   if (crudAction === "read") {
-    form.setValue("userName", "********");
+    form.setValue("username", "********");
     form.setValue("password", "********");
   }
 
@@ -94,7 +94,7 @@ export const VaultCrudForm = () => {
       <InputField {...passwordProps} />
 
       {/* retype Password */}
-      <InputField {...confirmPasswordProps} />
+      {crudAction !== "read" ? <InputField {...confirmPasswordProps} /> : null}
 
       {/* Description */}
       <TextareaField {...descriptionProps} />

@@ -1,5 +1,6 @@
-import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField'
-import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField'
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+
 import type { TextareaFieldProps } from '@/react-toolkit/ui/form/fields/TextareaField'
 
 // Config Id
@@ -19,7 +20,7 @@ export const nameProps: InputFieldProps = {
 
 // User Name
 export const userNameProps: InputFieldProps = {
-  name: "userName",
+  name: "username",
   label: "User Name",
   isRequired: true,
   placeholder: "exampleUserName"

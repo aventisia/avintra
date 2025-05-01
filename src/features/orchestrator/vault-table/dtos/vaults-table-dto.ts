@@ -22,7 +22,7 @@ export interface VaultsTableDto {
   /**
    * Gets or sets the name of the credentials. Max-255
    */
-  userName: string;
+  username: string;
 
   /**
    * Gets or sets the name of the credentials. Max-255

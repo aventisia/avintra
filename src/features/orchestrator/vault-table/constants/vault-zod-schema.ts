@@ -1,7 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
-import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
+import {
+  alphaNumericError,
+  maxLenError,
+  reqError,
+} from "@/react-toolkit/utils/error-message-list";
+import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 
 /**
  * Represents the Zod object's item schema for a config name.
@@ -21,7 +25,7 @@ export const vaultZodSchema = z
   .object({
     id: z.string(),
     name: vaultNameSchema,
-    userName: z.string().min(1, { message: reqError("User name") }),
+    username: z.string().min(1, { message: reqError("User name") }),
     password: z.string().min(1, { message: reqError("Password") }),
     confirmPassword: z
       .string()
