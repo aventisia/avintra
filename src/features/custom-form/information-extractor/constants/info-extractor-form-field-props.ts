@@ -6,8 +6,8 @@ import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
 const documentContextProps: TextareaFieldProps = {
-    name: "documentContext",
-    label: "Document Context",
+    name: "context",
+    label: "Context",
     placeholder: "We need to pass Document Context to LLM",
     isRequired: false,
     className: "text-sm resize-none"
@@ -17,13 +17,13 @@ const inputTextProps: TextareaFieldProps = {
     name: "inputText",
     label: "Input Text",
     placeholder: "It could be hard coded or a variable",
-    isRequired: false,
+    isRequired: true,
     className: "text-sm resize-none"
 } 
 
 const fieldNameProps : InputFieldProps = {
     name: "",
-    isRequired: false,
+    isRequired: true,
     type: "text",
     className: "text-sm",
     placeholder: "Field Name"
@@ -31,7 +31,7 @@ const fieldNameProps : InputFieldProps = {
 
 const typeProps: SelectFieldProps = {
     name: "",
-    isRequired: false,
+    isRequired: true,
     placeholder: "Select",
     selectOptions: enumToArray(DataTypeEnum),
     className: "text-sm"
@@ -62,7 +62,7 @@ const tableNameProps: InputFieldProps = {
 
 const headerNameProps: InputFieldProps = {
     name: "",
-    isRequired: false,
+    isRequired: true,
     type: "text",
     className: "text-sm",
     placeholder: "Header Name"
@@ -71,14 +71,14 @@ const headerNameProps: InputFieldProps = {
 const nodePropmptProps: TextareaFieldProps = {
     name: "nodePrompt",
     label: "Node Prompt",
-    isRequired: false,
+    isRequired: true,
     className: "text-sm resize-none",
     rows: 4
 }
 
 const saveInModelLibraryProps: CheckboxFieldProps = {
     name: "saveInModelLibrary",
-    label: "Save it in model library",
+    label: "",
     className: "text-sm"
 }
 
@@ -87,6 +87,7 @@ const modelNameProps: InputFieldProps = {
     label: "Model Name",
     placeholder: "Enter Model Name",
     className: "text-sm",
+    isRequired: true
 }
 
 export {

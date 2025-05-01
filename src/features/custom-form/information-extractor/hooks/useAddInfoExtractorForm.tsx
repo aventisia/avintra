@@ -18,9 +18,9 @@ export const useAddInformationExtractorForm = ({
   const form = useForm<z.infer<typeof addInfoExtractorFormZodSchema>>({
     resolver: zodResolver(addInfoExtractorFormZodSchema),
     defaultValues: {
-      documentContext: "",
+      context: "",
       inputText: "",
-      dataToBeExtracted: [{ fieldName: "", type: "", instructions: "" }],
+      fields: [{ fieldName: "", type: "", instructions: "" }],
       tables: null,
       nodePrompt:
         "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.",
@@ -29,6 +29,7 @@ export const useAddInformationExtractorForm = ({
       selectedModel: null,
     },
   });
+
   const { setActiveTab } = useInformationExtractorTableStore(
     useShallow((state) => ({
       setActiveTab: state.setActiveTab,
@@ -41,22 +42,22 @@ export const useAddInformationExtractorForm = ({
     setValue,
   } = form;
 
-  // useFieldArray for handling the dynamic array of dataToBeExtracted
+  // useFieldArray for handling the dynamic array of fields
   const {
     fields: dataFields,
     append,
     remove,
   } = useFieldArray({
     control,
-    name: "dataToBeExtracted",
+    name: "fields",
   });
 
-  // Function to add a new object to dataToBeExtracted
+  // Function to add a new object to fields
   const addDataToExtracted = () => {
     append({ fieldName: "", type: "", instructions: "" });
   };
 
-  // Function to remove an object from dataToBeExtracted
+  // Function to remove an object from fields
   const removeDataToExtracted = (index: number) => {
     remove(index);
   };
@@ -151,6 +152,14 @@ export const useAddInformationExtractorForm = ({
     }
   }, [formFieldValuesToFill, form]);
 
+  // Safe, refined version of getValues
+  const refineFormData = () => {
+    const data = form.getValues();
+    if (!data.saveInModelLibrary) {
+      setValue("modelName", "");
+    }
+  };
+
   return {
     form,
     isSubmitting,
@@ -163,5 +172,6 @@ export const useAddInformationExtractorForm = ({
     removeTableHandler,
     addTableHeaderHandler,
     removeTableHeaderHandler,
+    refineFormData,
   };
 };

@@ -1,5 +1,5 @@
 import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
@@ -7,6 +7,7 @@ import ModelSelectDropdown from "./ModelSelectDropdown";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { useAddModelStore } from "../../stores/add-model-store";
 import { useShallow } from "zustand/react/shallow";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 interface AddModelProps {
   form: UseFormReturn<z.infer<typeof addInfoExtractorFormZodSchema>>;
@@ -33,7 +34,7 @@ const AddModel = ({ form }: AddModelProps) => {
           type="button"
           onClick={() => setShowAddModelDropdownContainer(true)}
         >
-          <Plus size={18} /> <span>Add Model</span>
+          <PlusIcon className="h-4 w-4 stroke-2" /> <span>Add Model</span>
         </Button>
       )}
 

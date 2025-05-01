@@ -10,8 +10,8 @@ export const dataToBeExtractedSchema = z.object({
 })
 
 const tableSchema = z.object({
-    tableContext: z.string().min(1, {message: reqError("Table Context")}),
-    tableName: z.string(),
+    tableContext: z.string().optional(),
+    tableName: z.string().optional(),
     tableData: z.array(
       z.object({
         headerName: z.string().min(1, {message: reqError("Header Name")}),
@@ -23,9 +23,9 @@ const tableSchema = z.object({
 
 export const addInfoExtractorFormZodSchema = z
   .object({
-    documentContext: z.string().min(1, {message: reqError("Document Context")}),
+    context: z.string().optional(),
     inputText: z.string().min(1, {message: reqError("Input Text")}),
-    dataToBeExtracted: z.array(dataToBeExtractedSchema),
+    fields: z.array(dataToBeExtractedSchema),
     tables: z.array(tableSchema).optional().nullable(),
     nodePrompt: z.string().min(1, {message: reqError("Node Prompt")}),
     saveInModelLibrary: z.boolean().optional(),

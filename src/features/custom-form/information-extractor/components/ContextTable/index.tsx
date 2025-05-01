@@ -3,8 +3,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { Plus } from "lucide-react";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   headerNameProps,
   instructionsProps,
@@ -45,8 +44,8 @@ type ContextTablesProps = {
   form: UseFormReturn<z.infer<typeof addInfoExtractorFormZodSchema>>;
   tableFields: {
     id: string;
-    tableContext: string;
-    tableName: string;
+    tableContext?: string;
+    tableName?: string;
     tableData: TableDataItem[];
   }[];
   addTableHandler: () => void;
@@ -91,12 +90,12 @@ const ContextTables = ({
           <div className="flex items-center justify-between">
             <p className="text-base">Tables</p>
             <Button
-              type="button"
               variant="ghost"
-              className="text-primary"
+              size="icon8"
               onClick={addTableHandler}
+              type="button"
             >
-              <Plus size={20} />
+              <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
             </Button>
           </div>
           <Tabs
@@ -185,24 +184,19 @@ const ContextTables = ({
 
                     {/* Table Headers */}
                     <div className="inline-block rounded-lg border">
-                      <div className="grid grid-cols-[1fr_1fr_1fr_auto] bg-accent text-center text-sm">
-                        <div className="border-b border-r px-2 py-3">
-                          Header Name
-                        </div>
-                        <div className="border-b border-r px-2 py-2.5">
-                          Type
-                        </div>
-                        <div className="border-b px-2 py-2.5">Instructions</div>
-                        <div className="border-b px-2 py-2.5"></div>
+                      <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm">
+                        <div className="px-3">Header Name</div>
+                        <div className="px-3">Type</div>
+                        <div className="px-3">Instructions</div>
                       </div>
 
                       {table.tableData.map((_, rowIndex) => (
                         <div
                           key={rowIndex}
-                          className={`grid grid-cols-[1fr_1fr_1fr_auto] justify-center gap-2 ${
+                          className={`justify-left grid grid-cols-3 gap-2 ${
                             rowIndex !== table.tableData.length - 1 &&
                             "border-b"
-                          } px-2 py-2.5`}
+                          } p-2.5`}
                         >
                           {/* Header Name */}
                           <Controller
@@ -234,34 +228,36 @@ const ContextTables = ({
                             )}
                           />
 
-                          {/* Instructions */}
-                          <Controller
-                            control={control}
-                            name={`tables.${tableIndex}.tableData.${rowIndex}.instructions`}
-                            render={({ field }) => (
-                              <InputField
-                                {...instructionsProps}
-                                value={field.value}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                                name={field.name}
-                              />
-                            )}
-                          />
+                          <div className="flex items-center gap-1">
+                            {/* Instructions */}
+                            <Controller
+                              control={control}
+                              name={`tables.${tableIndex}.tableData.${rowIndex}.instructions`}
+                              render={({ field }) => (
+                                <InputField
+                                  {...instructionsProps}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  onBlur={field.onBlur}
+                                  name={field.name}
+                                />
+                              )}
+                            />
 
-                          {/* Delete button */}
-                          {table.tableData.length > 1 && (
-                            <Button
-                              type="button"
-                              onClick={() =>
-                                removeTableHeaderHandler(tableIndex, rowIndex)
-                              }
-                              className="m-0 p-0"
-                              variant="ghost"
-                            >
-                              <TrashIcon className="h-4 w-4" />
-                            </Button>
-                          )}
+                            {/* Delete button */}
+                            {table.tableData.length > 1 && (
+                              <Button
+                                type="button"
+                                onClick={() =>
+                                  removeTableHeaderHandler(tableIndex, rowIndex)
+                                }
+                                className="m-0 p-0"
+                                variant="ghost"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -270,11 +266,12 @@ const ContextTables = ({
                     <Button
                       size="xs"
                       variant="outline"
-                      className="w-full space-x-0.5 bg-muted text-sm text-primary"
+                      className="w-full space-x-0.5 bg-muted text-sm text-primary hover:text-primary"
                       type="button"
                       onClick={() => addTableHeaderHandler(tableIndex)}
                     >
-                      <Plus size={18} /> <span>Add Header</span>
+                      <PlusIcon className="h-4 w-4 stroke-2 text-primary" />
+                      <span>Add Header</span>
                     </Button>
                   </div>
                 </TabsContent>
@@ -292,9 +289,10 @@ const ContextTables = ({
             type="button"
             variant="outline"
             size="xs"
-            className="w-full space-x-0.5 bg-accent text-sm"
+            className="w-full space-x-0.5 border-dashed bg-transparent py-6 text-sm font-normal text-muted-foreground"
           >
-            <Plus size={18} /> <span>Add Table</span>
+            <PlusIcon className="h-4 w-4 stroke-2" />
+            <span>Add Table</span>
           </Button>
         ))}
 
