@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { useShallow } from "zustand/react/shallow"
 
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability"
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store"
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store"
+import { CrudActionTypeConverter } from "@/react-toolkit/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
 
-import { isNameAvailable } from "../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../constants";
-import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
-import { QueuesTableDto } from "../dtos/queues-table-dto";
+import { isNameAvailable } from "../apis/queues-table-apis"
+import { DATA_QUERY_KEY } from "../constants"
+import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema"
+import { QueuesTableDto } from "../dtos/queues-table-dto"
 
 /**
  * Custom hook for defining a queue form.
@@ -170,18 +170,4 @@ export const useDefineQueueForm = () => {
     handleInputChange,
   };
 };
-
-export const CrudActionTypeConverter = (
-  action: CrudActionType,
-): "create" | "read" | "update" | undefined => {
-  switch (action) {
-    case "create":
-      return "create";
-    case "read":
-      return "read";
-    case "update":
-      return "update";
-    default:
-      return undefined;
-  }
-};
+ 

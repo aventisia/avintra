@@ -1,5 +1,7 @@
 import { ISelectOption } from "@/react-toolkit/types/select-option";
 
+import { CrudActionType } from "../types/literal-types";
+
 export function when<T>(
   value: T,
   cases: { [key: string]: () => unknown },
@@ -37,3 +39,24 @@ export function areStringsEqualCaseInsensitive(
 ): boolean {
   return str1.localeCompare(str2, undefined, { sensitivity: "case" }) === 0;
 }
+
+export /**
+ * converter to use in define form hook to set crud action in zod object to manipulate validation.
+ *
+ * @param {CrudActionType} action
+ * @return {("create" | "read" | "update" | undefined)}
+ */
+const CrudActionTypeConverter = (
+  action: CrudActionType,
+): "create" | "read" | "update" | undefined => {
+  switch (action) {
+    case "create":
+      return "create";
+    case "read":
+      return "read";
+    case "update":
+      return "update";
+    default:
+      return undefined;
+  }
+};
