@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { alphaNumericError, maxLenError, reqError } from "@/react-toolkit/utils/error-message-list";
+import {
+  alphaNumericError,
+  maxLenError,
+  reqError,
+} from "@/react-toolkit/utils/error-message-list";
 import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
 
 import { ipv4Regex, ipv6Regex } from "./";
@@ -32,10 +36,9 @@ export const machineZodSchema = z.object({
   name: machineNameSchema,
   type: z.string().min(1, { message: reqError("Machine OS Type") }),
   environment: z.string().min(1, { message: reqError("Environment Type") }),
-  licenseType: z.string().min(1, { message: reqError("License Type") }),
+  licenseId: z.string().min(1, { message: reqError("License Type") }),
   ipAddress: ipAddressSchema,
   hostname: z.string().min(1, { message: reqError("Host Name") }),
-  licenseId: z.string().min(1, { message: reqError("License Type") }),
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
