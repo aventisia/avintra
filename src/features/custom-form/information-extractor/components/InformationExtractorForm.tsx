@@ -137,7 +137,7 @@ const InformationExtractorForm = ({
       // onSubmit={form.handleSubmit(submitHandler)}
       disabled={isSubmitting}
     >
-      <ScrollArea className="mt-4 flex-grow px-2 py-1 pb-4">
+      <ScrollArea className="mt-4 flex-grow px-2 py-1">
         <FormProvider {...form}>
           <div className="space-y-4 px-2 py-1">
             {/* Document Context */}
