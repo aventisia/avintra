@@ -24,7 +24,6 @@ import { useShallow } from "zustand/react/shallow";
 import { Node } from "@xyflow/react";
 import filterFieldValues from "@/components/node-container/utils/filterFieldValues";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
-
 interface InformationExtractorFormProps {
   /** A function to close the dialog. */
   closeDialog: () => void;
@@ -52,9 +51,12 @@ const InformationExtractorForm = ({
     removeTableHandler,
     addTableHeaderHandler,
     removeTableHeaderHandler,
+    refineFormData,
   } = useAddInformationExtractorForm({ formFieldValuesToFill });
 
-  const { getValues } = form;
+  const { getValues, watch } = form;
+
+  const saveInModelLibraryValue = watch("saveInModelLibrary");
 
   // Get ReactFlowExt store state & actions
   const { nodes, setNodes, setFlowVariablesObject, flowVariablesObject } =
@@ -121,6 +123,7 @@ const InformationExtractorForm = ({
   // Submit handler
   function submitHandler(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
+    refineFormData();
     setNodes(updateNodeFieldValues(nodeId, { ...getValues() }));
     setFlowVariablesObject(
       updateFlowVariablesObject({ nodeId: nodeId as string, ...getValues() }),
@@ -143,6 +146,7 @@ const InformationExtractorForm = ({
             {/* Input Text */}
             <TextareaField {...inputTextProps} />
 
+            {/* Separator */}
             <Separator />
 
             {/* Data to be extracted */}
@@ -152,6 +156,9 @@ const InformationExtractorForm = ({
               form={form}
               removeDataToExtracted={removeDataToExtracted}
             />
+
+            {/* Separator */}
+            {tableFields && tableFields.length > 0 && <Separator />}
 
             {/* Context Table */}
             <ContextTables
@@ -163,7 +170,7 @@ const InformationExtractorForm = ({
               tableFields={tableFields}
             />
 
-            <Separator />
+            {tableFields && tableFields.length > 0 && <Separator />}
 
             {/* Node Prompt */}
             <TextareaField {...nodePropmptProps} />
@@ -172,10 +179,13 @@ const InformationExtractorForm = ({
             <AddModel form={form} />
 
             {/* Save in model library */}
-            <CheckboxField {...saveInModelLibraryProps} />
+            <div className="flex items-center gap-x-1.5 text-sm">
+              <CheckboxField {...saveInModelLibraryProps} />
+              <span>Save it in model library</span>
+            </div>
 
             {/* Model Name */}
-            <InputField {...modelNameProps} />
+            {saveInModelLibraryValue && <InputField {...modelNameProps} />}
           </div>
         </FormProvider>
       </ScrollArea>

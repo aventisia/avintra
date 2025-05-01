@@ -6,10 +6,10 @@ import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
 const documentContextProps: TextareaFieldProps = {
-    name: "documentContext",
-    label: "Document Context",
+    name: "context",
+    label: "Context",
     placeholder: "We need to pass Document Context to LLM",
-    isRequired: true,
+    isRequired: false,
     className: "text-sm resize-none"
 } 
 
@@ -47,14 +47,21 @@ const instructionsProps: InputFieldProps = {
 const tableContextProps: InputFieldProps = {
     name: "tableContext",
     label: "Table Context",
-    isRequired: true,
+    isRequired: false,
     type: "text",
     className: "text-sm",
     placeholder: "Table context"
 }
 
+const tableNameProps: InputFieldProps = {
+    name: "tableName",
+    fieldSize: "sm",
+    maxLength: 20,
+    className: "h-7 w-24 bg-transparent",
+}
+
 const headerNameProps: InputFieldProps = {
-    name: "headerName",
+    name: "",
     isRequired: true,
     type: "text",
     className: "text-sm",
@@ -65,12 +72,13 @@ const nodePropmptProps: TextareaFieldProps = {
     name: "nodePrompt",
     label: "Node Prompt",
     isRequired: true,
-    className: "text-sm resize-none"
+    className: "text-sm resize-none",
+    rows: 4
 }
 
 const saveInModelLibraryProps: CheckboxFieldProps = {
     name: "saveInModelLibrary",
-    label: "Save it in model library",
+    label: "",
     className: "text-sm"
 }
 
@@ -78,13 +86,15 @@ const modelNameProps: InputFieldProps = {
     name: "modelName",
     label: "Model Name",
     placeholder: "Enter Model Name",
-    className: "text-sm"
+    className: "text-sm",
+    isRequired: true
 }
 
 export {
     documentContextProps,
     inputTextProps,
     fieldNameProps,
+    tableNameProps,
     typeProps,
     instructionsProps,
     tableContextProps,

@@ -23,7 +23,6 @@ type State = {
 
     // Show add model dropdown container
     showAddModelDropdownContainer: boolean,
-
 }
 
 type Actions = {

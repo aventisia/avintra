@@ -4,6 +4,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useInformationExtractorTableStore } from "../stores/info-extractor-table-store";
 
 interface useAddInformationExtractorFormProps {
   /** Form fields values mainly getting as response from an api and to fill the form to view or update data */
@@ -16,16 +18,23 @@ export const useAddInformationExtractorForm = ({
   const form = useForm<z.infer<typeof addInfoExtractorFormZodSchema>>({
     resolver: zodResolver(addInfoExtractorFormZodSchema),
     defaultValues: {
-      documentContext: "",
+      context: "",
       inputText: "",
-      dataToBeExtracted: [{ fieldName: "", type: "", instructions: "" }],
+      fields: [{ fieldName: "", type: "", instructions: "" }],
       tables: null,
-      nodePrompt: "",
+      nodePrompt:
+        "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.",
       saveInModelLibrary: false,
       modelName: "",
       selectedModel: null,
     },
   });
+
+  const { setActiveTab } = useInformationExtractorTableStore(
+    useShallow((state) => ({
+      setActiveTab: state.setActiveTab,
+    })),
+  );
 
   const {
     formState: { isSubmitting, isDirty },
@@ -33,22 +42,22 @@ export const useAddInformationExtractorForm = ({
     setValue,
   } = form;
 
-  // useFieldArray for handling the dynamic array of dataToBeExtracted
+  // useFieldArray for handling the dynamic array of fields
   const {
     fields: dataFields,
     append,
     remove,
   } = useFieldArray({
     control,
-    name: "dataToBeExtracted",
+    name: "fields",
   });
 
-  // Function to add a new object to dataToBeExtracted
+  // Function to add a new object to fields
   const addDataToExtracted = () => {
     append({ fieldName: "", type: "", instructions: "" });
   };
 
-  // Function to remove an object from dataToBeExtracted
+  // Function to remove an object from fields
   const removeDataToExtracted = (index: number) => {
     remove(index);
   };
@@ -67,13 +76,32 @@ export const useAddInformationExtractorForm = ({
   const addTableHandler = () => {
     appendTable({
       tableContext: "",
+      tableName: `Table ${tableFields.length + 1}`,
       tableData: [{ headerName: "", type: "", instructions: "" }],
     });
   };
 
   // Function to remove a table from the tables array
-  const removeTableHandler = (index: number) => {
+  const removeTableHandler = (index: number | null) => {
+    if (index === null) return;
+
     removeTable(index);
+
+    // Check how many tabs are left after removal
+    const remainingTabs = tableFields.length - 1;
+
+    if (remainingTabs <= 0) {
+      // If only one tab was present and it was deleted, set active tab to null
+      setActiveTab(undefined);
+    } else {
+      // If the last tab is deleted, set the active tab to the previous one
+      if (index === remainingTabs) {
+        setActiveTab(`Table ${remainingTabs}`);
+      } else {
+        // Otherwise, set the active tab to the next tab
+        setActiveTab(`Table ${index + 1}`);
+      }
+    }
   };
 
   // Function to add a new table header (row) to a specific table
@@ -124,6 +152,14 @@ export const useAddInformationExtractorForm = ({
     }
   }, [formFieldValuesToFill, form]);
 
+  // Safe, refined version of getValues
+  const refineFormData = () => {
+    const data = form.getValues();
+    if (!data.saveInModelLibrary) {
+      setValue("modelName", "");
+    }
+  };
+
   return {
     form,
     isSubmitting,
@@ -136,5 +172,6 @@ export const useAddInformationExtractorForm = ({
     removeTableHandler,
     addTableHeaderHandler,
     removeTableHeaderHandler,
+    refineFormData,
   };
 };

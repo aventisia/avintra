@@ -52,8 +52,8 @@ const InputField = ({
               type={type}
               className={cn(className)}
               disabled={disabled}
-              {...props}
               {...field}
+              {...props}
               ref={field.ref}
             />
           </FormControl>

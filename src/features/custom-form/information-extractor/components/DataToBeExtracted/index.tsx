@@ -3,8 +3,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { Plus } from "lucide-react";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   fieldNameProps,
   instructionsProps,
@@ -30,26 +29,33 @@ const DataToBeExtracted = ({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm font-semibold">
-        Data to be extracted <span className="text-destructive">*</span>
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-base">Fields</p>
+        <Button
+          variant="ghost"
+          size="icon8"
+          onClick={addDataToExtracted}
+          type="button"
+        >
+          <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
+        </Button>
+      </div>
       <div className="!mt-0.5 inline-block rounded-lg border">
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto] text-center text-sm">
-          <div className="border-b border-r p-2">Field Name</div>
-          <div className="border-b border-r p-2">Type</div>
-          <div className="border-b p-2">Instructions</div>
-          <div className="border-b p-2"></div>
+        <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm">
+          <div className="px-3">Field Name</div>
+          <div className="px-3">Type</div>
+          <div className="px-3">Instructions</div>
         </div>
 
         {dataFields.map((field, index) => (
           <div
             key={field.id}
-            className={`grid grid-cols-[1fr_1fr_1fr_auto] justify-center gap-2 ${index !== dataFields.length - 1 && "border-b"} p-2`}
+            className={`justify-left grid grid-cols-3 gap-2 ${index !== dataFields.length - 1 && "border-b"} p-2.5`}
           >
             {/* Field Name */}
             <Controller
               control={control}
-              name={`dataToBeExtracted.${index}.fieldName`}
+              name={`fields.${index}.fieldName`}
               render={({ field }) => (
                 <InputField
                   {...fieldNameProps}
@@ -64,7 +70,7 @@ const DataToBeExtracted = ({
             {/* Type */}
             <Controller
               control={control}
-              name={`dataToBeExtracted.${index}.type`}
+              name={`fields.${index}.type`}
               render={({ field }) => (
                 <SelectField
                   {...typeProps}
@@ -75,46 +81,37 @@ const DataToBeExtracted = ({
                 />
               )}
             />
+            <div className="flex items-center gap-1">
+              {/* Instructions */}
+              <Controller
+                control={control}
+                name={`fields.${index}.instructions`}
+                render={({ field }) => (
+                  <InputField
+                    {...instructionsProps}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                  />
+                )}
+              />
 
-            {/* Instructions */}
-            <Controller
-              control={control}
-              name={`dataToBeExtracted.${index}.instructions`}
-              render={({ field }) => (
-                <InputField
-                  {...instructionsProps}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                />
+              {/* Delete button */}
+              {dataFields.length > 1 && (
+                <Button
+                  type="button"
+                  onClick={() => removeDataToExtracted(index)}
+                  className="m-0 p-0"
+                  variant="ghost"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
               )}
-            />
-
-            {/* Delete button */}
-            {dataFields.length > 1 && (
-              <Button
-                type="button"
-                onClick={() => removeDataToExtracted(index)}
-                className="m-0 p-0"
-                variant="caution"
-              >
-                <TrashIcon className="h-4 w-4" />
-              </Button>
-            )}
+            </div>
           </div>
         ))}
       </div>
-
-      <Button
-        size="xs"
-        variant="outline"
-        className="w-full space-x-0.5 bg-muted text-sm text-primary"
-        type="button"
-        onClick={addDataToExtracted}
-      >
-        <Plus size={18} /> <span>Add Field</span>
-      </Button>
     </div>
   );
 };
