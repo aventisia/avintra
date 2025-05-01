@@ -13,8 +13,13 @@ import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-    descriptionProps, idProps, inputJsonSchemaProps, isDisabledProps, maxRetriesProps, nameProps,
-    outputJsonSchemaProps
+  descriptionProps,
+  idProps,
+  inputJsonSchemaProps,
+  isDisabledProps,
+  maxRetriesProps,
+  nameProps,
+  outputJsonSchemaProps,
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
@@ -146,11 +151,13 @@ export const QueueCrudForm = () => {
           {...inputJsonSchemaProps}
           multiple={false}
           fileTypes={[".json"]}
+          isRequired={crudAction === "create"}
         />
         <InputFileField
           multiple={false}
           {...outputJsonSchemaProps}
           fileTypes={[".json"]}
+          isRequired={crudAction === "create"}
         />
       </div>
 
