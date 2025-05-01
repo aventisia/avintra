@@ -8,7 +8,7 @@ def getBuildMode(branchName) {
         case 'main':
             return 'production'
         default:
-            error 'Unsupported branch: ${branchName}'
+            error "Unsupported branch: ${branchName}"
     }
 }
 
@@ -22,7 +22,7 @@ def getTargetServer(branchName) {
         case 'main':
             return 'avweb.aventisia.com'
         default:
-            error 'Unsupported branch: ${branchName}'
+            error "Unsupported branch: ${branchName}"
     }
 }
 
@@ -56,7 +56,7 @@ pipeline {
             steps {
                 echo 'Building...'
                 script {
-                    sh 'npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}'
+                    sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                 }
             }
         }
@@ -67,10 +67,10 @@ pipeline {
                         // Set target server based on branch
                         def targetServer = getTargetServer(env.BRANCH_NAME)
 
-                        echo 'Deploying to ${targetServer}...'
+                        echo "Deploying to ${targetServer}..."
                         
                         // Deploy to target server  
-                        sh 'rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/workspace/'
+                        sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/workspace/"
                     }
                 }
             }
