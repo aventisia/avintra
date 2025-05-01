@@ -44,13 +44,13 @@ const Header = ({
       >
         <div className="flex flex-grow items-center">
           {!isDesktop && (
-            <Sidebar
-              className={cn(["hidden md:block"])}
-              appConfig={appConfig}
-            />
-          )}
-          {!isDesktop && (
-            <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />
+            <>
+              <Sidebar
+                className={cn(["hidden md:block"])}
+                appConfig={appConfig}
+              />
+              <NavbarOnSheet className="flex md:hidden" appConfig={appConfig} />
+            </>
           )}
           <AppLogo />
           {/* Extra content to render on left side */}
