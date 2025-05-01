@@ -12,14 +12,14 @@ import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
  */
 export const vaultNameSchema = z
   .string()
-  .min(1, { message: reqError("Config name") })
-  .max(255, { message: maxLenError("Config name", 255) })
+  .min(1, { message: reqError("Credential name") })
+  .max(255, { message: maxLenError("Credential name", 255) })
   .regex(alphaNumericRegex, {
-    message: alphaNumericError("Config name"),
+    message: alphaNumericError("Credential name"),
   });
 
 /**
- * Represents the Zod schema for a config.
+ * Represents the Zod schema for a Credential.
  */
 export const vaultZodSchema = z
   .object({
