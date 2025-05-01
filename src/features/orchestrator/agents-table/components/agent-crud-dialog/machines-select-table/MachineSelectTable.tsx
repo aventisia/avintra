@@ -1,12 +1,15 @@
+import { useShallow } from "zustand/react/shallow";
+
+import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
+import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { DataTable } from "@/react-toolkit/ui/data-table";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { machineSelectTableColumns } from "./MachineSelectTableColumns";
-import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
+
 import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { machineSelectTableColumns } from "./MachineSelectTableColumns";
+import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
 
 interface MachineSelectTableProps {
   isRowSelectionEnabled?: boolean;
@@ -33,7 +36,17 @@ export function MachineSelectTable({
     true,
   );
   return isFetching ? (
-    <DataTableSkeleton />
+    <DataTableSkeletonGeneric
+      columnCount={2}
+      rowCount={2}
+      showHeader={false}
+      customHeader={
+        <div className="flex h-[1.75rem] items-center justify-between">
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[10rem]" />
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[13rem]" />
+        </div>
+      }
+    />
   ) : (
     <>
       <div className="my-2 flex items-center justify-between">

@@ -1,9 +1,10 @@
 import { useShallow } from "zustand/react/shallow";
 
+import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
 import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
 import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
 import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import { Skeleton } from "@/react-toolkit/ui/skeleton";
 
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";
@@ -39,7 +40,17 @@ export function AgentSelectTable({
   );
 
   return isFetching ? (
-    <DataTableSkeleton />
+    <DataTableSkeletonGeneric
+      columnCount={2}
+      rowCount={2}
+      showHeader={false}
+      customHeader={
+        <div className="flex h-[1.75rem] items-center justify-between">
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[10rem]" />
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[13rem]" />
+        </div>
+      }
+    />
   ) : (
     <>
       <div className="my-2 flex items-center justify-between">
