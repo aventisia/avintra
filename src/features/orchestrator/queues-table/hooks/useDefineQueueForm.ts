@@ -1,12 +1,15 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { isNameAvailable } from "../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
@@ -47,6 +50,7 @@ export const useDefineQueueForm = () => {
   const form = useForm<z.infer<typeof queueZodSchema>>({
     resolver: zodResolver(queueZodSchema),
     defaultValues: {
+      crudAction: CrudActionTypeConverter(crudAction),
       id: "",
       name: "",
       description: "",
@@ -87,19 +91,20 @@ export const useDefineQueueForm = () => {
 
     // Set queue data to form
     form.reset({
+      crudAction: CrudActionTypeConverter(crudAction),
       id: rowId,
-      name: queueData?.name ?? "",
-      description: queueData?.description ?? "",
+      name: queueData?.name,
+      description: queueData?.description,
 
-      isUniqueReferencesEnforced: false,
-      isStoredEncrypted: false,
-      shouldRetryFailedItems: false,
-      shouldRetryAbandonedItems: false,
-      maximumRetryAttempts: 3,
+      isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
+      isStoredEncrypted: queueData?.isStoredEncrypted,
+      shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
+      shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
+      maximumRetryAttempts: queueData?.maximumRetryAttempts,
       specificDataSchemaFile: undefined,
       outputDataSchemaFile: undefined,
 
-      isDisabled: queueData?.isDisabled ?? false,
+      isDisabled: queueData?.isDisabled,
       // Read (view) only fields
       createdBy:
         queueData?.createdBy ??
@@ -164,4 +169,19 @@ export const useDefineQueueForm = () => {
     isCheckPending,
     handleInputChange,
   };
+};
+
+export const CrudActionTypeConverter = (
+  action: CrudActionType,
+): "create" | "read" | "update" | undefined => {
+  switch (action) {
+    case "create":
+      return "create";
+    case "read":
+      return "read";
+    case "update":
+      return "update";
+    default:
+      return undefined;
+  }
 };
