@@ -8,7 +8,7 @@ def getBuildMode(branchName) {
         case 'main':
             return 'production'
         default:
-            error "Unsupported branch: ${branchName}"
+            error 'Unsupported branch: ${branchName}'
     }
 }
 
@@ -22,7 +22,7 @@ def getTargetServer(branchName) {
         case 'main':
             return 'avweb.aventisia.com'
         default:
-            error "Unsupported branch: ${branchName}"
+            error 'Unsupported branch: ${branchName}'
     }
 }
 
@@ -40,8 +40,10 @@ pipeline {
         stage('Update Gitea npm registry') {
             steps {
                 echo 'Updating Gitea npm registry...'
-                sh "npm config set -- //gitea.aventisia.com/api/packages/aventisia/npm/:_authToken ${GITEA_NPM_REGISTRY_TOKEN}"
-                sh "npm config set @aventisia:registry=https://gitea.aventisia.com/api/packages/aventisia/npm/"
+
+                // Note: if we wrap below sh lines in double quotes, it will throw an error
+                sh 'npm config set -- //gitea.aventisia.com/api/packages/aventisia/npm/:_authToken ${GITEA_NPM_REGISTRY_TOKEN}'
+                sh 'npm config set @aventisia:registry=https://gitea.aventisia.com/api/packages/aventisia/npm/'
             }
         }
         stage('Install Dependencies') {
@@ -54,7 +56,7 @@ pipeline {
             steps {
                 echo 'Building...'
                 script {
-                    sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
+                    sh 'npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}'
                 }
             }
         }
@@ -65,10 +67,10 @@ pipeline {
                         // Set target server based on branch
                         def targetServer = getTargetServer(env.BRANCH_NAME)
 
-                        echo "Deploying to ${targetServer}..."
+                        echo 'Deploying to ${targetServer}...'
                         
                         // Deploy to target server  
-                        sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/workspace/"
+                        sh 'rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/workspace/'
                     }
                 }
             }
