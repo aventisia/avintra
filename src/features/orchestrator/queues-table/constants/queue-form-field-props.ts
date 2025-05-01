@@ -46,5 +46,4 @@ export const inputJsonSchemaProps: InputFieldProps = {
 export const outputJsonSchemaProps: InputFieldProps = {
   name: "outputDataSchemaFile",
   label: "Output Data Json Schema",
-  isRequired: true,
 };
