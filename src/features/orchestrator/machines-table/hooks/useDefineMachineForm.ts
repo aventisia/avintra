@@ -139,6 +139,7 @@ export const useDefineMachineForm = () => {
       ipAddress: machineData?.ipAddress,
       hostname: machineData?.hostname,
 
+      isDisabled: machineData?.isDisabled,
       createdBy:
         machineData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
