@@ -30,6 +30,17 @@ export const getPricingPlansToSelect = (tenantId?: string) => {
 };
 
 /**
+ * Retrieves list of pricingplan for tenant.
+ */
+export const getPricingPlansToSelectForTenant = () => {
+  return axiosInstance
+    .get<
+      IHttpResponse<ISelectOption[]>
+    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/pricing-plan/plans-to-select`)
+    .then((res) => res.data);
+};
+
+/**
  * Retrieves list of pricingplan by id.
  */
 export const getPricingPlan = (

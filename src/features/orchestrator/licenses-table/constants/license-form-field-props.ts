@@ -1,7 +1,8 @@
-import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-
-import { getLicensesToSelect } from "../apis/licenses-table-apis";
+import {
+  getPricingPlansToSelectForTenant
+} from "@/features/sa/pricing-table/apis/pricingPlans-table-apis"
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField"
+import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField"
 
 // License Id
 export const idProps: InputFieldProps = {
@@ -12,7 +13,8 @@ export const idProps: InputFieldProps = {
 
 export const licenseSelectProps: AsyncSelectFieldProps = {
   name: "planId",
-  selectOptions: () => getLicensesToSelect().then((data) => data.data),
+  selectOptions: () =>
+    getPricingPlansToSelectForTenant().then((data) => data.data),
   label: "License Type",
   placeholder: "Select License",
   className: "!w-[30rem]",
