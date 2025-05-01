@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useShallow } from 'zustand/react/shallow';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useCheckAvailability } from '@/react-toolkit/hooks/useCheckAvailability';
-import { useDTCrudDialogStore } from '@/react-toolkit/stores/dt-crud-dialog-store';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { isKeystoreNameAvailable } from '../apis/keystores-table-apis';
-import { DATA_QUERY_KEY } from '../constants';
-import { keystoreNameSchema, keystoreZodSchema } from '../constants/keystore-zod-schema';
-import { KeystoresTableDto } from '../dtos/keystores-table-dto';
+import { isKeystoreNameAvailable } from "../apis/keystores-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
+import {
+  keystoreNameSchema,
+  keystoreZodSchema,
+} from "../constants/keystore-zod-schema";
+import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
 /**
  * Custom hook for defining a keystore form.
@@ -40,7 +43,6 @@ export const useDefineKeystoreForm = () => {
       toggleFormDirty: state.toggleFormDirty,
     })),
   );
-
 
   // Get query client
   const queryClient = useQueryClient();
@@ -86,14 +88,14 @@ export const useDefineKeystoreForm = () => {
     // Set keystore data to form
     form.reset({
       id: rowId,
-      type: keystoreData?.type ?? "",
-      name: keystoreData?.name ?? "",
-      value: "",
-      description: keystoreData?.description ?? "",
-      tags: keystoreData?.tags ?? "",
-      isEncrypted: keystoreData?.isEncrypted ?? false,
+      type: keystoreData?.type,
+      name: keystoreData?.name,
+      value: keystoreData?.value,
+      description: keystoreData?.description,
+      tags: keystoreData?.tags,
+      isEncrypted: keystoreData?.isEncrypted,
 
-      isDisabled: keystoreData?.isDisabled ?? false,
+      isDisabled: keystoreData?.isDisabled,
       // Read (view) only fields
       createdBy:
         keystoreData?.createdBy ??
