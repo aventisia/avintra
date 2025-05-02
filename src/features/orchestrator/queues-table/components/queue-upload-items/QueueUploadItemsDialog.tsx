@@ -71,7 +71,7 @@ export const QueueUploadItemsDialog = ({
     reader.readAsArrayBuffer(file);
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
     accept: {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [], // .xlsx
@@ -111,21 +111,28 @@ export const QueueUploadItemsDialog = ({
             onSubmit={form.handleSubmit(onSubmit)}
             className="px-2.5 pb-5"
           >
-            <div>
-              <input {...getInputProps()} />
-              <div
-                {...getRootProps()}
-                className={cn(
-                  "flex h-[calc(50vh-15rem)]",
-                  "border-separate border-spacing-1 cursor-pointer !items-center justify-center rounded-lg border-2 border-dashed",
-                  isDragActive && "animation-rotate-border",
-                )}
+            <div
+              className="flex w-full items-center justify-center"
+              {...getRootProps()}
+            >
+              <label
+                htmlFor="dropzone-file"
+                className="dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
               >
-                <p className="flex gap-2 text-muted-foreground">
-                  <UploadCloud /> Drop spreadsheet file here
-                </p>
-              </div>
+                <div className="flex flex-col items-center justify-center pb-2 pt-5">
+                  <UploadCloud className="h-10 w-10 text-muted-foreground" />
+                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="font-semibold">Click to upload</span> or
+                    drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    spredsheet file types allowed, eg .xlsx,.csv
+                  </p>
+                </div>
+                <input {...getInputProps()} />
+              </label>
             </div>
+
             {data && <UploadedItemsTable data={data} />}
             <div className="!mt-10 flex w-full justify-end">
               <SubmitButton
