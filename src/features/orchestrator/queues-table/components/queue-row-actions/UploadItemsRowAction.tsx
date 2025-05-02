@@ -4,8 +4,6 @@ import { Upload } from "lucide-react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useQueueUploadItemsStore } from "../../stores/queues-upload-item-store";
-
 interface UploadItemsRowActionProps {
   rowId: string;
   size?: "sm" | "md";
@@ -15,12 +13,6 @@ export const UploadItemsRowAction: React.FC<UploadItemsRowActionProps> = ({
   size = "md",
   rowId,
 }) => {
-  const { setShowDialog } = useQueueUploadItemsStore(
-    useShallow((state) => ({
-      setShowDialog: state.setShowDialog,
-    })),
-  );
-
   // Get data-table crud dialog store state and actions
   const { setCrudDialogOptions } = useDTCrudDialogStore(
     useShallow((state) => ({
@@ -31,11 +23,10 @@ export const UploadItemsRowAction: React.FC<UploadItemsRowActionProps> = ({
   return (
     <SimpleDDMenuItem
       onClick={() => {
-        setShowDialog(true);
         setCrudDialogOptions({
           crudAction: "delete",
           rowId,
-          showDialog: false,
+          showDialog: true,
         });
       }}
       size={size}
