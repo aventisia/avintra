@@ -13,11 +13,18 @@ public class QueueTransactionController : BaseApiController
     }
 
     // Retrieve all transactions associated with a specific queue
-    [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> GetTransactions(Guid? queueId)
+    [HttpGet("list/{queueId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> GetTransactions(Guid queueId)
     {
         // Fetch all transactions for the given queue
         return ResultHelper(await _queueTransactionService.GetAllTransactionsAsync(queueId));
+    }
+
+    // Retrieves a specific queue transaction by its ID.
+    [HttpGet("{queueTransactionId}")]
+    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueByIdAsync(Guid queueTransactionId)
+    {
+        return ResultHelper(await _queueTransactionService.GetQueueTransactionByIdAsync(queueTransactionId));
     }
 
     // Add a new transaction (work item) to the specified queue
@@ -39,5 +46,12 @@ public class QueueTransactionController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteTransaction(Guid transactionId)
     {
         return ResultHelper(await _queueTransactionService.RemoveTransactionAsync(transactionId));
+    }
+
+    // Deletes multiple queue transactions by their IDs.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteQueues([FromBody] List<Guid> queueTransactionIds)
+    {
+        return ResultHelper(await _queueTransactionService.DeleteQueueTransactionsAsync(queueTransactionIds));
     }
 }

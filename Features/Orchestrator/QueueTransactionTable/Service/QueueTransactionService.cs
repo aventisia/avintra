@@ -19,7 +19,7 @@ public class QueueTransactionService : IQueueTransactionService
     }
 
     // Retrieve all transactions for a specific queue
-    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid? queueId)
+    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid queueId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<QueueTransactionDto>>
         {
@@ -32,8 +32,7 @@ public class QueueTransactionService : IQueueTransactionService
             // Query the transactions for the specified queue
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(t =>
-                    t.CreatedByUserId == _userId &&
-                    (queueId != null || t.QueueId == queueId)
+                    t.QueueId == queueId
                 )
                 .Include(q => q.Queue)
                 .Include(c => c.CreatedByUser)
@@ -56,6 +55,49 @@ public class QueueTransactionService : IQueueTransactionService
         return serviceResponse;
     }
 
+    // Retrieves a specific queue transaction by its ID.
+    public async Task<ServiceResponse<QueueTransactionDto>> GetQueueTransactionByIdAsync(Guid queueTransactionId)
+    {
+        var serviceResponse = new ServiceResponse<QueueTransactionDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve queue transaction. Please try again later."
+        };
+
+        try
+        {
+            // Retrieve the specific queue transaction including related data
+            var queueTransaction = await _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(w => w.Id == queueTransactionId)
+                .Include(i => i.Queue)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            // Check if the transaction was found
+            if (queueTransaction == null)
+            {
+                _logger.LogInformation("Queue transaction with ID {QueueTransactionId} not found.", queueTransactionId);
+                serviceResponse.Message = "Queue transaction not found.";
+                return serviceResponse;
+            }
+
+            // Map entity to DTO and update response
+            serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Queue transaction retrieved successfully.";
+
+            _logger.LogInformation("Queue transaction with ID {QueueTransactionId} retrieved successfully.", queueTransactionId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving the queue transaction with ID {QueueTransactionId}.", queueTransactionId);
+        }
+
+        return serviceResponse;
+    }
+
     // Add a new transaction (work item) to the queue
     public async Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(QueueTransactionDto queueTransactionDto)
     {
@@ -68,7 +110,7 @@ public class QueueTransactionService : IQueueTransactionService
         try
         {
             _logger.LogInformation("Attempting to add a new transaction to the queue.");
-            
+
             //TODO: Add here validation to check uniqueness
             // Check if a transaction with the specified queue I exists
             // var existingTransaction = await _unitOfWork.QueueTransactionRepo
@@ -212,6 +254,54 @@ public class QueueTransactionService : IQueueTransactionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while removing transaction {TransactionId} from queue.", transactionId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Deletes multiple queue transactions based on provided IDs.
+    public async Task<ServiceResponse<bool>> DeleteQueueTransactionsAsync(List<Guid> queueTransactionIds)
+    {
+        // Initialize the response as a failed operation by default
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Unable to delete queue transactions. Please try again."
+        };
+
+        try
+        {
+            // Fetch queue transactions that match the provided IDs
+            var queueTransactions = await _unitOfWork.QueueTransactionRepo
+                                                     .GetByConditionAsync(qt => queueTransactionIds.Contains(qt.Id))
+                                                     .ToListAsync();
+
+            // If no matching transactions are found, return early
+            if (queueTransactions.Count == 0)
+            {
+                _logger.LogInformation("No matching queue transactions found for deletion.");
+                serviceResponse.Message = "No queue transactions found for the given IDs.";
+                return serviceResponse;
+            }
+
+            // Perform deletion
+            _unitOfWork.QueueTransactionRepo.Delete(queueTransactions);
+
+            // Attempt to save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save changes to the database after attempting to delete queue transactions.");
+                return serviceResponse;
+            }
+
+            // Deletion was successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{queueTransactions.Count} queue transaction(s) successfully deleted.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred while deleting queue transactions.");
         }
 
         return serviceResponse;

@@ -7,7 +7,14 @@ public interface IQueueTransactionService
     /// </summary>
     /// <param name="queueId">The unique identifier of the queue</param>
     /// <returns>A collection of transactions related to the specified queue</returns>
-    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid? queueId);
+    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid queueId);
+
+    /// <summary>
+    /// Retrieves the details of a specific queue transaction by its unique identifier.
+    /// </summary>
+    /// <param name="queueTransactionId">The ID of the queue transaction to fetch.</param>
+    /// <returns>The task result containing the service response with the details of the requested queue transaction.</returns>
+    Task<ServiceResponse<QueueTransactionDto>> GetQueueTransactionByIdAsync(Guid queueTransactionId);
 
     /// <summary>
     /// Create a new work item within the queue.
@@ -29,4 +36,14 @@ public interface IQueueTransactionService
     /// <param name="transactionId">The unique identifier of the transaction to be deleted</param>
     /// <returns>True if the transaction was successfully deleted, otherwise false</returns>
     Task<ServiceResponse<bool>> RemoveTransactionAsync(Guid transactionId);
+
+    /// <summary>
+    /// Deletes multiple queue transactions by their IDs.
+    /// </summary>
+    /// <param name="queueTransactionIds">The IDs of the queue transactions to delete.</param>
+    /// <returns>The task result contains the service response indicating whether the queue transactions were successfully deleted.</returns>
+    /// <remarks>
+    /// It is recommended to use this method to delete multiple queue transactions at once to reduce the number of requests to the server.
+    /// </remarks>
+    Task<ServiceResponse<bool>> DeleteQueueTransactionsAsync(List<Guid> queueTransactionIds);
 }
