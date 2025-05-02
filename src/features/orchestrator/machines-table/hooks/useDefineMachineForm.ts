@@ -11,7 +11,10 @@ import { useShallow } from "zustand/react/shallow";
 
 import { isMachineNameAvailable } from "../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import { machineNameSchema, machineZodSchema } from "../constants/machine-zod-schema";
+import {
+  machineNameSchema,
+  machineZodSchema,
+} from "../constants/machine-zod-schema";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
 import { useFetchSelectTableAgents } from "./useFetchSelectAgents";

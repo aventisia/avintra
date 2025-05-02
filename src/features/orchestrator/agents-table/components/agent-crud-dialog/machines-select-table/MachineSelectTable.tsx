@@ -1,13 +1,11 @@
+import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
+
+import { Skeleton } from "@aventisia/ui";
+import { DTSearchBox, DataTable } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
-import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
-import { Skeleton } from "@aventisia/ui";
-import { DataTable, DTSearchBox } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-
-import {
-    machineSelectTableColumnVisibilityState
-} from "../../../constants/column-visibility-state";
+import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 import { machineSelectTableColumns } from "./MachineSelectTableColumns";
 import { MachineSelectTablePagination } from "./MachineSelectTablePagination";

@@ -1,6 +1,10 @@
+import {
+  alphaNumericError,
+  alphaNumericRegex,
+  maxLenError,
+  reqError,
+} from "@aventisia/ui/utils";
 import { z } from "zod";
-
-import { alphaNumericError, alphaNumericRegex, maxLenError, reqError } from "@aventisia/ui/utils";
 
 import { ipv4Regex, ipv6Regex } from "./";
 
