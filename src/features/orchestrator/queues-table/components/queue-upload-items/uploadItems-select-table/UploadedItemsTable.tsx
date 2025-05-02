@@ -1,16 +1,15 @@
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import Enumerable from "linq";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { Checkbox } from "@aventisia/ui";
+import {
+    DataTable, DataTableSkeleton, DTColumnHeader, DTSearchBox
+} from "@aventisia/ui/data-table";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import {
+    ColumnDef, getCoreRowModel, getPaginationRowModel, useReactTable
+} from "@tanstack/react-table";
 
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
 import { UploadedItemsTablePagination } from "./UploadedItemsTablePagination";
@@ -28,9 +27,14 @@ export function UploadedItemsTable<TData extends object>({
       isProcessiong: state.isProcessing,
     })),
   );
+
+  // create dynamic columns
   const columns: ColumnDef<TData>[] = useMemo(() => {
     const sampleObject = data[0];
-    return Object.keys(sampleObject).map((key) => ({
+    if (!sampleObject) return [{ id: "id" }];
+    const columns = Enumerable.from(Object.keys(sampleObject)).select<
+      ColumnDef<TData>
+    >((key) => ({
       accessorKey: key as keyof TData,
       header: ({ column }) => (
         <DTColumnHeader
@@ -44,6 +48,31 @@ export function UploadedItemsTable<TData extends object>({
         </div>
       ),
     }));
+
+    const selectRowsColumn: ColumnDef<TData> = {
+      accessorKey: "id",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+          className="translate-y-[2px]"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="translate-y-[2px]"
+        />
+      ),
+      enableSorting: false,
+    };
+    return [selectRowsColumn, ...columns];
   }, [data]);
 
   // Initialize the table
