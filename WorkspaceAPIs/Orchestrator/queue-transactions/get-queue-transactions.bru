@@ -1,15 +1,11 @@
 meta {
   name: Get queue transactions
   type: http
-  seq: 4
+  seq: 5
 }
 
 get {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/list/?queueId={{QUEUE_ID}}
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/list/{{QUEUE_ID}}
   body: none
   auth: none
-}
-
-params:query {
-  queueId: {{QUEUE_ID}}
 }
