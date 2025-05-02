@@ -1,11 +1,13 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { CheckboxField } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import { InputFileField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
-import { TextareaField } from "@aventisia/ui/form";
-import { AutherCard } from "@aventisia/ui/form";
+import {
+  AutherCard,
+  CheckboxField,
+  Form,
+  InputField,
+  InputFileField,
+  SwitchField,
+  TextareaField,
+} from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 
@@ -147,21 +149,25 @@ export const QueueCrudForm = () => {
       </div>
 
       {/* additional options */}
-      <p className="text-md mb-2 border-b-2 pb-2">Schema Definations</p>
-      <div className="flex flex-col gap-3">
-        <InputFileField
-          {...inputJsonSchemaProps}
-          multiple={false}
-          fileTypes={[".json"]}
-          isRequired={crudAction === "create"}
-        />
-        <InputFileField
-          multiple={false}
-          {...outputJsonSchemaProps}
-          fileTypes={[".json"]}
-          isRequired={crudAction === "create"}
-        />
-      </div>
+      {crudAction === "create" && (
+        <>
+          <p className="text-md mb-2 border-b-2 pb-2">Schema Definations</p>
+          <div className="flex flex-col gap-3">
+            <InputFileField
+              {...inputJsonSchemaProps}
+              multiple={false}
+              fileTypes={[".json"]}
+              isRequired={crudAction === "create"}
+            />
+            <InputFileField
+              multiple={false}
+              {...outputJsonSchemaProps}
+              fileTypes={[".json"]}
+              isRequired={crudAction === "create"}
+            />
+          </div>
+        </>
+      )}
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
