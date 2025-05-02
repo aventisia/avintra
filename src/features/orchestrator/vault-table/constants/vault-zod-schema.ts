@@ -1,6 +1,10 @@
+import {
+  alphaNumericError,
+  alphaNumericRegex,
+  maxLenError,
+  reqError,
+} from "@aventisia/ui/utils";
 import { z } from "zod";
-
-import { alphaNumericError, alphaNumericRegex, maxLenError, reqError } from "@aventisia/ui/utils";
 
 /**
  * Represents the Zod object's item schema for a config name.

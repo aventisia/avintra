@@ -1,8 +1,11 @@
-import { z } from "zod";
-
 import {
-    alphaNumericError, alphaNumericRegex, maxLenError, numericRegex, reqError
+  alphaNumericError,
+  alphaNumericRegex,
+  maxLenError,
+  numericRegex,
+  reqError,
 } from "@aventisia/ui/utils";
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a queue name.

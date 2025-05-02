@@ -1,6 +1,5 @@
-import React from "react";
-
 import { Skeleton } from "@aventisia/ui";
+import React from "react";
 
 export type DataTableSkeletonProps = {
   columnCount: number;
