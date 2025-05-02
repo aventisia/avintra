@@ -1,6 +1,4 @@
-import { ISelectOption } from "@aventisia/ui/types";
-
-import { CrudActionType } from "../types/literal-types";
+import { CrudActionType, ISelectOption } from "@aventisia/ui/types";
 
 export function when<T>(
   value: T,

@@ -1,6 +1,8 @@
 import { useShallow } from "zustand/react/shallow";
 
-import { DataTable, DataTableSkeleton, DTSearchBox } from "@aventisia/ui/data-table";
+import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
+import { Skeleton } from "@aventisia/ui";
+import { DataTable, DTSearchBox } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 
 import {
