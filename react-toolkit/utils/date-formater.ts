@@ -3,6 +3,7 @@ import {
   format,
   formatDistanceToNow,
   isAfter,
+  isValid,
 } from "date-fns";
 
 export const DATE_MIN = new Date(1, 1, 1);
@@ -19,7 +20,10 @@ export const dateFormatter = (
   date: Date,
   dateFormat: string = "dd MMM yyyy",
   placeholder: string = "NA",
-) => (isAfter(date, DATE_MIN) ? format(date, dateFormat) : placeholder);
+) =>
+  isValid(date) && isAfter(date, DATE_MIN)
+    ? format(date, dateFormat)
+    : placeholder;
 
 /**
  * return a human distace time
