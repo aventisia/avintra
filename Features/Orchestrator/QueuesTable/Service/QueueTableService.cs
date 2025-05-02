@@ -78,7 +78,7 @@ public class QueueTableService : IQueueTableService
             // Get queues for the current user
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w => w.CreatedByUserId == _userId)
-                .OrderByDescending(w => w.CreatedOn)
+                .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<QueuesTableDto>()
                 .ToListAsync();
 
@@ -251,9 +251,9 @@ public class QueueTableService : IQueueTableService
 
             // Validate queue name uniqueness
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(m =>
-                    m.Name.ToLower() == updateQueuesTableDto.Name.ToLower() &&
-                    m.Id != updateQueuesTableDto.Id
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == updateQueuesTableDto.Name.ToLower() &&
+                    w.Id != updateQueuesTableDto.Id
                 )
                 .FirstOrDefaultAsync();
 

@@ -31,12 +31,12 @@ public class QueueTransactionService : IQueueTransactionService
         {
             // Query the transactions for the specified queue
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(t =>
-                    t.QueueId == queueId
+                .GetByConditionAsync(w =>
+                    w.QueueId == queueId && w.CreatedByUserId == _userId
                 )
-                .Include(q => q.Queue)
-                .Include(c => c.CreatedByUser)
-                .Include(lm => lm.LastModifiedByUser)
+                .Include(i => i.Queue)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.CreatedOn)
                 .AsNoTracking()
                 .ToListAsync();
@@ -114,8 +114,8 @@ public class QueueTransactionService : IQueueTransactionService
             //TODO: Add here validation to check uniqueness
             // Check if a transaction with the specified queue I exists
             // var existingTransaction = await _unitOfWork.QueueTransactionRepo
-            //     .GetByConditionAsync(t =>
-            //         t.QueueID == queueTransactionDto.QueueId
+            //     .GetByConditionAsync(w =>
+            //         w.QueueID == queueTransactionDto.QueueId
             //     )
             //     .SingleOrDefaultAsync();
 
@@ -170,10 +170,10 @@ public class QueueTransactionService : IQueueTransactionService
 
             // Retrieve the transaction by ID
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(t => t.Id == queueTransactionDto.Id)
-                .Include(q => q.Queue)
-                .Include(c => c.CreatedByUser)
-                .Include(l => l.LastModifiedByUser)
+                .GetByConditionAsync(w => w.Id == queueTransactionDto.Id)
+                .Include(i => i.Queue)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .SingleOrDefaultAsync();
 
             if (queueTransaction == null)
@@ -225,7 +225,7 @@ public class QueueTransactionService : IQueueTransactionService
 
             // Retrieve the transaction to be deleted
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(t => t.Id == transactionId)
+                .GetByConditionAsync(w => w.Id == transactionId)
                 .SingleOrDefaultAsync();
 
             if (queueTransaction == null)
@@ -273,7 +273,7 @@ public class QueueTransactionService : IQueueTransactionService
         {
             // Fetch queue transactions that match the provided IDs
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
-                                                     .GetByConditionAsync(qt => queueTransactionIds.Contains(qt.Id))
+                                                     .GetByConditionAsync(w => queueTransactionIds.Contains(w.Id))
                                                      .ToListAsync();
 
             // If no matching transactions are found, return early
