@@ -1,20 +1,21 @@
 import { useNavigatePreserveQuery } from "@/hooks/useNavigatePreserveQuery";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+
+import { Button } from "@aventisia/ui/buttons";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 
 const tabs = [
-  { id: "label", label: "Label" },
+  { id: "setup-test", label: "Setup & Test" },
   { id: "fineTune", label: "Fine-tune" },
-  { id: "test", label: "Test" },
-  { id: "view", label: "View" },
+  { id: "monitor", label: "Monitor" },
 ];
 
 export const NavigationTabs = () => {
-  const [activeTab, setActiveTab] = useState("label");
+  const [activeTab, setActiveTab] = useState("setup-test");
 
   useEffect(() => {
     const currentPath = window.location.pathname.split("/")[1];
+
     setActiveTab(currentPath);
   }, []);
 
@@ -34,16 +35,16 @@ export const NavigationTabs = () => {
   return (
     <>
       {/* Tabs Container */}
-      <div className="mr-2 flex rounded-lg bg-gray-100 p-1">
+      <div className="flex rounded-full bg-white/10 p-1 text-white">
         {tabs.map((tab) => (
           <Button
-            disabled={["fineTune", "view"].includes(tab.id)} //temporary disable view and train tabs
+            disabled={["fineTune"].includes(tab.id)} //temporary disable view and train tabs
             variant={"ghost"}
             size={"xs"}
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
-            className={`flex-1 rounded-lg px-3 py-1.5 text-center text-sm font-medium transition-colors ${
-              activeTab === tab.id && "bg-white shadow-sm hover:bg-white"
+            className={`h-7 flex-1 rounded-full px-3 py-1.5 text-center text-sm font-medium transition-colors hover:bg-primary hover:text-white ${
+              activeTab === tab.id && "bg-primary shadow-sm"
             }`}
           >
             {tab.label}

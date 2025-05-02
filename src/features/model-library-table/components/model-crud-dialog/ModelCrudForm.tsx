@@ -1,10 +1,10 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { Button } from "@aventisia/ui/buttons";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
+import { SwitchField } from "@aventisia/ui/form";
+import { TextareaField } from "@aventisia/ui/form";
+import { Form } from "@aventisia/ui/form";
 // import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 import { z } from "zod";
 import { DATA_QUERY_KEY } from "../../constants";

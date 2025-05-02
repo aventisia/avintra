@@ -1,9 +1,9 @@
-import { IconProps } from "@/react-toolkit/types/icon-props";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/react-toolkit/ui/hover-card";
+} from "@aventisia/ui/hover-card";
+import { IconProps } from "@aventisia/ui/types";
 import { NavLink } from "react-router-dom";
 
 interface MenuItemProps {
@@ -23,13 +23,13 @@ const CollapsedMenuItem = ({ Icon, name, route }: MenuItemProps) => {
               return isActive ? "active group" : "";
             }}
           >
-            <li className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-100 group-[.active]:bg-slate-100">
-              <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color]" />
+            <li className="group flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-100 group-[.active]:bg-slate-100">
+              <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color] group-hover:text-primary group-[.active]:text-primary" />
             </li>
           </NavLink>
         </div>
       </HoverCardTrigger>
-      <HoverCardContent className="absolute bottom-[0.5rem] left-[1.8rem] whitespace-nowrap rounded-lg border border-slate-100 bg-white px-3 py-1 text-sm font-normal capitalize shadow-sm">
+      <HoverCardContent className="absolute bottom-[0.5rem] left-[1.8rem] whitespace-nowrap rounded-lg border border-secondary bg-secondary px-3 py-1 text-sm font-normal capitalize text-white shadow-sm">
         {name}
       </HoverCardContent>
     </HoverCard>

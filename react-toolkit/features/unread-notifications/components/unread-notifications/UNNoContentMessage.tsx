@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
+import { NoContentMessage } from "@aventisia/ui";
 import { BellSlashIcon } from "@heroicons/react/24/outline";
 
 /**
@@ -7,7 +7,7 @@ import { BellSlashIcon } from "@heroicons/react/24/outline";
 export const UNNoContentMessage = () => {
   return (
     <NoContentMessage
-      className="mb-12"
+      className="-mt-16"
       Icon={BellSlashIcon}
       primaryMessage="You're all caught up!"
       secondaryMessage="You have no new notifications"

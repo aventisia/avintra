@@ -1,8 +1,9 @@
 import { DataTypeEnum } from "@/react-toolkit/enums/data-type-enum";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@aventisia/ui/form";
+import { TextareaFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
 
 const documentContextProps: TextareaFieldProps = {
     name: "documentContext",

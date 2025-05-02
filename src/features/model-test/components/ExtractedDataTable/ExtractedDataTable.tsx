@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { DTHeading } from "@aventisia/ui/data-table";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
 import { ExtractedDataDto } from "../../dtos/ extracted-data-dto";
 import { generateDynamicColumns } from "./ExtractedDataTableColumns";
 import { useGetExtractedDataList } from "../../hooks/useFetchExtractedDataList";

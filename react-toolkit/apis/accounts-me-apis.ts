@@ -1,18 +1,11 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { TerminateSessionDto } from "@/react-toolkit/dtos/request/terminate-session-dto";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { redirectToLoginUtil } from "@/react-toolkit/utils/redirect-utils";
+import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { toast } from "sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
-
-/** Logoff from sessions basis sessionIds (request is from MyAcccount) */
-const terminateUserSelectedSessions = (postObj: TerminateSessionDto) => {
-  return axiosInstance
-    .post(`${baseAPIURL}/terminate-my-sessions`, postObj)
-    .then((res) => res.data);
-};
 
 /** Gets user's current session to view latest user's info */
 const getMySession = () => {
@@ -31,7 +24,7 @@ const refreshSession = () => {
       toast.error(error);
 
       // Redirect to login page after 2 seconds
-      redirectToLoginUtil();
+      redirectToLoginOn401Util();
 
       return null;
     });
@@ -44,9 +37,4 @@ const logOffFromCurrentSession = () => {
     .then((res) => res.data);
 };
 
-export {
-  getMySession,
-  logOffFromCurrentSession,
-  refreshSession,
-  terminateUserSelectedSessions,
-};
+export { getMySession, logOffFromCurrentSession, refreshSession };

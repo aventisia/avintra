@@ -1,11 +1,11 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/react-toolkit/ui/select";
+} from "@aventisia/ui/select";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

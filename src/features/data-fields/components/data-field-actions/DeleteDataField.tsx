@@ -1,7 +1,7 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { Trash2 } from "lucide-react";
 import { DATA_QUERY_KEY } from "../../constants";
 import { DataFieldsDto } from "../../dtos/data-fields-dtos";

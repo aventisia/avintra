@@ -7,7 +7,7 @@ import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnota
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
-import { ScrollArea, ScrollBar } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import html2canvas from "html2canvas";
 import React, { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";

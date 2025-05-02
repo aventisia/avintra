@@ -1,10 +1,4 @@
-enum NavLocation {
-  header,
-  sidebar,
-}
-
 interface INavDataType {
-  navLocation: NavLocation;
   sideNavMenuSections: ISideNavMenuSection[];
 }
 
@@ -34,7 +28,6 @@ interface ISubMenuItem {
 }
 
 export {
-  NavLocation,
   type INavDataType,
   type ISideNavMenuSection,
   type IMenuItem,

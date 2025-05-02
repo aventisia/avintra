@@ -5,12 +5,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/react-toolkit/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { Annotation } from "./PdfPreviewer";
 
 interface FieldSelectionPopoverProps {

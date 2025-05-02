@@ -5,12 +5,12 @@ import {
   DialogDefaultHeader,
   DialogFooter,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog";
+} from "@aventisia/ui/dialog";
 import React, { ReactNode } from "react";
 import { useLabelDataStore } from "../stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
-import { FileChartPieIcon } from "lucide-react";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { FilePieChartIcon } from "lucide-react";
+import { Button } from "@aventisia/ui/buttons";
 import { useNavigate } from "react-router-dom";
 
 // Define the props interface
@@ -36,7 +36,7 @@ const TrainingDialog: React.FC<TrainingDialogProps> = ({ children }) => {
       <DialogContent className="sm:max-w-screen-xs">
         <DialogDefaultHeader heading="Training in progress" />
         <div className="flex flex-col items-center gap-4 p-7">
-          <FileChartPieIcon className="h-24 w-24 opacity-40" />
+          <FilePieChartIcon className="h-24 w-24 opacity-40" />
           <h2 className="">Task Processing...</h2>
           <p className="text-xs text-muted-foreground">{`Your ${modelName} model is now training, and this can take upto an hour to finish. Check it's status by going to models.`}</p>
         </div>

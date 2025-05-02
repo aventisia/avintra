@@ -1,4 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { Loader2, SparklesIcon } from "lucide-react";
 import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 import { useLocation } from "react-router-dom";

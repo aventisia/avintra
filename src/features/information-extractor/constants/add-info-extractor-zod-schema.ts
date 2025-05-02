@@ -1,7 +1,5 @@
 import * as z from "zod";
-import {
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
+import { reqError } from "@aventisia/ui/utils";
 
 export const dataToBeExtractedSchema = z.object({
     fieldName: z.string().min(1, {message: reqError("Field Name")}),

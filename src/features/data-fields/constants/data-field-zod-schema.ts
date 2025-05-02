@@ -1,9 +1,8 @@
-import {
-  alphaNumericError,
+import { 
+  alphaNumericError,  
   maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+  reqError, } from "@aventisia/ui/utils";
+import { alphaNumericRegex } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**

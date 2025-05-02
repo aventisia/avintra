@@ -2,9 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
-import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper.tsx";
-import { TooltipProvider } from "@/react-toolkit/ui/custom/Tooltip.tsx";
-import { ToasterExt } from "@/react-toolkit/ui/custom/ToasterExt.tsx";
+import { AlertDialogWrapper } from "@aventisia/ui/alert-dialog";
+import { TooltipProvider } from "@aventisia/ui/tooltip";
+import { SonnerToaster } from "@aventisia/ui/sonner";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,7 +15,7 @@ createRoot(document.getElementById("root")!).render(
       </AlertDialogWrapper>
 
       {/* To show toaster notifications */}
-      <ToasterExt />
+      <SonnerToaster />
     </TooltipProvider>
   </StrictMode>,
 );

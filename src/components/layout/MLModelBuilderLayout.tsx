@@ -1,9 +1,12 @@
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
-import { cn } from "@/react-toolkit/lib/utils";
+import { Header } from "@/react-toolkit/layout/Header";
+import { cn } from "@aventisia/ui/lib";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { Outlet } from "react-router-dom";
-import { MLModelBuilderHeader } from "./MLModelBuilderHeader";
+import { NavigationTabs } from "./NavigationTabs";
+import { LLMSelector } from "./LLMSelector";
+import ModelInfo from "./ModelInfo";
 
 export const MLModelBuilderLayout = () => {
   // Validate user session
@@ -15,9 +18,12 @@ export const MLModelBuilderLayout = () => {
         <RedirectPage />
       ) : (
         <div className="relative min-h-screen overflow-hidden bg-slate-100">
-          <MLModelBuilderHeader />
-          <ScrollArea className="h-[calc(100vh-4.5rem)]">
-            {/* added bg for main*/}
+          <Header
+            extraContentRight={<NavigationTabs />}
+            extraContentCenter={<LLMSelector />}
+            extraContentLeft={<ModelInfo />}
+          />
+          <ScrollArea className="mt-2.5 h-[calc(100vh-4.5rem)]">
             <main
               className={cn(
                 "h-[calc(100vh-4.5rem)] p-2 py-0 transition-[margin] duration-500",

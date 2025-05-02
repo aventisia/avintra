@@ -1,6 +1,6 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { modelOptimisticMutationFn } from "../../apis/model-library-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { ModelLibraryTableDto } from "../../dtos/model-library-table-dto";

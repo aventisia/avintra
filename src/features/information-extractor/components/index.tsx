@@ -1,7 +1,7 @@
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import SavingIndicator from "./SavingIndicator";
 import { useShallow } from "zustand/react/shallow";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import InformationExtractorForm from "./InformationExtractorForm";
 
 const InformationExtractor = () => {

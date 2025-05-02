@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { DeleteFileResponseDto, FileUploadDto } from "../dtos/file-upload-dto";
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { PdfViewerDto } from "@/features/pdf-previewer/dtos/file-list-dtos";
 
 // Wrapper type for DataResponseWithController

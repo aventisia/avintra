@@ -1,13 +1,13 @@
 import { useAddInformationExtractorForm } from "../hooks/useAddInfoExtractorForm";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { Form } from "@aventisia/ui/form";
 import {
   documentContextProps,
   nodePropmptProps,
 } from "../constants/info-extractor-form-field-props";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { TextareaField } from "@aventisia/ui/form";
+import { Button } from "@aventisia/ui/buttons";
+import { Separator } from "@aventisia/ui";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import DataToBeExtracted from "./DataToBeExtracted";
 import ContextTables from "./ContextTable";
 import { FormProvider } from "react-hook-form";

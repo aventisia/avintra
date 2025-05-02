@@ -1,11 +1,11 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { getColumnName } from "../constants/column-display-names";
 import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
-import { Badge } from "@/react-toolkit/ui/badge";
+import { Badge } from "@aventisia/ui/badge";
 import { ModelTableCellLink } from "./ModelTableCellLink";
 import { dateRangeFilter, getModelStatusColor } from "../utils";
 

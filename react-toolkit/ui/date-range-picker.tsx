@@ -2,14 +2,10 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
-import { cn } from "@/react-toolkit/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Calendar } from "@/react-toolkit/ui/calendar";
+import { cn } from "@aventisia/ui/lib";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
+import { Button } from "@aventisia/ui/buttons";
+import { Calendar } from "@aventisia/ui";
 
 interface DateRangePickerProps {
   selectedDate: DateRange | undefined;

@@ -1,11 +1,12 @@
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { IconProps } from "@/react-toolkit/types/icon-props";
 import { ISubMenuItem } from "@/react-toolkit/types/nav-data-types";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/react-toolkit/ui/hover-card";
+} from "@aventisia/ui/hover-card";
+import { IconProps } from "@aventisia/ui/types";
 import { useState } from "react";
 
 interface CollapsedMultiLevelMenuButtonProps {

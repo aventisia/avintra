@@ -1,6 +1,6 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { Progress } from "@/react-toolkit/ui/progress";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { FileUploadDto } from "../dtos/file-upload-dto";
