@@ -9,7 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "completedCount", value: "Completed" },
   { key: "failedCount", value: "Failed" },
   { key: "totalCount", value: "Total" },
-  { key: "lastUpdatedOn", value: "Last Updated On" },
+  { key: "lastModifiedOn", value: "Last Updated On" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
 ];

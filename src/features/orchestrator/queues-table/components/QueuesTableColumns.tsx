@@ -118,17 +118,17 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   },
 
   {
-    accessorKey: "lastUpdatedOn",
+    accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastUpdatedOn")}
+        title={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("lastUpdatedOn"))}
+        {dateFormatter(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },
