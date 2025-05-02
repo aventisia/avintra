@@ -1,25 +1,20 @@
 import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
-
 import { Separator } from "@aventisia/ui";
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTCreateButton } from "@aventisia/ui/data-table";
-import { DTHeading } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { DTViewOptions } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import {
+    DataTable, DataTableSkeleton, DTCreateButton, DTHeading, DTPagination, DTSearchBox,
+    DTViewOptions
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchMachines } from "../hooks/useFetchMachines";
-import { MachineStats } from "./MachineStats";
-import { MachineTabsList } from "./MachineTabs";
-import { machinesTableColumns } from "./MachinesTableColumns";
 import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
+import { machinesTableColumns } from "./MachinesTableColumns";
+import { MachineStats } from "./MachineStats";
 
 /**
  * Renders a table of machines.
@@ -54,7 +49,12 @@ export const MachinesTable = () => {
             <div className="flex items-center justify-between">
               <DTHeading heading={TABLE_HEADING} />
 
-              <MachineTabsList />
+              <span className="me-4">
+                <TabsList>
+                  <TabsTrigger value="machines">Machines</TabsTrigger>
+                  <TabsTrigger value="agents">Agents</TabsTrigger>
+                </TabsList>
+              </span>
 
               <div className="flex items-center gap-2">
                 <DTSearchBox

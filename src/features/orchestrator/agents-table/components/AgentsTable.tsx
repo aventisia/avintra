@@ -1,12 +1,14 @@
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTHeading } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { DTViewOptions } from "@aventisia/ui/data-table";
+import {
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
+} from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
+import { TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
-import { MachineTabsList } from "../../machines-table/components/MachineTabs";
 import { SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -45,7 +47,12 @@ export const AgentsTable = () => {
               {/* <AgentsTableHeading /> */}
               <DTHeading heading="Agents" />
 
-              <MachineTabsList />
+              <span className="me-4">
+                <TabsList>
+                  <TabsTrigger value="machines">Machines</TabsTrigger>
+                  <TabsTrigger value="agents">Agents</TabsTrigger>
+                </TabsList>
+              </span>
 
               <div className="flex items-center gap-2">
                 <DTSearchBox

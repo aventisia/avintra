@@ -1,52 +1,32 @@
-import { Tabs, TabsContent, TabsList } from "@aventisia/ui/tabs";
-import { TabsTrigger } from "@radix-ui/react-tabs";
-import { lazy } from "react";
-import { twMerge } from "tailwind-merge";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { Tabs, TabsContent } from "@aventisia/ui/tabs";
+import { Suspense, lazy } from "react";
 
-import { MachinesTable } from "./MachinesTable";
+const MachinesTable = lazy(() =>
+  import("./MachinesTable").then((module) => ({
+    default: module.MachinesTable,
+  })),
+);
+
+const AgentsTable = lazy(() =>
+  import("../../agents-table/components/AgentsTable").then((module) => ({
+    default: module.AgentsTable,
+  })),
+);
 
 export const MachineTabs = () => {
-  // Lazy load the AgentsTable component.
-  const AgentsTable = lazy(() =>
-    import("@/features/orchestrator/agents-table/components/AgentsTable").then(
-      (module) => ({
-        default: module.AgentsTable,
-      }),
-    ),
-  );
   return (
-    <Tabs defaultValue="machines" className="delay-800 transition-all">
+    <Tabs defaultValue="machines">
       <TabsContent value="machines">
-        <MachinesTable />
+        <Suspense fallback={<DataTableSkeleton />}>
+          <MachinesTable />
+        </Suspense>
       </TabsContent>
       <TabsContent value="agents">
-        <AgentsTable />
+        <Suspense fallback={<DataTableSkeleton />}>
+          <AgentsTable />
+        </Suspense>
       </TabsContent>
     </Tabs>
-  );
-};
-
-export const MachineTabsList = () => {
-  return (
-    <TabsList className="me-2 flex flex-row rounded-md bg-slate-100 px-2 text-center text-sm font-medium">
-      <TabsTrigger
-        className={twMerge(
-          "aria-selected:font-semibold aria-selected:text-primary",
-          "inline-block rounded-lg px-4 py-1 hover:bg-gray-100 hover:text-gray-900 aria-selected:bg-white aria-selected:shadow-md dark:hover:bg-gray-800 dark:hover:text-white",
-        )}
-        value="machines"
-      >
-        Machines
-      </TabsTrigger>
-      <TabsTrigger
-        className={twMerge(
-          "aria-selected:font-semibold aria-selected:text-primary",
-          "inline-block rounded-lg px-4 py-1 hover:bg-gray-100 hover:text-gray-900 aria-selected:bg-white aria-selected:shadow-md dark:hover:bg-gray-800 dark:hover:text-white",
-        )}
-        value="agents"
-      >
-        Agents
-      </TabsTrigger>
-    </TabsList>
   );
 };
