@@ -1,12 +1,11 @@
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import type { Column, Table } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 
-import type { Column, Table } from "@tanstack/react-table";
 interface AssignAllMachineCheckBoxProps<TData, TValue> {
   table: Table<TData>;
   column: Column<TData, TValue>;
@@ -15,16 +14,21 @@ export function AssignAllMachineCheckBox<TData, TValue>({
   table,
   column,
 }: Readonly<AssignAllMachineCheckBoxProps<TData, TValue>>) {
-  const { setAllAssigned, allAssigned,availableLicenses, isReadOnly, currentMachines } =
-    useMachinesSelectTableStore(
-      useShallow((state) => ({
-        setAllAssigned: state.setAllAssigned,
-        allAssigned: state.allAssigned,
-        availableLicenses: state.availableLicenses,
-        isReadOnly: state.isReadOnly,
-        currentMachines: state.currentMachines,
-      })),
-    );
+  const {
+    setAllAssigned,
+    allAssigned,
+    availableLicenses,
+    isReadOnly,
+    currentMachines,
+  } = useMachinesSelectTableStore(
+    useShallow((state) => ({
+      setAllAssigned: state.setAllAssigned,
+      allAssigned: state.allAssigned,
+      availableLicenses: state.availableLicenses,
+      isReadOnly: state.isReadOnly,
+      currentMachines: state.currentMachines,
+    })),
+  );
   return (
     <div className="flex w-auto max-w-20 gap-5 truncate align-middle font-medium">
       <Checkbox
@@ -43,7 +47,7 @@ export function AssignAllMachineCheckBox<TData, TValue>({
             );
             return;
           }
-          
+
           setAllAssigned(!!value);
           table.toggleAllPageRowsSelected(!!value);
         }}

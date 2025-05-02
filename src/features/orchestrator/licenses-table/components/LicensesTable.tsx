@@ -1,21 +1,21 @@
-import { useDataTable } from '@/react-toolkit/hooks/useDataTable';
-import { useDocumentTitle } from '@/react-toolkit/hooks/useDocumentTitle';
-import { DataTable } from '@/react-toolkit/ui/data-table';
-import { DataTableSkeleton } from '@/react-toolkit/ui/data-table/DataTableSkeleton';
-import { DTPagination } from '@/react-toolkit/ui/data-table/DTPagination';
-import { DTHeading } from '@/react-toolkit/ui/data-table/toolbar/DTHeading';
-import { DTSearchBox } from '@/react-toolkit/ui/data-table/toolbar/DTSearchBox';
-import { DTViewOptions } from '@/react-toolkit/ui/data-table/toolbar/DTViewOptions';
-import { Separator } from '@/react-toolkit/ui/separator';
+import { Separator } from "@aventisia/ui";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTHeading } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
+import { DTViewOptions } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from '../constants';
-import { columnDisplayNames } from '../constants/column-display-names';
-import { columnVisibilityState } from '../constants/column-visibility-state';
-import { useFetchLicenses } from '../hooks/useFetchLicenses';
-import { LicenseCrudDialog } from './license-crud-dialog/LicenseCrudDialog';
-import { LicensesStats } from './LicensesStats';
-import { licensesTableColumns } from './LicensesTableColumns';
-import { ManageLicenseButton } from './ManageLicenseButton';
+import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { columnDisplayNames } from "../constants/column-display-names";
+import { columnVisibilityState } from "../constants/column-visibility-state";
+import { useFetchLicenses } from "../hooks/useFetchLicenses";
+import { LicensesStats } from "./LicensesStats";
+import { licensesTableColumns } from "./LicensesTableColumns";
+import { ManageLicenseButton } from "./ManageLicenseButton";
+import { LicenseCrudDialog } from "./license-crud-dialog/LicenseCrudDialog";
 
 /**
  * Renders a table of licenses.

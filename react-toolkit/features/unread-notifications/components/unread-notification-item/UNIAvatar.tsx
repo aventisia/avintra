@@ -1,4 +1,4 @@
-import { AvatarExt } from "@/react-toolkit/ui/AvatarExt";
+import { AvatarExt } from "@aventisia/ui/avatar";
 
 /**
  * TODO: Renders the avatar of the sender user who caused the notification

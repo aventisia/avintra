@@ -1,12 +1,13 @@
+import { Button } from "@aventisia/ui/buttons";
+import {
+  AutherCard,
+  Form,
+  InputField,
+  SwitchField,
+  TextareaField,
+} from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
-
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
 import { vaultOptimisticMutationFn } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -94,7 +95,7 @@ export const VaultCrudForm = () => {
       <InputField {...passwordProps} />
 
       {/* retype Password */}
-      {crudAction !== "read" ? <InputField {...confirmPasswordProps} /> : null}
+      <InputField {...confirmPasswordProps} />
 
       {/* Description */}
       <TextareaField {...descriptionProps} />

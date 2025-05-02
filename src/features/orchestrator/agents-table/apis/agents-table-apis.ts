@@ -1,9 +1,11 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import type { IOptimisticMutation } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { AssignMachineDto } from "../dtos/assign-machine-dto";
-import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
-import type { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/agent`;
 
@@ -16,7 +18,6 @@ export const getPublishedAgents = () => {
     .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/publish-flows/`)
     .then((res) => res.data);
 };
-
 
 /**
  * Retrieves list of select options to assign a machine to agent.
@@ -32,7 +33,9 @@ export const getAssignableMachines = (agentId: string) => {
  */
 export const assignMachines = (assignMachineDto: AgentAssignMachineDto) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/${assignMachineDto.flowVersionId}/assign-machines`, assignMachineDto.machineIds)
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/${assignMachineDto.flowVersionId}/assign-machines`, assignMachineDto.machineIds)
     .then((res) => res.data);
 };
 
@@ -50,7 +53,9 @@ export const updateAgent = (updatedAgent: AgentsTableDto) => {
  */
 const deleteAgent = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${import.meta.env.VITE_WORKSPACE_API_URL}/flow-version/delete/${id}`)
+    .delete<
+      IHttpResponse<boolean>
+    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/flow-version/delete/${id}`)
     .then((res) => res.data);
 };
 
@@ -73,7 +78,9 @@ const deleteAgents = (ids: string[]) => {
 export const AgentOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<AgentsTableDto | string | string[] | AgentAssignMachineDto>) => {
+}: IOptimisticMutation<
+  AgentsTableDto | string | string[] | AgentAssignMachineDto
+>) => {
   switch (crudAction) {
     case "update":
       return assignMachines(payload as AgentAssignMachineDto);

@@ -1,4 +1,4 @@
-import { reqError } from "@/react-toolkit/utils/error-message-list";
+import { reqError } from "@aventisia/ui/utils";
 import * as z from "zod";
 
 export const emailSchema = z
@@ -6,7 +6,6 @@ export const emailSchema = z
   .min(1, { message: reqError("Email") })
   .email();
 
-export const updateEmailZodSchema = z
-  .object({
-    email: emailSchema,
-  })
+export const updateEmailZodSchema = z.object({
+  email: emailSchema,
+});

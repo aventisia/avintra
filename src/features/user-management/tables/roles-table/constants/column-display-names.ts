@@ -1,4 +1,4 @@
-import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type";
+import { KeyValueLookupType } from "@aventisia/ui/types";
 
 export const AdminRoleTableColumnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },

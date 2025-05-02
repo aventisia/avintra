@@ -1,6 +1,6 @@
-import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
-import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import { DTRowAction } from "@aventisia/ui/data-table";
+import { DataTableRowActions } from "@aventisia/ui/data-table";
 
 import { AgentRowDeleteAction } from "./AgentRowDeleteAction";
 import { AssignMachineRowAction } from "./AssignMachineRowAction";

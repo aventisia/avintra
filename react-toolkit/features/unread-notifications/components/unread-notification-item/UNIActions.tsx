@@ -1,6 +1,7 @@
 import { useMarkNotificationAsRead } from "@/react-toolkit/features/unread-notifications/hooks/useMarkNotificationAsRead";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Tooltip } from "@/react-toolkit/ui/Tooltip";
+
+import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
 interface UNIActionsProps {

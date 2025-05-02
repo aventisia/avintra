@@ -1,14 +1,8 @@
 import { z } from "zod";
 
 import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import {
-  alphaNumericRegex,
-  numericRegex,
-} from "@/react-toolkit/utils/regex-list";
+    alphaNumericError, alphaNumericRegex, maxLenError, numericRegex, reqError
+} from "@aventisia/ui/utils";
 
 /**
  * Represents the Zod object's item schema for a queue name.

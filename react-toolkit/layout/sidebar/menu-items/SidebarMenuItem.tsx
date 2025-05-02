@@ -1,5 +1,6 @@
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { IconProps } from "@/react-toolkit/types/icon-props";
+
+import { IconProps } from "@aventisia/ui/types";
 import { NavLink } from "react-router-dom";
 
 interface SidebarMenuItemProps {

@@ -1,7 +1,6 @@
-import { ZapIcon } from 'lucide-react';
-import React from 'react';
-
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { ZapIcon } from "lucide-react";
+import React from "react";
 
 interface AddTriggerRowActionProps {
   rowId: string;

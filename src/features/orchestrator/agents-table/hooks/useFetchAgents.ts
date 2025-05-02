@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
+
 import { getPublishedAgents } from "../apis/agents-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
@@ -9,7 +10,6 @@ import { DATA_QUERY_KEY } from "../constants";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchAgents = () => {
-
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: DATA_QUERY_KEY,

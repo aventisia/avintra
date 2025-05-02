@@ -1,5 +1,5 @@
+import { ClockIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
 import React from "react";
-import { RocketLaunchIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
 
 const ComingSoon: React.FC = () => {

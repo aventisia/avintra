@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 
 interface AppLogoProps {
   /** Set to true, if want to show aventisia logo */

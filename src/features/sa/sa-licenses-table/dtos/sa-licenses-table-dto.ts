@@ -1,7 +1,8 @@
-import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
+
+import { CurrenciesEnum } from "@aventisia/ui/enums";
 
 /**
  * Represents a data transfer object (DTO) for a license.
@@ -71,7 +72,7 @@ export interface LicensesTableDto {
    * Gets  the plan currency.
    *
    */
-  currency: CurrencyTypesEnum;
+  currency: CurrenciesEnum;
 
   /**
    * get the additional requested units for the license plan

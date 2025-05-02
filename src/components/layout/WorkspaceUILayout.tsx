@@ -1,10 +1,11 @@
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Header } from "@/react-toolkit/layout/Header";
-import { cn } from "@/react-toolkit/lib/utils";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { workspaceAppConfig } from "@/workspace-app-config";
+
+import { cn } from "@aventisia/ui/lib";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 
 export const WorkspaceUILayout = () => {

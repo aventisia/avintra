@@ -1,10 +1,11 @@
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
-import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+
+import { DatePickerFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
+import { TextareaFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
 // Tenant Id
 export const idProps: InputFieldProps = {

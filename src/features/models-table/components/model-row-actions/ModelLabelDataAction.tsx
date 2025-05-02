@@ -1,5 +1,6 @@
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { TagIcon } from "lucide-react";
+
 import { useOpenModel } from "../../hooks/useOpenModel";
 
 interface ModelLabelDataActionProps {

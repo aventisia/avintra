@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
+
 import { getQueues } from "../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 

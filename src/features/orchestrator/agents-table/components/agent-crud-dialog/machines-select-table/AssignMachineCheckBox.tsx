@@ -1,12 +1,11 @@
+import { Checkbox } from "@aventisia/ui";
+import type { Row } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-
+import type { AssignMachineDto } from "../../../dtos/assign-machine-dto";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 
-import type { Row } from "@tanstack/react-table";
-import type { AssignMachineDto } from "../../../dtos/assign-machine-dto";
 interface AssignMachineCheckBoxProps {
   row: Row<AssignMachineDto>;
 }

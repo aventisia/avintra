@@ -1,6 +1,7 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+
 import { vaultOptimisticMutationFn } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
@@ -9,9 +10,7 @@ interface VaultRowDeleteActionProps {
   rowId: string;
 }
 
-export const VaultRowDeleteAction = ({
-  rowId,
-}: VaultRowDeleteActionProps) => {
+export const VaultRowDeleteAction = ({ rowId }: VaultRowDeleteActionProps) => {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 

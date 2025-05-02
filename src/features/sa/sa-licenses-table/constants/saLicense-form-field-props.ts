@@ -1,6 +1,7 @@
 import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+
+import { DatePickerFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps } from "@aventisia/ui/form";
 
 import { searchTenantsToSearchSelect } from "../../tenants-table/apis/tenants-table-apis";
 

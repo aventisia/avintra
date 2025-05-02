@@ -1,6 +1,6 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
-import type { AssignMachineDto } from "../dtos/assign-machine-dto"
+import type { AssignMachineDto } from "../dtos/assign-machine-dto";
 
 type State = {
   /** machine id for agents */

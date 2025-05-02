@@ -1,8 +1,9 @@
-import { DataTableRowActions } from "@/react-toolkit/ui/data-table/row-actions/DataTableRowActions";
-import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
-import { DropdownMenuSeparator } from "@/react-toolkit/ui/dropdown-menu";
-import { ModelRowDeleteAction } from "./ModelRowDeleteAction";
+import { DTRowAction } from "@aventisia/ui/data-table";
+import { DataTableRowActions } from "@aventisia/ui/data-table";
+import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
+
 import { ModelLabelDataAction } from "./ModelLabelDataAction";
+import { ModelRowDeleteAction } from "./ModelRowDeleteAction";
 import { ModelTestAction } from "./ModelTestAction";
 
 interface ModelRowActionsProps {

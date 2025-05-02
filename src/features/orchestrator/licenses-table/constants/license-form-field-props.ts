@@ -1,8 +1,10 @@
 import {
-  getPricingPlansToSelectForTenant
-} from "@/features/sa/pricing-table/apis/pricingPlans-table-apis"
-import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField"
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField"
+    getPricingPlansToSelectForTenant
+} from "@/features/sa/pricing-table/apis/pricingPlans-table-apis";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { InputFieldProps } from "@aventisia/ui/form";
+
+import { getLicensesToSelect } from "../apis/licenses-table-apis";
 
 // License Id
 export const idProps: InputFieldProps = {

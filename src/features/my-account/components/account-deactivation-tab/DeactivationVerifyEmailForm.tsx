@@ -1,21 +1,23 @@
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputDivElement } from "../InputDivElement";
-import type { z } from "zod";
-import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { toast } from "sonner";
-import Lucide from "@/react-toolkit/ui/Lucide";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { ResendCodeButton } from "@/react-toolkit/ui/buttons/ResendCodeButton";
-import { verificationCodeProps } from "../../constants/constants";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { useDefineDeactivationVerifyEmailForm } from "../../hooks/useDefineDeactivationVerifyEmailForm";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
+
+import { Button } from "@aventisia/ui/buttons";
+import { ResendCodeButton } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { InputOtpField } from "@aventisia/ui/form";
+import { toast } from "sonner";
+import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { useAccountDeactivateMutation } from "../../hooks/useAccountDeactivateMutation";
+
+import { verificationCodeProps } from "../../constants/constants";
 import type { deactivationVerifyEmailZodSchema } from "../../constants/deactivation-verify-email-zod-schema";
+import { useAccountDeactivateMutation } from "../../hooks/useAccountDeactivateMutation";
 import { useDefineDeactivationForm } from "../../hooks/useDefineDeactivationForm";
+import { useDefineDeactivationVerifyEmailForm } from "../../hooks/useDefineDeactivationVerifyEmailForm";
 import { useResendCodeMutationForDeactivation } from "../../hooks/useResendCodeMutationForDeactivation";
+import { InputDivElement } from "../InputDivElement";
 
 export const DeactivationVerifyEmailForm = () => {
   // Get user session

@@ -1,6 +1,5 @@
-import { lazy, Suspense } from 'react';
-
-import { DataTableSkeleton } from '@/react-toolkit/ui/data-table/DataTableSkeleton';
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { Suspense, lazy } from "react";
 
 // Lazy load the UsersTable component.
 const UserManagement = lazy(() =>

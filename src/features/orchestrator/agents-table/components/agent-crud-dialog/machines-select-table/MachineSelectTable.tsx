@@ -1,12 +1,11 @@
 import { useShallow } from "zustand/react/shallow";
 
-import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { DataTable, DataTableSkeleton, DTSearchBox } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
 
-import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
+import {
+    machineSelectTableColumnVisibilityState
+} from "../../../constants/column-visibility-state";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 import { machineSelectTableColumns } from "./MachineSelectTableColumns";
 import { MachineSelectTablePagination } from "./MachineSelectTablePagination";

@@ -1,13 +1,13 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { MachinesTableDto } from "../dtos/machines-table-dto";
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
+import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
+import { TrueFalseResultDto } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import type { AssignAgentDto } from "../dtos/assign-agent-dto";
+import { MachinesTableDto } from "../dtos/machines-table-dto";
+import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/machine`;
 

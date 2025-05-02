@@ -1,5 +1,6 @@
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+
+import { Button } from "@aventisia/ui/buttons";
 
 const UpgradeCard = () => {
   const { sidebarExpand } = useBaseLayoutStore();

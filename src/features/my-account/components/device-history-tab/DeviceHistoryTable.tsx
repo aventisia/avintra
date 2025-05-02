@@ -1,5 +1,5 @@
-import { twMerge } from "tailwind-merge";
 import { createContext, useContext } from "react";
+import { twMerge } from "tailwind-merge";
 
 interface DeviceHistoryTableProps
   extends React.PropsWithChildren,

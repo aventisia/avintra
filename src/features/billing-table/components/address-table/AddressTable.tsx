@@ -1,7 +1,7 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { useFetchBillingAddresses } from "../../hooks/useFetchBillingAddresses";
 import { AddressTableColumns } from "./AddressTableColumns";

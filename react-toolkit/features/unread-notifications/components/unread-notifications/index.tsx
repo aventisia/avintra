@@ -4,12 +4,13 @@ import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/compon
 import { UN_DIALOG_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { cn } from "@/react-toolkit/lib/utils";
+
 import {
   Dialog,
   DialogContent,
   DialogDefaultHeader,
-} from "@/react-toolkit/ui/dialog";
+} from "@aventisia/ui/dialog";
+import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
 interface UnreadNotificationsProps {
@@ -44,10 +45,7 @@ export const UnreadNotifications = ({
       {/* Custom notification Dialog trigger */}
       <UNDialogTrigger triggerSize={triggerSize} />
       {/* Dialog content */}
-      <DialogContent
-        side={"right"}
-        className={cn("!max-w-[26rem]", className)}
-      >
+      <DialogContent side={"right"} className={cn("!max-w-[26rem]", className)}>
         {/* Notification default header */}
         <DialogDefaultHeader
           className="px-3.5 py-4 text-lg tracking-wide"

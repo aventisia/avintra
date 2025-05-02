@@ -1,6 +1,6 @@
 // disable eslink for this file
 /* eslint-disable */
-import { useRef, useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 export function useThrottle<T extends (...args: any[]) => void>(
   callback: T,

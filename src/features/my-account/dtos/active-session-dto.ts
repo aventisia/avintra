@@ -1,12 +1,12 @@
 export interface ActiveSessionDto {
-    deviceId: string;
-    IPAddress: string;
-    refreshToken: string;
-    browserType: string;
-    operatingSystem: string;
-    location: string;
-    sessionExpiresOn: Date;
-    loggedInOn: Date;
-    lastRefreshOn: Date;
-    version: number;
+  deviceId: string;
+  IPAddress: string;
+  refreshToken: string;
+  browserType: string;
+  operatingSystem: string;
+  location: string;
+  sessionExpiresOn: Date;
+  loggedInOn: Date;
+  lastRefreshOn: Date;
+  version: number;
 }

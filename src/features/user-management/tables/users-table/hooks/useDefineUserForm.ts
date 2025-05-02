@@ -1,13 +1,15 @@
 import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { useCheckAvailability } from "@aventisia/ui/hooks";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { DATA_QUERY_KEY } from "../constants";
 import { userEmailSchema, userZodSchema } from "../constants/user-zod-schema";
 import { UsersTableDto } from "../dtos/users-table-dto";

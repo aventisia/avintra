@@ -1,5 +1,6 @@
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
 import { useOpenSupportTicket } from "../../hooks/useOpenSupportTicket";
 
 interface SupportTicketRowOpenActionProps {

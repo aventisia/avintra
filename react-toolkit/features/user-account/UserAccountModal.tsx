@@ -1,18 +1,15 @@
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { cn } from "@/react-toolkit/lib/utils";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import Lucide from "@/react-toolkit/ui/Lucide";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-import { Separator } from "@/react-toolkit/ui/separator";
+
+import { Separator } from "@aventisia/ui";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
+import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -111,45 +108,43 @@ const UserAccountModal = ({
         </div>
         <Separator className="my-1 h-[0.5px]" />
         {!isDesktop && (
-          <Button
-            variant={"ghost"}
-            className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-            onClick={() => {
-              navigate("/account");
-              setisPopOverOpen(false);
-            }}
-          >
-            <Lucide icon="User" className="h-4 w-4" />
-            My Account
-          </Button>
+          <>
+            <Button
+              variant={"ghost"}
+              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+              onClick={() => {
+                navigate("/account");
+                setisPopOverOpen(false);
+              }}
+            >
+              <Lucide icon="User" className="h-4 w-4" />
+              My Account
+            </Button>
+            <Button
+              variant={"ghost"}
+              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+              onClick={() => {
+                navigate("/account/email-settings");
+                setisPopOverOpen(false);
+              }}
+            >
+              <Lucide icon="MailCheck" className="h-4 w-4" />
+              Email settings
+            </Button>
+            <Button
+              variant={"ghost"}
+              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+              onClick={() => {
+                navigate("/account/device-history");
+                setisPopOverOpen(false);
+              }}
+            >
+              <Lucide icon="Smartphone" className="h-4 w-4" />
+              Device history
+            </Button>
+            <Separator className="my-1 h-[0.5px]" />{" "}
+          </>
         )}
-        {!isDesktop && (
-          <Button
-            variant={"ghost"}
-            className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-            onClick={() => {
-              navigate("/account/email-settings");
-              setisPopOverOpen(false);
-            }}
-          >
-            <Lucide icon="MailCheck" className="h-4 w-4" />
-            Email settings
-          </Button>
-        )}
-        {!isDesktop && (
-          <Button
-            variant={"ghost"}
-            className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-            onClick={() => {
-              navigate("/account/device-history");
-              setisPopOverOpen(false);
-            }}
-          >
-            <Lucide icon="Smartphone" className="h-4 w-4" />
-            Device history
-          </Button>
-        )}
-        <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
           variant={"ghost"}

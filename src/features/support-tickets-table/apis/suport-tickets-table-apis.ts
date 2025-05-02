@@ -1,8 +1,10 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
+
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { STUpdateByReviewerDto } from "../dtos/STUpdateByReviewerDto";
+import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/supportticket`;
 

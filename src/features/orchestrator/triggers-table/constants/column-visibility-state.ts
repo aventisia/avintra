@@ -5,4 +5,4 @@ export const columnVisibilityState = {
   jobPriority: true,
   nextRunTime: true,
   stopAfter: true,
-}
+};

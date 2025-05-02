@@ -1,17 +1,17 @@
-import { z } from "zod";
-
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { RadioGroupField } from "@/react-toolkit/ui/form/fields/RadioGroupField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { DatePickerField } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { RadioGroupField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
+import { SwitchField } from "@aventisia/ui/form";
+import { TextareaField } from "@aventisia/ui/form";
+import { AutherCard } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { z } from "zod";
 
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -25,8 +25,8 @@ import {
   dbPwdProps,
   dbUserIdProps,
   effectiveOnProps,
-  idleSessionTimeoutMinutesProps,
   idProps,
+  idleSessionTimeoutMinutesProps,
   isDisabledProps,
   isIdleSessionTimeoutEnabledProps,
   isPwdEnabledProps,

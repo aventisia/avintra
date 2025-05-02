@@ -1,6 +1,7 @@
 import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
 
 import { getLicensesToSelect } from "../../licenses-table/apis/licenses-table-apis";
 

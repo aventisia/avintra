@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 import { sortAsAssignedFirst } from "../constants";
-
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
+
 type State = {
   /** agent id for agents */
   agentId: string | null;

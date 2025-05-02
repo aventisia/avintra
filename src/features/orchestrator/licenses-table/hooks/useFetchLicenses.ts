@@ -1,7 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
-
-import { useQuery } from "@tanstack/react-query";
 
 import { getMyLicenses } from "../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../constants";

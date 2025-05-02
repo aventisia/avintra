@@ -1,8 +1,9 @@
-import { Tabs, TabsContent, TabsList } from "@/react-toolkit/ui/tabs";
-import { MachinesTable } from "./MachinesTable";
+import { Tabs, TabsContent, TabsList } from "@aventisia/ui/tabs";
 import { TabsTrigger } from "@radix-ui/react-tabs";
-import { twMerge } from "tailwind-merge";
 import { lazy } from "react";
+import { twMerge } from "tailwind-merge";
+
+import { MachinesTable } from "./MachinesTable";
 
 export const MachineTabs = () => {
   // Lazy load the AgentsTable component.

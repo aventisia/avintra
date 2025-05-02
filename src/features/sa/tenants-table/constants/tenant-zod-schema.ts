@@ -1,12 +1,18 @@
-import { z } from "zod";
-
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
+
 import {
-    alphaNumericError, maxLenError, noWhitespaceError, reqError, variableError
-} from "@/react-toolkit/utils/error-message-list";
+  alphaNumericError,
+  maxLenError,
+  noWhitespaceError,
+  reqError,
+  variableError,
+} from "@aventisia/ui/utils";
 import {
-    alphaNumericRegex, noWhitespaceRegex, variableRegex
-} from "@/react-toolkit/utils/regex-list";
+  alphaNumericRegex,
+  noWhitespaceRegex,
+  variableRegex,
+} from "@aventisia/ui/utils";
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a tenant name.

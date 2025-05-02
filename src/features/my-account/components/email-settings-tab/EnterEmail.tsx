@@ -1,15 +1,17 @@
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputDivElement } from "../InputDivElement";
-import type { z } from "zod";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useShallow } from "zustand/react/shallow";
-import type { updateEmailZodSchema } from "../../types/create-account-zod-schema";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-import { useDefineEmailUpdateForm } from "../../hooks/useDefineEmailUpdateForm";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import type { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import { useCreateCodeMutationForEmailUpdate } from "../../hooks/useCreateCodeMutationForEmailUpdate";
+import { useDefineEmailUpdateForm } from "../../hooks/useDefineEmailUpdateForm";
+import type { updateEmailZodSchema } from "../../types/create-account-zod-schema";
+import { InputDivElement } from "../InputDivElement";
 
 export const EnterEmail = () => {
   // Get user session

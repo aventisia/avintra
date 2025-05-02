@@ -1,9 +1,5 @@
-import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+import { alphaNumericError, maxLenError, reqError } from "@aventisia/ui/utils";
+import { alphaNumericRegex } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**
@@ -24,7 +20,7 @@ export const modelZodSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("Model type") }),
   name: modelNameSchema,
-  llm:z.string(),
+  llm: z.string(),
   description: z
     .string()
     .max(500, { message: maxLenError("Model description", 500) }),

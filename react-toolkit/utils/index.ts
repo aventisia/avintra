@@ -1,4 +1,4 @@
-import { ISelectOption } from "@/react-toolkit/types/select-option";
+import { ISelectOption } from "@aventisia/ui/types";
 
 import { CrudActionType } from "../types/literal-types";
 

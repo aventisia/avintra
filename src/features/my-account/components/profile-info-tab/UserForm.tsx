@@ -1,19 +1,19 @@
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
-import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-
-import { InputDivElement } from "../InputDivElement";
-
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { CountriesEnum } from "@aventisia/ui/enums";
+import { Form } from "@aventisia/ui/form";
+import { DatePickerField } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 import type { z } from "zod";
-import type { UserProfileZodSchema } from "../../types/profile-zod-schema";
+
+import type { MyAccountDto } from "../../dtos/my-account-profile-dto";
 import { useDefineProfileInfoForm } from "../../hooks/useDefineProfileInfoForm";
 import { useProfileInfoFormMutation } from "../../hooks/useProfileInfoFormMutation";
-import type { MyAccountDto } from "../../dtos/my-account-profile-dto";
+import type { UserProfileZodSchema } from "../../types/profile-zod-schema";
 import CheckboxFeildDiv from "../CheckboxFeildDiv";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { InputDivElement } from "../InputDivElement";
+
 export const UserForm = () => {
   const { form, isLoading } = useDefineProfileInfoForm();
   const { mutate, isPending } = useProfileInfoFormMutation();

@@ -1,19 +1,20 @@
-import type { Editor } from "@tiptap/react";
-import type { Level } from "@tiptap/extension-heading";
-import { cn } from "@/react-toolkit/lib/utils";
-import { CaretDownIcon, LetterCaseCapitalizeIcon } from "@radix-ui/react-icons";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
-import { ToolbarButton } from "../toolbar-button";
-import { ShortcutKey } from "../shortcut-key";
-import React, { useCallback, useMemo } from "react";
+} from "@aventisia/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
+import { CaretDownIcon, LetterCaseCapitalizeIcon } from "@radix-ui/react-icons";
+import type { Level } from "@tiptap/extension-heading";
+import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";
-import type { toggleVariants } from "../toggle";
+import React, { useCallback, useMemo } from "react";
+
 import { FormatAction } from "../../types/types";
+import { ShortcutKey } from "../shortcut-key";
+import type { toggleVariants } from "../toggle";
+import { ToolbarButton } from "../toolbar-button";
 
 interface TextStyle
   extends Omit<

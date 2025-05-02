@@ -1,8 +1,10 @@
-import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
-
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
 import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
 import {
@@ -14,28 +16,26 @@ import {
 } from "./features/my-account/components";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import { BillingPage } from "./pages/BillingPage";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
 import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import { SupportTicketsPage } from "./pages/SupportTicketsPage";
+import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
+import { TenantInfoPage } from "./pages/TenantsInfoPage";
+import { UsersPage } from "./pages/UsersPage";
 import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
-import { VaultPage } from "./pages/orchestrator/VaultPage";
-import { SupportTicketsPage } from "./pages/SupportTicketsPage";
-import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantsPage } from "./pages/sa/TenantsPage";
-import { UsersPage } from "./pages/UsersPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { CrudActionTypeLong } from "@/react-toolkit/constants";
+import { VaultPage } from "./pages/orchestrator/VaultPage";
 import { PricingPage } from "./pages/sa/PricingPage";
-import { BillingPage } from "./pages/BillingPage";
 import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
-import { TenantInfoPage } from "./pages/TenantsInfoPage";
+import { TenantsPage } from "./pages/sa/TenantsPage";
 
 const routerConfig: RouteObject[] = [
   {

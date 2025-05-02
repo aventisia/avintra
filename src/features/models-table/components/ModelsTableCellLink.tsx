@@ -1,5 +1,6 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+
 import { useOpenModel } from "../hooks/useOpenModel";
 
 interface ModelTableCellLinkProps {
@@ -20,7 +21,7 @@ export const ModelsTableCellLink = ({
   // Return the component
   return (
     <Button
-      onClick={() => handleOpenModelAction(rowId,"View")}
+      onClick={() => handleOpenModelAction(rowId, "View")}
       variant={"link"}
       className={cn(
         "!h-6 w-auto justify-start truncate font-medium text-foreground hover:text-primary",

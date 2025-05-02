@@ -1,14 +1,15 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DTBulkActions } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkActions";
-import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkDeleteAction";
-import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import { DTBulkActions } from "@aventisia/ui/data-table";
+import { DTBulkDeleteAction } from "@aventisia/ui/data-table";
+import { DTSelectionInfo } from "@aventisia/ui/data-table";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
+
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
+import { QueuesTableDto } from "../../dtos/queues-table-dto";
 
 interface QueueBulkActionsProps {
   table: Table<QueuesTableDto>;

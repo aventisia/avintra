@@ -1,9 +1,5 @@
+import { maxLenError, reqError } from "@aventisia/ui/utils";
 import * as z from "zod";
-
-import {
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
 
 import { AccessType, Features } from "./permissions-and-acesses";
 

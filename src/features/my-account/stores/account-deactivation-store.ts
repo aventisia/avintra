@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { IVerifyEmailData } from "../types/verify-email-data";
 
 type State = {

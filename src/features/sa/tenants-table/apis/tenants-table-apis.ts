@@ -1,9 +1,10 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ISelectOption } from "@/react-toolkit/types/select-option";
+
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
+import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
+import { TrueFalseResultDto } from "@aventisia/ui/dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { ISelectOption } from "@aventisia/ui/types";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 

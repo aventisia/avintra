@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/react-toolkit/ui/select";
+} from "@aventisia/ui/select";
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,

@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { verifyEmailZodSchema } from "../constants/verify-email-zod-schema";
 import { useProfileEmailUpdateStore } from "../stores/profile-email-update-store";
 

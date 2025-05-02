@@ -3,8 +3,8 @@ import {
   minLenError,
   numericError,
   reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { numericRegex } from "@/react-toolkit/utils/regex-list";
+} from "@aventisia/ui/utils";
+import { numericRegex } from "@aventisia/ui/utils";
 import * as z from "zod";
 
 export const verifyEmailZodSchema = z.object({

@@ -1,20 +1,26 @@
 import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+
+import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { updateEmailZodSchema, emailSchema } from "../types/create-account-zod-schema";
+
 import { useProfileEmailUpdateStore } from "../stores/profile-email-update-store";
+import {
+  emailSchema,
+  updateEmailZodSchema,
+} from "../types/create-account-zod-schema";
 
 export const useDefineEmailUpdateForm = () => {
   // Get update email store state
-  const { updateProfileEmailData, setUpdateProfileEmailData } = useProfileEmailUpdateStore(
-    useShallow((state) => ({
-      updateProfileEmailData: state.updateProfileEmailData,
-      setUpdateProfileEmailData: state.setUpdateProfileEmailData,
-    })),
-  );
+  const { updateProfileEmailData, setUpdateProfileEmailData } =
+    useProfileEmailUpdateStore(
+      useShallow((state) => ({
+        updateProfileEmailData: state.updateProfileEmailData,
+        setUpdateProfileEmailData: state.setUpdateProfileEmailData,
+      })),
+    );
 
   // Define form with zod schema
   const form = useForm<z.infer<typeof updateEmailZodSchema>>({

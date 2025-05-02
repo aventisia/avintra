@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { IVerifyEmailData } from "../types/verify-email-data";
+
 import { IupdateProfileEmailData } from "../types/create-account-data";
+import { IVerifyEmailData } from "../types/verify-email-data";
 
 type State = {
   /** The current step number of the form */
@@ -30,6 +31,7 @@ export const useProfileEmailUpdateStore = create<State & Actions>((set) => ({
   verifyEmailData: null,
 
   setStepNo: (stepNo) => set({ stepNo }),
-  setUpdateProfileEmailData: (updateProfileEmailData) => set({ updateProfileEmailData }),
+  setUpdateProfileEmailData: (updateProfileEmailData) =>
+    set({ updateProfileEmailData }),
   setVerifyEmailData: (verifyEmailData) => set({ verifyEmailData }),
 }));

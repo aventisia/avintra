@@ -1,10 +1,7 @@
-import { Check, ChevronDown, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
 import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
-import { cn } from "@/react-toolkit/lib/utils";
-import { ISelectOption } from "@/react-toolkit/types/select-option";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
+
+import { Button } from "@aventisia/ui/buttons";
 import {
   Command,
   CommandEmpty,
@@ -12,13 +9,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/react-toolkit/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
+} from "@aventisia/ui/command";
+import { cn } from "@aventisia/ui/lib";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
+import { ISelectOption } from "@aventisia/ui/types";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */

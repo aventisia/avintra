@@ -1,11 +1,6 @@
 import { z } from "zod";
 
-import {
-  alphaNumericError,
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+import { alphaNumericError, alphaNumericRegex, maxLenError, reqError } from "@aventisia/ui/utils";
 
 import { ipv4Regex, ipv6Regex } from "./";
 

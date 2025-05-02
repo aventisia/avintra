@@ -1,20 +1,20 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTHeading } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
+import { DTViewOptions } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
 
+import { MachineTabsList } from "../../machines-table/components/MachineTabs";
 import { SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
-import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
-import { agentsTableColumns } from "./AgentsTableColumns";
 import { AgentStats } from "./AgentStats";
+import { agentsTableColumns } from "./AgentsTableColumns";
+import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
-import { MachineTabsList } from "../../machines-table/components/MachineTabs";
 
 /**
  * Renders a table of agents.

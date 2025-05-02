@@ -1,10 +1,11 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DTBulkActions } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkActions";
-import { DTBulkDeleteAction } from "@/react-toolkit/ui/data-table/bulk-actions/DTBulkDeleteAction";
-import { DTSelectionInfo } from "@/react-toolkit/ui/data-table/bulk-actions/DTSelectionInfo";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import { DTBulkActions } from "@aventisia/ui/data-table";
+import { DTBulkDeleteAction } from "@aventisia/ui/data-table";
+import { DTSelectionInfo } from "@aventisia/ui/data-table";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
+
 import { vaultOptimisticMutationFn } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
@@ -13,9 +14,7 @@ interface VaultsBulkActionsProps {
   table: Table<VaultsTableDto>;
 }
 
-export function VaultsBulkActions({
-  table,
-}: Readonly<VaultsBulkActionsProps>) {
+export function VaultsBulkActions({ table }: Readonly<VaultsBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 

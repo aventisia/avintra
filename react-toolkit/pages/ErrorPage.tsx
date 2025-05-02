@@ -1,8 +1,9 @@
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Separator } from "@/react-toolkit/ui/separator";
+
+import { Separator } from "@aventisia/ui";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useRouteError } from "react-router-dom";
 

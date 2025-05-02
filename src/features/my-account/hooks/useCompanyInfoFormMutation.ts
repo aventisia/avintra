@@ -1,24 +1,24 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateBillingAddress } from "../apis/my-account-apis";
 import { toast } from "sonner";
 
-export const useCompanyInfoFormMutation = () => {
+import { updateBillingAddress } from "../apis/my-account-apis";
 
-    const { isPending, mutate } = useMutation({
-        mutationFn: updateBillingAddress,
-        onSuccess: (httpResponse) => {
-            // Success message
-            toast.success(httpResponse?.message, {
-                className: "sonner-toaster-sm",
-            });
-        },
-        onError: (error) => {
-            // Show error toast
-            toast.error(error.toString());
-        },
-    });
-    return {
-        isPending,
-        mutate
-    }
+export const useCompanyInfoFormMutation = () => {
+  const { isPending, mutate } = useMutation({
+    mutationFn: updateBillingAddress,
+    onSuccess: (httpResponse) => {
+      // Success message
+      toast.success(httpResponse?.message, {
+        className: "sonner-toaster-sm",
+      });
+    },
+    onError: (error) => {
+      // Show error toast
+      toast.error(error.toString());
+    },
+  });
+  return {
+    isPending,
+    mutate,
+  };
 };

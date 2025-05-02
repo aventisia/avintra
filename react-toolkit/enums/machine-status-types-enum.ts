@@ -28,5 +28,5 @@ export enum MachineStatusTypesEnum {
   /// <summary>
   /// represents the flow/agent stopped status of the machine
   /// </summary>
-  Stopped = "Stopped"
+  Stopped = "Stopped",
 }

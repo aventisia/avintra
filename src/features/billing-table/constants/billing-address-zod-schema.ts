@@ -1,6 +1,5 @@
+import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
-
-import { reqError } from "@/react-toolkit/utils/error-message-list";
 
 /**
  * Represents the Zod schema for a billingplan.
