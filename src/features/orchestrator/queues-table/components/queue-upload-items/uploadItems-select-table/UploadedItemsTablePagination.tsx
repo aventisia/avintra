@@ -1,17 +1,12 @@
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@aventisia/ui/select";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
+    ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronLeftIcon, ChevronRightIcon
 } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
+
+import { UploadedItemsTableBulkActions } from "./UploadedItemsTableBulkActions";
 
 interface UploadedItemsTablePaginationProps<TData> {
   table: Table<TData>;
@@ -43,6 +38,7 @@ export function UploadedItemsTablePagination<TData>({
           </SelectContent>
         </Select>
       </div>
+      <UploadedItemsTableBulkActions table={table} />
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
