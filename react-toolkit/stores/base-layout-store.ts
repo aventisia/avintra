@@ -10,13 +10,6 @@ interface BaseLayoutStore {
   sidebarExpand: boolean;
 
   /**
-   * Specifies if the application is running in a Tauri environment.
-   * We don't need a setter for this property as it is determined at runtime.
-   * It is set to true if 'isTauri' is present in the window object.
-   */
-  isTauri: boolean;
-
-  /**
    * Determines whether the navbar is displayed on a sheet when open.
    */
   navbarOnSheetOpen: boolean;
@@ -25,11 +18,6 @@ interface BaseLayoutStore {
    * Indicates whether the notification panel is open.
    */
   notificationOpen: boolean;
-
-  /**
-   * Indicates whether the confirmation action dialog is open.
-   */
-  confirmActionOpen: boolean;
 
   /**
    * Indicates whether the user heading popover is open in the right corner.
@@ -55,12 +43,6 @@ interface BaseLayoutStore {
   setNotificationOpen: (notificationOpen: boolean) => void;
 
   /**
-   * Updates the state of the confirmation action dialog.
-   * @param confirmActionOpen - A boolean indicating the new state of the confirmation dialog.
-   */
-  setConfirmActionOpen: (confirmActionOpen: boolean) => void;
-
-  /**
    * Updates the state of the user heading popover in the right corner.
    * @param isOpen - A boolean indicating the new state of the popover.
    */
@@ -73,7 +55,6 @@ const useBaseLayoutStore = create<BaseLayoutStore>((set) => ({
   isTauri: "isTauri" in window,
   navbarOnSheetOpen: false,
   notificationOpen: false,
-  confirmActionOpen: false,
   isPopOverOpen: false,
 
   // Methods for manipulating state
@@ -85,9 +66,6 @@ const useBaseLayoutStore = create<BaseLayoutStore>((set) => ({
 
   setNotificationOpen: (newValue: boolean) =>
     set((state) => ({ ...state, notificationOpen: newValue })),
-
-  setConfirmActionOpen: (newValue: boolean) =>
-    set((state) => ({ ...state, confirmActionOpen: newValue })),
 
   setIsPopOverOpen: (newValue: boolean) =>
     set((state) => ({ ...state, isPopOverOpen: newValue })),
