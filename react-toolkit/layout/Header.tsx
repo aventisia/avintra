@@ -5,16 +5,17 @@ import { NavbarOnSheet } from "@/react-toolkit/layout/NavbarOnSheet";
 import { Sidebar } from "@/react-toolkit/layout/sidebar";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
+import { useTauriStore } from "@/stores/tauri-store";
 
 import { SearchBox } from "@aventisia/ui";
 import { cn } from "@aventisia/ui/lib";
+import { useShallow } from "zustand/react/shallow";
 
 interface HeaderProps {
   appConfig: IAppConfig;
   extraContentLeft?: React.ReactNode;
   extraContentRight?: React.ReactNode;
   className?: string;
-  isDesktop?: boolean;
 }
 
 /**
@@ -27,9 +28,16 @@ const Header = ({
   extraContentLeft,
   extraContentRight,
   className,
-  isDesktop,
 }: HeaderProps) => {
   const { userSession } = useUserSessionStore();
+
+  // Get the state if app is open in tauri window
+  const { isTauri } = useTauriStore(
+    useShallow((state) => ({
+      isTauri: state.isTauri,
+    })),
+  );
+  
   return (
     <header
       className={cn(
@@ -43,7 +51,7 @@ const Header = ({
         )}
       >
         <div className="flex flex-grow items-center">
-          {!isDesktop && (
+          {!isTauri && (
             <>
               <Sidebar
                 className={cn(["hidden md:block"])}
@@ -63,7 +71,7 @@ const Header = ({
           {userSession ? (
             <>
               <UnreadNotifications />
-              <UserAccountModal isDesktop={isDesktop} />
+              <UserAccountModal />
             </>
           ) : null}
         </div>

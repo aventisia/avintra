@@ -3,6 +3,7 @@ import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import Lucide from "@/react-toolkit/ui/Lucide";
+import { useTauriStore } from "@/stores/tauri-store";
 
 import { Separator } from "@aventisia/ui";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
@@ -23,18 +24,21 @@ interface UserAccountModalProps {
 
   /** Additional class name to override avatar size. Only pass h-,w- */
   sizeClassName?: string;
-
-  /** Check if application is in desktop mode */
-  isDesktop?: boolean;
 }
 
 const UserAccountModal = ({
   className,
   sizeClassName = "h-8 w-8",
-  isDesktop,
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
+
+  // Get the state if app is open in tauri window
+  const { isTauri } = useTauriStore(
+    useShallow((state) => ({
+      isTauri: state.isTauri,
+    })),
+  );
 
   //state to close the popover
   const { isPopOverOpen, setisPopOverOpen } = useBaseLayoutStore(
@@ -107,7 +111,7 @@ const UserAccountModal = ({
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
-        {!isDesktop && (
+        {!isTauri && (
           <>
             <Button
               variant={"ghost"}
