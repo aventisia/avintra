@@ -6,11 +6,11 @@ import { Form } from "@aventisia/ui/form";
 import { CheckboxField } from "@aventisia/ui/form";
 import { DatePickerField } from "@aventisia/ui/form";
 import { InputField } from "@aventisia/ui/form";
+import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import { recordPaymnet } from "../../apis/sa-licenses-table-apis";

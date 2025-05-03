@@ -1,5 +1,5 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 import { updateMyProfileInfo } from "../apis/my-account-apis";
 

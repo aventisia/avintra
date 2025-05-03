@@ -1,6 +1,6 @@
 import { Button } from "@aventisia/ui/buttons";
+import { toast } from "@aventisia/ui/sonner";
 import { Download } from "lucide-react";
-import { toast } from "sonner";
 
 interface InoviceDownloadRowActionProps {
   rowId: string;

@@ -1,7 +1,7 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { toast } from "@aventisia/ui/sonner";
 import type { Column, Table } from "@tanstack/react-table";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";

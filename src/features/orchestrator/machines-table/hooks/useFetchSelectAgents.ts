@@ -1,7 +1,7 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import {

@@ -1,6 +1,6 @@
 import { Checkbox } from "@aventisia/ui";
+import { toast } from "@aventisia/ui/sonner";
 import type { Row } from "@tanstack/react-table";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import type { SelectAgentTableDto } from "../../../dtos/select-agent-table-dto";

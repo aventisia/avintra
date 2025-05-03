@@ -1,6 +1,6 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
 
 import { getExecutions } from "../apis/executions-table-apis";
 import { DATA_QUERY_KEY } from "../constants";

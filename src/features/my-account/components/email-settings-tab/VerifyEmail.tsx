@@ -5,7 +5,7 @@ import { ResendCodeButton } from "@aventisia/ui/buttons";
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { InputOtpField } from "@aventisia/ui/form";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import type { z } from "zod";
 
 import { verificationCodeProps } from "../../constants/constants";
