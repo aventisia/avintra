@@ -1,7 +1,12 @@
 import { Separator } from "@aventisia/ui";
 import {
-    DataTable, DataTableSkeleton, DTCreateButton, DTHeading, DTPagination, DTSearchBox,
-    DTViewOptions
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
@@ -9,9 +14,9 @@ import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
+import { queuesTableColumns } from "./QueuesTableColumns";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
-import { queuesTableColumns } from "./QueuesTableColumns";
 
 /**
  * Renders a table of queues.
@@ -38,7 +43,6 @@ export const QueuesTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-       
           <QueueCrudDialog>
             {/* Table toolbar */}
             <div className="flex items-center justify-between">

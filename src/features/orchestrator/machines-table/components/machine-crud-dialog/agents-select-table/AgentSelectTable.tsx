@@ -1,9 +1,9 @@
-import { useShallow } from "zustand/react/shallow";
-
 import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
+
 import { Skeleton } from "@aventisia/ui";
-import { DataTable, DTSearchBox } from "@aventisia/ui/data-table";
+import { DTSearchBox, DataTable } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
+import { useShallow } from "zustand/react/shallow";
 
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";

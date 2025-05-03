@@ -1,15 +1,20 @@
-import Enumerable from "linq";
-import { useMemo } from "react";
-import { useShallow } from "zustand/react/shallow";
-
 import { Checkbox } from "@aventisia/ui";
 import {
-    DataTable, DataTableSkeleton, DTColumnHeader, DTSearchBox
+  DTColumnHeader,
+  DTSearchBox,
+  DataTable,
+  DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import {
-    ColumnDef, getCoreRowModel, getPaginationRowModel, useReactTable
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
+import Enumerable from "linq";
+import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
 import { UploadedItemsTablePagination } from "./UploadedItemsTablePagination";

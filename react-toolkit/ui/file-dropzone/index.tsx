@@ -1,8 +1,7 @@
-import { UploadCloud } from "lucide-react";
-import { DropzoneOptions, useDropzone } from "react-dropzone";
-
 import { cn } from "@aventisia/ui/lib";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { UploadCloud } from "lucide-react";
+import { DropzoneOptions, useDropzone } from "react-dropzone";
 
 export type FileUploadDropzoneProps = DropzoneOptions & {
   description?: string;
