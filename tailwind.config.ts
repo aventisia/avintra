@@ -6,6 +6,7 @@ const config = {
     "./index.html",
     "./src/**/*.{html,js,jsx,ts,tsx}",
     "./react-toolkit/**/*.{html,js,jsx,ts,tsx}",
+    "./node_modules/@aventisia/ui/**/*.js",
   ],
   prefix: "",
   theme: {
