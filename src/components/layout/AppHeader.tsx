@@ -25,7 +25,10 @@ const AppHeader: React.FC = () => {
       <Header>
         <div className="flex flex-grow items-center">
           {!isTauri && (
-            <SidebarOnDialog appLogo={<AppLogo />} className="flex md:hidden" />
+            <SidebarOnDialog
+              appLogo={<AppLogo logoSrc="app_logo_dark.svg" />}
+              className="flex md:hidden"
+            />
           )}
           <AppLogo />
         </div>

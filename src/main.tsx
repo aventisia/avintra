@@ -1,6 +1,5 @@
 import { AlertDialogWrapper } from "@aventisia/ui/alert-dialog";
 import { SonnerToaster } from "@aventisia/ui/sonner";
-import "@aventisia/ui/styles/react-perfect-scrollbar.css";
 import "@aventisia/ui/styles/sonner.css";
 import { TooltipProvider } from "@aventisia/ui/tooltip";
 import React from "react";
