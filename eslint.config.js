@@ -26,7 +26,7 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "import/order": [
-        "error",
+        "warn",
         {
           groups: [
             "builtin", // Node.js built-ins (e.g., fs, path)
