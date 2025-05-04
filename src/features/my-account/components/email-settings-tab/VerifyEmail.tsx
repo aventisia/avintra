@@ -1,12 +1,9 @@
-import Lucide from "@/react-toolkit/ui/Lucide";
-
-import { Button } from "@aventisia/ui/buttons";
-import { ResendCodeButton } from "@aventisia/ui/buttons";
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputOtpField } from "@aventisia/ui/form";
+import { Button, ResendCodeButton, SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputOtpField } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
 import type { z } from "zod";
+
+import Lucide from "@/react-toolkit/ui/Lucide";
 
 import { verificationCodeProps } from "../../constants/constants";
 import { verifyEmailZodSchema } from "../../constants/verify-email-zod-schema";

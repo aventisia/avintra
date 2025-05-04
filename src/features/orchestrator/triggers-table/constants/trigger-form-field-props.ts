@@ -1,6 +1,8 @@
-import { InputFieldProps } from "@aventisia/ui/form";
-import { SelectFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
 
 // trigger Id
 export const idProps: InputFieldProps = {

@@ -1,5 +1,5 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 
 // Lazy load the UsersTable component.
 const MyAccount = lazy(() =>

@@ -1,7 +1,7 @@
 import { Separator } from "@aventisia/ui";
 
-import { InovicesTable } from "./InovicesTable";
 import { AddressTable } from "./address-table/AddressTable";
+import { InovicesTable } from "./InovicesTable";
 
 export const Billings = () => {
   return (

@@ -1,5 +1,9 @@
-import { alphaNumericError, maxLenError, reqError } from "@aventisia/ui/utils";
-import { alphaNumericRegex } from "@aventisia/ui/utils";
+import {
+  alphaNumericError,
+  alphaNumericRegex,
+  maxLenError,
+  reqError,
+} from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**

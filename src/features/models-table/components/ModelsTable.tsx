@@ -1,21 +1,23 @@
 import { Separator } from "@aventisia/ui";
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTCreateButton } from "@aventisia/ui/data-table";
-import { DTHeading } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { DTViewOptions } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchModels } from "../hooks/useFetchModels";
+
+import { ModelCrudDialog } from "./model-crud-dialog/ModelCrudDialog";
 import { ModelsBulkActions } from "./ModelsBulkActions";
 import { modelsTableColumns } from "./ModelsTableColumns";
-import { ModelCrudDialog } from "./model-crud-dialog/ModelCrudDialog";
 
 /**
  * Renders a table of models.

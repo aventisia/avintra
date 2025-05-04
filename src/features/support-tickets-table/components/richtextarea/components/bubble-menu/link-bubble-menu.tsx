@@ -1,5 +1,4 @@
-import { Editor } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react";
+import { BubbleMenu, Editor } from "@tiptap/react";
 import React, { useCallback, useState } from "react";
 
 import { ShouldShowProps } from "../../types/types";

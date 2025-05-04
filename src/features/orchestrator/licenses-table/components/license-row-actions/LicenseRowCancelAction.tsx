@@ -1,6 +1,8 @@
 import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
-import { useListOptimisticMutation } from "@aventisia/ui/hooks";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import {
+  useListOptimisticMutation,
+  useShowAlertHandler,
+} from "@aventisia/ui/hooks";
 import { BanIcon } from "lucide-react";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";

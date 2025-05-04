@@ -1,10 +1,10 @@
 import {
+  DataTable,
+  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
 import { TabsList, TabsTrigger } from "@aventisia/ui/tabs";
@@ -13,9 +13,10 @@ import { SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
-import { AgentStats } from "./AgentStats";
-import { agentsTableColumns } from "./AgentsTableColumns";
+
 import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
+import { agentsTableColumns } from "./AgentsTableColumns";
+import { AgentStats } from "./AgentStats";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
 
 /**

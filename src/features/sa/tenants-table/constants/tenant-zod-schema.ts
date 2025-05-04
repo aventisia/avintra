@@ -1,18 +1,16 @@
-import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-
 import {
   alphaNumericError,
+  alphaNumericRegex,
   maxLenError,
   noWhitespaceError,
+  noWhitespaceRegex,
   reqError,
   variableError,
-} from "@aventisia/ui/utils";
-import {
-  alphaNumericRegex,
-  noWhitespaceRegex,
   variableRegex,
 } from "@aventisia/ui/utils";
 import { z } from "zod";
+
+import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 
 /**
  * Represents the Zod object's item schema for a tenant name.

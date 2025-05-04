@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
+
 import { TableActions } from "./table-actions/TableActions";
 
 /**

@@ -1,9 +1,9 @@
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@aventisia/ui/dropdown-menu";
-import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
 
 import { updateSupportTicketStatus } from "../../apis/suport-tickets-table-apis";
 

@@ -1,6 +1,3 @@
-import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +6,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { DATA_QUERY_KEY } from "../constants";
 import { userEmailSchema, userZodSchema } from "../constants/user-zod-schema";

@@ -1,12 +1,13 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTHeading } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
@@ -17,9 +18,10 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
+
 import { StFilterByStatusOptions } from "./StFilterByStatusOptions";
-import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
 import { SupportTicketCrudDialog } from "./support-ticket-crud-dialog/SupportTicketCrudDialog";
+import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
 
 /**
  * Renders a table of support tickets.

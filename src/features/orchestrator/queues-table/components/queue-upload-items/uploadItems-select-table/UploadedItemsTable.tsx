@@ -1,9 +1,9 @@
 import { Checkbox } from "@aventisia/ui";
 import {
-  DTColumnHeader,
-  DTSearchBox,
   DataTable,
   DataTableSkeleton,
+  DTColumnHeader,
+  DTSearchBox,
 } from "@aventisia/ui/data-table";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import {
@@ -17,6 +17,7 @@ import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
+
 import { UploadedItemsTablePagination } from "./UploadedItemsTablePagination";
 
 type UploadedItemsTableProps<TData extends object> = {

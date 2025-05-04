@@ -1,9 +1,11 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
 
-import { IOptimisticMutation } from "@aventisia/ui/dtos";
-import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
-import { TrueFalseResultDto } from "@aventisia/ui/dtos";
-import { IHttpResponse } from "@aventisia/ui/dtos";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 

@@ -1,15 +1,15 @@
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { getEnumValueByKey } from "@aventisia/ui/utils";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { FlowsTableCellLink } from "./FlowsTableCellLink";
+
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
+import { FlowsTableCellLink } from "./FlowsTableCellLink";
 
 /**
  * Array of table columns for the flows table.

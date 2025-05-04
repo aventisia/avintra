@@ -1,7 +1,9 @@
 import { CountriesEnum } from "@aventisia/ui/enums";
-import type { InputFieldProps } from "@aventisia/ui/form";
-import type { InputOtpFieldProps } from "@aventisia/ui/form";
-import type { SelectFieldProps } from "@aventisia/ui/form";
+import type {
+  InputFieldProps,
+  InputOtpFieldProps,
+  SelectFieldProps,
+} from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
 export const UN_QUERY_KEY_UPDATE_EMAIL = ["update-email"];

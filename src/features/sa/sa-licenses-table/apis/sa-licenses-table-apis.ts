@@ -1,8 +1,7 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
-import { IOptimisticMutation } from "@aventisia/ui/dtos";
-import { IHttpResponse } from "@aventisia/ui/dtos";
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 import { ISelectOption } from "@aventisia/ui/types";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { RecordPaymentDto } from "../dtos/record-payment-dto";
 import { RequestLicensesDto } from "../dtos/request-license-dto";

@@ -1,10 +1,11 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { DTBulkActions } from "@aventisia/ui/data-table";
-import { DTSelectionInfo } from "@aventisia/ui/data-table";
-import { useOptimisticMutation } from "@aventisia/ui/hooks";
-import { useQueryData } from "@aventisia/ui/hooks";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { DTBulkActions, DTSelectionInfo } from "@aventisia/ui/data-table";
+import {
+  useOptimisticMutation,
+  useQueryData,
+  useShowAlertHandler,
+} from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 import { CircleOff } from "lucide-react";
 

@@ -1,14 +1,13 @@
-import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
-import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-
 import { Skeleton } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
+import { Form, InputField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+
+import { useFetchPricingPlanDetails } from "@/features/sa/pricing-table/hooks/useFetchPricingPlanDetails";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
 import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -20,6 +19,7 @@ import {
 import { licenseZodSchema } from "../../constants/license-zod-schema";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
 import { useDefineLicenseForm } from "../../hooks/useDefineLicenseForm";
+
 import { OverviewDetails } from "./OverviewDetails";
 
 export const LicenseCrudForm = () => {

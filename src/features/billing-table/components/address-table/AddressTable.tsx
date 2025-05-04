@@ -1,9 +1,8 @@
-import { DataTable } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import { DataTable, DataTableSkeleton } from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { useFetchBillingAddresses } from "../../hooks/useFetchBillingAddresses";
+
 import { AddressTableColumns } from "./AddressTableColumns";
 
 const columnVisibilityState = {

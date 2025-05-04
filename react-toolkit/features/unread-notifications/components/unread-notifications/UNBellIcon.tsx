@@ -1,7 +1,7 @@
-import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-
 import { BellIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
 /**
  * Renders a bell icon with a red dot if there are any unread notifications.

@@ -1,11 +1,13 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { DatePickerField } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import { SelectField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
-import { TextareaField } from "@aventisia/ui/form";
-import { AutherCard } from "@aventisia/ui/form";
+import {
+  AutherCard,
+  DatePickerField,
+  Form,
+  InputField,
+  SelectField,
+  SwitchField,
+  TextareaField,
+} from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 
@@ -14,8 +16,8 @@ import { DATA_QUERY_KEY } from "../constants";
 import {
   daysBeforePwdExpiresProps,
   effectiveOnProps,
-  idProps,
   idleSessionTimeoutMinutesProps,
+  idProps,
   isIdleSessionTimeoutEnabledProps,
   isPwdEnabledProps,
   isPwdNeverExpiresEnabledProps,

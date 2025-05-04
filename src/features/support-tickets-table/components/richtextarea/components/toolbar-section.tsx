@@ -1,9 +1,9 @@
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@aventisia/ui/dropdown-menu";
-import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Editor } from "@tiptap/react";
@@ -12,6 +12,7 @@ import * as React from "react";
 
 import { FormatAction } from "../types/types";
 import { getShortcutKey } from "../utils/utils";
+
 import { ShortcutKey } from "./shortcut-key";
 import type { toggleVariants } from "./toggle";
 import { ToolbarButton } from "./toolbar-button";

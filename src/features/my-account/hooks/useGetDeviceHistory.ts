@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
+
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
-
-import { useEffect, useState } from "react";
 
 import { getActiveSessions } from "../apis/my-account-apis";
 import { browserImages } from "../constants/browsers";

@@ -1,7 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { CheckboxField } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
+import { CheckboxField, Form, InputField } from "@aventisia/ui/form";
 import type { z } from "zod";
 
 import { useDefineProfilePasswordForm } from "../../hooks/useDefineProfilePasswordForm";

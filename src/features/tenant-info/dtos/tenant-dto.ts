@@ -1,7 +1,7 @@
+import { CurrenciesEnum } from "@aventisia/ui/enums";
+
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
-
-import { CurrenciesEnum } from "@aventisia/ui/enums";
 
 /**
  * Represents a data transfer object (DTO) for a tenant.

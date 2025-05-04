@@ -7,8 +7,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelStatusEnum } from "../enums/model-status-enum";
-import { ModelsTableCellLink } from "./ModelsTableCellLink";
+
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
+import { ModelsTableCellLink } from "./ModelsTableCellLink";
 
 /**
  * Array of table columns for the model table.

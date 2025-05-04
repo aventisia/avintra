@@ -1,10 +1,3 @@
-import { UNDialogContent } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogContent";
-import { UNDialogTrigger } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogTrigger";
-import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNSkeleton";
-import { UN_DIALOG_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
-import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
-import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-
 import {
   Dialog,
   DialogContent,
@@ -12,6 +5,13 @@ import {
 } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
+
+import { UNDialogContent } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogContent";
+import { UNDialogTrigger } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogTrigger";
+import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNSkeleton";
+import { UN_DIALOG_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
+import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
+import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
 interface UnreadNotificationsProps {
   /** Additional class name to override notification dialog content container style */

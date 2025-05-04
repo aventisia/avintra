@@ -1,6 +1,8 @@
-import { InputFieldProps } from "@aventisia/ui/form";
-import { MultiSelectFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
+import {
+  InputFieldProps,
+  MultiSelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
 
 // User Id
 const idProps: InputFieldProps = {

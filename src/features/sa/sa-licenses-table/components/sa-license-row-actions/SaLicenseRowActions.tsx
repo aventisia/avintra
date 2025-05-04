@@ -1,6 +1,6 @@
-import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
-
 import { DataTableRowActions } from "@aventisia/ui/data-table";
+
+import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-status-enum";
 
 import { ApproveRowAction } from "./ApproveRowAction";
 import { RecordPaymentRowAction } from "./RecordPaymentRowAction";

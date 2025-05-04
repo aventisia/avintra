@@ -1,10 +1,3 @@
-import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import Lucide from "@/react-toolkit/ui/Lucide";
-import { useTauriStore } from "@/stores/tauri-store";
-
 import { Separator } from "@aventisia/ui";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Button } from "@aventisia/ui/buttons";
@@ -18,6 +11,12 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
+import { useTauriStore } from "@/stores/tauri-store";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */

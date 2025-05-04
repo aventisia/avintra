@@ -1,9 +1,9 @@
-import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+
+import { createVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
+import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 
 import { useProfileEmailUpdateStore } from "../stores/profile-email-update-store";
 

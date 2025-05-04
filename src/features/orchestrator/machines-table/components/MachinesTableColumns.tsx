@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { maskIP } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
+
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
 /**

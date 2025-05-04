@@ -1,5 +1,5 @@
-import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 import type { TextareaFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 
 // queue Id
 export const idProps: InputFieldProps = {

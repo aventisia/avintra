@@ -1,6 +1,8 @@
-import { CheckboxFieldProps } from "@aventisia/ui/form";
-import { InputFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
+import {
+  CheckboxFieldProps,
+  InputFieldProps,
+  TextareaFieldProps,
+} from "@aventisia/ui/form";
 
 import { ACCESSES } from "./permissions-and-acesses";
 

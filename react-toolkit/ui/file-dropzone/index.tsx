@@ -23,14 +23,14 @@ export const FileUploadDropzone = ({
 
   return (
     <div>
-      <div className="flex w-full flex-col   " {...getRootProps()}>
+      <div className="flex w-full flex-col" {...getRootProps()}>
         <label
           htmlFor="dropzone-file"
           className={cn(
             "dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer",
-            " flex-col items-center justify-center rounded-lg border-2 border-dashed",
-            " border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600",
-            " dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600",
+            "flex-col items-center justify-center rounded-lg border-2 border-dashed",
+            "border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600",
+            "dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600",
             isDragActive && "bg-primary-50",
             isDragAccept && "bg-green-50",
             isDragReject && "bg-red-50",
@@ -63,18 +63,18 @@ export const FileUploadDropzone = ({
         <ul>
           {acceptedFiles?.map((file, i) => (
             <li key={file.name}>
-              <section className="flex justify-start items-center border rounded-lg shadow-sm p-2">
-                <span className="p-2    me-2">{i + 1}.</span>
+              <section className="flex items-center justify-start rounded-lg border p-2 shadow-sm">
+                <span className="me-2 p-2">{i + 1}.</span>
                 {"  "}
                 <span>
-                  <p className=" text-sm">{file.name}</p>
-                  <p className="  text-muted-foreground text-xs">
+                  <p className="text-sm">{file.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     {file.relativePath}
                   </p>
                 </span>
-                <span className="ms-auto group flex gap-4 items-center">
+                <span className="group ms-auto flex items-center gap-4">
                   <p>({(file.size / 1024).toFixed(2)} KB)</p>
-                  <CrossCircledIcon className="w-5 h-5 stroke-destructive hover:cursor-pointer" />
+                  <CrossCircledIcon className="h-5 w-5 stroke-destructive hover:cursor-pointer" />
                 </span>
               </section>
             </li>

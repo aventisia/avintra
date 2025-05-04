@@ -1,7 +1,7 @@
 import { Separator } from "@aventisia/ui";
 import { cn } from "@aventisia/ui/lib";
-import { EditorContent } from "@tiptap/react";
 import type { Content, Editor } from "@tiptap/react";
+import { EditorContent } from "@tiptap/react";
 import * as React from "react";
 
 import { ImageBubbleMenu } from "./components/bubble-menu/image-bubble-menu";

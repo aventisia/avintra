@@ -1,11 +1,13 @@
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+  TextareaFieldProps,
+} from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
 import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
-
-import { InputFieldProps } from "@aventisia/ui/form";
-import { SelectFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
 
 // Keystore Id
 export const idProps: InputFieldProps = {

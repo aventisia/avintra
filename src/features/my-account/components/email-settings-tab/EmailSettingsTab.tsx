@@ -1,6 +1,7 @@
 import { useShallow } from "zustand/react/shallow";
 
 import { useProfileEmailUpdateStore } from "../../stores/profile-email-update-store";
+
 import { EnterEmail } from "./EnterEmail";
 import { VerifyEmail } from "./VerifyEmail";
 

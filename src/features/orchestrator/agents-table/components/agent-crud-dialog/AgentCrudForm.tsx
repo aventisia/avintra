@@ -1,16 +1,13 @@
-import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
-import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
-import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
-import { AutherCard } from "@aventisia/ui/form";
+import { AutherCard, Form, InputField, SwitchField } from "@aventisia/ui/form";
 import { useOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
+import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 
 import { assignMachines } from "../../apis/agents-table-apis";
 import {
@@ -24,6 +21,7 @@ import {
 import { AgentAssignMachineDto } from "../../dtos/agent-assign-machine-dto";
 import { useDefineAgentForm } from "../../hooks/useDefineAgentForm";
 import { useMachinesSelectTableStore } from "../../stores/machines-select-table-store";
+
 import { MachineSelectTable } from "./machines-select-table/MachineSelectTable";
 
 export const AgentCrudForm = () => {

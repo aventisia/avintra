@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
+
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 
 /**

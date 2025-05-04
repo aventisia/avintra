@@ -1,10 +1,10 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { EmailUpdateZodSchema } from "../types/EmailUpdateZodSchema";
 

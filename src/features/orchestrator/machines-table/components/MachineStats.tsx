@@ -1,11 +1,11 @@
+import Enumerable from "linq";
+import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
-
-import Enumerable from "linq";
-import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import type { MachinesTableDto } from "../dtos/machines-table-dto";
 

@@ -1,5 +1,4 @@
-import { InputFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 
 // execution Id
 export const idProps: InputFieldProps = {

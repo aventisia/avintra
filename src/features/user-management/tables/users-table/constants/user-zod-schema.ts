@@ -2,9 +2,9 @@ import {
   emailError,
   maxLenError,
   nameError,
+  nameRegex,
   reqError,
 } from "@aventisia/ui/utils";
-import { nameRegex } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**

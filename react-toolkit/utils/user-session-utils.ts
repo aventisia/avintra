@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 import {
   DEV_JWT_LS_KEY,
   SESSION_EXPIRED_LS_KEY,
@@ -7,8 +9,6 @@ import {
   IJwtPayload,
   IUserSessionStore,
 } from "@/react-toolkit/types/user-session-types";
-
-import { jwtDecode } from "jwt-decode";
 
 const setUserSessionLocally = (
   userSession: UserSessionDto,

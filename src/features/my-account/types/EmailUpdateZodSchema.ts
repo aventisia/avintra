@@ -1,6 +1,6 @@
-import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
-
 import { z } from "zod";
+
+import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
 
 export const EmailUpdateZodSchema = z.object({
   email: z

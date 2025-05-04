@@ -1,5 +1,3 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
@@ -7,6 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
 import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";

@@ -1,17 +1,14 @@
-import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
-import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
-import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import { SelectField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
+import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
+import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -29,6 +26,7 @@ import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
+
 import { AddedByAutherCard } from "./AddedByAutherCard";
 import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
 

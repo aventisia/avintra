@@ -1,6 +1,6 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { Tabs, TabsContent } from "@aventisia/ui/tabs";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 
 const MachinesTable = lazy(() =>
   import("./MachinesTable").then((module) => ({

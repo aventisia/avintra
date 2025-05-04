@@ -1,5 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
-import { NodeViewProps, NodeViewWrapper, isNumber } from "@tiptap/react";
+import { isNumber, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import { useMemo } from "react";
 
 import { useImageLoad } from "../../../hooks/use-image-load";

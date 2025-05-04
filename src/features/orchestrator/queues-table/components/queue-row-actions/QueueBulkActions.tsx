@@ -1,9 +1,13 @@
 import { Separator } from "@aventisia/ui";
-import { DTBulkActions } from "@aventisia/ui/data-table";
-import { DTBulkDeleteAction } from "@aventisia/ui/data-table";
-import { DTSelectionInfo } from "@aventisia/ui/data-table";
-import { useListOptimisticMutation } from "@aventisia/ui/hooks";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import {
+  DTBulkActions,
+  DTBulkDeleteAction,
+  DTSelectionInfo,
+} from "@aventisia/ui/data-table";
+import {
+  useListOptimisticMutation,
+  useShowAlertHandler,
+} from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";

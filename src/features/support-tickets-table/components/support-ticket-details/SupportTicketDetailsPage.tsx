@@ -1,5 +1,4 @@
-import { DotSeparator } from "@aventisia/ui";
-import { Separator } from "@aventisia/ui";
+import { DotSeparator, Separator } from "@aventisia/ui";
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { formatDistanceToNow } from "date-fns";
@@ -12,6 +11,7 @@ import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
 import { STRemarkRowActions } from "../st-remark-row-actions/STRemarkRowActions";
 import { STRemarkEditForm } from "../support-ticket-remark/STRemarkEditForm";
 import { STRemarkForm } from "../support-ticket-remark/STRemarkForm";
+
 import { STDetailsSideComponent } from "./STDetailsSideComponent";
 
 export const SupportTicketDetailsPage = () => {

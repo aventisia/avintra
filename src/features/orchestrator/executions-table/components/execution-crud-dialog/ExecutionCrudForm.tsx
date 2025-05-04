@@ -1,8 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
-import { AutherCard } from "@aventisia/ui/form";
+import { AutherCard, Form, InputField, SwitchField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 

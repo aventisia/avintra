@@ -1,15 +1,11 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import Lucide from "@/react-toolkit/ui/Lucide";
-
-import { Button } from "@aventisia/ui/buttons";
-import { ResendCodeButton } from "@aventisia/ui/buttons";
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import { InputOtpField } from "@aventisia/ui/form";
+import { Button, ResendCodeButton, SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputField, InputOtpField } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
 
 import { verificationCodeProps } from "../../constants/constants";
 import type { deactivationVerifyEmailZodSchema } from "../../constants/deactivation-verify-email-zod-schema";

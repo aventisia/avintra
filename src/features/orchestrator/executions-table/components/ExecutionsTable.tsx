@@ -1,21 +1,23 @@
 import { Separator } from "@aventisia/ui";
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTCreateButton } from "@aventisia/ui/data-table";
-import { DTHeading } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { DTViewOptions } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchExecutions } from "../hooks/useFetchExecutions";
-import { executionsTableColumns } from "./ExecutionsTableColumns";
+
 import { ExecutionCrudDialog } from "./execution-crud-dialog/ExecutionCrudDialog";
 import { ExecutionBulkActions } from "./execution-row-actions/ExecutionBulkActions";
+import { executionsTableColumns } from "./ExecutionsTableColumns";
 
 /**
  * Renders a table of executions.

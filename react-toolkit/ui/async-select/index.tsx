@@ -1,6 +1,3 @@
-import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
-import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
-
 import { Button } from "@aventisia/ui/buttons";
 import {
   Command,
@@ -15,6 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { ISelectOption } from "@aventisia/ui/types";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+
+import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
+import { areStringsEqualCaseInsensitive } from "@/react-toolkit/utils";
 
 export interface AsyncSelectProps<T> {
   /** Async function to fetch options */

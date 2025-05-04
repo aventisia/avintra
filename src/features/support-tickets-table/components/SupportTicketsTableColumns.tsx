@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
+
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
 
 /**

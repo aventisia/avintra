@@ -1,6 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
+import { Form, InputField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";

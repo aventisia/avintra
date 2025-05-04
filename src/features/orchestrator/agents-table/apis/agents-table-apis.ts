@@ -1,7 +1,7 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import type { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
 import { AgentsTableDto } from "../dtos/agents-table-dto";

@@ -1,7 +1,9 @@
-import { InputFieldProps } from "@aventisia/ui/form";
-import { SelectFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+  TextareaFieldProps,
+} from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
 import { ModelLLMEnum } from "../enums/model-llm-enum";

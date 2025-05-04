@@ -2,9 +2,9 @@ import {
   maxLenError,
   minLenError,
   numericError,
+  numericRegex,
   reqError,
 } from "@aventisia/ui/utils";
-import { numericRegex } from "@aventisia/ui/utils";
 import * as z from "zod";
 
 export const deactivationVerifyEmailZodSchema = z.object({

@@ -1,10 +1,12 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
-import { IOptimisticMutation } from "@aventisia/ui/dtos";
-import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
-import { TrueFalseResultDto } from "@aventisia/ui/dtos";
-import { IHttpResponse } from "@aventisia/ui/dtos";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
 import { ISelectOption } from "@aventisia/ui/types";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 

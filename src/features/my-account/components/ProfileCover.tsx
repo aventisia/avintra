@@ -1,7 +1,7 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import clsx from "clsx";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 export const ProfileCover = () => {
   const { userSession } = useUserSessionStore(
@@ -11,12 +11,12 @@ export const ProfileCover = () => {
   );
   return (
     <div className="box flex flex-col p-1.5 pb-20">
-      <div className="relative h-60 w-full rounded-[0.6rem] bg-gradient-to-b from-theme-1/95 to-theme-2/95">
+      <div className="from-theme-1/95 to-theme-2/95 relative h-60 w-full rounded-[0.6rem] bg-gradient-to-b">
         <div
           className={clsx([
             "relative h-full w-full overflow-hidden",
-            "before:absolute before:inset-0 before:-mt-[50rem] before:bg-texture-white before:content-['']",
-            "after:absolute after:inset-0 after:-mt-[50rem] after:bg-texture-white after:content-['']",
+            "before:bg-texture-white before:absolute before:inset-0 before:-mt-[50rem] before:content-['']",
+            "after:bg-texture-white after:absolute after:inset-0 after:-mt-[50rem] after:content-['']",
           ])}
         ></div>
         <div className="absolute inset-x-0 top-0 mx-auto mt-36 h-32 w-32">

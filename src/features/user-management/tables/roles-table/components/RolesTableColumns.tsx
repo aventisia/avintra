@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { RoleTableDTO } from "../dtos/roles-table-dto";
+
 import { RoleRowActions } from "./role-row-actions/RoleRowActions";
 
 /**

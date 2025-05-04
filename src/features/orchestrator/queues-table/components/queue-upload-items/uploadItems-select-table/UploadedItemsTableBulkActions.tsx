@@ -44,7 +44,7 @@ export function UploadedItemsTableBulkActions<TData>({
   return (
     <>
       {selectedRows.length > 0 && (
-        <div className="flex items-center group gap-2">
+        <div className="group flex items-center gap-2">
           <DTSelectionInfo table={table} />
           <Separator orientation="vertical" className="h-6 w-[0.5px]" />
           <DTBulkDeleteAction

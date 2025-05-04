@@ -1,9 +1,9 @@
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@aventisia/ui/dropdown-menu";
-import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
 import { CaretDownIcon, LetterCaseCapitalizeIcon } from "@radix-ui/react-icons";
 import type { Level } from "@tiptap/extension-heading";

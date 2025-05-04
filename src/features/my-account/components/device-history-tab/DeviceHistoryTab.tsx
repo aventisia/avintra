@@ -1,8 +1,9 @@
-import Lucide from "@/react-toolkit/ui/Lucide";
-
 import { Skeleton } from "@aventisia/ui";
 
+import Lucide from "@/react-toolkit/ui/Lucide";
+
 import useGetDeviceHistory from "../../hooks/useGetDeviceHistory";
+
 import DeviceHistoryTable from "./DeviceHistoryTable";
 
 export const DeviceHistoryTab = () => {

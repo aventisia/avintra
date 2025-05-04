@@ -1,7 +1,4 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
-import { DotSeparator } from "@aventisia/ui";
-import { Separator } from "@aventisia/ui";
+import { DotSeparator, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { Form } from "@aventisia/ui/form";
@@ -13,6 +10,8 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
 import { getTicketQueryKey } from "../../constants/constants";
@@ -26,6 +25,7 @@ import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-
 import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 import { STRemarkRowActionsNew } from "../st-remark-row-actions/STRemarkRowActionsNew";
 import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideComponent";
+
 import { STStatusUpdateAction } from "./STStatusUpdateAction";
 
 export const SupportTicketCrudFormNew = () => {

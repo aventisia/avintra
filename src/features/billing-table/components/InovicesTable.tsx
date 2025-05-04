@@ -1,17 +1,19 @@
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { DTViewOptions } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchInovices } from "../hooks/useFetchInovices";
+
+import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
 import { inovicesTableColumns } from "./InovicesTableColumns";
 import { InvoicesStats } from "./InvoicesStats";
-import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
 
 /**
  * Renders a table of billing.

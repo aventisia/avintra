@@ -1,23 +1,25 @@
-import { columnDisplayNames } from "@/features/flows-table/constants/column-display-names";
-
 import { Separator } from "@aventisia/ui";
-import { DataTable } from "@aventisia/ui/data-table";
-import { DTPagination } from "@aventisia/ui/data-table";
-import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { DTCreateButton } from "@aventisia/ui/data-table";
-import { DTHeading } from "@aventisia/ui/data-table";
-import { DTSearchBox } from "@aventisia/ui/data-table";
-import { DTViewOptions } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
+import { columnDisplayNames } from "@/features/flows-table/constants/column-display-names";
 
 import { usersTableColumns } from "../../users-table/components/UsersTableColumns";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { roleTableColumnvisibilityState } from "../constants/column-visibility-state";
 import { useFetchRoles } from "../hooks/useFetchRoles";
-import { RolesTableColumns } from "./RolesTableColumns";
+
 import { RoleCrudDialog } from "./role-crud-dialog/RoleCrudDialog";
 import { RolesBulkActions } from "./role-row-actions/RolesBulkActions";
+import { RolesTableColumns } from "./RolesTableColumns";
 
 /**
  * Renders a table of users.

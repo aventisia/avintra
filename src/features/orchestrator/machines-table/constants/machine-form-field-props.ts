@@ -1,11 +1,13 @@
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-
-import { InputFieldProps } from "@aventisia/ui/form";
-import { SelectFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
 
 import { getLicensesToSelect } from "../../licenses-table/apis/licenses-table-apis";
 

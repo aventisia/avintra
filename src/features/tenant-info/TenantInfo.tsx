@@ -1,8 +1,4 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import Lucide from "@/react-toolkit/ui/Lucide";
-
-import { Separator } from "@aventisia/ui";
-import { Switch } from "@aventisia/ui";
+import { Separator, Switch } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
   Card,
@@ -15,6 +11,9 @@ import {
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
 
 import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
 

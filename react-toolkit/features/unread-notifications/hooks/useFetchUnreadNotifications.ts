@@ -1,11 +1,11 @@
-import { getUnreadNotifications } from "@/react-toolkit/features/unread-notifications/apis/unread-notifications-apis";
-import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
-import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { getUnreadNotifications } from "@/react-toolkit/features/unread-notifications/apis/unread-notifications-apis";
+import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
+import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
 /**
  * Hook to fetch unread notifications for the user

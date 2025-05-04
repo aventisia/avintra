@@ -1,12 +1,11 @@
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputField } from "@aventisia/ui/form";
+import type { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField } from "@aventisia/ui/form";
-import type { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import { useCreateCodeMutationForEmailUpdate } from "../../hooks/useCreateCodeMutationForEmailUpdate";
 import { useDefineEmailUpdateForm } from "../../hooks/useDefineEmailUpdateForm";

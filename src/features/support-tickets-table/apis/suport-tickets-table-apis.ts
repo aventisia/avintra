@@ -1,7 +1,6 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
-import { IOptimisticMutation } from "@aventisia/ui/dtos";
-import { IHttpResponse } from "@aventisia/ui/dtos";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { STUpdateByReviewerDto } from "../dtos/STUpdateByReviewerDto";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";

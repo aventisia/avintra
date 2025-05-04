@@ -1,7 +1,7 @@
+import { Outlet } from "react-router-dom";
+
 import { ProfileCover } from "@/features/my-account/components/ProfileCover";
 import { MyAccountSidebar } from "@/features/my-account/components/Sidebar";
-
-import { Outlet } from "react-router-dom";
 
 export function MyAccount() {
   return (
