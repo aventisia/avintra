@@ -1,12 +1,12 @@
-import { CrudActionTypeLong } from "@/react-toolkit/constants";
-import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
-import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-
+import { NotFoundPage } from "@aventisia/ui/layout";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
-import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 
-import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
+
+import { AppErrorPage } from "./components/layout/AppErrorPage";
+import { AppLayout } from "./components/layout/AppLayout";
+import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import {
   AccountDeactivation,
   DeviceHistory,
@@ -22,10 +22,6 @@ import { FlowsPage } from "./pages/FlowsPage";
 import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
-import { SupportTicketsPage } from "./pages/SupportTicketsPage";
-import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantInfoPage } from "./pages/TenantsInfoPage";
-import { UsersPage } from "./pages/UsersPage";
 import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
@@ -36,12 +32,16 @@ import { VaultPage } from "./pages/orchestrator/VaultPage";
 import { PricingPage } from "./pages/sa/PricingPage";
 import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
+import { SupportTicketsPage } from "./pages/SupportTicketsPage";
+import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
+import { TenantInfoPage } from "./pages/TenantsInfoPage";
+import { UsersPage } from "./pages/UsersPage";
 
 const routerConfig: RouteObject[] = [
   {
     path: "/",
-    element: <WorkspaceUILayout />,
-    errorElement: <ErrorPage />,
+    element: <AppLayout />,
+    errorElement: <AppErrorPage />,
     children: [
       {
         path: "/",
@@ -62,7 +62,7 @@ const routerConfig: RouteObject[] = [
       {
         path: "/account",
         element: <MyAccountPage />,
-        errorElement: import.meta.env.DEV && <ErrorPage />,
+        errorElement: <AppErrorPage />,
         children: [
           {
             index: true,
@@ -106,7 +106,7 @@ const routerConfig: RouteObject[] = [
       {
         path: "/orchestrator",
         element: <Orchestrator />,
-        errorElement: import.meta.env.DEV && <ErrorPage />,
+        errorElement: <AppErrorPage />,
         children: [
           {
             index: true,
@@ -185,8 +185,8 @@ const routerConfig: RouteObject[] = [
   },
   {
     path: "/redirect",
-    element: <RedirectPage />,
-    errorElement: <ErrorPage />,
+    element: <AppRedirectPage />,
+    errorElement: <AppErrorPage />,
   },
 ];
 

@@ -12,6 +12,7 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { toast } from "@aventisia/ui/sonner";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
