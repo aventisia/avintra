@@ -59,29 +59,31 @@ export const FileUploadDropzone = ({
         </label>
       </div>
 
-      <div className="mt-2">
-        <p className="my-1 text-sm">Uploaded files</p>
-        <ul>
-          {acceptedFiles?.map((file, i) => (
-            <li key={file.name}>
-              <section className="flex justify-start items-center border rounded-lg shadow-sm p-2">
-                <span className="p-2    me-2">{i + 1}.</span>
-                {"  "}
-                <span>
-                  <p className=" text-sm">{file.name}</p>
-                  <p className="  text-muted-foreground text-xs">
-                    {file.relativePath}
-                  </p>
-                </span>
-                <span className="ms-auto group flex gap-4 items-center">
-                  <p>({(file.size / 1024).toFixed(2)} KB)</p>
-                  <CrossCircledIcon className="w-5 h-5 stroke-destructive hover:cursor-pointer" />
-                </span>
-              </section>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {acceptedFiles && (
+        <div className="mt-2">
+          <p className="my-1 text-sm">Uploaded files</p>
+          <ul>
+            {acceptedFiles?.map((file, i) => (
+              <li key={file.name}>
+                <section className="flex justify-start items-center border rounded-lg shadow-sm p-2">
+                  <span className="p-2    me-2">{i + 1}.</span>
+                  {"  "}
+                  <span>
+                    <p className=" text-sm">{file.name}</p>
+                    <p className="  text-muted-foreground text-xs">
+                      {file.relativePath}
+                    </p>
+                  </span>
+                  <span className="ms-auto group flex gap-4 items-center">
+                    <p>({(file.size / 1024).toFixed(2)} KB)</p>
+                    <CrossCircledIcon className="w-5 h-5 stroke-destructive hover:cursor-pointer" />
+                  </span>
+                </section>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
