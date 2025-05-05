@@ -1,9 +1,28 @@
 // components/ContextTablesSection.tsx
-import { Controller, UseFormReturn } from "react-hook-form";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@aventisia/ui/alert-dialog";
 import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
+import { DropdownMenuContent } from "@aventisia/ui/dropdown-menu";
 import { InputField } from "@aventisia/ui/form";
 import { SelectField } from "@aventisia/ui/form";
-import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Controller, UseFormReturn } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
 import {
   headerNameProps,
   instructionsProps,
@@ -11,29 +30,10 @@ import {
   tableNameProps,
   typeProps,
 } from "../../constants/info-extractor-form-field-props";
-import { z } from "zod";
-import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
-import { Tabs, TabsTrigger, TabsList } from "@aventisia/ui/tabs";
-import { TabsContent } from "@radix-ui/react-tabs";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import { useShallow } from "zustand/react/shallow";
-import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
-import { DropdownMenuContent } from "@aventisia/ui/dropdown-menu";
-import { TabsActionsTrigger } from "./TabsActionsTrigger";
+import { useInformationExtractorTableStore } from "../../stores/info-extractor-table-store";
 import { TabsDeleteAction } from "./TabsActions/TabsDeleteAction";
 import { TabsRenameAction } from "./TabsActions/TabsRenameAction";
-import { useInformationExtractorTableStore } from "../../stores/info-extractor-table-store";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogCancel,
-} from "@aventisia/ui/alert-dialog";
-import { buttonVariants } from "@aventisia/ui/buttons";
+import { TabsActionsTrigger } from "./TabsActionsTrigger";
 
 type Table = NonNullable<
   z.infer<typeof addInfoExtractorFormZodSchema>["tables"]
