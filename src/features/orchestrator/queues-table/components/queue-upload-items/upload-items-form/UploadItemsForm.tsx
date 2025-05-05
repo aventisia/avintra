@@ -39,7 +39,7 @@ export const UploadItemsForm = () => {
     QueueWorkItemDto,
     QueueWorkItemDto,
     boolean
-  >(uploadWorkItem, ["work-item", rowId]);
+  >(uploadWorkItem, ["work-item", rowId], undefined);
 
   // Handle file upload
   const handleFileUpload = (file: File) => {
