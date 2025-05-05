@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export const useOptimisticMutation = <TData, TResponseResult, TQueryData>(
   mutationFn: (data: TData) => Promise<IHttpResponse<TResponseResult>>,
   queryKey: string[],
-  updatedQueryData?: TQueryData[],
+  updatedQueryData: TQueryData[] | undefined,
   showSuccessToast: boolean = true,
 ) => {
   // Get query client
