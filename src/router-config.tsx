@@ -41,6 +41,8 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
 
+
+
 const routerConfig: RouteObject[] = [
   {
     path: "/",
@@ -204,7 +206,9 @@ const routerConfig: RouteObject[] = [
 
 export const router = createBrowserRouter(routerConfig, {
   basename: import.meta.env.BASE_URL,
-}).subscribe((state) => {
+});
+
+router.subscribe((state) => {
   const currentMatch = state.matches[state.matches.length - 1];
   const id = currentMatch.params["id"];
   const action = currentMatch.params["a"];
