@@ -5,8 +5,8 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
-
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
+import { WorkItemsTableCellLink } from "./WorkItemsTableCellLink";
 
 /**
  * Array of table columns for the queues table.
@@ -42,7 +42,9 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <WorkItemsTableCellLink rowId={row.original.id}>
+        {row.getValue<string>("name")}
+      </WorkItemsTableCellLink>
     ),
   },
 
