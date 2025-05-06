@@ -1,3 +1,4 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import {
   CheckAvailabilityDto,
   IHttpResponse,
@@ -5,11 +6,9 @@ import {
   TrueFalseResultDto,
 } from "@aventisia/ui/dtos";
 
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-
 import { QueueCreateUpdateDto } from "../dtos/queue-create-update-dto";
-import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
+import { QueueWorkItemDto } from "../work-items-table/dtos/queue-work-item-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
 
