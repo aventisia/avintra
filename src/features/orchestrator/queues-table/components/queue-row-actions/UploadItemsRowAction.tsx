@@ -1,18 +1,10 @@
-import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
-import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { Upload } from "lucide-react";
-import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
-interface UploadItemsRowActionProps {
-  rowId: string;
-  size?: "sm" | "md";
-}
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 
-export const UploadItemsRowAction: React.FC<UploadItemsRowActionProps> = ({
-  size = "md",
-  rowId,
-}) => {
+export const UploadItemsRowAction = ({ rowId }: { rowId: string }) => {
   // Get data-table crud dialog store state and actions
   const { setCrudDialogOptions } = useDTCrudDialogStore(
     useShallow((state) => ({
@@ -29,7 +21,6 @@ export const UploadItemsRowAction: React.FC<UploadItemsRowActionProps> = ({
           showDialog: true,
         });
       }}
-      size={size}
       content="Upload Items"
       Icon={Upload}
     />
