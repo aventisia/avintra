@@ -1,22 +1,20 @@
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
-import { PlayIcon, PauseIcon, StopIcon } from "@heroicons/react/24/solid";
+import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { invoke } from "@tauri-apps/api/core";
 
 const ExecuteFlow = () => {
   const isFlowExecuting = false;
 
-  const openFile = () => {
-    console.log("opening file");
-    try {
-      const filePath =
-        "C:\\My Space\\PLAYGROUND\\StockAnalysisAutomationDemo\\StockAnalysisAutomationDemo.exe";
-      if (window)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).electron.openFile(filePath);
-    } catch (error) {
-      console.log("Error in opening file", error);
-    }
+  // Tauri API to open desktop executor
+  const openDesktopExecutor = async () => {
+    await invoke("launch_desktop_executor", {
+      jwt: "dummy_jwt",
+    })
+      .then((res) => console.log(res))
+      .catch((e) => console.error(e));
   };
+
   return (
     <div className="flex h-7 items-center justify-center gap-2 rounded-lg bg-muted">
       {isFlowExecuting ? (
@@ -36,7 +34,7 @@ const ExecuteFlow = () => {
         <Button
           variant={"ghost"}
           className="group h-7 gap-1.5 whitespace-nowrap rounded-md px-2"
-          onClick={() => openFile()}
+          onClick={() => openDesktopExecutor()}
         >
           <PlayIcon className="h-4 w-4 text-green-500" />
           Execute
