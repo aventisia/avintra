@@ -26,13 +26,11 @@ def getTargetServer(branchName) {
     }
 }
 
-// Get the Gitea npm token from Jenkins credentials
-environment {
-  GITEA_NPM_REGISTRY_TOKEN = credentials('gitea_npm_registry_token')
-}
-
 pipeline {
     agent any
+    environment {
+        GITEA_NPM_REGISTRY_TOKEN = credentials('gitea_npm_registry_token')
+    }
     tools {
         nodejs 'NodeJS 20.18.1'
     }
