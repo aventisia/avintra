@@ -46,8 +46,7 @@ export function PayloadTableBulkActions<TData>({
     usePayloadDataStore.subscribe(
       (state) => state.payloadData,
       (payload) => {
-        if (!currentWorkItem) {
-          // toast.error("Something went wrong while updating payload data");
+        if (!currentWorkItem || table.getSelectedRowModel().rows.length <= 0) {
           return;
         }
         mutatePayloadData({
@@ -57,7 +56,7 @@ export function PayloadTableBulkActions<TData>({
         });
       },
     );
-  }, [currentWorkItem?.id]);
+  }, []);
 
   // Get rowIds of selected rows
   const selectedRows = Enumerable.from(

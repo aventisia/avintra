@@ -1,13 +1,13 @@
-import { DataTableSkeleton, DTHeading } from "@aventisia/ui/data-table";
-import { useDocumentTitle } from "@aventisia/ui/hooks";
-import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
+import { DataTableSkeleton, DTHeading } from "@aventisia/ui/data-table"
+import { useDocumentTitle } from "@aventisia/ui/hooks"
+import { useEffect } from "react"
+import { useShallow } from "zustand/react/shallow"
 
-import { TABLE_HEADING } from "../../constants";
-import { useFetchQueuesWorkItems } from "../../hooks/useFetchQueuesWorkItems";
-import { usePayloadDataStore } from "../../store/payload-data-store";
+import { TABLE_HEADING } from "../../constants"
+import { useFetchQueuesWorkItems } from "../../hooks/useFetchQueuesWorkItems"
+import { usePayloadDataStore } from "../../store/payload-data-store"
 
-import { DynacmicDataTable } from "./DynacmicDataTable";
+import { DynacmicDataTable } from "./DynacmicDataTable"
 
 /**
  * Renders a table of queues.
@@ -20,11 +20,10 @@ export const WorkItemPayloadDataTable = () => {
 
   const { isLoading, data: reaspose } = useFetchQueuesWorkItems();
 
-  const { payloadData, setPayloadData, currentWorkItem, setCurrentWorkItem } =
+  const { payloadData, setPayloadData, setCurrentWorkItem } =
     usePayloadDataStore(
       useShallow((state) => ({
         payloadData: state.payloadData,
-        currentWorkItem: state.currentWorkItem,
         setPayloadData: state.setPayloadData,
         setCurrentWorkItem: state.setCurrentWorkItem,
       })),
@@ -47,9 +46,7 @@ export const WorkItemPayloadDataTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading
-              heading={`Payload Data: ${currentWorkItem?.queueName ?? ""} `}
-            />
+            <DTHeading heading={`Payload Data`} />
           </div>
 
           <DynacmicDataTable data={payloadData} isLoading={isLoading} />

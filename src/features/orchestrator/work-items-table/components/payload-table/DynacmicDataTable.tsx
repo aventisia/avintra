@@ -17,6 +17,8 @@ import {
 import Enumerable from "linq";
 import { useMemo, useState } from "react";
 
+import { PayloadTableHeading } from "../table-components/TableHeading";
+
 import { PayloadTableBulkActions } from "./PayloadTableBulkActions";
 import { SearchDataTable } from "./SearchDataTable";
 
@@ -120,6 +122,8 @@ export function DynacmicDataTable<TData extends object>({
   ) : (
     <>
       <div className="my-2 flex items-center justify-end">
+        <PayloadTableHeading />
+
         <div className="me-5 flex items-center gap-2">
           <DTViewOptions {...{ table, columnDisplayNames }} />
 

@@ -9,9 +9,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue-tran
 /**
  * Retrieves list of queues work items by the queue id.
  */
-export const getQueuesWorkItem = (id: string) => {
+export const getQueuesWorkItemPayload = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}/${id}`)
+    .get<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}/payload/${id}`)
     .then((res) => res.data);
 };
 
