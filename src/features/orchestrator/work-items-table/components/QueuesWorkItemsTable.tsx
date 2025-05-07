@@ -1,17 +1,22 @@
-import { useEffect, useState } from "react";
-
 import {
-    DataTable, DataTableSkeleton, DTHeading, DTPagination, DTSearchBox, DTViewOptions
+  DataTable,
+  DataTableSkeleton,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { useEffect, useState } from "react";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { useFetchQueusWorkItemsList } from "../hooks/useFetchQueusWorkItemsList";
+
 import { QueuesWorkItemsTableColumns } from "./QueuesWorkItemsTableColumns";
 import { WorkItemsTableBulkActions } from "./table-actions/WorkItemsTableBulkActions";
+import { PayloadTableHeading } from "./table-components/TableHeading";
 
 /**
  * Renders a table of queues.
@@ -45,7 +50,7 @@ export const QueuesWorkItemsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <PayloadTableHeading />
 
             <div className="flex items-center gap-2">
               <DTSearchBox
