@@ -1,19 +1,18 @@
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
-import { useDocumentTitle } from "@aventisia/ui/hooks";
-
-import { useUploadItemsStore } from "../../store/upload-items-store";
+import { usePayloadDataStore } from "../../store/payload-data-store";
 
 export const FlowsTableHeading: React.FC = () => {
   // Get flows store state and actions
-  const { queueName } = useUploadItemsStore(
+  const { queueName } = usePayloadDataStore(
     useShallow((state) => ({
-      queueName: state.queueName,
+      queueName: state.currentWorkItem?.queueName,
     })),
   );
 
   // Set the document title to "Project Name | flows".
-  useDocumentTitle(`${queueName} | Queues`);
+  useDocumentTitle(`${queueName ?? ""} | Queues`);
 
   return (
     <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
