@@ -10,7 +10,7 @@ import {
 } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 import Enumerable from "linq";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { updateQueuesWorkItems } from "../../apis/work-items-table-apis";
@@ -26,6 +26,8 @@ export function PayloadTableBulkActions<TData>({
 }: Readonly<PayloadTableBulkActionsProps<TData>>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  const [tableData, setTableData] = useState<Array<object>>([]);
 
   const { payloadData, currentWorkItem, setPayloadData } = usePayloadDataStore(
     useShallow((state) => ({
@@ -46,14 +48,7 @@ export function PayloadTableBulkActions<TData>({
     usePayloadDataStore.subscribe(
       (state) => state.payloadData,
       (payload) => {
-        if (!currentWorkItem || table.getSelectedRowModel().rows.length <= 0) {
-          return;
-        }
-        mutatePayloadData({
-          id: currentWorkItem.id,
-          queueId: currentWorkItem.queueId,
-          payloadData: JSON.stringify(payload),
-        });
+        if (payload) setTableData(payload);
       },
     );
   }, []);
@@ -72,6 +67,15 @@ export function PayloadTableBulkActions<TData>({
       .toArray();
 
     setPayloadData(toRemove as Array<object>);
+
+    if (!currentWorkItem || table.getSelectedRowModel().rows.length <= 0) {
+      return;
+    }
+    mutatePayloadData({
+      id: currentWorkItem.id,
+      queueId: currentWorkItem.queueId,
+      payloadData: JSON.stringify(tableData),
+    });
     table.toggleAllRowsSelected(false);
 
     console.log(payloadData);
