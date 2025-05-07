@@ -63,12 +63,7 @@ export const UsersTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={usersTableColumns.length}
-              />
-            </div>
+            <DataTable table={table} columnsLength={usersTableColumns.length} />
           </UserCrudDialog>
 
           {/* Data table Pagination component */}

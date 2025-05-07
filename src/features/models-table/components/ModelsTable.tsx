@@ -62,12 +62,10 @@ export const ModelsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={modelsTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={modelsTableColumns.length}
+            />
           </ModelCrudDialog>
 
           {/* Data table Pagination component */}

@@ -63,12 +63,10 @@ export const TenantsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={tenantsTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={tenantsTableColumns.length}
+            />
           </TenantCrudDialog>
 
           {/* Data table Pagination component */}

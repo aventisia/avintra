@@ -62,12 +62,10 @@ export const QueuesTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={queuesTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={queuesTableColumns.length}
+            />
           </QueueCrudDialog>
 
           {/* Data table Pagination component */}

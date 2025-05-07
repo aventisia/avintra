@@ -98,7 +98,7 @@ export const SupportTicketsTable = () => {
               </div>
             </div>
             {/* Data table container */}
-            <div className="rounded-md border">
+            <div>
               {/* Main data table component to render the support tickets data. */}
               <StFilterByStatusOptions />
               <DataTable

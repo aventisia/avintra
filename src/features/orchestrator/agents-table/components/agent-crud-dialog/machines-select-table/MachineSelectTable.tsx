@@ -64,12 +64,10 @@ export function MachineSelectTable({
       </div>
 
       {/* Data table to render data */}
-      <div className="rounded-md border">
-        <DataTable
-          table={table}
-          columnsLength={machineSelectTableColumns.length}
-        />
-      </div>
+      <DataTable
+        table={table}
+        columnsLength={machineSelectTableColumns.length}
+      />
       <div className="mt-2">
         <MachineSelectTablePagination
           isRowSelectionEnabled={isRowSelectionEnabled}

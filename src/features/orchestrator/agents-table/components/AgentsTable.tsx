@@ -68,12 +68,10 @@ export const AgentsTable = () => {
             {/* Data table to render data */}
             <div className="flex flex-col gap-2">
               <AgentStats data={data?.data} />
-              <div className="rounded-md border">
-                <DataTable
-                  table={table}
-                  columnsLength={agentsTableColumns.length}
-                />
-              </div>
+              <DataTable
+                table={table}
+                columnsLength={agentsTableColumns.length}
+              />
             </div>
           </AgentCrudDialog>
 

@@ -108,11 +108,9 @@ export function UploadedItemsTable<TData extends object>({
       </div>
 
       {/* Data table to render data */}
-      <div className="rounded-lg border">
-        <ScrollArea className="h-[calc(60vh-15rem)] w-[48vw]">
-          <DataTable table={table} columnsLength={columns.length} />
-        </ScrollArea>
-      </div>
+      <ScrollArea className="h-[calc(60vh-15rem)] w-[48vw]">
+        <DataTable table={table} columnsLength={columns.length} />
+      </ScrollArea>
       <div className="mt-2">
         <UploadedItemsTablePagination table={table} />
       </div>

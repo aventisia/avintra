@@ -63,12 +63,10 @@ export const TriggersTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={triggersTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={triggersTableColumns.length}
+            />
           </TriggerCrudDialog>
 
           {/* Data table Pagination component */}

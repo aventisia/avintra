@@ -78,12 +78,10 @@ export const MachinesTable = () => {
             {/* Data table to render data */}
             <div className="flex flex-col gap-2">
               <MachineStats data={data?.data} />
-              <div className="rounded-md border">
-                <DataTable
-                  table={table}
-                  columnsLength={machinesTableColumns.length}
-                />
-              </div>
+              <DataTable
+                table={table}
+                columnsLength={machinesTableColumns.length}
+              />
             </div>
           </MachineCrudDialog>
 

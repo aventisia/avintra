@@ -63,12 +63,7 @@ export const FlowsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={flowsTableColumns.length}
-              />
-            </div>
+            <DataTable table={table} columnsLength={flowsTableColumns.length} />
           </FlowCrudDialog>
 
           {/* Data table Pagination component */}

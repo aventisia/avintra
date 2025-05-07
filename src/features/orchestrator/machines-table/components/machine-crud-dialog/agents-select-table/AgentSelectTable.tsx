@@ -68,12 +68,7 @@ export function AgentSelectTable({
       </div>
 
       {/* Data table to render data */}
-      <div className="rounded-md border">
-        <DataTable
-          table={table}
-          columnsLength={agentSelectTableColumns.length}
-        />
-      </div>
+      <DataTable table={table} columnsLength={agentSelectTableColumns.length} />
       <div className="mt-2">
         <AgentSelectTablePagination table={table} />
       </div>
