@@ -79,7 +79,7 @@ export const useUpdateFlowSilently = () => {
       saveData({
         id: currentFlow.id,
         reactFlowObject: JSON.stringify(reactFlowObject),
-        flowVariablesObject: JSON.stringify(flowVariablesObject) || null
+        flowVariablesObject: JSON.stringify(flowVariablesObject)
       });
     }, DEBOUNCE_SAVE_DELAY); // Debounce save operation
 
