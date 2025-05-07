@@ -1,5 +1,6 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 
@@ -37,11 +38,7 @@ export const insertQueuesWorkItems = (dto: QueueWorkItemDto) => {
  */
 export const updateQueuesWorkItems = (updatedqueue: QueueWorkItemDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}`, updatedqueue, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    .put<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}`, updatedqueue)
     .then((res) => res.data);
 };
 
