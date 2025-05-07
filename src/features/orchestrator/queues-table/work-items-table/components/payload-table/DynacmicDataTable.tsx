@@ -131,9 +131,7 @@ export function DynacmicDataTable<TData extends object>({
       </div>
 
       {/* Data table to render data */}
-      <div className="rounded-lg border">
-        <DataTable table={table} columnsLength={columns.length} />
-      </div>
+      <DataTable table={table} columnsLength={columns.length} />
       <div className="mt-2">
         {/* Data table Pagination component */}
         <DTPagination table={table} />

@@ -63,12 +63,10 @@ export const VaultTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={vaultsTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={vaultsTableColumns.length}
+            />
           </VaultCrudDialog>
 
           {/* Data table Pagination component */}

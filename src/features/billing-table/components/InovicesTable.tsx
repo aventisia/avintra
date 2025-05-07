@@ -61,13 +61,10 @@ export const InovicesTable = () => {
 
             <div className="flex flex-col gap-2">
               <InvoicesStats />
-
-              <div className="rounded-md border">
-                <DataTable
-                  table={table}
-                  columnsLength={inovicesTableColumns.length}
-                />
-              </div>
+              <DataTable
+                table={table}
+                columnsLength={inovicesTableColumns.length}
+              />
             </div>
           </BillingAddressCrudDialog>
 

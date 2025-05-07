@@ -65,12 +65,10 @@ export const SaLicensesTable = () => {
             {/* Data table to render data */}
             <div className="flex flex-col gap-2">
               <SaLicensesStats />
-              <div className="rounded-md border">
-                <DataTable
-                  table={table}
-                  columnsLength={saLicensesTableColumns.length}
-                />
-              </div>
+              <DataTable
+                table={table}
+                columnsLength={saLicensesTableColumns.length}
+              />
             </div>
           </SaLicenseCrudDialog>
 

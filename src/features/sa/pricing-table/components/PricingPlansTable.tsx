@@ -63,12 +63,10 @@ export const PricingPlansTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={pricingPlansTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={pricingPlansTableColumns.length}
+            />
           </PricingPlanCrudDialog>
 
           {/* Data table Pagination component */}

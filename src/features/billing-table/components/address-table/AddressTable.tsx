@@ -35,12 +35,7 @@ export const AddressTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Data table to render data */}
-          <div className="rounded-md border">
-            <DataTable
-              table={table}
-              columnsLength={AddressTableColumns.length}
-            />
-          </div>
+          <DataTable table={table} columnsLength={AddressTableColumns.length} />
         </div>
       ) : (
         // Show data table skeleton while fetching the billingplans data

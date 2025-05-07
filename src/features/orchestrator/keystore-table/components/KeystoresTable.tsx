@@ -63,12 +63,10 @@ export const KeystoresTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={keystoresTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={keystoresTableColumns.length}
+            />
           </KeystoreCrudDialog>
 
           {/* Data table Pagination component */}

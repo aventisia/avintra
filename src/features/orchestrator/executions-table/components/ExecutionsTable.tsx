@@ -63,12 +63,10 @@ export const ExecutionsTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={executionsTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={executionsTableColumns.length}
+            />
           </ExecutionCrudDialog>
 
           {/* Data table Pagination component */}

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 
 import {
-    DataTable, DataTableSkeleton, DTHeading, DTPagination, DTSearchBox, DTViewOptions
+  DataTable,
+  DataTableSkeleton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
@@ -58,12 +63,10 @@ export const QueuesWorkItemsTable = () => {
           </div>
 
           {/* Data table to render data */}
-          <div className="rounded-md border">
-            <DataTable
-              table={table}
-              columnsLength={QueuesWorkItemsTableColumns.length}
-            />
-          </div>
+          <DataTable
+            table={table}
+            columnsLength={QueuesWorkItemsTableColumns.length}
+          />
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
