@@ -20,6 +20,13 @@ public class QueueTransactionController : BaseApiController
         return ResultHelper(await _queueTransactionService.GetAllTransactionsAsync(queueId));
     }
 
+    // Retrieves a specific queue transaction by its queueId.
+    [HttpGet("payload/{queueId}")]
+    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueWorkItemByQueueIdAsync(Guid queueId)
+    {
+        return ResultHelper(await _queueTransactionService.GetQueueWorkItemByQueueIdAsync(queueId));
+    }
+
     // Retrieves a specific queue transaction by its ID.
     [HttpGet("{queueTransactionId}")]
     public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueByIdAsync(Guid queueTransactionId)

@@ -98,6 +98,50 @@ public class QueueTransactionService : IQueueTransactionService
         return serviceResponse;
     }
 
+
+    // Retrieves a specific queue transaction by its ID.
+    public async Task<ServiceResponse<QueueTransactionDto>> GetQueueWorkItemByQueueIdAsync(Guid queueId)
+    {
+        var serviceResponse = new ServiceResponse<QueueTransactionDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve queue work item. Please try again later."
+        };
+
+        try
+        {
+            // Retrieve the specific queue transaction including related data
+            var queueTransaction = await _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(w => w.QueueId == queueId)
+                .Include(i => i.Queue)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            // Check if the transaction was found
+            if (queueTransaction == null)
+            {
+                _logger.LogInformation("Queue work item with Q ID {QueueId} not found.", queueId);
+                serviceResponse.Message = "Queue transaction not found.";
+                return serviceResponse;
+            }
+
+            // Map entity to DTO and update response
+            serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Queue work item retrieved successfully.";
+
+            _logger.LogInformation("Queue work item with Q ID {QueueId} retrieved successfully.", queueId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving the queue work item with Q ID {QueueId}.", queueId);
+        }
+
+        return serviceResponse;
+    }
+
     // Add a new transaction (work item) to the queue
     public async Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(QueueTransactionDto queueTransactionDto)
     {

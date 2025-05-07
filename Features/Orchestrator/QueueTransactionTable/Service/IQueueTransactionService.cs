@@ -17,6 +17,13 @@ public interface IQueueTransactionService
     Task<ServiceResponse<QueueTransactionDto>> GetQueueTransactionByIdAsync(Guid queueTransactionId);
 
     /// <summary>
+    /// Retrieves the details of a specific queue transaction by its unique identifier.
+    /// </summary>
+    /// <param name="queueId">The ID of the queue to fetch.</param>
+    /// <returns>The task result containing the service response with the details of the requested queue transaction.</returns>
+    Task<ServiceResponse<QueueTransactionDto>> GetQueueWorkItemByQueueIdAsync(Guid queueId);
+
+    /// <summary>
     /// Create a new work item within the queue.
     /// </summary>
     /// <param name="queueTransactionDto">Details of the transaction to be added</param>
