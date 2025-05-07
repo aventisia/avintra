@@ -1,15 +1,23 @@
-import Enumerable from "linq";
-import { useMemo, useState } from "react";
-
 import { Checkbox } from "@aventisia/ui";
 import {
-    DataTable, DataTableSkeleton, DTColumnHeader, DTPagination, DTViewOptions
+  DataTable,
+  DataTableSkeleton,
+  DTColumnHeader,
+  DTPagination,
+  DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { KeyValueLookupType } from "@aventisia/ui/types";
 import {
-    ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
+import Enumerable from "linq";
+import { useMemo, useState } from "react";
 
+import { PayloadTableBulkActions } from "./PayloadTableBulkActions";
 import { SearchDataTable } from "./SearchDataTable";
 
 export function DynacmicDataTable<TData extends object>({
@@ -111,11 +119,7 @@ export function DynacmicDataTable<TData extends object>({
     <DataTableSkeleton />
   ) : (
     <>
-      <div className="my-2 flex items-center justify-between">
-        <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
-          Data
-        </h4>
-
+      <div className="my-2 flex items-center justify-end">
         <div className="me-5 flex items-center gap-2">
           <DTViewOptions {...{ table, columnDisplayNames }} />
 
@@ -133,6 +137,9 @@ export function DynacmicDataTable<TData extends object>({
       <div className="mt-2">
         {/* Data table Pagination component */}
         <DTPagination table={table} />
+
+        {/* Data table bulk action component */}
+        <PayloadTableBulkActions table={table} />
       </div>
     </>
   );
