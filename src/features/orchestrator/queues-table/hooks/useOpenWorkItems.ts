@@ -10,7 +10,7 @@ export const useOpenWorkItems = () => {
   const navigate = useNavigate();
   const handleOpenWorkItemsAction = (rowId: string) => {
     // Open work items in studio
-    navigate(`/orchestrator/queues/work-items/${rowId}`);
+    navigate(`/orchestrator/queues/payload-table/${rowId}`);
   };
 
   // Return the handle open work items action function
