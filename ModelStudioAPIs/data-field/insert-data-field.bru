@@ -1,11 +1,11 @@
 meta {
-  name: Update data field
+  name: Insert data field
   type: http
-  seq: 4
+  seq: 3
 }
 
-put {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/data-field/
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/data-field
   body: none
   auth: none
 }
@@ -14,11 +14,19 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    Id: bru.getGlobalEnvVar("DATA_FIELD_ID"),
     MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    Name: "Liaison",
+    Name: faker.person.jobType(),
     Type: "Text",
     Color: faker.color.human(),
     Description: faker.lorem.sentence(),
   })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "DATA_FIELD_ID",
+    res.getBody().data.id
+    );
+  }
 }

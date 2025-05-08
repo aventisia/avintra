@@ -1,11 +1,11 @@
 meta {
   name: Update extracted data
   type: http
-  seq: 3
+  seq: 4
 }
 
 put {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data/
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data
   body: none
   auth: none
 }
@@ -15,8 +15,8 @@ script:pre-request {
   
   req.setBody({
     Id: bru.getGlobalEnvVar("EDATA_ID"),
-    MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    docId: "01954c6c-58e5-7211-8c5e-152fdb1351ca",
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    docId: bru.getGlobalEnvVar("DOC_ID"),
     accuracy: 99.575648,
     type:"TestData",
     DataObject: faker.lorem.sentence()

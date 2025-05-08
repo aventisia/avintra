@@ -14,7 +14,7 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    queueId: bru.getGlobalEnvVar("QUEUE_ID"),
+    queueId: "f8e814af-16ef-45bb-82de-60a5d49645f8",//bru.getGlobalEnvVar("QUEUE_ID"),
     status: "Pending",
     payloadData: "[{}]"
   })

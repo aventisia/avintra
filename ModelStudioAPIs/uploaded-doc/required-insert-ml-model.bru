@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model/
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model
   body: none
   auth: none
 }
@@ -16,6 +16,7 @@ script:pre-request {
   req.setBody({
     Name: faker.person.jobType(),
     Type: "Extraction",
+    LLM: "LLM1",
     Description: faker.lorem.sentence(),
     Status:"Active",
     TrainedOn: faker.date.anytime()

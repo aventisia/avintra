@@ -1,11 +1,11 @@
 meta {
   name: Insert extracted data
   type: http
-  seq: 2
+  seq: 3
 }
 
 post {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data/
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data
   body: none
   auth: none
 }
@@ -15,7 +15,7 @@ script:pre-request {
   
   req.setBody({
     MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    docId: "01954c6c-58e5-7211-8c5e-152fdb1351ca",
+    docId: "0196ae73-81c4-7ad9-a8bd-b123dc3289c4",
     accuracy: 99.585616,
     type:"TestData",
     DataObject: faker.lorem.sentence()

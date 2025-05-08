@@ -1,11 +1,11 @@
 meta {
-  name: Insert a LLM
+  name: Insert ml model
   type: http
   seq: 2
 }
 
 post {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/llm/
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model
   body: none
   auth: none
 }
@@ -14,14 +14,19 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    Name: faker.person.jobType(),
+    name: faker.person.jobType(),
+    type: "Extraction",
+    lLM: "LLM1",
+    description: faker.lorem.sentence(),
+    status:"Annotation",
+    trainedOn: faker.date.anytime(),
   })
 }
 
 script:post-response {
   if(res.getStatus() == 200){
     bru.setGlobalEnvVar(
-    "LLM_ID",
+    "MLMODEL_ID",
     res.getBody().data.id
     );
   }

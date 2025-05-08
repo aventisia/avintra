@@ -1,7 +1,7 @@
 meta {
   name: Get extracted data list
   type: http
-  seq: 4
+  seq: 5
 }
 
 get {
@@ -12,12 +12,4 @@ get {
 
 params:path {
   type: LabelData
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    MLModelId: "01955fbe-a5f0-7be6-add4-9a1ce445d0b6",
-  })
 }

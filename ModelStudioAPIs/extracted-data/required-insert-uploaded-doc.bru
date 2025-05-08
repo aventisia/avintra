@@ -1,7 +1,7 @@
 meta {
-  name: Insert uploaded doc
+  name: Required - Insert uploaded doc
   type: http
-  seq: 3
+  seq: 2
 }
 
 post {
@@ -15,7 +15,7 @@ script:pre-request {
   
   req.setBody(
     [{
-      mLModelId: "0195a90b-e828-79de-a9cd-bcc76fe39642",
+      mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
       name: faker.person.jobType(),
       extension: "PDF",
       size: 304889,
@@ -23,4 +23,13 @@ script:pre-request {
       path: "/files/4bb3f813-4444-429e-badd-890b7b2b6503.pdf"
     }
     ])
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "DOC_ID",
+    res.getBody().data[0].id
+    );
+  }
 }

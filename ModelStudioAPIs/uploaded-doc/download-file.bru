@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc?fileurl=/files/914697a8-ec1e-4473-ae4c-1a8b580d18fd.pdf
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc?fileurl={{FILE_URL}}
   body: json
   auth: none
 }
 
 params:query {
-  fileurl: /files/914697a8-ec1e-4473-ae4c-1a8b580d18fd.pdf
+  fileurl: {{FILE_URL}}
 }
 
 script:pre-request {

@@ -1,0 +1,15 @@
+meta {
+  name: Get list of uploaded docs
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/list/{{MLMODEL_ID}}/:type
+  body: none
+  auth: none
+}
+
+params:path {
+  type: 
+}
