@@ -1,12 +1,12 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { lazy, Suspense } from "react";
 
-// Lazy load the QueuesWorkItemsTable component.
-const QueuesWorkItemsTable = lazy(() =>
+// Lazy load the WorkItemPayloadDataTable component.
+const WorkItemPayloadDataTable = lazy(() =>
   import(
-    "@/features/orchestrator/work-items-table/components/QueuesWorkItemsTable"
+    "@/features/orchestrator/work-items-table/components/WorkItemPayloadDataTable"
   ).then((module) => ({
-    default: module.QueuesWorkItemsTable,
+    default: module.WorkItemPayloadDataTable,
   })),
 );
 
@@ -17,7 +17,7 @@ const QueuesWorkItemsTable = lazy(() =>
 export const QueuesWorkItemsPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <QueuesWorkItemsTable />
+      <WorkItemPayloadDataTable />
     </Suspense>
   );
 };
