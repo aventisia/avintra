@@ -69,4 +69,9 @@ public class Queue : BaseEntity, IMustHaveTenant
     /// Configures the many-to-many relationship between queue transactions and queues.
     /// </summary>
     public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between machine flow and flow versions.
+    /// </summary>   
+    public virtual ICollection<QueueFlowVersion>? QueueFlowVersions { get; set; }
 }

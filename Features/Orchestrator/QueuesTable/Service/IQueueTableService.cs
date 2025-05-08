@@ -55,4 +55,19 @@ public interface IQueueTableService
     /// It is recommended to use this method to delete multiple queues at once to reduce the number of requests to the server.
     /// </remarks>
     Task<ServiceResponse<bool>> DeleteQueuesAsync(List<Guid> queueIds);
+
+    /// <summary>
+    /// Assign a set of agents to a specified queue.
+    /// </summary>
+    /// <param name="queueId">The ID of the queue to whom the agents will be assigned.</param>
+    /// <param name="agentIds">A collection of agent IDs to be assigned to the queue.</param>
+    /// <returns>A service response indicating whether the operation was successful.</returns>
+    Task<ServiceResponse<bool>> AssignAgentsAsync(Guid queueId, IEnumerable<Guid> agentIds);
+
+    /// <summary>
+    /// Fetch all agents currently assigned to a specified queue.
+    /// </summary>
+    /// <param name="queueId">The ID of the queue whose assigned agents are to be retrieved.</param>
+    /// <returns>A service response containing a list of agents assigned to the queue.</returns>
+    Task<ServiceResponse<IEnumerable<AssignAgentQueueDto>>> GetAgentsAsync(Guid queueId);
 }

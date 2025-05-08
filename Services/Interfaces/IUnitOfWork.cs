@@ -18,6 +18,7 @@ public interface IUnitOfWork
     IMachineFlowRepo MachineFlowRepo { get; }
     IFlowTemplateRepo FlowTemplateRepo { get; }
     IQueueRepo QueueRepo { get; }
+    IQueueFlowVersionRepo QueueFlowVersionRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }
     IJobRepo JobRepo { get; }
     IKeyStoreRepo KeyStoreRepo { get; }

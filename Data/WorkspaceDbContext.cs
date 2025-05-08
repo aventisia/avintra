@@ -109,6 +109,9 @@ public class WorkspaceDbContext : DbContext
         // Configure Many-to-Many relationship between Job and Flow Version
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.Jobs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
 
+        // Configure Many-to-Many relationship between queue and flow version
+        modelBuilder.Entity<Queue>().HasMany(many => many.QueueFlowVersions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
+        modelBuilder.Entity<FlowVersion>().HasMany(many => many.QueueFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
     }
     // On Save Changes - write tenant Id to table
     public override int SaveChanges()

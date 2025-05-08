@@ -434,4 +434,185 @@ public class QueueTableService : IQueueTableService
 
         return serviceResponse;
     }
+
+
+    // Assigns multiple agents to an queue.
+    public async Task<ServiceResponse<bool>> AssignAgentsAsync(Guid queueId, IEnumerable<Guid> agentIds)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to assign agents. Please try again."
+        };
+
+        try
+        {
+            // Check if queue IDs are unique.
+            if (agentIds.Count() != agentIds.Distinct().Count())
+            {
+                _logger.LogInformation("Duplicate queue IDs detected.");
+                serviceResponse.Message = "Queue IDs cannot contain duplicates.";
+                return serviceResponse;
+            }
+
+            // Check if the queue exists and belongs to the current user.
+            var queue = await _unitOfWork.QueueRepo
+                        .GetByConditionAsync(w =>
+                            w.Id == queueId && w.CreatedByUserId == _userId
+                        )
+                        .Include(a => a.QueueFlowVersions)
+                        .FirstOrDefaultAsync();
+
+            if (queue == null)
+            {
+                // If queue does not exist or does not belong to the current user, return failure.
+                _logger.LogInformation("Queue not found.");
+                serviceResponse.Message = "The queue does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if all provided queue IDs are valid and belong to the current user.
+            var agents = await _unitOfWork.FlowVersionRepo
+                        .GetByConditionAsync(w =>
+                            agentIds.Contains(w.Id) && w.CreatedByUserId == _userId
+                        )
+                        .ToListAsync();
+
+            var invalidAgnetIds = agentIds.Except(agents.Select(m => m.Id)).ToList();
+
+            if (invalidAgnetIds.Any())
+            {
+                // If there are invalid queue IDs, return failure.
+                _logger.LogInformation("Invalid queue IDs found: {InvalidAgnetIds}", string.Join(", ", invalidAgnetIds));
+                serviceResponse.Message = $"The following queue IDs are invalid or do not belong to the user: {string.Join(", ", invalidAgnetIds)}";
+                return serviceResponse;
+            }
+
+            // Identify agents that are already assigned to the queue.
+            var existing = queue?.QueueFlowVersions?.ToList() ?? new List<QueueFlowVersion>();
+            var existingIds = existing.Select(mf => mf.QueueId).ToList();
+
+            // Identify new queue IDs that are not yet assigned to the queue.
+            var newIds = agentIds.Except(existingIds).ToList();
+
+            // Identify queue IDs that are no longer assigned and need to be removed.
+            var removedIds = existingIds.Except(agentIds).ToList();
+
+            // If no changes are made (no new agents, no agents to remove), inform the user.
+            if (!newIds.Any() && !removedIds.Any())
+            {
+                _logger.LogInformation("No changes made; all provided agents are already assigned to the queue.");
+                serviceResponse.Message = "No changes made to the queue assignments.";
+                return serviceResponse;
+            }
+
+            // Create new QueueFlowVersion entries for agents not already assigned.
+            var toAdd = newIds.Select(id => new QueueFlowVersion()
+            {
+                QueueId = id,
+                FlowVersionId = queueId,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            }).ToList();
+
+            // Remove existing QueuFlowVersion entries for agents that are no longer assigned.
+            var toRemove = existing
+                .Where(mf => removedIds.Contains(mf.QueueId))
+                .ToList();
+
+            // Begin the transaction to insert and remove data.
+            if (toAdd.Any())
+            {
+                await _unitOfWork.QueueFlowVersionRepo.InsertAsync(toAdd);
+            }
+
+            if (toRemove.Any())
+            {
+                _unitOfWork.QueueFlowVersionRepo.Delete(toRemove);
+            }
+
+            // Attempt to save the changes to the database.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                // If saving fails, log and return failure.
+                _logger.LogInformation("Database save operation failed while assigning or updating agents.");
+                serviceResponse.Message = "Failed to update queue assignments for the queue.";
+                return serviceResponse;
+            }
+
+            // Return success with the count of newly assigned and removed agents.
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{newIds.Count} agents assigned and {removedIds.Count} agents removed from the queue.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected error.
+            _logger.LogError(ex, "An unexpected error occurred while assigning agents.");
+            return serviceResponse;
+        }
+
+        // Return the service response.
+        return serviceResponse;
+    }
+
+    // Retrieve agent list
+    public async Task<ServiceResponse<IEnumerable<AssignAgentQueueDto>>> GetAgentsAsync(Guid queueId)
+    {
+        // Initialize the response with a failed result
+        var serviceResponse = new ServiceResponse<IEnumerable<AssignAgentQueueDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve agents. Please try again."
+        };
+
+        try
+        {
+            // Check if the queue exists and belongs to the current user
+            var queue = await _unitOfWork.QueueRepo
+                                            .GetByConditionAsync(w =>
+                                                w.Id == queueId &&
+                                                w.CreatedByUserId == _userId)
+                                            .Include(a => a.QueueFlowVersions)
+                                            .FirstOrDefaultAsync();
+
+            // Return an error if the queue doesn't exist
+            if (queue == null)
+            {
+                _logger.LogInformation("Queue with ID {QueueId} not found for user {UserId}.", queueId, _userId);
+                serviceResponse.Message = "The queue does not exist.";
+                return serviceResponse;
+            }
+
+            // Retrieve all agents for the current user
+            var agents = await _unitOfWork.FlowVersionRepo
+                                            .GetByConditionAsync(w =>
+                                                w.IsPublished &&
+                                                w.CreatedByUserId == _userId)
+                                            .Include(f => f.Flow)
+                                            .ProjectToType<AssignAgentQueueDto>()
+                                            .ToListAsync();
+
+            // Set IsAssigned to true if the agent is already assigned to the queue
+            agents.ForEach(a =>
+            {
+                a.IsAssigned = (queue.QueueFlowVersions ?? Enumerable.Empty<QueueFlowVersion>()).Any(mf => mf.FlowVersionId == a.Id);
+                a.QueueId = queue.Id;
+            });
+
+            // Return the agents along with their assignment status
+            serviceResponse.Data = agents;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Agents retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while retrieving agents for queue {QueueId}.", queueId);
+            serviceResponse.Message = "An error occurred while retrieving agents from the queue.";
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
 }
