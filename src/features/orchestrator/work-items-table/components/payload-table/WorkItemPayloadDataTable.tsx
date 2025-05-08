@@ -1,13 +1,13 @@
-import { DataTableSkeleton, DTHeading } from "@aventisia/ui/data-table"
-import { useDocumentTitle } from "@aventisia/ui/hooks"
-import { useEffect } from "react"
-import { useShallow } from "zustand/react/shallow"
+import { DataTableSkeleton, DTHeading } from "@aventisia/ui/data-table";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
-import { TABLE_HEADING } from "../../constants"
-import { useFetchQueuesWorkItems } from "../../hooks/useFetchQueuesWorkItems"
-import { usePayloadDataStore } from "../../store/payload-data-store"
+import { TABLE_HEADING } from "../../constants";
+import { useFetchQueuesWorkItems } from "../../hooks/useFetchQueuesWorkItems";
+import { usePayloadDataStore } from "../../store/payload-data-store";
 
-import { DynacmicDataTable } from "./DynacmicDataTable"
+import { DynacmicDataTable } from "./DynacmicDataTable";
 
 /**
  * Renders a table of queues.

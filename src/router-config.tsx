@@ -1,21 +1,21 @@
+import { NotFoundPage } from "@aventisia/ui/layout";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 
 import { CrudActionTypeLong } from "@/react-toolkit/constants";
-import { NotFoundPage } from "@aventisia/ui/layout";
-import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import {
-    AccountDeactivation, DeviceHistory, EmailSettings, ProfileInfo, Security
+  AccountDeactivation,
+  DeviceHistory,
+  EmailSettings,
+  ProfileInfo,
+  Security,
 } from "./features/my-account/components";
-import {
-    STCreatePage
-} from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
-import {
-    SupportTicketEditForm
-} from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
+import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import { BillingPage } from "./pages/BillingPage";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
@@ -27,9 +27,7 @@ import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
-import {
-    QueuesWorkItemPayloadTablePages
-} from "./pages/orchestrator/QueuesWorkItemPayloadTablePage";
+import { QueuesWorkItemPayloadTablePages } from "./pages/orchestrator/QueuesWorkItemPayloadTablePage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
@@ -40,8 +38,6 @@ import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
-
-
 
 const routerConfig: RouteObject[] = [
   {

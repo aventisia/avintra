@@ -1,8 +1,7 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import { getQueuesWorkItemPayload } from "../apis/work-items-table-apis";
 import { DATA_QUERY_KEY } from "../constants";

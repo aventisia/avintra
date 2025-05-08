@@ -1,8 +1,7 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import { getQueuesWorkItemsList } from "../apis/work-items-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
@@ -13,7 +12,7 @@ import { DATA_QUERY_KEY } from "../constants";
  */
 export const useFetchQueusWorkItemsList = () => {
   const { qid } = useParams();
-console.log(qid);
+  console.log(qid);
   // Get projects using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,

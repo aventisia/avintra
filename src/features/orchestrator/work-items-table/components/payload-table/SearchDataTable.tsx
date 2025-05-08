@@ -1,7 +1,6 @@
-import { X } from "lucide-react";
-
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { X } from "lucide-react";
 
 interface SearchInputProps {
   globalFilter: string; // Type for the search input value
