@@ -28,7 +28,7 @@ public class LLMController : BaseApiController
     }
 
     //check LLM name availability
-    [HttpPost("IsLLMNameAvailable")]
+    [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsLLMNameAvailable(CheckAvailabilityDto checkAvailabilityDto)
     {
         return ResultHelper(await _llmService.IsLLMNameAvailableAsync(checkAvailabilityDto));
