@@ -27,7 +27,6 @@ import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
-import { QueuesWorkItemPayloadTablePages } from "./pages/orchestrator/QueuesWorkItemPayloadTablePage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
@@ -122,10 +121,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/queues/work-items/:qid",
             element: <QueuesWorkItemsPage />,
-          },
-          {
-            path: "/orchestrator/queues/payload-table/:qid",
-            element: <QueuesWorkItemPayloadTablePages />,
           },
           {
             path: "/orchestrator/executions/:id?/:a?",
