@@ -1,7 +1,7 @@
-import { Button } from "@aventisia/ui/buttons"
-import { cn } from "@aventisia/ui/lib"
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 
-import { useOpenPayloadTable } from "../../hooks/useOpenPayloadTable"
+import { useOpenPayloadTable } from "../../hooks/useOpenPayloadTable";
 
 interface PayloadTableCellLinkProps {
   /** The ID of the work items to open. */

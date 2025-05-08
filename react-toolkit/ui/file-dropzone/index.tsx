@@ -1,8 +1,8 @@
+import { cn } from "@aventisia/ui/lib";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { UploadCloud } from "lucide-react";
 import { DropzoneOptions, useDropzone } from "react-dropzone";
 
-import { cn } from "@aventisia/ui/lib";
-import { CrossCircledIcon } from "@radix-ui/react-icons";
 
 export type FileUploadDropzoneProps = DropzoneOptions & {
   description?: string;
@@ -65,18 +65,18 @@ export const FileUploadDropzone = ({
           <ul>
             {acceptedFiles?.map((file, i) => (
               <li key={file.name}>
-                <section className="flex justify-start items-center border rounded-lg shadow-sm p-2">
-                  <span className="p-2    me-2">{i + 1}.</span>
+                <section className="flex items-center justify-start rounded-lg border p-2 shadow-sm">
+                  <span className="me-2 p-2">{i + 1}.</span>
                   {"  "}
                   <span>
-                    <p className=" text-sm">{file.name}</p>
-                    <p className="  text-muted-foreground text-xs">
+                    <p className="text-sm">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
                       {file.relativePath}
                     </p>
                   </span>
-                  <span className="ms-auto group flex gap-4 items-center">
+                  <span className="group ms-auto flex items-center gap-4">
                     <p>({(file.size / 1024).toFixed(2)} KB)</p>
-                    <CrossCircledIcon className="w-5 h-5 stroke-destructive hover:cursor-pointer" />
+                    <CrossCircledIcon className="h-5 w-5 stroke-destructive hover:cursor-pointer" />
                   </span>
                 </section>
               </li>

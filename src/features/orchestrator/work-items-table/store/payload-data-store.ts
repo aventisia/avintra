@@ -3,8 +3,6 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 
-
-
 type State = {
   isProcessing: boolean;
   payloadData?: Array<object>;
