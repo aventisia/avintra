@@ -13,9 +13,9 @@ import Enumerable from "linq";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { updateQueuesWorkItems } from "../../apis/work-items-table-apis";
-import { QueueWorkItemDto } from "../../dtos/queue-work-item-dto";
-import { usePayloadDataStore } from "../../store/payload-data-store";
+import { updateQueuesWorkItems } from "../apis/work-items-table-apis";
+import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+import { usePayloadDataStore } from "../store/payload-data-store";
 
 interface PayloadTableBulkActionsProps<TData> {
   table: Table<TData>;

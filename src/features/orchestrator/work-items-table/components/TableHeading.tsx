@@ -9,7 +9,7 @@ import {
 import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { usePayloadDataStore } from "../../store/payload-data-store";
+import { usePayloadDataStore } from "../store/payload-data-store";
 
 export const PayloadTableHeading: React.FC = () => {
   const { queueName } = usePayloadDataStore(

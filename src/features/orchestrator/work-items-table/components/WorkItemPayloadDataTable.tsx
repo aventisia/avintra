@@ -3,11 +3,14 @@ import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { TABLE_HEADING } from "../../constants";
-import { useFetchQueuesWorkItems } from "../../hooks/useFetchQueuesWorkItems";
-import { usePayloadDataStore } from "../../store/payload-data-store";
+import { DynacmicDataTable } from "@/react-toolkit/ui/dynamic-data-table/DynacmicDataTable";
 
-import { DynacmicDataTable } from "./DynacmicDataTable";
+import { TABLE_HEADING } from "../constants";
+import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
+import { usePayloadDataStore } from "../store/payload-data-store";
+
+import { PayloadTableBulkActions } from "./PayloadTableBulkActions";
+import { PayloadTableHeading } from "./TableHeading";
 
 /**
  * Renders a table of queues.
@@ -49,7 +52,16 @@ export const WorkItemPayloadDataTable = () => {
             <DTHeading heading={`Payload Data`} />
           </div>
 
-          <DynacmicDataTable data={payloadData} isLoading={isLoading} />
+          <DynacmicDataTable
+            data={payloadData}
+            isLoading={isLoading}
+            TableHeading={() => <PayloadTableHeading />}
+            formatDates={false}
+            enableRowSelection={true}
+            BulkActionElement={(table) => (
+              <PayloadTableBulkActions table={table} />
+            )}
+          />
         </div>
       ) : (
         // Show data table skeleton while fetching the queues data
