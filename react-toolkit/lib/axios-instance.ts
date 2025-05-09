@@ -9,7 +9,6 @@ import {
   REQUEST_TIMEOUT,
 } from "@/react-toolkit/constants";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
-
 /**
  * Creates an Axios instance with predefined configuration.
  *
@@ -18,6 +17,7 @@ import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
  *
  * @constant {AxiosInstance} axiosInstance - The configured Axios instance.
  */
+
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
 });
