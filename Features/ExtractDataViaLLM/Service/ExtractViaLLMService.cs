@@ -80,7 +80,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
 
             // Create the prompt instruction for the LLM model
             // TODO: We'll have define the context of the files first and the purpose of the extraction to set the right context for the LLM model. This should be set in the model record in the database.
-            string context = "";
+            string context = string.Empty;
 
             // TODO: We'll have to have an entity to store the instructions for the extraction process which we should be able to update from admin panel for various types of files and extraction purposes.
             string instructions = "Extract the following fields from the file text:";

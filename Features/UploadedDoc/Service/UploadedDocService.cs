@@ -279,7 +279,7 @@ public class UploadedDocService : IUploadedDocService
             if (pathParts.Length < 2)
             {
                 serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.");
+                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.",pathParts.Last());
                 return serviceResponse;
             }
 
@@ -502,7 +502,7 @@ public class UploadedDocService : IUploadedDocService
             if (pathParts.Length < 2)
             {
                 serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.");
+                _logger.LogWarning("Invalid file URL structure. Expected format: '/files/{filename}'.", pathParts.Last());
                 return serviceResponse;
 
             }
