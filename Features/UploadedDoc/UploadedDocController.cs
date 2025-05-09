@@ -90,6 +90,7 @@ public class UploadedDocController : BaseApiController
             ".jpg" or ".jpeg" => "image/jpeg",
             ".png" => "image/png",
             ".txt" => "text/plain",
+            ".svg" => "image/svg+xml",
             ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             _ => "application/octet-stream"
