@@ -171,7 +171,6 @@ export const QueueCrudForm = () => {
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
       {/* AutherCard */}
       {isReadMode && (
         <AutherCard
