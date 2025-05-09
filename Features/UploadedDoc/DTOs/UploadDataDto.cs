@@ -1,0 +1,19 @@
+namespace MLModelBuilderAPIs.DTOs;
+
+public class UploadDataDto
+{
+    /// <summary>
+    /// List of files to be uploaded.
+    /// </summary>
+    public required List<IFormFile> Files { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of data which will be extracted from uploaded file. 
+    /// </summary>
+    public ExtractedDataType Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ML model record's primary key to which this record is associated.
+    /// </summary>/
+    public Guid MLModelId { get; set; }
+}
