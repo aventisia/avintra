@@ -31,6 +31,7 @@ const ImageViewer = () => {
   );
   const imageRef = useRef<ReactZoomPanPinchRef>(null);
   const [rotation, setRotation] = useState<number>(0);
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
   const { mutate: downloadPdf } = useDownloadPdf();
   // Get model data store state and actions
   const { modelId } = useLabelDataStore(
@@ -52,10 +53,20 @@ const ImageViewer = () => {
   };
 
   const zoomInHandler = () => {
-    if (imageRef) imageRef.current?.zoomIn();
+    if (imageRef) {
+      imageRef.current?.zoomIn();
+      setZoomLevel((prevZoom) => {
+        return prevZoom < 200 ? prevZoom + 20 : prevZoom;
+      });
+    }
   };
   const zoomOutHandler = () => {
-    if (imageRef) imageRef.current?.zoomOut();
+    if (imageRef) {
+      imageRef.current?.zoomOut();
+      setZoomLevel((prevZoom) => {
+        return prevZoom > 100 ? prevZoom - 20 : prevZoom;
+      });
+    }
   };
   const resetTransformHandler = () => {
     if (imageRef) {
@@ -90,6 +101,7 @@ const ImageViewer = () => {
     // <div className="col-span-2 grid grid-rows-[auto_calc(100vh-11.2rem)_auto]  overflow-hidden rounded-lg border bg-white shadow">
     <div className="col-span-2 overflow-hidden rounded-lg border bg-white shadow">
       <ControlPanel
+        zoomLevel={zoomLevel}
         zoomInHandler={zoomInHandler}
         zoomOutHandler={zoomOutHandler}
         resetTransformHandler={resetTransformHandler}

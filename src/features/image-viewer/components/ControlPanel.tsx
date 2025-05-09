@@ -6,6 +6,7 @@ import { Redo, RotateCcw, Undo, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 
 // Add tooltip to buttons
 interface ControlPanelProps {
+  zoomLevel: number;
   zoomInHandler: () => void;
   zoomOutHandler: () => void;
   resetTransformHandler: () => void;
@@ -13,6 +14,7 @@ interface ControlPanelProps {
   rotateAnticlockwiseHandler: () => void;
 }
 const ControlPanel = ({
+  zoomLevel = 100,
   zoomInHandler,
   zoomOutHandler,
   resetTransformHandler,
@@ -58,7 +60,7 @@ const ControlPanel = ({
         <Button variant="ghost" size="icon7" onClick={() => zoomOutHandler()}>
           <ZoomOutIcon className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
         </Button>
-        <span className="text-sm">{100}%</span>
+        <span className="text-sm">{zoomLevel}%</span>
         <Button variant="ghost" size="icon7" onClick={() => zoomInHandler()}>
           <ZoomInIcon className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
         </Button>
