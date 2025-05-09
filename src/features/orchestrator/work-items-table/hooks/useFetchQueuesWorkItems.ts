@@ -14,7 +14,7 @@ export const useFetchQueuesWorkItems = () => {
   // Get projects using react query
 
   const { qid } = useParams();
-  const { data, isFetching, isLoading, isError, error } = useQuery({
+  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: [...DATA_QUERY_KEY, qid],
     queryFn: () => getQueuesWorkItemPayload(qid ?? ""),
   });
@@ -25,5 +25,5 @@ export const useFetchQueuesWorkItems = () => {
   }, [error, isError]);
 
   // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading };
+  return { data, isFetching, isLoading, refetch };
 };

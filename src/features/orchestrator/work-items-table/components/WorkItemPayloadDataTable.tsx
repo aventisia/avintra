@@ -1,6 +1,7 @@
 import { DataTableSkeleton, DTHeading } from "@aventisia/ui/data-table";
 import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { DynacmicDataTable } from "@/react-toolkit/ui/dynamic-data-table/DynacmicDataTable";
@@ -21,7 +22,9 @@ export const WorkItemPayloadDataTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  const { isLoading, data: reaspose } = useFetchQueuesWorkItems();
+  const { qid } = useParams();
+
+  const { isLoading, data: reaspose, refetch } = useFetchQueuesWorkItems();
 
   const { payloadData, setPayloadData, setCurrentWorkItem } =
     usePayloadDataStore(
@@ -33,6 +36,10 @@ export const WorkItemPayloadDataTable = () => {
     );
 
   useEffect(() => {
+    refetch();
+  }, []);
+
+  useEffect(() => {
     if (reaspose?.data?.payloadData) {
       setCurrentWorkItem(reaspose?.data);
       const jsonData: Record<string, string>[] = JSON.parse(
@@ -40,7 +47,7 @@ export const WorkItemPayloadDataTable = () => {
       );
       setPayloadData(jsonData);
     }
-  }, [reaspose?.data, setCurrentWorkItem, setPayloadData]);
+  }, [reaspose?.data, setCurrentWorkItem, setPayloadData, qid]);
 
   // Return the rendered DataTable component.
   return (
@@ -49,7 +56,7 @@ export const WorkItemPayloadDataTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={`Payload Data`} />
+            <DTHeading heading="Work Items" />
           </div>
 
           <DynacmicDataTable
