@@ -1,0 +1,25 @@
+meta {
+  name: Upload data files
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/upload-files
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  files: @file(/home/rahmat15/Downloads/Upload Docs.pdf|/home/rahmat15/Downloads/fcdeef91-636a-4653-b8a7-e4df28ff317e.txt)
+  ~mlModelId: {{MLMODEL_ID}}
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "FILE_URL",
+    res.getBody().data[0].path
+    );
+  }
+}
