@@ -1,7 +1,10 @@
 import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
 import { toast } from "@aventisia/ui/sonner";
 import type { Row } from "@tanstack/react-table";
 import { useShallow } from "zustand/react/shallow";
+
+import { dateFormatterDistanceToNow } from "@/react-toolkit/utils/date-formater";
 
 import type { AssignMachineDto } from "../../../dtos/assign-machine-dto";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
@@ -29,9 +32,11 @@ export function AssignMachineCheckBox({
   );
 
   return (
-    <div className="flex gap-5 truncate font-medium">
+    <label className="flex items-center gap-5 truncate font-medium">
       <Checkbox
-        checked={row.getValue<boolean>("isAssigned")}
+        checked={
+          currentAgentMachines.find((x) => x.id == row.original.id)?.isAssigned
+        }
         onCheckedChange={(value) => {
           if (
             currentAgentMachines.filter((a) => a.isAssigned).length >=
@@ -52,7 +57,14 @@ export function AssignMachineCheckBox({
         className="translate-y-[2px]"
         disabled={isReadOnly}
       />
-      <span className="max-w-3 text-ellipsis">{row.getValue("name")}</span>
-    </div>
+      <div className="flex w-full flex-col space-y-1">
+        <p>{row.original.name}</p>
+        <p className="text-xs text-muted-foreground">
+          by {row.original.createdBy} last modified on{" "}
+          {dateFormatterDistanceToNow(row.original.lastModifiedOn)}
+        </p>
+      </div>
+      <Badge className="me-8">{row.original.type ?? "OS"}</Badge>
+    </label>
   );
 }
