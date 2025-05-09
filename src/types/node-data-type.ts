@@ -14,6 +14,7 @@ type NodeDataInputsOutputs = {
 
 type NodeDataType = {
   type: CustomNodeType;
+  category?: string;
   name: string;
   label: string;
   description: string;
