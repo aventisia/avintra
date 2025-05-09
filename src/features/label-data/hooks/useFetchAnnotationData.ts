@@ -5,7 +5,7 @@ import { useLabelDataStore } from "@/features/label-data/stores/label-data-store
 import { useShallow } from "zustand/react/shallow";
 import { getAnnotationList } from "../apis/annotation-apis";
 import { useAnnotationDataStore } from "../stores/annotation-data-store";
-import { usePdfListStore } from "@/features/pdf-previewer/stores/pdf-list-store";
+import { useFileListStore } from "@/features/multi-format-viewer/store/pdf-list-store";
 /**
  * Custom hook to fetch data fields using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
@@ -24,9 +24,9 @@ export const useFetchAnnotationData = () => {
       setAnnotationObject: state.setAnnotationObject,
     })),
   );
-  const { selectedPdf } = usePdfListStore(
+  const { selectedPdf } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedPdf,
+      selectedPdf: state.selectedFile,
     })),
   );
   // Get models using react query

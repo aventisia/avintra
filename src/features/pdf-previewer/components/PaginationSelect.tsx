@@ -12,13 +12,15 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
 } from "lucide-react";
-import { PdfViewerDto } from "../dtos/file-list-dtos";
+import { Image } from "lucide-react";
+
+import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";
 import pdfIcon from "/pdf-svgrepo-com.svg";
 
 interface PdfPaginatedSelectProps {
-  pdfList: PdfViewerDto[];
-  selectedPdf: PdfViewerDto;
-  onPdfSelect: (pdf: PdfViewerDto) => void;
+  pdfList: FileViewerDto[];
+  selectedPdf: FileViewerDto;
+  onPdfSelect: (pdf: FileViewerDto) => void;
 }
 
 const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
@@ -34,7 +36,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
   const handleNext = () => onPdfSelect(pdfList[currentIndex + 1]);
 
   return (
-    <div className="flex w-full flex-col items-center gap-4 rounded-b-lg border-t bg-white px-2 py-2">
+    <div className="flex w-full justify-center gap-4 rounded-b-lg border-t bg-white px-2 py-2">
       <div className="flex items-center justify-between gap-1.5">
         <Button
           variant="outline"
@@ -68,7 +70,11 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
             {pdfList.map((pdf) => (
               <SelectItem key={pdf.id} value={pdf.id || ""}>
                 <div className="flex gap-2">
-                  <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />
+                  {selectedPdf.extension === "PDF" ? (
+                    <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />
+                  ) : (
+                    <Image className="h-4 w-4 text-info-foreground" />
+                  )}
                   <p>{pdf.name}</p>
                 </div>
               </SelectItem>
@@ -93,10 +99,6 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
         >
           <ChevronsRightIcon className="h-5 w-5 stroke-[1.5]" />
         </Button>
-      </div>
-
-      <div className="hidden text-center text-sm text-gray-500">
-        Option {currentIndex + 1} of {pdfList.length}
       </div>
     </div>
   );

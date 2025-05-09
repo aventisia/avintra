@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { DEBOUNCE_SAVE_DELAY } from "../constants";
 import { useAnnotationDataStore } from "../stores/annotation-data-store";
 import { updateAnnotationData } from "../apis/annotation-apis";
-import { usePdfListStore } from "@/features/pdf-previewer/stores/pdf-list-store";
+import { useFileListStore } from "@/features/multi-format-viewer/store/pdf-list-store";
 import { AnnotationDataDto } from "../dtos/annotation-data-dtos";
 import { useFetchAnnotationData } from "./useFetchAnnotationData";
 
@@ -23,9 +23,9 @@ export const useUpdateAnnotationSilently = () => {
       setIsDataSaving: state.setIsDataSaving,
     })),
   );
-  const { selectedPdf } = usePdfListStore(
+  const { selectedPdf } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedPdf,
+      selectedPdf: state.selectedFile,
     })),
   );
 

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { getUploadedFiles } from "@/features/file-uploader/apis/file-upload-apis";
-import { usePdfListStore } from "../stores/pdf-list-store";
+import { useFileListStore } from "../../multi-format-viewer/store/pdf-list-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { useLocation } from "react-router-dom";
@@ -11,10 +11,10 @@ import { useLocation } from "react-router-dom";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchUploadedFiles = () => {
-  const { selectedPdf, setSelectedPdf } = usePdfListStore(
+  const { selectedPdf, setSelectedPdf } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedPdf,
-      setSelectedPdf: state.setSelectedPdf,
+      selectedPdf: state.selectedFile,
+      setSelectedPdf: state.setSelectedFile,
     })),
   );
   // Get modelId (m) and modelName (pn)

@@ -1,9 +1,10 @@
 import { Button } from "@aventisia/ui/buttons";
 import { Loader2, SparklesIcon } from "lucide-react";
-import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { usePdfListStore } from "../stores/pdf-list-store";
+
+import { useFileListStore } from "../../multi-format-viewer/store/pdf-list-store";
+import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {
   // Get modelId from query params
@@ -11,9 +12,9 @@ function ExtractViaLLMButton() {
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("mid") || "";
 
-  const { selectedPdf } = usePdfListStore(
+  const { selectedPdf } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedPdf,
+      selectedPdf: state.selectedFile,
     })),
   );
 

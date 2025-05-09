@@ -4,27 +4,29 @@ import { uploadFile } from "@/features/file-uploader/apis/file-upload-apis";
 import { AnnotationDataDto } from "@/features/label-data/dtos/annotation-data-dtos";
 import { useFetchAnnotationData } from "@/features/label-data/hooks/useFetchAnnotationData";
 import { useUpdateAnnotation } from "@/features/label-data/hooks/useUpdateAnnotation";
+import { useUpdateAnnotationSilently } from "@/features/label-data/hooks/useUpdateAnnotationSilently";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
+
 import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import html2canvas from "html2canvas";
 import React, { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
-import { PdfViewerDto } from "../dtos/file-list-dtos";
+
+import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";
+import { useFileListStore } from "../../multi-format-viewer/store/pdf-list-store";
 import { useDownloadPdf } from "../hooks/useDownloadPdf";
 import { useFetchUploadedFiles } from "../hooks/useFetchFiles";
 import { useParentWidth } from "../hooks/usePdfWidth";
-import { usePdfListStore } from "../stores/pdf-list-store";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import { addUpdateInString } from "../utils";
 import AnnotationBox from "./AnnotationBox";
 import ControlPanel from "./ControlPannel";
 import FieldSelectionPopover from "./FieldSelectionPopover";
 import PdfLoaderTemplate from "./PdfLoaderTemplate";
-import { useUpdateAnnotationSilently } from "@/features/label-data/hooks/useUpdateAnnotationSilently";
 
 //Define pdfjs worker file path
 pdfjs.GlobalWorkerOptions.workerSrc = "assets/pdf.worker.min.js";
@@ -89,11 +91,11 @@ export const PdfPreviewer: React.FC = () => {
     })),
   );
 
-  const { selectedPdf, pdfUrl, setSelectedPdf } = usePdfListStore(
+  const { selectedPdf, pdfUrl, setSelectedPdf } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedPdf,
-      pdfUrl: state.pdfUrl,
-      setSelectedPdf: state.setSelectedPdf,
+      selectedPdf: state.selectedFile,
+      pdfUrl: state.fileUrl,
+      setSelectedPdf: state.setSelectedFile,
     })),
   );
   useUpdateAnnotationSilently();
@@ -119,7 +121,7 @@ export const PdfPreviewer: React.FC = () => {
 
   const { width } = useParentWidth(parentRef, 32);
 
-  const handlePdfSelect = (newPdf: PdfViewerDto) => {
+  const handlePdfSelect = (newPdf: FileViewerDto) => {
     setSelectedPdf(newPdf);
     downloadPdf(newPdf.path || "");
     setAnnotations([]);
@@ -360,6 +362,7 @@ export const PdfPreviewer: React.FC = () => {
           <Document
             file={pdfUrl}
             // options={options}
+            error=""
             loading={<PdfLoaderTemplate />}
             onLoadSuccess={onDocumentLoadSuccess}
           >

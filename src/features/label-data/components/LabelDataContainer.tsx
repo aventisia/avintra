@@ -1,13 +1,15 @@
 import FileUploader from "@/features/file-uploader/components/FileUploader";
+import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
-import { PdfPreviewer } from "@/features/pdf-previewer/components/PdfPreviewer";
+import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
+
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import { useLabelDataStore } from "../stores/label-data-store";
 import Nav from "./Header/Nav";
-import InformationExtractor from "@/features/information-extractor/components";
 
 export const LabelDataContainer = () => {
   useLabelDataQueryKey();
@@ -45,7 +47,7 @@ export const LabelDataContainer = () => {
 
       {step == 1 ? (
         <div className="grid w-full grid-cols-3">
-          <PdfPreviewer />
+          <MultiFormatViewer />
           <InformationExtractor />
         </div>
       ) : (

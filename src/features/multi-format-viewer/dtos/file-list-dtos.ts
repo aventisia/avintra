@@ -2,7 +2,7 @@
  * Represents a data transfer object (DTO) for a PdfViewerDto.
  */
 
-export interface PdfViewerDto {
+export interface FileViewerDto {
   /**
    * Gets or sets the primary key of the pdf record.
    *
