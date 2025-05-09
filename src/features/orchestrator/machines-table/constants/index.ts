@@ -1,6 +1,4 @@
-import { CrudActionType } from "@aventisia/ui/types";
-
-import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
+import { CrudActionType } from "@aventisia/ui/types"
 
 /**
  * The unique key for the machines query to be used in the query client. ["machines"]
@@ -34,12 +32,14 @@ export {
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
-  TABLE_HEADING,
-};
+  TABLE_HEADING
+}
 
-export const sortAsAssignedFirst = (
-  a: SelectAgentTableDto,
-  b: SelectAgentTableDto,
+export const sortAsAssignedFirst = <
+  T extends { isAssigned: boolean; name: string },
+>(
+  a: T,
+  b: T,
 ) => {
   if (a.isAssigned && !b.isAssigned) return -1;
   if (!a.isAssigned && b.isAssigned) return 1;
