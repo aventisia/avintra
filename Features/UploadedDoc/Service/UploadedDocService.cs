@@ -162,6 +162,65 @@ public class UploadedDocService : IUploadedDocService
         return serviceResponse;
     }
 
+    // Processes and saves metadata for a batch of uploaded data files.
+    public async Task<ServiceResponse<IList<UploadedDocDto>>> UploadDataFilesAsync(UploadDataDto uploadDataDto)
+    {
+        var serviceResponse = new ServiceResponse<IList<UploadedDocDto>>
+        {
+            Data = null,
+            Message = "Failed to upload file. Please try again"
+        };
+
+        try
+        {
+            var uploadedDocs = new List<UploadedDoc>();
+
+            foreach (var uploadItem in uploadDataDto.Files)
+            {
+                // Upload the file and get the result
+                var fileUploadResult = await UploadFilesAsync(new List<IFormFile> { uploadItem });
+
+                // Check upload result
+                if (fileUploadResult.Data == null || !fileUploadResult.Data.Any())
+                {
+                    _logger.LogWarning("File upload failed or returned no result for file: {FileName}, Model ID: {ModelId}",
+                        uploadItem.FileName, uploadDataDto.MLModelId);
+
+                    serviceResponse.Message = $"File upload failed for model ID: {uploadDataDto.MLModelId}";
+                    return serviceResponse;
+                }
+                // Map metadata from the upload DTO to the entity
+                var docEntity = uploadDataDto.Adapt<UploadedDoc>();
+                fileUploadResult.Data.FirstOrDefault().Adapt(docEntity);
+
+                docEntity.CreatedByUserId = _userId;
+                docEntity.LastModifiedByUserId = _userId;
+
+                uploadedDocs.Add(docEntity);
+            }
+
+            // Save all uploaded document entities
+            await _unitOfWork.UploadedDocRepo.InsertAsync(uploadedDocs);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save uploaded document records to the database.");
+                return serviceResponse;
+            }
+
+            // Map entities to DTOs for response
+            serviceResponse.Data = uploadedDocs.Adapt<IList<UploadedDocDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Documents uploaded successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while uploading documents.");
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves list of uploaded docs
     public async Task<ServiceResponse<IEnumerable<UploadedDocDto>>> GetUploadedDocsAsync(Guid mlModelId, ExtractedDataType type)
     {

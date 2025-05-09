@@ -17,6 +17,13 @@ public interface IUploadedDocService
     Task<ServiceResponse<IList<UploadedDocDto>>> InsertUploadedDocAsync(IList<UploadedDocDto> uploadedDocList);
 
     /// <summary>
+    /// Uploads and stores metadata for a collection of uploaded documents.
+    /// </summary>
+    /// <param name="uploadDataList">A list of document metadata to be saved.</param>
+    /// <returns>A service response containing the saved document records.</returns>
+    Task<ServiceResponse<IList<UploadedDocDto>>> UploadDataFilesAsync(UploadDataDto uploadDataDto);
+
+    /// <summary>
     /// Get list of uploaded docs
     /// </summary>
     /// <param name="mlModelId"></param>

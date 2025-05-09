@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.Controllers;
 [Route("upload-doc")]
 [ApiController]
 [Authorize]
-public class UploadedDocController: BaseApiController
+public class UploadedDocController : BaseApiController
 {
     private readonly IUploadedDocService _uploadedDocService;
 
@@ -25,8 +25,15 @@ public class UploadedDocController: BaseApiController
         return ResultHelper(await _uploadedDocService.InsertUploadedDocAsync(uploadedDocList));
     }
 
+    // Uploads data files
+    [HttpPost("upload-files")]
+    public async Task<ActionResult<ServiceResponse<IList<UploadedDocDto>>>> UploadDataFilesAsync([FromForm] UploadDataDto uploadDataDto)
+    {
+        return ResultHelper(await _uploadedDocService.UploadDataFilesAsync(uploadDataDto));
+    }
+
     //Retrieves list of uploaded docs
-     [HttpGet("list/{mlModelId}/{type}")]
+    [HttpGet("list/{mlModelId}/{type}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<UploadedDocDto>>>> GetUploadedDocs(Guid mlModelId, ExtractedDataType type)
     {
         return ResultHelper(await _uploadedDocService.GetUploadedDocsAsync(mlModelId, type));
@@ -34,7 +41,7 @@ public class UploadedDocController: BaseApiController
 
     //Delete files
     [HttpDelete]
-    public ActionResult<ServiceResponse<bool>> DeleteFile (string fileUrl)
+    public ActionResult<ServiceResponse<bool>> DeleteFile(string fileUrl)
     {
         return ResultHelper(_uploadedDocService.DeleteFileAsync(fileUrl));
     }

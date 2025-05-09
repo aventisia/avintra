@@ -6,7 +6,7 @@ public class UploadedDocMappingProfile : IRegister
     {
         // Mapping of DTO to get list of uploaded docs to show on the UI.
         config.NewConfig<UploadedDoc, UploadedDocDto>()
-        .Map(dest => dest.CreatedBy, 
+        .Map(dest => dest.CreatedBy,
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
             : null)
@@ -21,6 +21,9 @@ public class UploadedDocMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
+        //Mapping entity to insert or update the record
+        config.NewConfig<FileDetailDto, UploadedDoc>()
             .IgnoreNullValues(true);
 
     }
