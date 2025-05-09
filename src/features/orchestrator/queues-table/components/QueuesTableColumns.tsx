@@ -167,7 +167,10 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the queues row actions component
-      <QueueRowActions rowId={row.original.id ?? "rowId"} />
+      <QueueRowActions
+        rowId={row.original.id ?? "rowId"}
+        queueName={row.original.name ?? ""}
+      />
     ),
   },
 ];
