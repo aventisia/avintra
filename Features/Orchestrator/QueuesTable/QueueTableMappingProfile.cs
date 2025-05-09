@@ -15,7 +15,7 @@ public class QueueTableMappingProfile : IRegister
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
                     : null)
-                    
+
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
@@ -31,5 +31,21 @@ public class QueueTableMappingProfile : IRegister
         config.NewConfig<CreateOrUpdateQueuesTableDto, Queue>()
             .Ignore(dest => dest.Id)
             .IgnoreNullValues(true);
+
+        // Mapping to get agent list
+        config.NewConfig<FlowVersion, AssignAgentQueueDto>()
+            .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null)
+            .Map(dest => dest.CreatedByUserInitials,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
+                    : null);
     }
 }
