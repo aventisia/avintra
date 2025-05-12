@@ -15,7 +15,7 @@ script:pre-request {
   
   req.setBody({
     Id: bru.getGlobalEnvVar("DATA_FIELD_ID"),
-    MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
     Name: "Liaison",
     Type: "Text",
     Color: faker.color.human(),

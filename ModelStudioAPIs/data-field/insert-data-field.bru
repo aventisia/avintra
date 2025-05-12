@@ -14,7 +14,7 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
     Name: faker.person.jobType(),
     Type: "Text",
     Color: faker.color.human(),

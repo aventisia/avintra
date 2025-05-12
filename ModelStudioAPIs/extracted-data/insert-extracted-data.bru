@@ -14,8 +14,8 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    MLModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    docId: "0196ae73-81c4-7ad9-a8bd-b123dc3289c4",
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    docId: bru.getGlobalEnvVar("DOC_ID"),
     accuracy: 99.585616,
     type:"TestData",
     DataObject: faker.lorem.sentence()
