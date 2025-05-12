@@ -23,6 +23,7 @@ public static class AppServicesExtension
         config.Apply(new UploadedDocMappingProfile());
         config.Apply(new ModelBuilderUserMappingProfile());
         config.Apply(new LLMMappingProfile());
+        config.Apply(new ExtractionSetupMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -41,7 +42,7 @@ public static class AppServicesExtension
         services.AddScoped<IModelBuilderUserService, ModelBuilderUserService>();
         services.AddScoped<IExtractViaLLMService, ExtractViaLLMService>();
         services.AddScoped<ILLMService, LLMService>();
-
+        services.AddScoped<IExtractionSetupService, ExtractionSetupService>();
         
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
