@@ -8,4 +8,5 @@ export enum ModelTypesEnum {
   Extraction = "Extraction",
   Summarization = "Summarization",
   Classification = "Classification",
+  SentimentAnalytics = "Sentiment Analytics"
 }
