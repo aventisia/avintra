@@ -26,7 +26,7 @@ public class ExtractionSetupDto
     /// <summary>
     /// Setup configurations for fields to be extracted, if available.
     /// </summary>
-    public IEnumerable<FieldSetupDto>? FiledSetups { get; set; }
+    public IEnumerable<FieldSetupDto>? FieldSetups { get; set; }
 
     /// <summary>
     /// Gets or sets the name of model library. Max character is 50.

@@ -103,9 +103,9 @@ public class ExtractionSetupService : IExtractionSetupService
             }
 
             // Map field setups if any exist.
-            if (extractionSetupDto.FiledSetups.Any())
+            if (extractionSetupDto.FieldSetups.Any())
             {
-                extractionSetupEntity.FieldSetups = extractionSetupDto.FiledSetups.Select(field => new FieldSetup
+                extractionSetupEntity.FieldSetups = extractionSetupDto.FieldSetups.Select(field => new FieldSetup
                 {
                     Name = field.Name,
                     Type = field.Type,
@@ -257,7 +257,7 @@ public class ExtractionSetupService : IExtractionSetupService
 
             // ----------------------------- FIELD SETUP HANDLING -----------------------------
             _logger.LogInformation("Processing field setups | Setup ID: {Id}", extractionSetupDto.Id);
-            var dtoFields = extractionSetupDto.FiledSetups ?? new List<FieldSetupDto>();
+            var dtoFields = extractionSetupDto.FieldSetups ?? new List<FieldSetupDto>();
 
             // Remove fields not in DTO
             var fieldsToBeDeleted = extractionSetup.FieldSetups

@@ -21,7 +21,7 @@ public class ExtractionSetupMappingProfile : IRegister
                     Instructions = s1.Instructions
                 }).ToList() : null
             }).ToList() : null)
-            .Map(dest => dest.FiledSetups, src => src.FieldSetups != null ? src.FieldSetups.Select(s => new FieldSetupDto()
+            .Map(dest => dest.FieldSetups, src => src.FieldSetups != null ? src.FieldSetups.Select(s => new FieldSetupDto()
             {
                 Id = s.Id,
                 Name = s.Name,
