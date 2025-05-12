@@ -18,6 +18,10 @@ public class UnitOfWork : IUnitOfWork
     public IUploadedDocRepo UploadedDocRepo => new UploadedDocRepo(_mlModelBuilderDbContext);
     public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
     public ILLMRepo LLMRepo => new LLMRepo(_mlModelBuilderDbContext);
+    public IExtractionSetupRepo ExtractionSetupRepo => new ExtractionSetupRepo(_mlModelBuilderDbContext);
+    public ITableMetadataRepo TableMetadataRepo => new TableMetadataRepo(_mlModelBuilderDbContext);
+    public ITableHeaderRepo TableHeaderRepo => new TableHeaderRepo(_mlModelBuilderDbContext);
+    public IFieldSetupRepo FieldSetupRepo => new FieldSetupRepo(_mlModelBuilderDbContext);
 
 
 
