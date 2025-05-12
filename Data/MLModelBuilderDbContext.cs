@@ -27,14 +27,18 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ExtractedData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<DataField>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ExtractionSetup>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<FieldSetup>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<TableMetadata>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<TableHeader>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
-        modelBuilder.Entity<MLModel>().HasIndex(index => new {index.Name, index.CreatedByUserId}).IsUnique();
+        modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
         modelBuilder.Entity<DataField>().HasIndex(index => new { index.MLModelId, index.Name }).IsUnique();
 
         // Enum to string conversion
-        modelBuilder.Entity<MLModel>().Property(e =>e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
-        modelBuilder.Entity<MLModel>().Property(e =>e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());
+        modelBuilder.Entity<MLModel>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
+        modelBuilder.Entity<MLModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());
         modelBuilder.Entity<DataField>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FieldTypesEnum>());
         modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
@@ -59,14 +63,19 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<LLM>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<LLM>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
+        // Configure One-to-One relationship between Extraction Setup and ModelBuilder User
+        modelBuilder.Entity<ExtractionSetup>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExtractionSetup>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
         // Configure One-to-Many relationship between data model and model library
         modelBuilder.Entity<MLModel>().HasMany(many => many.ExtractedData).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.DataFields).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
+        modelBuilder.Entity<MLModel>().HasMany(many => many.ExtractionSetups).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.ExtractedData).WithOne(one => one.UploadedDoc).HasForeignKey<ExtractedData>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
-        
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -109,5 +118,8 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<DataField> DataFields { get; set; }
     public DbSet<UploadedDoc> UploadedDocs { get; set; }
     public DbSet<LLM> LLMs { get; set; }
-
+    public DbSet<ExtractionSetup> ExtractionSetups { get; set; }
+    public DbSet<TableMetadata> TableMetadata { get; set; }
+    public DbSet<TableHeader> TableHeaders { get; set; }
+    public DbSet<FieldSetup> FieldSetups { get; set; }
 }
