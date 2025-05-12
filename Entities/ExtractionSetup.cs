@@ -37,7 +37,7 @@ public class ExtractionSetup : BaseEntity, IMustHaveTenant
     /// <summary>
     /// A collection of metadata for tables relevant to the document's structure.
     /// </summary>
-    public virtual ICollection<TableMetadata>? Tables { get; set; }
+    public virtual ICollection<TableMetadata>? TableMetadata { get; set; }
 
     /// <summary>
     /// A collection of field configurations defining specific data points to extract from the document.

@@ -40,5 +40,5 @@ public class TableMetadata : IMustHaveTenant
     /// <summary>
     /// A collection of headers representing individual columns or fields within the table.
     /// </summary>
-    public virtual ICollection<TableHeader>? Headers { get; set; }
+    public virtual ICollection<TableHeader>? TableHeaders { get; set; }
 }
