@@ -1,0 +1,17 @@
+meta {
+  name: Delete extraction setup data
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extraction-setup/{{EXTRACTION_SETUP_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  req.setBody({
+    Id: bru.getGlobalEnvVar("MLMODEL_ID"),
+  })
+}
