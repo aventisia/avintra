@@ -26,7 +26,13 @@ public class ExtractionSetupDto
     /// <summary>
     /// Setup configurations for fields to be extracted, if available.
     /// </summary>
-    public IEnumerable<FiledSetupDto>? FiledSetups { get; set; }
+    public IEnumerable<FieldSetupDto>? FiledSetups { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of model library. Max character is 50.
+    /// </summary>
+    [StringLength(50)]
+    public string? MlModelName { get; set; }
 
     /// <summary>
     /// The unique identifier of the machine learning model associated with this extraction setup.
@@ -60,7 +66,7 @@ public class ExtractionSetupDto
 }
 
 
-public class FiledSetupDto
+public class FieldSetupDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the field setup within the ML model.
