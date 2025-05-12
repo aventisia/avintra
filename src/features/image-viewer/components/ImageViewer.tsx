@@ -1,13 +1,11 @@
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { FileViewerDto } from "@/features/multi-format-viewer/dtos/file-list-dtos";
-import { useFileListStore } from "@/features/multi-format-viewer/store/pdf-list-store";
+import { useDownloadFile } from "@/features/multi-format-viewer/hooks/useDownloadFile";
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
-import { useDownloadPdf } from "@/features/pdf-previewer/hooks/useDownloadPdf";
-import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
-// import { ScrollArea } from "@aventisia/ui/scroll";
-// import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ReactZoomPanPinchRef,
@@ -32,7 +30,7 @@ const ImageViewer = () => {
   const imageRef = useRef<ReactZoomPanPinchRef>(null);
   const [rotation, setRotation] = useState<number>(0);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
-  const { mutate: downloadPdf } = useDownloadPdf();
+  const { mutate: downloadImage } = useDownloadFile();
   // Get model data store state and actions
   const { modelId } = useLabelDataStore(
     useShallow((state) => ({
@@ -43,12 +41,12 @@ const ImageViewer = () => {
   // Load initial PDF
   useEffect(() => {
     if (selectedFile) {
-      downloadPdf(selectedFile.path || "");
+      downloadImage(selectedFile.path || "");
     }
-  }, [selectedFile, downloadPdf, modelId]);
+  }, [selectedFile, downloadImage, modelId]);
 
   const handlePdfSelect = (newFile: FileViewerDto) => {
-    downloadPdf(newFile.path || "");
+    downloadImage(newFile.path || "");
     setSelectedFile(newFile);
   };
 
@@ -108,7 +106,7 @@ const ImageViewer = () => {
         rotateClockwiseHandler={rotateClockwiseHandler}
         rotateAnticlockwiseHandler={rotateAnticlockwiseHandler}
       />
-      <ScrollArea className="h-[calc(100vh-11.2rem)] w-full p-2">
+      <ScrollArea className="h-[calc(100vh-11.2rem)] w-full p-2 grid content-center">
         {/* <div className="p-2"> */}
         <div className="w-full h-full">
           <TransformWrapper ref={imageRef} wheel={{ disabled: true }}>

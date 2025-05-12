@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { getUploadedFiles } from "@/features/file-uploader/apis/file-upload-apis";
-import { useFileListStore } from "../../multi-format-viewer/store/pdf-list-store";
+import { useFileListStore } from "../store/file-list-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { useLocation } from "react-router-dom";
@@ -11,10 +11,10 @@ import { useLocation } from "react-router-dom";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchUploadedFiles = () => {
-  const { selectedPdf, setSelectedPdf } = useFileListStore(
+  const { selectedFile, setSelectedFile } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedFile,
-      setSelectedPdf: state.setSelectedFile,
+      selectedFile: state.selectedFile,
+      setSelectedFile: state.setSelectedFile,
     })),
   );
   // Get modelId (m) and modelName (pn)
@@ -47,9 +47,9 @@ export const useFetchUploadedFiles = () => {
   useEffect(() => {}, [step]);
 
   useEffect(() => {
-    if (data?.data && (!selectedPdf || selectedPdf?.mlModelId != modelId))
-      setSelectedPdf(data?.data[0]);
-  }, [data, selectedPdf, setSelectedPdf, mid, modelId]);
+    if (data?.data && (!selectedFile || selectedFile?.mlModelId != modelId))
+      setSelectedFile(data?.data[0]);
+  }, [data, selectedFile, setSelectedFile, mid, modelId]);
 
   // Show toast on fetch error
   useEffect(() => {

@@ -2,7 +2,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import ImageViewer from "../image-viewer/components/ImageViewer";
 import { PdfPreviewer } from "../pdf-previewer/components/PdfPreviewer";
-import { useFileListStore } from "./store/pdf-list-store";
+import { useFileListStore } from "./store/file-list-store";
 
 const MultiFormatViewer = () => {
   const { selectedFile } = useFileListStore(

@@ -3,7 +3,7 @@ import { Loader2, SparklesIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { useFileListStore } from "../../multi-format-viewer/store/pdf-list-store";
+import { useFileListStore } from "../../multi-format-viewer/store/file-list-store";
 import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {

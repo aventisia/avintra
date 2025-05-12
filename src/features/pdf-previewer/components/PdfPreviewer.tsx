@@ -17,9 +17,9 @@ import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";
-import { useFileListStore } from "../../multi-format-viewer/store/pdf-list-store";
-import { useDownloadPdf } from "../hooks/useDownloadPdf";
-import { useFetchUploadedFiles } from "../hooks/useFetchFiles";
+import { useDownloadFile } from "../../multi-format-viewer/hooks/useDownloadFile";
+import { useFetchUploadedFiles } from "../../multi-format-viewer/hooks/useFetchFiles";
+import { useFileListStore } from "../../multi-format-viewer/store/file-list-store";
 import { useParentWidth } from "../hooks/usePdfWidth";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import { addUpdateInString } from "../utils";
@@ -76,7 +76,7 @@ export const PdfPreviewer: React.FC = () => {
     | AnnotationDataDto[]
     | undefined;
 
-  const { mutate: downloadPdf } = useDownloadPdf();
+  const { mutate: downloadPdf } = useDownloadFile();
 
   const { mutate: updateAnnotation } = useUpdateAnnotation();
 

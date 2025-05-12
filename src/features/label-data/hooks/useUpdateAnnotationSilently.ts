@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { DEBOUNCE_SAVE_DELAY } from "../constants";
 import { useAnnotationDataStore } from "../stores/annotation-data-store";
 import { updateAnnotationData } from "../apis/annotation-apis";
-import { useFileListStore } from "@/features/multi-format-viewer/store/pdf-list-store";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import { AnnotationDataDto } from "../dtos/annotation-data-dtos";
 import { useFetchAnnotationData } from "./useFetchAnnotationData";
 
