@@ -99,7 +99,7 @@ const ImageViewer = () => {
 
   return (
     // <div className="col-span-2 grid grid-rows-[auto_calc(100vh-11.2rem)_auto]  overflow-hidden rounded-lg border bg-white shadow">
-    <div className="col-span-2 overflow-hidden rounded-lg border bg-white shadow">
+    <div className="overflow-hidden rounded-lg border bg-white shadow">
       <ControlPanel
         zoomLevel={zoomLevel}
         zoomInHandler={zoomInHandler}

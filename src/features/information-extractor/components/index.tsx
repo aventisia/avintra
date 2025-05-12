@@ -1,11 +1,14 @@
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
-import SavingIndicator from "./SavingIndicator";
-import { useShallow } from "zustand/react/shallow";
+
 import { ScrollArea } from "@aventisia/ui/scroll";
-import InformationExtractorForm from "./InformationExtractorForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { useShallow } from "zustand/react/shallow";
+
+import InformationExtractorForm from "./setup/InformationExtractorForm";
+import SavingIndicator from "./setup/SavingIndicator";
+import InformationExtractorTestForm from "./test/InformationExtractorTestForm";
 
 const InformationExtractor = () => {
-  // Get store state and actions
   const { isDataSaving } = useAnnotationDataStore(
     useShallow((state) => ({
       isDataSaving: state.isDataSaving,
@@ -13,17 +16,43 @@ const InformationExtractor = () => {
   );
 
   return (
-    <div className="col-span-1 ml-2 rounded-lg bg-white shadow">
-      <div className="flex h-12 items-center justify-between border-b px-4 py-2">
-        <div className="flex items-center gap-2">
-          <p className="text-md font-medium">Extraction</p>
-          <SavingIndicator isSaving={isDataSaving} />
-        </div>
-      </div>
+    <div className="ml-2 rounded-lg bg-white shadow h-full flex flex-col">
+      {/* Only ONE Tabs wrapper */}
+      <Tabs defaultValue="setup" className="flex flex-col flex-1">
+        {/* Header and TabsList side by side */}
+        <div className="flex items-center h-12 justify-between border-b px-4 py-2">
+          <div className="flex items-center gap-2">
+            <p className="text-md font-medium">Extraction</p>
+            <SavingIndicator isSaving={isDataSaving} />
+          </div>
 
-      <ScrollArea className="h-[calc(100vh-7.6rem)] py-2">
-        <InformationExtractorForm />
-      </ScrollArea>
+          <TabsList className="rounded-full">
+            <TabsTrigger
+              value="setup"
+              className="rounded-full data-[state=active]:text-primary"
+            >
+              Setup
+            </TabsTrigger>
+            <TabsTrigger
+              value="test"
+              className="rounded-full data-[state=active]:text-primary"
+            >
+              Test
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        {/* Scrollable content */}
+        <ScrollArea className="h-[calc(100vh-7.6rem)]">
+          <TabsContent value="setup" className="h-full">
+            <InformationExtractorForm />
+          </TabsContent>
+
+          <TabsContent value="test" className="h-full">
+            <InformationExtractorTestForm />
+          </TabsContent>
+        </ScrollArea>
+      </Tabs>
     </div>
   );
 };

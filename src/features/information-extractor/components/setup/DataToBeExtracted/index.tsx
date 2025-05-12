@@ -1,16 +1,17 @@
 // components/DataToBeExtractedSection.tsx
-import { Controller, UseFormReturn } from "react-hook-form";
 import { Button } from "@aventisia/ui/buttons";
 import { InputField } from "@aventisia/ui/form";
 import { SelectField } from "@aventisia/ui/form";
-import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Controller, UseFormReturn } from "react-hook-form";
+import { z } from "zod";
+
+import { addInfoExtractorFormZodSchema } from "../../../constants/add-info-extractor-zod-schema";
 import {
   fieldNameProps,
   instructionsProps,
   typeProps,
-} from "../../constants/info-extractor-form-field-props";
-import { z } from "zod";
-import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
+} from "../../../constants/info-extractor-form-field-props";
 
 type DataToBeExtractedProps = {
   form: UseFormReturn<z.infer<typeof addInfoExtractorFormZodSchema>>;
@@ -40,7 +41,7 @@ const DataToBeExtracted = ({
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
         </Button>
       </div>
-      <div className="!mt-0.5 inline-block rounded-lg border">
+      <div className="!mt-0.5 inline-block rounded-lg border w-full">
         <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm">
           <div className="px-3">Field Name</div>
           <div className="px-3">Type</div>

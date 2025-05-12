@@ -342,7 +342,7 @@ export const PdfPreviewer: React.FC = () => {
   return (
     <div
       ref={parentRef}
-      className="col-span-2 overflow-hidden rounded-lg border bg-white shadow"
+      className="overflow-hidden rounded-lg border bg-white shadow"
     >
       <ControlPanel
         scale={scale}

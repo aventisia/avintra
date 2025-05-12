@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { addInfoExtractorFormZodSchema } from "../constants/add-info-extractor-zod-schema";
-import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { addInfoExtractorFormZodSchema } from "../constants/add-info-extractor-zod-schema";
 import { useInformationExtractorTableStore } from "../stores/info-extractor-table-store";
 
 export const useAddInformationExtractorForm = () => {

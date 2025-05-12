@@ -1,9 +1,10 @@
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { useInformationExtractorTableStore } from "../../../stores/info-extractor-table-store";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
+import { useInformationExtractorTableStore } from "../../../../stores/info-extractor-table-store";
 
 interface TabsDeleteActionProps {
   idx: number;

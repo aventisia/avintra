@@ -22,15 +22,15 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
+import { addInfoExtractorFormZodSchema } from "../../../constants/add-info-extractor-zod-schema";
 import {
   headerNameProps,
   instructionsProps,
   tableContextProps,
   tableNameProps,
   typeProps,
-} from "../../constants/info-extractor-form-field-props";
-import { useInformationExtractorTableStore } from "../../stores/info-extractor-table-store";
+} from "../../../constants/info-extractor-form-field-props";
+import { useInformationExtractorTableStore } from "../../../stores/info-extractor-table-store";
 import { TabsDeleteAction } from "./TabsActions/TabsDeleteAction";
 import { TabsRenameAction } from "./TabsActions/TabsRenameAction";
 import { TabsActionsTrigger } from "./TabsActionsTrigger";
@@ -183,8 +183,8 @@ const ContextTables = ({
                     />
 
                     {/* Table Headers */}
-                    <div className="inline-block rounded-lg border">
-                      <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm">
+                    <div className="inline-block rounded-lg border w-full">
+                      <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm ">
                         <div className="px-3">Header Name</div>
                         <div className="px-3">Type</div>
                         <div className="px-3">Instructions</div>

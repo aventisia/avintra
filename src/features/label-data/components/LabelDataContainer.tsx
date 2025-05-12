@@ -3,6 +3,11 @@ import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/react-toolkit/ui/resizable";
 
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
@@ -46,11 +51,18 @@ export const LabelDataContainer = () => {
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
 
       {step == 1 ? (
-        <div className="grid w-full grid-cols-3">
-          <MultiFormatViewer />
-          <InformationExtractor />
-        </div>
+        // <div className="grid w-full grid-cols-3">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={70} minSize={35}>
+            <MultiFormatViewer />
+          </ResizablePanel>
+          <ResizableHandle withHandle className="ml-2 mr-0" />
+          <ResizablePanel defaultSize={35} minSize={35}>
+            <InformationExtractor />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       ) : (
+        // </div>
         <FileUploader />
       )}
     </>
