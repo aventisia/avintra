@@ -89,15 +89,15 @@ public class ExtractionSetupService : IExtractionSetupService
             // Map nested table metadata if any exist.
             if (extractionSetupDto.TableMetadata.Any())
             {
-                extractionSetupEntity.TableMetadata = extractionSetupDto.TableMetadata.Select(table => new TableMetadata
+                extractionSetupEntity.TableMetadata = extractionSetupDto.TableMetadata.Select(s => new TableMetadata
                 {
-                    Name = table.Name,
-                    Context = table.Context,
-                    TableHeaders = table.TableHeaders.Select(header => new TableHeader
+                    Name = s.Name,
+                    Context = s.Context,
+                    TableHeaders = s.TableHeaders.Select(s1 => new TableHeader
                     {
-                        Name = header.Name,
-                        Type = header.Type,
-                        Instructions = header.Instructions
+                        Name = s1.Name,
+                        Type = s1.Type,
+                        Instructions = s1.Instructions
                     }).ToList()
                 }).ToList();
             }
@@ -165,6 +165,15 @@ public class ExtractionSetupService : IExtractionSetupService
             // Return if no such setup exists
             if (extractionSetup == null)
             {
+                // TODO: this will remove letter
+                // Try inserting a new extraction setup using the provided DTO
+                var response = await InsertExtractionSetupAsync(extractionSetupDto);
+
+                // If insertion is successful (HTTP 200), return the response
+                if (response.StatusCode == 200)
+                {
+                    return response;
+                }
                 _logger.LogWarning("Extraction setup not found | ID: {Id} | User ID: {UserId}", extractionSetupDto.Id, _userId);
                 serviceResponse.Message = "Extraction setup not found";
                 return serviceResponse;
