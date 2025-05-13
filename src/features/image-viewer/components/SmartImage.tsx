@@ -5,16 +5,7 @@ interface SmartImageProps {
   style?: React.CSSProperties;
 }
 
-const SmartImage: React.FC<SmartImageProps> = ({ src, type, alt, style }) => {
-  if (type === "SVG") {
-    return (
-      <object type="image/svg+xml" data={src} style={style}>
-        {/* Optional fallback */}
-        {alt || "SVG not supported"}
-      </object>
-    );
-  }
-
+const SmartImage: React.FC<SmartImageProps> = ({ src, alt, style }) => {
   return <img src={src} alt={alt || ""} style={style} />;
 };
 

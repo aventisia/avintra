@@ -54,7 +54,6 @@ const FileDropzone = ({
       "image/png": [".png"],
       "image/gif": [".gif"],
       "image/webp": [".webp"],
-      "image/svg+xml": [".svg"], // ✅ SVG support
     },
     noClick: true,
   });

@@ -116,7 +116,6 @@ const ImageViewer = () => {
             >
               <SmartImage
                 src={fileUrl || ""}
-                type={selectedFile?.extension}
                 alt={selectedFile?.name}
                 style={{
                   width: "100%",

@@ -16,7 +16,6 @@ const MultiFormatViewer = () => {
     case "JPG":
     case "PNG":
     case "WEBP":
-    case "SVG":
       return <ImageViewer />;
 
     case "PDF":

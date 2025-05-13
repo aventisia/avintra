@@ -5,7 +5,6 @@ const ALLOWED_FILE_TYPES = [
   "image/jpg",         // JPG image files
   "image/png",          // PNG image files
   "image/webp",         // WebP image files
-  "image/svg+xml",      // Svgs
 ];
 
 
