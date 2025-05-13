@@ -80,21 +80,21 @@ public class UploadedDocController : BaseApiController
     }
 
     // Get the content type based on the file extension
-    private string GetContentType(string filePath)
-    {
-        var fileExtension = Path.GetExtension(filePath).ToLower();
-
-        return fileExtension switch
+        private string GetContentType(string filePath)
         {
-            ".pdf" => "application/pdf",
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".txt" => "text/plain",
-            ".svg" => "image/svg+xml",
-            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            _ => "application/octet-stream"
-        };
-    }
+            var fileExtension = Path.GetExtension(filePath).ToLower();
+
+            return fileExtension switch
+            {
+                ".pdf" => "application/pdf",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".txt" => "text/plain",
+                ".gif" => "image/gif",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                _ => "application/octet-stream"
+            };
+        }
 
 }
