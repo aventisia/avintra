@@ -57,6 +57,8 @@ public class ExtractionSetupMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.FieldSetups!)
+            .Ignore(dest => dest.TableMetadata!)
             .IgnoreNullValues(true);
 
     }
