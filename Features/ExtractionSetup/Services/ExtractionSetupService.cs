@@ -64,7 +64,7 @@ public class ExtractionSetupService : IExtractionSetupService
     public async Task<ServiceResponse<bool>> InitializeExtractionSetupAsync(Guid mlModelId)
     {
         // Default response indicating failure
-        var response = new ServiceResponse<bool>
+        var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
             Message = "Failed to initialize extraction setup. Please try again.",
@@ -79,8 +79,20 @@ public class ExtractionSetupService : IExtractionSetupService
 
             _logger.LogInformation("User [{UserId}] is attempting to initialize a new extraction setup.", _userId);
 
+            // Check if an extraction setup already exists for the given MLModelId
+            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
+                .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                .FirstOrDefaultAsync();
+
+            if (extractionSetup != null)
+            {
+                // Log that an extraction setup already exists and return a relevant message
+                _logger.LogInformation("An extraction setup already exists for ML model ID: {MLModelId}.", mlModelId);
+                return serviceResponse;
+            }
+
             // Creating the extraction setup record
-            var extractionSetup = new ExtractionSetup()
+            extractionSetup = new ExtractionSetup()
             {
                 DocumentContext = string.Empty,
                 NodePrompt = defaultNodePrompt,
@@ -98,13 +110,13 @@ public class ExtractionSetupService : IExtractionSetupService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Database save failed while initializing extraction setup for user [{UserId}].", _userId);
-                return response;
+                return serviceResponse;
             }
 
-            // Successfully initialized and saved; update response accordingly
-            response.Data = true;
-            response.StatusCode = 200;
-            response.Message = "Extraction setup successfully initialized.";
+            // Successfully initialized and saved; update serviceResponse accordingly
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extraction setup successfully initialized.";
 
             _logger.LogInformation("Extraction setup successfully initialized for user [{UserId}].", _userId);
         }
@@ -113,14 +125,14 @@ public class ExtractionSetupService : IExtractionSetupService
             _logger.LogError(ex, "An unexpected error occurred while initializing extraction setup for user [{UserId}].", _userId);
         }
 
-        return response;
+        return serviceResponse;
     }
 
     // Creates a new extraction setup record
     public async Task<ServiceResponse<ExtractionSetupDto>> InsertExtractionSetupAsync(ExtractionSetupDto extractionSetupDto)
     {
         // Initialize the response with a default failure message.
-        var response = new ServiceResponse<ExtractionSetupDto>
+        var serviceResponse = new ServiceResponse<ExtractionSetupDto>
         {
             Data = null,
             Message = "Failed to add extraction setup. Please try again.",
@@ -130,7 +142,21 @@ public class ExtractionSetupService : IExtractionSetupService
         {
             _logger.LogInformation("User [{UserId}] is attempting to create a new extraction setup.", _userId);
 
-            // TODO: Validate uniqueness of extraction setup name for the user.
+            // Check if an extraction setup already exists for the given MLModelId
+            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
+                .GetByConditionAsync(w => w.MLModelId == extractionSetupDto.MLModelId)
+                .Include(i => i.MLModel)
+                .FirstOrDefaultAsync();
+
+            if (extractionSetup != null)
+            {
+                // Log that an extraction setup already exists and return a relevant message
+                _logger.LogInformation("An extraction setup already exists for ML model ID: {MLModelId}.", extractionSetupDto.MLModelId);
+
+                // Update the service response message to inform the user
+                serviceResponse.Message = $"An extraction setup already exists for ML model Name: {extractionSetup.MLModel.Name}.";
+                return serviceResponse;
+            }
 
             // Trim and sanitize all string properties in the DTO.
             extractionSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(extractionSetupDto);
@@ -178,13 +204,13 @@ public class ExtractionSetupService : IExtractionSetupService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Database save failed while creating extraction setup for user [{UserId}].", _userId);
-                return response;
+                return serviceResponse;
             }
 
             // Successfully saved; map back to DTO and update response
-            response.Data = extractionSetupEntity.Adapt<ExtractionSetupDto>();
-            response.StatusCode = 200;
-            response.Message = "Extraction setup added successfully.";
+            serviceResponse.Data = extractionSetupEntity.Adapt<ExtractionSetupDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extraction setup added successfully.";
 
             _logger.LogInformation("Extraction setup created successfully for user [{UserId}].", _userId);
         }
@@ -193,7 +219,7 @@ public class ExtractionSetupService : IExtractionSetupService
             _logger.LogError(ex, "An unexpected error occurred while creating extraction setup for user [{UserId}].", _userId);
         }
 
-        return response;
+        return serviceResponse;
     }
 
     // Update an existing extraction setup record
@@ -212,7 +238,9 @@ public class ExtractionSetupService : IExtractionSetupService
 
             // Fetch the existing extraction setup from DB with its related tables, headers, and field setups
             var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.Id == extractionSetupDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == extractionSetupDto.Id || w.MLModelId == extractionSetupDto.MLModelId
+                )
                 .Include(i => i.TableMetadata!)
                     .ThenInclude(i1 => i1.TableHeaders)
                 .Include(i => i.FieldSetups)
