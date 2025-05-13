@@ -62,7 +62,7 @@ export const QueueAssignAgentDialog = ({
       }}
     >
       {children}
-      <DialogContent side={"right"} className="!max-w-[32rem]">
+      <DialogContent side={"right"} className="!max-w-[38rem]">
         <DialogDefaultHeader heading={dialogHeading} />
         <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
           <QueueAssignAgentForm />

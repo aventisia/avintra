@@ -56,9 +56,9 @@ export function AgentSelectTable() {
       rowCount={2}
       showHeader={false}
       customHeader={
-        <div className="flex h-[1.75rem] items-center justify-between">
+        <div className="flex h-[1.75rem] items-center justify-start">
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[8rem]" />
           <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[10rem]" />
-          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[13rem]" />
         </div>
       }
     />
