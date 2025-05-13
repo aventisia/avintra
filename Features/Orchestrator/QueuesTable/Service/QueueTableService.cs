@@ -201,7 +201,7 @@ public class QueueTableService : IQueueTableService
                 newQueue.OutputDataSchemaPath = outputDataSchemaUploadResponse.Data.Path;
             }
 
-            // Insert queue
+            // Insert queue 
             await _unitOfWork.QueueRepo.InsertAsync(newQueue);
 
             // Save changes
@@ -536,7 +536,7 @@ public class QueueTableService : IQueueTableService
             {
                 // If saving fails, log and return failure.
                 _logger.LogInformation("Database save operation failed while assigning or updating agents.");
-                serviceResponse.Message = "Failed to update queue assignments for the queue.";
+                serviceResponse.Message = "Failed to update agent assignments for the queue.";
                 return serviceResponse;
             }
 
