@@ -59,6 +59,6 @@ public class ExtractionSetupController : BaseApiController
     [HttpGet("ml-model/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<ExtractionSetupDto>>> GetExtractionSetupByMLModelId(Guid mlModelId)
     {
-        return ResultHelper(await _extractionSetupService.RetrieveExtractionSetupByIdAsync(mlModelId));
+        return ResultHelper(await _extractionSetupService.GetExtractionSetupByMLModelIdAsync(mlModelId));
     }
 }
