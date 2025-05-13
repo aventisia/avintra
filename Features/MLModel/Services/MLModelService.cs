@@ -4,18 +4,21 @@ public class MLModelService : IMLModelService
 {
     private readonly ILogger<MLModelService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IExtractionSetupService _extractionSetupService;
     private readonly Guid _userId;
 
     public MLModelService(
         ILogger<MLModelService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IExtractionSetupService extractionSetupService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _extractionSetupService = extractionSetupService;
     }
 
     // Get the list of model records created by the user
@@ -141,6 +144,20 @@ public class MLModelService : IMLModelService
                 return serviceResponse;
             }
 
+            // Initialize extraction setup
+            var response = await _extractionSetupService.InitializeExtractionSetupAsync(newMLModel.Id);
+
+            // Log the response based on whether it was successful or not
+            if (response.Data)
+            {
+                _logger.LogInformation("Extraction setup successfully initialized for ML model with ID: {MLModelId}.", newMLModel.Id);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to initialize extraction setup for ML model with ID: {MLModelId}. Error message: {ErrorMessage}",
+                    newMLModel.Id, response.Message);
+            }
+
             // Task successful
             serviceResponse.Data = newMLModel.Adapt<MLModelDto>();
             serviceResponse.StatusCode = 200;
@@ -170,8 +187,8 @@ public class MLModelService : IMLModelService
         {
             // Validate model record existence
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => 
-                    w.Id == mlModelDto.Id && 
+                .GetByConditionAsync(w =>
+                    w.Id == mlModelDto.Id &&
                     w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
@@ -247,8 +264,8 @@ public class MLModelService : IMLModelService
         {
             // Try to get model record
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => 
-                    w.Id == id && 
+                .GetByConditionAsync(w =>
+                    w.Id == id &&
                     w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
