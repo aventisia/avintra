@@ -60,6 +60,62 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
+    // Initialize a new extraction setup record
+    public async Task<ServiceResponse<bool>> InitializeExtractionSetupAsync(Guid mlModelId)
+    {
+        // Default response indicating failure
+        var response = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to initialize extraction setup. Please try again.",
+        };
+
+        try
+        {
+            // Defining the default NodePrompt
+            var defaultNodePrompt = "You are an expert extraction algorithm.\n" +
+                                    "Only extract relevant information from the text.\n" +
+                                    "If you do not know the value of an attribute asked to extract, you may omit the attribute's value.";
+
+            _logger.LogInformation("User [{UserId}] is attempting to initialize a new extraction setup.", _userId);
+
+            // Creating the extraction setup record
+            var extractionSetup = new ExtractionSetup()
+            {
+                DocumentContext = string.Empty,
+                NodePrompt = defaultNodePrompt,
+                MLModelId = mlModelId,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            _logger.LogInformation("Inserting new extraction setup into the database for user [{UserId}].", _userId);
+
+            // Insert the new extraction setup into the repository
+            await _unitOfWork.ExtractionSetupRepo.InsertAsync(extractionSetup);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Database save failed while initializing extraction setup for user [{UserId}].", _userId);
+                return response;
+            }
+
+            // Successfully initialized and saved; update response accordingly
+            response.Data = true;
+            response.StatusCode = 200;
+            response.Message = "Extraction setup successfully initialized.";
+
+            _logger.LogInformation("Extraction setup successfully initialized for user [{UserId}].", _userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while initializing extraction setup for user [{UserId}].", _userId);
+        }
+
+        return response;
+    }
+
     // Creates a new extraction setup record
     public async Task<ServiceResponse<ExtractionSetupDto>> InsertExtractionSetupAsync(ExtractionSetupDto extractionSetupDto)
     {
@@ -480,6 +536,54 @@ public class ExtractionSetupService : IExtractionSetupService
         }
 
         // Return the final service response
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<ExtractionSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId)
+    {
+        // Initialize the response with a default failure message and null data
+        var serviceResponse = new ServiceResponse<ExtractionSetupDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the extraction setup. Please try again later."
+        };
+
+        try
+        {
+            // Log the beginning of the retrieval process
+            _logger.LogInformation("Attempting to retrieve extraction setup for ML model with ID: {MLModelId}", mlModelId);
+
+            // Fetch the extraction setup based on the provided ML model ID and map it to the DTO
+            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
+                .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                .Include(i => i.MLModel)
+                .Include(i => i.TableMetadata!)
+                    .ThenInclude(i1 => i1.TableHeaders)
+                .Include(i => i.FieldSetups)
+                .ProjectToType<ExtractionSetupDto>()
+                .SingleOrDefaultAsync();
+
+            // If no setup is found, log a warning and return a message
+            if (extractionSetup == null)
+            {
+                _logger.LogWarning("No extraction setup found for ML model with ID: {MLModelId}", mlModelId);
+                serviceResponse.Message = "No extraction setup exists for the provided ML model ID.";
+                return serviceResponse;
+            }
+
+            // Log the successful retrieval of the setup
+            _logger.LogInformation("Successfully retrieved extraction setup for ML model with ID: {MLModelId}", mlModelId);
+
+            // Set the successful response data
+            serviceResponse.Data = extractionSetup;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extraction setup retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error occurred while retrieving extraction setup for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+        }
+
         return serviceResponse;
     }
 }
