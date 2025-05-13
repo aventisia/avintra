@@ -98,7 +98,16 @@ public class ExtractionSetupService : IExtractionSetupService
                 NodePrompt = defaultNodePrompt,
                 MLModelId = mlModelId,
                 CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId
+                LastModifiedByUserId = _userId,
+                FieldSetups = new List<FieldSetup>()
+                {
+                    new FieldSetup()
+                    {
+                        Name = string.Empty,
+                        Type = string.Empty,
+                        Instructions = string.Empty
+                    }
+                }
             };
 
             _logger.LogInformation("Inserting new extraction setup into the database for user [{UserId}].", _userId);
