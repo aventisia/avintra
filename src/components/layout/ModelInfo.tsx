@@ -1,6 +1,9 @@
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+
 import { DotSeparator } from "@aventisia/ui";
 import { useLocation } from "react-router-dom";
+
+import { ModelTypesEnum } from "../enums/model-type-enum";
 
 const ModelInfo = () => {
   const location = useLocation();
@@ -14,7 +17,7 @@ const ModelInfo = () => {
         {modelName}
       </span>
       <span className="mr-[0.6rem] truncate rounded-full border px-3 py-1 text-xs font-medium text-white">
-        {data?.data.type}
+        {ModelTypesEnum[data?.data.type as keyof typeof ModelTypesEnum]}
       </span>
     </>
   );

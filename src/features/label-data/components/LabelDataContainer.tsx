@@ -3,6 +3,7 @@ import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import SentimentAnalytics from "@/features/sentiment-analytics/components";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -13,6 +14,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useFetchModel } from "../hooks/useFetchModel";
 import { useLabelDataStore } from "../stores/label-data-store";
 import Nav from "./Header/Nav";
 
@@ -28,6 +30,7 @@ export const LabelDataContainer = () => {
   );
 
   const { data: pdfList, refetch, isLoading } = useFetchUploadedFiles();
+  const { data: modelData } = useFetchModel();
 
   useEffect(() => {
     if (pdfList?.data.length) {
@@ -46,6 +49,23 @@ export const LabelDataContainer = () => {
     );
   }
 
+  const renderLLMComponent = () => {
+    const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
+
+    switch (modelType) {
+      case "extraction":
+        return <InformationExtractor />;
+      case "sentimentanalytics":
+        return <SentimentAnalytics />;
+      default:
+        // Optionally log an error or return a fallback component
+        console.warn(
+          `Unknown model type: ${modelType}. Falling back to default.`,
+        );
+        return <InformationExtractor />; // Default component
+    }
+  };
+
   return (
     <>
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
@@ -58,7 +78,7 @@ export const LabelDataContainer = () => {
           </ResizablePanel>
           <ResizableHandle withHandle className="ml-2 mr-0" />
           <ResizablePanel defaultSize={35} minSize={35}>
-            <InformationExtractor />
+            {renderLLMComponent()}
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
