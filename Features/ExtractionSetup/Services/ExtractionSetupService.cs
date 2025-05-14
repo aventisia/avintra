@@ -19,47 +19,47 @@ public class ExtractionSetupService : IExtractionSetupService
         _unitOfWork = unitOfWork;
     }
 
-    //Retrieves all extraction setups created by the user
-    public async Task<ServiceResponse<IEnumerable<ExtractionSetupDto>>> RetrieveAllExtractionSetupsAsync()
-    {
-        // Initialize the service response with a failure message and null data.
-        var serviceResponse = new ServiceResponse<IEnumerable<ExtractionSetupDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve extraction setups. Please try again."
-        };
+    // //Retrieves all extraction setups created by the user
+    // public async Task<ServiceResponse<IEnumerable<ExtractionSetupDto>>> RetrieveAllExtractionSetupsAsync()
+    // {
+    //     // Initialize the service response with a failure message and null data.
+    //     var serviceResponse = new ServiceResponse<IEnumerable<ExtractionSetupDto>>
+    //     {
+    //         Data = null,
+    //         Message = "Failed to retrieve extraction setups. Please try again."
+    //     };
 
-        try
-        {
-            // Log the attempt to fetch extraction setups for the user.
-            _logger.LogInformation($"Initiating retrieval of extraction setups for user: {_userId}");
+    //     try
+    //     {
+    //         // Log the attempt to fetch extraction setups for the user.
+    //         _logger.LogInformation($"Initiating retrieval of extraction setups for user: {_userId}");
 
-            // Fetch extraction setups associated with the user, ordered by creation date.
-            var extractionSetups = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
-                .Include(i => i.MLModel)
-                .Include(i => i.TableMetadata!)
-                    .ThenInclude(i1 => i1.TableHeaders)
-                .Include(i => i.FieldSetups)
-                .ProjectToType<ExtractionSetupDto>()
-                .ToListAsync();
+    //         // Fetch extraction setups associated with the user, ordered by creation date.
+    //         var extractionSetups = await _unitOfWork.ExtractionSetupRepo
+    //             .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+    //             .Include(i => i.MLModel)
+    //             .Include(i => i.TableMetadata!)
+    //                 .ThenInclude(i1 => i1.TableHeaders)
+    //             .Include(i => i.FieldSetups)
+    //             .ProjectToType<ExtractionSetupDto>()
+    //             .ToListAsync();
 
-            // Log the successful retrieval of extraction setups, including the count retrieved.
-            _logger.LogInformation($"Successfully retrieved {extractionSetups.Count} extraction setups for user: {_userId}");
+    //         // Log the successful retrieval of extraction setups, including the count retrieved.
+    //         _logger.LogInformation($"Successfully retrieved {extractionSetups.Count} extraction setups for user: {_userId}");
 
-            // Assign the retrieved extraction setups to the service response's data property.
-            serviceResponse.Data = extractionSetups.Adapt<IEnumerable<ExtractionSetupDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setups retrieved successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"An error occurred while retrieving extraction setups for user: {_userId}. Exception: {ex.Message}");
-        }
+    //         // Assign the retrieved extraction setups to the service response's data property.
+    //         serviceResponse.Data = extractionSetups.Adapt<IEnumerable<ExtractionSetupDto>>();
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Extraction setups retrieved successfully.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError($"An error occurred while retrieving extraction setups for user: {_userId}. Exception: {ex.Message}");
+    //     }
 
-        // Return the service response.
-        return serviceResponse;
-    }
+    //     // Return the service response.
+    //     return serviceResponse;
+    // }
 
     //Initialize a new extraction setup record
     public string CreateSerializedExtractionSetup()
@@ -87,102 +87,102 @@ public class ExtractionSetupService : IExtractionSetupService
         };
 
         // Serialize the setup to a JSON string
-        return JsonConvert.SerializeObject(defaultExtractionSetup);
+        return JsonSerializer.Serialize(defaultExtractionSetup);
     }
 
-    // Creates a new extraction setup record
-    public async Task<ServiceResponse<ExtractionSetupDto>> InsertExtractionSetupAsync(ExtractionSetupDto extractionSetupDto)
-    {
-        // Initialize the response with a default failure message.
-        var serviceResponse = new ServiceResponse<ExtractionSetupDto>
-        {
-            Data = null,
-            Message = "Failed to add extraction setup. Please try again.",
-        };
+    // // Creates a new extraction setup record
+    // public async Task<ServiceResponse<ExtractionSetupDto>> InsertExtractionSetupAsync(ExtractionSetupDto extractionSetupDto)
+    // {
+    //     // Initialize the response with a default failure message.
+    //     var serviceResponse = new ServiceResponse<ExtractionSetupDto>
+    //     {
+    //         Data = null,
+    //         Message = "Failed to add extraction setup. Please try again.",
+    //     };
 
-        try
-        {
-            _logger.LogInformation("User [{UserId}] is attempting to create a new extraction setup.", _userId);
+    //     try
+    //     {
+    //         _logger.LogInformation("User [{UserId}] is attempting to create a new extraction setup.", _userId);
 
-            // Check if an extraction setup already exists for the given MLModelId
-            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.MLModelId == extractionSetupDto.MLModelId)
-                .Include(i => i.MLModel)
-                .FirstOrDefaultAsync();
+    //         // Check if an extraction setup already exists for the given MLModelId
+    //         var extractionSetup = await _unitOfWork.ExtractionSetupRepo
+    //             .GetByConditionAsync(w => w.MLModelId == extractionSetupDto.MLModelId)
+    //             .Include(i => i.MLModel)
+    //             .FirstOrDefaultAsync();
 
-            if (extractionSetup != null)
-            {
-                // Log that an extraction setup already exists and return a relevant message
-                _logger.LogInformation("An extraction setup already exists for ML model ID: {MLModelId}.", extractionSetupDto.MLModelId);
+    //         if (extractionSetup != null)
+    //         {
+    //             // Log that an extraction setup already exists and return a relevant message
+    //             _logger.LogInformation("An extraction setup already exists for ML model ID: {MLModelId}.", extractionSetupDto.MLModelId);
 
-                // Update the service response message to inform the user
-                serviceResponse.Message = $"An extraction setup already exists for ML model Name: {extractionSetup.MLModel.Name}.";
-                return serviceResponse;
-            }
+    //             // Update the service response message to inform the user
+    //             serviceResponse.Message = $"An extraction setup already exists for ML model Name: {extractionSetup.MLModel.Name}.";
+    //             return serviceResponse;
+    //         }
 
-            // Trim and sanitize all string properties in the DTO.
-            extractionSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(extractionSetupDto);
+    //         // Trim and sanitize all string properties in the DTO.
+    //         extractionSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(extractionSetupDto);
 
-            // Map the DTO to the entity model.
-            var extractionSetupEntity = extractionSetupDto.Adapt<ExtractionSetup>();
+    //         // Map the DTO to the entity model.
+    //         var extractionSetupEntity = extractionSetupDto.Adapt<ExtractionSetup>();
 
-            // Set audit fields
-            extractionSetupEntity.CreatedByUserId = _userId;
-            extractionSetupEntity.LastModifiedByUserId = _userId;
+    //         // Set audit fields
+    //         extractionSetupEntity.CreatedByUserId = _userId;
+    //         extractionSetupEntity.LastModifiedByUserId = _userId;
 
-            // Map nested table metadata if any exist.
-            if (extractionSetupDto.TableMetadata.Any())
-            {
-                extractionSetupEntity.TableMetadata = extractionSetupDto.TableMetadata.Select(s => new TableMetadata
-                {
-                    Name = s.Name,
-                    Context = s.Context,
-                    TableHeaders = s.TableHeaders.Select(s1 => new TableHeader
-                    {
-                        Name = s1.Name,
-                        Type = s1.Type,
-                        Instructions = s1.Instructions
-                    }).ToList()
-                }).ToList();
-            }
+    //         // Map nested table metadata if any exist.
+    //         if (extractionSetupDto.TableMetadata.Any())
+    //         {
+    //             extractionSetupEntity.TableMetadata = extractionSetupDto.TableMetadata.Select(s => new TableMetadata
+    //             {
+    //                 Name = s.Name,
+    //                 Context = s.Context,
+    //                 TableHeaders = s.TableHeaders.Select(s1 => new TableHeader
+    //                 {
+    //                     Name = s1.Name,
+    //                     Type = s1.Type,
+    //                     Instructions = s1.Instructions
+    //                 }).ToList()
+    //             }).ToList();
+    //         }
 
-            // Map field setups if any exist.
-            if (extractionSetupDto.FieldSetups.Any())
-            {
-                extractionSetupEntity.FieldSetups = extractionSetupDto.FieldSetups.Select(field => new FieldSetup
-                {
-                    Name = field.Name,
-                    Type = field.Type,
-                    Instructions = field.Instructions
-                }).ToList();
-            }
+    //         // Map field setups if any exist.
+    //         if (extractionSetupDto.FieldSetups.Any())
+    //         {
+    //             extractionSetupEntity.FieldSetups = extractionSetupDto.FieldSetups.Select(field => new FieldSetup
+    //             {
+    //                 Name = field.Name,
+    //                 Type = field.Type,
+    //                 Instructions = field.Instructions
+    //             }).ToList();
+    //         }
 
-            _logger.LogInformation("Inserting extraction setup into the database for user [{UserId}].", _userId);
+    //         _logger.LogInformation("Inserting extraction setup into the database for user [{UserId}].", _userId);
 
-            // Insert the new extraction setup
-            await _unitOfWork.ExtractionSetupRepo.InsertAsync(extractionSetupEntity);
+    //         // Insert the new extraction setup
+    //         await _unitOfWork.ExtractionSetupRepo.InsertAsync(extractionSetupEntity);
 
-            // Save changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Database save failed while creating extraction setup for user [{UserId}].", _userId);
-                return serviceResponse;
-            }
+    //         // Save changes to the database
+    //         if (!await _unitOfWork.SaveAsync())
+    //         {
+    //             _logger.LogError("Database save failed while creating extraction setup for user [{UserId}].", _userId);
+    //             return serviceResponse;
+    //         }
 
-            // Successfully saved; map back to DTO and update response
-            serviceResponse.Data = extractionSetupEntity.Adapt<ExtractionSetupDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setup added successfully.";
+    //         // Successfully saved; map back to DTO and update response
+    //         serviceResponse.Data = extractionSetupEntity.Adapt<ExtractionSetupDto>();
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Extraction setup added successfully.";
 
-            _logger.LogInformation("Extraction setup created successfully for user [{UserId}].", _userId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred while creating extraction setup for user [{UserId}].", _userId);
-        }
+    //         _logger.LogInformation("Extraction setup created successfully for user [{UserId}].", _userId);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An unexpected error occurred while creating extraction setup for user [{UserId}].", _userId);
+    //     }
 
-        return serviceResponse;
-    }
+    //     return serviceResponse;
+    // }
 
     // Method to update an existing extraction setup record
     public async Task<ServiceResponse<MLModelSetupDto>> UpdateExtractionSetupAsync(MLModelSetupDto mLModelSetupDto)
@@ -248,164 +248,164 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
-    // Delete an extraction setup record
-    public async Task<ServiceResponse<bool>> RemoveExtractionSetupAsync(Guid extractionSetupId)
-    {
-        // Initialize the service response with default failure values
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to delete extraction setup. Please try again."
-        };
+    // // Delete an extraction setup record
+    // public async Task<ServiceResponse<bool>> RemoveExtractionSetupAsync(Guid extractionSetupId)
+    // {
+    //     // Initialize the service response with default failure values
+    //     var serviceResponse = new ServiceResponse<bool>
+    //     {
+    //         Data = false,
+    //         Message = "Failed to delete extraction setup. Please try again."
+    //     };
 
-        try
-        {
-            // Log the start of the deletion process
-            _logger.LogInformation($"Attempting to delete extraction setup with ID: {extractionSetupId} for user: {_userId}");
+    //     try
+    //     {
+    //         // Log the start of the deletion process
+    //         _logger.LogInformation($"Attempting to delete extraction setup with ID: {extractionSetupId} for user: {_userId}");
 
-            // Attempt to retrieve the extraction setup by ID
-            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.Id == extractionSetupId)
-                .SingleOrDefaultAsync();
+    //         // Attempt to retrieve the extraction setup by ID
+    //         var extractionSetup = await _unitOfWork.ExtractionSetupRepo
+    //             .GetByConditionAsync(w => w.Id == extractionSetupId)
+    //             .SingleOrDefaultAsync();
 
-            // If not found, log a warning and return an appropriate message
-            if (extractionSetup == null)
-            {
-                _logger.LogWarning($"Extraction setup with ID {extractionSetupId} not found for user: {_userId}");
-                serviceResponse.Message = "Extraction setup does not exist.";
-                return serviceResponse;
-            }
+    //         // If not found, log a warning and return an appropriate message
+    //         if (extractionSetup == null)
+    //         {
+    //             _logger.LogWarning($"Extraction setup with ID {extractionSetupId} not found for user: {_userId}");
+    //             serviceResponse.Message = "Extraction setup does not exist.";
+    //             return serviceResponse;
+    //         }
 
-            // Proceed to delete the found extraction setup
-            _logger.LogInformation($"Deleting extraction setup with ID: {extractionSetupId} for user: {_userId}");
-            _unitOfWork.ExtractionSetupRepo.Delete(extractionSetup);
+    //         // Proceed to delete the found extraction setup
+    //         _logger.LogInformation($"Deleting extraction setup with ID: {extractionSetupId} for user: {_userId}");
+    //         _unitOfWork.ExtractionSetupRepo.Delete(extractionSetup);
 
-            // Attempt to persist the deletion in the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError($"Failed to delete extraction setup with ID {extractionSetupId} for user: {_userId} during save.");
-                return serviceResponse;
-            }
+    //         // Attempt to persist the deletion in the database
+    //         if (!await _unitOfWork.SaveAsync())
+    //         {
+    //             _logger.LogError($"Failed to delete extraction setup with ID {extractionSetupId} for user: {_userId} during save.");
+    //             return serviceResponse;
+    //         }
 
-            // Log successful deletion
-            _logger.LogInformation($"Successfully deleted extraction setup with ID {extractionSetupId} for user: {_userId}");
+    //         // Log successful deletion
+    //         _logger.LogInformation($"Successfully deleted extraction setup with ID {extractionSetupId} for user: {_userId}");
 
-            // Update service response to reflect success
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setup deleted successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error occurred while deleting extraction setup with ID {extractionSetupId} for user: {_userId}. Exception: {ex.Message}");
-        }
+    //         // Update service response to reflect success
+    //         serviceResponse.Data = true;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Extraction setup deleted successfully.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError($"Error occurred while deleting extraction setup with ID {extractionSetupId} for user: {_userId}. Exception: {ex.Message}");
+    //     }
 
-        // Return the final service response
-        return serviceResponse;
-    }
+    //     // Return the final service response
+    //     return serviceResponse;
+    // }
 
-    // Delete multiple extraction setup records
-    public async Task<ServiceResponse<bool>> RemoveMultipleExtractionSetupAsync(IEnumerable<Guid> extractionSetupIds)
-    {
-        // Initialize the service response with default failure values
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to delete extraction setups. Please try again."
-        };
+    // // Delete multiple extraction setup records
+    // public async Task<ServiceResponse<bool>> RemoveMultipleExtractionSetupAsync(IEnumerable<Guid> extractionSetupIds)
+    // {
+    //     // Initialize the service response with default failure values
+    //     var serviceResponse = new ServiceResponse<bool>
+    //     {
+    //         Data = false,
+    //         Message = "Failed to delete extraction setups. Please try again."
+    //     };
 
-        try
-        {
-            // Log the start of the batch deletion process
-            _logger.LogInformation($"Attempting to delete {extractionSetupIds.Count()} extraction setups for user: {_userId}");
+    //     try
+    //     {
+    //         // Log the start of the batch deletion process
+    //         _logger.LogInformation($"Attempting to delete {extractionSetupIds.Count()} extraction setups for user: {_userId}");
 
-            // Retrieve all extraction setups that match the provided IDs
-            var extractionSetups = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => extractionSetupIds.Contains(w.Id))
-                .ToListAsync();
+    //         // Retrieve all extraction setups that match the provided IDs
+    //         var extractionSetups = await _unitOfWork.ExtractionSetupRepo
+    //             .GetByConditionAsync(w => extractionSetupIds.Contains(w.Id))
+    //             .ToListAsync();
 
-            // If none of the requested setups were found, return early
-            if (!extractionSetups.Any())
-            {
-                serviceResponse.Message = "No extraction setups were found to delete.";
-                return serviceResponse;
-            }
+    //         // If none of the requested setups were found, return early
+    //         if (!extractionSetups.Any())
+    //         {
+    //             serviceResponse.Message = "No extraction setups were found to delete.";
+    //             return serviceResponse;
+    //         }
 
-            // Delete the found extraction setups
-            _unitOfWork.ExtractionSetupRepo.Delete(extractionSetups);
+    //         // Delete the found extraction setups
+    //         _unitOfWork.ExtractionSetupRepo.Delete(extractionSetups);
 
-            // Attempt to save the changes
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError($"Failed to delete extraction setups for user: {_userId} during save.");
-                return serviceResponse;
-            }
+    //         // Attempt to save the changes
+    //         if (!await _unitOfWork.SaveAsync())
+    //         {
+    //             _logger.LogError($"Failed to delete extraction setups for user: {_userId} during save.");
+    //             return serviceResponse;
+    //         }
 
-            // Log successful deletion
-            _logger.LogInformation($"Successfully deleted {extractionSetups.Count} extraction setups for user: {_userId}");
+    //         // Log successful deletion
+    //         _logger.LogInformation($"Successfully deleted {extractionSetups.Count} extraction setups for user: {_userId}");
 
-            // Set success response
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setups deleted successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"An error occurred while deleting multiple extraction setups for user: {_userId}. Exception: {ex.Message}");
-        }
+    //         // Set success response
+    //         serviceResponse.Data = true;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Extraction setups deleted successfully.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError($"An error occurred while deleting multiple extraction setups for user: {_userId}. Exception: {ex.Message}");
+    //     }
 
-        return serviceResponse;
-    }
+    //     return serviceResponse;
+    // }
 
-    // Retrieves an extraction setup by its identifier
-    public async Task<ServiceResponse<ExtractionSetupDto>> RetrieveExtractionSetupByIdAsync(Guid extractionSetupId)
-    {
-        // Initialize the service response with a default failure message and null data
-        var serviceResponse = new ServiceResponse<ExtractionSetupDto>
-        {
-            Data = null,
-            Message = "Failed to retrieve extraction setup. Please try again."
-        };
+    // // Retrieves an extraction setup by its identifier
+    // public async Task<ServiceResponse<ExtractionSetupDto>> RetrieveExtractionSetupByIdAsync(Guid extractionSetupId)
+    // {
+    //     // Initialize the service response with a default failure message and null data
+    //     var serviceResponse = new ServiceResponse<ExtractionSetupDto>
+    //     {
+    //         Data = null,
+    //         Message = "Failed to retrieve extraction setup. Please try again."
+    //     };
 
-        try
-        {
-            // Log the start of the retrieval process
-            _logger.LogInformation($"Attempting to retrieve extraction setup with ID: {extractionSetupId}");
+    //     try
+    //     {
+    //         // Log the start of the retrieval process
+    //         _logger.LogInformation($"Attempting to retrieve extraction setup with ID: {extractionSetupId}");
 
-            // Attempt to fetch the extraction setup by ID and map it to a DTO
-            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.Id == extractionSetupId)
-                .Include(i => i.MLModel)
-                .Include(i => i.TableMetadata!)
-                    .ThenInclude(i1 => i1.TableHeaders)
-                .Include(i => i.FieldSetups)
-                .ProjectToType<ExtractionSetupDto>()
-                .SingleOrDefaultAsync();
+    //         // Attempt to fetch the extraction setup by ID and map it to a DTO
+    //         var extractionSetup = await _unitOfWork.ExtractionSetupRepo
+    //             .GetByConditionAsync(w => w.Id == extractionSetupId)
+    //             .Include(i => i.MLModel)
+    //             .Include(i => i.TableMetadata!)
+    //                 .ThenInclude(i1 => i1.TableHeaders)
+    //             .Include(i => i.FieldSetups)
+    //             .ProjectToType<ExtractionSetupDto>()
+    //             .SingleOrDefaultAsync();
 
-            // If the setup is not found, log a warning and return an appropriate message
-            if (extractionSetup == null)
-            {
-                _logger.LogWarning($"Extraction setup with ID {extractionSetupId} not found");
-                serviceResponse.Message = "Extraction setup does not exist.";
-                return serviceResponse;
-            }
+    //         // If the setup is not found, log a warning and return an appropriate message
+    //         if (extractionSetup == null)
+    //         {
+    //             _logger.LogWarning($"Extraction setup with ID {extractionSetupId} not found");
+    //             serviceResponse.Message = "Extraction setup does not exist.";
+    //             return serviceResponse;
+    //         }
 
-            // Log successful retrieval
-            _logger.LogInformation($"Extraction setup with ID {extractionSetupId} retrieved successfully");
+    //         // Log successful retrieval
+    //         _logger.LogInformation($"Extraction setup with ID {extractionSetupId} retrieved successfully");
 
-            // Populate the successful response
-            serviceResponse.Data = extractionSetup;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setup retrieved successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error retrieving extraction setup with ID {extractionSetupId}. Exception: {ex.Message}");
-        }
+    //         // Populate the successful response
+    //         serviceResponse.Data = extractionSetup;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Extraction setup retrieved successfully.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError($"Error retrieving extraction setup with ID {extractionSetupId}. Exception: {ex.Message}");
+    //     }
 
-        // Return the final service response
-        return serviceResponse;
-    }
+    //     // Return the final service response
+    //     return serviceResponse;
+    // }
 
     public async Task<ServiceResponse<MLModelSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId)
     {
