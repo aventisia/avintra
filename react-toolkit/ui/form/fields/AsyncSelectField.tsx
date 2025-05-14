@@ -1,9 +1,11 @@
-import { FormControl } from "@aventisia/ui/form";
-import { FormField } from "@aventisia/ui/form";
-import { FormItem } from "@aventisia/ui/form";
-import { FormMessage } from "@aventisia/ui/form";
-import { BaseFieldProps } from "@aventisia/ui/form";
-import { FormLabelExt } from "@aventisia/ui/form";
+import {
+  BaseFieldProps,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabelExt,
+  FormMessage,
+} from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
@@ -55,26 +57,28 @@ export const AsyncSelectField = ({
       {...{ name, control }}
       render={({ field }) => (
         <FormItem {...{ size }}>
-          {label && (
-            <FormLabelExt
-              {...{ size, label, disabled, isRequired, description }}
-            />
-          )}
-          <FormControl>
-            <AsyncSelect
-              {...props}
-              selectOptions={selectOptions}
-              label={label}
-              value={field.value}
-              disabled={disabled || field.disabled}
-              onChange={(value) => {
-                setValue(name, value, {
-                  shouldDirty: true,
-                });
-                field.onChange(value);
-              }}
-            />
-          </FormControl>
+          <div className="group flex flex-col gap-2">
+            {label && (
+              <FormLabelExt
+                {...{ size, label, disabled, isRequired, description }}
+              />
+            )}
+            <FormControl>
+              <AsyncSelect
+                {...props}
+                selectOptions={selectOptions}
+                label={label}
+                value={field.value}
+                disabled={disabled || field.disabled}
+                onChange={(value) => {
+                  setValue(name, value, {
+                    shouldDirty: true,
+                  });
+                  field.onChange(value);
+                }}
+              />
+            </FormControl>
+          </div>
 
           <FormMessage {...{ size }} />
         </FormItem>
