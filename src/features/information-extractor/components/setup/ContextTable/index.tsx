@@ -36,17 +36,17 @@ import { TabsRenameAction } from "./TabsActions/TabsRenameAction";
 import { TabsActionsTrigger } from "./TabsActionsTrigger";
 
 type Table = NonNullable<
-  z.infer<typeof addInfoExtractorFormZodSchema>["tables"]
+  z.infer<typeof addInfoExtractorFormZodSchema>["tableMetadata"]
 >[number];
-type TableDataItem = Table["tableData"][number];
+type TableDataItem = Table["tableHeaders"][number];
 
 type ContextTablesProps = {
   form: UseFormReturn<z.infer<typeof addInfoExtractorFormZodSchema>>;
   tableFields: {
     id: string;
-    tableContext?: string;
-    tableName?: string;
-    tableData: TableDataItem[];
+    context?: string;
+    name?: string;
+    tableHeaders: TableDataItem[];
   }[];
   addTableHandler: () => void;
   removeTableHandler: (index: number | null) => void;
@@ -116,7 +116,7 @@ const ContextTables = ({
                       {tableIndex === tableToEditNameIndex ? (
                         <Controller
                           control={control}
-                          name={`tables.${tableIndex}.tableName`}
+                          name={`tableMetadata.${tableIndex}.name`}
                           render={({ field }) => (
                             <InputField
                               {...tableNameProps}
@@ -141,7 +141,7 @@ const ContextTables = ({
                             setTableToEditNameIndex(tableIndex)
                           }
                         >
-                          {form.watch(`tables.${tableIndex}.tableName`)}
+                          {form.watch(`tableMetadata.${tableIndex}.name`)}
                         </Button>
                       )}
 
@@ -170,7 +170,7 @@ const ContextTables = ({
                     {/* Table context */}
                     <Controller
                       control={control}
-                      name={`tables.${tableIndex}.tableContext`}
+                      name={`tableMetadata.${tableIndex}.context`}
                       render={({ field }) => (
                         <InputField
                           {...tableContextProps}
@@ -190,18 +190,18 @@ const ContextTables = ({
                         <div className="px-3">Instructions</div>
                       </div>
 
-                      {table.tableData.map((_, rowIndex) => (
+                      {table.tableHeaders.map((_, rowIndex) => (
                         <div
                           key={rowIndex}
                           className={`justify-left grid grid-cols-3 gap-2 ${
-                            rowIndex !== table.tableData.length - 1 &&
+                            rowIndex !== table.tableHeaders.length - 1 &&
                             "border-b"
                           } p-2.5`}
                         >
                           {/* Header Name */}
                           <Controller
                             control={control}
-                            name={`tables.${tableIndex}.tableData.${rowIndex}.headerName`}
+                            name={`tableMetadata.${tableIndex}.tableHeaders.${rowIndex}.name`}
                             render={({ field }) => (
                               <InputField
                                 {...headerNameProps}
@@ -216,7 +216,7 @@ const ContextTables = ({
                           {/* Type */}
                           <Controller
                             control={control}
-                            name={`tables.${tableIndex}.tableData.${rowIndex}.type`}
+                            name={`tableMetadata.${tableIndex}.tableHeaders.${rowIndex}.type`}
                             render={({ field }) => (
                               <SelectField
                                 {...typeProps}
@@ -231,7 +231,7 @@ const ContextTables = ({
                             {/* Instructions */}
                             <Controller
                               control={control}
-                              name={`tables.${tableIndex}.tableData.${rowIndex}.instructions`}
+                              name={`tableMetadata.${tableIndex}.tableHeaders.${rowIndex}.instructions`}
                               render={({ field }) => (
                                 <InputField
                                   {...instructionsProps}
@@ -244,7 +244,7 @@ const ContextTables = ({
                             />
 
                             {/* Delete button */}
-                            {table.tableData.length > 1 && (
+                            {table.tableHeaders.length > 1 && (
                               <Button
                                 type="button"
                                 onClick={() =>

@@ -24,7 +24,6 @@ const InformationExtractorTestForm = () => {
     // getValues,
   } = form;
 
-  // console.log(getValues());
   // Submit handler
   function submitHandler(
     formData: z.infer<typeof infoExtractorTestFormZodSchema>,
@@ -39,7 +38,7 @@ const InformationExtractorTestForm = () => {
       onSubmit={form.handleSubmit(submitHandler)}
       disabled={isSubmitting}
     >
-      <ScrollArea className="mt-4 flex-grow">
+      <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
         <FormProvider {...form}>
           <div className="space-y-10 px-4 pb-1">
             <DataFields form={form} dataFields={dataFields} />

@@ -56,7 +56,7 @@ const DataToBeExtracted = ({
             {/* Field Name */}
             <Controller
               control={control}
-              name={`fields.${index}.fieldName`}
+              name={`fieldSetups.${index}.name`}
               render={({ field }) => (
                 <InputField
                   {...fieldNameProps}
@@ -71,7 +71,7 @@ const DataToBeExtracted = ({
             {/* Type */}
             <Controller
               control={control}
-              name={`fields.${index}.type`}
+              name={`fieldSetups.${index}.type`}
               render={({ field }) => (
                 <SelectField
                   {...typeProps}
@@ -87,7 +87,7 @@ const DataToBeExtracted = ({
               {/* Instructions */}
               <Controller
                 control={control}
-                name={`fields.${index}.instructions`}
+                name={`fieldSetups.${index}.instructions`}
                 render={({ field }) => (
                   <InputField
                     {...instructionsProps}
