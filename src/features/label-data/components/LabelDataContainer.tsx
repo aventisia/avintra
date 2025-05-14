@@ -1,3 +1,4 @@
+import ClassificationModel from "@/features/classification-model/components";
 import FileUploader from "@/features/file-uploader/components/FileUploader";
 import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
@@ -60,6 +61,8 @@ export const LabelDataContainer = () => {
         return <SentimentAnalytics />;
       case "summarization":
         return <SummarizationModel />;
+      case "classification":
+        return <ClassificationModel />;
       default:
         // Optionally log an error or return a fallback component
         console.warn(
