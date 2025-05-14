@@ -45,6 +45,11 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public decimal? Accuracy { get; set; }
 
     /// <summary>
+    /// Gets or sets the data model's fields JSON data in string format. The default value will be an empty object.
+    /// </summary>
+    public string? SetupObject { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.
     /// </summary>
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }
