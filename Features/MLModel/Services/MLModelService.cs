@@ -134,6 +134,9 @@ public class MLModelService : IMLModelService
             newMLModel.CreatedByUserId = _userId;
             newMLModel.LastModifiedByUserId = _userId;
 
+            // Initialize extraction setup
+            newMLModel.SetupObject = _extractionSetupService.CreateSerializedExtractionSetup();
+
             //Insert a model record
             await _unitOfWork.MLModelRepo.InsertAsync(newMLModel);
 
@@ -144,25 +147,10 @@ public class MLModelService : IMLModelService
                 return serviceResponse;
             }
 
-            // Initialize extraction setup
-            var response = await _extractionSetupService.InitializeExtractionSetupAsync(newMLModel.Id);
-
-            // Log the response based on whether it was successful or not
-            if (response.Data)
-            {
-                _logger.LogInformation("Extraction setup successfully initialized for ML model with ID: {MLModelId}.", newMLModel.Id);
-            }
-            else
-            {
-                _logger.LogWarning("Failed to initialize extraction setup for ML model with ID: {MLModelId}. Error message: {ErrorMessage}",
-                    newMLModel.Id, response.Message);
-            }
-
             // Task successful
             serviceResponse.Data = newMLModel.Adapt<MLModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Model added successfully";
-
         }
         catch (Exception ex)
         {
