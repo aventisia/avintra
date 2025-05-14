@@ -72,11 +72,6 @@ public class ExtractionSetupDto
 public class FieldSetupDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the field setup within the ML model.
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
     /// The name of the field to extract within the document.
     /// </summary>
     [StringLength(255)]
@@ -97,11 +92,6 @@ public class FieldSetupDto
 public class TableMetadataDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the table metadata within the ML model.
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
     /// Optional context or description of the table, such as its purpose or location within the document.
     /// </summary>
     public string? Context { get; set; }
@@ -120,11 +110,6 @@ public class TableMetadataDto
 
 public class TableHeaderDto
 {
-    /// <summary>
-    /// Gets or sets the unique identifier for the table header within the ML model.
-    /// </summary>
-    public Guid Id { get; set; }
-
     /// <summary>
     /// The name of the column in the table to be extracted.
     /// </summary>
