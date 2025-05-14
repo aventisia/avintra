@@ -9,6 +9,9 @@ interface SliderProps
 
   /** Optional Tailwind class to style the slider thumb (handle) */
   thumbColorClass?: string;
+
+  /** Optional Tailwind class to style the Empty Track */
+  trackColorClass?: string;
 }
 
 const Slider = React.forwardRef<
@@ -20,6 +23,7 @@ const Slider = React.forwardRef<
       className,
       rangeColorClass = "bg-primary",
       thumbColorClass = "border-primary",
+      trackColorClass = "bg-accent",
       value,
       ...props
     },
@@ -37,21 +41,27 @@ const Slider = React.forwardRef<
         )}
         {...props}
       >
-        <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-accent">
+        <SliderPrimitive.Track
+          className={cn(
+            "relative h-1.5 w-full grow overflow-hidden rounded-full",
+            trackColorClass,
+          )}
+        >
           <SliderPrimitive.Range
             className={cn("absolute h-full", rangeColorClass)}
           />
         </SliderPrimitive.Track>
         <SliderPrimitive.Thumb
           className={cn(
-            "relative block h-4 w-4 rounded-full bg-background shadow transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border",
+            "relative block h-4 w-4 rounded-full bg-background shadow transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border group",
             thumbColorClass,
           )}
         >
           <span
-            className={
-              "absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-white px-3 py-0.5 rounded-md bg-primary"
-            }
+            className={cn(
+              "absolute hidden -top-6 left-1/2 -translate-x-1/2 text-xs text-white px-3 py-0.5 rounded-md bg-primary group-hover:block",
+              rangeColorClass,
+            )}
           >
             {currentValue}
           </span>

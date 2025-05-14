@@ -1,6 +1,8 @@
+import { accuracyValueProps } from "@/features/sentiment-analytics/constants/sentiment-analytics-test-form-field-props";
 import { sentimentalAnalyticsTestFormZodSchema } from "@/features/sentiment-analytics/constants/sentiment-analytics-test-form-zod-schema";
+import { sliderColorClassMap } from "@/features/sentiment-analytics/constants/slider-color-class-map";
 
-import { FormItem, FormLabel } from "@aventisia/ui/form";
+import { FormItem, FormLabel, InputField } from "@aventisia/ui/form";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,6 +25,8 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
 
       {categoryFields.map((field, index) => {
         const label = field.fieldName;
+        const colorIndex = index % sliderColorClassMap.length;
+
         return (
           <FormItem>
             <FormLabel className="flex items-center justify-between text-sm">
@@ -32,20 +36,8 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
               control={control}
               name={`categories.${index}.accuracy`}
               render={({ field }) => {
-                const thumbColorClass = field.value
-                  ? field.value > 70
-                    ? "border-success-foreground"
-                    : field.value < 30
-                      ? "border-destructive"
-                      : "border-warning-foreground"
-                  : "";
-                const rangeColorClass = field.value
-                  ? field.value > 70
-                    ? "bg-success-foreground"
-                    : field.value < 30
-                      ? "bg-destructive"
-                      : "bg-warning-foreground"
-                  : "";
+                console.log("FV", field.value);
+
                 return (
                   <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
                     <span className="text-sm">0%</span>
@@ -57,17 +49,13 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
                       min={0}
                       max={100}
                       step={1}
-                      thumbColorClass={thumbColorClass}
-                      rangeColorClass={rangeColorClass}
+                      thumbColorClass={`border-${sliderColorClassMap[colorIndex].dark}`}
+                      rangeColorClass={`bg-${sliderColorClassMap[colorIndex].dark}`}
+                      trackColorClass={sliderColorClassMap[colorIndex].light}
                     />
                     <span className="text-sm">100%</span>
-                    <span
-                      className={
-                        "text-sm border border-primary px-4 py-1 rounded-lg"
-                      }
-                    >
-                      {field.value}%
-                    </span>
+
+                    <InputField {...field} {...accuracyValueProps} />
                   </div>
                 );
               }}

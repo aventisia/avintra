@@ -21,6 +21,9 @@ interface SliderFieldProps
 
   /** Optional Tailwind class to style the slider thumb (handle) */
   thumbColorClass?: string;
+
+  /** Optional Tailwind class to style the Empty Track */
+  trackColorClass?: string;
 }
 
 /**
@@ -32,6 +35,7 @@ const SliderField = ({
   disabled,
   rangeColorClass,
   thumbColorClass,
+  trackColorClass,
   ...props
 }: SliderFieldProps) => {
   const { control } = useFormContext<FieldValues>();
@@ -51,6 +55,7 @@ const SliderField = ({
               onValueCommit={field.onBlur}
               rangeColorClass={rangeColorClass}
               thumbColorClass={thumbColorClass}
+              trackColorClass={trackColorClass}
               {...props}
             />
           </FormControl>
