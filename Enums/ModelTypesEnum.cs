@@ -11,5 +11,6 @@ public enum ModelTypesEnum
     Extraction, 
     Summarization, 
     Classification,
-    SentimentAnalytics
+    SentimentAnalytics,
+    QuestionAnswer
 }
