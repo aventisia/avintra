@@ -1,12 +1,51 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-public class ExtractionSetupDto
+public class MLModelSetupDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the extraction setup within the ML model.
     /// </summary>
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of model library. Max character is 50.
+    /// </summary>
+    [MaxLength(50)]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the data model's fields JSON data in string format. The default value will be an empty object.
+    /// </summary>
+    public ExtractionSetupDto? SetupObject { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date of creation of ML model.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the user who created the record.
+    /// </summary>
+    public Guid CreatedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the user who modified the record last.
+    /// </summary>
+    public Guid LastModifiedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the user who created the record.
+    /// </summary>
+    public string? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the username who created the record.
+    /// </summary>
+    public string? CreatedByUsername { get; set; }
+}
+
+public class ExtractionSetupDto
+{
     /// <summary>
     /// Optional description of the document's context or type, providing additional information to guide the extraction process.
     /// </summary>
@@ -27,42 +66,6 @@ public class ExtractionSetupDto
     /// Setup configurations for fields to be extracted, if available.
     /// </summary>
     public IEnumerable<FieldSetupDto>? FieldSetups { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of model library. Max character is 50.
-    /// </summary>
-    [StringLength(50)]
-    public string? MlModelName { get; set; }
-
-    /// <summary>
-    /// The unique identifier of the machine learning model associated with this extraction setup.
-    /// </summary>
-    public Guid MLModelId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date and time when the extraction setup was created.
-    /// </summary>
-    public DateTimeOffset CreatedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ID of the user who created the extraction setup record.
-    /// </summary>
-    public Guid CreatedByUserId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ID of the user who last modified the extraction setup record.
-    /// </summary>
-    public Guid LastModifiedByUserId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the user who created the extraction setup record.
-    /// </summary>
-    public string? CreatedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the user who created the extraction setup record.
-    /// </summary>
-    public string? CreatedByUsername { get; set; }
 }
 
 
