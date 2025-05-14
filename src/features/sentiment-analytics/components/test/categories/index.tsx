@@ -36,8 +36,6 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
               control={control}
               name={`categories.${index}.accuracy`}
               render={({ field }) => {
-                console.log("FV", field.value);
-
                 return (
                   <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
                     <span className="text-sm">0%</span>
