@@ -8,10 +8,9 @@ public class MLModelSetupDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of model library. Max character is 50.
+    /// Gets or sets the name of model library.
     /// </summary>
-    [MaxLength(50)]
-    public required string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the data model's fields JSON data in string format. The default value will be an empty object.
