@@ -4,6 +4,7 @@ import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQu
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import SentimentAnalytics from "@/features/sentiment-analytics/components";
+import SummarizationModel from "@/features/summarization/components";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -57,6 +58,8 @@ export const LabelDataContainer = () => {
         return <InformationExtractor />;
       case "sentimentanalytics":
         return <SentimentAnalytics />;
+      case "summarization":
+        return <SummarizationModel />;
       default:
         // Optionally log an error or return a fallback component
         console.warn(
