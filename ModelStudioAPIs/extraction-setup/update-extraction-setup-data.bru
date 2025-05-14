@@ -14,30 +14,32 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    Id: bru.getGlobalEnvVar("EXTRACTION_SETUP_ID"),
-    documentContext: faker.lorem.lines(),
-    nodePrompt: faker.lorem.lines(2),
-    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    tableMetadata: [
-      {
-        context: faker.lorem.sentence(),
-        name: faker.company.name(),
-        tableHeaders: [
-          {
-            name: faker.book.author(),
-            type: faker.book.format(),
-            instructions: faker.lorem.lines(2)
-          }
-        ]
-      }
-    ],
-    fieldSetups: [
-      {
-        name: faker.book.author(),
-        type: faker.book.format(),
-        instructions: faker.lorem.lines(2)
-      }
-    ],
+    id: bru.getGlobalEnvVar("MLMODEL_ID"),
+    name: "",
+    setupObject: {
+      documentContext: faker.lorem.lines(),
+      nodePrompt: faker.lorem.lines(2),
+      tableMetadata: [
+        {
+          context: faker.lorem.sentence(),
+          name: faker.company.name(),
+          tableHeaders: [
+            {
+              name: faker.book.author(),
+              type: "text",
+              instructions: faker.lorem.lines(2)
+            }
+          ]
+        }
+      ],
+      fieldSetups: [
+        {
+          name: faker.book.author(),
+          type: "text",
+          instructions: faker.lorem.lines(2)
+        }
+      ]
+    }
   });
   
 }
