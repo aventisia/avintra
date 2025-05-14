@@ -29,9 +29,9 @@ public class ExtractionSetupController : BaseApiController
 
     // Updates an existing extraction setup
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<ExtractionSetupDto>>> UpdateExtractionSetup([FromBody] ExtractionSetupDto extractionSetupDto)
+    public async Task<ActionResult<ServiceResponse<ExtractionSetupDto>>> UpdateExtractionSetup([FromBody] MLModelSetupDto mlModelSetupDto)
     {
-        return ResultHelper(await _extractionSetupService.UpdateExtractionSetupAsync(extractionSetupDto));
+        return ResultHelper(await _extractionSetupService.UpdateExtractionSetupAsync(mlModelSetupDto));
     }
 
     // Permanently deletes an extraction setup by ID

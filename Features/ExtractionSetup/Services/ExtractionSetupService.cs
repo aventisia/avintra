@@ -1,3 +1,4 @@
+
 namespace MLModelBuilderAPIs.Services;
 
 public class ExtractionSetupService : IExtractionSetupService
@@ -18,7 +19,7 @@ public class ExtractionSetupService : IExtractionSetupService
         _unitOfWork = unitOfWork;
     }
 
-    // Retrieves all extraction setups created by the user
+    //Retrieves all extraction setups created by the user
     public async Task<ServiceResponse<IEnumerable<ExtractionSetupDto>>> RetrieveAllExtractionSetupsAsync()
     {
         // Initialize the service response with a failure message and null data.
@@ -60,81 +61,33 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
-    // Initialize a new extraction setup record
-    public async Task<ServiceResponse<bool>> InitializeExtractionSetupAsync(Guid mlModelId)
+    //Initialize a new extraction setup record
+    public string CreateSerializedExtractionSetup()
     {
-        // Default response indicating failure
-        var serviceResponse = new ServiceResponse<bool>
+        // Define the default prompt for extraction logic
+        var defaultPrompt = "You are an expert extraction algorithm.\n" +
+                           "Only extract relevant information from the text.\n" +
+                           "If you do not know the value of an attribute asked to extract, you may omit the attribute's value.";
+
+        // Construct a default extraction setup
+        var defaultExtractionSetup = new ExtractionSetupDto
         {
-            Data = false,
-            Message = "Failed to initialize extraction setup. Please try again.",
+            DocumentContext = string.Empty,
+            NodePrompt = defaultPrompt,
+            TableMetadata = null,
+            FieldSetups = new List<FieldSetupDto>
+            {
+                new FieldSetupDto
+                {
+                    Name = string.Empty,
+                    Type = string.Empty,
+                    Instructions = string.Empty
+                }
+            }
         };
 
-        try
-        {
-            // Defining the default NodePrompt
-            var defaultNodePrompt = "You are an expert extraction algorithm.\n" +
-                                    "Only extract relevant information from the text.\n" +
-                                    "If you do not know the value of an attribute asked to extract, you may omit the attribute's value.";
-
-            _logger.LogInformation("User [{UserId}] is attempting to initialize a new extraction setup.", _userId);
-
-            // Check if an extraction setup already exists for the given MLModelId
-            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.MLModelId == mlModelId)
-                .FirstOrDefaultAsync();
-
-            if (extractionSetup != null)
-            {
-                // Log that an extraction setup already exists and return a relevant message
-                _logger.LogInformation("An extraction setup already exists for ML model ID: {MLModelId}.", mlModelId);
-                return serviceResponse;
-            }
-
-            // Creating the extraction setup record
-            extractionSetup = new ExtractionSetup()
-            {
-                DocumentContext = string.Empty,
-                NodePrompt = defaultNodePrompt,
-                MLModelId = mlModelId,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-                FieldSetups = new List<FieldSetup>()
-                {
-                    new FieldSetup()
-                    {
-                        Name = string.Empty,
-                        Type = string.Empty,
-                        Instructions = string.Empty
-                    }
-                }
-            };
-
-            _logger.LogInformation("Inserting new extraction setup into the database for user [{UserId}].", _userId);
-
-            // Insert the new extraction setup into the repository
-            await _unitOfWork.ExtractionSetupRepo.InsertAsync(extractionSetup);
-
-            // Save changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Database save failed while initializing extraction setup for user [{UserId}].", _userId);
-                return serviceResponse;
-            }
-
-            // Successfully initialized and saved; update serviceResponse accordingly
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setup successfully initialized.";
-
-            _logger.LogInformation("Extraction setup successfully initialized for user [{UserId}].", _userId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred while initializing extraction setup for user [{UserId}].", _userId);
-        }
-
-        return serviceResponse;
+        // Serialize the setup to a JSON string
+        return JsonConvert.SerializeObject(defaultExtractionSetup);
     }
 
     // Creates a new extraction setup record
@@ -231,187 +184,65 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
-    // Update an existing extraction setup record
-    public async Task<ServiceResponse<ExtractionSetupDto>> UpdateExtractionSetupAsync(ExtractionSetupDto extractionSetupDto)
+    // Method to update an existing extraction setup record
+    public async Task<ServiceResponse<MLModelSetupDto>> UpdateExtractionSetupAsync(MLModelSetupDto mLModelSetupDto)
     {
-        // Initialize the service response with a failure state
-        var serviceResponse = new ServiceResponse<ExtractionSetupDto>
+        // Initialize the service response with a failure state and default message
+        var serviceResponse = new ServiceResponse<MLModelSetupDto>
         {
             Data = null,
-            Message = "Failed to update extraction setup. Please try again."
+            Message = "Failed to update extraction setup. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("START UpdateExtractionSetupAsync | Setup ID: {Id} | User ID: {UserId}", extractionSetupDto.Id, _userId);
+            // Log the start of the update operation, including the relevant identifiers
+            _logger.LogInformation("Update process initiated | ML Model Setup ID: {Id} | User ID: {UserId}", mLModelSetupDto.Id, _userId);
 
-            // Fetch the existing extraction setup from DB with its related tables, headers, and field setups
-            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w =>
-                    w.Id == extractionSetupDto.Id || w.MLModelId == extractionSetupDto.MLModelId
-                )
-                .Include(i => i.TableMetadata!)
-                    .ThenInclude(i1 => i1.TableHeaders)
-                .Include(i => i.FieldSetups)
+            // Retrieve the existing extraction setup from the database by ID
+            var mLModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == mLModelSetupDto.Id)
                 .SingleOrDefaultAsync();
 
-            // Return if no such setup exists
-            if (extractionSetup == null)
+            // Check if the setup was not found and return an appropriate message
+            if (mLModel == null)
             {
-                // TODO: this will remove letter
-                // Try inserting a new extraction setup using the provided DTO
-                var response = await InsertExtractionSetupAsync(extractionSetupDto);
-
-                // If insertion is successful (HTTP 200), return the response
-                if (response.StatusCode == 200)
-                {
-                    return response;
-                }
-                _logger.LogWarning("Extraction setup not found | ID: {Id} | User ID: {UserId}", extractionSetupDto.Id, _userId);
-                serviceResponse.Message = "Extraction setup not found";
+                _logger.LogWarning("Extraction setup not found | ML Model Setup ID: {Id} | User ID: {UserId}", mLModelSetupDto.Id, _userId);
+                serviceResponse.Message = "Extraction setup not found. The provided setup ID does not exist.";
                 return serviceResponse;
             }
 
-            // Clean any extra spaces or formatting in string fields of the DTO
-            extractionSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(extractionSetupDto);
+            // Trim any unnecessary spaces or formatting from string fields in the DTO
+            mLModelSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mLModelSetupDto);
 
-            // Map updated values from DTO to the existing entity
-            _logger.LogInformation("Mapping DTO to entity | Setup ID: {Id}", extractionSetupDto.Id);
-            extractionSetupDto.Adapt(extractionSetup);
-            extractionSetup.LastModifiedByUserId = _userId;
+            // Log the mapping process from DTO to entity
+            mLModelSetupDto.Adapt(mLModel);
+            mLModel.LastModifiedByUserId = _userId;
 
-            // ----------------------------- TABLE METADATA HANDLING -----------------------------
-            _logger.LogInformation("Processing table metadata | Setup ID: {Id}", extractionSetupDto.Id);
-            var dtoTables = extractionSetupDto.TableMetadata ?? new List<TableMetadataDto>();
+            // Log the action of saving changes to the database
+            _logger.LogInformation("Saving the updated extraction setup to the database | ML Model Setup ID: {Id}", mLModelSetupDto.Id);
+            _unitOfWork.MLModelRepo.Update(mLModel);
 
-            // Identify obsolete tables for deletion
-            var tablesToBeDeleted = extractionSetup.TableMetadata
-                .Where(existingTable => !dtoTables
-                    .Any(dtoTable => dtoTable.Name == existingTable.Name && dtoTable.Context == existingTable.Context));
-
-            if (tablesToBeDeleted.Any())
-            {
-                _logger.LogInformation("Deleting {Count} obsolete tables", tablesToBeDeleted.Count());
-                _unitOfWork.TableMetadataRepo.Delete(tablesToBeDeleted);
-            }
-
-            // Iterate through DTO tables to add or update them
-            foreach (var dtoTable in dtoTables)
-            {
-                var existingTable = extractionSetup.TableMetadata
-                    .FirstOrDefault(t => t.Name == dtoTable.Name && t.Context == dtoTable.Context);
-
-                if (existingTable == null)
-                {
-                    _logger.LogInformation("Adding new table | Name: {Name}, Context: {Context}", dtoTable.Name, dtoTable.Context);
-                    extractionSetup.TableMetadata.Add(new TableMetadata
-                    {
-                        Name = dtoTable.Name,
-                        Context = dtoTable.Context,
-                        TableHeaders = dtoTable.TableHeaders.Select(h => new TableHeader
-                        {
-                            Name = h.Name,
-                            Type = h.Type,
-                            Instructions = h.Instructions
-                        }).ToList()
-                    });
-                }
-                else
-                {
-                    _logger.LogInformation("Updating headers for table | Name: {Name}", dtoTable.Name);
-                    var dtoHeaders = dtoTable.TableHeaders ?? new List<TableHeaderDto>();
-
-                    // Delete headers not in DTO
-                    var headersToDelete = existingTable.TableHeaders
-                        .Where(header => !dtoHeaders
-                            .Any(dh => dh.Name == header.Name && dh.Type == header.Type));
-
-                    if (headersToDelete.Any())
-                    {
-                        _logger.LogInformation("Deleting {Count} obsolete headers from table {Table}", headersToDelete.Count(), dtoTable.Name);
-                        _unitOfWork.TableHeaderRepo.Delete(headersToDelete);
-                    }
-
-                    // Add or update headers
-                    foreach (var dtoHeader in dtoHeaders)
-                    {
-                        var existingHeader = existingTable.TableHeaders
-                            .FirstOrDefault(h => h.Name == dtoHeader.Name && h.Type == dtoHeader.Type);
-
-                        if (existingHeader == null)
-                        {
-                            _logger.LogInformation("Adding new header | Header: {Header}, Table: {Table}", dtoHeader.Name, dtoTable.Name);
-                            existingTable.TableHeaders.Add(new TableHeader
-                            {
-                                Name = dtoHeader.Name,
-                                Type = dtoHeader.Type,
-                                Instructions = dtoHeader.Instructions
-                            });
-                        }
-                        else if (existingHeader.Instructions != dtoHeader.Instructions)
-                        {
-                            _logger.LogInformation("Updating instructions for header | Header: {Header}, Table: {Table}", dtoHeader.Name, dtoTable.Name);
-                            existingHeader.Instructions = dtoHeader.Instructions;
-                        }
-                    }
-                }
-            }
-
-            // ----------------------------- FIELD SETUP HANDLING -----------------------------
-            _logger.LogInformation("Processing field setups | Setup ID: {Id}", extractionSetupDto.Id);
-            var dtoFields = extractionSetupDto.FieldSetups ?? new List<FieldSetupDto>();
-
-            // Remove fields not in DTO
-            var fieldsToBeDeleted = extractionSetup.FieldSetups
-                .Where(existingField => !dtoFields
-                    .Any(dtoField => dtoField.Name == existingField.Name && dtoField.Type == existingField.Type));
-
-            if (fieldsToBeDeleted.Any())
-            {
-                _logger.LogInformation("Deleting {Count} obsolete field setups", fieldsToBeDeleted.Count());
-                _unitOfWork.FieldSetupRepo.Delete(fieldsToBeDeleted);
-            }
-
-            // Add or update field setups
-            foreach (var dtoField in dtoFields)
-            {
-                var existingField = extractionSetup.FieldSetups
-                    .FirstOrDefault(f => f.Name == dtoField.Name && f.Type == dtoField.Type);
-
-                if (existingField == null)
-                {
-                    _logger.LogInformation("Adding new field setup | Field: {FieldName}", dtoField.Name);
-                    extractionSetup.FieldSetups.Add(new FieldSetup
-                    {
-                        Name = dtoField.Name,
-                        Type = dtoField.Type,
-                        Instructions = dtoField.Instructions
-                    });
-                }
-                else if (existingField.Instructions != dtoField.Instructions)
-                {
-                    _logger.LogInformation("Updating field instructions | Field: {FieldName}", dtoField.Name);
-                    existingField.Instructions = dtoField.Instructions;
-                }
-            }
-
-            _logger.LogInformation("Saving changes to the database | Setup ID: {Id}", extractionSetupDto.Id);
-            _unitOfWork.ExtractionSetupRepo.Update(extractionSetup);
-
+            // Attempt to persist the changes and check for success
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to persist updates to the database | Setup ID: {Id} | User ID: {UserId}", extractionSetupDto.Id, _userId);
+                // Log an error if the database save operation fails
+                _logger.LogError("Failed to save changes to the database | ML Model Setup ID: {Id} | User ID: {UserId}", mLModelSetupDto.Id, _userId);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Extraction setup update successful | Setup ID: {Id} | User ID: {UserId}", extractionSetupDto.Id, _userId);
-            serviceResponse.Data = extractionSetup.Adapt<ExtractionSetupDto>();
+            // Log success upon successful update
+            _logger.LogInformation("Extraction setup update completed successfully | ML Model Setup ID: {Id} | User ID: {UserId}", mLModelSetupDto.Id, _userId);
+
+            // Set the response data with the updated DTO and indicate successful completion
+            serviceResponse.Data = mLModel.Adapt<MLModelSetupDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Extraction setup updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception occurred while updating extraction setup | Setup ID: {Id} | User ID: {UserId}", extractionSetupDto.Id, _userId);
+            // Log any exception that occurs during the process
+            _logger.LogError(ex, "Exception occurred during extraction setup update | ML Model Setup ID: {Id} | User ID: {UserId}", mLModelSetupDto.Id, _userId);
         }
 
         return serviceResponse;
@@ -576,10 +407,10 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<ExtractionSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId)
+    public async Task<ServiceResponse<MLModelSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId)
     {
         // Initialize the response with a default failure message and null data
-        var serviceResponse = new ServiceResponse<ExtractionSetupDto>
+        var serviceResponse = new ServiceResponse<MLModelSetupDto>
         {
             Data = null,
             Message = "Failed to retrieve the extraction setup. Please try again later."
@@ -591,17 +422,13 @@ public class ExtractionSetupService : IExtractionSetupService
             _logger.LogInformation("Attempting to retrieve extraction setup for ML model with ID: {MLModelId}", mlModelId);
 
             // Fetch the extraction setup based on the provided ML model ID and map it to the DTO
-            var extractionSetup = await _unitOfWork.ExtractionSetupRepo
-                .GetByConditionAsync(w => w.MLModelId == mlModelId)
-                .Include(i => i.MLModel)
-                .Include(i => i.TableMetadata!)
-                    .ThenInclude(i1 => i1.TableHeaders)
-                .Include(i => i.FieldSetups)
-                .ProjectToType<ExtractionSetupDto>()
+            var mLModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == mlModelId)
+                .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
             // If no setup is found, log a warning and return a message
-            if (extractionSetup == null)
+            if (mLModel == null)
             {
                 _logger.LogWarning("No extraction setup found for ML model with ID: {MLModelId}", mlModelId);
                 serviceResponse.Message = "No extraction setup exists for the provided ML model ID.";
@@ -612,7 +439,7 @@ public class ExtractionSetupService : IExtractionSetupService
             _logger.LogInformation("Successfully retrieved extraction setup for ML model with ID: {MLModelId}", mlModelId);
 
             // Set the successful response data
-            serviceResponse.Data = extractionSetup;
+            serviceResponse.Data = mLModel.Adapt<MLModelSetupDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Extraction setup retrieved successfully.";
         }

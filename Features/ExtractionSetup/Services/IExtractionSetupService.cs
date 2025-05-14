@@ -9,11 +9,12 @@ public interface IExtractionSetupService
     Task<ServiceResponse<IEnumerable<ExtractionSetupDto>>> RetrieveAllExtractionSetupsAsync();
 
     /// <summary>
-    /// Initializes a new extraction setup for the specified machine learning model.
+    /// Creates and serializes the extraction setup for the specified machine learning model.
+    /// This setup includes configuration data necessary for the extraction process, 
+    /// which is then serialized into a string format for storage or transmission.
     /// </summary>
-    /// <param name="mlModelId">The ID of the machine learning model to associate with the extraction setup.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a service response indicating success or failure.</returns>
-    Task<ServiceResponse<bool>> InitializeExtractionSetupAsync(Guid mlModelId);
+    /// <returns>A string containing the serialized extraction setup.</returns>
+    string CreateSerializedExtractionSetup();
 
     /// <summary>
     /// Adds a new extraction setup.
@@ -23,11 +24,13 @@ public interface IExtractionSetupService
     Task<ServiceResponse<ExtractionSetupDto>> InsertExtractionSetupAsync(ExtractionSetupDto extractionSetupDto);
 
     /// <summary>
-    /// Updates an existing extraction setup.
+    /// Updates an existing extraction setup associated with a machine learning model.
+    /// This operation modifies the setup configuration based on the provided details in the 
+    /// <paramref name="mlModelSetupDto"/> and returns the updated extraction setup.
     /// </summary>
-    /// <param name="extractionSetupDto">Extraction Setup Dto</param>
-    /// <returns>An updated extraction setup</returns>
-    Task<ServiceResponse<ExtractionSetupDto>> UpdateExtractionSetupAsync(ExtractionSetupDto extractionSetupDto);
+    /// <param name="mlModelSetupDto">The updated extraction setup data transfer object (DTO) containing the new setup details.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a service response with the updated extraction setup details.</returns>
+    Task<ServiceResponse<MLModelSetupDto>> UpdateExtractionSetupAsync(MLModelSetupDto mlModelSetupDto);
 
     /// <summary>
     /// Deletes an extraction setup.
@@ -55,5 +58,5 @@ public interface IExtractionSetupService
     /// </summary>
     /// <param name="mlModelId">The unique identifier of the machine learning model associated with the extraction setup.</param>
     /// <returns>A service response containing the extraction setup associated with the provided machine learning model ID.</returns>
-    Task<ServiceResponse<ExtractionSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId);
+    Task<ServiceResponse<MLModelSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId);
 }
