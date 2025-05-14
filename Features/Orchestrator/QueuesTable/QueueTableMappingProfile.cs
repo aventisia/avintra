@@ -8,12 +8,21 @@ public class QueueTableMappingProfile : IRegister
         config.NewConfig<Queue, QueuesTableDto>()
             .Map(dest => dest.TotalPendingItems,
                 src => src.QueueTransactions != null
-                    ? src.QueueTransactions.Where(q => q.Status == QueueTransactionStatusTypesEnum.Pending).Count()
+                    ? src.QueueTransactions.Count(q => q.Status == QueueTransactionStatusTypesEnum.Pending)
                     : 0)
 
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+
+            .Map(dest => dest.SpecificDataSchemaJsonString,
+                src => src.SpecificDataSchemaPath != null
+                    ? File.ReadAllText(src.SpecificDataSchemaPath)
+                    : null)
+            .Map(dest => dest.OutputDataSchemaJsonString,
+                src => src.OutputDataSchemaPath != null
+                    ? File.ReadAllText(src.OutputDataSchemaPath)
                     : null)
 
             .Map(dest => dest.LastModifiedBy,
