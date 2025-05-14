@@ -106,4 +106,31 @@ public static class JsonStringExtensions
         return combined.ToString(Formatting.None);
     }
 
+
+    /// <summary>
+    /// Checks if all objects in a JSON array are unique based on their full content.
+    /// </summary>
+    public static bool AreJsonObjectsUnique(this string jsonArray, out Dictionary<string, int> duplicates)
+    {
+        try
+        {
+            JArray array = JArray.Parse(jsonArray);
+
+            // Group by entire object content (using JObject.DeepEquals)
+            var grouped = array
+                .GroupBy(jo => jo.ToString(Formatting.None)) // Compare raw string representation
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            duplicates = grouped.ToDictionary(g => g.Key, c => c.Count());
+
+            return grouped.Count == 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error parsing JSON: " + ex.Message);
+            duplicates = [];
+            return false;
+        }
+    }
 }
