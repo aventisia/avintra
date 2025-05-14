@@ -32,3 +32,6 @@ global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 global using Mapster;
 global using Ardalis.GuardClauses;
+
+global using Newtonsoft.Json;
+global using Newtonsoft.Json.Schema;
