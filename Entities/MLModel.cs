@@ -50,6 +50,11 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public string? SetupObject { get; set; }
 
     /// <summary>
+    /// Stores the dynamically generated prompt as a string, typically created at runtime for use in model interactions or processing.
+    /// </summary>
+    public string? GeneratedPrompt { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.
     /// </summary>
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }
@@ -63,7 +68,7 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the ML model to which this uploaded docs are associated.
     /// </summary>
     public virtual ICollection<UploadedDoc>? UploadedDocs { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the collection of extraction setups associated with this ML model.
     /// </summary>
