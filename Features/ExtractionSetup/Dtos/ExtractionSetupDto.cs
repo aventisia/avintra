@@ -59,12 +59,12 @@ public class ExtractionSetupDto
     /// <summary>
     /// Metadata about tables used in the extraction setup, if available.
     /// </summary>
-    public IEnumerable<TableMetadataDto>? TableMetadata { get; set; }
+    public List<TableMetadataDto>? TableMetadata { get; set; }
 
     /// <summary>
     /// Setup configurations for fields to be extracted, if available.
     /// </summary>
-    public IEnumerable<FieldSetupDto>? FieldSetups { get; set; }
+    public List<FieldSetupDto>? FieldSetups { get; set; }
 }
 
 
@@ -104,7 +104,7 @@ public class TableMetadataDto
     /// <summary>
     /// List of headers associated with the table.
     /// </summary>
-    public IEnumerable<TableHeaderDto>? TableHeaders { get; set; }
+    public List<TableHeaderDto>? TableHeaders { get; set; }
 }
 
 public class TableHeaderDto
