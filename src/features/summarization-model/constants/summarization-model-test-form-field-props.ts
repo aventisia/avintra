@@ -1,11 +1,10 @@
-import { AutosizeTextAreaProps } from "@aventisia/ui";
+import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
 
-const summarizedTextProps: AutosizeTextAreaProps = {
+const summarizedTextProps: AutosizeTextareaFieldProps = {
     name: "summarizedText",
-    // label: "Summarized Text",
     placeholder: "Summarized Text",
     minHeight: 10,
-    // isRequired: true,
+    isRequired: true,
     className: "text-sm resize-none"
 } 
 export {summarizedTextProps}
