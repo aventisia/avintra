@@ -15,29 +15,12 @@ interface SliderFieldProps
 
   /** Optional label displayed alongside the slider. */
   label?: React.ReactNode;
-
-  /** Optional Tailwind class to style the slider range (filled track) */
-  rangeColorClass?: string;
-
-  /** Optional Tailwind class to style the slider thumb (handle) */
-  thumbColorClass?: string;
-
-  /** Optional Tailwind class to style the Empty Track */
-  trackColorClass?: string;
 }
 
 /**
  * A form-integrated slider field component using Radix UI.
  */
-const SliderField = ({
-  name,
-  label,
-  disabled,
-  rangeColorClass,
-  thumbColorClass,
-  trackColorClass,
-  ...props
-}: SliderFieldProps) => {
+const SliderField = ({ name, label, disabled, ...props }: SliderFieldProps) => {
   const { control } = useFormContext<FieldValues>();
 
   return (
@@ -53,9 +36,6 @@ const SliderField = ({
               value={field.value ?? [0]}
               onValueChange={field.onChange}
               onValueCommit={field.onBlur}
-              rangeColorClass={rangeColorClass}
-              thumbColorClass={thumbColorClass}
-              trackColorClass={trackColorClass}
               {...props}
             />
           </FormControl>
