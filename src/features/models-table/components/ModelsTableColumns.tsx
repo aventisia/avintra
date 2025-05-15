@@ -10,6 +10,7 @@ import { ModelStatusEnum } from "../enums/model-status-enum";
 
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
+import { ModelTypesEnum } from "../enums/model-type-enum";
 
 /**
  * Array of table columns for the model table.
@@ -59,9 +60,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("type")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("type")}</div>
-    ),
+    cell: ({ row }) => {
+      const typeValue =
+        ModelTypesEnum[row.getValue("type") as keyof typeof ModelTypesEnum];
+      return <div className="w-auto font-medium">{typeValue}</div>;
+    },
   },
   {
     accessorKey: "llm",
