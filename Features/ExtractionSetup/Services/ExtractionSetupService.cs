@@ -217,6 +217,7 @@ public class ExtractionSetupService : IExtractionSetupService
 
             // Log the mapping process from DTO to entity
             mLModelSetupDto.Adapt(mLModel);
+            mLModel.GeneratedPrompt = GenerateExtractionModelPrompt(mLModelSetupDto);
             mLModel.LastModifiedByUserId = _userId;
 
             // Log the action of saving changes to the database
@@ -246,6 +247,98 @@ public class ExtractionSetupService : IExtractionSetupService
         }
 
         return serviceResponse;
+    }
+
+    // Generates a prompt string used to guide the ML model for extracting data from documents, based on the provided model setup.
+    private string? GenerateExtractionModelPrompt(MLModelSetupDto mlModelSetupDto)
+    {
+        // Extract field names for reference (optional use)
+        string fieldNames = string.Join(", ", mlModelSetupDto.SetupObject?.FieldSetups?.Select(f => f.Name) ?? Enumerable.Empty<string>());
+
+        var promptBuilder = new StringBuilder();
+
+        // Add the base instruction or use the provided NodePrompt
+        promptBuilder.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.NodePrompt)
+            ? mlModelSetupDto.SetupObject.NodePrompt.Trim()
+            : "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
+
+        // Section: Field extraction instructions
+        if (mlModelSetupDto.SetupObject?.FieldSetups != null && mlModelSetupDto.SetupObject.FieldSetups.Any())
+        {
+            promptBuilder.AppendLine();
+            promptBuilder.AppendLine("Fields (Single-value attributes):");
+            promptBuilder.AppendLine("The following fields need to be extracted:");
+
+            for (int i = 0; i < mlModelSetupDto.SetupObject.FieldSetups.Count; i++)
+            {
+                var field = mlModelSetupDto.SetupObject.FieldSetups[i];
+                var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
+
+                promptBuilder.AppendLine($"- {i + 1}. {field.Name} (type: {field.Type}){instructions}");
+            }
+        }
+
+        // Section: Table extraction instructions
+        if (mlModelSetupDto.SetupObject?.TableMetadata != null && mlModelSetupDto.SetupObject.TableMetadata.Any())
+        {
+            promptBuilder.AppendLine();
+            promptBuilder.AppendLine("Tables:");
+            promptBuilder.AppendLine("For each table, extract the relevant column data as per the instructions provided.");
+
+            foreach (var table in mlModelSetupDto.SetupObject.TableMetadata)
+            {
+                promptBuilder.AppendLine();
+                promptBuilder.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
+                promptBuilder.AppendLine("Following columns need to be extracted:");
+
+                if (table.TableHeaders != null)
+                {
+                    if (table.TableHeaders != null)
+                    {
+                        for (int i = 0; i < table.TableHeaders.Count; i++)
+                        {
+                            var column = table.TableHeaders[i];
+                            var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
+                            promptBuilder.AppendLine($"{i + 1}. {column.Name} (type: {column.Type}){instructions}");
+                        }
+                    }
+                }
+            }
+        }
+
+        // Future enhancement placeholder
+        // TODO: Add extraction rules if any
+
+        // Section: Output format specification
+        promptBuilder.AppendLine();
+        promptBuilder.AppendLine("Expected Output Format:");
+        promptBuilder.AppendLine("The output must be formatted as a JSON object with two primary sections:");
+        promptBuilder.AppendLine("{");
+        promptBuilder.AppendLine("  \"fields\": [");
+        promptBuilder.AppendLine("    {\"fieldName\": \"field_name\", \"fieldValue\": \"field_value\"},");
+        promptBuilder.AppendLine("    {\"fieldName\": \"another_field\", \"fieldValue\": \"another_value\"}");
+        promptBuilder.AppendLine("  ],");
+        promptBuilder.AppendLine("  \"tables\": [");
+        promptBuilder.AppendLine("    {");
+        promptBuilder.AppendLine("      \"tableName\": \"table_name\",");
+        promptBuilder.AppendLine("      \"rows\": [");
+        promptBuilder.AppendLine("        [\"col1_value\", \"col2_value\", \"col3_value\"],");
+        promptBuilder.AppendLine("        [\"col1_value_2\", \"col2_value_2\", \"col3_value_2\"]");
+        promptBuilder.AppendLine("      ]");
+        promptBuilder.AppendLine("    }");
+        promptBuilder.AppendLine("  ]");
+        promptBuilder.AppendLine("}");
+
+        // Notes and final instruction
+        promptBuilder.AppendLine();
+        promptBuilder.AppendLine("Important Notes:");
+        promptBuilder.AppendLine("- Ensure there are no additional comments or text outside of the JSON structure.");
+        promptBuilder.AppendLine("- If a field or table cannot be extracted, omit it from the output entirely.");
+        promptBuilder.AppendLine();
+        promptBuilder.AppendLine("Remember, the key is accuracy and precision. Only extract what is explicitly stated in the document text.");
+
+        // Convert to single-line format by replacing line breaks
+        return promptBuilder.ToString().Replace("\n", " ");
     }
 
     // // Delete an extraction setup record
