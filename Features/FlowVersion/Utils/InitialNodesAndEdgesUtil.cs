@@ -89,7 +89,7 @@ public static class InitialNodesAndEdgesUtil
             };
 
             // Serialize and return the react flow object
-            return JsonSerializer.Serialize(reactFlowObject, camelCaseOptions);
+            return System.Text.Json.JsonSerializer.Serialize(reactFlowObject, camelCaseOptions);
         }
         catch
         {
