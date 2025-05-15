@@ -1,6 +1,8 @@
+import { SelectField } from "@/shared/select-field/SelectField";
+
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form, SelectField, SwitchField } from "@aventisia/ui/form";
+import { Form, SwitchField } from "@aventisia/ui/form";
 import { TextareaField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";

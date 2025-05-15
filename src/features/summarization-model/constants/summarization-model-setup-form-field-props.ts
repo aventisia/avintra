@@ -1,7 +1,7 @@
 import { InputFieldProps } from "@aventisia/ui/form";
 import { TextareaFieldProps } from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
-import { SelectFieldProps } from "../components/select-field/SelectField";
+import { SelectFieldProps } from "../../../shared/select-field/SelectField";
 
 
 const summarizationMethodSelectOptions: ISelectOption[] = [

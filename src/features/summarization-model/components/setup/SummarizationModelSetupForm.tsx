@@ -6,6 +6,7 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
+import { SelectField } from "../../../../shared/select-field/SelectField";
 import {
   charactersPerChunkProps,
   chunkOverlapProps,
@@ -21,7 +22,6 @@ import {
 } from "../../constants/summarization-model-setup-form-field-props";
 import { summarizationModelSetupFormZodSchema } from "../../constants/summarization-model-setup-zod-schema";
 import { useSummarizationModelSetupForm } from "../../hooks/useSummarizationModelSetupForm";
-import { SelectField } from "../select-field/SelectField";
 
 const SummarizationModelSetupForm = () => {
   const { form, isSubmitting, isDirty } = useSummarizationModelSetupForm();

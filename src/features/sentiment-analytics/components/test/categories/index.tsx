@@ -5,7 +5,7 @@ import { FormItem, FormLabel, InputField } from "@aventisia/ui/form";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import { SliderField } from "../../Slider/SliderField";
+import { SliderField } from "../../../../../shared/Slider/SliderField";
 
 type FormSchema = z.infer<typeof sentimentalAnalyticsTestFormZodSchema>;
 type Field = FormSchema["categories"][number] & { id: string };

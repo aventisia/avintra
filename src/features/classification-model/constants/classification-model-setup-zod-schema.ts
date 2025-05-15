@@ -8,7 +8,7 @@ export const categoriesSchema = z.object({
 
 export const classificationModelSetupFormZodSchema = z
   .object({
-    context: z.string().optional(),
+    context: z.string().min(1, {message: reqError("Context")}),
     categories: z.array(categoriesSchema),
     allowMultipleClasses: z.boolean(),
     whenNoClearMatch: z.string().min(1, {message: reqError("When No Clear Match")}),

@@ -1,4 +1,5 @@
-import { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@/shared/select-field/SelectField";
+import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 import { TextareaFieldProps } from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
 
@@ -19,7 +20,7 @@ const contextProps: TextareaFieldProps = {
     name: "context",
     label: "Context",
     placeholder: "We need to pass Context to LLM",
-    isRequired: false,
+    isRequired: true,
     className: "text-sm resize-none"
 } 
 
@@ -42,7 +43,7 @@ const allowMultipleClassesProps: SwitchFieldProps = {
     name: "allowMultipleClasses",
     className: "text-sm",
     label: "Multiple Classes",
-    description: "Allow multiple classes to be true"
+    description: "Allow multiple classes to be true",
 }
 
 const whenNoClearMatchProps: SelectFieldProps = {
@@ -50,7 +51,8 @@ const whenNoClearMatchProps: SelectFieldProps = {
     className: "text-sm",
     placeholder: "Select",
     label: "When no clear match",
-    selectOptions: whenNoClearMatchSelectOptions
+    selectOptions: whenNoClearMatchSelectOptions,
+    isRequired: true,
 }
 
 const systemPromptProps: TextareaFieldProps = {

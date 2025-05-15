@@ -1,12 +1,10 @@
 import { accuracyValueProps } from "@/features/classification-model/constants/classification-model-test-form-field-props";
 import { classificationModelTestFormZodSchema } from "@/features/classification-model/constants/classification-model-test-form-zod-schema";
-import { sliderColorClassMap } from "@/features/classification-model/constants/slider-color-class-map";
+import { SliderField } from "@/shared/Slider/SliderField";
 
 import { FormItem, FormLabel, InputField } from "@aventisia/ui/form";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-
-import { SliderField } from "../../Slider/SliderField";
 
 type FormSchema = z.infer<typeof classificationModelTestFormZodSchema>;
 type Field = FormSchema["categories"][number] & { id: string };
@@ -25,7 +23,6 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
 
       {categoryFields.map((field, index) => {
         const label = field.fieldName;
-        const colorIndex = index % sliderColorClassMap.length;
 
         return (
           <FormItem>
@@ -47,9 +44,6 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
                       min={0}
                       max={100}
                       step={1}
-                      thumbColorClass={`border-${sliderColorClassMap[colorIndex].dark}`}
-                      rangeColorClass={`bg-${sliderColorClassMap[colorIndex].dark}`}
-                      trackColorClass={sliderColorClassMap[colorIndex].light}
                     />
                     <span className="text-sm">100%</span>
 
