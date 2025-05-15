@@ -1,6 +1,6 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form, InputField, SelectField } from "@aventisia/ui/form";
+import { Form, InputField } from "@aventisia/ui/form";
 import { TextareaField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
@@ -21,6 +21,7 @@ import {
 } from "../../constants/summarization-model-setup-form-field-props";
 import { summarizationModelSetupFormZodSchema } from "../../constants/summarization-model-setup-zod-schema";
 import { useSummarizationModelSetupForm } from "../../hooks/useSummarizationModelSetupForm";
+import { SelectField } from "../select-field/SelectField";
 
 const SummarizationModelSetupForm = () => {
   const { form, isSubmitting, isDirty } = useSummarizationModelSetupForm();

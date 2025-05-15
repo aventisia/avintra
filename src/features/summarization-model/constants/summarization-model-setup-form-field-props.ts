@@ -1,6 +1,7 @@
-import { InputFieldProps, SelectFieldProps } from "@aventisia/ui/form";
+import { InputFieldProps } from "@aventisia/ui/form";
 import { TextareaFieldProps } from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
+import { SelectFieldProps } from "../components/select-field/SelectField";
 
 
 const summarizationMethodSelectOptions: ISelectOption[] = [
@@ -65,7 +66,7 @@ const totalMaxWordsProps: InputFieldProps = {
     className: "text-sm"
 }
 
-const summarizationMethodProps: SelectFieldProps = {
+const summarizationMethodProps: SelectFieldProps  = {
     name: "summarizationMethod",
     label: "Summarization Method",
     isRequired: true,

@@ -5,7 +5,7 @@ import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQu
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import SentimentAnalytics from "@/features/sentiment-analytics/components";
-import SummarizationModel from "@/features/summarization/components";
+import SummarizationModel from "@/features/summarization-model/components";
 import {
   ResizableHandle,
   ResizablePanel,
