@@ -4,6 +4,7 @@ import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import QuestionAnswerModel from "@/features/question-answer-model/components";
 import SentimentAnalytics from "@/features/sentiment-analytics/components";
 import SummarizationModel from "@/features/summarization-model/components";
 import {
@@ -63,6 +64,8 @@ export const LabelDataContainer = () => {
         return <SummarizationModel />;
       case "classification":
         return <ClassificationModel />;
+      case "questionanswer":
+        return <QuestionAnswerModel />;
       default:
         // Optionally log an error or return a fallback component
         console.warn(
