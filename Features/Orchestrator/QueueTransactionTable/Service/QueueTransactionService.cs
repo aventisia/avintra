@@ -5,17 +5,19 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly ILogger<QueueTransactionService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly IStringEncryptionService _stringEncryptionService;
 
     public QueueTransactionService(
         ILogger<QueueTransactionService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _stringEncryptionService = stringEncryptionService;
     }
 
     // Retrieve all transactions for a specific queue
@@ -153,6 +155,15 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
+            var queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueTransactionDto.QueueId).SingleOrDefaultAsync();
+
+            if (queue == null)
+            {
+                _logger.LogWarning("Queue not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
+                response.Message = "Queue not found.";
+                return response;
+            }
+
             _logger.LogInformation("Attempting to add a new transaction to the queue.");
 
             //TODO: Add here validation to check uniqueness
@@ -174,6 +185,47 @@ public class QueueTransactionService : IQueueTransactionService
             var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
             newTransaction.CreatedByUserId = _userId;
             newTransaction.LastModifiedByUserId = _userId;
+
+            if (string.IsNullOrWhiteSpace(queue.SpecificDataSchemaPath))
+            {
+                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
+                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
+                return response;
+            }
+
+            var inputJson = await File.ReadAllTextAsync(queue.SpecificDataSchemaPath);
+            if (string.IsNullOrWhiteSpace(inputJson))
+            {
+                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
+                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
+                return response;
+            }
+
+            if (!string.IsNullOrWhiteSpace(queueTransactionDto.PayloadData))
+            {
+                // Validate object
+                var isValidArray = inputJson.ValidateJsonArrayWithFromShema(queueTransactionDto.PayloadData, out var errors);
+
+                if (errors.Count > 0 || !isValidArray)
+                {
+                    _logger.LogWarning("errors occured while validating the work items array for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", errors));
+                    response.Message = $"errors occured while validating the work items array for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", errors)}";
+                    return response;
+                }
+
+                if (queue.IsUniqueReferencesEnforced && !queueTransactionDto.PayloadData.AreJsonObjectsUnique(out var duplicates))
+                {
+                    _logger.LogWarning("duplicate work items are not allowed for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)")));
+                    response.Message = $"duplicate work items are not allowed for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)"))}";
+                    return response;
+                }
+
+                if (queue.IsStoredEncrypted)
+                {
+                    newTransaction.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData);
+                }
+            }
+
 
             // Insert the new transaction into the repository
             await _unitOfWork.QueueTransactionRepo.InsertAsync(newTransaction);
@@ -202,7 +254,7 @@ public class QueueTransactionService : IQueueTransactionService
     // Update the status of an existing transaction
     public async Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionStatusAsync(QueueTransactionDto queueTransactionDto)
     {
-        var serviceResponse = new ServiceResponse<QueueTransactionDto>
+        var response = new ServiceResponse<QueueTransactionDto>
         {
             Data = null,
             Message = "Failed to update queue transaction status. Please try again."
@@ -223,13 +275,70 @@ public class QueueTransactionService : IQueueTransactionService
             if (queueTransaction == null)
             {
                 _logger.LogWarning("Transaction {TransactionId} not found for status update.", queueTransactionDto.Id);
-                serviceResponse.Message = "Queue transaction not found.";
-                return serviceResponse;
+                response.Message = "Queue transaction not found.";
+                return response;
             }
+
+
+            if (string.IsNullOrWhiteSpace(queueTransaction.Queue.SpecificDataSchemaPath))
+            {
+                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
+                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
+                return response;
+            }
+
+            var inputJson = await File.ReadAllTextAsync(queueTransaction.Queue.SpecificDataSchemaPath);
+            if (string.IsNullOrWhiteSpace(inputJson))
+            {
+                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
+                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
+                return response;
+            }
+
+
+            var queuePayloadData = queueTransaction.Queue.IsStoredEncrypted ? _stringEncryptionService.DecryptString(queueTransaction.PayloadData) : queueTransaction.PayloadData;
+            if (!string.IsNullOrWhiteSpace(queueTransactionDto.PayloadData))
+            {
+                // Validate object
+                var isValidArray = inputJson.ValidateJsonArrayWithFromShema(queueTransactionDto.PayloadData, out var errors);
+
+                if (errors.Count > 0 || !isValidArray)
+                {
+                    _logger.LogWarning("errors occured while validating the work items array for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", errors));
+                    response.Message = $"errors occured while validating the work items array for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", errors)}";
+                    return response;
+                }
+
+                if (string.IsNullOrWhiteSpace(queuePayloadData))
+                {
+                    queuePayloadData = queueTransactionDto.PayloadData;
+                }
+                else
+                {
+                    var mergedPayloadData = inputJson.ValidateAndJoinJsonArrays(queueTransactionDto.PayloadData, queuePayloadData, out var combinedErrors);
+
+                    if (combinedErrors.Count > 0 || string.IsNullOrWhiteSpace(mergedPayloadData))
+                    {
+                        _logger.LogWarning("errors occured while merging and validating the work items array for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", combinedErrors));
+                        response.Message = $"errors occured while merging and validating the work items array for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", combinedErrors)}";
+                        return response;
+                    }
+                    queuePayloadData = queueTransaction.Queue.IsStoredEncrypted ? _stringEncryptionService.EncryptString(mergedPayloadData) : mergedPayloadData;
+                }
+
+                if (queueTransaction.Queue.IsUniqueReferencesEnforced && !queueTransactionDto.PayloadData.AreJsonObjectsUnique(out var duplicates))
+                {
+                    _logger.LogWarning("duplicate work items are not allowed for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)")));
+                    response.Message = $"duplicate work items are not allowed for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)"))}";
+                    return response;
+                }
+            }
+
 
             // Update the queue transaction
             queueTransactionDto.Adapt(queueTransaction);
             queueTransaction.LastModifiedByUserId = _userId;
+            queueTransaction.PayloadData = _stringEncryptionService.EncryptString(queuePayloadData);
 
             _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
 
@@ -237,13 +346,13 @@ public class QueueTransactionService : IQueueTransactionService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to commit changes while updating transaction status.");
-                return serviceResponse;
+                return response;
             }
 
             // Successfully updated the transaction status
-            serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Queue transaction status updated successfully.";
+            response.Data = queueTransaction.Adapt<QueueTransactionDto>();
+            response.StatusCode = 200;
+            response.Message = "Queue transaction status updated successfully.";
             _logger.LogInformation($"Transaction {queueTransactionDto.Id} status changed to {queueTransactionDto.Status}.");
         }
         catch (Exception ex)
@@ -251,7 +360,7 @@ public class QueueTransactionService : IQueueTransactionService
             _logger.LogError(ex, "Error occurred while updating the status for transaction {TransactionId}.", queueTransactionDto.Id);
         }
 
-        return serviceResponse;
+        return response;
     }
 
     // Delete a transaction (work item) from the queue
