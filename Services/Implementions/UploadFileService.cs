@@ -242,9 +242,11 @@ public class UploadFileService : IUploadFileService
                 // Construct the file URL for referencing later
                 var fileUrl = $"/files/{uniqueFileName}".Replace("\\", "/");
 
+                bool isLocalhost = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Localhost";
+
                 uploadedFiles.Add(new FileUploadResponseDto
                 {
-                    Path = fileUrl,
+                    Path = Path.Join(_fileUploadConfig.UploadDirectory, uniqueFileName),
                     Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
                     Name = fileName,
                     Size = stream.Length,
