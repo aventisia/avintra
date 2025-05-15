@@ -1,3 +1,5 @@
+import { useTabStore } from "@/store/tab-store";
+
 import { Button } from "@aventisia/ui/buttons";
 import { Loader2, SparklesIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
@@ -17,6 +19,7 @@ function ExtractViaLLMButton() {
       selectedPdf: state.selectedFile,
     })),
   );
+  const { activeTab } = useTabStore();
 
   // Get extract via LLM mutation and pending status
   const { extractViaLLMMutation, isExtractionPending } =
@@ -34,7 +37,7 @@ function ExtractViaLLMButton() {
       size="xs"
       className="gap-2 pl-2 pr-3.5 text-sm"
       onClick={handleExtract}
-      disabled={isExtractionPending}
+      disabled={isExtractionPending || activeTab == "setup"}
     >
       {isExtractionPending ? (
         <>

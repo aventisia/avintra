@@ -1,4 +1,5 @@
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
+import { useTabStore } from "@/store/tab-store";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
@@ -14,12 +15,16 @@ const InformationExtractor = () => {
       isDataSaving: state.isDataSaving,
     })),
   );
+  const { activeTab, setActiveTab } = useTabStore();
 
   return (
     <div className="ml-2 rounded-lg bg-white shadow h-full flex flex-col">
-      {/* Only ONE Tabs wrapper */}
-      <Tabs defaultValue="setup" className="flex flex-col flex-1">
-        {/* Header and TabsList side by side */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="flex flex-col flex-1"
+      >
+        {/* Header */}
         <div className="flex items-center h-12 justify-between border-b px-4 py-2">
           <div className="flex items-center gap-2">
             <p className="text-md font-medium">Extraction</p>
@@ -42,7 +47,6 @@ const InformationExtractor = () => {
           </TabsList>
         </div>
 
-        {/* Scrollable content */}
         <ScrollArea className="h-[calc(100vh-7.6rem)]">
           <TabsContent value="setup" className="h-full">
             <InformationExtractorForm />

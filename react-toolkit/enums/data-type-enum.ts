@@ -5,7 +5,7 @@ export enum DataTypeEnum {
     numeric = "Numeric",
     text = "Text",
     alphanumeric = "Alphanumeric",
-    image = "Image",
+    amount = "Amount",
     date = "Date",
     time = "Time",
 }
