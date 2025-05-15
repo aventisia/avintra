@@ -2,6 +2,14 @@ namespace WorkspaceAPIs.MappingProfiles;
 
 public class QueueTransactionMappingProfile : IRegister
 {
+
+    private readonly IStringEncryptionService _encryptionService;
+
+    public QueueTransactionMappingProfile() { }
+    public QueueTransactionMappingProfile(IStringEncryptionService encryptionService)
+    {
+        _encryptionService = encryptionService;
+    }
     public void Register(TypeAdapterConfig config)
     {
         // Mapping of DTO to get list of versions to show on the UI.
@@ -11,6 +19,12 @@ public class QueueTransactionMappingProfile : IRegister
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
             : null)
+
+        .Map(dest => dest.PayloadData,
+            src => src.Queue != null && src.Queue.IsStoredEncrypted
+            ? _encryptionService.DecryptString(src.PayloadData)
+            : src.PayloadData)
+
         .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
             ? src.CreatedByUser.UserName
             : null);
