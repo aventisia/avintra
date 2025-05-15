@@ -16,14 +16,14 @@ public class QueueTableMappingProfile : IRegister
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
                     : null)
 
-            .Map(dest => dest.SpecificDataSchemaJsonString,
-                src => src.SpecificDataSchemaPath != null
-                    ? File.ReadAllText(src.SpecificDataSchemaPath)
-                    : null)
-            .Map(dest => dest.OutputDataSchemaJsonString,
-                src => src.OutputDataSchemaPath != null
-                    ? File.ReadAllText(src.OutputDataSchemaPath)
-                    : null)
+            // .Map(dest => dest.SpecificDataSchemaJsonString,
+            //     src => src.SpecificDataSchemaPath != null
+            //         ? File.ReadAllText(src.SpecificDataSchemaPath)
+            //         : null)
+            // .Map(dest => dest.OutputDataSchemaJsonString,
+            //     src => src.OutputDataSchemaPath != null
+            //         ? File.ReadAllText(src.OutputDataSchemaPath)
+            //         : null)
 
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
