@@ -135,7 +135,6 @@ public class MLModelService : IMLModelService
             newMLModel.LastModifiedByUserId = _userId;
 
             // Initialize extraction setup
-            newMLModel.SetupObject = _extractionSetupService.CreateSerializedExtractionSetup();
 
             //Insert a model record
             await _unitOfWork.MLModelRepo.InsertAsync(newMLModel);

@@ -20,7 +20,7 @@ public class ClassificationController : BaseApiController
     }
 
     // Retrieves a specific extraction setup by ml model ID
-    [HttpGet("setup/{mlModelId}")]
+    [HttpGet("setup-by-model/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<ClassificationDto>>> GetClassificationSetupByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _ClassificationService.GetClassificationSetupByMLModelIdAsync(mlModelId));

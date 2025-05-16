@@ -3,14 +3,6 @@ namespace MLModelBuilderAPIs.Services;
 public interface IExtractionSetupService
 {
     /// <summary>
-    /// Creates and serializes the extraction setup for the specified machine learning model.
-    /// This setup includes configuration data necessary for the extraction process, 
-    /// which is then serialized into a string format for storage or transmission.
-    /// </summary>
-    /// <returns>A string containing the serialized extraction setup.</returns>
-    string CreateSerializedExtractionSetup();
-
-    /// <summary>
     /// Updates an existing extraction setup associated with a machine learning model.
     /// This operation modifies the setup configuration based on the provided details in the 
     /// <paramref name="mlModelSetupDto"/> and returns the updated extraction setup.

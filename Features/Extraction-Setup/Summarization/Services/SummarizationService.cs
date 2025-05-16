@@ -11,179 +11,224 @@ public class SummarizationService : ISummarizationService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
-        // Retrieve the current user's ID from the HTTP context
+        // Extract the user ID from the current HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
 
-    // Updates the Summarization setup for a given ML model
-    public async Task<ServiceResponse<SummarizationDto>> UpdateSummarizationSetupAsync(SummarizationDto SummarizationDto)
+    // Updates the summarization setup for a specific ML model
+    public async Task<ServiceResponse<SummarizationDto>> UpdateSummarizationSetupAsync(SummarizationDto summarizationDto)
     {
-        var serviceResponse = new ServiceResponse<SummarizationDto>
+        var response = new ServiceResponse<SummarizationDto>
         {
             Data = null,
-            Message = "Failed to update the Summarization setup. Please try again later."
+            Message = "Failed to update the summarization setup. Please try again.",
         };
 
         try
         {
-            _logger.LogInformation("Initiating update for Summarization setup | Setup ID: {Id} | User ID: {UserId}", SummarizationDto.Id, _userId);
+            _logger.LogInformation("Updating summarization setup | Model ID: {ModelId} | User ID: {UserId}", summarizationDto.Id, _userId);
 
-            var mLModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == SummarizationDto.Id)
+            // Validate based on summarization method
+            switch (summarizationDto.SetupObject.SummarizationMethod)
+            {
+                case SummarizationMethodTypesEnum.MapReduce:
+                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
+                    {
+                        _logger.LogWarning("'MapIndividualSummaryPrompt' is required and cannot be null or empty.");
+                        response.Message = "'MapIndividualSummaryPrompt' is required.";
+                        return response;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
+                    {
+                        _logger.LogWarning("'MapFinalCombinePrompt' is required and cannot be null or empty.");
+                        response.Message = "'MapFinalCombinePrompt' is required.";
+                        return response;
+                    }
+                    break;
+
+                case SummarizationMethodTypesEnum.Refine:
+                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
+                    {
+                        _logger.LogWarning("'RefineInitialPrompt' is required and cannot be null or empty.");
+                        response.Message = "'RefineInitialPrompt' is required.";
+                        return response;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
+                    {
+                        _logger.LogWarning("'RefineSubsequentPrompt' is required and cannot be null or empty.");
+                        response.Message = "'RefineSubsequentPrompt' is required.";
+                        return response;
+                    }
+                    break;
+
+                case SummarizationMethodTypesEnum.Stuff:
+                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
+                    {
+                        _logger.LogWarning("'StuffPrompt' is required and cannot be null or empty.");
+                        response.Message = "'StuffPrompt' is required.";
+                        return response;
+                    }
+                    break;
+
+                default:
+                    _logger.LogWarning("Invalid summarization method: {Method}", summarizationDto.SetupObject.SummarizationMethod);
+                    response.Message = "Invalid summarization method.";
+                    return response;
+            }
+            var existingModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(m => m.Id == summarizationDto.Id)
                 .SingleOrDefaultAsync();
 
-            if (mLModel == null)
+            if (existingModel == null)
             {
-                _logger.LogWarning("No Summarization setup found | Setup ID: {Id} | User ID: {UserId}", SummarizationDto.Id, _userId);
-                serviceResponse.Message = "Summarization setup not found. Please verify the setup ID.";
-                return serviceResponse;
+                _logger.LogWarning("Summarization setup not found | Model ID: {ModelId} | User ID: {UserId}", summarizationDto.Id, _userId);
+                response.Message = "Summarization setup not found. Please check the model ID.";
+                return response;
             }
 
-            // Clean up DTO string properties
-            SummarizationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(SummarizationDto);
+            summarizationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(summarizationDto);
 
-            // Map the updated DTO data to the model entity
-            SummarizationDto.Adapt(mLModel);
-            mLModel.GeneratedPrompt = GenerateSummarizationModelPrompt(SummarizationDto);
-            mLModel.LastModifiedByUserId = _userId;
+            summarizationDto.Adapt(existingModel);
+            existingModel.GeneratedPrompt = GenerateSummarizationPrompt(summarizationDto);
+            existingModel.LastModifiedByUserId = _userId;
 
-            _logger.LogInformation("Saving updated Summarization setup | Setup ID: {Id}", SummarizationDto.Id);
-            _unitOfWork.MLModelRepo.Update(mLModel);
+            _logger.LogInformation("Saving changes to summarization setup | Model ID: {ModelId}", summarizationDto.Id);
+            _unitOfWork.MLModelRepo.Update(existingModel);
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save updated Summarization setup | Setup ID: {Id} | User ID: {UserId}", SummarizationDto.Id, _userId);
-                return serviceResponse;
+                _logger.LogError("Error saving summarization setup | Model ID: {ModelId} | User ID: {UserId}", summarizationDto.Id, _userId);
+                return response;
             }
 
-            _logger.LogInformation("Successfully updated Summarization setup | Setup ID: {Id} | User ID: {UserId}", SummarizationDto.Id, _userId);
+            _logger.LogInformation("Summarization setup updated successfully | Model ID: {ModelId} | User ID: {UserId}", summarizationDto.Id, _userId);
 
-            serviceResponse.Data = mLModel.Adapt<SummarizationDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Summarization setup updated successfully.";
+            response.Data = existingModel.Adapt<SummarizationDto>();
+            response.StatusCode = 200;
+            response.Message = "Summarization setup updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while updating the Summarization setup | Setup ID: {Id} | User ID: {UserId}", SummarizationDto.Id, _userId);
+            _logger.LogError(ex, "Unexpected error occurred while updating summarization setup | Model ID: {ModelId} | User ID: {UserId}", summarizationDto.Id, _userId);
         }
 
-        return serviceResponse;
+        return response;
     }
 
-    // Constructs the prompt string for the Summarization model based on configuration details
-    private string? GenerateSummarizationModelPrompt(SummarizationDto SummarizationDto)
+    // Builds the prompt string for the summarization model using the setup settings
+    private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
     {
         var promptBuilder = new StringBuilder();
 
-        // Use custom prompt if provided; otherwise, default to a generic Summarization instruction
-        promptBuilder.AppendLine(!string.IsNullOrEmpty(SummarizationDto.SetupObject?.Prompt)
-            ? SummarizationDto.SetupObject.Prompt.Trim()
-            : "You are a Summarization expert. Your task is to classify the provided content.");
+        // Use custom prompt if available, otherwise use default instruction
+        promptBuilder.AppendLine(!string.IsNullOrEmpty(summarizationDto.SetupObject?.Prompt)
+            ? summarizationDto.SetupObject.Prompt.Trim()
+            : "You are a summarization expert. Your role is to condense and interpret the given content.");
 
-        switch (SummarizationDto.SetupObject.SummarizationMethod)
+        switch (summarizationDto.SetupObject.SummarizationMethod)
         {
             case SummarizationMethodTypesEnum.MapReduce:
-                if (!string.IsNullOrWhiteSpace(SummarizationDto.SetupObject.MapIndividualSummaryPrompt))
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
                 {
-                    promptBuilder.AppendLine("Map Step Prompt:");
-                    promptBuilder.AppendLine(SummarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
+                    promptBuilder.AppendLine("Map Phase Prompt:");
+                    promptBuilder.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
                 }
 
-                if (!string.IsNullOrWhiteSpace(SummarizationDto.SetupObject.MapFinalCombinePrompt))
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
                 {
-                    promptBuilder.AppendLine("Reduce Step Prompt:");
-                    promptBuilder.AppendLine(SummarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
+                    promptBuilder.AppendLine("Reduce Phase Prompt:");
+                    promptBuilder.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
                 }
                 break;
 
             case SummarizationMethodTypesEnum.Refine:
-                if (!string.IsNullOrWhiteSpace(SummarizationDto.SetupObject.RefineInitialPrompt))
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
                 {
-                    promptBuilder.AppendLine("Initial Refine Prompt:");
-                    promptBuilder.AppendLine(SummarizationDto.SetupObject.RefineInitialPrompt.Trim());
+                    promptBuilder.AppendLine("Initial Refinement Prompt:");
+                    promptBuilder.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
                 }
 
-                if (!string.IsNullOrWhiteSpace(SummarizationDto.SetupObject.RefineSubsequentPrompt))
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
                 {
-                    promptBuilder.AppendLine("Subsequent Refine Prompt:");
-                    promptBuilder.AppendLine(SummarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
+                    promptBuilder.AppendLine("Subsequent Refinement Prompt:");
+                    promptBuilder.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
                 }
                 break;
 
             case SummarizationMethodTypesEnum.Stuff:
-                if (!string.IsNullOrWhiteSpace(SummarizationDto.SetupObject.StuffPrompt))
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
                 {
                     promptBuilder.AppendLine("Stuff Prompt:");
-                    promptBuilder.AppendLine(SummarizationDto.SetupObject.StuffPrompt.Trim());
+                    promptBuilder.AppendLine(summarizationDto.SetupObject.StuffPrompt.Trim());
                 }
                 break;
         }
 
-        // Include summarization constraints if defined
-        if (SummarizationDto.SetupObject.TotalMinimumWords > 0 || SummarizationDto.SetupObject.TotalMaximumWords > 0)
+        // Add summarization length constraints if specified
+        if (summarizationDto.SetupObject.TotalMinimumWords > 0 || summarizationDto.SetupObject.TotalMaximumWords > 0)
         {
             promptBuilder.AppendLine();
-            promptBuilder.AppendLine("Constraints:");
-            if (SummarizationDto.SetupObject.TotalMinimumWords > 0)
-                promptBuilder.AppendLine($"- Minimum words: {SummarizationDto.SetupObject.TotalMinimumWords}");
-            if (SummarizationDto.SetupObject.TotalMaximumWords > 0)
-                promptBuilder.AppendLine($"- Maximum words: {SummarizationDto.SetupObject.TotalMaximumWords}");
+            promptBuilder.AppendLine("Length Constraints:");
+            if (summarizationDto.SetupObject.TotalMinimumWords > 0)
+                promptBuilder.AppendLine($"- Minimum word count: {summarizationDto.SetupObject.TotalMinimumWords}");
+            if (summarizationDto.SetupObject.TotalMaximumWords > 0)
+                promptBuilder.AppendLine($"- Maximum word count: {summarizationDto.SetupObject.TotalMaximumWords}");
         }
 
-        // Define the expected output format for the model's Summarization
+        // Define output format and writing style expectations
         promptBuilder.AppendLine();
-        // Final instructions
+        promptBuilder.AppendLine("Expected Output:");
+        promptBuilder.AppendLine("Provide a clear, concise summary in plain text format.");
         promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Output Format:");
-        promptBuilder.AppendLine("Return a clear and concise summary in plain text.");
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Guidelines:");
-        promptBuilder.AppendLine("- Focus only on the key ideas from the source text.");
-        promptBuilder.AppendLine("- Avoid unnecessary repetition or filler.");
-        promptBuilder.AppendLine("- Maintain the original meaning and tone of the content.");
+        promptBuilder.AppendLine("Writing Guidelines:");
+        promptBuilder.AppendLine("- Emphasize key ideas and relevant details.");
+        promptBuilder.AppendLine("- Avoid redundant or irrelevant content.");
+        promptBuilder.AppendLine("- Preserve the original tone and meaning.");
 
         return promptBuilder.ToString().Replace("\n", " ");
     }
 
-    // Retrieves the Summarization setup for a specific ML model
+    // Retrieves the summarization setup for a given ML model ID
     public async Task<ServiceResponse<SummarizationDto>> GetSummarizationSetupByMLModelIdAsync(Guid mlModelId)
     {
-        var serviceResponse = new ServiceResponse<SummarizationDto>
+        var response = new ServiceResponse<SummarizationDto>
         {
             Data = null,
-            Message = "Failed to retrieve the Summarization setup. Please try again later."
+            Message = "Failed to retrieve the summarization setup. Please try again."
         };
 
         try
         {
-            _logger.LogInformation("Fetching Summarization setup for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Retrieving summarization setup | Model ID: {ModelId}", mlModelId);
 
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == mlModelId)
-                .Include(i => i.CreatedByUser)
+            var model = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(m => m.Id == mlModelId)
+                .Include(m => m.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            if (mlModel == null)
+            if (model == null)
             {
-                _logger.LogWarning("No Summarization setup found for ML model ID: {MLModelId}", mlModelId);
-                serviceResponse.Message = "No Summarization setup found for the specified ML model.";
-                return serviceResponse;
+                _logger.LogWarning("Summarization setup not found | Model ID: {ModelId}", mlModelId);
+                response.Message = "No summarization setup found for the specified model ID.";
+                return response;
             }
 
-            _logger.LogInformation("Successfully retrieved Summarization setup for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Summarization setup retrieved successfully | Model ID: {ModelId}", mlModelId);
 
-            serviceResponse.Data = mlModel.Adapt<SummarizationDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Summarization setup retrieved successfully.";
+            response.Data = model.Adapt<SummarizationDto>();
+            response.StatusCode = 200;
+            response.Message = "Summarization setup retrieved successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while retrieving Summarization setup | ML Model ID: {MLModelId}", mlModelId);
+            _logger.LogError(ex, "Error occurred while retrieving summarization setup | Model ID: {ModelId}", mlModelId);
         }
 
-        return serviceResponse;
+        return response;
     }
 }

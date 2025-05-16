@@ -14,13 +14,13 @@ public class SummarizationController : BaseApiController
 
     // Updates an existing summarization setup
     [HttpPut("setup")]
-    public async Task<ActionResult<ServiceResponse<SummarizationDto>>> UpdateSummarizationSetup([FromBody] SummarizationDto SummarizationDto)
+    public async Task<ActionResult<ServiceResponse<SummarizationDto>>> UpdateSummarizationSetup([FromBody] SummarizationDto summarizationDto)
     {
-        return ResultHelper(await _SummarizationService.UpdateSummarizationSetupAsync(SummarizationDto));
+        return ResultHelper(await _SummarizationService.UpdateSummarizationSetupAsync(summarizationDto));
     }
 
     // Retrieves a specific summarization setup by ml model ID
-    [HttpGet("setup/{mlModelId}")]
+    [HttpGet("setup-by-model/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<SummarizationDto>>> GetSummarizationSetupByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _SummarizationService.GetSummarizationSetupByMLModelIdAsync(mlModelId));

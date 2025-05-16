@@ -20,7 +20,7 @@ public class QuestionAnswerController : BaseApiController
     }
 
     // Retrieves a specific QuestionAnswer setup by ml model ID
-    [HttpGet("setup/{mlModelId}")]
+    [HttpGet("setup-by-model/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<QuestionAnswerDto>>> GetQuestionAnswerSetupByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _QuestionAnswerService.GetQuestionAnswerSetupByMLModelIdAsync(mlModelId));

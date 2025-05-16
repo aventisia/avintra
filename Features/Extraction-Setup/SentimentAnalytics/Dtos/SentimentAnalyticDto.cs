@@ -64,16 +64,8 @@ public class SentimentAnalyticSetupDto
 
     /// <summary>
     /// Optional list of sentiment categories to classify, each with optional guidance.
-    /// Defaults to a single empty category.
     /// </summary>
-    public List<SentimentAnalyticsSetupCategoryDto>? Categories { get; set; } = new List<SentimentAnalyticsSetupCategoryDto>
-    {
-        new SentimentAnalyticsSetupCategoryDto
-        {
-            Name = string.Empty,
-            Instructions = string.Empty
-        }
-    };
+    public List<SentimentAnalyticsSetupCategoryDto>? Categories { get; set; }
 }
 
 /// <summary>

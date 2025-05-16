@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.Controllers;
 
-[Route("extraction-setup")]
+[Route("extraction")]
 [ApiController]
 [Authorize]
 public class ExtractionSetupController : BaseApiController
@@ -13,14 +13,14 @@ public class ExtractionSetupController : BaseApiController
     }
 
     // Updates an existing extraction setup
-    [HttpPut]
+    [HttpPut("setup")]
     public async Task<ActionResult<ServiceResponse<ExtractionSetupDto>>> UpdateExtractionSetup([FromBody] MLModelSetupDto mlModelSetupDto)
     {
         return ResultHelper(await _extractionSetupService.UpdateExtractionSetupAsync(mlModelSetupDto));
     }
 
     // Retrieves a specific extraction setup by ml model ID
-    [HttpGet("ml-model/{mlModelId}")]
+    [HttpGet("setup-by-model/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<ExtractionSetupDto>>> GetExtractionSetupByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _extractionSetupService.GetExtractionSetupByMLModelIdAsync(mlModelId));

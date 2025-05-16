@@ -19,35 +19,6 @@ public class ExtractionSetupService : IExtractionSetupService
         _unitOfWork = unitOfWork;
     }
 
-    //Initialize a new extraction setup record
-    public string CreateSerializedExtractionSetup()
-    {
-        // Define the default prompt for extraction logic
-        var defaultPrompt = "You are an expert extraction algorithm.\n" +
-                           "Only extract relevant information from the text.\n" +
-                           "If you do not know the value of an attribute asked to extract, you may omit the attribute's value.";
-
-        // Construct a default extraction setup
-        var defaultExtractionSetup = new ExtractionSetupDto
-        {
-            DocumentContext = string.Empty,
-            NodePrompt = defaultPrompt,
-            TableMetadata = null,
-            FieldSetups = new List<FieldSetupDto>
-            {
-                new FieldSetupDto
-                {
-                    Name = string.Empty,
-                    Type = string.Empty,
-                    Instructions = string.Empty
-                }
-            }
-        };
-
-        // Serialize the setup to a JSON string
-        return JsonSerializer.Serialize(defaultExtractionSetup);
-    }
-
     // Method to update an existing extraction setup record
     public async Task<ServiceResponse<MLModelSetupDto>> UpdateExtractionSetupAsync(MLModelSetupDto mLModelSetupDto)
     {
@@ -122,8 +93,8 @@ public class ExtractionSetupService : IExtractionSetupService
         var promptBuilder = new StringBuilder();
 
         // Add the base instruction or use the provided NodePrompt
-        promptBuilder.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.NodePrompt)
-            ? mlModelSetupDto.SetupObject.NodePrompt.Trim()
+        promptBuilder.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.Prompt)
+            ? mlModelSetupDto.SetupObject.Prompt.Trim()
             : "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
 
         // Section: Field extraction instructions

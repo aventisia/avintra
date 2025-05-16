@@ -8,11 +8,6 @@ public class MLModelSetupDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of model library.
-    /// </summary>
-    public string? Name { get; set; }
-
-    /// <summary>
     /// Gets or sets the data model's fields JSON data in string format. The default value will be an empty object.
     /// </summary>
     public ExtractionSetupDto? SetupObject { get; set; }
@@ -48,13 +43,14 @@ public class ExtractionSetupDto
     /// <summary>
     /// Optional description of the document's context or type, providing additional information to guide the extraction process.
     /// </summary>
-    public string? DocumentContext { get; set; }
+    [Required]
+    public required string Context { get; set; }
 
     /// <summary>
     /// The prompt that is required to guide the node for data extraction, with a maximum length of 1000 characters.
     /// </summary>
-    [StringLength(1000)]
-    public required string NodePrompt { get; set; }
+    [Required]
+    public required string Prompt { get; set; }
 
     /// <summary>
     /// Metadata about tables used in the extraction setup, if available.

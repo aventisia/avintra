@@ -60,17 +60,20 @@ public class ClassificationSetupDto
     public required string Prompt { get; set; }
 
     /// <summary>
-    /// A list of classification categories with optional instructions.
-    /// Defaults to a single empty category if not specified.
+    /// Enum to define behavior when no clear match is found during classification.
     /// </summary>
-    public List<ClassificationCategoryDto>? Categories { get; set; } = new List<ClassificationCategoryDto>
-    {
-        new ClassificationCategoryDto
-        {
-            Name = string.Empty,
-            Instructions = string.Empty
-        }
-    };
+    [Required]
+    public required ClassificationUncertaintyAction UncertaintyAction { get; set; }
+
+    /// <summary>
+    /// Enum to control the multiple class scenario when no single match is found.
+    /// </summary>
+    public bool AllowMultipleClasses { get; set; }
+
+    /// <summary>
+    /// A list of classification categories with optional instructions.
+    /// </summary>
+    public List<ClassificationCategoryDto>? Categories { get; set; }
 }
 
 /// <summary>

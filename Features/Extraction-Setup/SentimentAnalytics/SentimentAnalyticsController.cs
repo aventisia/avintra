@@ -20,7 +20,7 @@ public class SentimentAnalyticsController : BaseApiController
     }
 
     // Retrieves a specific extraction setup by ml model ID
-    [HttpGet("setup/{mlModelId}")]
+    [HttpGet("setup-by-model/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<SentimentAnalyticDto>>> GetSentimentAnalyticsSetupByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _sentimentAnalyticsService.GetSentimentAnalyticsSetupByMLModelIdAsync(mlModelId));
