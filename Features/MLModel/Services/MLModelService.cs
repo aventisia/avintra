@@ -129,7 +129,7 @@ public class MLModelService : IMLModelService
 
             // Default mapping
             var newMLModel = mlModelDto.Adapt<MLModel>();
-
+            newMLModel.SetupObject = GetDefaultSerializedSetupByModel(newMLModel);
             newMLModel.Accuracy = (decimal?)90.00;
             newMLModel.CreatedByUserId = _userId;
             newMLModel.LastModifiedByUserId = _userId;
@@ -317,7 +317,7 @@ public class MLModelService : IMLModelService
             // Task successful
             serviceResponse.Data = mlModel.Adapt<MLModelDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Model retrived successfully";
+            serviceResponse.Message = "Model retrieved successfully";
 
         }
         catch (Exception ex)
@@ -326,5 +326,122 @@ public class MLModelService : IMLModelService
             return serviceResponse;
         }
         return serviceResponse;
+    }
+
+    // Initializes and serializes the default setup configuration based on the model type.
+    private string GetDefaultSerializedSetupByModel(MLModel newMLModel)
+    {
+        // Default prompt text used for all model types.
+        var defaultPrompt = "You are an expert extraction algorithm.\n" +
+                            "Extract only the relevant information from the provided text.\n" +
+                            "If you do not know the value of an attribute, leave it blank.";
+
+        // Set up configuration based on the model type in the provided newMLModel object.
+        switch (newMLModel.Type)
+        {
+            case ModelTypesEnum.Extraction:
+                // Configuration for the extraction model type: defines how to extract relevant information.
+                var extractionSetup = new ExtractionSetupDto
+                {
+                    Context = string.Empty,
+                    Prompt = defaultPrompt,
+                    TableMetadata = null,
+                    FieldSetups = new List<FieldSetupDto>
+                {
+                    new FieldSetupDto
+                    {
+                        Name = string.Empty,
+                        Type = string.Empty,
+                        Instructions = string.Empty
+                    }
+                }
+                };
+
+                // Serialize the extraction setup configuration and return as a JSON string.
+                return JsonSerializer.Serialize(extractionSetup);
+
+            case ModelTypesEnum.Classification:
+                // Configuration for the classification model type: defines categories and instructions for content classification.
+                var classificationSetup = new ClassificationSetupDto
+                {
+                    Context = string.Empty,
+                    Prompt = defaultPrompt,
+                    UncertaintyAction = ClassificationUncertaintyAction.DiscardItem,
+                    AllowMultipleClasses = false,
+                    Categories = new List<ClassificationCategoryDto>
+                {
+                    new ClassificationCategoryDto
+                    {
+                        Name = string.Empty,
+                        Instructions = string.Empty
+                    }
+                }
+                };
+
+                // Serialize the classification setup configuration and return as a JSON string.
+                return JsonSerializer.Serialize(classificationSetup);
+
+            case ModelTypesEnum.SentimentAnalytics:
+                // Configuration for the sentiment analysis model type: defines sentiment categories and their instructions.
+                var sentimentAnalyticsSetup = new SentimentAnalyticSetupDto
+                {
+                    Context = string.Empty,
+                    Prompt = defaultPrompt,
+                    Categories = new List<SentimentAnalyticsSetupCategoryDto>
+                {
+                    new SentimentAnalyticsSetupCategoryDto
+                    {
+                        Name = string.Empty,
+                        Instructions = string.Empty
+                    }
+                }
+                };
+
+                // Serialize the sentiment analysis setup configuration and return as a JSON string.
+                return JsonSerializer.Serialize(sentimentAnalyticsSetup);
+
+            // Setup for the Summarization model type (currently no specific configuration is defined).
+            case ModelTypesEnum.Summarization:
+                // Configuration for summarization model type (if needed in the future).
+                var summarizationSetup = new SummarizationSetupDto
+                {
+                    Context = string.Empty,
+                    Prompt = defaultPrompt,
+                    CharactersPerChunk = 0,
+                    ChunkOverlap = 0,
+                    TotalMinimumWords = 0,
+                    TotalMaximumWords = 0,
+                    SummarizationMethod = SummarizationMethodTypesEnum.MapReduce,
+                    MapFinalCombinePrompt = string.Empty,
+                    MapIndividualSummaryPrompt = string.Empty,
+                };
+
+                // Serialize the summarization setup configuration and return as a JSON string.
+                return JsonSerializer.Serialize(summarizationSetup);
+
+            // Setup for the Question Answer model type (currently no specific configuration is defined).
+            case ModelTypesEnum.QuestionAnswer:
+                // Configuration for question answering model type (if needed in the future).
+                var questionAnswerSetup = new QuestionAnswerSetupDto
+                {
+                    Context = string.Empty,
+                    Prompt = defaultPrompt,
+                    QuestionAnswers = new List<QuestionAnswerLabelDto>()
+                {
+                    new QuestionAnswerLabelDto()
+                    {
+                        Name = string.Empty,
+                        Instructions = string.Empty
+                    }
+                }
+                };
+
+                // Serialize the question answer setup configuration and return as a JSON string.
+                return JsonSerializer.Serialize(questionAnswerSetup);
+
+            // Default case: returns an empty string for any unrecognized model types.
+            default:
+                return string.Empty;
+        }
     }
 }
