@@ -279,7 +279,7 @@ public class UploadedDocService : IUploadedDocService
             if (pathParts.Length < 2)
             {
                 serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.",pathParts.Last());
+                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.", pathParts.Last());
                 return serviceResponse;
             }
 
@@ -404,6 +404,13 @@ public class UploadedDocService : IUploadedDocService
             return "Videos";
         }
 
+        // Check Audios category
+        if (_fileUploadConfig.AllowedFileTypes.Audio.AllowedFileExtensions.Contains(extension))
+        {
+            _logger.LogInformation("File extension '{Extension}' matches category: Audio.", extension);
+            return "Audio";
+        }
+
         // If no category matches, log the failure and return empty
         _logger.LogInformation("No matching file category found for extension: {Extension}.", extension);
         return string.Empty;
@@ -420,6 +427,7 @@ public class UploadedDocService : IUploadedDocService
             "pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions,
             "documents" => _fileUploadConfig.AllowedFileTypes.Documents.AllowedFileExtensions,
             "videos" => _fileUploadConfig.AllowedFileTypes.Videos.AllowedFileExtensions,
+            "audio" => _fileUploadConfig.AllowedFileTypes.Audio.AllowedFileExtensions,
             _ => new List<string>()
         };
 
@@ -449,11 +457,12 @@ public class UploadedDocService : IUploadedDocService
         _logger.LogDebug("Converted file size to megabytes: {FileSizeMB} MB.", fileSizeInMB);
 
         // Retrieve the maximum allowed size (in MB) for the given file category
-        int maxSizeMB = fileCategory switch
+        int maxSizeMB = fileCategory.ToLower() switch
         {
-            "Pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.MaxSizeMB,
-            "Documents" => _fileUploadConfig.AllowedFileTypes.Documents.MaxSizeMB,
-            "Videos" => _fileUploadConfig.AllowedFileTypes.Videos.MaxSizeMB,
+            "pictures" => _fileUploadConfig.AllowedFileTypes.Pictures.MaxSizeMB,
+            "documents" => _fileUploadConfig.AllowedFileTypes.Documents.MaxSizeMB,
+            "videos" => _fileUploadConfig.AllowedFileTypes.Videos.MaxSizeMB,
+            "audio" => _fileUploadConfig.AllowedFileTypes.Audio.MaxSizeMB,
             _ => throw new InvalidOperationException($"Unsupported file category: {fileCategory}")
         };
 
