@@ -8,7 +8,7 @@ export const questionAnswerSchema = z.object({
 
 export const questionAnswerSetupFormZodSchema = z
   .object({
-    context: z.string().optional(),
+    context: z.string().min(1, {message: reqError("Context")}),
     questions: z.array(questionAnswerSchema),
-    nodePrompt: z.string().min(1, {message: reqError("Node Prompt")}),
+    prompt: z.string().min(1, {message: reqError("Prompt")}),
 })

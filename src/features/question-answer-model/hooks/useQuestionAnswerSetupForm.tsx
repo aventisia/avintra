@@ -11,7 +11,7 @@ export const useQuestionAnswerSetupForm = () => {
     defaultValues: {
       context: "",
       questions: [{ question: "", instructions: "" }],
-      nodePrompt:
+      prompt:
         "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.",
     },
   });

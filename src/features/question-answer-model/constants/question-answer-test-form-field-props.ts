@@ -1,10 +1,10 @@
-import {  TextareaFieldProps } from "@aventisia/ui/form";
+import {  AutosizeTextareaFieldProps } from "@aventisia/ui/form";
 
-const answerProps : TextareaFieldProps = {
+const answerProps : AutosizeTextareaFieldProps = {
     name: "",
     className: "text-sm resize-none",
+    minHeight: 10,
     placeholder: "Field Value",
-    rows: 3
 }
 
 export {answerProps}

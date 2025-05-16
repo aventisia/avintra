@@ -1,7 +1,6 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { TextareaField } from "@aventisia/ui/form";
+import { AutosizeTextareaField, Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -40,8 +39,8 @@ const SentimentAnalyticsForm = () => {
       <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
         <FormProvider {...form}>
           <div className="space-y-4 px-4 pb-1 w-full">
-            {/* Document Context */}
-            <TextareaField {...contextProps} />
+            {/* Context */}
+            <AutosizeTextareaField {...contextProps} />
 
             {/* Separator */}
             <Separator />
@@ -57,8 +56,8 @@ const SentimentAnalyticsForm = () => {
             {/* Separator */}
             <Separator />
 
-            {/* Node Prompt */}
-            <TextareaField {...nodePropmptProps} />
+            {/* Prompt */}
+            <AutosizeTextareaField {...nodePropmptProps} />
           </div>
         </FormProvider>
       </ScrollArea>

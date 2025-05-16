@@ -1,12 +1,12 @@
-import { InputFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
+import { AutosizeTextareaFieldProps, InputFieldProps } from "@aventisia/ui/form";
 
 
-const contextProps: TextareaFieldProps = {
+const contextProps: AutosizeTextareaFieldProps = {
     name: "context",
     label: "Context",
+    minHeight: 10,
     placeholder: "We need to pass Context to LLM",
-    isRequired: false,
+    isRequired: true,
     className: "text-sm resize-none"
 } 
 
@@ -25,9 +25,10 @@ const instructionsProps: InputFieldProps = {
     placeholder: "Instructions"
 }
 
-const nodePropmptProps: TextareaFieldProps = {
-    name: "nodePrompt",
-    label: "Node Prompt",
+const nodePropmptProps: AutosizeTextareaFieldProps = {
+    name: "prompt",
+    label: "Prompt",
+    minHeight: 10,
     isRequired: true,
     className: "text-sm resize-none",
     rows: 4

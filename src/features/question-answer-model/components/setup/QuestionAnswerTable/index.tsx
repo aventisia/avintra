@@ -4,7 +4,7 @@ import {
 } from "@/features/question-answer-model/constants/question-answer-setup-form-field-props";
 
 import { Button } from "@aventisia/ui/buttons";
-import { TextareaField } from "@aventisia/ui/form";
+import { AutosizeTextareaField } from "@aventisia/ui/form";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -55,7 +55,7 @@ const QuestionAnswerTable = ({
               control={control}
               name={`questions.${index}.question`}
               render={({ field }) => (
-                <TextareaField
+                <AutosizeTextareaField
                   {...questionProps}
                   value={field.value}
                   onChange={field.onChange}
@@ -71,7 +71,7 @@ const QuestionAnswerTable = ({
                 control={control}
                 name={`questions.${index}.instructions`}
                 render={({ field }) => (
-                  <TextareaField
+                  <AutosizeTextareaField
                     {...instructionsProps}
                     value={field.value}
                     onChange={field.onChange}

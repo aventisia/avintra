@@ -2,8 +2,7 @@ import { useLabelDataStore } from "@/features/label-data/stores/label-data-store
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { TextareaField } from "@aventisia/ui/form";
+import { AutosizeTextareaField, Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -61,8 +60,8 @@ const InformationExtractorForm = () => {
       <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
         <FormProvider {...form}>
           <div className="space-y-4 px-4 pb-1 w-full">
-            {/* Document Context */}
-            <TextareaField {...documentContextProps} />
+            {/* Context */}
+            <AutosizeTextareaField {...documentContextProps} />
 
             {/* Separator */}
             <Separator />
@@ -90,8 +89,8 @@ const InformationExtractorForm = () => {
 
             {tableFields && tableFields.length > 0 && <Separator />}
 
-            {/* Node Prompt */}
-            <TextareaField {...nodePropmptProps} />
+            {/* Prompt */}
+            <AutosizeTextareaField {...nodePropmptProps} />
           </div>
         </FormProvider>
       </ScrollArea>

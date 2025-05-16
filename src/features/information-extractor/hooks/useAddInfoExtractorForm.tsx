@@ -16,10 +16,10 @@ export const useAddInformationExtractorForm = () => {
   const form = useForm<z.infer<typeof addInfoExtractorFormZodSchema>>({
     resolver: zodResolver(addInfoExtractorFormZodSchema),
     defaultValues: {
-      documentContext: "",
+      context: "",
       fieldSetups: [{ name: "", type: "", instructions: "" }],
       tableMetadata: null,
-      nodePrompt: "",
+      prompt: "",
     },
   });
   const { setActiveTab } = useInformationExtractorTableStore(
@@ -148,8 +148,8 @@ export const useAddInformationExtractorForm = () => {
     const setupFormData = data?.data.setupObject;
 
     form.reset({
-      documentContext: setupFormData?.documentContext ?? "",
-      nodePrompt: setupFormData?.nodePrompt ?? "",
+      context: setupFormData?.context ?? "",
+      prompt: setupFormData?.prompt ?? "",
       fieldSetups: setupFormData?.fieldSetups ?? [
         { name: "", type: "", instructions: "" },
       ],

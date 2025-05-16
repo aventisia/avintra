@@ -12,5 +12,5 @@ export const classificationModelSetupFormZodSchema = z
     categories: z.array(categoriesSchema),
     allowMultipleClasses: z.boolean(),
     whenNoClearMatch: z.string().min(1, {message: reqError("When No Clear Match")}),
-    systemPrompt: z.string().min(1, {message: reqError("System Prompt")}),
+    prompt: z.string().min(1, {message: reqError("Prompt")}),
 })

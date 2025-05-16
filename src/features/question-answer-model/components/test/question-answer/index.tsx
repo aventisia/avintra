@@ -2,10 +2,10 @@ import { answerProps } from "@/features/question-answer-model/constants/question
 import { questionAnswerTestFormZodSchema } from "@/features/question-answer-model/constants/question-answer-test-form-zod-schema";
 
 import {
+  AutosizeTextareaField,
   FormControl,
   FormItem,
   FormLabel,
-  TextareaField,
 } from "@aventisia/ui/form";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -33,8 +33,10 @@ const QuestionAnswerFields = ({
         return (
           <FormItem key={field.id} className="space-y-0.5">
             <FormLabel className="flex items-center justify-between">
-              <div className="flex justify-between items-center w-full">
-                <div>{fieldName}</div>
+              <div className="flex justify-between items-center w-full px-1">
+                <p className="text-sm">
+                  {index + 1}. {fieldName}
+                </p>
                 <div>
                   <span
                     className={
@@ -55,7 +57,7 @@ const QuestionAnswerFields = ({
                 control={control}
                 name={`questionAnswers.${index}.answer`}
                 render={({ field }) => (
-                  <TextareaField
+                  <AutosizeTextareaField
                     {...answerProps}
                     {...field}
                     placeholder={`Enter value for ${fieldName}`}

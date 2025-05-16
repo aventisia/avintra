@@ -22,8 +22,8 @@ const tableSchema = z.object({
 
 export const addInfoExtractorFormZodSchema = z
   .object({
-    documentContext: z.string().optional(),
-    nodePrompt: z.string().min(1, {message: reqError("Node Prompt")}),
+    context: z.string().min(1, {message: reqError("Context")}),
+    prompt: z.string().min(1, {message: reqError("Prompt")}),
     tableMetadata: z.array(tableSchema).optional().nullable(),
     fieldSetups: z.array(dataToBeExtractedSchema),
 })

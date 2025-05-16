@@ -8,7 +8,7 @@ export const categoriesSchema = z.object({
 
 export const sentimentAnalyticsSetupFormZodSchema = z
   .object({
-    context: z.string().optional(),
+    context: z.string().min(1, {message: reqError("Context")}),
     categories: z.array(categoriesSchema),
-    nodePrompt: z.string().min(1, {message: reqError("Node Prompt")}),
+    prompt: z.string().min(1, {message: reqError("Prompt")}),
 })

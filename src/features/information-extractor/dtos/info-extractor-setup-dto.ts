@@ -16,8 +16,8 @@ interface ITableMetaData {
 }
 
 interface ISetupObject {
-    documentContext: string;
-    nodePrompt: string;
+    context: string;
+    prompt: string;
     tableMetadata: ITableMetaData[] | null,
     fieldSetups: IFieldSetups[];
 

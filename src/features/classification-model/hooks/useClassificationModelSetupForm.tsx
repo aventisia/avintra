@@ -12,7 +12,7 @@ export const useClassificationModelSetupForm = () => {
       categories: [{ categoryName: "", instructions: "" }],
       allowMultipleClasses: false,
       whenNoClearMatch: "",
-      systemPrompt: "",
+      prompt: "",
     },
   });
 

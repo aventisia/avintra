@@ -1,7 +1,6 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form, InputField } from "@aventisia/ui/form";
-import { TextareaField } from "@aventisia/ui/form";
+import { AutosizeTextareaField, Form, InputField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -47,7 +46,7 @@ const SummarizationModelSetupForm = () => {
         <FormProvider {...form}>
           <div className="space-y-4 px-4 pb-1 w-full">
             {/* Context */}
-            <TextareaField {...contextProps} />
+            <AutosizeTextareaField {...contextProps} />
 
             <div className="grid grid-cols-2 gap-2">
               {/* Character Per Chunk */}
@@ -71,27 +70,27 @@ const SummarizationModelSetupForm = () => {
             {summarizationMethodValue === "mapReduce" && (
               <>
                 {/* Individual Summary Prompt */}
-                <TextareaField {...individualSummaryPromptProps} />
+                <AutosizeTextareaField {...individualSummaryPromptProps} />
 
                 {/* Final Prompt to combine */}
-                <TextareaField {...finalPromptToCombineProps} />
+                <AutosizeTextareaField {...finalPromptToCombineProps} />
               </>
             )}
 
             {summarizationMethodValue === "refine" && (
               <>
                 {/* Subsequent Refine Prompt */}
-                <TextareaField {...subsequentPromptProps} />
+                <AutosizeTextareaField {...subsequentPromptProps} />
 
                 {/* Initial Prompt */}
-                <TextareaField {...initialPromptProps} />
+                <AutosizeTextareaField {...initialPromptProps} />
               </>
             )}
 
             {summarizationMethodValue === "stuff" && (
               <>
                 {/* Prompt */}
-                <TextareaField {...promptProps} />
+                <AutosizeTextareaField {...promptProps} />
               </>
             )}
           </div>

@@ -1,5 +1,4 @@
-import { InputFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
+import { AutosizeTextareaFieldProps, InputFieldProps } from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
 import { SelectFieldProps } from "../../../shared/select-field/SelectField";
 
@@ -22,9 +21,10 @@ const summarizationMethodSelectOptions: ISelectOption[] = [
     },
 ]
 
-const contextProps: TextareaFieldProps = {
+const contextProps: AutosizeTextareaFieldProps = {
     name: "context",
     label: "Context",
+    minHeight: 10,
     placeholder: "We need to pass Context to LLM",
     isRequired: true,
     className: "text-sm resize-none"
@@ -76,41 +76,46 @@ const summarizationMethodProps: SelectFieldProps  = {
 }
 
 
-const individualSummaryPromptProps: TextareaFieldProps = {
+const individualSummaryPromptProps: AutosizeTextareaFieldProps = {
     name: "individualSummaryPrompt",
     label: "Individual Summary Prompt",
+    minHeight: 10,
     placeholder: "Please provide a summary prompt",
     isRequired: true,
     className: "text-sm resize-none"
 } 
 
-const finalPromptToCombineProps: TextareaFieldProps = {
+const finalPromptToCombineProps: AutosizeTextareaFieldProps = {
     name: "finalPromptToCombine",
     label: "Final Prompt to Combine",
+    minHeight: 10,
     placeholder: "Please provide a final prompt",
     isRequired: true,
     className: "text-sm resize-none"
 } 
 
-const subsequentPromptProps: TextareaFieldProps = {
+const subsequentPromptProps: AutosizeTextareaFieldProps = {
     name: "subsequentPrompt",
     label: "Subsequent (Refine) Prompt",
+    minHeight: 10,
     placeholder: "Please provide a Subsequent Prmpot",
     isRequired: true,
     className: "text-sm resize-none"
 } 
 
-const initialPromptProps: TextareaFieldProps = {
+const initialPromptProps: AutosizeTextareaFieldProps = {
     name: "initialPrompt",
     label: "Initial Prompt",
+    minHeight: 10,
     placeholder: "Please provide an Initial Prmpot",
     isRequired: true,
     className: "text-sm resize-none"
 } 
 
-const promptProps: TextareaFieldProps = {
+const promptProps: AutosizeTextareaFieldProps = {
     name: "prompt",
     label: "Prompt",
+    minHeight: 10,
     placeholder: "Please provide a Prompt",
     isRequired: true,
     className: "text-sm resize-none"

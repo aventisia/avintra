@@ -1,6 +1,5 @@
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
-import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
+import { AutosizeTextareaFieldProps, InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
 
 const whenNoClearMatchSelectOptions: ISelectOption[] = [
@@ -16,9 +15,10 @@ const whenNoClearMatchSelectOptions: ISelectOption[] = [
     }
 ]
 
-const contextProps: TextareaFieldProps = {
+const contextProps: AutosizeTextareaFieldProps = {
     name: "context",
     label: "Context",
+    minHeight: 10,
     placeholder: "We need to pass Context to LLM",
     isRequired: true,
     className: "text-sm resize-none"
@@ -55,9 +55,10 @@ const whenNoClearMatchProps: SelectFieldProps = {
     isRequired: true,
 }
 
-const systemPromptProps: TextareaFieldProps = {
-    name: "nodePrompt",
-    label: "System Prompt",
+const systemPromptProps: AutosizeTextareaFieldProps = {
+    name: "prompt",
+    label: "Prompt",
+    minHeight: 10,
     isRequired: true,
     className: "text-sm resize-none",
     rows: 4

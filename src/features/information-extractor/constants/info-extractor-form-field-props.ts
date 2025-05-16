@@ -1,15 +1,15 @@
 import { DataTypeEnum } from "@/react-toolkit/enums/data-type-enum";
-import { InputFieldProps } from "@aventisia/ui/form";
+import { AutosizeTextareaFieldProps, InputFieldProps } from "@aventisia/ui/form";
 import { SelectFieldProps } from "@aventisia/ui/form";
-import { TextareaFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
 
-const documentContextProps: TextareaFieldProps = {
-    name: "documentContext",
-    label: "Document Context",
-    placeholder: "We need to pass Document Context to LLM",
-    isRequired: false,
+const documentContextProps: AutosizeTextareaFieldProps = {
+    name: "context",
+    label: "Context",
+    minHeight: 10,
+    placeholder: "We need to pass Context to LLM",
+    isRequired: true,
     className: "text-sm resize-none"
 } 
 
@@ -60,9 +60,10 @@ const headerNameProps: InputFieldProps = {
     placeholder: "Header Name"
 }
 
-const nodePropmptProps: TextareaFieldProps = {
-    name: "nodePrompt",
-    label: "Node Prompt",
+const nodePropmptProps: AutosizeTextareaFieldProps = {
+    name: "prompt",
+    label: "Prompt",
+    minHeight: 10,
     isRequired: true,
     className: "text-sm resize-none",
     rows: 4
