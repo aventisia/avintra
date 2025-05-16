@@ -1,14 +1,15 @@
-import { FormControl } from "@aventisia/ui/form";
-import { FormField } from "@aventisia/ui/form";
-import { FormItem } from "@aventisia/ui/form";
-import { FormMessage } from "@aventisia/ui/form";
-import { BaseFieldProps } from "@aventisia/ui/form";
-import { FormLabelExt } from "@aventisia/ui/form";
+import {
+  BaseFieldProps,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabelExt,
+  FormMessage,
+} from "@aventisia/ui/form";
 import { Label } from "@aventisia/ui/label";
 import { cn } from "@aventisia/ui/lib";
 import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
-import { FormFieldSizeType } from "@aventisia/ui/types";
-import { ISelectOption } from "@aventisia/ui/types";
+import { FormFieldSizeType, ISelectOption } from "@aventisia/ui/types";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
@@ -78,7 +79,7 @@ export const RadioCardGroupField = ({
                 onValueChange?.(value);
                 field.onChange(value);
               }}
-              defaultValue={field.value}
+              value={field.value}
               className={cn(
                 "flex !flex-row !justify-items-stretch",
                 size === "xs" && "gap-1.5",
