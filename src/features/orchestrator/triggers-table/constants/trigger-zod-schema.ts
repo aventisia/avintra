@@ -24,26 +24,34 @@ export const triggerZodSchema = z.object({
   id: z.string(),
   name: triggerNameSchema,
   environment: z.string(),
-
-  process: z.string().optional(),
-  startsOn: z.date().optional(),
+  assignAgents: z.string().optional(),
 
   timeZone: z.string().optional(),
+  startsOn: z.date().optional(),
+
   frequency: z.string().optional(),
-  repeateEvery: z.string().optional(),
-  repeateEveryAtHour: z.date().optional(),
+
+  //time of the trigger
+  repeateAt: z.date().optional(),
+
+  //day or weekday
+  repeateOn: z.string().optional(),
+
+  //count of the repeatation
+  repeateCount: z.string().optional(),
 
   scheduleNonWorkingDays: z.boolean().optional(),
-  nonWorkingDays: z.date().optional(),
-
-  repeateEveryWeekDays: z.string().optional(),
+  nonWorkingDays: z.date().optional(), //TODO - change this to date array when calendar component capable for multiple dates
 
   scheduleRetristredTimeZone: z.boolean().optional(),
-  retristredTimeZoneFrom: z.date().optional(),
-  retristredTimeZoneTo: z.date().optional(),
+  restrictToTime: z.date().optional(),
+  restrictFromTime: z.date().optional(),
 
   scheduleEnding: z.boolean().optional(),
   endsOn: z.date().optional(),
+
+  triggerForNewItem: z.boolean().optional(),
+  triggerForNewEmail: z.boolean().optional(),
 
   scheduleAutoDisabling: z.boolean().optional(),
   generateStuckAlert: z.boolean().optional(),
