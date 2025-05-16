@@ -4,9 +4,9 @@ export const columnVisibilityState = {
   name: true,
   type: true,
   llm: true,
-  accuracy: true,
-  docsProcessed: true,
-  status: true,
+  accuracy: false,
+  docsProcessed: false,
+  status: false,
   trainedOn: false,
   createdOn: false,
 };
