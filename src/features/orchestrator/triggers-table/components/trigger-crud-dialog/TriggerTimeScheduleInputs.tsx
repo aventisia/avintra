@@ -1,10 +1,13 @@
-import { InputField, MultiSelectField } from "@aventisia/ui/form";
 import { ISelectOption } from "@aventisia/ui/types";
 import { enumToArray } from "@aventisia/ui/utils";
 import Enumerable from "linq";
+import { useMemo } from "react";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 import { DayOfWeek } from "@/react-toolkit/enums/day-of-week-enum";
+import { InputAndTimeComboField } from "@/react-toolkit/ui/form/fields/combo/InputAndTimeComboField";
+import { MultiSelectAndTimeComboField } from "@/react-toolkit/ui/form/fields/combo/MultiSelectAndTimeComboField";
+import { MultiSelectField } from "@/react-toolkit/ui/form/fields/MultiSelectField";
 import { TimePickerField } from "@/react-toolkit/ui/form/fields/TimePickerField";
 
 export const TriggerTimeScheduleInputs = ({
@@ -12,107 +15,82 @@ export const TriggerTimeScheduleInputs = ({
 }: {
   frequency?: string;
 }) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const input = e.key;
-    const currentValue = (e.target as HTMLInputElement).value;
+  const frequencyKey = frequency as keyof typeof TriggerFrequencyTypesEnum;
 
-    // Allow control keys
-    if (
-      ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"].includes(e.key)
-    ) {
-      return;
-    }
+  const daysOptions = useMemo(
+    () => [
+      { label: "Last day of the month", value: "lastDayOfMonth" },
+      {
+        label: "Last working day of the month",
+        value: "lastWorkingDayOfMonth",
+      },
+      ...Enumerable.range(1, 31).select<ISelectOption>((x) => ({
+        label: x.toString(),
+        value: x.toString(),
+      })),
+    ],
+    [],
+  );
 
-    // Allow only digits
-    if (!/^\d$/.test(input)) {
-      e.preventDefault();
-      return;
-    }
-
-    // Build new potential value
-    const newValue = currentValue + input;
-
-    // Parse number
-    const num = parseInt(newValue);
-
-    // Block values over 59 or less than 1
-    if (num < 1 || num > 59) {
-      e.preventDefault();
-    }
-  };
-
-  switch (frequency as keyof typeof TriggerFrequencyTypesEnum) {
+  switch (frequencyKey) {
     case "MinuteByMinute":
-      return (
-        <div className="group grid grid-flow-col items-center justify-center gap-2 text-sm">
-          <InputField
-            name="repeateEveryMinut"
-            label="Repeate Every"
-            onKeyDown={handleKeyDown}
-          />
-        </div>
-      );
     case "Hourly":
     case "Daily":
       return (
-        <div className="group grid grid-flow-col items-center justify-center gap-2 text-sm">
-          <TimePickerField name="repeateEveryHourOrDaily" label="At" />
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <TimePickerField
+            name="repeateAt"
+            showHours={frequencyKey === "Hourly" || frequencyKey === "Daily"}
+            label={frequencyKey === "Daily" ? "Daily at" : "Every "}
+          />
         </div>
       );
     case "Weekly":
       return (
-        <div className="group grid grid-flow-col items-center justify-center gap-2 text-sm">
-          <p>On specific weekdays</p>
-          <MultiSelectField
-            className="flex-shrink"
-            name="repeateEveryWeekDays"
-            selectOptions={enumToArray(DayOfWeek)}
+        <div className="flex flex-row items-center text-sm">
+          <MultiSelectAndTimeComboField
+            {...{
+              timePickerProps: {
+                name: "repeateAt",
+                label: "At",
+              },
+              selectFieldProps: {
+                label: "On specific weekdays",
+                name: "repeateOn",
+                selectOptions: enumToArray(DayOfWeek),
+              },
+            }}
           />
-          <p> at</p>
-          <TimePickerField name="repeateEveryAtHour" />
         </div>
       );
     case "MonthlyDayOfMonth":
-      return (
-        <div>
-          <div className="group grid grid-flow-col items-center justify-center gap-2 text-sm">
-            <p>Repeate Every</p>
-            <InputField className="flex-shrink" name="repeateEvery" />
-            <p>month(s) at</p>
-            <TimePickerField name="repeateEveryAtHour" />
-          </div>
-          <MultiSelectField
-            label="Running on"
-            className="flex-shrink"
-            name="repeateEveryAtDay"
-            selectOptions={[
-              { label: "Last day of the month", value: "lastDayOfMonth" },
-              {
-                label: "Last working day of the month",
-                value: "lastWorkingDayOfMonth",
-              },
-              ...Enumerable.range(0, 31).select<ISelectOption>((x) => ({
-                label: x.toString(),
-                value: x.toString(),
-              })),
-            ]}
-          />
-        </div>
-      );
     case "MonthlyDayOfWeek":
       return (
-        <div>
-          <div className="group grid grid-flow-col items-center justify-center gap-2 text-sm">
-            <p>Repeate Every</p>
-            <InputField className="flex-shrink" name="repeateEvery" />
-            <p>month(s) at</p>
-            <TimePickerField name="repeateEveryAtHour" />
-          </div>
+        <div className="group flex flex-col gap-2 text-sm">
+          <InputAndTimeComboField
+            {...{
+              inputFieldProps: {
+                label: "Repeate Every",
+                name: "repeateCount",
+                min: 1,
+                max: 31,
+                type: "tel",
+              },
+              timePickerProps: {
+                name: "repeateAt",
+                label: "At",
+              },
+            }}
+          />
           <MultiSelectField
             label="Running on"
             className="flex-shrink"
-            name="repeateEveryWeekDay"
-            selectOptions={enumToArray(DayOfWeek)}
+            name="repeateOn"
+            selectOptions={
+              frequencyKey === "MonthlyDayOfWeek"
+                ? daysOptions
+                : enumToArray(DayOfWeek)
+            }
           />
         </div>
       );
