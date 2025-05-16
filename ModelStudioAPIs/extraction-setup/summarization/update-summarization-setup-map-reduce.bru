@@ -1,0 +1,31 @@
+meta {
+  name: Update summarization setup (MapReduce)
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/summarization/setup
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MLMODEL_ID"),
+    setupObject: {
+      context: faker.lorem.lines(),
+      prompt: faker.lorem.lines(2),
+      charactersPerChunk: 5,
+      chunkOverlap: 5,
+      totalMinimumWords: 1,
+      totalMaximumWords: 5,
+      summarizationMethod: "MapReduce",
+      mapIndividualSummaryPrompt: faker.lorem.lines(2),
+      mapFinalCombinePrompt: faker.lorem.lines(2),
+    }
+  });
+  
+}

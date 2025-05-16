@@ -1,0 +1,11 @@
+meta {
+  name: Get classification setup data by ml model id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/classification/setup-by-model/{{MLMODEL_ID}}
+  body: none
+  auth: none
+}

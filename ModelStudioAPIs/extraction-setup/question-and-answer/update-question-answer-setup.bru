@@ -1,0 +1,30 @@
+meta {
+  name: Update question answer setup
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/question-answer/setup
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MLMODEL_ID"),
+    setupObject: {
+      context: faker.lorem.lines(),
+      prompt: faker.lorem.lines(2),
+      questionAnswers: [
+        {
+          name: faker.book.author(),
+          instructions: faker.lorem.lines(2)
+        }
+      ]
+    }
+  });
+  
+}

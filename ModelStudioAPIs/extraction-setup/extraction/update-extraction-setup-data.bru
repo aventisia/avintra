@@ -1,11 +1,11 @@
 meta {
   name: Update extraction setup data
   type: http
-  seq: 3
+  seq: 2
 }
 
 put {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extraction-setup
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extraction/setup
   body: none
   auth: none
 }
@@ -15,7 +15,6 @@ script:pre-request {
   
   req.setBody({
     id: bru.getGlobalEnvVar("MLMODEL_ID"),
-    name: "",
     setupObject: {
       documentContext: faker.lorem.lines(),
       nodePrompt: faker.lorem.lines(2),
