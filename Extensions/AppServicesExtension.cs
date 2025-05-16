@@ -24,6 +24,7 @@ public static class AppServicesExtension
         config.Apply(new ModelBuilderUserMappingProfile());
         config.Apply(new LLMMappingProfile());
         config.Apply(new ExtractionSetupMappingProfile());
+        config.Apply(new SentimentAnalyticsMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -33,7 +34,7 @@ public static class AppServicesExtension
         // Signleton
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("ExtractViaLLMConfig").Get<ExtractViaLLMConfig>(), "ExtractViaLLMConfig cannot be null"));
-        
+
         //Feature Services
         services.AddScoped<IMLModelService, MLModelService>();
         services.AddScoped<IExtractedDataService, ExtractedDataService>();
@@ -43,7 +44,8 @@ public static class AppServicesExtension
         services.AddScoped<IExtractViaLLMService, ExtractViaLLMService>();
         services.AddScoped<ILLMService, LLMService>();
         services.AddScoped<IExtractionSetupService, ExtractionSetupService>();
-        
+        services.AddScoped<ISentimentAnalyticsService, SentimentAnalyticsService>();
+
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
