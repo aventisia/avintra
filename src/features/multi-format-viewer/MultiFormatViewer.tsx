@@ -1,5 +1,6 @@
 import { useShallow } from "zustand/react/shallow";
 
+import AudioTranscriptionPlayer from "../audio-transcription-player/components/AudioTranscriptionPlayer";
 import ImageViewer from "../image-viewer/components/ImageViewer";
 import { PdfPreviewer } from "../pdf-previewer/components/PdfPreviewer";
 import { useFileListStore } from "./store/file-list-store";
@@ -20,6 +21,14 @@ const MultiFormatViewer = () => {
 
     case "PDF":
       return <PdfPreviewer />;
+
+    case "MP3":
+    case "WAV":
+    case "OGG":
+    case "OGA":
+    case "AAC":
+    case "OPUS":
+      return <AudioTranscriptionPlayer />;
 
     default:
       return (

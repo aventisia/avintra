@@ -54,6 +54,11 @@ const FileDropzone = ({
       "image/png": [".png"],
       "image/gif": [".gif"],
       "image/webp": [".webp"],
+      "audio/mpeg": [".mp3"], // MP3
+      "audio/wav": [".wav"], // WAV
+      "audio/ogg": [".ogg", ".oga"], // OGG (Vorbis)
+      "audio/aac": [".aac"], // AAC
+      "audio/opus": [".opus"], // Opus
     },
     noClick: true,
   });
