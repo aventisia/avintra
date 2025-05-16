@@ -2,73 +2,36 @@
  * Represents a data transfer object (DTO) for a trigger.
  */
 export interface TriggersTableDto {
-  /**
-   * Gets or sets the primary key of the trigger record.
-   *
-   * Not making it required because same DTO is used for insert and update.
-   */
   id?: string;
-
-  /**
-   * Gets or sets the name of the trigger. Max-255
-   */
   name: string;
+  environment: string;
+  assignAgents: string;
 
-  /**
-   * Gets or sets the process of the trigger. Max-255
-   */
-  process: string;
-
-  /**
-   * Gets or sets the job Priority of the trigger. Max-255
-   */
-  jobPriority: string;
-
-  /**
-   * Gets or sets the runtime Type of the trigger. Max-255
-   */
-  runtimeType: string;
-
-  /**
-   * Gets or sets the time Zone of the trigger. Max-255
-   */
   timeZone: string;
+  startsOn: Date;
 
-  /**
-   * Gets or sets the frequency of the trigger. Max-255
-   */
   frequency: string;
 
-  /**
-   * Gets or sets the repeatation of the trigger. Max-255
-   */
-  repeateEvery: string;
+  repeateAt: Date;
+  repeateOn: string;
 
-  /**
-   * Gets or sets the non-Working Days of the trigger. Max-255
-   */
-  nonWorkingDays: string;
+  repeateCount: number;
 
-  /**
-   * Gets or sets the schedule Ending of the trigger.
-   */
+  scheduleNonWorkingDays: boolean;
+  nonWorkingDays: Date;
+
+  scheduleRetristredTimeZone: boolean;
+  restrictFromTime: Date;
+  restrictToTime: Date;
+
   scheduleEnding: boolean;
+  endsOn: Date;
 
-  /**
-   * Gets or sets the schedule Auto Disabling of the trigger.
-   */
+  triggerForNewItem: boolean;
+  triggerForNewEmail: boolean;
   scheduleAutoDisabling: boolean;
-
-  /**
-   * Gets or sets the generate Stuck Alert of the trigger.
-   */
   generateStuckAlert: boolean;
-
-  /**
-   * Gets or sets the generate Failed Alert of the trigger.
-   */
   generateFailedAlert: boolean;
-
   /**
    * Gets or sets a flag indicating whether the trigger record is disabled.
    *
