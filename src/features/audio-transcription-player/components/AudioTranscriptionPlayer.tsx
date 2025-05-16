@@ -46,6 +46,7 @@ const AudioTranscriptionPlayer = () => {
   const handlePdfSelect = (newFile: FileViewerDto) => {
     downloadAudio(newFile.path || "");
     setSelectedFile(newFile);
+    setPlaybackRate("1");
   };
 
   const handleSpeedChange = (newRate: string) => {
