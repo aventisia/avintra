@@ -20,7 +20,7 @@ export const useFetchSetupFormData = () => {
   );
 
   // Get models using react query
-  const { data, isError, error, refetch } = useQuery({
+  const { data, isError, error, refetch, isLoading } = useQuery({
     queryKey: ["SETUP_FORM_DATA"],
     queryFn: () => getExtractionSetupFormDataById(modelId),
     enabled: !!modelId, // prevents query from running with empty modelId
@@ -35,5 +35,5 @@ export const useFetchSetupFormData = () => {
     }
   }, [isError, error]);
 
-  return { data, refetch };
+  return { data, refetch, isLoading, isError };
 };

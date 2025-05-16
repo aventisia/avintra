@@ -33,6 +33,5 @@ interface IModelInfo {
 
 export interface InformationExtractorSetupDTO extends IModelInfo {
     id: string;
-    name?: string;
     setupObject: ISetupObject;
 }

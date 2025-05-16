@@ -20,7 +20,7 @@ import ContextTables from "./ContextTable";
 import DataToBeExtracted from "./DataToBeExtracted";
 
 const InformationExtractorForm = () => {
-  useFetchSetupFormData();
+  const { isLoading, isError } = useFetchSetupFormData();
   const {
     form,
     isSubmitting,
@@ -49,6 +49,18 @@ const InformationExtractorForm = () => {
       setupObject: formData,
       id: modelId,
     } as InformationExtractorSetupDTO);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-9rem)] grid place-items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <p>Failed to load data. Please try again!!</p>;
   }
 
   return (

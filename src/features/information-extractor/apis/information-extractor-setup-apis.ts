@@ -2,7 +2,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { InformationExtractorSetupDTO } from "../dtos/info-extractor-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extraction-setup`;
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extraction`;
 
 
 /**
@@ -10,7 +10,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extraction
  */
 const getExtractionSetupFormDataById = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<InformationExtractorSetupDTO>>(`${baseAPIURL}/ml-model/${modelId}`)
+    .get<IHttpResponse<InformationExtractorSetupDTO>>(`${baseAPIURL}/setup-by-model/${modelId}`)
     .then((res) => res.data);
 };
 
@@ -20,7 +20,7 @@ const getExtractionSetupFormDataById = (modelId: string) => {
  */
 const updateExtractionSetupFormData = (data: InformationExtractorSetupDTO) => {
   return axiosInstance
-    .put<IHttpResponse<InformationExtractorSetupDTO>>(`${baseAPIURL}`, data)
+    .put<IHttpResponse<InformationExtractorSetupDTO>>(`${baseAPIURL}/setup`, data)
     .then((res) => res.data);
 };
 
