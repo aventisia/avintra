@@ -80,21 +80,35 @@ public class UploadedDocController : BaseApiController
     }
 
     // Get the content type based on the file extension
-        private string GetContentType(string filePath)
+    private string GetContentType(string filePath)
+    {
+        var fileExtension = Path.GetExtension(filePath).ToLower();
+
+        return fileExtension switch
         {
-            var fileExtension = Path.GetExtension(filePath).ToLower();
+            // Document types
+            ".pdf" => "application/pdf",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".txt" => "text/plain",
 
-            return fileExtension switch
-            {
-                ".pdf" => "application/pdf",
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".txt" => "text/plain",
-                ".gif" => "image/gif",
-                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                _ => "application/octet-stream"
-            };
-        }
+            // Image types
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
 
+            // Audio types
+            ".mp3" => "audio/mpeg",
+            ".wav" => "audio/wav",
+            ".aac" => "audio/aac",
+            ".ogg" => "audio/ogg",
+            ".oga" => "audio/ogg",
+            ".flac" => "audio/flac",
+            ".m4a" => "audio/m4a",
+            ".opus" => "audio/opus",
+
+            // Default
+            _ => "application/octet-stream"
+        };
+    }
 }
