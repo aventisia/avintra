@@ -27,6 +27,7 @@ public static class AppServicesExtension
         config.Apply(new SentimentAnalyticsMappingProfile());
         config.Apply(new ClassificationMappingProfile());
         config.Apply(new SummarizationMappingProfile());
+        config.Apply(new QuestionAnswerMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -49,6 +50,7 @@ public static class AppServicesExtension
         services.AddScoped<ISentimentAnalyticsService, SentimentAnalyticsService>();
         services.AddScoped<IClassificationService, ClassificationService>();
         services.AddScoped<ISummarizationService, SummarizationService>();
+        services.AddScoped<IQuestionAnswerService, QuestionAnswerService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
