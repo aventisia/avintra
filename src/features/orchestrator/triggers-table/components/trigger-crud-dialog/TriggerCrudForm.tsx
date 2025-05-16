@@ -114,7 +114,7 @@ export const TriggerCrudForm = () => {
       />
       <SelectField {...environmentTypeProps} />
 
-      <div className="!my-4 h-fit w-[38rem]">
+      <div className="!my-4 h-fit w-auto">
         <AgentSelectTable
           isFetching={isFetching || isLoading}
           isReadMode={isReadMode}
