@@ -7,6 +7,7 @@ import {
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
@@ -55,6 +56,15 @@ export const updateTrigger = (updatedtrigger: TriggersTableDto) => {
 export const deleteTrigger = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves list of agents of machine.
+ */
+export const geTriggerAgents = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<SelectAgentTableDto[]>>(`${baseAPIURL}/${id}/agents`)
     .then((res) => res.data);
 };
 
