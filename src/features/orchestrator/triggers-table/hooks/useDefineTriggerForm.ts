@@ -16,6 +16,9 @@ import {
   triggerZodSchema,
 } from "../constants/trigger-zod-schema";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
+import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
+
+import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
 
 /**
  * Custom hook for defining a trigger form.
@@ -44,6 +47,44 @@ export const useDefineTriggerForm = () => {
     })),
   );
 
+  const {
+    data: currentAgentsDataResponse,
+    isFetching,
+    isLoading,
+  } = useFetchSelectTableAgents(rowId);
+
+  const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
+    useAgentsSelectTableStore(
+      useShallow((state) => ({
+        currentAgents: state.currentAgents,
+        setCurrentAgents: state.setCurrentAgents,
+        setAllAssigned: state.setAllAssigned,
+        setIsReadOnly: state.setIsReadOnly,
+      })),
+    );
+
+  useEffect(() => {
+    setIsReadOnly(crudAction === "read");
+    setCurrentAgents(
+      currentAgentsDataResponse?.data.filter(
+        (a) => crudAction !== "read" || a.isAssigned,
+      ) ?? [],
+    );
+    if (currentAgentsDataResponse?.data)
+      setAllAssigned(
+        currentAgentsDataResponse?.data.some((x) => x.isAssigned)
+          ? "indeterminate"
+          : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
+      );
+  }, [
+    rowId,
+    isFetching,
+    currentAgentsDataResponse?.data,
+    setAllAssigned,
+    setCurrentAgents,
+    setIsReadOnly,
+    crudAction,
+  ]);
   // Get query client
   const queryClient = useQueryClient();
 
@@ -55,12 +96,20 @@ export const useDefineTriggerForm = () => {
       id: "",
       name: "",
       process: "",
-      jobPriority: "",
-      runtimeType: "",
+      environment: "",
+
       timeZone: "",
       frequency: "",
       repeateEvery: "",
-      nonWorkingDays: "",
+      repeateEveryAtHour: undefined,
+
+      scheduleNonWorkingDays: false,
+      nonWorkingDays: undefined, //triggerData?.nonWorkingDays ?? "",
+
+      scheduleRetristredTimeZone: false,
+      retristredTimeZoneFrom: undefined, //triggerData?.nonWorkingDays ?? "",
+      retristredTimeZoneTo: undefined, //triggerData?.nonWorkingDays ?? "",
+
       scheduleEnding: false,
       scheduleAutoDisabling: false,
       generateStuckAlert: false,
@@ -95,14 +144,23 @@ export const useDefineTriggerForm = () => {
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
+      startsOn: new Date(),
 
       process: triggerData?.process ?? "",
-      jobPriority: triggerData?.jobPriority ?? "",
-      runtimeType: triggerData?.runtimeType ?? "",
+      environment: triggerData?.jobPriority ?? "",
+
       timeZone: triggerData?.timeZone ?? "",
       frequency: triggerData?.frequency ?? "",
+      repeateEveryAtHour: new Date(),
+
       repeateEvery: triggerData?.repeateEvery ?? "",
-      nonWorkingDays: triggerData?.nonWorkingDays ?? "",
+
+      nonWorkingDays: new Date(), //triggerData?.nonWorkingDays ?? "",
+
+      scheduleRetristredTimeZone: false,
+      retristredTimeZoneFrom: new Date(), //triggerData?.nonWorkingDays ?? "",
+      retristredTimeZoneTo: new Date(), //triggerData?.nonWorkingDays ?? "",
+
       scheduleEnding: triggerData?.scheduleEnding ?? false,
       scheduleAutoDisabling: triggerData?.scheduleAutoDisabling ?? false,
       generateStuckAlert: triggerData?.generateStuckAlert ?? false,
@@ -157,7 +215,7 @@ export const useDefineTriggerForm = () => {
   // Reset availability message when dialog closes
   useEffect(() => {
     if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+  }, [setAvailabilityMessage, showDialog, currentAgents]);
 
   // Return form and methods
   return {
@@ -169,6 +227,9 @@ export const useDefineTriggerForm = () => {
     refineFormData,
     isAvailable,
     availabilityMessage,
+    currentAgentsDataResponse,
+    isFetching,
+    isLoading,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
