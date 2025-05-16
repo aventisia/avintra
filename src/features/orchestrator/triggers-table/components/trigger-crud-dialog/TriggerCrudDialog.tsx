@@ -25,7 +25,7 @@ export const TriggerCrudDialog = ({ children }: React.PropsWithChildren) => {
   return (
     <DTCrudDialogWrapper>
       {children}
-      <DialogContent side={"right"} className="!max-w-[32rem]">
+      <DialogContent side={"right"} className="!max-w-[42rem]">
         <DialogDefaultHeader
           heading={dialogHeaderOptions.heading}
           description={dialogHeaderOptions.description}
