@@ -7,7 +7,7 @@ public class ClassificationMappingProfile : IRegister
     {
         // Mapping of DTO to get list of extraction setup to show on the UI.
         config.NewConfig<MLModel, ClassificationDto>()
-            .Map(dest => dest.SetupObject, src => JsonSerializer.Deserialize<SentimentAnalyticSetupDto>(
+            .Map(dest => dest.SetupObject, src => JsonSerializer.Deserialize<ClassificationSetupDto>(
                 src.SetupObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
