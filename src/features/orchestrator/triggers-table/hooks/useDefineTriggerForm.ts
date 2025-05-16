@@ -95,25 +95,35 @@ export const useDefineTriggerForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      process: "",
       environment: "",
+      assignAgents: "",
 
       timeZone: "",
+      startsOn: new Date(),
+
       frequency: "",
-      repeateEvery: "",
-      repeateEveryAtHour: undefined,
+
+      repeateAt: new Date(),
+      //day or weekday
+      repeateOn: "",
+      repeateCount: "",
 
       scheduleNonWorkingDays: false,
-      nonWorkingDays: undefined, //triggerData?.nonWorkingDays ?? "",
+      nonWorkingDays: new Date(),
 
       scheduleRetristredTimeZone: false,
-      retristredTimeZoneFrom: undefined, //triggerData?.nonWorkingDays ?? "",
-      retristredTimeZoneTo: undefined, //triggerData?.nonWorkingDays ?? "",
+      restrictFromTime: new Date(),
+      restrictToTime: new Date(),
 
       scheduleEnding: false,
+      endsOn: new Date(),
+
+      triggerForNewItem: false,
+      triggerForNewEmail: false,
       scheduleAutoDisabling: false,
       generateStuckAlert: false,
       generateFailedAlert: false,
+
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -144,27 +154,32 @@ export const useDefineTriggerForm = () => {
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
-      startsOn: new Date(),
+      environment: triggerData?.environment,
+      assignAgents: triggerData?.assignAgents,
 
-      process: triggerData?.process ?? "",
-      environment: triggerData?.jobPriority ?? "",
+      timeZone: triggerData?.timeZone,
+      startsOn: triggerData?.startsOn,
+      frequency: triggerData?.frequency,
 
-      timeZone: triggerData?.timeZone ?? "",
-      frequency: triggerData?.frequency ?? "",
-      repeateEveryAtHour: new Date(),
+      repeateAt: triggerData?.repeateAt,
+      repeateOn: triggerData?.repeateOn,
+      repeateCount: triggerData?.repeateCount.toString(),
 
-      repeateEvery: triggerData?.repeateEvery ?? "",
+      scheduleNonWorkingDays: triggerData?.scheduleNonWorkingDays,
+      nonWorkingDays: triggerData?.nonWorkingDays,
 
-      nonWorkingDays: new Date(), //triggerData?.nonWorkingDays ?? "",
+      scheduleRetristredTimeZone: triggerData?.scheduleRetristredTimeZone,
+      restrictFromTime: triggerData?.restrictFromTime,
+      restrictToTime: triggerData?.restrictToTime,
 
-      scheduleRetristredTimeZone: false,
-      retristredTimeZoneFrom: new Date(), //triggerData?.nonWorkingDays ?? "",
-      retristredTimeZoneTo: new Date(), //triggerData?.nonWorkingDays ?? "",
+      scheduleEnding: triggerData?.scheduleEnding,
+      endsOn: triggerData?.endsOn,
 
-      scheduleEnding: triggerData?.scheduleEnding ?? false,
-      scheduleAutoDisabling: triggerData?.scheduleAutoDisabling ?? false,
-      generateStuckAlert: triggerData?.generateStuckAlert ?? false,
-      generateFailedAlert: triggerData?.generateFailedAlert ?? false,
+      triggerForNewItem: triggerData?.triggerForNewItem,
+      triggerForNewEmail: triggerData?.triggerForNewEmail,
+      scheduleAutoDisabling: triggerData?.scheduleAutoDisabling,
+      generateStuckAlert: triggerData?.generateStuckAlert,
+      generateFailedAlert: triggerData?.generateFailedAlert,
 
       isDisabled: triggerData?.isDisabled ?? false,
       // Read (view) only fields
