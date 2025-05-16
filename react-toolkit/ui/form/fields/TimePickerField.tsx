@@ -8,14 +8,15 @@ import {
 } from "@aventisia/ui/form";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
-import { TimePicker } from "../../date-time-picker/TimePicker";
+import { TimePicker, TimePickerProps } from "../../date-time-picker/TimePicker";
 
-export type TimePickerFieldProps = BaseFieldProps & {
-  /** The name of the form field. */
-  name: FieldPath<FieldValues>;
-  fieldSize?: "base" | "sm" | "xs";
-  disabled?: boolean;
-};
+export type TimePickerFieldProps = TimePickerProps &
+  BaseFieldProps & {
+    /** The name of the form field. */
+    name: FieldPath<FieldValues>;
+    fieldSize?: "base" | "sm" | "xs";
+    disabled?: boolean;
+  };
 
 /**
  * A custom input form field component with label (if provided)
@@ -28,6 +29,7 @@ export const TimePickerField = ({
   description,
   disabled,
   nonErrorMessage,
+  ...props
 }: TimePickerFieldProps) => {
   // Get the form context
   const { control } = useFormContext<FieldValues>();
@@ -45,7 +47,11 @@ export const TimePickerField = ({
             />
           )}
           <FormControl>
-            <TimePicker value={field.value} setValue={field.onChange} />
+            <TimePicker
+              value={field.value}
+              setValue={field.onChange}
+              {...props}
+            />
           </FormControl>
 
           {nonErrorMessage ? (
