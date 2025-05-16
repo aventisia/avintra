@@ -57,7 +57,7 @@ export const AsyncSelectField = ({
       {...{ name, control }}
       render={({ field }) => (
         <FormItem {...{ size }}>
-          <div className="group flex flex-col gap-2">
+          <div className="group flex flex-col gap-1">
             {label && (
               <FormLabelExt
                 {...{ size, label, disabled, isRequired, description }}
