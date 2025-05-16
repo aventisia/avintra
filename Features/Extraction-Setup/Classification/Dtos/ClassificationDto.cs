@@ -1,0 +1,91 @@
+namespace MLModelBuilderAPIs.DTOs;
+
+/// <summary>
+/// Represents the metadata and setup information for a classification model, including creation details and configuration.
+/// </summary>
+public class ClassificationDto
+{
+    /// <summary>
+    /// Unique identifier for the the name of model library.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Configuration settings for the classification process.
+    /// Defaults to an empty object if unspecified.
+    /// </summary>
+    public ClassificationSetupDto? SetupObject { get; set; }
+
+    /// <summary>
+    /// Timestamp indicating when the configuration was created.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// ID of the user who created the configuration.
+    /// </summary>
+    public Guid CreatedByUserId { get; set; }
+
+    /// <summary>
+    /// ID of the user who last modified the configuration.
+    /// </summary>
+    public Guid LastModifiedByUserId { get; set; }
+
+    /// <summary>
+    /// Full name of the user who created the configuration.
+    /// </summary>
+    public string? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Username of the user who created the configuration.
+    /// </summary>
+    public string? CreatedByUsername { get; set; }
+}
+
+/// <summary>
+/// Defines the setup details for a classification model, including context, prompt, and categories.
+/// </summary>
+public class ClassificationSetupDto
+{
+    /// <summary>
+    /// Contextual description to guide the classification process.
+    /// </summary>
+    [Required]
+    public required string Context { get; set; }
+
+    /// <summary>
+    /// Instructional prompt used to drive model behavior during classification.
+    /// </summary>
+    [Required]
+    public required string Prompt { get; set; }
+
+    /// <summary>
+    /// A list of classification categories with optional instructions.
+    /// Defaults to a single empty category if not specified.
+    /// </summary>
+    public List<ClassificationCategoryDto>? Categories { get; set; } = new List<ClassificationCategoryDto>
+    {
+        new ClassificationCategoryDto
+        {
+            Name = string.Empty,
+            Instructions = string.Empty
+        }
+    };
+}
+
+/// <summary>
+/// Represents a classification category, with an optional explanation to assist with classification logic.
+/// </summary>
+public class ClassificationCategoryDto
+{
+    /// <summary>
+    /// The name of the classification category (e.g., "Spam", "Not Spam").
+    /// </summary>
+    [Required, StringLength(255)]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Optional instructions to clarify the criteria for this category.
+    /// </summary>
+    public string? Instructions { get; set; }
+}

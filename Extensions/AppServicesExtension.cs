@@ -25,6 +25,7 @@ public static class AppServicesExtension
         config.Apply(new LLMMappingProfile());
         config.Apply(new ExtractionSetupMappingProfile());
         config.Apply(new SentimentAnalyticsMappingProfile());
+        config.Apply(new ClassificationMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -45,6 +46,7 @@ public static class AppServicesExtension
         services.AddScoped<ILLMService, LLMService>();
         services.AddScoped<IExtractionSetupService, ExtractionSetupService>();
         services.AddScoped<ISentimentAnalyticsService, SentimentAnalyticsService>();
+        services.AddScoped<IClassificationService, ClassificationService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
