@@ -79,22 +79,18 @@ export const QueueCrudForm = () => {
       {/* queue Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      <p className="text-md mb-2 border-b-2 pb-2">General Details</p>
-      <div className="flex flex-col gap-3">
-        {/* Name */}
-        <InputField
-          {...nameProps}
-          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-          nonErrorMessage={availabilityMessage}
-        />
+      {/* Name */}
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
 
-        {/* Description */}
-        <TextareaField {...descriptionProps} />
-      </div>
+      {/* Description */}
+      <TextareaField {...descriptionProps} />
 
       {/* additional options */}
-      <p className="text-md mb-2 border-b-2 pb-2">Additonal Details</p>
-      <div className="flex flex-col gap-2">
+      <div className="mt-4 flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
           <label htmlFor="isUniqueReferencesEnforced" className="fm text-sm">
             Enforce unique references
@@ -114,7 +110,6 @@ export const QueueCrudForm = () => {
       </div>
 
       {/* autor etry  */}
-      <p className="text-md mb-2 border-b-2 pb-2">Auto retry</p>
       <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
           <label htmlFor="shouldRetryFailedItems" className="fm text-sm">
@@ -150,23 +145,20 @@ export const QueueCrudForm = () => {
 
       {/* additional options */}
       {crudAction === "create" && (
-        <>
-          <p className="text-md mb-2 border-b-2 pb-2">Schema Definations</p>
-          <div className="flex flex-col gap-3">
-            <InputFileField
-              {...inputJsonSchemaProps}
-              multiple={false}
-              fileTypes={[".json"]}
-              isRequired={crudAction === "create"}
-            />
-            <InputFileField
-              multiple={false}
-              {...outputJsonSchemaProps}
-              fileTypes={[".json"]}
-              isRequired={crudAction === "create"}
-            />
-          </div>
-        </>
+        <div className="flex flex-col gap-3">
+          <InputFileField
+            {...inputJsonSchemaProps}
+            multiple={false}
+            fileTypes={[".json"]}
+            isRequired={crudAction === "create"}
+          />
+          <InputFileField
+            multiple={false}
+            {...outputJsonSchemaProps}
+            fileTypes={[".json"]}
+            isRequired={crudAction === "create"}
+          />
+        </div>
       )}
 
       {/* Is Disabled */}
