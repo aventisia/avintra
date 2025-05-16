@@ -23,18 +23,31 @@ export const triggerNameSchema = z
 export const triggerZodSchema = z.object({
   id: z.string(),
   name: triggerNameSchema,
+  environment: z.string(),
 
-  process: z.string(),
-  jobPriority: z.string(),
-  runtimeType: z.string(),
-  timeZone: z.string(),
-  frequency: z.string(),
-  repeateEvery: z.string(),
-  nonWorkingDays: z.string(),
-  scheduleEnding: z.boolean().default(false),
-  scheduleAutoDisabling: z.boolean().default(false),
-  generateStuckAlert: z.boolean().default(false),
-  generateFailedAlert: z.boolean().default(false),
+  process: z.string().optional(),
+  startsOn: z.date().optional(),
+
+  timeZone: z.string().optional(),
+  frequency: z.string().optional(),
+  repeateEvery: z.string().optional(),
+  repeateEveryAtHour: z.date().optional(),
+
+  scheduleNonWorkingDays: z.boolean().optional(),
+  nonWorkingDays: z.date().optional(),
+
+  repeateEveryWeekDays: z.string().optional(),
+
+  scheduleRetristredTimeZone: z.boolean().optional(),
+  retristredTimeZoneFrom: z.date().optional(),
+  retristredTimeZoneTo: z.date().optional(),
+
+  scheduleEnding: z.boolean().optional(),
+  endsOn: z.date().optional(),
+
+  scheduleAutoDisabling: z.boolean().optional(),
+  generateStuckAlert: z.boolean().optional(),
+  generateFailedAlert: z.boolean().optional(),
 
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
