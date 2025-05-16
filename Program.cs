@@ -90,7 +90,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 if (!app.Environment.IsEnvironment("Localhost")) app.UseHsts();
 
 // In a Nginx setup with SSL termination, Nginx handles the HTTPS connection and forwards the request to your backend ASP.NET Core application using HTTP (port 80 by default).
-if (app.Environment.IsEnvironment("Localhost")) app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Localhost")) app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging();
 
