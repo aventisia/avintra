@@ -288,6 +288,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("GeneratedPrompt")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
