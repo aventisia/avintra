@@ -5,12 +5,12 @@ import { ISelectOption } from "@aventisia/ui/types";
 const whenNoClearMatchSelectOptions: ISelectOption[] = [
     {
         label: "Discard Item",
-        value: "discardItem",
+        value: "DiscardItem",
         description: "Ignore the item and drop it from the output"
     },
     {
         label: "Output on Extra, ‘Other’ Branch",
-        value: "outputOnExtra",
+        value: "OutputToOtherBranch",
         description: "Create a separate output branch called ‘other’"
     }
 ]
@@ -47,7 +47,7 @@ const allowMultipleClassesProps: SwitchFieldProps = {
 }
 
 const whenNoClearMatchProps: SelectFieldProps = {
-    name: "whenNoClearMatch",
+    name: "uncertaintyAction",
     className: "text-sm",
     placeholder: "Select",
     label: "When no clear match",
