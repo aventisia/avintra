@@ -9,6 +9,7 @@ import {
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { DateTimePickerField } from "@/react-toolkit/ui/form/fields/DateTimePickerField";
@@ -18,16 +19,13 @@ import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
   environmentTypeProps,
-  generateFailedAlert,
-  generateStuckAlert,
   idProps,
   isDisabledProps,
   nameProps,
   nonWorkingDays,
-  scheduleAutoDisabling,
   scheduleEnding,
   scheduleNonWorkingDays,
-  scheduleRetristredTimeZone,
+  scheduleNonWorkingTimeRange,
   selectFrequencyProps,
   selectTimeZoneProps,
   trigerForNewItem,
@@ -36,6 +34,7 @@ import {
 import { triggerZodSchema } from "../../constants/trigger-zod-schema";
 import { TriggersTableDto } from "../../dtos/triggers-table-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
+import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
 
 import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
 import { TriggerTimeScheduleInputs } from "./TriggerTimeScheduleInputs";
@@ -58,6 +57,13 @@ export const TriggerCrudForm = () => {
     refineFormData,
   } = useDefineTriggerForm();
 
+  const { currentAgents } = useAgentsSelectTableStore(
+    useShallow((state) => ({
+      currentAgents: state.currentAgents,
+      setAvailableLicenses: state.setAvailableLicenses,
+    })),
+  );
+
   // Define optimistic mutation to crete or update the trigger
   const { mutate: mutatetrigger } = useListOptimisticMutation<
     TriggersTableDto,
@@ -72,16 +78,21 @@ export const TriggerCrudForm = () => {
     isScheduleRetristredTimeZone,
   ] = form.watch([
     "frequency",
-    "scheduleEnding",
-    "scheduleNonWorkingDays",
-    "scheduleRetristredTimeZone",
+    "isEnds",
+    "hasNonWorkingDays",
+    "hasNonWorkingTime",
   ]);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
+    const payload = {
+      ...(refineFormData(formData) as unknown as TriggersTableDto),
+      agentIds: currentAgents?.filter((x) => x.isAssigned).map((m) => m.id),
+    };
+
     // Create or update the trigger
     mutatetrigger({
-      payload: refineFormData(formData) as unknown as TriggersTableDto,
+      payload: payload,
       crudAction: crudAction,
     });
 
@@ -130,7 +141,7 @@ export const TriggerCrudForm = () => {
         <div
           className={cn(
             "group mt-2 flex flex-col gap-2 space-y-2",
-            frequency && "my-2 rounded-lg border p-2",
+            frequency && frequency != "OneTime" && "my-2 rounded-lg border p-2",
           )}
         >
           <SelectField {...selectFrequencyProps} />
@@ -156,15 +167,18 @@ export const TriggerCrudForm = () => {
             isScheduleRetristredTimeZone && "my-2 rounded-lg border p-2",
           )}
         >
-          {isScheduleRetristredTimeZone}
           <SwitchField
-            {...scheduleRetristredTimeZone}
+            {...scheduleNonWorkingTimeRange}
             className={cn(isScheduleRetristredTimeZone && "px-0")}
           />
           {isScheduleRetristredTimeZone && (
             <div className="group flex justify-evenly gap-4">
-              <TimePickerField name="retristredTimeZoneFrom" label="From" />
-              <TimePickerField name="retristredTimeZoneTo" label="To" />
+              <TimePickerField
+                isRequired
+                name="nonWorkingTimeFrom"
+                label="From"
+              />
+              <TimePickerField isRequired name="nonWorkingTimeTo" label="To" />
             </div>
           )}
         </div>
@@ -175,21 +189,16 @@ export const TriggerCrudForm = () => {
             className={cn(sheduleEnding && "px-0")}
           />
           {sheduleEnding && (
-            <DateTimePickerField
-              name="endssOn"
-              label="Ends on"
-              isRequired
-              mode="multiple"
-            />
+            <DateTimePickerField name="endsOn" label="Ends on" isRequired />
           )}
         </div>
 
         <SwitchField {...trigerForNewItem} />
         <SwitchField {...trigerFornNewEmail} />
 
-        <SwitchField {...scheduleAutoDisabling} />
+        {/* <SwitchField {...scheduleAutoDisabling} />
         <SwitchField {...generateStuckAlert} />
-        <SwitchField {...generateFailedAlert} />
+        <SwitchField {...generateFailedAlert} /> */}
       </div>
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
