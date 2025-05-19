@@ -1100,6 +1100,160 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("SupportTicketRemark");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Triggers", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("DisableAutomaticaly")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("EndsOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Environment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("HasFailedAlert")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("HasNonWorkingDays")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("HasNonWorkingTime")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("HasStuckAlert")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsEnds")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime[]>("NonWorkingDays")
+                        .HasColumnType("TIMESTAMP[]");
+
+                    b.Property<DateTime?>("NonWorkingTimeFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("NonWorkingTimeTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("RepeateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("RepeateEvery")
+                        .HasColumnType("integer");
+
+                    b.Property<string[]>("RepeateOn")
+                        .HasColumnType("TEXT[]");
+
+                    b.Property<DateTime>("StartsOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Timezone")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("TriggerForNewEmail")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("TriggerForNewItem")
+                        .HasColumnType("boolean");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("Triggers");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.TriggersFlowVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FlowVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TriggerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlowVersionId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TriggerId");
+
+                    b.ToTable("TriggersFlowVersion");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Vault", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1638,6 +1792,60 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Triggers", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.TriggersFlowVersion", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
+                        .WithMany("TriggerFlowVersions")
+                        .HasForeignKey("FlowVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.Triggers", "Trigger")
+                        .WithMany("TriggerFlowVersions")
+                        .HasForeignKey("TriggerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("FlowVersion");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("Trigger");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Vault", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -1684,6 +1892,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("QueueFlowVersions");
 
                     b.Navigation("QueueTransactions");
+
+                    b.Navigation("TriggerFlowVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
@@ -1711,6 +1921,11 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.SupportTicket", b =>
                 {
                     b.Navigation("SupportTicketRemarks");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Triggers", b =>
+                {
+                    b.Navigation("TriggerFlowVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>
