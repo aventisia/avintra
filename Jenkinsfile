@@ -28,9 +28,6 @@ def getTargetServer(branchName) {
 
 pipeline {
     agent any
-    environment {
-        GITEA_NPM_REGISTRY_TOKEN = credentials('gitea_npm_registry_token')
-    }
     tools {
         nodejs 'NodeJS 20.18.1'
     }
@@ -40,8 +37,7 @@ pipeline {
                 echo 'Updating Gitea npm registry...'
 
                 // Note: if we wrap below sh lines in double quotes, it will throw an error
-                sh 'npm config set -- //gitea.aventisia.com/api/packages/aventisia/npm/:_authToken ${GITEA_NPM_REGISTRY_TOKEN}'
-                sh 'npm config set @aventisia:registry=https://gitea.aventisia.com/api/packages/aventisia/npm/'
+                sh 'npm config set @aventisia:registry=https://gitea.aventisia.com/api/packages/aventisia-public/npm/'
             }
         }
         stage('Install Dependencies') {
