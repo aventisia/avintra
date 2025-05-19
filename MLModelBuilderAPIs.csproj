@@ -28,5 +28,11 @@
   <ItemGroup>
     <ProjectReference Include="..\AspNetToolkit\AspNetToolkit.csproj" />
   </ItemGroup>
-
+ 
+  <ItemGroup>
+    
+    <None Update="StaticFiles\PromptTemplates\ExtractionSetup.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
