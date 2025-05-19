@@ -133,7 +133,7 @@ export const TriggerCrudForm = () => {
       </div>
 
       <div className="gap-2">
-        <span className="group flex flex-col gap-2">
+        <span className="grid grid-flow-col gap-2">
           <AsyncSelectField {...selectTimeZoneProps} />
           <DateTimePickerField name="startsOn" label="Starts on" isRequired />
         </span>
