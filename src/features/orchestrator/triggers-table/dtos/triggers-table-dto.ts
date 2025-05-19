@@ -1,34 +1,39 @@
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+
 /**
  * Represents a data transfer object (DTO) for a trigger.
  */
 export interface TriggersTableDto {
   id?: string;
-  name: string;
-  environment: string;
-  assignAgents: string;
+  tenantId: string;
 
-  timeZone: string;
+  name: string;
+  environment: MachineEnvironmentTypesEnum;
+  agentIds?: string[];
+
+  timezone: string;
   startsOn: Date;
 
-  frequency: string;
+  frequency: TriggerFrequencyTypesEnum;
 
-  repeateAt: Date;
-  repeateOn: string;
+  repeateAt?: Date;
+  repeateOn?: string[];
+  repeateEvery?: number;
 
-  repeateCount: number;
-
-  scheduleNonWorkingDays: boolean;
+  hasNonWorkingDays: boolean;
   nonWorkingDays: Date;
 
-  scheduleRetristredTimeZone: boolean;
-  restrictFromTime: Date;
-  restrictToTime: Date;
+  hasNonWorkingTime: boolean;
+  nonWorkingTimeFrom: Date;
+  nonWorkingTimeTo: Date;
 
-  scheduleEnding: boolean;
+  isEnds: boolean;
   endsOn: Date;
 
   triggerForNewItem: boolean;
   triggerForNewEmail: boolean;
+
   scheduleAutoDisabling: boolean;
   generateStuckAlert: boolean;
   generateFailedAlert: boolean;
