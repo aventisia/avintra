@@ -30,16 +30,26 @@ public static class JsonStringExtensions
             // Parse array
             JArray array = JArray.Parse(jsonArray);
 
+            var schemaProps = schema.Properties.Select(p => p.Key);
+
             // Validate each item in the array
-            foreach (var item in array)
+            foreach (JObject item in array.Cast<JObject>())
             {
-                if (item is not JObject obj)
+                if (item == null)
+                {
+                    errors.Add("Item is not a valid JSON object.");
+                    continue;
+                }
+                var itemProps = item.Properties().Select(k => k.Name);
+
+                bool itemHasAllProps = schemaProps.All(k => itemProps.Contains(k));
+                if (!itemHasAllProps)
                 {
                     errors.Add("Item is not a valid JSON object.");
                     continue;
                 }
 
-                if (!obj.IsValid(schema, out IList<string> itemErrors))
+                if (!item.IsValid(schema, out IList<string> itemErrors))
                 {
                     errors.AddRange(itemErrors);
                 }
