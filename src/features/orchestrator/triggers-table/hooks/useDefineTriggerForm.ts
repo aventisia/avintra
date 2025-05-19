@@ -96,27 +96,27 @@ export const useDefineTriggerForm = () => {
       id: "",
       name: "",
       environment: "",
-      assignAgents: "",
+      agentIds: [],
 
-      timeZone: "",
-      startsOn: new Date(),
+      timezone: "",
+      startsOn: undefined,
 
       frequency: "",
 
-      repeateAt: new Date(),
+      repeateAt: undefined,
       //day or weekday
-      repeateOn: "",
-      repeateCount: "",
+      repeateOn: [],
+      repeateEvery: 0,
 
-      scheduleNonWorkingDays: false,
-      nonWorkingDays: new Date(),
+      hasNonWorkingDays: false,
+      nonWorkingDays: undefined,
 
-      scheduleRetristredTimeZone: false,
-      restrictFromTime: new Date(),
-      restrictToTime: new Date(),
+      hasNonWorkingTime: false,
+      nonWorkingTimeTo: undefined,
+      nonWorkingTimeFrom: undefined,
 
-      scheduleEnding: false,
-      endsOn: new Date(),
+      isEnds: false,
+      endsOn: undefined,
 
       triggerForNewItem: false,
       triggerForNewEmail: false,
@@ -155,24 +155,24 @@ export const useDefineTriggerForm = () => {
       id: rowId,
       name: triggerData?.name ?? "",
       environment: triggerData?.environment,
-      assignAgents: triggerData?.assignAgents,
+      agentIds: triggerData?.agentIds,
 
-      timeZone: triggerData?.timeZone,
+      timezone: triggerData?.timezone,
       startsOn: triggerData?.startsOn,
       frequency: triggerData?.frequency,
 
       repeateAt: triggerData?.repeateAt,
       repeateOn: triggerData?.repeateOn,
-      repeateCount: triggerData?.repeateCount.toString(),
+      repeateEvery: triggerData?.repeateEvery,
 
-      scheduleNonWorkingDays: triggerData?.scheduleNonWorkingDays,
+      hasNonWorkingDays: triggerData?.hasNonWorkingDays,
       nonWorkingDays: triggerData?.nonWorkingDays,
 
-      scheduleRetristredTimeZone: triggerData?.scheduleRetristredTimeZone,
-      restrictFromTime: triggerData?.restrictFromTime,
-      restrictToTime: triggerData?.restrictToTime,
+      hasNonWorkingTime: triggerData?.hasNonWorkingTime,
+      nonWorkingTimeTo: triggerData?.nonWorkingTimeFrom,
+      nonWorkingTimeFrom: triggerData?.nonWorkingTimeTo,
 
-      scheduleEnding: triggerData?.scheduleEnding,
+      isEnds: triggerData?.isEnds,
       endsOn: triggerData?.endsOn,
 
       triggerForNewItem: triggerData?.triggerForNewItem,
