@@ -1,4 +1,5 @@
 export enum TriggerFrequencyTypesEnum {
+  OneTime = "One Time",
   MinuteByMinute = "Minute By Minute",
   Hourly = "Hourly",
   Daily = "Daily",
