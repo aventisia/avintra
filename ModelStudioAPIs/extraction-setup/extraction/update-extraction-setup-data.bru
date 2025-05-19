@@ -16,8 +16,8 @@ script:pre-request {
   req.setBody({
     id: bru.getGlobalEnvVar("MLMODEL_ID"),
     setupObject: {
-      documentContext: faker.lorem.lines(),
-      nodePrompt: faker.lorem.lines(2),
+      context: faker.lorem.lines(),
+      prompt: faker.lorem.lines(2),
       tableMetadata: [
         {
           context: faker.lorem.sentence(),
