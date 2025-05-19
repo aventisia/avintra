@@ -1,0 +1,48 @@
+Data Extraction Prompt:
+
+{{Prompt}}
+
+Fields:
+Please extract the following fields:
+{{Fields}}
+
+Tables:
+Please extract the following table column data as per the instructions provided:
+{{Tables}}
+
+Expected Output Format:
+The output must be formatted as a JSON object with two primary sections:
+
+{
+  "fields": [
+    { "fieldName": "field_name", "fieldValue": "field_value" },
+    { "fieldName": "another_field", "fieldValue": "another_value" }
+  ],
+  "tables": [
+    {
+      "tableName": "table_name",
+      "rows": [
+        {
+          "rowName": "row_1",
+          "rowValue": [
+            "column1: col1_value",
+            "column2: col2_value",
+            "column3: col3_value"
+          ]
+        },
+        {
+          "rowName": "row_2",
+          "rowValue": [
+            "column1: col1_value_2",
+            "column2: col2_value_2",
+            "column3: col3_value_2"
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+- Ensure there are no additional comments or text outside of the JSON structure.
+- If a field or table cannot be extracted, omit it from the output entirely.
+Remember, the key is accuracy and precision. Only extract what is explicitly stated in the document text.
