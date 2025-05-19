@@ -91,7 +91,7 @@ export const useMachinesSelectTableStore = create<State & Actions>((set) => ({
             ? -1
             : !a.isAssigned && b.isAssigned
               ? 1
-              : a.name.localeCompare(b.name),
+              : a?.name?.localeCompare(b.name),
         ),
     })),
 }));
