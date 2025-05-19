@@ -139,11 +139,12 @@ export const useAddInformationExtractorForm = () => {
 
   const queryClient = useQueryClient();
   // Get Setup Form Data
-  const data = queryClient.getQueryData<{
-    data: InformationExtractorSetupDTO;
-  }>(["SETUP_FORM_DATA"]);
 
   useEffect(() => {
+    const data = queryClient.getQueryData<{
+      data: InformationExtractorSetupDTO;
+    }>(["SETUP_FORM_DATA"]);
+
     // Extract setupObject from fetched data
     const setupFormData = data?.data.setupObject;
 
@@ -155,7 +156,7 @@ export const useAddInformationExtractorForm = () => {
       ],
       tableMetadata: setupFormData?.tableMetadata ?? null,
     });
-  }, [form, queryClient, data]);
+  }, [form, queryClient]);
 
   // Mutation to update form data
   const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({

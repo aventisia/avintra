@@ -32,6 +32,16 @@ const InformationExtractorTestForm = () => {
     console.log(formData);
   }
 
+  if ((!dataFields.length || !dataFields[0].name) && !tableFields.length) {
+    return (
+      <p className="text-center text-md py-6">
+        No fields were configured in the setup form.
+        <br />
+        Please make sure to fill out the required fields during setup
+      </p>
+    );
+  }
+
   return (
     <Form
       methods={form}
@@ -42,12 +52,14 @@ const InformationExtractorTestForm = () => {
         <FormProvider {...form}>
           <div className="space-y-10 px-4 pb-1">
             <DataFields form={form} dataFields={dataFields} />
-            <ExtractedTablesData
-              form={form}
-              handleAddRow={handleAddRow}
-              handleDeleteRow={handleDeleteRow}
-              tableFields={tableFields}
-            />
+            {tableFields.length > 0 && (
+              <ExtractedTablesData
+                form={form}
+                handleAddRow={handleAddRow}
+                handleDeleteRow={handleDeleteRow}
+                tableFields={tableFields}
+              />
+            )}
           </div>
         </FormProvider>
       </ScrollArea>

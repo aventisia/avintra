@@ -29,7 +29,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
       <p className="text-base">Fields</p>
 
       {dataFields.map((field, index) => {
-        const fieldName = field.fieldName;
+        const fieldName = field.name;
         const dotColor = textColorClassMap[index % textColorClassMap.length];
         const accuracy = field.accuracy || 0;
 
@@ -53,7 +53,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
                           : "text-yellow-500"
                     }
                   >
-                    {field.accuracy}%
+                    {field.accuracy ? field.accuracy : 0}%
                   </span>
                 </div>
               </div>
@@ -61,7 +61,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
             <FormControl>
               <Controller
                 control={control}
-                name={`fields.${index}.fieldValue`}
+                name={`fields.${index}.value`}
                 render={({ field }) => (
                   <InputField
                     {...fieldValueProps}

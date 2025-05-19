@@ -1,3 +1,5 @@
+import ErrorFetchingTemplate from "@/components/templates/ErrorFetchingTemplate";
+import LoaderTemplate from "@/components/templates/LoaderTemplate";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useTabStore } from "@/store/tab-store";
 
@@ -5,11 +7,14 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useShallow } from "zustand/react/shallow";
 
+import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
 import InformationExtractorForm from "./setup/InformationExtractorForm";
 import SavingIndicator from "./setup/SavingIndicator";
 import InformationExtractorTestForm from "./test/InformationExtractorTestForm";
 
 const InformationExtractor = () => {
+  const { isLoading, isError } = useFetchSetupFormData();
+
   const { isDataSaving } = useAnnotationDataStore(
     useShallow((state) => ({
       isDataSaving: state.isDataSaving,
@@ -47,14 +52,22 @@ const InformationExtractor = () => {
           </TabsList>
         </div>
 
-        <ScrollArea className="h-[calc(100vh-7.6rem)]">
-          <TabsContent value="setup" className="h-full">
-            <InformationExtractorForm />
-          </TabsContent>
+        <ScrollArea className="h-[calc(100vh-7.6rem)">
+          {isLoading ? (
+            <LoaderTemplate />
+          ) : isError ? (
+            <ErrorFetchingTemplate />
+          ) : (
+            <>
+              <TabsContent value="setup" className="h-full">
+                <InformationExtractorForm />
+              </TabsContent>
 
-          <TabsContent value="test" className="h-full">
-            <InformationExtractorTestForm />
-          </TabsContent>
+              <TabsContent value="test" className="h-full">
+                <InformationExtractorTestForm />
+              </TabsContent>
+            </>
+          )}
         </ScrollArea>
       </Tabs>
     </div>

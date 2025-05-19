@@ -15,12 +15,10 @@ import {
 } from "../../constants/info-extractor-form-field-props";
 import { InformationExtractorSetupDTO } from "../../dtos/info-extractor-setup-dto";
 import { useAddInformationExtractorForm } from "../../hooks/useAddInfoExtractorForm";
-import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import ContextTables from "./ContextTable";
 import DataToBeExtracted from "./DataToBeExtracted";
 
 const InformationExtractorForm = () => {
-  const { isLoading, isError } = useFetchSetupFormData();
   const {
     form,
     isSubmitting,
@@ -49,18 +47,6 @@ const InformationExtractorForm = () => {
       setupObject: formData,
       id: modelId,
     } as InformationExtractorSetupDTO);
-  }
-
-  if (isLoading) {
-    return (
-      <div className="h-[calc(100vh-9rem)] grid place-items-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return <p>Failed to load data. Please try again!!</p>;
   }
 
   return (

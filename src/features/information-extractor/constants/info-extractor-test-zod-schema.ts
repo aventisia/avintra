@@ -1,16 +1,16 @@
 import * as z from "zod";
 
 const fieldsSchema = z.object({
-    fieldName: z.string().optional(),
-    fieldValue: z.string().optional(),
+    name: z.string().optional(),
+    value: z.string().optional(),
     accuracy: z.number().optional(),
 })
 
 const tableSchema = z.object({
-    tableName: z.string(),
+    name: z.string(),
     extractedData: z.array(
       z.object({
-        headerName: z.string(),
+        name: z.string(),
         values: z.array(z.string().optional())
       })
     )

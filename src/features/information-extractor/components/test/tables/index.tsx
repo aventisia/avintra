@@ -60,7 +60,7 @@ const ExtractedTablesData = ({
                         variant="ghost"
                         className="p-0 text-sm hover:bg-transparent"
                       >
-                        {form.watch(`tables.${tableIndex}.tableName`)}
+                        {form.watch(`tables.${tableIndex}.name`)}
                       </Button>
                     </TabsTrigger>
                   ))}
@@ -87,7 +87,7 @@ const ExtractedTablesData = ({
                               key={rowIndex}
                               className="flex-1 px-3 text-left"
                             >
-                              {item.headerName}
+                              {item.name}
                             </div>
                           );
                         })}

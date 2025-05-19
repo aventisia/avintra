@@ -2,7 +2,6 @@ import * as z from "zod";
 import { reqError } from "@aventisia/ui/utils";
 
 export const dataToBeExtractedSchema = z.object({
-    id: z.string().optional(),
     name: z.string().min(1, {message: reqError("Field Name")}),
     type: z.string().min(1, {message: reqError("Type")}),
     instructions: z.string().optional()

@@ -1,83 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { infoExtractorTestFormZodSchema } from "../constants/info-extractor-test-zod-schema";
+import { InformationExtractorTestDTO } from "../dtos/info-extractor-test-dto";
 
 export const useAddInformationExtractorTestForm = () => {
   const form = useForm<z.infer<typeof infoExtractorTestFormZodSchema>>({
     resolver: zodResolver(infoExtractorTestFormZodSchema),
     defaultValues: {
-      fields: [
-        {
-          fieldName: "ToPayName",
-          fieldValue: "John Smith",
-          accuracy: 85,
-        },
-        {
-          fieldName: "ToAccountName",
-          fieldValue: "Mark Jacob",
-          accuracy: 75,
-        },
-        {
-          fieldName: "ToBankName",
-          fieldValue: "Great Bank",
-          accuracy: 20,
-        },
-        {
-          fieldName: "TOBSB",
-          fieldValue: "000-098-9736",
-          accuracy: 60,
-        },
-      ],
-      tables: [
-        {
-          tableName: "Table 1",
-          extractedData: [
-            {
-              headerName: "DESCRIPTION",
-              values: [
-                "Content Plan",
-                "Copy Writing",
-                "Website Design",
-                "Website Development",
-                "SEO",
-                "Sub Total",
-                "Package Discount (30%)",
-                "TOTAL",
-              ],
-            },
-            {
-              headerName: "RATE",
-              values: ["$50/hr", "$50/hr", "$50/hr", "$100/hr", "$50/hr"],
-            },
-            { headerName: "HOURS", values: ["4", "2", "5", "5", "4"] },
-            {
-              headerName: "AMOUNT",
-              values: [
-                "$200.00",
-                "$100.00",
-                "$250.00",
-                "$500.00",
-                "$200.00",
-                "$1250.00",
-                "$375.00",
-                "$875.00",
-              ],
-            },
-          ],
-        },
-        {
-          tableName: "Table 2",
-          extractedData: [
-            { headerName: "Hrs/Qty", values: ["1.00"] },
-            { headerName: "Service", values: ["Web Design Services"] },
-            { headerName: "Rate/Price", values: ["$85.00"] },
-            { headerName: "Adjust", values: ["0.00%"] },
-            { headerName: "Sub Total", values: ["$85.00"] },
-          ],
-        },
-      ],
+      fields: [],
+      tables: [],
     },
   });
 
@@ -143,6 +78,38 @@ export const useAddInformationExtractorTestForm = () => {
     // Apply the update
     update(tableIndex, updatedTable[tableIndex]);
   };
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const data = queryClient.getQueryData<{
+      data: InformationExtractorTestDTO;
+    }>(["SETUP_FORM_DATA"]);
+
+    // Extract setupObject from fetched data
+    const setupFormData = data?.data.setupObject;
+
+    // Only extract `name` field from fieldSetups
+    const fields = setupFormData?.fieldSetups?.map((field) => ({
+      name: field?.name ?? "",
+    })) ?? [{}];
+
+    // Only extract `tableName` and `headerName` from tables
+    const tables =
+      setupFormData?.tableMetadata?.map((table) => ({
+        name: table.name,
+        extractedData:
+          table.tableHeaders?.map((item) => ({
+            name: item.name,
+            values: [], // or omit if your Zod schema allows
+          })) ?? [],
+      })) ?? [];
+
+    form.reset({
+      fields,
+      tables,
+    });
+  }, [form, queryClient]);
 
   const refineFormData = (
     formData: z.infer<typeof infoExtractorTestFormZodSchema>,
