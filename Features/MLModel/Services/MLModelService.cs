@@ -406,14 +406,11 @@ public class MLModelService : IMLModelService
                 var summarizationSetup = new SummarizationSetupDto
                 {
                     Context = string.Empty,
-                    Prompt = defaultPrompt,
                     CharactersPerChunk = 0,
                     ChunkOverlap = 0,
                     TotalMinimumWords = 0,
                     TotalMaximumWords = 0,
-                    SummarizationMethod = SummarizationMethodTypesEnum.MapReduce,
-                    MapFinalCombinePrompt = string.Empty,
-                    MapIndividualSummaryPrompt = string.Empty,
+                    SummarizationMethod = null,
                 };
 
                 // Serialize the summarization setup configuration and return as a JSON string.
