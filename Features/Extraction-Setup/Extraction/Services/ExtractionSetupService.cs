@@ -87,93 +87,77 @@ public class ExtractionSetupService : IExtractionSetupService
     // Generates a prompt string used to guide the ML model for extracting data from documents, based on the provided model setup.
     private string? GenerateExtractionModelPrompt(MLModelSetupDto mlModelSetupDto)
     {
-        // Extract field names for reference (optional use)
-        string fieldNames = string.Join(", ", mlModelSetupDto.SetupObject?.FieldSetups?.Select(f => f.Name) ?? Enumerable.Empty<string>());
+        // Initialize a StringBuilder to build the default prompt string
+        var defaultPrompt = new StringBuilder();
 
-        var promptBuilder = new StringBuilder();
-
-        // Add the base instruction or use the provided NodePrompt
-        promptBuilder.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.Prompt)
+        // Add the base instruction or use the provided NodePrompt from the setup object
+        // If mlModelSetupDto.SetupObject.Prompt is not null or empty, it will be used. Otherwise, a default message is added.
+        defaultPrompt.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.Prompt)
             ? mlModelSetupDto.SetupObject.Prompt.Trim()
             : "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
+
+        // Initialize a StringBuilder for storing field extraction instructions
+        var fieldInstruction = new StringBuilder();
 
         // Section: Field extraction instructions
         if (mlModelSetupDto.SetupObject?.FieldSetups != null && mlModelSetupDto.SetupObject.FieldSetups.Any())
         {
-            promptBuilder.AppendLine();
-            promptBuilder.AppendLine("Fields (Single-value attributes):");
-            promptBuilder.AppendLine("The following fields need to be extracted:");
-
+            // Iterate through the list of field setups in the model setup object
             for (int i = 0; i < mlModelSetupDto.SetupObject.FieldSetups.Count; i++)
             {
                 var field = mlModelSetupDto.SetupObject.FieldSetups[i];
+
+                // If there are specific instructions for the field, append them, otherwise leave it blank
                 var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
 
-                promptBuilder.AppendLine($"- {i + 1}. {field.Name} (type: {field.Type}){instructions}");
+                // Append each field's details, including its name, type, and instructions if available
+                fieldInstruction.AppendLine($"- {i + 1}. {field.Name} (type: {field.Type}){instructions}");
             }
         }
+
+        // Initialize a StringBuilder for storing table extraction instructions
+        var tableInstruction = new StringBuilder();
 
         // Section: Table extraction instructions
         if (mlModelSetupDto.SetupObject?.TableMetadata != null && mlModelSetupDto.SetupObject.TableMetadata.Any())
         {
-            promptBuilder.AppendLine();
-            promptBuilder.AppendLine("Tables:");
-            promptBuilder.AppendLine("For each table, extract the relevant column data as per the instructions provided.");
-
+            // Iterate through the list of table metadata in the model setup object
             foreach (var table in mlModelSetupDto.SetupObject.TableMetadata)
             {
-                promptBuilder.AppendLine();
-                promptBuilder.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
-                promptBuilder.AppendLine("Following columns need to be extracted:");
+                // Add a new line and display table name with optional context if available
+                tableInstruction.AppendLine();
+                tableInstruction.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
+                tableInstruction.AppendLine("Please extract following columns:");
 
+                // Check if table headers exist and loop through them to extract column info
                 if (table.TableHeaders != null)
                 {
-                    if (table.TableHeaders != null)
+                    for (int i = 0; i < table.TableHeaders.Count; i++)
                     {
-                        for (int i = 0; i < table.TableHeaders.Count; i++)
-                        {
-                            var column = table.TableHeaders[i];
-                            var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
-                            promptBuilder.AppendLine($"{i + 1}. {column.Name} (type: {column.Type}){instructions}");
-                        }
+                        var column = table.TableHeaders[i];
+
+                        // Append instructions for the column, if any
+                        var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
+
+                        // Append each column's details, including its name, type, and instructions if available
+                        tableInstruction.AppendLine($"{i + 1}. {column.Name} (type: {column.Type}){instructions}");
                     }
                 }
             }
         }
 
-        // Future enhancement placeholder
-        // TODO: Add extraction rules if any
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionSetup.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Fields}}, and {{Tables}} in the template with the respective sections
+                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
+                        {"{{Fields}}", fieldInstruction.Replace("\n","").ToString() },
+                        {"{{Tables}}", tableInstruction.Replace("\n","").ToString() }
+                    }
+                );
 
-        // Section: Output format specification
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Expected Output Format:");
-        promptBuilder.AppendLine("The output must be formatted as a JSON object with two primary sections:");
-        promptBuilder.AppendLine("{");
-        promptBuilder.AppendLine("  \"fields\": [");
-        promptBuilder.AppendLine("    {\"fieldName\": \"field_name\", \"fieldValue\": \"field_value\"},");
-        promptBuilder.AppendLine("    {\"fieldName\": \"another_field\", \"fieldValue\": \"another_value\"}");
-        promptBuilder.AppendLine("  ],");
-        promptBuilder.AppendLine("  \"tables\": [");
-        promptBuilder.AppendLine("    {");
-        promptBuilder.AppendLine("      \"tableName\": \"table_name\",");
-        promptBuilder.AppendLine("      \"rows\": [");
-        promptBuilder.AppendLine("        [\"col1_value\", \"col2_value\", \"col3_value\"],");
-        promptBuilder.AppendLine("        [\"col1_value_2\", \"col2_value_2\", \"col3_value_2\"]");
-        promptBuilder.AppendLine("      ]");
-        promptBuilder.AppendLine("    }");
-        promptBuilder.AppendLine("  ]");
-        promptBuilder.AppendLine("}");
-
-        // Notes and final instruction
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Important Notes:");
-        promptBuilder.AppendLine("- Ensure there are no additional comments or text outside of the JSON structure.");
-        promptBuilder.AppendLine("- If a field or table cannot be extracted, omit it from the output entirely.");
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Remember, the key is accuracy and precision. Only extract what is explicitly stated in the document text.");
-
-        // Convert to single-line format by replacing line breaks
-        return promptBuilder.ToString().Replace("\n", " ");
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 
     public async Task<ServiceResponse<MLModelSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId)
