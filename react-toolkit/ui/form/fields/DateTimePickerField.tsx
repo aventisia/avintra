@@ -8,10 +8,7 @@ import {
 } from "@aventisia/ui/form";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
-import {
-  DateTimePicker,
-  DateTimePickerProps,
-} from "../../date-time-picker/DateTimePicker";
+import { DateTimePicker, DateTimePickerProps } from "../../date-time-picker";
 
 export type DateTimePickerFieldProps = DateTimePickerProps &
   BaseFieldProps & {
@@ -52,7 +49,7 @@ export const DateTimePickerField = ({
           <FormControl>
             <DateTimePicker
               value={field.value}
-              onValueChange={field.onChange}
+              onChange={field.onChange}
               {...props}
             />
           </FormControl>
