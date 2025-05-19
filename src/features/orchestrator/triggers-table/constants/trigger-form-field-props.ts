@@ -64,7 +64,7 @@ export const selectTimeZoneProps: AsyncSelectFieldProps = {
       search,
     ),
   triggerClassName: "w-full",
-  className: "w-[37rem]",
+  className: "w-fit ",
 };
 
 export const selectFrequencyProps: SelectFieldProps = {
@@ -86,7 +86,6 @@ export const weeklyFrequencyRepeateProps: MultiSelectAndTimeComboFieldProps = {
     name: "repeateAt",
     label: "Repeate at",
     isRequired: true,
-    hourCycle: 12,
   },
   selectFieldProps: {
     label: "Repeate on",
