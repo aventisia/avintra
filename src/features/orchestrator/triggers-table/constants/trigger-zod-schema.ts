@@ -20,47 +20,87 @@ export const triggerNameSchema = z
 /**
  * Represents the Zod schema for a trigger.
  */
-export const triggerZodSchema = z.object({
-  id: z.string(),
-  name: triggerNameSchema,
-  environment: z.string(),
-  assignAgents: z.string().optional(),
+export const triggerZodSchema = z
+  .object({
+    id: z.string(),
+    name: triggerNameSchema,
+    environment: z.string({ required_error: reqError("Environment") }),
+    agentIds: z.array(z.string().optional()).optional(),
 
-  timeZone: z.string().optional(),
-  startsOn: z.date().optional(),
+    timezone: z.string({ required_error: reqError("Time zone") }),
+    startsOn: z.date({ required_error: reqError("Start on") }),
 
-  frequency: z.string().optional(),
+    frequency: z.string({ required_error: reqError("Start on") }),
 
-  //time of the trigger
-  repeateAt: z.date().optional(),
+    //time of the trigger
+    repeateAt: z.date().optional(),
 
-  //day or weekday
-  repeateOn: z.string().optional(),
+    //day or weekday
+    repeateOn: z.array(z.string().optional()).optional(),
 
-  //count of the repeatation
-  repeateCount: z.string().optional(),
+    //count of the repeatation
+    repeateEvery: z
+      .union([z.string().optional(), z.number().optional()])
+      .optional(),
 
-  scheduleNonWorkingDays: z.boolean().optional(),
-  nonWorkingDays: z.date().optional(), //TODO - change this to date array when calendar component capable for multiple dates
+    hasNonWorkingDays: z.boolean().optional(),
+    nonWorkingDays: z.date().optional(), //TODO - change this to date array when calendar component capable for multiple dates
 
-  scheduleRetristredTimeZone: z.boolean().optional(),
-  restrictToTime: z.date().optional(),
-  restrictFromTime: z.date().optional(),
+    hasNonWorkingTime: z.boolean().optional(),
+    nonWorkingTimeFrom: z.date().optional(),
+    nonWorkingTimeTo: z.date().optional(),
 
-  scheduleEnding: z.boolean().optional(),
-  endsOn: z.date().optional(),
+    isEnds: z.boolean().optional(),
+    endsOn: z.date().optional(),
 
-  triggerForNewItem: z.boolean().optional(),
-  triggerForNewEmail: z.boolean().optional(),
+    triggerForNewItem: z.boolean().optional(),
+    triggerForNewEmail: z.boolean().optional(),
 
-  scheduleAutoDisabling: z.boolean().optional(),
-  generateStuckAlert: z.boolean().optional(),
-  generateFailedAlert: z.boolean().optional(),
+    scheduleAutoDisabling: z.boolean().optional(),
+    generateStuckAlert: z.boolean().optional(),
+    generateFailedAlert: z.boolean().optional(),
 
-  isDisabled: z.boolean().default(false),
-  // Read (view) only fields
-  createdBy: z.string(),
-  createdOn: z.date(),
-  lastModifiedBy: z.string(),
-  lastModifiedOn: z.date(),
-});
+    isDisabled: z.boolean().default(false),
+    // Read (view) only fields
+    createdBy: z.string(),
+    createdOn: z.date(),
+    lastModifiedBy: z.string(),
+    lastModifiedOn: z.date(),
+  })
+  .refine((check) => check.frequency == "OneTime" || check.repeateAt, {
+    path: ["repeateAt"],
+    message: reqError("Repeate At"),
+  })
+  .refine(
+    (check) =>
+      ["OneTime", "MinuteByMinute", "Hourly", "Daily"].includes(
+        check.frequency,
+      ) || check.repeateOn,
+    {
+      path: ["repeateOn"],
+      message: reqError("Repeate on"),
+    },
+  )
+  .refine(
+    (check) =>
+      ["OneTime", "MinuteByMinute", "Hourly", "Daily", "Weekly"].includes(
+        check.frequency,
+      ) || check.repeateEvery,
+    {
+      path: ["repeateEvery"],
+      message: reqError("Repeate every"),
+    },
+  )
+  .refine((check) => !check.hasNonWorkingDays || check.nonWorkingDays, {
+    path: ["nonWorkingDays"],
+    message: reqError("Non working days"),
+  })
+  .refine(
+    (check) =>
+      !check.hasNonWorkingTime ||
+      (check.nonWorkingTimeFrom && check.nonWorkingTimeTo,
+      {
+        path: ["nonWorkingTimeFrom", "nonWorkingTimeTo"],
+        message: reqError("Non working days"),
+      }),
+  );
