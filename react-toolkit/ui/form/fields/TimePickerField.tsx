@@ -8,7 +8,7 @@ import {
 } from "@aventisia/ui/form";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
-import { TimePicker, TimePickerProps } from "../../date-time-picker/TimePicker";
+import { TimePicker, TimePickerProps } from "../../date-time-picker";
 
 export type TimePickerFieldProps = TimePickerProps &
   BaseFieldProps & {
@@ -49,7 +49,7 @@ export const TimePickerField = ({
           <FormControl>
             <TimePicker
               value={field.value}
-              setValue={field.onChange}
+              onChange={field.onChange}
               {...props}
             />
           </FormControl>
