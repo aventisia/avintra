@@ -6,20 +6,21 @@ import { useFileListStore } from "@/features/multi-format-viewer/store/file-list
 import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { useEffect, useRef, useState } from "react";
+import { format } from "date-fns";
+import { useEffect, useRef } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { useShallow } from "zustand/react/shallow";
 
+import { useAudioPlayerStore } from "../stores/audio-transcription-player-store";
 import "../styles/audio-player.css";
-import AudioLoaderTemplate from "./AudioLoaderTemplate";
-import AudioPlaybackSpeedSelect from "./AudioPlaybackSpeedSelect";
+import AudioLoaderTemplate from "./AudioPlayer/AudioLoaderTemplate";
+import AudioPlaybackSpeedSelect from "./AudioPlayer/AudioPlaybackSpeedSelect";
+import { customAudioPlayerIcons } from "./AudioPlayer/CustomAudioPlayerIcons";
 import ControlPanel from "./ControlPanel";
-import { customAudioPlayerIcons } from "./CustomAudioPlayerIcons";
 import TranscriptTimeline from "./TranscriptTimeline";
 
 const AudioTranscriptionPlayer = () => {
-  const [playbackRate, setPlaybackRate] = useState<string>("1");
   const playerRef = useRef<AudioPlayer | null>(null);
   const { data: fileList, isLoading } = useFetchUploadedFiles();
   const { selectedFile, setSelectedFile, fileUrl } = useFileListStore(
@@ -35,6 +36,8 @@ const AudioTranscriptionPlayer = () => {
       modelId: state.modelId,
     })),
   );
+  const { playbackRate, setPlaybackRate, setCurrentTimeStamp } =
+    useAudioPlayerStore();
 
   // Load initial File
   useEffect(() => {
@@ -68,10 +71,10 @@ const AudioTranscriptionPlayer = () => {
   return (
     <div className="overflow-hidden rounded-lg border shadow bg-white">
       <ControlPanel />
-      <ScrollArea className="h-[calc(100vh-11.2rem)] w-full p-4 bg-accent">
+      <ScrollArea className="h-[calc(100vh-11.2rem)] w-full p-4 bg-accent scroll-smooth">
         <AudioPlayer
           ref={playerRef}
-          className="shadow-xl rounded-lg mb-10"
+          className="shadow-xl rounded-lg mb-10 !p-5 sticky top-0 z-10"
           src={fileUrl || ""}
           progressJumpSteps={{ backward: 5000, forward: 5000 }}
           customIcons={{
@@ -89,6 +92,17 @@ const AudioTranscriptionPlayer = () => {
               onChange={handleSpeedChange}
             />,
           ]}
+          onListen={() => {
+            const currentTime = playerRef.current?.audio?.current?.currentTime;
+            if (typeof currentTime === "number") {
+              const formattedTime = format(
+                new Date(currentTime * 1000),
+                "mm:ss",
+              );
+              setCurrentTimeStamp(formattedTime);
+            }
+          }}
+          listenInterval={1000}
         />
         <TranscriptTimeline />
       </ScrollArea>
