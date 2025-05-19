@@ -83,31 +83,31 @@ public class QuestionAnswerService : IQuestionAnswerService
             ? QuestionAnswerDto.SetupObject.Prompt.Trim()
             : "You are an expert in answering questions. Your task is to analyze and classify the content provided.");
 
-        // Add instructions based on predefined categories, if available
+        var questionAnswerBuilder = new StringBuilder();
+
+        // Add instructions based on predefined question and answer, if available
         if (QuestionAnswerDto.SetupObject?.QuestionAnswers != null && QuestionAnswerDto.SetupObject.QuestionAnswers.Any())
         {
-            promptBuilder.AppendLine();
-            promptBuilder.AppendLine("Please classify the content into one of the following categories:");
-
             for (int i = 0; i < QuestionAnswerDto.SetupObject.QuestionAnswers.Count; i++)
             {
                 var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
                 var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                promptBuilder.AppendLine($"- {i + 1}. {category.Name}{instructions}");
+                questionAnswerBuilder.AppendLine($"- {i + 1}. {category.Name}{instructions}");
             }
         }
 
-        // Provide a format guide for the expected output
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Expected Output:");
-        promptBuilder.AppendLine("Provide a clear and concise summary in plain text.");
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Guidelines:");
-        promptBuilder.AppendLine("- Highlight the core message or information.");
-        promptBuilder.AppendLine("- Avoid redundancy or irrelevant content.");
-        promptBuilder.AppendLine("- Preserve the tone and intent of the original material.");
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("QuestionAnswerPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Questions}} in the template with the respective sections
+                        {"{{Prompt}}", promptBuilder.Replace("\n","").ToString()  },
+                        {"{{Context}}", QuestionAnswerDto.SetupObject.Context.Replace("\n","").ToString() },
+                        {"{{Questions}}", questionAnswerBuilder.Replace("\n","").ToString() },
+                    }
+                );
 
-        return promptBuilder.ToString().Replace("\n", " ");
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 
     // Retrieves the QuestionAnswer setup associated with a specific ML model

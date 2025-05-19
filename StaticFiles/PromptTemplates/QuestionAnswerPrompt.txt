@@ -1,0 +1,25 @@
+{{Prompt}}
+
+Please extract answers for the following questions and format them as specified below.
+Context: {{Context}}
+
+Questions: {{Questions}}
+
+Output Format:
+Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
+
+"[
+  {
+    "question1": "Insert the first question here.",
+    "answer1": "Insert the corresponding answer here."
+  },
+  {
+    "question2": "Insert the second question here.",
+    "answer2": "Insert the corresponding answer here."
+  }
+]"
+
+Instructions:
+Use only the provided question for answer.
+Classify each question and answer based on their intent and content.
+Do not include any text outside the JSON structure.
