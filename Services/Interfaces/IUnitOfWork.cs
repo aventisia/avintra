@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Metadata;
+
 namespace WorkspaceAPIs.Services;
 
 public interface IUnitOfWork
@@ -23,6 +25,9 @@ public interface IUnitOfWork
     IJobRepo JobRepo { get; }
     IKeyStoreRepo KeyStoreRepo { get; }
     IVaultRepo VaultRepo { get; }
+
+    ITriggerRepo TriggerRepo { get; }
+    ITriggerFlowRepo TriggerFlowRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

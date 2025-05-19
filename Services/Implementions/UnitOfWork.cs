@@ -42,6 +42,10 @@ public class UnitOfWork : IUnitOfWork
     public IKeyStoreRepo KeyStoreRepo => new KeyStoreRepo(_workspaceDbContext);
     public IVaultRepo VaultRepo => new VaultRepo(_workspaceDbContext);
 
+    public ITriggerRepo TriggerRepo => new TriggerRepo(_workspaceDbContext);
+
+    public ITriggerFlowRepo TriggerFlowRepo => new TriggerFlowRepo(_workspaceDbContext);
+
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
         // Check change tracker first 
