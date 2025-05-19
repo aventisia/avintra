@@ -76,6 +76,7 @@ public static class AppServicesExtension
         services.AddScoped<IJobTableService, JobTableService>();
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();
+        services.AddScoped<ITriggerService, TriggerService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
