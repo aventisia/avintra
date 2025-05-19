@@ -10,6 +10,12 @@ import { MultiSelectAndTimeComboField } from "@/react-toolkit/ui/form/fields/com
 import { MultiSelectField } from "@/react-toolkit/ui/form/fields/MultiSelectField";
 import { TimePickerField } from "@/react-toolkit/ui/form/fields/TimePickerField";
 
+import {
+  monthlyFrequencyProps,
+  monthlyFrequencyRepeateProps,
+  weeklyFrequencyRepeateProps,
+} from "../../constants/trigger-form-field-props";
+
 export const TriggerTimeScheduleInputs = ({
   frequency,
 }: {
@@ -40,7 +46,8 @@ export const TriggerTimeScheduleInputs = ({
         <div className="flex items-center justify-center gap-2 text-sm">
           <TimePickerField
             name="repeateAt"
-            showHours={frequencyKey === "Hourly" || frequencyKey === "Daily"}
+            isRequired
+            showHours={frequencyKey !== "MinuteByMinute"}
             label={frequencyKey === "Daily" ? "Daily at" : "Every "}
           />
         </div>
@@ -49,17 +56,8 @@ export const TriggerTimeScheduleInputs = ({
       return (
         <div className="flex flex-row items-center text-sm">
           <MultiSelectAndTimeComboField
-            {...{
-              timePickerProps: {
-                name: "repeateAt",
-                label: "At",
-              },
-              selectFieldProps: {
-                label: "On specific weekdays",
-                name: "repeateOn",
-                selectOptions: enumToArray(DayOfWeek),
-              },
-            }}
+            isRequired
+            {...weeklyFrequencyRepeateProps}
           />
         </div>
       );
@@ -67,27 +65,11 @@ export const TriggerTimeScheduleInputs = ({
     case "MonthlyDayOfWeek":
       return (
         <div className="group flex flex-col gap-2 text-sm">
-          <InputAndTimeComboField
-            {...{
-              inputFieldProps: {
-                label: "Repeate Every",
-                name: "repeateCount",
-                min: 1,
-                max: 31,
-                type: "tel",
-              },
-              timePickerProps: {
-                name: "repeateAt",
-                label: "At",
-              },
-            }}
-          />
+          <InputAndTimeComboField isRequired {...monthlyFrequencyProps} />
           <MultiSelectField
-            label="Running on"
-            className="flex-shrink"
-            name="repeateOn"
+            {...monthlyFrequencyRepeateProps}
             selectOptions={
-              frequencyKey === "MonthlyDayOfWeek"
+              frequencyKey === "MonthlyDayOfMonth"
                 ? daysOptions
                 : enumToArray(DayOfWeek)
             }
