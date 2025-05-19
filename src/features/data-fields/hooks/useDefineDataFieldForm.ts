@@ -1,4 +1,4 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,9 +12,9 @@ import {
 } from "../constants/data-field-zod-schema";
 import { DataFieldsDto } from "../dtos/data-fields-dtos";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { isFieldNameAvailable } from "../apis/add-fields-apis";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
 
 /**
  * Custom hook for defining a model form.

@@ -2,8 +2,8 @@ import {
   addUpdateInString,
   getObjectByName,
 } from "@/features/pdf-previewer/utils";
-import { Badge } from "@/react-toolkit/ui/badge";
-import { Input } from "@/react-toolkit/ui/input";
+import { Badge } from "@aventisia/ui/badge";
+import { Input } from "@aventisia/ui";
 import { useEffect, useState } from "react";
 import { DataFieldsDto } from "../dtos/data-fields-dtos";
 import { DataFiledEditAction } from "./data-field-actions/DataFieldEditAction";

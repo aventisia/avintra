@@ -1,14 +1,14 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import {
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+} from "@aventisia/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { addFieldDropdownList } from "../../constants";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
 export function AddFieldOptions() {

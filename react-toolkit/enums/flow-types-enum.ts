@@ -6,4 +6,5 @@
  */
 export enum FlowTypesEnum {
   AutomationAgent = "Automation Agent",
+  AIAgent = "AI Agent",
 }

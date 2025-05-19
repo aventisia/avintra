@@ -1,8 +1,8 @@
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 // import { AddFieldOptions } from "./add-field-dropdown/AddFieldDropdown";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { ModelCrudDialog } from "./data-field-crud-dialog/DataFieldCrudDialog";
@@ -32,24 +32,24 @@ const AddFields = () => {
           <p className="text-md font-medium">Fields</p>
           <SavingIndicator isSaving={isDataSaving} />
         </div>
-          <ModelCrudDialog>
-            <Tooltip content="Add field">
-              <Button
-                variant={"ghost"}
-                size="icon8"
-                onClick={() =>
-                  setCrudDialogOptions({
-                    showDialog: true,
-                    rowId: window.crypto.randomUUID(),
-                    crudAction: "create",
-                  })
-                }
-              >
-                <PlusIcon className="h-5 w-5" />
-              </Button>
-            </Tooltip>
-            {/* <AddFieldOptions /> */}
-          </ModelCrudDialog>
+        <ModelCrudDialog>
+          <Tooltip content="Add field">
+            <Button
+              variant={"ghost"}
+              size="icon8"
+              onClick={() =>
+                setCrudDialogOptions({
+                  showDialog: true,
+                  rowId: window.crypto.randomUUID(),
+                  crudAction: "create",
+                })
+              }
+            >
+              <PlusIcon className="h-5 w-5" />
+            </Button>
+          </Tooltip>
+          {/* <AddFieldOptions /> */}
+        </ModelCrudDialog>
       </div>
 
       <ScrollArea className="h-[calc(100vh-7.6rem)] p-4">

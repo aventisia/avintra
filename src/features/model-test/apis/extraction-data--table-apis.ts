@@ -1,4 +1,4 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { ExtractedDataDto } from "../dtos/ extracted-data-dto";
 

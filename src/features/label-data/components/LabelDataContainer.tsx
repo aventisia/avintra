@@ -1,11 +1,23 @@
-import AddFields from "@/features/data-fields/components";
+import ClassificationModel from "@/features/classification-model/components";
 import FileUploader from "@/features/file-uploader/components/FileUploader";
+import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
-import { PdfPreviewer } from "@/features/pdf-previewer/components/PdfPreviewer";
-import { useFetchUploadedFiles } from "@/features/pdf-previewer/hooks/useFetchFiles";
+import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import QuestionAnswerModel from "@/features/question-answer-model/components";
+import SentimentAnalytics from "@/features/sentiment-analytics/components";
+import SummarizationModel from "@/features/summarization-model/components";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/react-toolkit/ui/resizable";
+
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useFetchModel } from "../hooks/useFetchModel";
 import { useLabelDataStore } from "../stores/label-data-store";
 import Nav from "./Header/Nav";
 
@@ -21,6 +33,7 @@ export const LabelDataContainer = () => {
   );
 
   const { data: pdfList, refetch, isLoading } = useFetchUploadedFiles();
+  const { data: modelData } = useFetchModel();
 
   useEffect(() => {
     if (pdfList?.data.length) {
@@ -39,16 +52,46 @@ export const LabelDataContainer = () => {
     );
   }
 
+  const renderLLMComponent = () => {
+    const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
+
+    switch (modelType) {
+      case "extraction":
+        return <InformationExtractor />;
+      case "sentimentanalytics":
+        return <SentimentAnalytics />;
+      case "summarization":
+        return <SummarizationModel />;
+      case "classification":
+        return <ClassificationModel />;
+      case "questionanswer":
+        return <QuestionAnswerModel />;
+      default:
+        // Optionally log an error or return a fallback component
+        console.warn(
+          `Unknown model type: ${modelType}. Falling back to default.`,
+        );
+        return <InformationExtractor />; // Default component
+    }
+  };
+
   return (
     <>
       <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
 
       {step == 1 ? (
-        <div className="grid w-full grid-cols-3">
-          <PdfPreviewer />
-          <AddFields />
-        </div>
+        // <div className="grid w-full grid-cols-3">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={70} minSize={35}>
+            <MultiFormatViewer />
+          </ResizablePanel>
+          <ResizableHandle withHandle className="ml-2 mr-0" />
+          <ResizablePanel defaultSize={35} minSize={35}>
+            {renderLLMComponent()}
+          </ResizablePanel>
+        </ResizablePanelGroup>
       ) : (
+        // </div>
         <FileUploader />
       )}
     </>

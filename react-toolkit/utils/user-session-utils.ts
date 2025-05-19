@@ -1,16 +1,13 @@
 import {
   DEV_JWT_LS_KEY,
-  USER_PREFERENCES_LS_KEY,
-  USER_SESSION_LS_KEY,
+  SESSION_EXPIRED_LS_KEY,
 } from "@/react-toolkit/constants";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
-import { UserPreferencesType } from "@/react-toolkit/types/user-preferences-type";
 import {
   IJwtPayload,
-  IUserSessionLS,
   IUserSessionStore,
 } from "@/react-toolkit/types/user-session-types";
-import { redirectToLoginUtil } from "@/react-toolkit/utils/redirect-utils";
+
 import { jwtDecode } from "jwt-decode";
 
 const setUserSessionLocally = (
@@ -23,18 +20,8 @@ const setUserSessionLocally = (
       : userSession.accessToken,
   );
 
-  // Create user session local storage object
-  const userSessionLS: IUserSessionLS = {
-    tenantId: decodedJwt.tntid,
-    userName: decodedJwt.uname,
-    expiresOn: new Date(decodedJwt.exp * 1000),
-  };
-
-  // Set user session in local storage
-  localStorage.setItem(USER_SESSION_LS_KEY, JSON.stringify(userSessionLS));
-
-  // Set user preferences in local storage
-  setUserPreferencesLocally();
+  // Set user session status in local storage
+  localStorage.setItem(SESSION_EXPIRED_LS_KEY, "false");
 
   // create roles array
   const roles: string[] =
@@ -54,91 +41,4 @@ const setUserSessionLocally = (
   };
 };
 
-const setUserPreferencesLocally = (userPreferences?: UserPreferencesType) => {
-  // Get user preferences from local storage
-  const oldUserPreferencesLSObj = JSON.parse(
-    localStorage.getItem(USER_PREFERENCES_LS_KEY) || '""',
-  ) as UserPreferencesType;
-
-  // If user preferences already exist, then return
-  if (!userPreferences && oldUserPreferencesLSObj) return;
-
-  // Create user preferences local storage object
-  const userPreferencesLS: UserPreferencesType = {
-    theme: userPreferences?.theme ? userPreferences.theme : "light",
-    studio: userPreferences?.studio
-      ? userPreferences.studio
-      : {
-          layoutDirection: "TB",
-          miniMap: true,
-          undoRedo: true,
-          intractivityToggle: true,
-          zoomControls: true,
-          deleteAlert: true,
-        },
-  };
-
-  // Set user preferences in local storage
-  localStorage.setItem(
-    USER_PREFERENCES_LS_KEY,
-    JSON.stringify(userPreferencesLS),
-  );
-};
-
-const getTenantId = () => {
-  const userSessionLS = JSON.parse(
-    localStorage.getItem(USER_SESSION_LS_KEY) || '""',
-  ) as IUserSessionLS;
-
-  // Session does not exist
-  if (!userSessionLS) return null;
-
-  return userSessionLS.tenantId;
-};
-
-const removeUserSessionLocally = (redirectToLogin?: boolean) => {
-  localStorage.removeItem(USER_SESSION_LS_KEY);
-
-  // Redirect to login page after 2 seconds
-  if (redirectToLogin) redirectToLoginUtil();
-};
-
-/** Checks whether user session exists or not. If exists, then checks whether expired or not */
-const isUserSessionValid = () => {
-  // Get userSessionLS
-  const userSessionLS = JSON.parse(
-    localStorage.getItem(USER_SESSION_LS_KEY) || '""',
-  ) as IUserSessionLS;
-
-  // Session does not exist or Session expired
-  if (!userSessionLS || new Date(userSessionLS.expiresOn) <= new Date())
-    return false;
-
-  // Session is valid
-  return true;
-};
-
-const addSecondsToDate = (date: Date, secondsToAdd: number): Date => {
-  // Convert date into seconds
-  let dateInSeconds = date.getTime() / 1000;
-  // Add seconds
-  dateInSeconds += secondsToAdd;
-  // Convert back to date
-  return new Date(dateInSeconds * 1000);
-};
-
-const convertDateTimeToUTC = (dateInput: Date) => {
-  return new Date(
-    dateInput.getTime() + dateInput.getTimezoneOffset() * 60 * 1000,
-  );
-};
-
-export {
-  addSecondsToDate,
-  convertDateTimeToUTC,
-  getTenantId,
-  isUserSessionValid,
-  removeUserSessionLocally,
-  setUserPreferencesLocally,
-  setUserSessionLocally,
-};
+export { setUserSessionLocally };

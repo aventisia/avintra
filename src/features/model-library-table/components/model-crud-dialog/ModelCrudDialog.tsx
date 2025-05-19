@@ -1,6 +1,6 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper";
-import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { DTCrudDialogWrapper } from "@aventisia/ui/data-table";
+import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
 import { useShallow } from "zustand/react/shallow";
 import { getDialogHeadingDescription } from "../../constants";
 import { ModelCrudForm } from "./ModelCrudForm";

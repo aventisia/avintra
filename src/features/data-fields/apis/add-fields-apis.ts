@@ -1,9 +1,9 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { DataFieldsDto } from "../dtos/data-fields-dtos";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
+import { TrueFalseResultDto } from "@aventisia/ui/dtos";
 
 const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/data-field`;
 

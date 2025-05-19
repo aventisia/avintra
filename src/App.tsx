@@ -1,21 +1,20 @@
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  createBrowserRouter,
   Navigate,
   RouterProvider,
+  createBrowserRouter,
 } from "react-router-dom";
+
 import { MLModelBuilderLayout } from "./components/layout/MLModelBuilderLayout";
 import { LabelDataPage } from "./pages/LabelDataPage";
 import { ModelTestPage } from "./pages/ModelTestPage";
+
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-    },
-  },
+  defaultOptions: { queries: { staleTime: 60 * 1000 } },
 });
 
 const router = createBrowserRouter(
@@ -25,26 +24,11 @@ const router = createBrowserRouter(
       element: <MLModelBuilderLayout />,
       errorElement: <ErrorPage />,
       children: [
-        {
-          path: "/",
-          element: <Navigate to="/label" />,
-        },
-        {
-          path: "/label",
-          element: <LabelDataPage />,
-        },
-        {
-          path: "/model",
-          element: <h1>Model </h1>,
-        },
-        {
-          path: "/test",
-          element: <ModelTestPage />,
-        },
-        {
-          path: "/*",
-          element: <NotFoundPage />,
-        },
+        { path: "/", element: <Navigate to="/setup-test" /> },
+        { path: "/setup-test", element: <LabelDataPage /> },
+        { path: "/model", element: <h1>Model </h1> },
+        { path: "/monitor", element: <ModelTestPage /> },
+        { path: "/*", element: <NotFoundPage /> },
       ],
     },
     {

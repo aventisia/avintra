@@ -1,9 +1,9 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { cn } from "@/react-toolkit/lib/utils";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 
 interface DataFiledEditActionProps {
   id: string;

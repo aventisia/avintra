@@ -7,8 +7,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/react-toolkit/ui/select";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+} from "@aventisia/ui/select";
+import { enumToArray } from "@aventisia/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -60,7 +60,7 @@ export function LLMSelector() {
         }}
       >
         <SelectTrigger
-          className="h-6 w-auto gap-1 rounded-xl px-2 py-1 font-medium"
+          className="h-6 w-auto gap-1 rounded-xl border-none bg-white/10 px-3 py-1.5 font-medium text-white"
           size="sm"
         >
           <SelectValue placeholder="Select LLM" />

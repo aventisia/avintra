@@ -1,5 +1,5 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { cn } from "@aventisia/ui/lib";
+import { Button } from "@aventisia/ui/buttons";
 
 interface ModelTableCellLinkProps {
   /** The ID of the model to open. */

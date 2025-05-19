@@ -1,8 +1,9 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { CloudUploadIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+
 import { FileUploadDto } from "../dtos/file-upload-dto";
 import { useFileUpload } from "../hooks/useFileUpload";
 import { FileState } from "../stores/file-uploader-store";
@@ -49,6 +50,15 @@ const FileDropzone = ({
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
+      "image/jpeg": [".jpeg", ".jpg"],
+      "image/png": [".png"],
+      "image/gif": [".gif"],
+      "image/webp": [".webp"],
+      "audio/mpeg": [".mp3"], // MP3
+      "audio/wav": [".wav"], // WAV
+      "audio/ogg": [".ogg", ".oga"], // OGG (Vorbis)
+      "audio/aac": [".aac"], // AAC
+      "audio/opus": [".opus"], // Opus
     },
     noClick: true,
   });

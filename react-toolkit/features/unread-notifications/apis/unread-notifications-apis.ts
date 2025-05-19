@@ -1,8 +1,9 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/notification/unread`;
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/notification/unread`;
 
 /** Get list of unread notifications for the user */
 const getUnreadNotifications = () => {

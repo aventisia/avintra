@@ -30,7 +30,7 @@ export const useFileUpload = ({
         );
       }
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-        throw new Error("Only PDF files are allowed");
+        throw new Error("File type not supported");
       }
 
       try {

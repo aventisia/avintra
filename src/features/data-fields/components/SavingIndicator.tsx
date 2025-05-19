@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loader2, CheckCircle2 } from "lucide-react";
-import { Badge } from "@/react-toolkit/ui/badge";
+import { Badge } from "@aventisia/ui/badge";
 
 interface SavingIndicatorProps {
   isSaving: boolean;

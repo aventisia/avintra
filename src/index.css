@@ -37,6 +37,7 @@
     --popover-foreground: hsl(222.2 84% 4.9%);
 
     --header-height: 3.5rem;
+    --header-padding: 0.375rem;
     --sidebar-max-width: 14rem;
     --sidebar-min-width: 4.296rem;
     --popover-height: 70vh;

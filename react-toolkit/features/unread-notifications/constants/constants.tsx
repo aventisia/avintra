@@ -4,6 +4,6 @@
 export const UN_QUERY_KEY = ["unread-notifications"];
 
 /**
- * The heading for the unread notifications popover. "Notifications"
+ * The heading for the unread notifications dialog. "Notifications"
  */
-export const UN_POPOVER_HEADING = "Notifications";
+export const UN_DIALOG_HEADING = "Notifications";

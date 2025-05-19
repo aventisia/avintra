@@ -1,12 +1,15 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Progress } from "@/react-toolkit/ui/progress";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+
+import { Button } from "@aventisia/ui/buttons";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { XCircleIcon } from "@heroicons/react/24/solid";
+
 import { FileUploadDto } from "../dtos/file-upload-dto";
 import { useFileDelete } from "../hooks/useFileDelete";
 import { FileState } from "../stores/file-uploader-store";
 import { formatFileSize } from "../utils";
+
 interface FileUploadListProps {
   files: FileState[];
   clearFiles: () => void;
@@ -55,7 +58,7 @@ const FileUploadList = ({
           </div>
 
           {/* List of Files */}
-          <ScrollArea className="h-[calc(75vh-8.6rem)] py-0.5">
+          <ScrollArea className="h-[calc(100vh-12rem)] py-0.5">
             {files.map((file) => {
               const progress = file.progress;
               return (

@@ -1,4 +1,4 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -19,7 +19,7 @@ import { toast } from "sonner";
 export const useOptimisticMutation = <TData, TResponseResult, TQueryData>(
   mutationFn: (data: TData) => Promise<IHttpResponse<TResponseResult>>,
   queryKey: string[],
-  updatedQueryData: TQueryData[] | undefined,
+  updatedQueryData?: TQueryData[],
   showSuccessToast: boolean = true,
 ) => {
   // Get query client

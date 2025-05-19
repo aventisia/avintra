@@ -1,9 +1,12 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { useTabStore } from "@/store/tab-store";
+
+import { Button } from "@aventisia/ui/buttons";
 import { Loader2, SparklesIcon } from "lucide-react";
-import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { usePdfListStore } from "../stores/pdf-list-store";
+
+import { useFileListStore } from "../../multi-format-viewer/store/file-list-store";
+import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {
   // Get modelId from query params
@@ -11,11 +14,12 @@ function ExtractViaLLMButton() {
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("mid") || "";
 
-  const { selectedPdf } = usePdfListStore(
+  const { selectedPdf } = useFileListStore(
     useShallow((state) => ({
-      selectedPdf: state.selectedPdf,
+      selectedPdf: state.selectedFile,
     })),
   );
+  const { activeTab } = useTabStore();
 
   // Get extract via LLM mutation and pending status
   const { extractViaLLMMutation, isExtractionPending } =
@@ -33,7 +37,7 @@ function ExtractViaLLMButton() {
       size="xs"
       className="gap-2 pl-2 pr-3.5 text-sm"
       onClick={handleExtract}
-      disabled={isExtractionPending}
+      disabled={isExtractionPending || activeTab == "setup"}
     >
       {isExtractionPending ? (
         <>

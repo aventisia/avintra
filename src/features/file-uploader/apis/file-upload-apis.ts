@@ -1,7 +1,7 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { DeleteFileResponseDto, FileUploadDto } from "../dtos/file-upload-dto";
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { PdfViewerDto } from "@/features/pdf-previewer/dtos/file-list-dtos";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { FileViewerDto } from "@/features/multi-format-viewer/dtos/file-list-dtos";
 
 // Wrapper type for DataResponseWithController
 interface DataResponseWithController {
@@ -13,7 +13,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc
 
 const getUploadedFiles = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<PdfViewerDto[]>>(`${baseAPIURL}/list/${modelId}/LabelData`)
+    .get<IHttpResponse<FileViewerDto[]>>(`${baseAPIURL}/list/${modelId}/LabelData`)
     .then((res) => res.data);
 };
 

@@ -1,15 +1,17 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Input } from "@/react-toolkit/ui/input";
+import { Input } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
+  ChevronsRightIcon,
   RotateCcw,
   ZoomInIcon,
   ZoomOutIcon,
 } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import ExtractViaLLMButton from "./ExtractViaLLMButton";
 
@@ -59,7 +61,7 @@ const PageControl = (props: PageControlProps) => {
         />
       </Button>
       <Button variant="ghost" size="icon7" onClick={props.goToLastPage}>
-        <ChevronRightIcon
+        <ChevronsRightIcon
           className={`cursor-pointer ${props.lastPageClass} h-5 w-5 stroke-[1.5]`}
         />
       </Button>

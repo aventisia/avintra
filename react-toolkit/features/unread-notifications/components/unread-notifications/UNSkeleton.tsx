@@ -1,4 +1,4 @@
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { Skeleton } from "@aventisia/ui";
 
 /**
  * Renders a skeleton component till the time unread notifications are being fetched.
