@@ -143,7 +143,7 @@ export const useAddInformationExtractorForm = () => {
   useEffect(() => {
     const data = queryClient.getQueryData<{
       data: InformationExtractorSetupDTO;
-    }>(["SETUP_FORM_DATA"]);
+    }>(["EXTRACTOR_SETUP_FORM_DATA"]);
 
     // Extract setupObject from fetched data
     const setupFormData = data?.data.setupObject;
@@ -163,7 +163,7 @@ export const useAddInformationExtractorForm = () => {
     mutationFn: updateExtractionSetupFormData,
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["SETUP_FORM_DATA"],
+        queryKey: ["EXTRACTOR_SETUP_FORM_DATA"],
       });
     },
     onError: (error) => {

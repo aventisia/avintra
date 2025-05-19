@@ -14,12 +14,12 @@ export const summarizationModelSetupFormZodSchema = z
       z.number().min(1, { message: reqError("Chunk Overlap") })
     ),
     
-    totalMinWords: z.preprocess(
+    totalMinimumWords: z.preprocess(
       (val) => Number(val),
       z.number().min(1, { message: reqError("Total Minimum words") })
     ),
     
-    totalMaxWords: z.preprocess(
+    totalMaximumWords: z.preprocess(
       (val) => Number(val),
       z.number().min(1, { message: reqError("Total Maximum Words") })
     ),
@@ -27,53 +27,53 @@ export const summarizationModelSetupFormZodSchema = z
 
     summarizationMethod: z.string(),
 
-    individualSummaryPrompt: z.string().optional(),
-    finalPromptToCombine: z.string().optional(),
-    subsequentPrompt: z.string().optional(),
-    initialPrompt: z.string().optional(),
-    prompt: z.string().optional(),
+    mapIndividualSummaryPrompt: z.string().optional(),
+    mapFinalCombinePrompt: z.string().optional(),
+    refineSubsequentPrompt: z.string().optional(),
+    refineInitialPrompt: z.string().optional(),
+    stuffPrompt: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     const method = data.summarizationMethod;
 
-    if (method === "mapReduce") {
-      if (!data.individualSummaryPrompt || data.individualSummaryPrompt.trim() === "") {
+    if (method === "MapReduce") {
+      if (!data.mapIndividualSummaryPrompt || data.mapIndividualSummaryPrompt.trim() === "") {
         ctx.addIssue({
-          path: ["individualSummaryPrompt"],
+          path: ["mapIndividualSummaryPrompt"],
           message: reqError("Individual Summary Prompt"),
           code: z.ZodIssueCode.custom,
         });
       }
-      if (!data.finalPromptToCombine || data.finalPromptToCombine.trim() === "") {
+      if (!data.mapFinalCombinePrompt || data.mapFinalCombinePrompt.trim() === "") {
         ctx.addIssue({
-          path: ["finalPromptToCombine"],
+          path: ["mapFinalCombinePrompt"],
           message: reqError("Final Prompt To Combine"),
           code: z.ZodIssueCode.custom,
         });
       }
     }
 
-    if (method === "refine") {
-      if (!data.subsequentPrompt || data.subsequentPrompt.trim() === "") {
+    if (method === "Refine") {
+      if (!data.refineSubsequentPrompt || data.refineSubsequentPrompt.trim() === "") {
         ctx.addIssue({
-          path: ["subsequentPrompt"],
+          path: ["refineSubsequentPrompt"],
           message: reqError("Subsequent Prompt"),
           code: z.ZodIssueCode.custom,
         });
       }
-      if (!data.initialPrompt || data.initialPrompt.trim() === "") {
+      if (!data.refineInitialPrompt || data.refineInitialPrompt.trim() === "") {
         ctx.addIssue({
-          path: ["initialPrompt"],
+          path: ["refineInitialPrompt"],
           message: reqError("Initial Prompt"),
           code: z.ZodIssueCode.custom,
         });
       }
     }
 
-    if (method === "stuff") {
-      if (!data.prompt || data.prompt.trim() === "") {
+    if (method === "Stuff") {
+      if (!data.stuffPrompt || data.stuffPrompt.trim() === "") {
         ctx.addIssue({
-          path: ["prompt"],
+          path: ["stuffPrompt"],
           message: reqError("Prompt"),
           code: z.ZodIssueCode.custom,
         });

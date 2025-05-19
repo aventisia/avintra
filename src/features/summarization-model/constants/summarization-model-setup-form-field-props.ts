@@ -6,17 +6,17 @@ import { SelectFieldProps } from "../../../shared/select-field/SelectField";
 const summarizationMethodSelectOptions: ISelectOption[] = [
     {
         label: "Map Reduce (Recommended)", 
-        value: "mapReduce", 
+        value: "MapReduce", 
         description: "Summarize each document (or chunk) individually, then summarize those summaries"
     },
     {
         label: "Refine", 
-        value: "refine", 
+        value: "Refine", 
         description: "Summarize the first document (or chunk). Then update that summary based on the next document (for chunk), and repeat"
     },
     {
         label: "Stuff", 
-        value: "stuff", 
+        value: "Stuff", 
         description: "Pass all documents (for chunks) at once. Ideal for small datasets"
     },
 ]
@@ -34,6 +34,7 @@ const charactersPerChunkProps: InputFieldProps = {
     name: "charactersPerChunk",
     label: "Characters Per Chunk",
     type: "number",
+    min: 0,
     placeholder: "00",
     isRequired: true,
     className: "text-sm"
@@ -43,24 +44,27 @@ const chunkOverlapProps: InputFieldProps = {
     name: "chunkOverlap",
     label: "Chunk Overlap (Characters)",
     type: "number",
+    min: 0,
     placeholder: "00",
     isRequired: true,
     className: "text-sm"
 }
 
 const totalMinWordsProps: InputFieldProps = {
-    name: "totalMinWords",
+    name: "totalMinimumWords",
     label: "Total Minimum Words",
     type: "number",
+    min: 0,
     placeholder: "00",
     isRequired: true,
     className: "text-sm"
 }
 
 const totalMaxWordsProps: InputFieldProps = {
-    name: "totalMaxWords",
+    name: "totalMaximumWords",
     label: "Total Maximum Words",
     type: "number",
+    min: 0,
     placeholder: "00",
     isRequired: true,
     className: "text-sm"
@@ -77,7 +81,7 @@ const summarizationMethodProps: SelectFieldProps  = {
 
 
 const individualSummaryPromptProps: AutosizeTextareaFieldProps = {
-    name: "individualSummaryPrompt",
+    name: "mapIndividualSummaryPrompt",
     label: "Individual Summary Prompt",
     minHeight: 10,
     placeholder: "Please provide a summary prompt",
@@ -86,7 +90,7 @@ const individualSummaryPromptProps: AutosizeTextareaFieldProps = {
 } 
 
 const finalPromptToCombineProps: AutosizeTextareaFieldProps = {
-    name: "finalPromptToCombine",
+    name: "mapFinalCombinePrompt",
     label: "Final Prompt to Combine",
     minHeight: 10,
     placeholder: "Please provide a final prompt",
@@ -95,7 +99,7 @@ const finalPromptToCombineProps: AutosizeTextareaFieldProps = {
 } 
 
 const subsequentPromptProps: AutosizeTextareaFieldProps = {
-    name: "subsequentPrompt",
+    name: "refineSubsequentPrompt",
     label: "Subsequent (Refine) Prompt",
     minHeight: 10,
     placeholder: "Please provide a Subsequent Prmpot",
@@ -104,7 +108,7 @@ const subsequentPromptProps: AutosizeTextareaFieldProps = {
 } 
 
 const initialPromptProps: AutosizeTextareaFieldProps = {
-    name: "initialPrompt",
+    name: "refineInitialPrompt",
     label: "Initial Prompt",
     minHeight: 10,
     placeholder: "Please provide an Initial Prmpot",
@@ -113,7 +117,7 @@ const initialPromptProps: AutosizeTextareaFieldProps = {
 } 
 
 const promptProps: AutosizeTextareaFieldProps = {
-    name: "prompt",
+    name: "stuffPrompt",
     label: "Prompt",
     minHeight: 10,
     placeholder: "Please provide a Prompt",

@@ -64,6 +64,7 @@ const SelectField = ({
               disabled={disabled}
               onValueChange={field.onChange}
               defaultValue={field.value}
+              value={field.value}
             >
               <SelectTrigger size={size} {...field} ref={field.ref} {...props}>
                 <SelectValue

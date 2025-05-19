@@ -84,7 +84,7 @@ export const useAddInformationExtractorTestForm = () => {
   useEffect(() => {
     const data = queryClient.getQueryData<{
       data: InformationExtractorTestDTO;
-    }>(["SETUP_FORM_DATA"]);
+    }>(["EXTRACTOR_SETUP_FORM_DATA"]);
 
     // Extract setupObject from fetched data
     const setupFormData = data?.data.setupObject;

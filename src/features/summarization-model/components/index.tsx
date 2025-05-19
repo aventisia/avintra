@@ -1,3 +1,5 @@
+import ErrorFetchingTemplate from "@/components/templates/ErrorFetchingTemplate";
+import LoaderTemplate from "@/components/templates/LoaderTemplate";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useTabStore } from "@/store/tab-store";
 
@@ -5,11 +7,14 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useShallow } from "zustand/react/shallow";
 
+import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
 import SavingIndicator from "./setup/SavingIndicator";
 import SummarizationModelSetupForm from "./setup/SummarizationModelSetupForm";
 import SummarizationModelTestForm from "./test/SummarizationModelTestForm";
 
 const SummarizationModel = () => {
+  const { isLoading, isError } = useFetchSetupFormData();
+
   const { isDataSaving } = useAnnotationDataStore(
     useShallow((state) => ({
       isDataSaving: state.isDataSaving,
@@ -50,13 +55,21 @@ const SummarizationModel = () => {
         </div>
         {/* Scrollable content */}
         <ScrollArea className="h-[calc(100vh-7.6rem)]">
-          <TabsContent value="setup" className="h-full">
-            <SummarizationModelSetupForm />
-          </TabsContent>
+          {isLoading ? (
+            <LoaderTemplate />
+          ) : isError ? (
+            <ErrorFetchingTemplate />
+          ) : (
+            <>
+              <TabsContent value="setup" className="h-full">
+                <SummarizationModelSetupForm />
+              </TabsContent>
 
-          <TabsContent value="test" className="h-full">
-            <SummarizationModelTestForm />
-          </TabsContent>
+              <TabsContent value="test" className="h-full">
+                <SummarizationModelTestForm />
+              </TabsContent>
+            </>
+          )}
         </ScrollArea>
       </Tabs>
     </div>
