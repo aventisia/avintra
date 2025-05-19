@@ -560,7 +560,7 @@ export const TimePickerInput = React.forwardRef<
         id={id ?? picker}
         name={name ?? picker}
         className={cn(
-          "w-[52px] text-center font-mono text-base tabular-nums caret-transparent focus:bg-accent focus:text-accent-foreground [&::-webkit-inner-spin-button]:appearance-none",
+          "w-[56px] text-center font-mono text-base tabular-nums caret-transparent focus:bg-accent focus:text-accent-foreground [&::-webkit-inner-spin-button]:appearance-none",
           className,
         )}
         value={value || calculatedValue}
@@ -641,7 +641,7 @@ export const TimePicker = React.forwardRef<TimePickerRef, TimePickerProps>(
         {showHours && (
           <>
             <TimePickerInput
-              label="hour"
+              label="hours"
               picker={hourCycle === 24 ? "hours" : "12hours"}
               date={value}
               id="datetime-picker-hour-input"
@@ -657,7 +657,7 @@ export const TimePicker = React.forwardRef<TimePickerRef, TimePickerProps>(
           (granularity === "minute" || granularity === "second") && (
             <>
               <TimePickerInput
-                label="minute"
+                label="minutes"
                 picker="minutes"
                 date={value}
                 onDateChange={onChange}
@@ -670,7 +670,7 @@ export const TimePicker = React.forwardRef<TimePickerRef, TimePickerProps>(
           )}
         {showSeconds && granularity === "second" && (
           <TimePickerInput
-            label="second"
+            label="seconds"
             picker="seconds"
             date={value}
             onDateChange={onChange}
@@ -687,7 +687,7 @@ export const TimePicker = React.forwardRef<TimePickerRef, TimePickerProps>(
               date={value}
               onDateChange={(date) => {
                 onChange?.(date);
-                if (date && date?.getHours() >= 12) {
+                if (date && toDate(date)?.getHours() >= 12) {
                   setPeriod("PM");
                 } else {
                   setPeriod("AM");
