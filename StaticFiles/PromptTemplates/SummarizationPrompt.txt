@@ -1,0 +1,16 @@
+{{Prompt}}
+
+Context: {{Context}}
+
+Length Requirements:
+- Characters per Chunk: {{CharactersPerChunk}}
+- Chunk Overlap (Characters): {{ChunkOverlap}}
+- Total Word Count Range: {{TotalMinimumWords}}–{{TotalMaximumWords}} words
+
+Output Format:
+- Provide a clear, concise summary in plain text.
+
+Writing Instructions:
+- Focus on key points and essential details.
+- Eliminate repetition and irrelevant content.
+- Maintain the original tone and accurately convey the intended meaning.

@@ -123,69 +123,62 @@ public class SummarizationService : ISummarizationService
     // Builds the prompt string for the summarization model using the setup settings
     private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
     {
-        var promptBuilder = new StringBuilder();
+        var defaultPrompt = new StringBuilder();
 
         switch (summarizationDto.SetupObject.SummarizationMethod)
         {
             case SummarizationMethodTypesEnum.MapReduce:
                 if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
                 {
-                    promptBuilder.AppendLine("Map Phase Prompt:");
-                    promptBuilder.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
+                    defaultPrompt.AppendLine("Map Phase Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
                 }
 
                 if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
                 {
-                    promptBuilder.AppendLine("Reduce Phase Prompt:");
-                    promptBuilder.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
+                    defaultPrompt.AppendLine("Reduce Phase Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
                 }
                 break;
 
             case SummarizationMethodTypesEnum.Refine:
                 if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
                 {
-                    promptBuilder.AppendLine("Initial Refinement Prompt:");
-                    promptBuilder.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
+                    defaultPrompt.AppendLine("Initial Refinement Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
                 }
 
                 if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
                 {
-                    promptBuilder.AppendLine("Subsequent Refinement Prompt:");
-                    promptBuilder.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
+                    defaultPrompt.AppendLine("Subsequent Refinement Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
                 }
                 break;
 
             case SummarizationMethodTypesEnum.Stuff:
                 if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
                 {
-                    promptBuilder.AppendLine("Stuff Prompt:");
-                    promptBuilder.AppendLine(summarizationDto.SetupObject.StuffPrompt.Trim());
+                    defaultPrompt.AppendLine("Stuff Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.StuffPrompt.Trim());
                 }
                 break;
         }
 
-        // Add summarization length constraints if specified
-        if (summarizationDto.SetupObject.TotalMinimumWords > 0 || summarizationDto.SetupObject.TotalMaximumWords > 0)
-        {
-            promptBuilder.AppendLine();
-            promptBuilder.AppendLine("Length Constraints:");
-            if (summarizationDto.SetupObject.TotalMinimumWords > 0)
-                promptBuilder.AppendLine($"- Minimum word count: {summarizationDto.SetupObject.TotalMinimumWords}");
-            if (summarizationDto.SetupObject.TotalMaximumWords > 0)
-                promptBuilder.AppendLine($"- Maximum word count: {summarizationDto.SetupObject.TotalMaximumWords}");
-        }
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SummarizationPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, {{CharactersPerChunk}}, {{ChunkOverlap}}, {{TotalMinimumWords}}, and {{TotalMaximumWords}} in the template with the respective sections
+                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
+                        {"{{Context}}", summarizationDto.SetupObject.Context.ToString()  },
+                        {"{{CharactersPerChunk}}", summarizationDto.SetupObject.CharactersPerChunk.ToString()},
+                        {"{{ChunkOverlap}}", summarizationDto.SetupObject.ChunkOverlap.ToString()},
+                        {"{{TotalMinimumWords}}", summarizationDto.SetupObject.TotalMinimumWords.ToString() },
+                        {"{{TotalMaximumWords}}", summarizationDto.SetupObject.TotalMaximumWords.ToString()}
+                    }
+                );
 
-        // Define output format and writing style expectations
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Expected Output:");
-        promptBuilder.AppendLine("Provide a clear, concise summary in plain text format.");
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Writing Guidelines:");
-        promptBuilder.AppendLine("- Emphasize key ideas and relevant details.");
-        promptBuilder.AppendLine("- Avoid redundant or irrelevant content.");
-        promptBuilder.AppendLine("- Preserve the original tone and meaning.");
-
-        return promptBuilder.ToString().Replace("\n", " ");
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 
     // Retrieves the summarization setup for a given ML model ID

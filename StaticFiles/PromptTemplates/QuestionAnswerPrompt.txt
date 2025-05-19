@@ -9,14 +9,8 @@ Output Format:
 Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
 
 "[
-  {
-    "question1": "Insert the first question here.",
-    "answer1": "Insert the corresponding answer here."
-  },
-  {
-    "question2": "Insert the second question here.",
-    "answer2": "Insert the corresponding answer here."
-  }
+  {\"question\": \"Insert the first question here.\", \"answer\": \"Insert the corresponding answer here.\"},
+  {\"question\": \"Insert the second question here.\", \"answer\": \"Insert the corresponding answer here.\"}
 ]"
 
 Instructions:

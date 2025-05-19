@@ -76,46 +76,38 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
     // Builds the prompt string used by the ML model to perform sentiment analysis based on the configuration
     private string? GenerateSentimentAnalyticsModelPrompt(SentimentAnalyticDto sentimentAnalyticDto)
     {
-        var promptBuilder = new StringBuilder();
+        var defaultPrompt = new StringBuilder();
 
         // Use the custom prompt if provided, otherwise use a default instruction
-        promptBuilder.AppendLine(!string.IsNullOrEmpty(sentimentAnalyticDto.SetupObject?.Prompt)
+        defaultPrompt.AppendLine(!string.IsNullOrEmpty(sentimentAnalyticDto.SetupObject?.Prompt)
             ? sentimentAnalyticDto.SetupObject.Prompt.Trim()
             : "You are a sentiment analysis expert. Your task is to accurately classify the sentiment of the provided content.");
+
+        var categoriesPrompt = new StringBuilder();
 
         // Add category-based classification instructions if defined
         if (sentimentAnalyticDto.SetupObject?.Categories != null && sentimentAnalyticDto.SetupObject.Categories.Any())
         {
-            promptBuilder.AppendLine();
-            promptBuilder.AppendLine("Classify the content into the following categories:");
-
             for (int i = 0; i < sentimentAnalyticDto.SetupObject.Categories.Count; i++)
             {
                 var category = sentimentAnalyticDto.SetupObject.Categories[i];
                 var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                promptBuilder.AppendLine($"- {i + 1}. {category.Name}{instructions}");
+                categoriesPrompt.AppendLine($"{i + 1}. {category.Name}{instructions}");
             }
         }
 
-        // Define the expected structure of the model's output
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Expected Output Format:");
-        promptBuilder.AppendLine("Return a JSON object structured as follows:");
-        promptBuilder.AppendLine("{");
-        promptBuilder.AppendLine("  \"fields\": [");
-        promptBuilder.AppendLine("    {\"fieldName\": \"sentiment\", \"fieldValue\": \"Positive\"},");
-        promptBuilder.AppendLine("    {\"fieldName\": \"emotion\", \"fieldValue\": \"Joy\"}");
-        promptBuilder.AppendLine("  ]");
-        promptBuilder.AppendLine("}");
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SentimentAnalyticsPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Categories}} in the template with the respective sections
+                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
+                        {"{{Context}}", sentimentAnalyticDto.SetupObject.Context.Replace("\n","").ToString() },
+                        {"{{Categories}}", categoriesPrompt.Replace("\n","").ToString() },
+                    }
+                );
 
-        // Final notes and validation rules
-        promptBuilder.AppendLine();
-        promptBuilder.AppendLine("Important Notes:");
-        promptBuilder.AppendLine("- Do not include comments or extra text outside the JSON structure.");
-        promptBuilder.AppendLine("- Skip any field if no data is available.");
-        promptBuilder.AppendLine("- Focus on extracting only what is clearly present in the input text.");
-
-        return promptBuilder.ToString().Replace("\n", " ");
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 
     // Retrieves the sentiment analytics setup for a given machine learning model ID

@@ -111,7 +111,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
 
                 // Append each field's details, including its name, type, and instructions if available
-                fieldInstruction.AppendLine($"- {i + 1}. {field.Name} (type: {field.Type}){instructions}");
+                fieldInstruction.AppendLine($"{i + 1}. {field.Name} (type: {field.Type}){instructions}");
             }
         }
 

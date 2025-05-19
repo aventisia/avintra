@@ -1,0 +1,18 @@
+{{Prompt}}
+
+Context: {{Context}}
+
+Please extract the values for the following categories: {{Categories}}
+
+Output Format:
+Return the result as a JSON string in the structure below:
+
+"{\"categories\": [
+  {\"categoryName\": \"sentiment\", \"categoryValue\": \"Positive\"},
+  {\"categoryName\": \"emotion\", \"categoryValue\": \"Joy\"}
+]}"
+
+Instructions:
+- Only output the JSON as a string — no extra text, comments, or explanations.
+- Include only categories that can be clearly determined from the input.
+- Omit any category if the value is ambiguous or not present in the text.

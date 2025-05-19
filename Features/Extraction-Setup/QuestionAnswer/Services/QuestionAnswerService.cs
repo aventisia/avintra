@@ -92,7 +92,7 @@ public class QuestionAnswerService : IQuestionAnswerService
             {
                 var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
                 var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                questionAnswerBuilder.AppendLine($"- {i + 1}. {category.Name}{instructions}");
+                questionAnswerBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
             }
         }
 

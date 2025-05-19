@@ -1,0 +1,23 @@
+{{Prompt}}
+
+Please extract value for each provided categories and classify them accordingly.
+Context: {{Context}}
+
+Classification Settings:
+1. Multiple category assignment allowed: {{AllowMultipleClasses}}
+2. If no suitable category is found: {{UncertaintyAction}}
+
+Please extract the value for the following categories: {{Categories}}
+
+Output Format:
+Return the results as a JSON array. Each object must include a categories and its corresponding value (ranging from 0 to 100), formatted as shown below:
+
+"[
+  {\"categoryName\": \"category_name\", \"categoryValue\": 85},
+  {\"categoryName\": \"another_category\", \"categoryValue\": 60}
+]"
+
+Writing Instructions:
+- Use only the provided input and context.
+- Assign a value between 0 and 100 to each category based on strength, relevance, or intensity.
+- Do not include any explanation, comments, or text outside the JSON string.
