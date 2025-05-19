@@ -1,6 +1,10 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { isBefore } from "date-fns";
+
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
 import { getColumnName } from "../constants/column-display-names";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
@@ -46,40 +50,180 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   },
 
   {
-    accessorKey: "jobPriority",
+    accessorKey: "environment",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("environment")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("environment")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "agentIds",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("agentIds")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue<string[]>("agentIds")?.length ?? 0}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "timezone",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("timezone")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("timezone")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "startsOn",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("startsOn")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormatter(row.getValue("startsOn"))}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "frequency",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("frequency")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {getEnumValueByKey(
+          TriggerFrequencyTypesEnum,
+          row.getValue("frequency"),
+        )}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "repeateAt",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("repeateAt")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {isBefore(row.getValue<Date>("repeateAt"), new Date(2000, 1, 1))
+          ? "NA"
+          : dateFormatter(row.getValue<Date>("repeateAt"), "HH:mm:ss")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "repeateOn",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("repeateOn")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue<string[]>("repeateOn").length > 0
+          ? row.getValue<string[]>("repeateOn").join(", ")
+          : "NA"}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "repeateEvery",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("repeateEvery")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("repeateEvery") ?? "NA"}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "nonWorkingDays",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("nonWorkingDays")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("nonWorkingDays")
+          ? dateFormatter(
+              row.getValue<Date[]>("nonWorkingDays")[0] ?? new Date(),
+            )
+          : "NA"}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "hasNonWorkingTime",
     header: ({ column }) => (
       <DTColumnHeader
         column={column}
-        title={getColumnName("jobPriority") ?? 0}
+        title={getColumnName("hasNonWorkingTime")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("jobPriority") ?? 0}
+        {row.getValue<Date>("nonWorkingTimeFrom") &&
+        row.getValue<Date>("nonWorknonWorkingTimeToingTimeFrom")
+          ? `${row.getValue<Date>("nonWorkingTimeFrom")} - ${row.getValue<Date>("nonWorknonWorkingTimeToingTimeFrom")}`
+          : "NA"}
       </div>
     ),
   },
 
   {
-    accessorKey: "nextRunTime",
+    accessorKey: "endsOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("nextRunTime")} />
+      <DTColumnHeader column={column} title={getColumnName("endsOn")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("nextRunTime") ?? 0}
+        {row.getValue("endsOn") ?? "NA"}
       </div>
     ),
   },
 
   {
-    accessorKey: "stopAfter",
+    accessorKey: "triggerForNewItem",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("stopAfter") ?? 0} />
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("triggerForNewItem")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("stopAfter") ?? 0}
+        {row.getValue("triggerForNewItem") ? "Yes" : "No"}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "triggerForNewEmail",
+    header: ({ column }) => (
+      <DTColumnHeader
+        column={column}
+        title={getColumnName("triggerForNewEmail")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("triggerForNewEmail") ? "Yes" : "No"}
       </div>
     ),
   },
