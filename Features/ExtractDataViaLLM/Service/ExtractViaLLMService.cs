@@ -63,18 +63,10 @@ public class ExtractViaLLMService : IExtractViaLLMService
                 return serviceResponse;
             }
 
-            // Get data fields to be extracted
-            var dataFields = await _unitOfWork.DataFieldRepo
-                                                .GetByConditionAsync(w =>
-                                                    w.MLModelId == extractRequestDto.ModelId)
-                                                .Select(s => s.Name)
-                                                .ToListAsync();
-
-            // Data fields not found
-            if (dataFields == null || !dataFields.Any())
+            if (string.IsNullOrEmpty(model.GeneratedPrompt))
             {
-                _logger.LogInformation("Data fields not found for model id: {ModelId}.", extractRequestDto.ModelId);
-                serviceResponse.Message = "Fields not found for the model";
+                _logger.LogInformation("Prompt not found for model id: {ModelId}.", extractRequestDto.ModelId);
+                serviceResponse.Message = "Prompt not found for the model";
                 return serviceResponse;
             }
 
@@ -83,9 +75,6 @@ public class ExtractViaLLMService : IExtractViaLLMService
             string context = string.Empty;
 
             // TODO: We'll have to have an entity to store the instructions for the extraction process which we should be able to update from admin panel for various types of files and extraction purposes.
-            string instructions = "Extract the following fields from the file text:";
-            string fieldNames = string.Join(", ", dataFields);
-            string format = "Please provide the final output strictly in JSON format. Use the structure: [{\"fieldName\": \"field_name\", \"fieldValue\": \"field_value\"}]. Do not include any additional text or information beyond the JSON data.";
 
             // Create a object for extracted data
             var extractedDataList = new List<FileExtractedData>();
@@ -156,7 +145,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         var requestDto = new
                         {
                             stream = false,
-                            prompt = $"{instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}",
+                            prompt = $"{model.GeneratedPrompt}\n\nFile Text:\n{fileText}",
                             model = llmModelMapper.GetValueOrDefault(model.LLM) // TODO: Change this LLMName
                         };
 
@@ -184,7 +173,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
                         var llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
 
-                        _logger.LogInformation($"Prompt was: {instructions}\n\nFields: {fieldNames}\n\nFormat: {format}\n\nFile Text:\n{fileText}");
+                        _logger.LogInformation($"Prompt was: {model.GeneratedPrompt}\n\nFile Text:\n{fileText}");
                         _logger.LogInformation($"Model was: {llmModelMapper.GetValueOrDefault(model.LLM)}");
                         _logger.LogInformation($"LLM Response was: {llmResponse}");
 
