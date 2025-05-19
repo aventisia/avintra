@@ -1,4 +1,4 @@
-import { CrudActionType } from "@aventisia/ui/types"
+import { CrudActionType } from "@aventisia/ui/types";
 
 /**
  * The unique key for the machines query to be used in the query client. ["machines"]
@@ -32,8 +32,8 @@ export {
   DATA_QUERY_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
-  TABLE_HEADING
-}
+  TABLE_HEADING,
+};
 
 export const sortAsAssignedFirst = <
   T extends { isAssigned: boolean; name: string },
@@ -43,7 +43,7 @@ export const sortAsAssignedFirst = <
 ) => {
   if (a.isAssigned && !b.isAssigned) return -1;
   if (!a.isAssigned && b.isAssigned) return 1;
-  return a.name.localeCompare(b.name);
+  return a?.name?.localeCompare(b.name);
 };
 
 // Regular expressions for IPv4 and IPv6 validation
