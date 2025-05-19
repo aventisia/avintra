@@ -9,7 +9,6 @@ import {
 import { cn } from "@aventisia/ui/lib";
 import { FieldValues, useFormContext } from "react-hook-form";
 
-import { FormCustomMessage } from "../../FormCustomMessage";
 import { TimePickerField, TimePickerFieldProps } from "../TimePickerField";
 
 export type InputAndTimeComboFieldProps = {
@@ -33,20 +32,10 @@ export const InputAndTimeComboField = ({
   timePickerProps,
 }: InputAndTimeComboFieldProps) => {
   // Get the form context
-  const {
-    control: controlForInput,
-    getFieldState: getSelectFieldState,
-    formState,
-  } = useFormContext<FieldValues>();
+  const { control: controlForInput } = useFormContext<FieldValues>();
 
   //add control for the form
-  const { control: controlForTime, getFieldState: getInputFieldState } =
-    useFormContext<FieldValues>();
-
-  //state of the inputs
-  const selectFieldState = getSelectFieldState(inputFieldProps.name, formState);
-
-  const inputFieldState = getInputFieldState(timePickerProps.name, formState);
+  const { control: controlForTime } = useFormContext<FieldValues>();
 
   // Render the mponent
   return (
@@ -61,12 +50,7 @@ export const InputAndTimeComboField = ({
         />
       )}
       <div className="grid grid-cols-3 gap-x-4">
-        <span
-          className={cn(
-            "col-span-2",
-            timePickerProps.label ? "mt-[1.4rem]" : "mt-[.2rem]",
-          )}
-        >
+        <span className={cn("col-span-2")}>
           <FormField
             {...{ name: inputFieldProps.name, control: controlForInput }}
             render={({ field }) => (
@@ -103,10 +87,6 @@ export const InputAndTimeComboField = ({
           />
         </span>
       </div>
-      <FormCustomMessage
-        fieldStates={[selectFieldState, inputFieldState]}
-        {...{ size: size }}
-      />
     </div>
   );
 };
