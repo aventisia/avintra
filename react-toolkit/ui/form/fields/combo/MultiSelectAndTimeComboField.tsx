@@ -7,7 +7,6 @@ import {
 import { cn } from "@aventisia/ui/lib";
 import { FieldValues, useFormContext } from "react-hook-form";
 
-import { FormCustomMessage } from "../../FormCustomMessage";
 import { MultiSelectField, MultiSelectFieldProps } from "../MultiSelectField";
 import { TimePickerField, TimePickerFieldProps } from "../TimePickerField";
 
@@ -38,23 +37,10 @@ export const MultiSelectAndTimeComboField = ({
   timePickerProps,
 }: MultiSelectAndTimeComboFieldProps) => {
   // Get the form context
-  const {
-    control: controlForSelect,
-    getFieldState: getSelectFieldState,
-    formState,
-  } = useFormContext<FieldValues>();
+  const { control: controlForSelect } = useFormContext<FieldValues>();
 
   //add control for the form
-  const { control: controlForTime, getFieldState: getInputFieldState } =
-    useFormContext<FieldValues>();
-
-  //state of the inputs
-  const selectFieldState = getSelectFieldState(
-    selectFieldProps.name,
-    formState,
-  );
-
-  const inputFieldState = getInputFieldState(timePickerProps.name, formState);
+  const { control: controlForTime } = useFormContext<FieldValues>();
 
   // Render the mponent
   return (
@@ -68,13 +54,9 @@ export const MultiSelectAndTimeComboField = ({
           }}
         />
       )}
-      <div className={cn("grid grid-cols-4 space-x-2", containerClassName)}>
+      <div className={cn("flex space-x-2", containerClassName)}>
         <div
-          className={cn(
-            "col-span-3 items-stretch",
-            timePickerProps.label ? "mt-[1.4rem]" : "mt-[.2rem]",
-            selectContainerClassName,
-          )}
+          className={cn("col-span-2 items-stretch", selectContainerClassName)}
         >
           <FormField
             {...{ name: selectFieldProps.name, control: controlForSelect }}
@@ -109,10 +91,6 @@ export const MultiSelectAndTimeComboField = ({
           />
         </div>
       </div>
-      <FormCustomMessage
-        fieldStates={[selectFieldState, inputFieldState]}
-        {...{ size: size }}
-      />
     </div>
   );
 };
