@@ -1,18 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import { updateSentimentAnalyticsSetupFormData } from "../apis/sentiment-analytics-setup-form-apis";
 import { sentimentAnalyticsSetupFormZodSchema } from "../constants/setiment-analytics-setup-zod-schema";
+import { SentimentAnalyticsSetupDTO } from "../dtos/sentiment-analytics-setup-dto";
 
 export const useSentimentAnalyticsSetupForm = () => {
   const form = useForm<z.infer<typeof sentimentAnalyticsSetupFormZodSchema>>({
     resolver: zodResolver(sentimentAnalyticsSetupFormZodSchema),
     defaultValues: {
       context: "",
-      categories: [{ categoryName: "", instructions: "" }],
-      prompt:
-        "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.",
+      categories: [{ name: "", instructions: "" }],
+      prompt: "",
     },
   });
 
@@ -33,13 +37,45 @@ export const useSentimentAnalyticsSetupForm = () => {
 
   // Function to add a new object to categories
   const addCategory = () => {
-    append({ categoryName: "", instructions: "" });
+    append({ name: "", instructions: "" });
   };
 
   // Function to remove an object from categories
   const removeCategory = (index: number) => {
     remove(index);
   };
+
+  const queryClient = useQueryClient();
+  // Get Setup Form Data
+
+  useEffect(() => {
+    const data = queryClient.getQueryData<{
+      data: SentimentAnalyticsSetupDTO;
+    }>(["SENTIMENT_SETUP_FORM_DATA"]);
+
+    // Extract setupObject from fetched data
+    const setupFormData = data?.data.setupObject;
+
+    form.reset({
+      context: setupFormData?.context ?? "",
+      prompt: setupFormData?.prompt ?? "",
+      categories: setupFormData?.categories ?? [{ name: "", instructions: "" }],
+    });
+  }, [form, queryClient]);
+
+  // Mutation to update form data
+  const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
+    mutationFn: updateSentimentAnalyticsSetupFormData,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["SENTIMENT_SETUP_FORM_DATA"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error updating data:", error);
+      toast.error("Failed to update form data");
+    },
+  });
 
   return {
     form,
@@ -48,5 +84,7 @@ export const useSentimentAnalyticsSetupForm = () => {
     categoryFields,
     addCategory,
     removeCategory,
+    updateFormData,
+    isUpdatePending,
   };
 };

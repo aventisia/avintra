@@ -138,9 +138,9 @@ export const useAddInformationExtractorForm = () => {
   };
 
   const queryClient = useQueryClient();
-  // Get Setup Form Data
 
   useEffect(() => {
+    // Get Setup Form Data
     const data = queryClient.getQueryData<{
       data: InformationExtractorSetupDTO;
     }>(["EXTRACTOR_SETUP_FORM_DATA"]);

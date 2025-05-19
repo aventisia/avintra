@@ -54,7 +54,7 @@ const CategoriesTable = ({
             {/* Category Name */}
             <Controller
               control={control}
-              name={`categories.${index}.categoryName`}
+              name={`categories.${index}.name`}
               render={({ field }) => (
                 <InputField
                   {...categoryNameProps}
