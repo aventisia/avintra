@@ -125,11 +125,6 @@ public class SummarizationService : ISummarizationService
     {
         var promptBuilder = new StringBuilder();
 
-        // Use custom prompt if available, otherwise use default instruction
-        promptBuilder.AppendLine(!string.IsNullOrEmpty(summarizationDto.SetupObject?.Prompt)
-            ? summarizationDto.SetupObject.Prompt.Trim()
-            : "You are a summarization expert. Your role is to condense and interpret the given content.");
-
         switch (summarizationDto.SetupObject.SummarizationMethod)
         {
             case SummarizationMethodTypesEnum.MapReduce:

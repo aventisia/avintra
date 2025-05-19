@@ -57,12 +57,6 @@ public class SummarizationSetupDto
     public required string Context { get; set; }
 
     /// <summary>
-    /// The base prompt to guide the model's summarization behavior.
-    /// </summary>
-    [Required]
-    public required string Prompt { get; set; }
-
-    /// <summary>
     /// Maximum number of characters in each chunk of text during preprocessing.
     /// </summary>
     public int CharactersPerChunk { get; set; }
@@ -85,7 +79,7 @@ public class SummarizationSetupDto
     /// <summary>
     /// Specifies which summarization strategy to use: MapReduce, Refine, or Stuff.
     /// </summary>
-    public SummarizationMethodTypesEnum SummarizationMethod { get; set; }
+    public SummarizationMethodTypesEnum? SummarizationMethod { get; set; }
 
     // ========== MapReduce Method ==========
     /// <summary>
