@@ -33,7 +33,7 @@ const QuestionAnswerFields = ({
         return (
           <FormItem key={field.id} className="space-y-0.5">
             <FormLabel className="flex items-center justify-between">
-              <div className="flex justify-between items-center w-full px-1">
+              <div className="flex justify-between items-end w-full px-1">
                 <p className="text-sm">
                   {index + 1}. {fieldName}
                 </p>
