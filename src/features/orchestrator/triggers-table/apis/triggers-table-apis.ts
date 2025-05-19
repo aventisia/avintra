@@ -10,7 +10,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/trigger`;
 
 /**
  * Retrieves list of triggers.
@@ -56,6 +56,17 @@ export const updateTrigger = (updatedtrigger: TriggersTableDto) => {
 export const deleteTrigger = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves list of select options to assign a agent to  new trigger.
+ */
+export const getNewTriggerAgents = () => {
+  return axiosInstance
+    .get<
+      IHttpResponse<SelectAgentTableDto[]>
+    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/agent/publish-flows`)
     .then((res) => res.data);
 };
 
