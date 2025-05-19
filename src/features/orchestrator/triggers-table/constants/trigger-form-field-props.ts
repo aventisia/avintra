@@ -9,9 +9,13 @@ import Enumerable from "linq";
 import timezones from "timezones-list";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+import { DayOfWeek } from "@/react-toolkit/enums/day-of-week-enum";
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { InputAndTimeComboFieldProps } from "@/react-toolkit/ui/form/fields/combo/InputAndTimeComboField";
+import { MultiSelectAndTimeComboFieldProps } from "@/react-toolkit/ui/form/fields/combo/MultiSelectAndTimeComboField";
 import { DateTimePickerFieldProps } from "@/react-toolkit/ui/form/fields/DateTimePickerField";
+import { MultiSelectFieldProps } from "@/react-toolkit/ui/form/fields/MultiSelectField";
 import { getSearchOptionsForAsyncSelect } from "@/react-toolkit/utils";
 
 // trigger Id
@@ -42,27 +46,10 @@ export const isDisabledProps: SwitchFieldProps = {
   description:
     "Disable this triggrt if it's been not in use, or not required anymore",
 };
-export const selectProcessProps: SelectFieldProps = {
-  name: "process",
-  label: "Process",
-  isRequired: true,
-  selectOptions: [],
-};
-export const selectJobPriorityProps: SelectFieldProps = {
-  name: "jobPriority",
-  label: "Job Prority",
-  isRequired: true,
-  selectOptions: [],
-};
-export const selectRuntimeTypeProps: SelectFieldProps = {
-  name: "runtimeType",
-  label: "Runtime Type",
-  isRequired: true,
-  selectOptions: [],
-};
+
 export const selectTimeZoneProps: AsyncSelectFieldProps = {
-  name: "timeZone",
-  label: "TimeZone",
+  name: "timezone",
+  label: "Time zone",
   isRequired: true,
   size: "base",
   getOptionValue: (option) => option.value.toLowerCase(),
@@ -79,54 +66,79 @@ export const selectTimeZoneProps: AsyncSelectFieldProps = {
   triggerClassName: "w-full",
   className: "w-[37rem]",
 };
+
 export const selectFrequencyProps: SelectFieldProps = {
   name: "frequency",
   label: "Frequency",
+  isRequired: true,
   selectOptions: enumToArray(TriggerFrequencyTypesEnum),
-};
-export const selectRepetationProps: SelectFieldProps = {
-  name: "repeateEvery",
-  label: "Repeat Every",
-  selectOptions: [],
-};
-
-export const selectNonWorkingDaysProps: SelectFieldProps = {
-  name: "nonWorkingDays",
-  label: "Non-working days restriction",
-  selectOptions: [],
 };
 
 export const scheduleEnding: SwitchFieldProps = {
-  name: "scheduleEnding",
+  name: "isEnds",
   label: "Schedule ending of job execution",
   description: "",
   showBorder: false,
 };
 
+export const weeklyFrequencyRepeateProps: MultiSelectAndTimeComboFieldProps = {
+  timePickerProps: {
+    name: "repeateAt",
+    label: "Repeate at",
+    isRequired: true,
+    hourCycle: 12,
+  },
+  selectFieldProps: {
+    label: "Repeate on",
+    placeholder: "select weekdays",
+    name: "repeateOn",
+    isRequired: true,
+    maxCount: 2,
+    selectOptions: enumToArray(DayOfWeek),
+  },
+};
+
+export const monthlyFrequencyProps: InputAndTimeComboFieldProps = {
+  inputFieldProps: {
+    label: "Repeate every",
+    name: "repeateEvery",
+    min: 1,
+    max: 31,
+    isRequired: true,
+    type: "tel",
+  },
+  timePickerProps: {
+    name: "repeateAt",
+    label: "Repeate at",
+    isRequired: true,
+  },
+};
+
+export const monthlyFrequencyRepeateProps: MultiSelectFieldProps = {
+  label: "Running on",
+  className: "flex-shrink",
+  name: "repeateOn",
+  selectOptions: [],
+};
+
 export const nonWorkingDays: DateTimePickerFieldProps = {
   name: "nonWorkingDays",
   label: "Schedule non working days",
+  isRequired: true,
 };
 
 export const scheduleNonWorkingDays: SwitchFieldProps = {
-  name: "scheduleNonWorkingDays",
+  name: "hasNonWorkingDays",
   label: "Schedule non working days",
   showBorder: false,
   description: "",
 };
 
-export const scheduleRetristredTimeZone: SwitchFieldProps = {
-  name: "scheduleRetristredTimeZone",
-  label: "Schedule restricted time zone",
+export const scheduleNonWorkingTimeRange: SwitchFieldProps = {
+  name: "hasNonWorkingTime",
+  label: "Schedule non working time range",
   showBorder: false,
   description: "",
-};
-
-export const scheduleAutoDisabling: SwitchFieldProps = {
-  name: "scheduleAutoDisabling",
-  label: "Schedule automatic trigger disabling",
-  description: "",
-  showBorder: false,
 };
 
 export const trigerForNewItem: SwitchFieldProps = {
@@ -138,7 +150,7 @@ export const trigerForNewItem: SwitchFieldProps = {
 
 export const trigerFornNewEmail: SwitchFieldProps = {
   name: "trigerFornNewEmail",
-  label: "Trigger when new email arrieved",
+  label: "Trigger when new email arrieves",
   description: "",
   showBorder: false,
 };
