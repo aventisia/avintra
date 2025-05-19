@@ -53,7 +53,7 @@ const QuestionAnswerTable = ({
             {/* Category Name */}
             <Controller
               control={control}
-              name={`questions.${index}.question`}
+              name={`questionAnswers.${index}.name`}
               render={({ field }) => (
                 <AutosizeTextareaField
                   {...questionProps}
@@ -69,7 +69,7 @@ const QuestionAnswerTable = ({
               {/* Instructions */}
               <Controller
                 control={control}
-                name={`questions.${index}.instructions`}
+                name={`questionAnswers.${index}.instructions`}
                 render={({ field }) => (
                   <AutosizeTextareaField
                     {...instructionsProps}

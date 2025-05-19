@@ -1,18 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import { updateQuestionAnswersSetupFormData } from "../apis/question-answer-setup-api";
 import { questionAnswerSetupFormZodSchema } from "../constants/question-answer-setup-zod-schema";
+import { QuestionAnswersSetupDTO } from "../dtos/question-answer-setup-dto";
 
 export const useQuestionAnswerSetupForm = () => {
   const form = useForm<z.infer<typeof questionAnswerSetupFormZodSchema>>({
     resolver: zodResolver(questionAnswerSetupFormZodSchema),
     defaultValues: {
       context: "",
-      questions: [{ question: "", instructions: "" }],
-      prompt:
-        "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.",
+      questionAnswers: [{ name: "", instructions: "" }],
+      prompt: "",
     },
   });
 
@@ -28,18 +32,52 @@ export const useQuestionAnswerSetupForm = () => {
     remove,
   } = useFieldArray({
     control,
-    name: "questions",
+    name: "questionAnswers",
   });
 
   // Function to add a new object to categories
   const addQuestion = () => {
-    append({ question: "", instructions: "" });
+    append({ name: "", instructions: "" });
   };
 
   // Function to remove an object from categories
   const removeQuestion = (index: number) => {
     remove(index);
   };
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Get Setup Form Data
+    const data = queryClient.getQueryData<{
+      data: QuestionAnswersSetupDTO;
+    }>(["QUESTION_ANSWER_SETUP_FORM_DATA"]);
+
+    // Extract setupObject from fetched data
+    const setupFormData = data?.data.setupObject;
+
+    form.reset({
+      context: setupFormData?.context ?? "",
+      prompt: setupFormData?.prompt ?? "",
+      questionAnswers: setupFormData?.questionAnswers ?? [
+        { name: "", instructions: "" },
+      ],
+    });
+  }, [form, queryClient]);
+
+  // Mutation to update form data
+  const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
+    mutationFn: updateQuestionAnswersSetupFormData,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["QUESTION_ANSWER_SETUP_FORM_DATA"],
+      });
+    },
+    onError: (error) => {
+      console.error("Error updating data:", error);
+      toast.error("Failed to update form data");
+    },
+  });
 
   return {
     form,
@@ -48,5 +86,7 @@ export const useQuestionAnswerSetupForm = () => {
     categoryFields,
     addQuestion,
     removeQuestion,
+    updateFormData,
+    isUpdatePending,
   };
 };
