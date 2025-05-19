@@ -147,7 +147,7 @@ public class ExtractionSetupService : IExtractionSetupService
         }
 
         // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionSetup.txt", new Dictionary<string, string>()
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
                     {
                         // Replace the placeholders {{Prompt}}, {{Fields}}, and {{Tables}} in the template with the respective sections
                         {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },

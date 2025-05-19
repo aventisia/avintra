@@ -30,8 +30,7 @@
   </ItemGroup>
  
   <ItemGroup>
-    
-    <None Update="StaticFiles\PromptTemplates\ExtractionSetup.txt">
+    <None Update="StaticFiles\PromptTemplates\ExtractionPrompt.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
