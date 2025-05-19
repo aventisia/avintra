@@ -47,7 +47,15 @@ export const MultiSelectField = ({
             />
           )}
           <FormControl>
-            <MultiSelect {...field} {...props} />
+            <MultiSelect
+              onValueChange={(value) => {
+                field.onChange(value);
+              }}
+              value={field.value}
+              disabled={field.disabled}
+              name={field.name}
+              {...props}
+            />
           </FormControl>
 
           {nonErrorMessage ? (
