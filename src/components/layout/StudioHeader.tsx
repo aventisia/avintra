@@ -6,7 +6,7 @@ import { StudioPreferences } from "@/features/studio-preferences/components";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { DotSeparator } from "@aventisia/ui";
 import { Separator } from "@aventisia/ui";
 import { Panel } from "@xyflow/react";
 
