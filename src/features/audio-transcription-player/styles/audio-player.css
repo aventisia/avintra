@@ -12,11 +12,12 @@
   }
 
   .rhap_volume-indicator{
-    /* background-color: var(--primary);  */
-    background-color: var(--muted-foreground); 
+    background-color: #94a3b8;
+
+    
   }
 
   .rhap_volume-filled{
-    background-color: var(--muted-foreground); 
+    background-color: #94a3b8;
 
   }

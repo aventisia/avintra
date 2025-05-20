@@ -19,12 +19,16 @@ const TranscriptTimeline = () => {
       : acc;
   }, -1);
 
+  console.log("ACTI", activeIndex);
+
   // Refs for each timeline item
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Scroll to active transcript block
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];
+    console.log("ACTItem", activeIndex);
+
     if (activeItem) {
       activeItem.scrollIntoView({
         behavior: "smooth",
@@ -38,7 +42,7 @@ const TranscriptTimeline = () => {
       <h1 className="text-lg mb-5 ml-2">Transcription</h1>
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-input"></div>
+        <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200"></div>
 
         {timelineData.map((item, index) => (
           <div
@@ -49,12 +53,12 @@ const TranscriptTimeline = () => {
             {/* Horizontal connector */}
             {index > 0 && (
               <div
-                className={`absolute left-3 w-6 h-0.5 mt-3 ${index === activeIndex ? "bg-muted-foreground" : "bg-input"}`}
+                className={`absolute left-3 w-6 h-0.5 mt-3 ${index === activeIndex ? "bg-slate-400" : "bg-slate-200"}`}
               ></div>
             )}
 
             <div
-              className={`absolute ${index === 0 ? "left-[0.593rem] mt-0" : "left-8 mt-[0.58rem]"} w-2 h-2 rounded-full ${index === activeIndex ? "bg-muted-foreground" : "bg-input"}`}
+              className={`absolute ${index === 0 ? "left-[0.593rem] mt-0" : "left-8 mt-[0.58rem]"} w-2 h-2 rounded-full ${index === activeIndex ? "bg-slate-400" : "bg-slate-200"}`}
             ></div>
 
             {/* Content */}
@@ -79,7 +83,9 @@ const TranscriptTimeline = () => {
                   <Volume2Icon className="text-primary ml-2" size={20} />
                 )}
               </div>
-              <p className={`mt-1 text-muted-foreground text-md ml-11 pr-4`}>
+              <p
+                className={`mt-1 ${index === activeIndex ? "text-slate-500" : "text-slate-400"}  text-md ml-11 pr-4`}
+              >
                 {item.text}
               </p>
             </div>
