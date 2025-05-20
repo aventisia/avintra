@@ -1,19 +1,22 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { RoleTableDTO } from "../dtos/roles-table-dto";
 
-export const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/role`;
+export const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-role`;
 
 /**
  * Retrieves list of Documents.
  */
 export const getRoles = () => {
   return axiosInstance
-    .get<IHttpResponse<RoleTableDTO[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<RoleTableDTO[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 

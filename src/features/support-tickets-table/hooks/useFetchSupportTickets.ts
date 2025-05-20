@@ -1,8 +1,9 @@
-import { useQuery, QueryObserverResult } from "@tanstack/react-query";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+
 import { getSupportTickets } from "../apis/suport-tickets-table-apis";
 import { DATA_QUERY_KEY } from "../constants/constants";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 
 type FetchSupportTicketsReturnType = {
   data: IHttpResponse<SupportTicketsTableDto[]> | undefined;

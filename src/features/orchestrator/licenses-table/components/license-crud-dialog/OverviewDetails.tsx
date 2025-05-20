@@ -1,7 +1,8 @@
+import { useQueryClient } from "@tanstack/react-query";
+
 import { OverviewDetailDivElement } from "@/features/sa/sa-licenses-table/components/sa-license-crud-dialog/RecordPaymentOverviewDetails";
 import { PricingPlanDto } from "@/react-toolkit/types/pricing-plan-dto";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../../constants";
 import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
@@ -34,7 +35,7 @@ export const OverviewDetails = ({
         <OverviewDetailDivElement
           label="Unit Cost :"
           isFetching={isFetching}
-          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} /mo`}
+          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} ${licenseDetails?.pricingComponent == "GPUCompute" ? "/30 sec" : "/mo"}`}
         />
         {licenseDetails?.frequency && licenseDetails?.frequency != "NA" ? (
           <OverviewDetailDivElement

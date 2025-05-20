@@ -1,12 +1,14 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useCheckAvailability } from "@aventisia/ui/hooks";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { isMachineNameAvailable } from "../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
@@ -15,6 +17,7 @@ import {
 } from "../constants/machine-zod-schema";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
+
 import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
 
 /**
@@ -44,7 +47,11 @@ export const useDefineMachineForm = () => {
     })),
   );
 
-  const { data: currentAgentsDataResponse, isFetching, isLoading } = useFetchSelectTableAgents(rowId);
+  const {
+    data: currentAgentsDataResponse,
+    isFetching,
+    isLoading,
+  } = useFetchSelectTableAgents(rowId);
 
   // Get store state and actions
   const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
@@ -59,14 +66,26 @@ export const useDefineMachineForm = () => {
 
   useEffect(() => {
     setIsReadOnly(crudAction === "read");
-    setCurrentAgents(currentAgentsDataResponse?.data.filter(a => crudAction !== "read" || a.isAssigned) ?? []);
+    setCurrentAgents(
+      currentAgentsDataResponse?.data.filter(
+        (a) => crudAction !== "read" || a.isAssigned,
+      ) ?? [],
+    );
     if (currentAgentsDataResponse?.data)
       setAllAssigned(
         currentAgentsDataResponse?.data.some((x) => x.isAssigned)
           ? "indeterminate"
           : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
       );
-  }, [rowId, isFetching, currentAgentsDataResponse?.data, setAllAssigned, setCurrentAgents, setIsReadOnly, crudAction])
+  }, [
+    rowId,
+    isFetching,
+    currentAgentsDataResponse?.data,
+    setAllAssigned,
+    setCurrentAgents,
+    setIsReadOnly,
+    crudAction,
+  ]);
 
   // Get query client
   const queryClient = useQueryClient();
@@ -79,6 +98,7 @@ export const useDefineMachineForm = () => {
       id: "",
       name: "",
       type: "",
+      licenseId: "",
       environment: "",
       ipAddress: "",
       hostname: "",
@@ -115,10 +135,12 @@ export const useDefineMachineForm = () => {
       id: rowId,
       name: machineData?.name ?? "",
       type: machineData?.type ?? "",
+      licenseId: machineData?.licenseId ?? "",
       environment: machineData?.environment,
       ipAddress: machineData?.ipAddress,
       hostname: machineData?.hostname,
 
+      isDisabled: machineData?.isDisabled,
       createdBy:
         machineData?.createdBy ??
         userSession?.firstName + " " + userSession?.lastName,
@@ -132,7 +154,7 @@ export const useDefineMachineForm = () => {
         ? new Date(machineData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession,]);
+  }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
   const {

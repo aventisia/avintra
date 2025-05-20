@@ -1,13 +1,12 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-
-import { InputDivElement } from "../InputDivElement";
-import type { PwdZodSchema } from "../../types/pwd-zod-schema";
+import { Button } from "@aventisia/ui/buttons";
+import { CheckboxField, Form, InputField } from "@aventisia/ui/form";
 import type { z } from "zod";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { useProfilePasswordFormMutation } from "../../hooks/useProfilePasswordFormMutation";
+
 import { useDefineProfilePasswordForm } from "../../hooks/useDefineProfilePasswordForm";
+import { useProfilePasswordFormMutation } from "../../hooks/useProfilePasswordFormMutation";
+import type { PwdZodSchema } from "../../types/pwd-zod-schema";
+import { InputDivElement } from "../InputDivElement";
+
 export const SecurityTab = () => {
   const { form } = useDefineProfilePasswordForm();
   const { mutate, isPending } = useProfilePasswordFormMutation();

@@ -1,12 +1,13 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
+import { ISelectOption } from "@aventisia/ui/types";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { RecordPaymentDto } from "../dtos/record-payment-dto";
 import { RequestLicensesDto } from "../dtos/request-license-dto";
 import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/license-credit`;
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/manage-license-credit`;
 
 /**
  * Retrieves list of licenses.
@@ -14,6 +15,25 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/license-cre
 export const getLicenses = () => {
   return axiosInstance
     .get<IHttpResponse<LicensesTableDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+/**
+ * Retrieves list of license by id.
+ */
+export const getLicense = (id?: string) => {
+  id = id && !id?.includes("00000000") ? id : "";
+  return axiosInstance
+    .get<IHttpResponse<LicensesTableDto>>(`${baseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
+
+export const getLicensesToSelect = (tenantId?: string) => {
+  tenantId = tenantId && !tenantId?.includes("00000000") ? tenantId : "";
+
+  return axiosInstance
+    .get<
+      IHttpResponse<ISelectOption[]>
+    >(`${baseAPIURL}/license-to-select/${tenantId}`)
     .then((res) => res.data);
 };
 

@@ -1,19 +1,21 @@
-import * as React from "react";
-import type { Editor } from "@tiptap/react";
-import { cn } from "@/react-toolkit/lib/utils";
-import { CaretDownIcon } from "@radix-ui/react-icons";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/react-toolkit/ui/dropdown-menu";
-import { ToolbarButton } from "./toolbar-button";
-import { ShortcutKey } from "./shortcut-key";
-import { getShortcutKey } from "../utils/utils";
-import { FormatAction } from "../types/types";
+} from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
+import { CaretDownIcon } from "@radix-ui/react-icons";
+import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";
+import * as React from "react";
+
+import { FormatAction } from "../types/types";
+import { getShortcutKey } from "../utils/utils";
+
+import { ShortcutKey } from "./shortcut-key";
 import type { toggleVariants } from "./toggle";
+import { ToolbarButton } from "./toolbar-button";
 
 interface ToolbarSectionProps extends VariantProps<typeof toggleVariants> {
   editor: Editor;

@@ -1,14 +1,16 @@
-import { Badge } from "@/react-toolkit/ui/badge";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { dateFormater } from "@/react-toolkit/utils/date-formater";
+import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelStatusEnum } from "../enums/model-status-enum";
+
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
+import { ModelTypesEnum } from "../enums/model-type-enum";
 
 /**
  * Array of table columns for the model table.
@@ -58,9 +60,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("type")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("type")}</div>
-    ),
+    cell: ({ row }) => {
+      const typeValue =
+        ModelTypesEnum[row.getValue("type") as keyof typeof ModelTypesEnum];
+      return <div className="w-auto font-medium">{typeValue}</div>;
+    },
   },
   {
     accessorKey: "llm",
@@ -109,7 +113,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("createdOn"))}
+        {dateFormatter(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -124,7 +128,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("trainedOn"))}
+        {dateFormatter(row.getValue("trainedOn"))}
       </div>
     ),
   },

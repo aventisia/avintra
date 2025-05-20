@@ -1,8 +1,9 @@
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+
 import { getSupportTicket } from "../apis/suport-tickets-table-apis";
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 import { getTicketQueryKey } from "../constants/constants";
+import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
 /**
  * Custom hook to fetch support ticket details using react query.

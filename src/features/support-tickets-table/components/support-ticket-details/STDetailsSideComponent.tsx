@@ -1,14 +1,16 @@
-import { Separator } from "@/react-toolkit/ui/separator";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
-import { useLocation, useNavigate } from "react-router-dom";
-import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
-import { useEffect, useState } from "react";
-import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
 import { formatDistanceToNow } from "date-fns";
-import { SupportTicketTDeleteAction } from "../st-remark-row-actions/SupportTicketDeleteAction";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
+import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
+import { SupportTicketTDeleteAction } from "../st-remark-row-actions/SupportTicketDeleteAction";
 
 /**
  * Support ticket details side component.

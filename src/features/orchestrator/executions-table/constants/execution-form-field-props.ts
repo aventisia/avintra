@@ -1,5 +1,4 @@
-import { InputFieldProps } from '@/react-toolkit/ui/form/fields/InputField';
-import { SwitchFieldProps } from '@/react-toolkit/ui/form/fields/SwitchField';
+import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 
 // execution Id
 export const idProps: InputFieldProps = {

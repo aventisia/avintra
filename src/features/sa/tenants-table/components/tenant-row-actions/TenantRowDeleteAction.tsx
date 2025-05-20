@@ -1,6 +1,9 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import {
+  useListOptimisticMutation,
+  useShowAlertHandler,
+} from "@aventisia/ui/hooks";
+
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { TenantsTableDto } from "../../dtos/tenants-table-dto";

@@ -1,11 +1,10 @@
-import { z } from "zod";
-
 import {
   alphaNumericError,
+  alphaNumericRegex,
   maxLenError,
   reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { alphaNumericRegex } from "@/react-toolkit/utils/regex-list";
+} from "@aventisia/ui/utils";
+import { z } from "zod";
 
 /**
  * Represents the Zod schema for a tenant.

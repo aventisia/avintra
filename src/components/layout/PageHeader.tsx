@@ -1,5 +1,5 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { Skeleton } from "@aventisia/ui";
+import { cn } from "@aventisia/ui/lib";
 
 interface PageHeaderProps {
   isLoading?: boolean;
@@ -34,4 +34,3 @@ const PageHeader = ({
 };
 
 export { PageHeader };
-

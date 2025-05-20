@@ -1,4 +1,5 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 

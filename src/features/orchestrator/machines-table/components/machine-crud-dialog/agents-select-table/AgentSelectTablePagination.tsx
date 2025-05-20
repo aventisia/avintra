@@ -1,4 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
@@ -6,8 +6,9 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
-import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { useShallow } from "zustand/react/shallow";
+
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 
 interface AgentSelectTablePaginationProps<TData> {
   table: Table<TData>;

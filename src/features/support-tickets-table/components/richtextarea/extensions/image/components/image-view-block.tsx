@@ -1,7 +1,8 @@
+import { cn } from "@aventisia/ui/lib";
 import { isNumber, NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import { useMemo } from "react";
+
 import { useImageLoad } from "../../../hooks/use-image-load";
-import { cn } from "@/react-toolkit/lib/utils";
 
 const ImageViewBlock = ({ editor, node, getPos }: NodeViewProps) => {
   const imgSize = useImageLoad(node.attrs.src);

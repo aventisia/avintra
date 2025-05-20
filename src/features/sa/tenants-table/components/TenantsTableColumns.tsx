@@ -1,12 +1,12 @@
-import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { dateFormater } from "@/react-toolkit/utils/date-formater";
-import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { CurrenciesEnum } from "@aventisia/ui/enums";
+import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
+
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
 /**
@@ -62,7 +62,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("effectiveDate"))}
+        {dateFormatter(row.getValue("effectiveDate"))}
       </div>
     ),
   },
@@ -73,7 +73,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue<Date>("renewalDate"))}
+        {dateFormatter(row.getValue<Date>("renewalDate"))}
       </div>
     ),
   },
@@ -84,7 +84,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(CurrencyTypesEnum, row.getValue("currency"))}
+        {getEnumValueByKey(CurrenciesEnum, row.getValue("currency"))}
       </div>
     ),
   },
@@ -95,7 +95,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue<Date>("expiresOn"))}
+        {dateFormatter(row.getValue<Date>("expiresOn"))}
       </div>
     ),
   },
@@ -121,7 +121,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("createdOn"))}
+        {dateFormatter(row.getValue("createdOn"))}
       </div>
     ),
   },

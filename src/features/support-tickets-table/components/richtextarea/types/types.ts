@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/core";
-import type { EditorView } from "@tiptap/pm/view";
 import type { EditorState } from "@tiptap/pm/state";
+import type { EditorView } from "@tiptap/pm/view";
 
 export interface LinkProps {
   url: string;

@@ -1,15 +1,13 @@
-import { Badge } from "@/react-toolkit/ui/badge";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import {
-  dateFormater,
-  dateFormaterDistanceToNow,
-} from "@/react-toolkit/utils/date-formater";
+import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { maskIP } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
+
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
 /**
@@ -105,7 +103,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormaterDistanceToNow(row.getValue<Date>("lastCheckedIn"))}
+        {dateFormatter(row.getValue<Date>("lastCheckedIn"))}
       </div>
     ),
   },
@@ -157,7 +155,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue<Date>("createdOn"))}
+        {dateFormatter(row.getValue<Date>("createdOn"))}
       </div>
     ),
   },

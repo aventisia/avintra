@@ -1,19 +1,22 @@
+import { Separator } from "@aventisia/ui";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
 import { columnDisplayNames } from "@/features/flows-table/constants/column-display-names";
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { Separator } from "@/react-toolkit/ui/separator";
 
 import { usersTableColumns } from "../../users-table/components/UsersTableColumns";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { roleTableColumnvisibilityState } from "../constants/column-visibility-state";
 import { useFetchRoles } from "../hooks/useFetchRoles";
+
 import { RoleCrudDialog } from "./role-crud-dialog/RoleCrudDialog";
 import { RolesBulkActions } from "./role-row-actions/RolesBulkActions";
 import { RolesTableColumns } from "./RolesTableColumns";
@@ -62,12 +65,7 @@ export const RolesTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={usersTableColumns.length}
-              />
-            </div>
+            <DataTable table={table} columnsLength={usersTableColumns.length} />
           </RoleCrudDialog>
 
           {/* Data table Pagination component */}

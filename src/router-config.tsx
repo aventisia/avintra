@@ -1,10 +1,12 @@
+import { NotFoundPage } from "@aventisia/ui/layout";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 
-import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
-import { NotFoundPage } from "@/react-toolkit/pages/NotFoundPage";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { CrudActionTypeLong } from "@/react-toolkit/constants";
 
-import { WorkspaceUILayout } from "./components/layout/WorkspaceUILayout";
+import { AppErrorPage } from "./components/layout/AppErrorPage";
+import { AppLayout } from "./components/layout/AppLayout";
+import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import {
   AccountDeactivation,
   DeviceHistory,
@@ -14,6 +16,7 @@ import {
 } from "./features/my-account/components";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import { BillingPage } from "./pages/BillingPage";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
 import { LicensesPage } from "./pages/LicensesPage";
@@ -24,24 +27,22 @@ import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
+import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
+import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
+import { PricingPage } from "./pages/sa/PricingPage";
+import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
+import { TenantsPage } from "./pages/sa/TenantsPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantsPage } from "./pages/sa/TenantsPage";
-import { UsersPage } from "./pages/UsersPage";
-import { TriggersPage } from "./pages/orchestrator/TriggersPage";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { CrudActionTypeLong } from "@/react-toolkit/constants";
-import { PricingPage } from "./pages/sa/PricingPage";
-import { BillingPage } from "./pages/BillingPage";
-import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
+import { UsersPage } from "./pages/UsersPage";
 
 const routerConfig: RouteObject[] = [
   {
     path: "/",
-    element: <WorkspaceUILayout />,
-    errorElement: <ErrorPage />,
+    element: <AppLayout />,
+    errorElement: <AppErrorPage />,
     children: [
       {
         path: "/",
@@ -62,7 +63,7 @@ const routerConfig: RouteObject[] = [
       {
         path: "/account",
         element: <MyAccountPage />,
-        errorElement: import.meta.env.DEV && <ErrorPage />,
+        errorElement: <AppErrorPage />,
         children: [
           {
             index: true,
@@ -106,7 +107,7 @@ const routerConfig: RouteObject[] = [
       {
         path: "/orchestrator",
         element: <Orchestrator />,
-        errorElement: import.meta.env.DEV && <ErrorPage />,
+        errorElement: <AppErrorPage />,
         children: [
           {
             index: true,
@@ -116,6 +117,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/queues/:id?/:a?",
             element: <QueuesPage />,
+          },
+          {
+            path: "/orchestrator/queues/work-items/:qid",
+            element: <QueuesWorkItemsPage />,
           },
           {
             path: "/orchestrator/executions/:id?/:a?",
@@ -185,30 +190,31 @@ const routerConfig: RouteObject[] = [
   },
   {
     path: "/redirect",
-    element: <RedirectPage />,
-    errorElement: <ErrorPage />,
+    element: <AppRedirectPage />,
+    errorElement: <AppErrorPage />,
   },
 ];
 
 export const router = createBrowserRouter(routerConfig, {
   basename: import.meta.env.BASE_URL,
-  unstable_patchRoutesOnNavigation: (state) => {
-    const currentMatch = state.matches[state.matches.length - 1];
-    const id = currentMatch.params["id"];
-    const action = currentMatch.params["a"];
+});
 
-    useDTCrudDialogStore.subscribe(
-      (state) => state,
-      (state) => {
-        if (!!id && !!action && !!CrudActionTypeLong[action]) {
-          state.setCrudDialogOptions({
-            rowId: id ?? window.crypto.randomUUID(),
-            crudAction: CrudActionTypeLong[action],
-            showDialog: true,
-          });
-          state.setShowDialog(true);
-        }
-      },
-    );
-  },
+router.subscribe((state) => {
+  const currentMatch = state.matches[state.matches.length - 1];
+  const id = currentMatch.params["id"];
+  const action = currentMatch.params["a"];
+
+  useDTCrudDialogStore.subscribe(
+    (state) => state,
+    (state) => {
+      if (!!id && !!action && !!CrudActionTypeLong[action]) {
+        state.setCrudDialogOptions({
+          rowId: id ?? window.crypto.randomUUID(),
+          crudAction: CrudActionTypeLong[action],
+          showDialog: true,
+        });
+        state.setShowDialog(true);
+      }
+    },
+  );
 });

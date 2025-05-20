@@ -1,8 +1,12 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
@@ -19,9 +23,7 @@ const getFlows = () => {
 /**
  * Checks the availability of a flow name.
  */
-const isFlowNameAvailable = (
-  postObj: CheckAvailabilityDto,
-) => {
+const isFlowNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
     .post<
       IHttpResponse<TrueFalseResultDto>

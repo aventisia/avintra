@@ -1,4 +1,4 @@
-import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type";
+import { KeyValueLookupType } from "@aventisia/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
@@ -9,7 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "completedCount", value: "Completed" },
   { key: "failedCount", value: "Failed" },
   { key: "totalCount", value: "Total" },
-  { key: "lastUpdatedOn", value: "Last Updated On" },
+  { key: "lastModifiedOn", value: "Last Updated On" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
 ];

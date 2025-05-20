@@ -1,10 +1,13 @@
-import { useListOptimisticMutation } from '@/react-toolkit/hooks/useListOptimisticMutation';
-import { useShowAlertHandler } from '@/react-toolkit/hooks/useShowAlertHandler';
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import {
+  useListOptimisticMutation,
+  useShowAlertHandler,
+} from "@aventisia/ui/hooks";
+import { BanIcon } from "lucide-react";
 
-import { licenseOptimisticMutationFn } from '../../apis/licenses-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
-import { MyLicensesTableDto } from '../../dtos/licenses-table-dto';
+import { licenseOptimisticMutationFn } from "../../apis/licenses-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
+import { MyLicensesTableDto } from "../../dtos/licenses-table-dto";
 
 interface LicenseRowCancelActionProps {
   rowId: string;
@@ -27,7 +30,7 @@ export const LicenseRowCancelAction = ({
   return (
     <SimpleDDMenuItem
       content="Cancel"
-      lucidIconName="Ban"
+      Icon={BanIcon}
       onClick={() => {
         showCustomAlertDialog({
           confirmActionFn: () =>
@@ -36,9 +39,9 @@ export const LicenseRowCancelAction = ({
               crudAction: "delete",
             }),
           isDestructive: true,
-          title: "Approve the Request?",
+          title: "Cancel the Request?",
           description: `Are you sure to cancel the requested units?`,
-          confirmBtnText: "Approve",
+          confirmBtnText: "Cancel",
         });
       }}
     />

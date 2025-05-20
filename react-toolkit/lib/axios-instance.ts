@@ -1,3 +1,7 @@
+import { toast } from "@aventisia/ui/sonner";
+import { sleep } from "@aventisia/ui/utils";
+import axios from "axios";
+
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import {
   DEV_JWT_LS_KEY,
@@ -5,10 +9,6 @@ import {
   REQUEST_TIMEOUT,
 } from "@/react-toolkit/constants";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
-import { sleep } from "@/react-toolkit/utils/sleep-util";
-import axios from "axios";
-import { toast } from "sonner";
-
 /**
  * Creates an Axios instance with predefined configuration.
  *
@@ -17,6 +17,7 @@ import { toast } from "sonner";
  *
  * @constant {AxiosInstance} axiosInstance - The configured Axios instance.
  */
+
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
 });

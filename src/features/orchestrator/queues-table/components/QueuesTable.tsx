@@ -1,22 +1,24 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
+
+import { QueueAssignAgentDialog } from "./assign-agents/dialog/QueueAssignAgentDialog";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import { queuesTableColumns } from "./QueuesTableColumns";
-import { QueueUploadItemsDialog } from "./queue-upload-items/QueueUploadItemsDialog";
 
 /**
  * Renders a table of queues.
@@ -43,34 +45,30 @@ export const QueuesTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <QueueUploadItemsDialog>
-            <QueueCrudDialog>
-              {/* Table toolbar */}
-              <div className="flex items-center justify-between">
-                <DTHeading heading={TABLE_HEADING} />
+          <QueueCrudDialog>
+            <QueueAssignAgentDialog />
+            {/* Table toolbar */}
+            <div className="flex items-center justify-between">
+              <DTHeading heading={TABLE_HEADING} />
 
-                <div className="flex items-center gap-2">
-                  <DTSearchBox
-                    table={table}
-                    searchColumn={SEARCH_COLUMN}
-                    placeholder="Search queues..."
-                  />
-                  <DTViewOptions {...{ table, columnDisplayNames }} />
-                  <Separator orientation="vertical" className="mx-2 h-6" />
-                  <DTCreateButton />
-                </div>
-              </div>
-
-              {/* Data table to render data */}
-              <div className="rounded-md border">
-                <DataTable
+              <div className="flex items-center gap-2">
+                <DTSearchBox
                   table={table}
-                  columnsLength={queuesTableColumns.length}
+                  searchColumn={SEARCH_COLUMN}
+                  placeholder="Search queues..."
                 />
+                <DTViewOptions {...{ table, columnDisplayNames }} />
+                <Separator orientation="vertical" className="mx-2 h-6" />
+                <DTCreateButton />
               </div>
-            </QueueCrudDialog>
-          </QueueUploadItemsDialog>
+            </div>
+
+            {/* Data table to render data */}
+            <DataTable
+              table={table}
+              columnsLength={queuesTableColumns.length}
+            />
+          </QueueCrudDialog>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

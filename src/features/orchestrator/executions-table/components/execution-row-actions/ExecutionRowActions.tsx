@@ -1,12 +1,13 @@
-import { ExecutionStatusTypesEnum } from '@/react-toolkit/enums/execution-status-type-enum';
-import { DataTableRowActions } from '@/react-toolkit/ui/data-table/row-actions/DataTableRowActions';
-import { DTRowAction } from '@/react-toolkit/ui/data-table/row-actions/DTRowAction';
-import { DropdownMenuSeparator } from '@/react-toolkit/ui/dropdown-menu';
+import { DataTableRowActions, DTRowAction } from "@aventisia/ui/data-table";
+import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
-import { ExecutionsTableDto } from '../../dtos/executions-table-dto';
-import { ExecutionRowCancelAction } from './ExecutionRowCancelAction';
-import { ExecutionRowDeleteAction } from './ExecutionRowDeleteAction';
-import { ExecutionRowRetryAction } from './ExecutionRowRetryAction';
+import { ExecutionStatusTypesEnum } from "@/react-toolkit/enums/execution-status-type-enum";
+
+import { ExecutionsTableDto } from "../../dtos/executions-table-dto";
+
+import { ExecutionRowCancelAction } from "./ExecutionRowCancelAction";
+import { ExecutionRowDeleteAction } from "./ExecutionRowDeleteAction";
+import { ExecutionRowRetryAction } from "./ExecutionRowRetryAction";
 
 interface ExecutionRowActionsProps {
   rowId: string;

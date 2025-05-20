@@ -1,4 +1,5 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Separator, Switch } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
 import {
   Card,
   CardContent,
@@ -6,15 +7,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/react-toolkit/ui/card/card";
-import Lucide from "@/react-toolkit/ui/Lucide";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { Switch } from "@/react-toolkit/ui/switch";
-import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+} from "@aventisia/ui/cards";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import Lucide from "@/react-toolkit/ui/Lucide";
+
+import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
 
 export const TenantInfo = () => {
   const navigate = useNavigate();

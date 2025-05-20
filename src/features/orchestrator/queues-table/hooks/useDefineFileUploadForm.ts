@@ -1,10 +1,12 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { queueUploadFileZodSchema } from "../constants/queue-zod-schema";
 
 /**
@@ -37,8 +39,12 @@ export const useDefineFileUploadForm = () => {
   const form = useForm<z.infer<typeof queueUploadFileZodSchema>>({
     resolver: zodResolver(queueUploadFileZodSchema),
     defaultValues: {
-      id: "",
-      data: "",
+      payloadData: "",
+
+      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdOn: new Date(),
+      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: new Date(),
     },
   });
 
@@ -53,6 +59,9 @@ export const useDefineFileUploadForm = () => {
   ) => {
     return {
       ...formData,
+      id: rowId,
+      queueId: rowId,
+      status: "Pending",
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
@@ -62,6 +71,7 @@ export const useDefineFileUploadForm = () => {
   useEffect(() => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
+
   // Return form and methods
   return {
     form,

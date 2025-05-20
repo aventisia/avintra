@@ -1,20 +1,22 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
-import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
+
 import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
+import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
 import { triggersTableColumns } from "./TriggersTableColumns";
 
 /**
@@ -61,12 +63,10 @@ export const TriggersTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={triggersTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={triggersTableColumns.length}
+            />
           </TriggerCrudDialog>
 
           {/* Data table Pagination component */}

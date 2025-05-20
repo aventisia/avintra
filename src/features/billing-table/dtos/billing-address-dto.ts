@@ -23,12 +23,7 @@ export interface BillingAddressDto {
   /**
    * get or set address line 2 of the user whos getting the bill
    */
-  addressLine2: string;
-
-  /**
-   * get or set address line 3 of the user whos getting the bill
-   */
-  addressLine3: string;
+  addressLine2?: string;
 
   /**
    * get or set city of the address

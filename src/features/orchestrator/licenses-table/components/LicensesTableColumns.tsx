@@ -1,13 +1,14 @@
-import { PricingComponentsEnum } from '@/react-toolkit/enums/pricing-components-enum';
-import { DTColumnHeader } from '@/react-toolkit/ui/data-table/DTColumnHeader';
-import { currencyFormater } from '@/react-toolkit/utils/currency-formatter';
-import { dateFormater } from '@/react-toolkit/utils/date-formater';
-import { getEnumValueByKey } from '@/react-toolkit/utils/enum-to-array';
-import { ColumnDef } from '@tanstack/react-table';
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { ColumnDef } from "@tanstack/react-table";
 
-import { getColumnName } from '../constants/column-display-names';
-import { MyLicensesTableDto } from '../dtos/licenses-table-dto';
-import { LicenseRowActions } from './license-row-actions/LicenseRowActions';
+import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
+
+import { getColumnName } from "../constants/column-display-names";
+import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
+
+import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
 
 /**
  * Array of table columns for the licenses table.
@@ -124,7 +125,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue<Date>("nextBillingDate"))}
+        {dateFormatter(row.getValue<Date>("nextBillingDate"))}
       </div>
     ),
   },

@@ -1,17 +1,16 @@
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputDivElement } from "../InputDivElement";
+import { Button, ResendCodeButton, SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputOtpField } from "@aventisia/ui/form";
+import { toast } from "@aventisia/ui/sonner";
 import type { z } from "zod";
-import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { toast } from "sonner";
+
+import Lucide from "@/react-toolkit/ui/Lucide";
+
+import { verificationCodeProps } from "../../constants/constants";
 import { verifyEmailZodSchema } from "../../constants/verify-email-zod-schema";
 import { useDefineVerifyEmailForm } from "../../hooks/useDefineVerifyEmailForm";
 import { useProfileEmailMutation } from "../../hooks/useProfileEmailMutation";
-import Lucide from "@/react-toolkit/ui/Lucide";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { verificationCodeProps } from "../../constants/constants";
 import { useResendCodeMutationForEmailUpdate } from "../../hooks/useResendCodeMutationForEmailUpdate";
-import { ResendCodeButton } from "@/react-toolkit/ui/buttons/ResendCodeButton";
+import { InputDivElement } from "../InputDivElement";
 
 export const VerifyEmail = () => {
   // Define form

@@ -1,6 +1,8 @@
-import Lucide from "@/react-toolkit/ui/Lucide";
 import clsx from "clsx";
 import { Link, matchPath, useLocation } from "react-router-dom";
+
+import Lucide from "@/react-toolkit/ui/Lucide";
+
 import type { MyAccountSidebarLink as MyAccountSidebarLinkProps } from "../types/my-account-sidebar-link";
 
 export const MyAccountSidebarLink = ({

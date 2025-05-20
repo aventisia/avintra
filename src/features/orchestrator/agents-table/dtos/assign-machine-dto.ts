@@ -1,5 +1,5 @@
-import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 
 /**
  * data transfer object for getting the machine data to select and assign to agent.
@@ -8,22 +8,22 @@ import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-envir
  * @interface AssignMachineDto
  */
 export interface AssignMachineDto {
-    /**
-     * 
-     * id for the record
-     * @type {string}
-     * @memberof AssignMachineDto
-     */
-    id: string
-    tenantId: string
-    agentId: string
-    name: string
-    isDisabled: boolean,
-    createdBy: string
-    createdOn: Date
-    lastModifiedBy: string
-    type?: MachineOsTypesEnum
-    environment?: MachineEnvironmentTypesEnum
-    lastModifiedOn: Date
-    isAssigned: boolean
+  /**
+   *
+   * id for the record
+   * @type {string}
+   * @memberof AssignMachineDto
+   */
+  id: string;
+  tenantId: string;
+  agentId: string;
+  name: string;
+  isDisabled: boolean;
+  createdBy: string;
+  createdOn: Date;
+  lastModifiedBy: string;
+  type?: MachineOsTypesEnum;
+  environment?: MachineEnvironmentTypesEnum;
+  lastModifiedOn: Date;
+  isAssigned: boolean;
 }

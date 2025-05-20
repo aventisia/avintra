@@ -1,7 +1,10 @@
-import { z } from 'zod';
-
-import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
-import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
+import {
+  alphaNumericError,
+  alphaNumericRegex,
+  maxLenError,
+  reqError,
+} from "@aventisia/ui/utils";
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a keystore name.
@@ -24,7 +27,7 @@ export const keystoreZodSchema = z.object({
   value: z.string().min(1, { message: reqError("Value") }),
   isDisabled: z.boolean().default(false),
   isEncrypted: z.optional(z.boolean().default(false)),
-  description: z.string().optional(),
+  description: z.string().optional().nullable(),
   tags: z.string().optional(),
 
   // Read (view) only fields

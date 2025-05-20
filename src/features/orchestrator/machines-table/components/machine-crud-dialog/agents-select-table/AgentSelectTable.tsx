@@ -1,12 +1,12 @@
+import { Skeleton } from "@aventisia/ui";
+import { DataTable, DTSearchBox } from "@aventisia/ui/data-table";
+import { useDataTable } from "@aventisia/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
 
-import { agentSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
+
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";
 import { AgentSelectTablePagination } from "./AgentSelectTablePagination";
 
@@ -25,15 +25,32 @@ export function AgentSelectTable({
       currentAgents: state.currentAgents,
     })),
   );
+
   // Create a React table for agents data
   const table = useDataTable(
     agentSelectTableColumns,
-    currentAgents,
-    agentSelectTableColumnVisibilityState,
+    currentAgents ?? [],
+    {
+      id: true,
+      name: false,
+      versionNumber: true,
+      isAssigned: false,
+    },
     true,
   );
+
   return isFetching ? (
-    <DataTableSkeleton />
+    <DataTableSkeletonGeneric
+      columnCount={2}
+      rowCount={2}
+      showHeader={false}
+      customHeader={
+        <div className="flex h-[1.75rem] items-center justify-between">
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[10rem]" />
+          <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[13rem]" />
+        </div>
+      }
+    />
   ) : (
     <>
       <div className="my-2 flex items-center justify-between">
@@ -51,12 +68,7 @@ export function AgentSelectTable({
       </div>
 
       {/* Data table to render data */}
-      <div className="rounded-md border">
-        <DataTable
-          table={table}
-          columnsLength={agentSelectTableColumns.length}
-        />
-      </div>
+      <DataTable table={table} columnsLength={agentSelectTableColumns.length} />
       <div className="mt-2">
         <AgentSelectTablePagination table={table} />
       </div>

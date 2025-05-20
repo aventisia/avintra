@@ -1,4 +1,4 @@
-import { KeyValueLookupType } from '@/react-toolkit/types/key-value-lookup-type';
+import { KeyValueLookupType } from "@aventisia/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [

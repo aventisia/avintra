@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
+
 import { sortAsAssignedFirst } from "../constants";
+import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 
 type State = {
-
   /** agent id for agents */
   agentId: string | null;
 
@@ -11,6 +11,8 @@ type State = {
   agentsQueryKey: string[];
 
   allAssigned: boolean | "indeterminate";
+
+  availableLicenses: number;
 
   isReadOnly: boolean;
 
@@ -22,6 +24,8 @@ type Actions = {
   setAgentsState: (agentId: string) => void;
 
   setIsReadOnly: (value: boolean) => void;
+
+  setAvailableLicenses: (value: number) => void;
 
   setCurrentAgents: (agents: SelectAgentTableDto[]) => void;
 
@@ -35,12 +39,18 @@ export const useAgentsSelectTableStore = create<State & Actions>((set) => ({
   agentsQueryKey: [],
   currentAgents: [],
   allAssigned: false,
+  availableLicenses: 0,
   isReadOnly: false,
 
   setAgentsState: (agentId) =>
     set(() => ({
       agentId: agentId,
       agentsQueryKey: ["agent", agentId],
+    })),
+
+  setAvailableLicenses: (value) =>
+    set(() => ({
+      availableLicenses: value,
     })),
 
   setIsReadOnly: (value) =>
@@ -50,21 +60,28 @@ export const useAgentsSelectTableStore = create<State & Actions>((set) => ({
 
   setCurrentAgents: (agents) =>
     set(() => ({
-      currentAgents: agents
+      currentAgents: agents,
     })),
 
   setIsAssigned: (agentsId: string, isAssigned: boolean) =>
-    set((state) => ({
-      currentAgents: state.currentAgents.map(m => m.id === agentsId ? { ...m, isAssigned } : m)
-    })),
+    set((state) => {
+      return {
+        currentAgents: state.currentAgents.map((m) =>
+          m.id === agentsId ? { ...m, isAssigned } : m,
+        ),
+      };
+    }),
 
   setAllAssigned: (value: boolean | "indeterminate") =>
-    set((state) => ({
-      allAssigned: value,
-      currentAgents: state.currentAgents.map((m) => ({
-        ...m,
-        isAssigned: typeof value === "string" ? m.isAssigned : value
-      })).sort(sortAsAssignedFirst),
-    })),
-
+    set((state) => {
+      return {
+        allAssigned: value,
+        currentAgents: state.currentAgents
+          .map((m) => ({
+            ...m,
+            isAssigned: typeof value === "string" ? m.isAssigned : value,
+          }))
+          .sort(sortAsAssignedFirst),
+      };
+    }),
 }));

@@ -1,14 +1,15 @@
+import { Button } from "@aventisia/ui/buttons";
+import {
+  AutherCard,
+  CheckboxField,
+  Form,
+  InputField,
+  InputFileField,
+  SwitchField,
+  TextareaField,
+} from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
-
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { InputFileField } from "@/react-toolkit/ui/form/fields/InputFileField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -22,9 +23,9 @@ import {
   outputJsonSchemaProps,
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
+import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
-import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 
 export const QueueCrudForm = () => {
   // Define queue form
@@ -78,22 +79,18 @@ export const QueueCrudForm = () => {
       {/* queue Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      <p className="text-md mb-2 border-b-2 pb-2">General Details</p>
-      <div className="flex flex-col gap-3">
-        {/* Name */}
-        <InputField
-          {...nameProps}
-          onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-          nonErrorMessage={availabilityMessage}
-        />
+      {/* Name */}
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+      />
 
-        {/* Description */}
-        <TextareaField {...descriptionProps} />
-      </div>
+      {/* Description */}
+      <TextareaField {...descriptionProps} />
 
       {/* additional options */}
-      <p className="text-md mb-2 border-b-2 pb-2">Additonal Details</p>
-      <div className="flex flex-col gap-2">
+      <div className="mt-4 flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
           <label htmlFor="isUniqueReferencesEnforced" className="fm text-sm">
             Enforce unique references
@@ -113,15 +110,14 @@ export const QueueCrudForm = () => {
       </div>
 
       {/* autor etry  */}
-      <p className="text-md mb-2 border-b-2 pb-2">Auto retry</p>
       <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
           <label htmlFor="shouldRetryFailedItems" className="fm text-sm">
             Failed Items
           </label>
           <CheckboxField
-            id="shouldRetryFailedItems"
-            name="retryFailed"
+            name="shouldRetryFailedItems"
+            id="retryFailed"
             label=""
           />
         </div>
@@ -130,35 +126,43 @@ export const QueueCrudForm = () => {
             Abandoned Items
           </label>
           <CheckboxField
-            id="shouldRetryAbandonedItems"
-            name="retryAbandoned"
+            name="shouldRetryAbandonedItems"
+            id="retryAbandoned"
             label=""
           />
         </div>
 
-        <div className="mt-4">
-          <InputField {...maxRetriesProps} />
-        </div>
+        {form.getValues("shouldRetryAbandonedItems") ||
+        form.getValues("shouldRetryFailedItems") ? (
+          <div className="mt-4">
+            <InputField
+              {...maxRetriesProps}
+              isRequired={crudAction === "create"}
+            />
+          </div>
+        ) : null}
       </div>
 
       {/* additional options */}
-      <p className="text-md mb-2 border-b-2 pb-2">Schema Definations</p>
-      <div className="flex flex-col gap-3">
-        <InputFileField
-          {...inputJsonSchemaProps}
-          multiple={false}
-          fileTypes={[".json"]}
-        />
-        <InputFileField
-          multiple={false}
-          {...outputJsonSchemaProps}
-          fileTypes={[".json"]}
-        />
-      </div>
+      {crudAction === "create" && (
+        <div className="flex flex-col gap-3">
+          <InputFileField
+            {...inputJsonSchemaProps}
+            multiple={false}
+            fileTypes={[".json"]}
+            isRequired={crudAction === "create"}
+          />
+          <InputFileField
+            multiple={false}
+            {...outputJsonSchemaProps}
+            fileTypes={[".json"]}
+            isRequired={crudAction === "create"}
+          />
+        </div>
+      )}
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
       {/* AutherCard */}
       {isReadMode && (
         <AutherCard

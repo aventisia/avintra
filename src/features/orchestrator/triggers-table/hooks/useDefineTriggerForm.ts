@@ -1,19 +1,24 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability"
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store"
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useShallow } from "zustand/react/shallow"
-import { isNameAvailable } from "../apis/triggers-table-apis"
-import { DATA_QUERY_KEY } from "../constants"
+import { useCheckAvailability } from "@aventisia/ui/hooks";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { isNameAvailable } from "../apis/triggers-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
 import {
   triggerNameSchema,
   triggerZodSchema,
-} from "../constants/trigger-zod-schema"
-import { TriggersTableDto } from "../dtos/triggers-table-dto"
+} from "../constants/trigger-zod-schema";
+import { TriggersTableDto } from "../dtos/triggers-table-dto";
+import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
+
+import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
 
 /**
  * Custom hook for defining a trigger form.
@@ -42,6 +47,44 @@ export const useDefineTriggerForm = () => {
     })),
   );
 
+  const {
+    data: currentAgentsDataResponse,
+    isFetching,
+    isLoading,
+  } = useFetchSelectTableAgents(rowId);
+
+  const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
+    useAgentsSelectTableStore(
+      useShallow((state) => ({
+        currentAgents: state.currentAgents,
+        setCurrentAgents: state.setCurrentAgents,
+        setAllAssigned: state.setAllAssigned,
+        setIsReadOnly: state.setIsReadOnly,
+      })),
+    );
+
+  useEffect(() => {
+    setIsReadOnly(crudAction === "read");
+    setCurrentAgents(
+      currentAgentsDataResponse?.data.filter(
+        (a) => crudAction !== "read" || a.isAssigned,
+      ) ?? [],
+    );
+    if (currentAgentsDataResponse?.data)
+      setAllAssigned(
+        currentAgentsDataResponse?.data.some((x) => x.isAssigned)
+          ? "indeterminate"
+          : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
+      );
+  }, [
+    rowId,
+    isFetching,
+    currentAgentsDataResponse?.data,
+    setAllAssigned,
+    setCurrentAgents,
+    setIsReadOnly,
+    crudAction,
+  ]);
   // Get query client
   const queryClient = useQueryClient();
 
@@ -52,17 +95,35 @@ export const useDefineTriggerForm = () => {
     defaultValues: {
       id: "",
       name: "",
-      process: "",
-      jobPriority: "",
-      runtimeType: "",
-      timeZone: "",
+      environment: "",
+      agentIds: [],
+
+      timezone: "",
+      startsOn: undefined,
+
       frequency: "",
-      repeateEvery: "",
-      nonWorkingDays: "",
-      scheduleEnding: false,
+
+      repeateAt: undefined,
+      //day or weekday
+      repeateOn: [],
+      repeateEvery: 0,
+
+      hasNonWorkingDays: false,
+      nonWorkingDays: undefined,
+
+      hasNonWorkingTime: false,
+      nonWorkingTimeTo: undefined,
+      nonWorkingTimeFrom: undefined,
+
+      isEnds: false,
+      endsOn: undefined,
+
+      triggerForNewItem: false,
+      triggerForNewEmail: false,
       scheduleAutoDisabling: false,
       generateStuckAlert: false,
       generateFailedAlert: false,
+
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -93,18 +154,32 @@ export const useDefineTriggerForm = () => {
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
+      environment: triggerData?.environment,
+      agentIds: triggerData?.agentIds,
 
-      process: triggerData?.process ?? "",
-      jobPriority: triggerData?.jobPriority ?? "",
-      runtimeType: triggerData?.runtimeType ?? "",
-      timeZone: triggerData?.timeZone ?? "",
-      frequency: triggerData?.frequency ?? "",
-      repeateEvery: triggerData?.repeateEvery ?? "",
-      nonWorkingDays: triggerData?.nonWorkingDays ?? "",
-      scheduleEnding: triggerData?.scheduleEnding ?? false,
-      scheduleAutoDisabling: triggerData?.scheduleAutoDisabling ?? false,
-      generateStuckAlert: triggerData?.generateStuckAlert ?? false,
-      generateFailedAlert: triggerData?.generateFailedAlert ?? false,
+      timezone: triggerData?.timezone,
+      startsOn: triggerData?.startsOn,
+      frequency: triggerData?.frequency,
+
+      repeateAt: triggerData?.repeateAt,
+      repeateOn: triggerData?.repeateOn,
+      repeateEvery: triggerData?.repeateEvery,
+
+      hasNonWorkingDays: triggerData?.hasNonWorkingDays,
+      nonWorkingDays: triggerData?.nonWorkingDays,
+
+      hasNonWorkingTime: triggerData?.hasNonWorkingTime,
+      nonWorkingTimeTo: triggerData?.nonWorkingTimeFrom,
+      nonWorkingTimeFrom: triggerData?.nonWorkingTimeTo,
+
+      isEnds: triggerData?.isEnds,
+      endsOn: triggerData?.endsOn,
+
+      triggerForNewItem: triggerData?.triggerForNewItem,
+      triggerForNewEmail: triggerData?.triggerForNewEmail,
+      scheduleAutoDisabling: triggerData?.scheduleAutoDisabling,
+      generateStuckAlert: triggerData?.generateStuckAlert,
+      generateFailedAlert: triggerData?.generateFailedAlert,
 
       isDisabled: triggerData?.isDisabled ?? false,
       // Read (view) only fields
@@ -155,7 +230,7 @@ export const useDefineTriggerForm = () => {
   // Reset availability message when dialog closes
   useEffect(() => {
     if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+  }, [setAvailabilityMessage, showDialog, currentAgents]);
 
   // Return form and methods
   return {
@@ -167,6 +242,9 @@ export const useDefineTriggerForm = () => {
     refineFormData,
     isAvailable,
     availabilityMessage,
+    currentAgentsDataResponse,
+    isFetching,
+    isLoading,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,

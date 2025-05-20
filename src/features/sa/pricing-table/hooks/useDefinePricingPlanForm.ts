@@ -1,15 +1,14 @@
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useFetchTenantDetails } from "@/hooks/useFetchTenantsToSelect";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { PricingUnitTypesEnum } from "@/react-toolkit/enums/pricing-unit-types-enum";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../constants";
 import { pricingPlanZodSchema } from "../constants/pricingPlan-zod-schema";
@@ -49,6 +48,7 @@ export const useDefinePricingPlanForm = () => {
   const form = useForm<z.infer<typeof pricingPlanZodSchema>>({
     resolver: zodResolver(pricingPlanZodSchema),
     defaultValues: {
+      type: "",
       id: "",
       pricingComponent: "",
       tenantType: "",
@@ -65,11 +65,7 @@ export const useDefinePricingPlanForm = () => {
     },
   });
 
-  const [pricingComponent, tenantId] = form.watch([
-    "pricingComponent",
-    "tenantId",
-  ]);
-  const { tenantDetails } = useFetchTenantDetails(tenantId ?? "");
+  const [pricingComponent] = form.watch(["pricingComponent"]);
 
   // Destructor form values and methods
   const {
@@ -89,7 +85,12 @@ export const useDefinePricingPlanForm = () => {
 
     // Set pricingplan data to form
     form.reset({
-      // Single fields
+      type:
+        crudAction === "create"
+          ? undefined
+          : data?.tenantId
+            ? "tenant"
+            : "default",
       id: rowId,
       pricingComponent: data?.pricingComponent ?? "",
       tenantType: data?.tenantType ?? "",
@@ -118,15 +119,13 @@ export const useDefinePricingPlanForm = () => {
     return {
       ...formData,
       tenantId:
-        formData.tenantId && !formData.tenantId?.includes("00000000")
-          ? formData.tenantId
-          : null,
+        // (formData.tenantId && !formData.tenantId?.includes("00000000")) ||
+        formData.type == "tenant" ? formData.tenantId : null,
 
       unit:
         formData.pricingComponent == PricingComponentsEnum.GPUCompute
           ? PricingUnitTypesEnum.Credit
           : PricingUnitTypesEnum.License,
-      currency: tenantDetails?.data.currency ?? formData.currency,
       frequency:
         formData.pricingComponent == PricingComponentsEnum.GPUCompute
           ? null
@@ -150,7 +149,6 @@ export const useDefinePricingPlanForm = () => {
   return {
     form,
     watch,
-    tenantDetails,
     isSubmitting,
     isDirty,
     rowId,

@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { lazy, Suspense } from "react";
 
 // Lazy load the TriggersTable component.

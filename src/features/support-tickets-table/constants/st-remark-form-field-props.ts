@@ -1,4 +1,5 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputFieldProps } from "@aventisia/ui/form";
+
 import { RichTextAreaFieldProps } from "../components/richtextarea/RichTextAreaField";
 
 // Remark Id

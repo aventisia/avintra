@@ -1,6 +1,7 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+
 import { getAssignableMachines } from "../apis/agents-table-apis";
 
 /**
@@ -8,7 +9,6 @@ import { getAssignableMachines } from "../apis/agents-table-apis";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchMachines = (agentId: string) => {
-
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["machines-to-select", agentId],

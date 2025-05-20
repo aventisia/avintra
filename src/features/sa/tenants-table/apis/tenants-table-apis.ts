@@ -1,8 +1,13 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
+import { ISelectOption } from "@aventisia/ui/types";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
@@ -13,6 +18,51 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant`;
 const getTenants = () => {
   return axiosInstance
     .get<IHttpResponse<TenantsTableDto[]>>(`${baseAPIURL}`)
+    .then((res) => res.data);
+};
+
+export const getTenantsToSelect = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/tenants-to-select`)
+    .then((res) => res.data);
+};
+
+export const getCurrenciesToSelect = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/currencies-to-select`)
+    .then((res) => res.data);
+};
+
+export const searchTenantsToSearchSelect = async (query?: string) => {
+  const data = await axiosInstance
+    .post<IHttpResponse<ISelectOption[]>>(
+      `${baseAPIURL}/tenants-to-search-select`,
+      {
+        userInput: query ?? null,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    .then((res) => res.data);
+  return Promise.resolve(data.data);
+};
+
+export const getTenantDetails = (id?: string | null) => {
+  if (!id)
+    return Promise.resolve<IHttpResponse<TenantsTableDto>>({
+      statusCode: 201,
+      message: "",
+      data: {
+        name: "id not provided",
+        effectiveDate: new Date(),
+        renewalDate: new Date(),
+      },
+    });
+  return axiosInstance
+    .get<IHttpResponse<TenantsTableDto>>(`${baseAPIURL}/${id ?? ""}`)
     .then((res) => res.data);
 };
 

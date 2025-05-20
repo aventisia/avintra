@@ -8,6 +8,7 @@ import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-typ
 import { StatsCard } from "@/react-toolkit/ui/card/StatsCard";
 
 import type { MachinesTableDto } from "../dtos/machines-table-dto";
+
 type MachineStatsProps = {
   data: MachinesTableDto[];
 };

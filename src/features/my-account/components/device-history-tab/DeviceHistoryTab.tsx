@@ -1,7 +1,10 @@
+import { Skeleton } from "@aventisia/ui";
+
 import Lucide from "@/react-toolkit/ui/Lucide";
-import DeviceHistoryTable from "./DeviceHistoryTable";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+
 import useGetDeviceHistory from "../../hooks/useGetDeviceHistory";
+
+import DeviceHistoryTable from "./DeviceHistoryTable";
 
 export const DeviceHistoryTab = () => {
   const { isLoading, activeSessions, currentSession, getImageSourceOfBrowser } =

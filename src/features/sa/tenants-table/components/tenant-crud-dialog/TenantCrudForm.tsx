@@ -1,33 +1,50 @@
+import { Button } from "@aventisia/ui/buttons";
+import {
+  AutherCard,
+  DatePickerField,
+  Form,
+  InputField,
+  RadioGroupField,
+  SelectField,
+  SwitchField,
+  TextareaField,
+} from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
 
-import { useFetchCurrenciesToSelect } from "@/hooks/useFetchLicense";
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { DatePickerField } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { RadioGroupField } from "@/react-toolkit/ui/form/fields/RadioGroupField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-    daysBeforePwdExpiresProps, dbHostProps, dbNamePrefixProps, dbOptionProps, dbPortProps,
-    dbPwdProps, dbUserIdProps, effectiveOnProps, idleSessionTimeoutMinutesProps, idProps,
-    isDisabledProps, isIdleSessionTimeoutEnabledProps, isPwdEnabledProps,
-    isPwdNeverExpiresEnabledProps, isSSOEnabledProps, isTwoFAEnabledProps, nameProps, renewsOnProps,
-    ssoConfigJsonProps, typeProps
+  currencyProps,
+  daysBeforePwdExpiresProps,
+  dbHostProps,
+  dbNamePrefixProps,
+  dbOptionProps,
+  dbPortProps,
+  dbPwdProps,
+  dbUserIdProps,
+  effectiveOnProps,
+  idleSessionTimeoutMinutesProps,
+  idProps,
+  isDisabledProps,
+  isIdleSessionTimeoutEnabledProps,
+  isPwdEnabledProps,
+  isPwdNeverExpiresEnabledProps,
+  isSSOEnabledProps,
+  isTwoFAEnabledProps,
+  nameProps,
+  renewsOnProps,
+  ssoConfigJsonProps,
+  typeProps,
 } from "../../constants/tenant-form-field-props";
 import { tenantZodSchema } from "../../constants/tenant-zod-schema";
 import { TenantsTableDto } from "../../dtos/tenants-table-dto";
 import { useDefineTenantForm } from "../../hooks/useDefineTenantForm";
 
 export const TenantCrudForm = () => {
-  const { currenciesToselect } = useFetchCurrenciesToSelect();
   // Define tenant form
   const {
     form,
@@ -104,14 +121,30 @@ export const TenantCrudForm = () => {
         <SelectField {...typeProps} />
       ) : null}
 
-      {form.getValues("currency") || crudAction === "create" ? (
-        <SelectField
-          name="currency"
-          label="Currency"
-          isRequired={true}
-          selectOptions={currenciesToselect ?? []}
-        />
-      ) : null}
+      {/* Currency */}
+      <AsyncSelectField
+        {...currencyProps}
+        triggerClassName="w-full"
+        className="w-[37.5rem]"
+        getOptionValue={(option) => option.value.toLowerCase()}
+        renderOption={(option) => (
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col">
+              <div className="font-medium">{option.value}</div>
+              <div className="text-xs text-muted-foreground">
+                {option.description}
+              </div>
+            </div>
+          </div>
+        )}
+        getDisplayValue={(option) => (
+          <div className="flex items-center gap-2 text-left">
+            <div className="flex flex-col leading-tight">
+              <div className="font-medium">{option.label}</div>
+            </div>
+          </div>
+        )}
+      />
 
       {/* Effective date */}
       <DatePickerField {...effectiveOnProps} />

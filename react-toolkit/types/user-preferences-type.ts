@@ -14,8 +14,4 @@ type UserPreferencesType = {
   studio: StudioPreferencesType;
 };
 
-export type {
-  LayoutDirectionType,
-  StudioPreferencesType,
-  UserPreferencesType,
-};
+export type { LayoutDirectionType, StudioPreferencesType, UserPreferencesType };

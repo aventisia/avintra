@@ -1,12 +1,12 @@
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../constants";
 import { billingAddressZodSchema } from "../constants/billing-address-zod-schema";
@@ -51,7 +51,6 @@ export const useDefineBillingAddressForm = () => {
       email: "",
       addressLine1: "",
       addressLine2: "",
-      addressLine3: "",
       city: "",
       state: "",
       country: "",
@@ -88,7 +87,6 @@ export const useDefineBillingAddressForm = () => {
       email: data?.email ?? "",
       addressLine1: data?.addressLine1 ?? "",
       addressLine2: data?.addressLine2 ?? "",
-      addressLine3: data?.addressLine3 ?? "",
       city: data?.city ?? "",
       state: data?.state ?? "",
       country: data?.country ?? "",
@@ -116,6 +114,8 @@ export const useDefineBillingAddressForm = () => {
   ) => {
     return {
       ...formData,
+      id: crudAction === "create" ? rowId : formData.id,
+      addressType: "official",
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

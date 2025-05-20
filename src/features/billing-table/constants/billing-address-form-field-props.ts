@@ -1,8 +1,10 @@
-import { CountriesEnum } from "@/react-toolkit/enums/countries-enum";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { CountriesEnum } from "@aventisia/ui/enums";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
 // BillingPlan Id
 export const idProps: InputFieldProps = {
@@ -30,7 +32,6 @@ export const addressLine1Props: InputFieldProps = {
 export const addressLine2Props: InputFieldProps = {
   name: "addressLine2",
   label: "Address Line 2",
-  isRequired: true,
 };
 export const addressLine3Props: InputFieldProps = {
   name: "addressLine3",

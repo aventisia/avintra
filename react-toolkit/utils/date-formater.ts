@@ -1,4 +1,10 @@
-import { format, formatDistanceToNow, FormatDistanceToNowOptions, isAfter } from 'date-fns';
+import {
+  FormatDistanceToNowOptions,
+  format,
+  formatDistanceToNow,
+  isAfter,
+  isValid,
+} from "date-fns";
 
 export const DATE_MIN = new Date(1, 1, 1);
 
@@ -10,11 +16,14 @@ export const DATE_MIN = new Date(1, 1, 1);
  * @param {string} [placeholder="NA"]
  * @return placeholder
  */
-export const dateFormater = (
+export const dateFormatter = (
   date: Date,
   dateFormat: string = "dd MMM yyyy",
   placeholder: string = "NA",
-) => (isAfter(date, DATE_MIN) ? format(date, dateFormat) : placeholder);
+) =>
+  isValid(date) && isAfter(date, DATE_MIN)
+    ? format(date, dateFormat)
+    : placeholder;
 
 /**
  * return a human distace time
@@ -24,7 +33,7 @@ export const dateFormater = (
  * @param {FormatDistanceToNowOptions} [formatToNowOptions={addSuffix: true,}]
  * @return placeholder
  */
-export const dateFormaterDistanceToNow = (
+export const dateFormatterDistanceToNow = (
   date: Date,
   placeholder: string = "NA",
   formatToNowOptions: FormatDistanceToNowOptions = {

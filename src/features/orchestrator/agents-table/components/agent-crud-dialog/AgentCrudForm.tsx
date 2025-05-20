@@ -1,22 +1,28 @@
-import { useShallow } from 'zustand/react/shallow';
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { AutherCard, Form, InputField, SwitchField } from "@aventisia/ui/form";
+import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
-import { useOptimisticMutation } from '@/react-toolkit/hooks/useOptimisticMutation';
-import { Button } from '@/react-toolkit/ui/buttons/Button';
-import { InputField } from '@/react-toolkit/ui/form/fields/InputField';
-import { SwitchField } from '@/react-toolkit/ui/form/fields/SwitchField';
-import { Form } from '@/react-toolkit/ui/form/Form';
-import { AutherCard } from '@/react-toolkit/ui/form/non-field/AutherCard';
-import { Separator } from '@/react-toolkit/ui/separator';
+import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
+import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 
-import { assignMachines } from '../../apis/agents-table-apis';
+import { assignMachines } from "../../apis/agents-table-apis";
 import {
-    idProps, isDisabledProps, machineCountProps, nameProps, versionNumberProps
-} from '../../constants/agent-form-field-props';
-import { AgentAssignMachineDto } from '../../dtos/agent-assign-machine-dto';
-import { useDefineAgentForm } from '../../hooks/useDefineAgentForm';
-import { useMachinesSelectTableStore } from '../../stores/machines-select-table-store';
-import { LicenseDiv } from './LicenseDiv';
-import { MachineSelectTable } from './machines-select-table/MachineSelectTable';
+  idProps,
+  isDisabledProps,
+  licenseSelectProps,
+  machineCountProps,
+  nameProps,
+  versionNumberProps,
+} from "../../constants/agent-form-field-props";
+import { AgentAssignMachineDto } from "../../dtos/agent-assign-machine-dto";
+import { useDefineAgentForm } from "../../hooks/useDefineAgentForm";
+import { useMachinesSelectTableStore } from "../../stores/machines-select-table-store";
+
+import { MachineSelectTable } from "./machines-select-table/MachineSelectTable";
 
 export const AgentCrudForm = () => {
   // Define agent form
@@ -27,11 +33,15 @@ export const AgentCrudForm = () => {
     rowId: agentId,
   } = useDefineAgentForm();
 
-  const { currentAgentMachines } = useMachinesSelectTableStore(
-    useShallow((state) => ({
-      currentAgentMachines: state.currentMachines,
-    })),
-  );
+  const [licenseDetails, setLicenseDetails] = useState<MyLicensesTableDto>();
+
+  const { currentAgentMachines, setAvailableLicenses } =
+    useMachinesSelectTableStore(
+      useShallow((state) => ({
+        currentAgentMachines: state.currentMachines,
+        setAvailableLicenses: state.setAvailableLicenses,
+      })),
+    );
 
   // Define optimistic mutation to crete or update the machine
   const { mutate: mutateAgent } = useOptimisticMutation<
@@ -52,6 +62,22 @@ export const AgentCrudForm = () => {
     ],
     true,
   );
+
+  const [licenseType] = form.watch(["licenseId"]);
+
+  useEffect(() => {
+    const getLicenseDetails = async () => {
+      if (!licenseType) {
+        setAvailableLicenses(0);
+        setLicenseDetails(undefined);
+        return;
+      }
+      const response = await getLicense(licenseType);
+      setAvailableLicenses(response.data.available);
+      setLicenseDetails(response.data);
+    };
+    getLicenseDetails();
+  }, [form, licenseType, setAvailableLicenses]);
 
   // Define submit handler
   const onSubmit = () => {
@@ -95,10 +121,14 @@ export const AgentCrudForm = () => {
         <SwitchField {...isDisabledProps} disabled={isReadMode} />
       )}
 
-      <LicenseDiv
-        isReadOnly={isReadMode}
-        value={form.getValues("licenseType")}
-      />
+      <div className="flex flex-col gap-4">
+        {/* license type */}
+        <AsyncSelectField {...licenseSelectProps} />
+        <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
+          <p className="font-light">Available Licenses:</p>
+          <p>{licenseDetails?.available ?? 0}</p>
+        </div>
+      </div>
 
       <div className="mt-2 h-fit w-[38rem]">
         <MachineSelectTable isRowSelectionEnabled={crudAction !== "read"} />

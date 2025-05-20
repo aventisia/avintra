@@ -1,7 +1,9 @@
 import { useShallow } from "zustand/react/shallow";
+
+import { useAccountDeactivationStore } from "../../stores/account-deactivation-store";
+
 import { AccountDeactivation } from "./AccountDeactivation";
 import { DeactivationVerifyEmailForm } from "./DeactivationVerifyEmailForm";
-import { useAccountDeactivationStore } from "../../stores/account-deactivation-store";
 
 export const AccountDeactivationTab = () => {
   // Get store state

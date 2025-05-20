@@ -1,12 +1,20 @@
+import { CurrenciesEnum } from "@aventisia/ui/enums";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
 import { BillingFrequenciesEnum } from "@/react-toolkit/enums/billing-frequencies-enum";
-import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { IconInputFieldProps } from "@/react-toolkit/ui/form/fields/IconInputField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { RadioCardGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioCardGroupField";
+import { getSearchOptionsForAsyncSelect } from "@/react-toolkit/utils";
+
+import { searchTenantsToSearchSelect } from "../../tenants-table/apis/tenants-table-apis";
 
 // PricingPlan Id
 export const idProps: InputFieldProps = {
@@ -15,32 +23,46 @@ export const idProps: InputFieldProps = {
   disabled: true,
 };
 
+export const tenantSelectProps: AsyncSelectFieldProps = {
+  name: "tenantId",
+  selectOptions: searchTenantsToSearchSelect,
+  label: "Tenant Name",
+  placeholder: "Select tenant",
+  className: "!w-[28rem]",
+  triggerClassName: "!w-full",
+  size: "base",
+};
+
 export const pricingComponentTypeProps: SelectFieldProps = {
   name: "pricingComponent",
   label: "Pricing Component",
   isRequired: true,
   selectOptions: enumToArray(PricingComponentsEnum),
 };
-export const tenantTypeProps: SelectFieldProps = {
+export const deploymentTypeProps: RadioCardGroupFieldProps = {
   name: "tenantType",
-  label: "Tenant Type",
-  isRequired: true,
+  label: "Depoyment Type",
   selectOptions: enumToArray(DeploymentTypeEnum),
 };
 
-export const currencyTypeProps: SelectFieldProps = {
+export const currencyTypeProps: AsyncSelectFieldProps = {
   name: "currency",
-  label: "Currency",
+  label: "Unit Price",
+  size: "base",
+  placeholder: "Currency",
+  getOptionValue: (option) => option.value.toLowerCase(),
   isRequired: true,
-  selectOptions: enumToArray(CurrencyTypesEnum),
+  selectOptions: (search) =>
+    getSearchOptionsForAsyncSelect(enumToArray(CurrenciesEnum), search),
+  triggerClassName: "rounded-r-none w-full",
 };
 export const unitPriceTypeProps: InputFieldProps = {
   name: "unitPrice",
-  label: "Unit Price",
+  label: "",
   isRequired: true,
   placeholder: "99",
 };
-export const frequencyTypeProps: SelectFieldProps = {
+export const frequencyTypeProps: RadioCardGroupFieldProps = {
   name: "frequency",
   label: "Billing Frequency",
   selectOptions: enumToArray(BillingFrequenciesEnum),

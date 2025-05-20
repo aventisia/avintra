@@ -1,15 +1,16 @@
-import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { CurrenciesEnum } from "@aventisia/ui/enums";
+import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { ColumnDef } from "@tanstack/react-table";
+
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-import { dateFormater } from "@/react-toolkit/utils/date-formater";
-import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
-import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
+
 import { PricingPlanRowActions } from "./pricingPlan-table-actions/PricingPlanRowActions";
 
 /**
@@ -114,7 +115,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
       <div className="w-auto truncate font-medium">
         {currencyFormater(
           row.getValue("unitPrice"),
-          row.getValue<keyof typeof CurrencyTypesEnum>("currency"),
+          row.getValue<keyof typeof CurrenciesEnum>("currency"),
         )}
       </div>
     ),
@@ -164,7 +165,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("createdOn"))}
+        {dateFormatter(row.getValue("createdOn"))}
       </div>
     ),
   },

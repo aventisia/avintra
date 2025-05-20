@@ -1,9 +1,12 @@
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { dateFormater } from "@/react-toolkit/utils/date-formater";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
 import { getColumnName } from "../constants/column-display-names";
 import { InovicesTableDto } from "../dtos/inovices-table-dto";
+
 import { InoviceDownloadRowAction } from "./inovice-table-actions/InoviceDownloadRowAction";
 
 /**
@@ -22,6 +25,68 @@ export const inovicesTableColumns: ColumnDef<InovicesTableDto>[] = [
   },
 
   {
+    accessorKey: "subscriptionId",
+    header: ({ column }) => (
+      <DTColumnHeader
+        className="!w-4"
+        column={column}
+        title={getColumnName("subscriptionId")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-4/12 truncate font-medium">
+        {row.getValue("subscriptionId")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "invoiceNumber",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("invoiceNumber")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("invoiceNumber") ?? "NA"}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "amount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("amount")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {currencyFormater(row.getValue("amount"))}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "tax",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("tax")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("tax")}%</div>
+    ),
+  },
+
+  {
+    accessorKey: "totalAmount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("totalAmount")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {currencyFormater(row.getValue("totalAmount"))}
+      </div>
+    ),
+  },
+
+  {
     accessorKey: "status",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("status")} />
@@ -34,13 +99,25 @@ export const inovicesTableColumns: ColumnDef<InovicesTableDto>[] = [
   },
 
   {
-    accessorKey: "amount",
+    accessorKey: "generatedDate",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("amount")} />
+      <DTColumnHeader column={column} title={getColumnName("generatedDate")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("amount")}
+        {dateFormatter(row.getValue("generatedDate"))}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "invoiceDate",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("invoiceDate")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormatter(row.getValue("invoiceDate"))}
       </div>
     ),
   },
@@ -52,7 +129,7 @@ export const inovicesTableColumns: ColumnDef<InovicesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("dueDate"))}
+        {dateFormatter(row.getValue("dueDate"))}
       </div>
     ),
   },
@@ -63,7 +140,7 @@ export const inovicesTableColumns: ColumnDef<InovicesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("paidOn"))}
+        {dateFormatter(row.getValue("paidOn"))}
       </div>
     ),
   },

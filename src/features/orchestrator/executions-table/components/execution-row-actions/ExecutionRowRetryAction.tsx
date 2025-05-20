@@ -1,8 +1,9 @@
-import { useOptimisticMutation } from '@/react-toolkit/hooks/useOptimisticMutation';
-import { SimpleDDMenuItem } from '@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem';
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { RotateCwIcon } from "lucide-react";
 
-import { retryExecution } from '../../apis/executions-table-apis';
-import { DATA_QUERY_KEY } from '../../constants';
+import { retryExecution } from "../../apis/executions-table-apis";
+import { DATA_QUERY_KEY } from "../../constants";
 
 interface ExecutionRowRetryActionProps {
   id: string;
@@ -23,7 +24,7 @@ export const ExecutionRowRetryAction = ({
   return (
     <SimpleDDMenuItem
       content="Retry"
-      lucidIconName="RotateCw"
+      Icon={RotateCwIcon}
       className="fonr stroke-2"
       disabled={isPending}
       onClick={() => mutate(id)}

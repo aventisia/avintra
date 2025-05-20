@@ -50,14 +50,16 @@ export interface QueuesTableDto {
   maximumRetryAttempts: number;
 
   /**
-   * Gets the queue specific Data Schema Path
+   * Gets the queue specific Data Schema Path and json string
    */
   specificDataSchemaPath: string;
+  specificDataSchemaJsonString: string;
 
   /**
-   * Gets the wheather queue output Data Schema Path
+   * Gets the wheather queue output Data Schema Path and json string
    */
   outputDataSchemaPath: string;
+  outputDataSchemaJsonString: string;
 
   /**
    * Gets or sets a flag indicating whether the credentials record is disabled.

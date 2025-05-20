@@ -1,5 +1,8 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+
+import { getLicensesToSelect } from "../../licenses-table/apis/licenses-table-apis";
 
 // Project Id
 export const projectIdProps: InputFieldProps = {
@@ -30,12 +33,22 @@ export const machineCountProps: InputFieldProps = {
   disabled: true,
 };
 
-// version number 
+// version number
 export const versionNumberProps: InputFieldProps = {
   name: "versionNumber",
   label: "Version Number",
   disabled: true,
+};
 
+export const licenseSelectProps: AsyncSelectFieldProps = {
+  name: "licenseId",
+  selectOptions: () => getLicensesToSelect().then((data) => data.data),
+  label: "License Type",
+  placeholder: "Select License",
+  className: "!w-[38rem]",
+  triggerClassName: "!w-full",
+  size: "base",
+  isRequired: true,
 };
 
 // Is Disabled
@@ -45,4 +58,3 @@ export const isDisabledProps: SwitchFieldProps = {
   description:
     "Disable this agent if it's been not in use, or not required anymore",
 };
-

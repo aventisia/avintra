@@ -35,7 +35,7 @@ export enum VerificationCodeRequestTypesEnum {
   AccountDeactivation = "AccountDeactivation",
 
   /**
- * Request type to create verification code on new email for update email an account.
- */
+   * Request type to create verification code on new email for update email an account.
+   */
   UpdateEmail = "UpdateEmail",
 }

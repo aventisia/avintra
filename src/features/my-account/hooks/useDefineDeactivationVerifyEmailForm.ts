@@ -2,18 +2,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { useAccountDeactivationStore } from "../stores/account-deactivation-store";
+
 import { deactivationVerifyEmailZodSchema } from "../constants/deactivation-verify-email-zod-schema";
+import { useAccountDeactivationStore } from "../stores/account-deactivation-store";
 
 export const useDefineDeactivationVerifyEmailForm = () => {
   // Get update email store state
-  const { verifyEmailData, setStepNo } =
-    useAccountDeactivationStore(
-      useShallow((state) => ({
-        setStepNo: state.setStepNo,
-        verifyEmailData: state.verifyEmailData,
-      })),
-    );
+  const { verifyEmailData, setStepNo } = useAccountDeactivationStore(
+    useShallow((state) => ({
+      setStepNo: state.setStepNo,
+      verifyEmailData: state.verifyEmailData,
+    })),
+  );
 
   // Define form with zod schema
   const form = useForm<z.infer<typeof deactivationVerifyEmailZodSchema>>({
@@ -22,8 +22,6 @@ export const useDefineDeactivationVerifyEmailForm = () => {
       verificationCode: "",
     },
   });
-
-
 
   console.log(verifyEmailData);
   // Destructor form values and methods

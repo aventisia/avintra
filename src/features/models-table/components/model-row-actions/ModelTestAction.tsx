@@ -1,5 +1,6 @@
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { CheckCheckIcon } from "lucide-react";
+
 import { useOpenModel } from "../../hooks/useOpenModel";
 
 interface ModelTestActionProps {
@@ -15,7 +16,7 @@ export const ModelTestAction = ({ rowId }: ModelTestActionProps) => {
     <SimpleDDMenuItem
       content="Run tests"
       Icon={CheckCheckIcon}
-      onClick={() => handleOpenModelAction(rowId,"Test")}
+      onClick={() => handleOpenModelAction(rowId, "Test")}
     />
   );
 };

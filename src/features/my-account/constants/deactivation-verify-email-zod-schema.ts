@@ -2,9 +2,9 @@ import {
   maxLenError,
   minLenError,
   numericError,
+  numericRegex,
   reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { numericRegex } from "@/react-toolkit/utils/regex-list";
+} from "@aventisia/ui/utils";
 import * as z from "zod";
 
 export const deactivationVerifyEmailZodSchema = z.object({
@@ -16,5 +16,5 @@ export const deactivationVerifyEmailZodSchema = z.object({
     .regex(numericRegex, {
       message: numericError("Verification code"),
     }),
-  password: z.string({ message: "Please enter your password." })
+  password: z.string({ message: "Please enter your password." }),
 });

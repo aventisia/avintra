@@ -1,4 +1,4 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from "@aventisia/ui/types";
 
 const FLOWS_QUERY_KEY = ["flows"];
 

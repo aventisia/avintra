@@ -1,6 +1,8 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { MultiSelectFieldProps } from "@/react-toolkit/ui/form/fields/MultiSelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import {
+  InputFieldProps,
+  MultiSelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
 
 // User Id
 const idProps: InputFieldProps = {

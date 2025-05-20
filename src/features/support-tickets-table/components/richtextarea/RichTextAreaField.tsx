@@ -1,13 +1,16 @@
-import { useFormContext, FieldPath, FieldValues } from "react-hook-form";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { MinimalTiptapEditor } from ".";
-import { cn } from "@/react-toolkit/lib/utils";
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
+import {
+  BaseFieldProps,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabelExt,
+  FormMessage,
+} from "@aventisia/ui/form";
+import { cn } from "@aventisia/ui/lib";
 import { Content } from "@tiptap/react";
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+
+import { MinimalTiptapEditor } from ".";
 
 interface RichTextAreaFieldProps
   extends React.ComponentProps<typeof MinimalTiptapEditor>,

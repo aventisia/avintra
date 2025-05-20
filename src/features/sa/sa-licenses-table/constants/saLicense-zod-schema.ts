@@ -1,7 +1,6 @@
+import { numericError, reqError } from "@aventisia/ui/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { z } from "zod";
-
-import { numericError, reqError } from "@/react-toolkit/utils/error-message-list";
 
 /**
  * Represents the Zod schema for a request license units.

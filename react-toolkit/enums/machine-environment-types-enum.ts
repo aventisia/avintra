@@ -7,5 +7,5 @@
 export enum MachineEnvironmentTypesEnum {
   Development = "Development",
   UAT = "UAT",
-  Production = "Production"
+  Production = "Production",
 }

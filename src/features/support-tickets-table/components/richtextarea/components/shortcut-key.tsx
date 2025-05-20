@@ -1,5 +1,6 @@
+import { cn } from "@aventisia/ui/lib";
 import * as React from "react";
-import { cn } from "@/react-toolkit/lib/utils";
+
 import { getShortcutKey } from "../utils/utils";
 
 export interface ShortcutKeyProps

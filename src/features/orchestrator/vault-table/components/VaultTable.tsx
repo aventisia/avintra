@@ -1,18 +1,20 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTCreateButton } from "@/react-toolkit/ui/data-table/toolbar/DTCreateButton";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchVaults } from "../hooks/useFetchVaults";
+
 import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
 import { vaultsTableColumns } from "./VaultsTableColumns";
@@ -61,12 +63,10 @@ export const VaultTable = () => {
             </div>
 
             {/* Data table to render data */}
-            <div className="rounded-md border">
-              <DataTable
-                table={table}
-                columnsLength={vaultsTableColumns.length}
-              />
-            </div>
+            <DataTable
+              table={table}
+              columnsLength={vaultsTableColumns.length}
+            />
           </VaultCrudDialog>
 
           {/* Data table Pagination component */}

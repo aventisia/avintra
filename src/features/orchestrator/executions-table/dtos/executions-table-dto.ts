@@ -12,17 +12,17 @@ export interface ExecutionsTableDto {
   id?: string;
 
   /**
- * Gets or sets the tenantId.
- *
- * Not making it required because same DTO is used for insert and update.
- */
+   * Gets or sets the tenantId.
+   *
+   * Not making it required because same DTO is used for insert and update.
+   */
   tenantId?: string;
 
   /**
-* Gets or sets the tenantId.
-*
-* Not making it required because same DTO is used for insert and update.
-*/
+   * Gets or sets the tenantId.
+   *
+   * Not making it required because same DTO is used for insert and update.
+   */
   flowVersionId?: string;
 
   /**
@@ -31,36 +31,34 @@ export interface ExecutionsTableDto {
   name: string;
 
   /**
- * Gets or sets the number of retry count in the execution.
- */
+   * Gets or sets the number of retry count in the execution.
+   */
   retryCount?: number;
 
   /**
- * Gets or sets the status of the execution.
- */
+   * Gets or sets the status of the execution.
+   */
   status: ExecutionStatusTypesEnum;
 
   /**
- * Gets or sets last update time of the execution.
- */
+   * Gets or sets last update time of the execution.
+   */
   endTime: Date;
 
-
   /**
-* Gets or sets last update time of the execution.
-*/
+   * Gets or sets last update time of the execution.
+   */
   startTime: Date;
 
   /**
-* Gets or sets last update time of the execution.
-*/
+   * Gets or sets last update time of the execution.
+   */
   duration: string;
 
   /**
-* Gets or sets version number .marker:
-*/
+   * Gets or sets version number .marker:
+   */
   versionNumber: number;
-
 
   /**
    * Gets or sets a flag indicating whether the execution record is disabled.

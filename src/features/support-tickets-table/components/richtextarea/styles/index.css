@@ -1,7 +1,7 @@
-@import './partials/code.css';
-@import './partials/placeholder.css';
-@import './partials/lists.css';
-@import './partials/typography.css';
+@import "./partials/code.css";
+@import "./partials/placeholder.css";
+@import "./partials/lists.css";
+@import "./partials/typography.css";
 
 :root {
   --mt-font-size-regular: 0.9375rem;
@@ -158,7 +158,7 @@
   width: 1px;
   border-radius: 0.125rem;
   background-color: rgba(var(--mt-accent-foreground), 0.15);
-  content: '';
+  content: "";
 }
 
 .minimal-tiptap-editor .ProseMirror hr {

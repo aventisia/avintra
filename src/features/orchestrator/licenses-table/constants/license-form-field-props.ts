@@ -1,10 +1,25 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputFieldProps } from "@aventisia/ui/form";
+
+import { getPricingPlansToSelectForTenant } from "@/features/sa/pricing-table/apis/pricingPlans-table-apis";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 
 // License Id
 export const idProps: InputFieldProps = {
   name: "id",
   label: "License Id",
   disabled: true,
+};
+
+export const licenseSelectProps: AsyncSelectFieldProps = {
+  name: "planId",
+  selectOptions: () =>
+    getPricingPlansToSelectForTenant().then((data) => data.data),
+  label: "License Type",
+  placeholder: "Select License",
+  className: "!w-[30rem]",
+  triggerClassName: "!w-full",
+  size: "base",
+  isRequired: true,
 };
 
 // New Allocated Units

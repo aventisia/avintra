@@ -1,32 +1,29 @@
-import { DataTableRowActions } from '@/react-toolkit/ui/data-table/row-actions/DataTableRowActions';
-import { DTRowAction } from '@/react-toolkit/ui/data-table/row-actions/DTRowAction';
-import { DropdownMenuSeparator } from '@/react-toolkit/ui/dropdown-menu';
+import { DataTableRowActions, DTRowAction } from "@aventisia/ui/data-table";
+import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
-import { AddTriggerRowAction } from './AddTriggerRowAction';
-import { AssignAgentsRowAction } from './AssignAgentsRowAction';
-import { DeactivateRowAction } from './DeactivateRowAction';
-import { QueueRowDeleteAction } from './QueueRowDeleteAction';
-import { UploadItemsRowAction } from './UploadItemsRowAction';
+import { AddTriggerRowAction } from "./AddTriggerRowAction";
+import { AssignAgentsRowAction } from "./AssignAgentsRowAction";
+import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
+import { UploadItemsRowAction } from "./UploadItemsRowAction";
 
 interface QueueRowActionsProps {
   rowId: string;
+  queueName: string;
 }
 
-export const QueueRowActions = ({ rowId }: QueueRowActionsProps) => {
+export const QueueRowActions = ({ rowId, queueName }: QueueRowActionsProps) => {
   return (
     // Dropdown menu for Queue table row action */}
-    <DataTableRowActions>
+    <DataTableRowActions className="flex !w-8 flex-col">
       {/* View the Queue details */}
       <DTRowAction rowId={rowId} crudAction="read" />
 
       {/* Edit Queue details */}
       <DTRowAction rowId={rowId} crudAction="update" />
 
-      <AssignAgentsRowAction rowId={rowId} />
+      <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
       <AddTriggerRowAction rowId={rowId} />
       <UploadItemsRowAction rowId={rowId} />
-      <DeactivateRowAction rowId={rowId} />
-
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
 

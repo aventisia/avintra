@@ -1,11 +1,12 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useEffect } from 'react';
-import { useUserSessionStore } from '@/react-toolkit/stores/user-session-store';
-import { useShallow } from 'zustand/react/shallow';
-import { EmailUpdateZodSchema } from '../types/EmailUpdateZodSchema';
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { EmailUpdateZodSchema } from "../types/EmailUpdateZodSchema";
 
 export const useDefineProfileEmailForm = () => {
   // Get user session
@@ -18,17 +19,19 @@ export const useDefineProfileEmailForm = () => {
   const form = useForm<z.infer<typeof EmailUpdateZodSchema>>({
     resolver: zodResolver(EmailUpdateZodSchema),
     defaultValues: {
-      email: userSession?.email
-    }
+      email: userSession?.email,
+    },
   });
 
   useEffect(() => {
     form.reset({
-      email: userSession?.email
-    })
+      email: userSession?.email,
+    });
   }, []);
 
-  const { formState: { isDirty }, } = form;
+  const {
+    formState: { isDirty },
+  } = form;
 
   // Return form and methods
   return {

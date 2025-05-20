@@ -1,24 +1,27 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTHeading } from "@/react-toolkit/ui/data-table/toolbar/DTHeading";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { columnVisibilityState } from "../constants/column-visibility-state";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
+import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
+
+import { StFilterByStatusOptions } from "./StFilterByStatusOptions";
 import { SupportTicketCrudDialog } from "./support-ticket-crud-dialog/SupportTicketCrudDialog";
 import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
-import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
-import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { StFilterByStatusOptions } from "./StFilterByStatusOptions";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/react-toolkit/lib/utils";
-import { useNavigate } from "react-router-dom";
-import { columnVisibilityState } from "../constants/column-visibility-state";
 
 /**
  * Renders a table of support tickets.
@@ -33,13 +36,12 @@ export const SupportTicketsTable = () => {
   const { data, refetch } = useFetchSupportTickets();
 
   // Get store setSupportTicketsState action
-  const { filteredData, setSupportTicketsState } =
-    useSupportTicketsTableStore(
-      useShallow((state) => ({
-        filteredData: state.filteredData,
-        setSupportTicketsState: state.setSupportTicketsState,
-      })),
-    );
+  const { filteredData, setSupportTicketsState } = useSupportTicketsTableStore(
+    useShallow((state) => ({
+      filteredData: state.filteredData,
+      setSupportTicketsState: state.setSupportTicketsState,
+    })),
+  );
 
   // Sync data with store
   useEffect(() => {
@@ -96,7 +98,7 @@ export const SupportTicketsTable = () => {
               </div>
             </div>
             {/* Data table container */}
-            <div className="rounded-md border">
+            <div>
               {/* Main data table component to render the support tickets data. */}
               <StFilterByStatusOptions />
               <DataTable

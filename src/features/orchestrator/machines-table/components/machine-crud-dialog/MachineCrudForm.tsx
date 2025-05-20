@@ -1,13 +1,14 @@
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { getLicense } from "@/features/orchestrator/licenses-table/apis/licenses-table-apis";
+import { MyLicensesTableDto } from "@/features/orchestrator/licenses-table/dtos/licenses-table-dto";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -17,6 +18,7 @@ import {
   idProps,
   ipAddressProps,
   isDisabledProps,
+  licenseSelectProps,
   nameProps,
   osTypeProps,
 } from "../../constants/machine-form-field-props";
@@ -24,9 +26,9 @@ import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
+
 import { AddedByAutherCard } from "./AddedByAutherCard";
 import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
-import { LicenseDiv } from "./LicenseDiv";
 
 export const MachineCrudForm = () => {
   // Define machine form
@@ -55,10 +57,13 @@ export const MachineCrudForm = () => {
     MachinesTableDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
 
+  const [licenseDetails, setLicenseDetails] = useState<MyLicensesTableDto>();
+
   // Get store state and actions
-  const { currentAgents } = useAgentsSelectTableStore(
+  const { currentAgents, setAvailableLicenses } = useAgentsSelectTableStore(
     useShallow((state) => ({
       currentAgents: state.currentAgents,
+      setAvailableLicenses: state.setAvailableLicenses,
     })),
   );
 
@@ -84,6 +89,21 @@ export const MachineCrudForm = () => {
     // Close the dialog
     setShowDialog(false);
   };
+  const [licenseType] = form.watch(["licenseId"]);
+
+  useEffect(() => {
+    const getLicenseDetails = async () => {
+      if (!licenseType) {
+        setAvailableLicenses(0);
+        setLicenseDetails(undefined);
+        return;
+      }
+      const response = await getLicense(licenseType);
+      setAvailableLicenses(response.data.available);
+      setLicenseDetails(response.data);
+    };
+    getLicenseDetails();
+  }, [form, licenseType, setAvailableLicenses]);
 
   // Return the form
   return (
@@ -127,15 +147,14 @@ export const MachineCrudForm = () => {
 
       <Separator className="!my-6" />
 
-      <LicenseDiv
-        isReadOnly={isReadMode}
-        value={form.getValues("licenseType")}
-      />
-
-      {/* Is Disabled */}
-      {crudAction !== "create" && (
-        <SwitchField {...isDisabledProps} disabled={isReadMode} />
-      )}
+      <div className="flex flex-col gap-4">
+        {/* license type */}
+        <AsyncSelectField {...licenseSelectProps} />
+        <div className="flex flex-row justify-between rounded-sm bg-primary-50 p-[.6rem] px-3">
+          <p className="font-light">Available Licenses:</p>
+          <p>{licenseDetails?.available ?? 0}</p>
+        </div>
+      </div>
 
       <div className="!mt-4 h-fit w-[30rem]">
         <AgentSelectTable
@@ -143,6 +162,11 @@ export const MachineCrudForm = () => {
           isReadMode={isReadMode}
         />
       </div>
+
+      {/* Is Disabled */}
+      {crudAction !== "create" && (
+        <SwitchField {...isDisabledProps} disabled={isReadMode} />
+      )}
 
       {/* AutherCard */}
       {isReadMode && (

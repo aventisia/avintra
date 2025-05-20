@@ -1,6 +1,5 @@
-import { CrudActionType } from "@/react-toolkit/types/literal-types";
+import { CrudActionType } from "@aventisia/ui/types";
 import { create } from "zustand";
-
 
 type State = {
   /** The crud dialog Options: RowId, CrudAction */
@@ -11,7 +10,6 @@ type State = {
 };
 
 type Actions = {
-
   /** To set show dialog state */
   setShowDialog: (showDialog: boolean) => void;
 
@@ -20,10 +18,8 @@ type Actions = {
 };
 
 export const useCompanyFormStore = create<State & Actions>((set) => ({
-
   crudAction: "create",
   isFormDirty: false,
-
 
   setShowDialog: (showDialog) =>
     set((state) => ({

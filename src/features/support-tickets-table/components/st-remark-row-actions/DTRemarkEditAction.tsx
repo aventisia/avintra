@@ -1,11 +1,11 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import {
   ArrowUpRightIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
 
 interface DTRemarkEditActionProps {
   rowId: string;

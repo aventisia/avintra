@@ -19,18 +19,18 @@ export interface MachinesTableDto {
   tenantId?: string;
 
   /**
- * Gets or sets the name of the machine. Max-100
- */
+   * Gets or sets the name of the machine. Max-100
+   */
   name: string;
 
   /**
- * Gets or sets the host name of the machine. Max-100
- */
+   * Gets or sets the host name of the machine. Max-100
+   */
   ipAddress?: string;
 
   /**
- * Gets or sets the name of the machine. Max-100
- */
+   * Gets or sets the name of the machine. Max-100
+   */
   hostname?: string;
 
   /**
@@ -39,18 +39,18 @@ export interface MachinesTableDto {
   type: MachineOsTypesEnum;
 
   /**
- * Gets or sets the status of the machine. Max-100
- */
+   * Gets or sets the status of the machine. Max-100
+   */
   status: MachineStatusTypesEnum;
 
   /**
-* Gets or sets the environment of the machine. Max-100
-*/
+   * Gets or sets the environment of the machine. Max-100
+   */
   environment: MachineEnvironmentTypesEnum;
 
   /**
-* Gets or sets the environment of the machine. Max-100
-*/
+   * Gets or sets the environment of the machine. Max-100
+   */
   currentTask: string;
 
   /**
@@ -62,6 +62,11 @@ export interface MachinesTableDto {
    * Represents the timestamp of when the machine was last checked in
    */
   lastCheckedIn?: Date;
+
+  /**
+   * Represents the license to select the agent to the machine
+   */
+  licenseId: string;
 
   /**
    * Gets or sets a flag indicating whether the user record is disabled.
@@ -90,12 +95,12 @@ export interface MachinesTableDto {
   lastModifiedOn?: Date;
 
   /**
- * Gets the count of the agents assigned to the machine.
- */
+   * Gets the count of the agents assigned to the machine.
+   */
   agentCount?: number;
 
   /**
-* Gets the count of the agents assigned to the machine.
-*/
+   * Gets the count of the agents assigned to the machine.
+   */
   agentIds?: string[];
 }

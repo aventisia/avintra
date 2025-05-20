@@ -1,12 +1,18 @@
-import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type";
+import { KeyValueLookupType } from "@aventisia/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
+  { key: "id", value: "ID" },
   { key: "status", value: "Status" },
   { key: "amount", value: "Amount" },
   { key: "dueDate", value: "Due Date" },
   { key: "paidOn", value: "Paid On" },
+  { key: "invoiceNumber", value: "Invoice Number" },
+  { key: "subscriptionId", value: "Subscription Id" },
+  { key: "tax", value: "Tax" },
+  { key: "totalAmount", value: "Total Amount" },
+  { key: "generatedDate", value: "Generated Date" },
+  { key: "invoiceDate", value: "Invoice Date" },
 ];
 
 // Get the column display name for the given column key.

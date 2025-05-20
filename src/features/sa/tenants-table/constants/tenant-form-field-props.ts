@@ -1,13 +1,18 @@
-import { CurrencyTypesEnum } from "@/react-toolkit/enums/currency-types-enum";
+import {
+  DatePickerFieldProps,
+  InputFieldProps,
+  RadioGroupFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+  TextareaFieldProps,
+} from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
 import { DatabaseOptionsEnum } from "@/react-toolkit/enums/database-options-enum";
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
-import { DatePickerFieldProps } from "@/react-toolkit/ui/form/fields/DatePickerField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { RadioGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioGroupField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+
+import { getCurrenciesToSelect } from "../apis/tenants-table-apis";
 
 // Tenant Id
 export const idProps: InputFieldProps = {
@@ -30,11 +35,14 @@ export const typeProps: SelectFieldProps = {
   isRequired: true,
 };
 
-export const currencyProps: SelectFieldProps = {
+export const currencyProps: AsyncSelectFieldProps = {
   name: "currency",
   label: "Currency",
-  selectOptions: enumToArray(CurrencyTypesEnum),
+  size: "base",
+  placeholder: "Currency",
   isRequired: true,
+  selectOptions: async () =>
+    await getCurrenciesToSelect().then((data) => data?.data),
 };
 
 export const effectiveOnProps: DatePickerFieldProps = {

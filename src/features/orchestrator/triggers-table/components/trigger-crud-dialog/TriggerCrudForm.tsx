@@ -1,33 +1,43 @@
+import { Button } from "@aventisia/ui/buttons";
+import {
+  AutherCard,
+  Form,
+  InputField,
+  SelectField,
+  SwitchField,
+} from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
+import { DateTimePickerField } from "@/react-toolkit/ui/form/fields/DateTimePickerField";
+import { TimePickerField } from "@/react-toolkit/ui/form/fields/TimePickerField";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
+  environmentTypeProps,
   idProps,
   isDisabledProps,
   nameProps,
-  selectProcessProps,
-  selectJobPriorityProps,
-  selectRuntimeTypeProps,
-  selectTimeZoneProps,
-  selectFrequencyProps,
-  selectRepetationProps,
+  nonWorkingDays,
   scheduleEnding,
-  scheduleAutoDisabling,
-  generateStuckAlert,
-  generateFailedAlert,
+  scheduleNonWorkingDays,
+  scheduleNonWorkingTimeRange,
+  selectFrequencyProps,
+  selectTimeZoneProps,
+  trigerForNewItem,
+  trigerFornNewEmail,
 } from "../../constants/trigger-form-field-props";
 import { triggerZodSchema } from "../../constants/trigger-zod-schema";
 import { TriggersTableDto } from "../../dtos/triggers-table-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
+
+import { AgentSelectTable } from "./agents-select-table/AgentSelectTable";
+import { TriggerTimeScheduleInputs } from "./TriggerTimeScheduleInputs";
 
 export const TriggerCrudForm = () => {
   // Define trigger form
@@ -37,6 +47,8 @@ export const TriggerCrudForm = () => {
     rowId,
     crudAction,
     isAvailable,
+    isFetching,
+    isLoading,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
@@ -45,6 +57,13 @@ export const TriggerCrudForm = () => {
     refineFormData,
   } = useDefineTriggerForm();
 
+  const { currentAgents } = useAgentsSelectTableStore(
+    useShallow((state) => ({
+      currentAgents: state.currentAgents,
+      setAvailableLicenses: state.setAvailableLicenses,
+    })),
+  );
+
   // Define optimistic mutation to crete or update the trigger
   const { mutate: mutatetrigger } = useListOptimisticMutation<
     TriggersTableDto,
@@ -52,11 +71,28 @@ export const TriggerCrudForm = () => {
     TriggersTableDto
   >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
+  const [
+    frequency,
+    sheduleEnding,
+    isScheduleNonWorkingDays,
+    isScheduleRetristredTimeZone,
+  ] = form.watch([
+    "frequency",
+    "isEnds",
+    "hasNonWorkingDays",
+    "hasNonWorkingTime",
+  ]);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
+    const payload = {
+      ...(refineFormData(formData) as unknown as TriggersTableDto),
+      agentIds: currentAgents?.filter((x) => x.isAssigned).map((m) => m.id),
+    };
+
     // Create or update the trigger
     mutatetrigger({
-      payload: refineFormData(formData) as unknown as TriggersTableDto,
+      payload: payload,
       crudAction: crudAction,
     });
 
@@ -87,26 +123,83 @@ export const TriggerCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+      <SelectField {...environmentTypeProps} />
 
-      <SelectField {...selectProcessProps} />
-
-      <div className="grid grid-cols-2 gap-2">
-        <SelectField {...selectJobPriorityProps} />
-        <SelectField {...selectRuntimeTypeProps} />
+      <div className="!my-4 h-fit w-auto">
+        <AgentSelectTable
+          isFetching={isFetching || isLoading}
+          isReadMode={isReadMode}
+        />
       </div>
 
-      <SelectField {...selectTimeZoneProps} />
-      <SelectField {...selectFrequencyProps} />
+      <div className="gap-2">
+        <span className="grid grid-flow-col gap-2">
+          <AsyncSelectField {...selectTimeZoneProps} />
+          <DateTimePickerField name="startsOn" label="Starts on" isRequired />
+        </span>
 
-      <div className="flex flex-col rounded-md border p-4">
-        <SelectField {...selectRepetationProps} />
+        <div
+          className={cn(
+            "group mt-2 flex flex-col gap-2 space-y-2",
+            frequency && frequency != "OneTime" && "my-2 rounded-lg border p-2",
+          )}
+        >
+          <SelectField {...selectFrequencyProps} />
+          <TriggerTimeScheduleInputs frequency={frequency} />
+        </div>
 
-        <SwitchField {...scheduleEnding} />
-        <SwitchField {...scheduleAutoDisabling} />
+        <div
+          className={cn(
+            isScheduleNonWorkingDays && "my-2 rounded-lg border p-2",
+          )}
+        >
+          <SwitchField
+            {...scheduleNonWorkingDays}
+            className={cn(isScheduleNonWorkingDays && "px-0")}
+          />
+          {isScheduleNonWorkingDays && (
+            <DateTimePickerField {...nonWorkingDays} />
+          )}
+        </div>
+
+        <div
+          className={cn(
+            isScheduleRetristredTimeZone && "my-2 rounded-lg border p-2",
+          )}
+        >
+          <SwitchField
+            {...scheduleNonWorkingTimeRange}
+            className={cn(isScheduleRetristredTimeZone && "px-0")}
+          />
+          {isScheduleRetristredTimeZone && (
+            <div className="group flex justify-evenly gap-4">
+              <TimePickerField
+                isRequired
+                name="nonWorkingTimeFrom"
+                label="From"
+              />
+              <TimePickerField isRequired name="nonWorkingTimeTo" label="To" />
+            </div>
+          )}
+        </div>
+
+        <div className={cn(sheduleEnding && "rounded-lg border p-2")}>
+          <SwitchField
+            {...scheduleEnding}
+            className={cn(sheduleEnding && "px-0")}
+          />
+          {sheduleEnding && (
+            <DateTimePickerField name="endsOn" label="Ends on" isRequired />
+          )}
+        </div>
+
+        <SwitchField {...trigerForNewItem} />
+        <SwitchField {...trigerFornNewEmail} />
+
+        {/* <SwitchField {...scheduleAutoDisabling} />
         <SwitchField {...generateStuckAlert} />
-        <SwitchField {...generateFailedAlert} />
+        <SwitchField {...generateFailedAlert} /> */}
       </div>
-
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
 

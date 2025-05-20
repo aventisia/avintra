@@ -1,11 +1,12 @@
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { DialogTrigger } from "@aventisia/ui/dialog";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { useShallow } from "zustand/react/shallow";
+
 import { UNBellIcon } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNBellIcon";
 import { UN_DIALOG_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { DialogTrigger } from "@/react-toolkit/ui/dialog";
-import { Tooltip } from "@/react-toolkit/ui/Tooltip";
-import { useShallow } from "zustand/react/shallow";
 
 interface UNDialogTriggerProps {
   /** Additional class name to override notification trigger icon button */

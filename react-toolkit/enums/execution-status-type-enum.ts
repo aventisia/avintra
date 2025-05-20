@@ -8,5 +8,5 @@ export enum ExecutionStatusTypesEnum {
   Running = "Running",
   Completed = "Completed",
   Failed = "Failed",
-  Canceled = "Canceled"
+  Canceled = "Canceled",
 }

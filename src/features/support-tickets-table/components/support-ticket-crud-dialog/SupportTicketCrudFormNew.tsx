@@ -1,30 +1,32 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { DotSeparator, Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { Form } from "@aventisia/ui/form";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import parse from "html-react-parser";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
+import { getTicketQueryKey } from "../../constants/constants";
 import { descriptionProps } from "../../constants/st-remark-form-field-props";
 import { supportTicketRemarksZodSchema } from "../../constants/support-ticket-zod-schema";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
-import { useLocation } from "react-router-dom";
-import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
-import { formatDistanceToNow } from "date-fns";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-import parse from "html-react-parser";
-import { useState, useEffect } from "react";
-import { Separator } from "@/react-toolkit/ui/separator";
 import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { STRemarkRowActionsNew } from "../st-remark-row-actions/STRemarkRowActionsNew";
 import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
-import { supportTicketRemarksOptimisticMutationFn } from "../../apis/suport-ticket-remarks-apis";
-import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideComponent";
-import { STStatusUpdateAction } from "./STStatusUpdateAction";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useShallow } from "zustand/react/shallow";
-import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
 import { useFetchSTRemarks } from "../../hooks/useFetchSTRemarks";
-import { useQueryClient } from "@tanstack/react-query";
-import { getTicketQueryKey } from "../../constants/constants";
+import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
+import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
+import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
+import { STRemarkRowActionsNew } from "../st-remark-row-actions/STRemarkRowActionsNew";
+import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideComponent";
+
+import { STStatusUpdateAction } from "./STStatusUpdateAction";
 
 export const SupportTicketCrudFormNew = () => {
   const { form, isDirty, crudAction, rowId, refineFormData } =
@@ -96,7 +98,9 @@ export const SupportTicketCrudFormNew = () => {
     // await refetch();
   };
 
-  const onSubmit = async (formData: z.infer<typeof supportTicketRemarksZodSchema>,) => {
+  const onSubmit = async (
+    formData: z.infer<typeof supportTicketRemarksZodSchema>,
+  ) => {
     const newRemark = {
       id: Date.now().toString(),
       ...formData,
@@ -104,7 +108,7 @@ export const SupportTicketCrudFormNew = () => {
       createdOn: new Date(),
     };
 
-    setRemarks(prevRemarks => [newRemark, ...prevRemarks]);
+    setRemarks((prevRemarks) => [newRemark, ...prevRemarks]);
 
     await mutateSupportTicketRemark({
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
@@ -112,14 +116,14 @@ export const SupportTicketCrudFormNew = () => {
     });
 
     // Invalidate queries after submission
-    queryClient.invalidateQueries({queryKey: getTicketQueryKey(id)});
-    queryClient.invalidateQueries({queryKey: remarksQueryKey});
+    queryClient.invalidateQueries({ queryKey: getTicketQueryKey(id) });
+    queryClient.invalidateQueries({ queryKey: remarksQueryKey });
 
     await Promise.all([refetch(), refetchRemarks()]);
-    
+
     console.log("Refetched after submit");
     setSupportTicketsState([], null, true);
-    
+
     form.reset();
     setEditingCommentId(null);
     setEditedRemark("");
@@ -129,13 +133,22 @@ export const SupportTicketCrudFormNew = () => {
     if (isSelectedSTDataChanged) {
       Promise.all([refetch(), refetchRemarks()])
         .then(() => console.log("Refetched support ticket and remarks data..."))
-        .catch(error => console.error("Refetch error: ", error));
-      queryClient.invalidateQueries({queryKey: getTicketQueryKey(id)});
-      queryClient.invalidateQueries({queryKey: remarksQueryKey});
+        .catch((error) => console.error("Refetch error: ", error));
+      queryClient.invalidateQueries({ queryKey: getTicketQueryKey(id) });
+      queryClient.invalidateQueries({ queryKey: remarksQueryKey });
       setSupportTicketsState([], null, false);
       console.log("ST data @ useEffect: ", data?.data);
     }
-  }, [isSelectedSTDataChanged, refetch, refetchRemarks, setSupportTicketsState, data, id, queryClient, remarksQueryKey]);
+  }, [
+    isSelectedSTDataChanged,
+    refetch,
+    refetchRemarks,
+    setSupportTicketsState,
+    data,
+    id,
+    queryClient,
+    remarksQueryKey,
+  ]);
 
   if (isLoading || isFetching) {
     return <DataTableSkeleton />;

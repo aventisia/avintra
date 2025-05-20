@@ -1,12 +1,12 @@
+import { useCheckAvailability } from "@aventisia/ui/hooks";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { isRoleNameAvailable } from "../apis/roles-table-apis";
 import { AccessType, PERMISSIONS } from "../constants/permissions-and-acesses";
@@ -14,6 +14,7 @@ import {
   addRoleFormZodSchema,
   roleNameSchema,
 } from "../constants/role-zod-schema";
+
 import { useFetchRoleById } from "./useFetchRoleById";
 
 export const useDefineRoleForm = () => {

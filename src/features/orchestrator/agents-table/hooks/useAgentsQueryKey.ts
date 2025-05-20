@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
 import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
 
 /**
@@ -19,7 +20,6 @@ export const useAgentsQueryKey = () => {
       setAgentsState: state.setAgentsState,
     })),
   );
-
 
   // Set agents query key, machine id, and machine name
   useEffect(() => {

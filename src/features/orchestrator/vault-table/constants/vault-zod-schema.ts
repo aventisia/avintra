@@ -1,27 +1,30 @@
-import { z } from 'zod';
-
-import { alphaNumericError, maxLenError, reqError } from '@/react-toolkit/utils/error-message-list';
-import { alphaNumericRegex } from '@/react-toolkit/utils/regex-list';
+import {
+  alphaNumericError,
+  alphaNumericRegex,
+  maxLenError,
+  reqError,
+} from "@aventisia/ui/utils";
+import { z } from "zod";
 
 /**
  * Represents the Zod object's item schema for a config name.
  */
 export const vaultNameSchema = z
   .string()
-  .min(1, { message: reqError("Config name") })
-  .max(255, { message: maxLenError("Config name", 255) })
+  .min(1, { message: reqError("Credential name") })
+  .max(255, { message: maxLenError("Credential name", 255) })
   .regex(alphaNumericRegex, {
-    message: alphaNumericError("Config name"),
+    message: alphaNumericError("Credential name"),
   });
 
 /**
- * Represents the Zod schema for a config.
+ * Represents the Zod schema for a Credential.
  */
 export const vaultZodSchema = z
   .object({
     id: z.string(),
     name: vaultNameSchema,
-    userName: z.string().min(1, { message: reqError("User name") }),
+    username: z.string().min(1, { message: reqError("User name") }),
     password: z.string().min(1, { message: reqError("Password") }),
     confirmPassword: z
       .string()

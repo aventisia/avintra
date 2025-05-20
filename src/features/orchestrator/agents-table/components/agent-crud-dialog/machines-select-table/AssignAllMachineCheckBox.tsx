@@ -1,8 +1,10 @@
-import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
-import { useShallow } from "zustand/react/shallow";
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { toast } from "@aventisia/ui/sonner";
 import type { Column, Table } from "@tanstack/react-table";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { useShallow } from "zustand/react/shallow";
+
+import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 
 interface AssignAllMachineCheckBoxProps<TData, TValue> {
   table: Table<TData>;
@@ -12,14 +14,21 @@ export function AssignAllMachineCheckBox<TData, TValue>({
   table,
   column,
 }: Readonly<AssignAllMachineCheckBoxProps<TData, TValue>>) {
-  const { setAllAssigned, allAssigned, isReadOnly } =
-    useMachinesSelectTableStore(
-      useShallow((state) => ({
-        setAllAssigned: state.setAllAssigned,
-        allAssigned: state.allAssigned,
-        isReadOnly: state.isReadOnly,
-      })),
-    );
+  const {
+    setAllAssigned,
+    allAssigned,
+    availableLicenses,
+    isReadOnly,
+    currentMachines,
+  } = useMachinesSelectTableStore(
+    useShallow((state) => ({
+      setAllAssigned: state.setAllAssigned,
+      allAssigned: state.allAssigned,
+      availableLicenses: state.availableLicenses,
+      isReadOnly: state.isReadOnly,
+      currentMachines: state.currentMachines,
+    })),
+  );
   return (
     <div className="flex w-auto max-w-20 gap-5 truncate align-middle font-medium">
       <Checkbox
@@ -27,6 +36,18 @@ export function AssignAllMachineCheckBox<TData, TValue>({
           allAssigned || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => {
+          if (
+            currentMachines.filter((a) => a.isAssigned).length >=
+            availableLicenses
+          ) {
+            toast.error(
+              !availableLicenses
+                ? "you don't have any license or not selected any."
+                : "You can only assign machines upto " + availableLicenses,
+            );
+            return;
+          }
+
           setAllAssigned(!!value);
           table.toggleAllPageRowsSelected(!!value);
         }}

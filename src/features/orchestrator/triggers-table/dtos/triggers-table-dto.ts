@@ -1,74 +1,42 @@
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
+
 /**
  * Represents a data transfer object (DTO) for a trigger.
  */
 export interface TriggersTableDto {
-  /**
-   * Gets or sets the primary key of the trigger record.
-   *
-   * Not making it required because same DTO is used for insert and update.
-   */
   id?: string;
+  tenantId: string;
 
-  /**
-   * Gets or sets the name of the trigger. Max-255
-   */
   name: string;
+  environment: MachineEnvironmentTypesEnum;
+  agentIds?: string[];
 
-  /**
-   * Gets or sets the process of the trigger. Max-255
-   */
-  process: string;
+  timezone: string;
+  startsOn: Date;
 
-  /**
-   * Gets or sets the job Priority of the trigger. Max-255
-   */
-  jobPriority: string;
+  frequency: TriggerFrequencyTypesEnum;
 
-  /**
-   * Gets or sets the runtime Type of the trigger. Max-255
-   */
-  runtimeType: string;
+  repeateAt?: Date;
+  repeateOn?: string[];
+  repeateEvery?: number;
 
-  /**
-   * Gets or sets the time Zone of the trigger. Max-255
-   */
-  timeZone: string;
+  hasNonWorkingDays: boolean;
+  nonWorkingDays: Date;
 
-  /**
-   * Gets or sets the frequency of the trigger. Max-255
-   */
-  frequency: string;
+  hasNonWorkingTime: boolean;
+  nonWorkingTimeFrom: Date;
+  nonWorkingTimeTo: Date;
 
-  /**
-   * Gets or sets the repeatation of the trigger. Max-255
-   */
-  repeateEvery: string;
+  isEnds: boolean;
+  endsOn: Date;
 
-  /**
-   * Gets or sets the non-Working Days of the trigger. Max-255
-   */
-  nonWorkingDays: string;
+  triggerForNewItem: boolean;
+  triggerForNewEmail: boolean;
 
-  /**
-   * Gets or sets the schedule Ending of the trigger.
-   */
-  scheduleEnding: boolean;
-
-  /**
-   * Gets or sets the schedule Auto Disabling of the trigger.
-   */
   scheduleAutoDisabling: boolean;
-
-  /**
-   * Gets or sets the generate Stuck Alert of the trigger.
-   */
   generateStuckAlert: boolean;
-
-  /**
-   * Gets or sets the generate Failed Alert of the trigger.
-   */
   generateFailedAlert: boolean;
-
   /**
    * Gets or sets a flag indicating whether the trigger record is disabled.
    *

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchTenants } from "@/features/sa/tenants-table/hooks/useFetchTenants";
@@ -5,10 +6,10 @@ import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { PricingPlanDto } from "@/react-toolkit/types/pricing-plan-dto";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { DATA_QUERY_KEY } from "../../constants";
 import { LicensesTableDto } from "../../dtos/sa-licenses-table-dto";
+
 import { OverviewDetailDivElement } from "./RecordPaymentOverviewDetails";
 
 export const RequestLicenseOverviewDetails = ({
@@ -65,7 +66,7 @@ export const RequestLicenseOverviewDetails = ({
         <OverviewDetailDivElement
           label="Unit Cost :"
           isFetching={isFetching}
-          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} /mo`}
+          data={`${currencyFormater(licenseDetails?.unitPrice ?? 0, licenseDetails?.currency)} ${licenseDetails?.pricingComponent == "GPUCompute" ? "/unit" : "/mo"}`}
         />
         {licenseDetails?.frequency && licenseDetails?.frequency != "NA" ? (
           <OverviewDetailDivElement

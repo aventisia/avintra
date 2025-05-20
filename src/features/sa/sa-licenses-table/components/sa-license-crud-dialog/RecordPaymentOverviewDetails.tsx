@@ -1,11 +1,11 @@
+import { Skeleton } from "@aventisia/ui";
+import { getEnumValueByKey } from "@aventisia/ui/utils";
 import { Convert } from "easy-currencies";
 import { useEffect, useState } from "react";
 
 import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
-import { getEnumValueByKey } from "@/react-toolkit/utils/enum-to-array";
 
 import { LicensesTableDto } from "../../dtos/sa-licenses-table-dto";
 

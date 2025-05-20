@@ -1,17 +1,18 @@
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
+import { DotSeparator, Separator } from "@aventisia/ui";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { formatDistanceToNow } from "date-fns";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { useEffect, useState } from "react";
-import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
-import { useLocation } from "react-router-dom";
-import { STRemarkForm } from "../support-ticket-remark/STRemarkForm";
-import { STRemarkEditForm } from "../support-ticket-remark/STRemarkEditForm";
-import { STRemarkRowActions } from "../st-remark-row-actions/STRemarkRowActions";
-import { STDetailsSideComponent } from "./STDetailsSideComponent";
 import parse from "html-react-parser";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+
+import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
+import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
+import { STRemarkRowActions } from "../st-remark-row-actions/STRemarkRowActions";
+import { STRemarkEditForm } from "../support-ticket-remark/STRemarkEditForm";
+import { STRemarkForm } from "../support-ticket-remark/STRemarkForm";
+
+import { STDetailsSideComponent } from "./STDetailsSideComponent";
 
 export const SupportTicketDetailsPage = () => {
   useDocumentTitle("Support Ticket Details");

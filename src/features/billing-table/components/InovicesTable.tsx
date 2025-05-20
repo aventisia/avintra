@@ -1,16 +1,19 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
-import { DTViewOptions } from "@/react-toolkit/ui/data-table/toolbar/DTViewOptions";
+import {
+  DataTable,
+  DataTableSkeleton,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+} from "@aventisia/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchInovices } from "../hooks/useFetchInovices";
-import { InovicesBulkActions } from "./inovice-table-actions/InovicesBulkActions";
-import { inovicesTableColumns } from "./InovicesTableColumns";
+
 import { BillingAddressCrudDialog } from "./billingAddress-crud-dialog/BillingAddressCrudDialog";
+import { inovicesTableColumns } from "./InovicesTableColumns";
+import { InvoicesStats } from "./InvoicesStats";
 
 /**
  * Renders a table of billing.
@@ -48,15 +51,16 @@ export const InovicesTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumn="name"
+                  searchColumn="invoiceNumber"
                   placeholder="Search  invoices..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
               </div>
             </div>
-
             {/* Data table to render data */}
-            <div className="rounded-md border">
+
+            <div className="flex flex-col gap-2">
+              <InvoicesStats />
               <DataTable
                 table={table}
                 columnsLength={inovicesTableColumns.length}
@@ -66,9 +70,6 @@ export const InovicesTable = () => {
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <InovicesBulkActions table={table} />
         </div>
       ) : (
         // Show data table skeleton while fetching the billing plans data

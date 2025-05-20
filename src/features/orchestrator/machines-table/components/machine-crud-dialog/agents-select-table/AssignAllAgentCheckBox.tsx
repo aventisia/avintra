@@ -1,8 +1,10 @@
-import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
-import { useShallow } from "zustand/react/shallow";
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { toast } from "@aventisia/ui/sonner";
 import type { Column, Table } from "@tanstack/react-table";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
+import { useShallow } from "zustand/react/shallow";
+
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 
 interface AssignAllAgentCheckBoxProps<TData, TValue> {
   table: Table<TData>;
@@ -12,10 +14,18 @@ export function AssignAllAgentCheckBox<TData, TValue>({
   table,
   column,
 }: Readonly<AssignAllAgentCheckBoxProps<TData, TValue>>) {
-  const { setAllAssigned, allAssigned, isReadOnly } = useAgentsSelectTableStore(
+  const {
+    setAllAssigned,
+    allAssigned,
+    isReadOnly,
+    currentAgents,
+    availableLicenses,
+  } = useAgentsSelectTableStore(
     useShallow((state) => ({
       setAllAssigned: state.setAllAssigned,
       allAssigned: state.allAssigned,
+      currentAgents: state.currentAgents,
+      availableLicenses: state.availableLicenses,
       isReadOnly: state.isReadOnly,
     })),
   );
@@ -26,6 +36,18 @@ export function AssignAllAgentCheckBox<TData, TValue>({
           allAssigned || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => {
+          if (
+            currentAgents.filter((a) => a.isAssigned).length >=
+            availableLicenses
+          ) {
+            toast.error(
+              !availableLicenses
+                ? "you don't have any license or not selected any."
+                : "You can only add agents upto " + availableLicenses,
+            );
+            return;
+          }
+
           setAllAssigned(!!value);
           table.toggleAllPageRowsSelected(!!value);
         }}

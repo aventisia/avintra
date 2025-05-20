@@ -1,14 +1,13 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
-import {
-  dateFormater,
-  dateFormaterDistanceToNow,
-} from "@/react-toolkit/utils/date-formater";
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
+
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
+import { WorkItemsTableCellLink } from "./WorkItemsTableCellLink";
 
 /**
  * Array of table columns for the queues table.
@@ -44,7 +43,9 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <WorkItemsTableCellLink rowId={row.original.id}>
+        {row.getValue<string>("name")}
+      </WorkItemsTableCellLink>
     ),
   },
 
@@ -121,17 +122,17 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   },
 
   {
-    accessorKey: "lastUpdatedOn",
+    accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastUpdatedOn")}
+        title={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormaterDistanceToNow(row.getValue("lastUpdatedOn"))}
+        {dateFormatter(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },
@@ -158,7 +159,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormater(row.getValue("createdOn"))}
+        {dateFormatter(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -166,7 +167,10 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the queues row actions component
-      <QueueRowActions rowId={row.original.id ?? "rowId"} />
+      <QueueRowActions
+        rowId={row.original.id ?? "rowId"}
+        queueName={row.original.name ?? ""}
+      />
     ),
   },
 ];

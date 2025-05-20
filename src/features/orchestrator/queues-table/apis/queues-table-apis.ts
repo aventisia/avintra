@@ -1,10 +1,17 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import {
+  CheckAvailabilityDto,
+  IHttpResponse,
+  IOptimisticMutation,
+  TrueFalseResultDto,
+} from "@aventisia/ui/dtos";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { QueuesTableDto } from "../dtos/queues-table-dto";
+
+import { QueueWorkItemDto } from "../../work-items-table/dtos/queue-work-item-dto";
+import { AssignAgentDto } from "../dtos/assign-agent-dto";
+import { QueueAgentsDto } from "../dtos/queue-agents-dto";
 import { QueueCreateUpdateDto } from "../dtos/queue-create-update-dto";
+import { QueuesTableDto } from "../dtos/queues-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
 
@@ -38,6 +45,48 @@ export const insertQueue = (newqueue: QueueCreateUpdateDto) => {
         "Content-Type": "multipart/form-data",
       },
     })
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new work item.
+ */
+export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<QueueWorkItemDto>
+    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/queue-transaction`, workitem)
+    .then((res) => res.data);
+};
+
+/**
+ * assign agents to the queue.
+ */
+export const getAgents = (queueId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<QueueAgentsDto[]>>(`${baseAPIURL}/${queueId}/agents`)
+    .then((res) => res.data);
+};
+
+/**
+ * assign agents to the queue.
+ */
+export const assignAgents = (assignAgentDto: AssignAgentDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/${assignAgentDto.queueId}/assign-agents`, assignAgentDto.agentIds)
+    .then((res) => res.data);
+};
+
+/**
+ * assign agents to the queue.
+ */
+export const addTrigger = (assignAgentDto: AssignAgentDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/${assignAgentDto.queueId}/add-trigger`, assignAgentDto.agentIds)
     .then((res) => res.data);
 };
 
