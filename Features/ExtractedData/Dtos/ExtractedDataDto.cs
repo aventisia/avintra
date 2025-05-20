@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 /// <summary>
 /// Represents an extracted data entity 
 /// </summary>
-public class ExtractedDataDto 
+public class ExtractedDataDto
 {
     /// <summary>
     /// Gets or sets the primary key for the data model
@@ -41,6 +41,11 @@ public class ExtractedDataDto
     /// Gets or sets the type of extra
     /// </summary>
     public ExtractedDataType? Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the model or data has been submitted for fine-tuning.
+    /// </summary>
+    public bool SubmitForFineTuning { get; set; }
 
     /// <summary>
     /// Gets or sets the date of creation of extracted data.

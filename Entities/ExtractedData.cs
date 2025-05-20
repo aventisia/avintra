@@ -32,7 +32,7 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public ExtractedDataType? Type { get; set; }
 
     /// <summary>
-    /// Indicates whether the model or data is submitted for fine-tuning.
+    /// Gets or sets a value indicating whether the model or data has been submitted for fine-tuning.
     /// </summary>
     public bool SubmitForFineTuning { get; set; }
 
