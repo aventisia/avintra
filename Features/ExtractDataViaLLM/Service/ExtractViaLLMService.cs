@@ -85,8 +85,8 @@ public class ExtractViaLLMService : IExtractViaLLMService
                 // Initialize the extracted data object
                 var extractedData = new FileExtractedData
                 {
+                    ExtractedData = new ExtractionSetupData(),
                     FileId = fileId,
-                    ExtractedData = new List<FieldValueSchema>(),
                     Remarks = $"001: Failed to extract data for file id: {fileId}."
                 };
 
@@ -208,25 +208,8 @@ public class ExtractViaLLMService : IExtractViaLLMService
                             continue;
                         }
 
-                        // Deserialize options
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true // Allows camelCase to PascalCase mapping
-                        };
-
-                        // Deserialize JSON and extract "response"
-                        var extractedDataListTemp = JsonSerializer.Deserialize<List<FieldValueSchema>>(llmResponse, options) ?? new List<FieldValueSchema>();
-
-                        // Check if extractedDataListTemp is empty
-                        if (extractedDataListTemp.Count == 0)
-                        {
-                            _logger.LogError("006: Failed to extract data for file id: {fileId}.", fileId);
-                            continue;
-                        }
-
                         // Successfully extracted the data
-                        extractedData.ExtractedData = extractedDataListTemp;
-                        extractedData.Remarks = "";
+                        extractedData = CreateExtractedDataByModel(model.Type, llmResponse, fileId);
                     }
 
                     // Break the loop
@@ -259,5 +242,52 @@ public class ExtractViaLLMService : IExtractViaLLMService
         }
 
         return serviceResponse;
+    }
+
+    // Creates a strongly-typed extracted data object based on the specified model type and LLM response.
+    private FileExtractedData CreateExtractedDataByModel(ModelTypesEnum model, string llmResponse, Guid fileId)
+    {
+        // Set up JSON deserialization options (case-insensitive for property names)
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        switch (model)
+        {
+            // case ModelTypesEnum.QuestionAnswer:
+            //     // Deserialize LLM response into question-answer specific data
+            //     var questionAnswerData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(llmResponse, options);
+            //     return new QuestionAnswerSetupResult
+            //     {
+            //         FileId = fileId,
+            //         // ExtractedData = questionAnswerData ?? new List<QuestionAnswerSetupData>(),
+            //         Remarks = ""
+            //     };
+
+            case ModelTypesEnum.Classification:
+                // Deserialize LLM response into classification data (reuses ExtractionSetupData structure)
+                // var classificationData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse, options);
+                // return new ExtractionSetupResult
+                // {
+                //     FileId = fileId,
+                //     ExtractedData = classificationData ?? new ExtractionSetupData(),
+                //     Remarks = ""
+                // };
+
+            case ModelTypesEnum.Extraction:
+                // Deserialize LLM response into generic extraction data
+                var extractionData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse, options);
+                return new FileExtractedData
+                {
+                    FileId = fileId,
+                    ExtractedData = extractionData ?? new ExtractionSetupData(),
+                    Remarks = ""
+                };
+
+            default:
+                // Handle unsupported model types
+                throw new NotSupportedException($"Model type '{model}' is not supported.");
+        }
     }
 }
