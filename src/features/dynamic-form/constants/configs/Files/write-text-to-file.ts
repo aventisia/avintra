@@ -4,9 +4,9 @@ import {
   ActivityConfig,
 } from "../../..";
 
-const writeTextToFileFieldList: IDynamicFieldSchema[] = [
+const WriteTextToFileActivityFieldList: IDynamicFieldSchema[] = [
   {
-    name: "filePath",
+    name: "FilePath",
     type: "text",
     label: "File path",
     description:
@@ -17,7 +17,7 @@ const writeTextToFileFieldList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "textToWrite",
+    name: "TextToWrite",
     type: "textarea",
     label: "Text to write",
     description: "The text to write in the specified file",
@@ -27,63 +27,34 @@ const writeTextToFileFieldList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "appendNewLine",
-    type: "switch",
-    label: "Append new line",
-    description: "Specifies whether to append a new line at the end of the overall text to write to the file",
-    defaultValue: true,
-  },
-  {
-    name: "ifFileExists",
+    name: "WriteMode",
     type: "select",
     label: "If file exists",
     description:
       "Specifies whether to overwrite the existing content, or to append to the end of the existing content. If the file doesn't exist, this action automatically creates it",
     selectOptions: [
-      { label: "Overwrite existing content", value: "overwrite" },
-      { label: "Append content", value: "append" },
+      { label: "Overwrite", value: "Overwrite" },
+      { label: "Append", value: "Append" },
     ],
-    defaultValue: "overwrite",
-  },
-  {
-    name: "encoding",
-    type: "select",
-    label: "Encoding",
-    description:
-      "The encoding to use for the specified text to write into text file",
-    selectOptions: [
-      { label: "System Default", value: "systemDefault" },
-      { label: "UTF-8", value: "utf8" },
-      { label: "Unicode", value: "unicode" },
-      { label: "Unicode (big endian)", value: "unicodeBigEndian" },
-      { label: "UTF-8 (without byte order mask)", value: "utf8WithoutBom" },
-      {
-        label: "Unicode (without byte order mask)",
-        value: "unicodeWithoutBom",
-      },
-      { label: "ASCII", value: "ascii" },
-    ],
-    defaultValue: "unicode",
-  },
+    defaultValue: "Overwrite",
+  }
 ];
 
-const writeTextToFileFieldCategories: IDynamicFormKeysCategory[] = [
+const WriteTextToFileActivityFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
     formFieldKeys: [
-      ["filePath"],
-      ["textToWrite"],
-      ["appendNewLine"],
-      ["ifFileExists"],
-      ["encoding"],
+      ["FilePath"],
+      ["TextToWrite"],
+      ["WriteMode"],
     ],
   },
 ];
 
-const writeTextToFile: ActivityConfig = {
-  fieldList: writeTextToFileFieldList,
-  fieldCategories: writeTextToFileFieldCategories,
+const WriteTextToFileActivity: ActivityConfig = {
+  fieldList: WriteTextToFileActivityFieldList,
+  fieldCategories: WriteTextToFileActivityFieldCategories,
   fieldsToWatch: [],
 };
 
-export default writeTextToFile;
+export default WriteTextToFileActivity;

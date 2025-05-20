@@ -6,7 +6,7 @@ type NodeTypeAndCategory = {
   category: string;
 };
 
-type NodeDataInputsOutputs = {
+export type NodeDataInputsOutputs = {
   key: string,
   value: string | number | boolean,
 }
