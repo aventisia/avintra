@@ -148,90 +148,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("ExtractedData");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractionSetup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DocumentContext")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("NodePrompt")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MLModelId");
-
-                    b.ToTable("ExtractionSetups");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.FieldSetup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ExtractionSetupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Instructions")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExtractionSetupId");
-
-                    b.ToTable("FieldSetups");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.LLM", b =>
                 {
                     b.Property<Guid>("Id")
@@ -380,38 +296,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("ModelBuilderUser");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.TableHeader", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Instructions")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<Guid>("TableMetadataId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableMetadataId");
-
-                    b.ToTable("TableHeaders");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
                 {
                     b.Property<Guid>("Id")
@@ -476,33 +360,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("UploadedDocs");
                 });
 
-            modelBuilder.Entity("TableMetadata", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Context")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ExtractionSetupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExtractionSetupId");
-
-                    b.ToTable("TableMetadata");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.DataField", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -565,44 +422,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("UploadedDoc");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractionSetup", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("ExtractionSetups")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.FieldSetup", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ExtractionSetup", "ExtractionSetup")
-                        .WithMany("FieldSetups")
-                        .HasForeignKey("ExtractionSetupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExtractionSetup");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.LLM", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -641,17 +460,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.TableHeader", b =>
-                {
-                    b.HasOne("TableMetadata", "TableMetadata")
-                        .WithMany("TableHeaders")
-                        .HasForeignKey("TableMetadataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TableMetadata");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -679,31 +487,11 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("MLModel");
                 });
 
-            modelBuilder.Entity("TableMetadata", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ExtractionSetup", "ExtractionSetup")
-                        .WithMany("TableMetadata")
-                        .HasForeignKey("ExtractionSetupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExtractionSetup");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractionSetup", b =>
-                {
-                    b.Navigation("FieldSetups");
-
-                    b.Navigation("TableMetadata");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
                 {
                     b.Navigation("DataFields");
 
                     b.Navigation("ExtractedData");
-
-                    b.Navigation("ExtractionSetups");
 
                     b.Navigation("UploadedDocs");
                 });
@@ -711,11 +499,6 @@ namespace MLModelBuilderAPIs.Migrations
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
                 {
                     b.Navigation("ExtractedData");
-                });
-
-            modelBuilder.Entity("TableMetadata", b =>
-                {
-                    b.Navigation("TableHeaders");
                 });
 #pragma warning restore 612, 618
         }
