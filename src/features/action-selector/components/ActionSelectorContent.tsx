@@ -8,7 +8,7 @@ import { NoActionsMessage } from "./NoActionsMessage";
 import { PrimaryCategoryList } from "./PrimaryCategoryList";
 import { ActionCategoryList } from "./ActionCategoryList";
 import { ArrowLeftIcon, Search } from "lucide-react";
-import { Input } from "@/react-toolkit/ui/input";
+import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 
 export const ActionSelectorContent = () => {

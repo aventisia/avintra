@@ -8,7 +8,7 @@ import {
   CalendarIcon,
 } from "@heroicons/react/24/outline";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Input } from "@/react-toolkit/ui/input";
+import { Input } from "@aventisia/ui";
 import {
   InputOTP,
   InputOTPGroup,
