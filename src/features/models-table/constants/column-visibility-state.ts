@@ -6,7 +6,7 @@ export const columnVisibilityState = {
   llm: true,
   accuracy: false,
   docsProcessed: false,
-  status: false,
+  setupStatus: false,
   trainedOn: false,
   createdOn: false,
 };

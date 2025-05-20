@@ -2,15 +2,14 @@ import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
+
 import { ColumnDef } from "@tanstack/react-table";
-
 import { getColumnName } from "../constants/column-display-names";
-import { ModelsTableDto } from "../dtos/models-table-dto";
-import { ModelStatusEnum } from "../enums/model-status-enum";
 
+import { ModelsTableDto } from "../dtos/models-table-dto";
+import { ModelTypesEnum } from "../enums/model-type-enum";
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
-import { ModelTypesEnum } from "../enums/model-type-enum";
 
 /**
  * Array of table columns for the model table.
@@ -133,25 +132,21 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "setupStatus",
     header: ({ column }) => (
       <DTColumnHeader
         className="w-12"
         column={column}
-        title={getColumnName("status")}
+        title={getColumnName("setupStatus")}
       />
     ),
     cell: ({ row }) => {
-      const status =
-        row.getValue("status") == ModelStatusEnum.Active
-          ? "success-foreground"
-          : "destructive";
       return (
         <Badge
           variant={"outline"}
-          className={`w-auto truncate px-2.5 py-1.5 font-medium capitalize text-${status} `}
+          className={`w-auto truncate px-2.5 py-1.5 font-medium capitalize`}
         >
-          {row.getValue("status")}
+          {row.getValue("setupStatus")}
         </Badge>
       );
     },

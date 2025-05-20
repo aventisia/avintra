@@ -29,7 +29,7 @@ export const modelZodSchema = z.object({
     .string()
     .max(500, { message: maxLenError("Model description", 500) }),
   // Read (view) only fields
-  status: z.string(),
+  setupStatus: z.string(),
   createdBy: z.string(),
   createdOn: z.date(),
   trainedOn: z.date(),
