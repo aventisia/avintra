@@ -1,4 +1,4 @@
-import { Badge } from "@/react-toolkit/ui/badge";
+import { Badge } from "@aventisia/ui/badge";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 
 export const FalseEdgeLabel = () => {
