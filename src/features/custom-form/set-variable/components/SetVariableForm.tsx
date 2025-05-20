@@ -7,7 +7,7 @@ import {
   valueProps,
   variableProps,
 } from "../constants/set-variable-form-field-props";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";

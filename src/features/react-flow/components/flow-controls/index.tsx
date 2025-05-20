@@ -1,4 +1,4 @@
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { Panel } from "@xyflow/react";
 import { FCBContainer } from "./FCBContainer";
 import { FCBRedo } from "./FCBRedo";

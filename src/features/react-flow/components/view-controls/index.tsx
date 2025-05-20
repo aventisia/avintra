@@ -1,4 +1,4 @@
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";

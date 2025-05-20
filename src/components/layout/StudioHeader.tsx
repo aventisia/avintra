@@ -7,7 +7,7 @@ import { UnreadNotifications } from "@/react-toolkit/features/unread-notificatio
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { Panel } from "@xyflow/react";
 
 const StudioHeader = () => {

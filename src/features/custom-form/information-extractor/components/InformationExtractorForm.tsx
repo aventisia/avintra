@@ -10,7 +10,7 @@ import {
 } from "../constants/info-extractor-form-field-props";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { Button } from "@aventisia/ui/buttons";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
