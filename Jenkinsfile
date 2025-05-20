@@ -32,6 +32,14 @@ pipeline {
         nodejs 'NodeJS 20.18.1'
     }
     stages {
+        stage('Update Gitea npm registry') {
+            steps {
+                echo 'Updating Gitea npm registry...'
+
+                // Note: if we wrap below sh lines in double quotes, it will throw an error
+                sh 'npm config set @aventisia:registry=https://gitea.aventisia.com/api/packages/aventisia-public/npm/'
+            }
+        }
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
