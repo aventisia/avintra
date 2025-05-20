@@ -205,6 +205,15 @@ public class MLModelService : IMLModelService
                 return serviceResponse;
             }
 
+
+            // Prevent changing setup status from 'Completed' to any other status
+            if (modelAlreadyExists.SetupStatus == SetupStatusTypesEnum.Completed &&
+                mlModelDto.SetupStatus != SetupStatusTypesEnum.Completed)
+            {
+                _logger.LogInformation("Cannot change setup status from 'Completed'.");
+                serviceResponse.Message = "Setup status change not allowed.";
+                return serviceResponse;
+            }
             // Trim dto' string props
             mlModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelDto);
 
