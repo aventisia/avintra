@@ -10,24 +10,28 @@ Expected Output Format:
 The output must be formatted as a JSON object:
 
 "{\"fields\": [
-  {\"fieldName\": \"field_name\", \"fieldValue\": \"field_value\"},
-  {\"fieldName\": \"another_field\", \"fieldValue\": \"another_value\"}
+  {\"name\": \"field_name\", \"value\": \"field_value\"},
+  {\"name\": \"another_field\", \"value\": \"another_value\"}
 ],
 \"tables\": [
   {
-    \"tableName\": \"table_name\",
-    \"rows\": [
+    \"name\": \"table_name\",
+    \"headers\": [
       {
-        \"column_name_1\": \"column_value_1\",
-        \"column_name_2\": \"column_value_2\",
-        \"column_name_3\": \"column_value_3\",
-        \"column_name_4\": \"column_value_4\"
+        \"name\": \"column_name_1\",
+        \"values\": [\"column_value_1\", \"column_value_1\"]
       },
       {
-        \"column_name_1\": \"column_value_1\",
-        \"column_name_2\": \"column_value_2\",
-        \"column_name_3\": \"column_value_3\",
-        \"column_name_4\": \"column_value_4\"
+        \"name\": \"column_name_2\",
+        \"values\": [\"column_value_2\", \"column_value_2\"]
+      },
+      {
+        \"name\": \"column_name_3\",
+        \"values\": [\"column_value_3\", \"column_value_3\"]
+      },
+      {
+        \"name\": \"column_name_4\",
+        \"values\": [\"column_value_4\", \"column_value_4\"]
       }
     ]
   }

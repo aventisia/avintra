@@ -8,10 +8,7 @@ Questions: {{Questions}}
 Output Format:
 Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
 
-"[
-  {\"question\": \"Insert the first question here.\", \"answer\": \"Insert the corresponding answer here.\"},
-  {\"question\": \"Insert the second question here.\", \"answer\": \"Insert the corresponding answer here.\"}
-]"
+"[{"question": "question_1", "response": "answer_1."}, {"question": "another_question", "response": "another_answer"}]"
 
 Instructions:
 Use only the provided question for answer.

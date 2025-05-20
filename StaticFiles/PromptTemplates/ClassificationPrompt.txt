@@ -12,10 +12,7 @@ Please extract the value for the following categories: {{Categories}}
 Output Format:
 Return the results as a JSON array. Each object must include a categories and its corresponding value (ranging from 0 to 100), formatted as shown below:
 
-"[
-  {\"categoryName\": \"category_name\", \"categoryValue\": 85},
-  {\"categoryName\": \"another_category\", \"categoryValue\": 60}
-]"
+"[{\"name\": \"category_name\", \"value\": \"category_value\"}, {\"name\": \"another_category_name\", \"value\": \"another_category_value\"}]";
 
 Writing Instructions:
 - Use only the provided input and context.

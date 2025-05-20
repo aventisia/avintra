@@ -8,7 +8,7 @@ Length Requirements:
 - Total Word Count Range: {{TotalMinimumWords}}–{{TotalMaximumWords}} words
 
 Output Format:
-- Provide a clear, concise summary in plain text.
+"{"summary":"summary_content"}"
 
 Writing Instructions:
 - Focus on key points and essential details.

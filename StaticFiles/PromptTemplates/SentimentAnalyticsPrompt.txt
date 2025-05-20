@@ -5,12 +5,9 @@ Context: {{Context}}
 Please extract the values for the following categories: {{Categories}}
 
 Output Format:
-Return the result as a JSON string in the structure below:
+Return the results as a JSON array. Each object must include a categories and its corresponding value (ranging from 0 to 100), formatted as shown below:
 
-"{\"categories\": [
-  {\"categoryName\": \"sentiment\", \"categoryValue\": \"Positive\"},
-  {\"categoryName\": \"emotion\", \"categoryValue\": \"Joy\"}
-]}"
+"[{\"name\": \"category_name\", \"value\": \"category_value\"}, {\"name\": \"another_category_name\", \"value\": \"another_category_value\"}]";
 
 Instructions:
 - Only output the JSON as a string — no extra text, comments, or explanations.
