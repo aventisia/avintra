@@ -105,7 +105,7 @@ import readFromCSVFile from "../constants/configs/Files/read-from-csv-file";
 import readTextFromFile from "../constants/configs/Files/read-text-from-file";
 import waitForFile from "../constants/configs/Files/wait-for-file";
 import writeToCSVFile from "../constants/configs/Files/write-to-csv-file";
-import writeTextToFile from "../constants/configs/Files/write-text-to-file";
+import WriteTextToFileActivity from "../constants/configs/Files/write-text-to-file";
 import comment from "../constants/configs/flow-control/comment";
 import getLastError from "../constants/configs/flow-control/get-last-error";
 import goTo from "../constants/configs/flow-control/go-to";
@@ -401,7 +401,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   renameFile,
   deleteFiles,
   readTextFromFile,
-  writeTextToFile,
+  WriteTextToFileActivity,
   readFromCSVFile,
   writeToCSVFile,
   getFilePathPart,

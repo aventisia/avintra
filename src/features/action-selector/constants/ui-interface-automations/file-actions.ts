@@ -53,7 +53,7 @@ export const fileActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "writeTextToFile",
+    name: "WriteTextToFileActivity",
     label: "Write text to file",
     description: "Write or appends text to a file",
     img: `${import.meta.env.BASE_URL}function.png`,
