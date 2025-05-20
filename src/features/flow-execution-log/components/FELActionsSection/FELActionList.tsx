@@ -1,4 +1,4 @@
-import { CommandItem } from "@/react-toolkit/ui/command";
+import { CommandItem } from "@aventisia/ui/command";
 import { FlowExecutionLogsDTO } from "../../dtos/flow-execution-log-dto";
 import { FELListItem } from "./FELListItem";
 import { useFlowExecutionLogStore } from "../../stores/flow-execution-lof-store";

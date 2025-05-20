@@ -45,7 +45,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/react-toolkit/ui/command";
+} from "@aventisia/ui/command";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { Switch } from "@/react-toolkit/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/react-toolkit/ui/radio-group";

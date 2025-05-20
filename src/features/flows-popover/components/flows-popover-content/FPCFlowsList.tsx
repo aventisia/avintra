@@ -1,4 +1,4 @@
-import { CommandItem } from "@/react-toolkit/ui/command";
+import { CommandItem } from "@aventisia/ui/command";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";

@@ -1,4 +1,4 @@
-import { CommandItem } from "@/react-toolkit/ui/command";
+import { CommandItem } from "@aventisia/ui/command";
 import { ActionToSelect } from "./ActionToSelect";
 import { NodeDataType } from "@/types/node-data-type";
 import { DialogClose } from "@/react-toolkit/ui/dialog";

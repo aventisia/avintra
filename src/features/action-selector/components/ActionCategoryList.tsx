@@ -1,4 +1,4 @@
-import { CommandItem, CommandList } from "@/react-toolkit/ui/command";
+import { CommandItem, CommandList } from "@aventisia/ui/command";
 import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";

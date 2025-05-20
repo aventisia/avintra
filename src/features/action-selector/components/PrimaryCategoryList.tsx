@@ -2,7 +2,7 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/react-toolkit/ui/command";
+} from "@aventisia/ui/command";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { PrimaryCategory } from "./PrimaryCategory";
 import { actionSelectorData } from "../constants/action-selector-data";
