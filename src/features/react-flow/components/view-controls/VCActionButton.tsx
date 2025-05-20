@@ -1,5 +1,5 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { IconProps } from "@/react-toolkit/types/icon-props";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";

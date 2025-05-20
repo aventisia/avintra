@@ -1,5 +1,5 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 // import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";

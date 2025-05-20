@@ -1,5 +1,5 @@
 import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { FlowListItemActions } from "../flow-list-item-actions";
 import { FLILastModifiedOn } from "./FLILastModifiedOn";
 import { FLIName } from "./FLIName";

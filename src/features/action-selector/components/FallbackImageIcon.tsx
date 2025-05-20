@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 
 interface FallbackImageIconProps extends React.HTMLAttributes<HTMLImageElement> {
   src?: string;

@@ -9,7 +9,7 @@ import { xml } from "@codemirror/lang-xml";
 import { powerShell } from "@codemirror/legacy-modes/mode/powershell";
 import { StreamLanguage } from "@codemirror/language";
 import { githubLight } from "@uiw/codemirror-theme-github";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 
 interface CodeEditorProps {
   language?:

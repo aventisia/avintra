@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDynamicFieldSchema, DynamicFieldLabel } from "..";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { format } from "date-fns";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import {

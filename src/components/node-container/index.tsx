@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { GripVertical } from "lucide-react";
 
 interface NodeContainerProps extends React.HTMLAttributes<HTMLDivElement> {

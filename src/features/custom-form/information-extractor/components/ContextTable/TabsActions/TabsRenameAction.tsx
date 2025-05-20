@@ -1,6 +1,6 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useInformationExtractorTableStore } from "../../../stores/info-extractor-table-store";
 import { useShallow } from "zustand/react/shallow";

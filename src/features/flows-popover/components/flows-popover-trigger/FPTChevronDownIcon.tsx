@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { ChevronDownIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";

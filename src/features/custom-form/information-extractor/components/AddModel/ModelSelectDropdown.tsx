@@ -14,7 +14,7 @@ import {
 } from "@/react-toolkit/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Switch } from "@/react-toolkit/ui/switch";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { UseFormReturn } from "react-hook-form";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
 import { z } from "zod";

@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";

@@ -2,7 +2,7 @@ import { InputHandle } from "@/components/handles/InputHandle";
 import { NodeProps, Position } from "@xyflow/react";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { Merge } from "lucide-react";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 
 export const MergeBranchesNode = ({
   targetPosition,

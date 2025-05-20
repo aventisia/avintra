@@ -1,5 +1,5 @@
 import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
-// import { cn } from "@/react-toolkit/lib/utils";
+// import { cn } from "@aventisia/ui/lib";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { useShallow } from "zustand/react/shallow";
 

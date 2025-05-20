@@ -1,6 +1,6 @@
 import { IDynamicFieldSchema } from "..";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
 
