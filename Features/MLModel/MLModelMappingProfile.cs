@@ -21,6 +21,7 @@ public class MLModelMappingProfile : IRegister
         //Mapping entity to insert or update the record
         config.NewConfig<MLModelDto, MLModel>()
             .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.SetupStatus)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)

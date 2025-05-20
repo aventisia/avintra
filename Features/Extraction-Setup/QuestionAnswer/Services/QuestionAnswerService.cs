@@ -48,6 +48,7 @@ public class QuestionAnswerService : IQuestionAnswerService
             // Apply updated values to the model entity
             QuestionAnswerDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateQuestionAnswerModelPrompt(QuestionAnswerDto);
+            mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mLModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving changes to QuestionAnswer setup | ID: {Id}", QuestionAnswerDto.Id);

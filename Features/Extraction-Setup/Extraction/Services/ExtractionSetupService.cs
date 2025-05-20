@@ -53,6 +53,7 @@ public class ExtractionSetupService : IExtractionSetupService
             // Log the mapping process from DTO to entity
             mLModelSetupDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateExtractionModelPrompt(mLModelSetupDto);
+            mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mLModel.LastModifiedByUserId = _userId;
 
             // Log the action of saving changes to the database

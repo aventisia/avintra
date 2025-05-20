@@ -29,9 +29,9 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public DateTimeOffset TrainedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the status of ML model.
+    /// Gets or sets the current setup status of the ML model.
     /// </summary>/
-    public ModelStatusEnum Status { get; set; }
+    public SetupStatusTypesEnum SetupStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the type of LLM.

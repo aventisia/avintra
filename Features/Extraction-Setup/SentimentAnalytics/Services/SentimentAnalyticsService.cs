@@ -48,6 +48,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
             // Map incoming DTO data to the existing model entity
             sentimentAnalyticDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateSentimentAnalyticsModelPrompt(sentimentAnalyticDto);
+            mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mLModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving changes to sentiment analytics setup | Setup ID: {Id}", sentimentAnalyticDto.Id);

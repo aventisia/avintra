@@ -38,7 +38,7 @@ public class MLModelBuilderDbContext : DbContext
 
         // Enum to string conversion
         modelBuilder.Entity<MLModel>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
-        modelBuilder.Entity<MLModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ModelStatusEnum>());
+        modelBuilder.Entity<MLModel>().Property(e => e.SetupStatus).HasConversion(new EnumToStringConverter<SetupStatusTypesEnum>());
         modelBuilder.Entity<DataField>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FieldTypesEnum>());
         modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());

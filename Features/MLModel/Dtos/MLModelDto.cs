@@ -45,9 +45,9 @@ public class MLModelDto
     public DateTimeOffset TrainedOn { get; set; }
 
     /// <summary>
-    ///Gets or sets the status of ML model.
+    /// Gets or sets the current setup status of the ML model.
     /// </summary>/
-    public ModelStatusEnum Status { get; set; }
+    public SetupStatusTypesEnum SetupStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the date of creation of ML model.

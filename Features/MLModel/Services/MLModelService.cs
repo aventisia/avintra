@@ -131,6 +131,7 @@ public class MLModelService : IMLModelService
             var newMLModel = mlModelDto.Adapt<MLModel>();
             newMLModel.SetupObject = GetDefaultSerializedSetupByModel(newMLModel);
             newMLModel.Accuracy = (decimal?)90.00;
+            newMLModel.SetupStatus = SetupStatusTypesEnum.Pending;
             newMLModel.CreatedByUserId = _userId;
             newMLModel.LastModifiedByUserId = _userId;
 

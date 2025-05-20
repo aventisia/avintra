@@ -48,6 +48,7 @@ public class ClassificationService : IClassificationService
             // Map the updated DTO data to the model entity
             classificationDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateClassificationModelPrompt(classificationDto);
+            mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mLModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving updated classification setup | Setup ID: {Id}", classificationDto.Id);
