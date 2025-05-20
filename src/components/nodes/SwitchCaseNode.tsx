@@ -5,7 +5,7 @@ import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
 import BaseNode from "./BaseNode";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { cn } from "@aventisia/ui/lib";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useAddSwitchCaseBranch } from "@/hooks/useAddSwitchCaseBranch";
 

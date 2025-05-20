@@ -8,7 +8,7 @@ import {
   variableProps,
 } from "../constants/set-variable-form-field-props";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";

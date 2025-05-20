@@ -1,4 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { Command, CommandEmpty, CommandList } from "@/react-toolkit/ui/command";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { FELActionList } from "./FELActionList";

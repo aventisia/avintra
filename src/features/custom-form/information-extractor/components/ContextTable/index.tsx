@@ -1,6 +1,6 @@
 // components/ContextTablesSection.tsx
 import { Controller, UseFormReturn } from "react-hook-form";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";

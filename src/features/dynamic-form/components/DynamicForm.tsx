@@ -4,7 +4,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { IDynamicFieldSchema, IDynamicFormCategory, renderFormField } from "..";
 import { cn } from "@aventisia/ui/lib";
 import { Separator } from "@/react-toolkit/ui/separator";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";

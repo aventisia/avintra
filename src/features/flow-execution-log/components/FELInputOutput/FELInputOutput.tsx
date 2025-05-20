@@ -1,4 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 import { Copy, Download } from "lucide-react";
 import ReactJson from "react-json-view";

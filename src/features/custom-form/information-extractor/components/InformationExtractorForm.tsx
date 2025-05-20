@@ -9,7 +9,7 @@ import {
   saveInModelLibraryProps,
 } from "../constants/info-extractor-form-field-props";
 import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";

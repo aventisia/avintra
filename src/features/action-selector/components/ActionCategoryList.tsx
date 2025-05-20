@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/react-toolkit/ui/accordion";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";

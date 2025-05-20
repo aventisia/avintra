@@ -9,7 +9,7 @@ import { PrimaryCategoryList } from "./PrimaryCategoryList";
 import { ActionCategoryList } from "./ActionCategoryList";
 import { ArrowLeftIcon, Search } from "lucide-react";
 import { Input } from "@/react-toolkit/ui/input";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 
 export const ActionSelectorContent = () => {
   // Get the origin and originId from the store

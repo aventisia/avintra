@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/react-toolkit/ui/select";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import {
   MultiSelector,
   MultiSelectorContent,

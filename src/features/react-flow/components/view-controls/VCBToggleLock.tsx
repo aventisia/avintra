@@ -1,5 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/outline";

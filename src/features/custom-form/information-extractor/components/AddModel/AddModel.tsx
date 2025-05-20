@@ -1,4 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import { Trash2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
