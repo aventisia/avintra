@@ -11,6 +11,9 @@ const TranscriptTimeline = () => {
   const parseTime = (time: string) => parse(time, "mm:ss", new Date(0));
   const currentTime = parseTime(currentTimeStamp || "");
 
+  console.log("UAT DEBUG - currentTimeStamp", currentTimeStamp);
+  console.log("UAT DEBUG - parsed currentTime", currentTime);
+
   // Calculate active index based on current time
   const activeIndex = timelineData.reduce((acc, item, index) => {
     const itemTime = parseTime(item.time);
@@ -19,15 +22,12 @@ const TranscriptTimeline = () => {
       : acc;
   }, -1);
 
-  console.log("ACTI", activeIndex);
-
   // Refs for each timeline item
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Scroll to active transcript block
   useEffect(() => {
     const activeItem = itemRefs.current[activeIndex];
-    console.log("ACTItem", activeIndex);
 
     if (activeItem) {
       activeItem.scrollIntoView({
