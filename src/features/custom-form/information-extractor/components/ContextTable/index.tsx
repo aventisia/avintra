@@ -15,7 +15,7 @@ import { z } from "zod";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
 import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { ScrollArea, ScrollBar } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
 import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
 import { DropdownMenuContent } from "@/react-toolkit/ui/dropdown-menu";

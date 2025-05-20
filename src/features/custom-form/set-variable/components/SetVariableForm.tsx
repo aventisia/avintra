@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import {

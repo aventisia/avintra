@@ -14,7 +14,7 @@ import { Separator } from "@aventisia/ui";
 import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import DataToBeExtracted from "./DataToBeExtracted";
 import ContextTables from "./ContextTable";
 import { FormProvider } from "react-hook-form";

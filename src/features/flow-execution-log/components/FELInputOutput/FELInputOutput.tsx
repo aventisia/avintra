@@ -1,5 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { Copy, Download } from "lucide-react";
 import ReactJson from "react-json-view";
 import { useFlowExecutionActions } from "../../hooks/useFlowExecutionActions";

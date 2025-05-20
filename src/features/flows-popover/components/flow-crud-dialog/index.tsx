@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
 } from "@/react-toolkit/ui/dialog";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
 import { getDialogHeadingDescription } from "../../constants/constants";
 import { FlowCrudForm } from "./FlowCrudForm";

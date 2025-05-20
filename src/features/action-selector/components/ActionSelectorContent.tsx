@@ -1,6 +1,6 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { Command } from "@aventisia/ui/command";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";

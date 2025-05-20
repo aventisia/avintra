@@ -7,7 +7,7 @@ import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 // import { PopoverClose } from "@radix-ui/react-popover";

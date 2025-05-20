@@ -3,7 +3,7 @@ import {
   PopoverContent,
   PopoverDefaultHeader,
 } from "@/react-toolkit/ui/popover";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { POPOVER_HEADING } from "../constants";
 import { StudioPreferencesForm } from "./StudioPreferencesForm";
 import { StudioPreferencesTrigger } from "./StudioPreferencesTrigger";
