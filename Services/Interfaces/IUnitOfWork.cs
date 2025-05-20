@@ -21,8 +21,4 @@ public interface IUnitOfWork
     IUploadedDocRepo UploadedDocRepo { get; }
     IModelBuilderUserRepo ModelBuilderUserRepo { get; }
     ILLMRepo LLMRepo { get; }
-    IExtractionSetupRepo ExtractionSetupRepo { get; }
-    ITableMetadataRepo TableMetadataRepo { get; }
-    ITableHeaderRepo TableHeaderRepo { get; }
-    IFieldSetupRepo FieldSetupRepo { get; }
 }
