@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { FlowExecutionLogsDTO } from "../../dtos/flow-execution-log-dto";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import FELSearchBox from "./FELSearchBox";
-import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
+import { NoContentMessage } from "@aventisia/ui";
 
 interface FELActionsSectionProps {
   actionList: FlowExecutionLogsDTO[];
