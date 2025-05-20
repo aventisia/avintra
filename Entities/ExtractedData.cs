@@ -32,6 +32,11 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public ExtractedDataType? Type { get; set; }
 
     /// <summary>
+    /// Indicates whether the model or data is submitted for fine-tuning.
+    /// </summary>
+    public bool SubmitForFineTuning { get; set; }
+
+    /// <summary>
     /// Gets or sets the model library to which this data model is associated with.
     /// </summary>
     [ForeignKey("MLModelId")]
