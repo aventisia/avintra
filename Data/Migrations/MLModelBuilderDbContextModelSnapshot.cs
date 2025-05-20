@@ -119,6 +119,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<Guid>("MLModelId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("SubmitForFineTuning")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -312,7 +315,7 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<string>("SetupObject")
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("SetupStatus")
                         .IsRequired()
                         .HasColumnType("text");
 
