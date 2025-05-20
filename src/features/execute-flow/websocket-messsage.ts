@@ -1,4 +1,5 @@
 export type WebSocketMessage = {
   source: "react" | "wpf";
-  command: "pause" | "resume" | "abort";
+  command: "nextnode" | "start" | "pause" | "resume" | "abort";
+  data?: string;
 };
