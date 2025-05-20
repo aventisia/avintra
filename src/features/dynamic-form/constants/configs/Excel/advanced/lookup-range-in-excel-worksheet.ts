@@ -7,11 +7,10 @@ import {
 const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "	The Excel instance to work with. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -38,6 +37,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Cells name",
     description: "	The name of the cells range to search for the lookup value.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "named cells" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "startColumn",
@@ -45,6 +54,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start column",
     description: "The index or letter of the first column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "startRow",
@@ -52,6 +71,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "The index of the first row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endColumn",
@@ -59,6 +88,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "The index or letter of the last column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endRow",
@@ -66,6 +105,16 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The index of the last row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "rangesFormat", value: "specific ranges" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "arrayForm",
@@ -82,6 +131,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The name of the cells range from which the matching value is returned.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "named cells" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "startColumnOfResultsSource",
@@ -90,6 +153,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The index or letter of the first column of the range from which the matching value is returned.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "startRowOfResultsSource",
@@ -98,6 +175,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The first row number of the range from which the matching value is returned. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endColumnOfResultsSource",
@@ -106,6 +197,20 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The index or letter of the last column of the range from which the matching value is returned.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "endRowOfResultsSource",
@@ -114,13 +219,43 @@ const lookupRangeInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The last row number of the range from which the matching value is returned. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "rangesFormat", value: "specific ranges" },
+              {key: "arrayForm", value : false}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   // output
   {
-    name: "lookupResult",
-    type: "switch",
-    label: "LookupResult",
+    name: "o_lookupResultOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The value returned by the LOOKUP function",
+    defaultValue: "LookupResult",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_lookupResultSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_lookupResultSwitch",
+    type: "output-switch-field",
+    label: "LookupResult",
     defaultValue: true,
   },
 ];
@@ -134,7 +269,8 @@ const lookupRangeInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
       ["rangesFormat"],
       ["cellsName"],
       ["startColumn"],
-      ["startRow"]["endColumn"],
+      ["startRow"],
+      ["endColumn"],
       ["endRow"],
       ["arrayForm"],
       ["CellsNameOfResultsSource"],
@@ -146,14 +282,14 @@ const lookupRangeInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["lookupResult"]],
+    formFieldKeys: [["o_lookupResultOutput", "o_lookupResultSwitch"]],
   },
 ];
 
 const lookupRangeInExcelWorksheet: ActivityConfig = {
   fieldList: lookupRangeInExcelWorksheetFieldList,
   fieldCategories: lookupRangeInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["rangesFormat", "arrayForm", "o_lookupResultOutput", "o_lookupResultSwitch"],
 };
 
 export default lookupRangeInExcelWorksheet;

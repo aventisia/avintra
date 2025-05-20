@@ -67,10 +67,34 @@ const takeScreenshotOfUiElementFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "imageFile",
-    type: "switch",
-    label: "ImageFile",
+    name: "o_imageFileOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The file path of the generated screenshot image file",
+    defaultValue: "ImageFile",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_imageFileSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "saveMode", value: "file" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_imageFileSwitch",
+    type: "output-switch-field",
+    label: "ImageFile",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -97,10 +121,10 @@ const takeScreenshotOfUiElementFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["imageFile"]],
+    formFieldKeys: [["o_imageFileOutput", "o_imageFileSwitch"]],
   },
 ];
-const takeScreenshotOfUiElementFieldsToWatch: string[] = ["saveMode"];
+const takeScreenshotOfUiElementFieldsToWatch: string[] = ["saveMode", "o_imageFileOutput", "o_imageFileSwitch"];
 
 const takeScreenshotOfUiElement: ActivityConfig = {
   fieldList: takeScreenshotOfUiElementFieldList,

@@ -7,10 +7,8 @@ import {
 const uploadFilesToFtpFieldList: IDynamicFieldSchema[] = [
   {
     name: "FTPConnection",
-    type: "select",
+    type: "text",
     label: "FTP connection",
-    selectOptions: [],
-
     description:
       "The FTP connection to work with. This variable must have been previously specified in an Open FTP connection action",
     defaultValue: "",

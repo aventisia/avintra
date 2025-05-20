@@ -3,6 +3,7 @@ import {
   IDynamicFormKeysCategory,
   ActivityConfig,
 } from "../../..";
+
 const launchNewChromeFieldList: IDynamicFieldSchema[] = [
   {
     name: "launchMode",
@@ -12,19 +13,15 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
       "Specify whether to launch the automation browser or a new instance of Internet Explorer or attach to an existing one",
     selectOptions: [
       {
-        label: "Launch automation browser",
-        value: "launch automation browser",
+        label: "Launch new Instance",
+        value: "Launch new Instance",
       },
       {
-        label: "Launch new Internet Explorer",
-        value: "launch new Internet Explorer",
-      },
-      {
-        label: "Attach to running Internet Explorer",
-        value: "Attach to running Internet Explorer",
+        label: "Attach to running Instance",
+        value: "Attach to running Instance",
       },
     ],
-    defaultValue: "launch automation browser",
+    defaultValue: "Launch new Instance",
   },
   {
     name: "attachToInternetExplorerTab",
@@ -38,6 +35,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
       { label: "Use foreground window", value: "use foreground window" },
     ],
     defaultValue: "by title",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchMode", value: "Attach to running Instance" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "initialURL",
@@ -46,6 +53,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "	Enter the URL of the web site to visit when the web browser is launched",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchMode", value: "Launch new Instance" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "tabTitle",
@@ -54,6 +71,20 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "Enter the title (or part of it) of the Internet Explorer tab to attach to",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "launchMode", value: "Attach to running Instance" },
+              {key: "attachToInternetExplorerTab", value: "by title"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "tabuRL",
@@ -62,6 +93,20 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "	Enter the URL (or part of it) of the Internet Explorer tab to attach to",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "launchMode", value: "Attach to running Instance" },
+              {key: "attachToInternetExplorerTab", value: "by URL"}
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "windowState",
@@ -75,6 +120,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
       { label: "Minimized", value: "minimized" },
     ],
     defaultValue: "normal",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchMode", value: "Launch new Instance" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "targetDesktop",
@@ -84,15 +139,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
       "Set the connection string of the target desktop that the browser launches",
     selectOptions: [
       { label: "Local computer", value: "local computer" },
-      {
-        label:
-          "Any virtual desktop that is either currently connected or has at least one UI element captured",
-        value:
-          "any virtual desktop that is either currently connected or has at least one UI element captured",
-      },
+      // {
+      //   label:
+      //     "Any virtual desktop that is either currently connected or has at least one UI element captured",
+      //   value:
+      //     "any virtual desktop that is either currently connected or has at least one UI element captured",
+      // },
     ],
     defaultValue: "local computer",
   },
+  // Advance
   {
     name: "clearCache",
     type: "switch",
@@ -100,6 +156,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to clear the entire cache of the web browser right after launching it",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchMode", value: "Launch new Instance" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "clearCookies",
@@ -108,6 +174,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to clear all stored cookies in the web browser right after launching it",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchMode", value: "Launch new Instance" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "waitForPageToLoad",
@@ -116,6 +192,16 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to wait for the new web page to load completely before proceeding",
     defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchMode", value: "Launch new Instance" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "timeoutForWebpageToLoad",
@@ -124,6 +210,20 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
     description:
       "Set the time in seconds for page to load before the action throws an error",
     defaultValue: 60,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForPageToLoad", value: true },
+              { key: "launchMode", value: "Launch new Instance" }
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "ifAPop-UpDialogAppears",
@@ -136,59 +236,79 @@ const launchNewChromeFieldList: IDynamicFieldSchema[] = [
       { label: "Press a button", value: "press a button" },
       { label: "Do nothing", value: "do nothing" },
     ],
-    defaultValue: "",
+    defaultValue: "close it",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "launchMode", value: "Launch new Instance" },
+              {key: "waitForPageToLoad", value: true}
+            ],
+            logicalOperator: "AND",
+          },
+        ],
+        initialState: true,
+      },
+    }
   },
   {
     name: "dialogButtonToPress",
     type: "text",
     label: "Dialog button to press",
     description: "Enter the dialog button to press if a pop-up dialog appears",
-    defaultValue: "ok",
+    defaultValue: "OK",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "ifAPop-UpDialogAppears", value: "press a button" },
+              { key: "launchMode", value: "Launch new Instance" },
+              {key: "waitForPageToLoad", value: true}
+            ],
+            logicalOperator :"AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
-
   {
     name: "timeOut",
     type: "number",
     label: "Timeout",
     description:
       "Set the time in seconds that you want to wait for the browser to be opened before the action fails",
-    defaultValue: "60",
-  },
-  {
-    name: "userDataFolder",
-    type: "select",
-    label: "User data folder",
-    description:
-      "Specify the user data folder the browser uses when the flow runs in Picture-in-Picture. If Browser default is selected, the browser can't be opened on both the desktop and in Picture-in-Picture at the same time.",
-    selectOptions: [
-      {
-        label: "Picture-in-Picture default",
-        value: "picture-in-Picture default",
-      },
-      { label: "Browser default", value: "browser default" },
-      { label: "Custom", value: "custom" },
-    ],
-    defaultValue: "picture-in-Picture default",
-  },
-  {
-    name: "userDataFolderPath",
-    type: "text",
-    label: "User data folder path",
-    description:
-      "Specify the path of the user data folder the browser will use when the flow runs in Picture-in-Picture.",
-    defaultValue: "",
+    defaultValue: 60,
   },
   // output
   {
-    name: "browser",
-    type: "switch",
-    label: "Browser",
+    name: "o_browserOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The Chrome instance to use with browser automation actions",
+    defaultValue: "Browser",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_browserSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_browserSwitch",
+    type: "output-switch-field",
+    label: "Browser",
     defaultValue: true,
   },
 ];
 
-const launchNewChromeFieldCategories: IDynamicFormKeysCategory[] = [
+const launchNewChromeCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
     formFieldKeys: [
@@ -211,19 +331,25 @@ const launchNewChromeFieldCategories: IDynamicFormKeysCategory[] = [
       ["ifAPop-UpDialogAppears"],
       ["dialogButtonToPress"],
       ["timeOut"],
-      ["userDataFolder"],
-      ["userDataFolderPath"],
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["browser"]],
+    formFieldKeys: [["o_browserOutput", "o_browserSwitch"]],
   },
 ];
+
 const launchNewChrome: ActivityConfig = {
   fieldList: launchNewChromeFieldList,
-  fieldCategories: launchNewChromeFieldCategories,
-  fieldsToWatch: [],
+  fieldCategories: launchNewChromeCategories,
+  fieldsToWatch: [
+    "launchMode",
+    "attachToInternetExplorerTab",
+    "waitForPageToLoad",
+    "ifAPop-UpDialogAppears",
+    "o_browserOutput", 
+    "o_browserSwitch"
+  ],
 };
 
 export default launchNewChrome;

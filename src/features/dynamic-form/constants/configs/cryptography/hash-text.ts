@@ -38,6 +38,30 @@ const hashTextList: IDynamicFieldSchema[] = [
     description: "The text to hash",
     defaultValue: "",
   },
+  // Output
+  {
+    name: "o_hashedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The hashed text for later processing",
+    defaultValue: "HashedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_hashedTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_hashedTextSwitch", //to watch
+    type: "output-switch-field",
+    label: "HashedText",
+    defaultValue: true,
+  },
 ];
 
 const hashTextFieldCategories: IDynamicFormKeysCategory[] = [
@@ -45,12 +69,16 @@ const hashTextFieldCategories: IDynamicFormKeysCategory[] = [
     title: "Basic",
     formFieldKeys: [["hashAlgorithm"], ["encoding"], ["textToHash"]],
   },
+  {
+    title: "Output",
+    formFieldKeys: [["o_hashedTextOutput", "o_hashedTextSwitch"]]
+  }
 ];
 
 const hashText: ActivityConfig = {
   fieldList: hashTextList,
   fieldCategories: hashTextFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_hashedTextOutput", "o_hashedTextSwitch"],
 };
 
 export default hashText;

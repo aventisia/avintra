@@ -43,8 +43,17 @@ const sendMouseClickFieldList: IDynamicFieldSchema[] = [
     label: "X",
     description:
       "The horizontal (X) position of the mouse in pixel coordinates",
-
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "moveMouse", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "y",
@@ -52,6 +61,16 @@ const sendMouseClickFieldList: IDynamicFieldSchema[] = [
     label: "Y",
     description: "The vertical (Y) position of the mouse in pixel coordinates",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "moveMouse", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "relativeTo",
@@ -65,6 +84,16 @@ const sendMouseClickFieldList: IDynamicFieldSchema[] = [
       { label: "Current mouse position", value: "Current mouse position" },
     ],
     defaultValue: "Screen",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "moveMouse", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "mouseMovementStyle",
@@ -88,6 +117,16 @@ const sendMouseClickFieldList: IDynamicFieldSchema[] = [
       },
     ],
     defaultValue: "Instant",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "moveMouse", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -103,16 +142,12 @@ const sendMouseClickFieldCategories: IDynamicFormKeysCategory[] = [
       ["relativeTo"],
       ["mouseMovementStyle"],
     ],
-  },
-  {
-    title: "Output",
-    formFieldKeys: [[""], [""]],
-  },
+  }
 ];
 const sendMouseClick: ActivityConfig = {
   fieldList: sendMouseClickFieldList,
   fieldCategories: sendMouseClickFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["moveMouse"],
 };
 
 export default sendMouseClick;

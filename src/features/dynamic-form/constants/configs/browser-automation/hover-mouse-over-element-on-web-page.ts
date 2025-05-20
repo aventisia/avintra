@@ -7,19 +7,17 @@ import {
 const hoverMouseOverElementOnWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
     name: "uIElement",
-    type: "select",
+    type: "ui-element-selector",
     label: "UI element",
     description: "Select the text field to populate",
-    selectOptions: [],
     defaultValue: "",
   },
   {

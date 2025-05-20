@@ -73,6 +73,33 @@ const decryptTextWithAesFieldList: IDynamicFieldSchema[] = [
     label: "Salt",
     description: "The randomly generated salt value for later processing",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useSalt", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "iterations",
+    type: "text",
+    label: "Iterations",
+    description: "The number of iterations to use. Note that, in order to decrypt the output, the same iterations must be used. Use iteration count of at least 100000, to reduce risks against brute force attacks.",
+    defaultValue: "100000",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useSalt", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "useInitializationVector",
@@ -89,13 +116,62 @@ const decryptTextWithAesFieldList: IDynamicFieldSchema[] = [
     description:
       "The randomly generated initialization vector value for later processing",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useInitializationVector", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "hashAlgorithm",
+    type: "select",
+    label: "Hash algorithm",
+    description: "The size of the key in bits to use for the encryption",
+    selectOptions: [
+      { label: "SHA1", value: "sha1" },
+      { label: "SHA256", value: "sha256" },
+      { label: "SHA384", value: "sha384" },
+      { label: "SHA512", value: "sha512" },
+    ],
+    defaultValue: "sha256",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useSalt", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   // output
   {
-    name: "decryptedText",
-    type: "switch",
-    label: "DecryptedText",
+    name: "o_decryptedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The decrypted text for later processing",
+    defaultValue: "DecryptedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_decryptedTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_decryptedTextSwitch",
+    type: "output-switch-field",
+    label: "DecryptedText",
     defaultValue: true,
   },
 ];
@@ -107,8 +183,6 @@ const decryptTextWithAesFieldCategories: IDynamicFormKeysCategory[] = [
       ["encoding"],
       ["TextToDecrypt"],
       ["decryptionKey"],
-      ["initializationVector"],
-      ["salt"],
     ],
   },
   {
@@ -117,19 +191,23 @@ const decryptTextWithAesFieldCategories: IDynamicFormKeysCategory[] = [
       ["padding"],
       ["keySize"],
       ["useSalt"],
+      ["salt"],
+      ["iterations"],
       ["useInitializationVector"],
+      ["initializationVector"],
+      ["hashAlgorithm"]
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["decryptedText"]],
+    formFieldKeys: [["o_decryptedTextOutput", "o_decryptedTextSwitch"]],
   },
 ];
 
 const decryptTextWithAes: ActivityConfig = {
   fieldList: decryptTextWithAesFieldList,
   fieldCategories: decryptTextWithAesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["useSalt", "useInitializationVector", "o_decryptedTextOutput", "o_decryptedTextSwitch"],
 };
 
 export default decryptTextWithAes;

@@ -29,19 +29,52 @@ const displaySelectFolderDialogFieldList: IDynamicFieldSchema[] = [
       "Whether the folder selection dialog should always remain on top of all other windows",
     defaultValue: false,
   },
+  // Output
   {
-    name: "selectedFolder",
-    type: "switch",
-    label: "SelectedFolder",
+    name: "o_selectedFolderOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The selected folder",
+    defaultValue: "SelectedFolder",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedFolderSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_selectedFolderSwitch",
+    type: "output-switch-field",
+    label: "SelectedFolder",
     defaultValue: true,
   },
   {
-    name: "buttonPressed",
-    type: "switch",
-    label: "ButtonPressed",
+    name: "o_buttonPressedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The text of the button pressed. The user will automatically be given the choice of OK or Cancel",
+    defaultValue: "ButtonPressed",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_buttonPressedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_buttonPressedSwitch",
+    type: "output-switch-field",
+    label: "ButtonPressed",
     defaultValue: true,
   },
 ];
@@ -57,13 +90,15 @@ const displaySelectFolderDialogFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["selectedFolder"], ["buttonPressed"]],
+    formFieldKeys: [
+      ["o_selectedFolderOutput", "o_selectedFolderSwitch"], 
+      ["o_buttonPressedOutput", "o_buttonPressedSwitch"]],
   },
 ];
 const displaySelectFolderDialog: ActivityConfig = {
   fieldList: displaySelectFolderDialogFieldList,
   fieldCategories: displaySelectFolderDialogFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_selectedFolderOutput", "o_selectedFolderSwitch","o_buttonPressedOutput", "o_buttonPressedSwitch" ],
 };
 
 export default displaySelectFolderDialog;

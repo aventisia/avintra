@@ -7,10 +7,9 @@ import {
 const searchForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
   {
     name: "terminalSession",
-    type: "select",
+    type: "text",
     label: "Terminal session",
     description: "	The previously opened terminal session",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -36,6 +35,30 @@ const searchForTextOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
     description: "The number of the columns on the terminal screen",
     defaultValue: "80",
   },
+  // Output
+  {
+    name: "o_findResultsOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The search results retrieved from the terminal session screen",
+    defaultValue: "FindResults",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_findResultsSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_findResultsSwitch", //to watch
+    type: "output-switch-field",
+    label: "FindResults",
+    defaultValue: true,
+  },
 ];
 
 const searchForTextOnTerminalSessionFieldCategories: IDynamicFormKeysCategory[] =
@@ -52,11 +75,15 @@ const searchForTextOnTerminalSessionFieldCategories: IDynamicFormKeysCategory[] 
       title: "Advanced",
       formFieldKeys: [["columnSize"]],
     },
+    {
+      title: "Output",
+      formFieldKeys: [["o_findResultsOutput", "o_findResultsSwitch"]]
+    }
   ];
 const searchForTextOnTerminalSession: ActivityConfig = {
   fieldList: searchForTextOnTerminalSessionFieldList,
   fieldCategories: searchForTextOnTerminalSessionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_findResultsOutput", "o_findResultsSwitch"],
 };
 
 export default searchForTextOnTerminalSession;

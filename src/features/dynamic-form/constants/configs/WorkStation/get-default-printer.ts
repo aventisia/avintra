@@ -5,26 +5,43 @@ import {
 } from "../../..";
 
 const getDefaultPrinterFieldList: IDynamicFieldSchema[] = [
+  // Output
   {
-    name: "printerName",
-    type: "switch",
-    label: "PrinterName",
+    name: "o_printerNameOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The name of the default printer",
-    defaultValue: "",
+    defaultValue: "PrinterName",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_printerNameSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_printerNameSwitch",
+    type: "output-switch-field",
+    label: "PrinterName",
+    defaultValue: true,
   },
 ];
 
 const getDefaultPrinterFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
-    formFieldKeys: [["printerName"]],
+    formFieldKeys: [["o_printerNameOutput", "o_printerNameSwitch"]],
   },
 ];
 
 const getDefaultPrinter: ActivityConfig = {
   fieldList: getDefaultPrinterFieldList,
   fieldCategories: getDefaultPrinterFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_printerNameOutput", "o_printerNameSwitch"],
 };
 
 export default getDefaultPrinter;

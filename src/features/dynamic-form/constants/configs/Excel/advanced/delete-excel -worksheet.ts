@@ -7,11 +7,10 @@ import {
 const deleteExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -32,6 +31,18 @@ const deleteExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The Index number of the worksheet to delete. The numbering starts from 1, meaning that the index of the first worksheet is 1, the second is 2, and so on.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "deleteWorksheetWith", value: "index" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "worksheetName",
@@ -39,6 +50,18 @@ const deleteExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Worksheet name",
     description: "The name of the worksheet to delete",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "deleteWorksheetWith", value: "name" },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 

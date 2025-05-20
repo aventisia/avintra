@@ -14,10 +14,26 @@ const escapeTextForRegularExpressionFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "escapedText",
-    type: "switch",
-    label: "EscapedText",
+    name: "o_escapedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The escaped text",
+    defaultValue: "EscapedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_escapedTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_escapedTextSwitch",
+    type: "output-switch-field",
+    label: "EscapedText",
     defaultValue: true,
   },
 ];
@@ -30,10 +46,10 @@ const escapeTextForRegularExpressionFieldCategories: IDynamicFormKeysCategory[] 
     },
     {
       title: "Output",
-      formFieldKeys: [["escapedText"]],
+      formFieldKeys: [["o_escapedTextOutput", "o_escapedTextSwitch"]],
     },
   ];
-const escapeTextForRegularExpressionFieldsToWatch: string[] = [];
+const escapeTextForRegularExpressionFieldsToWatch: string[] = ["o_escapedTextOutput", "o_escapedTextSwitch"];
 
 const escapeTextForRegularExpression: ActivityConfig = {
   fieldList: escapeTextForRegularExpressionFieldList,

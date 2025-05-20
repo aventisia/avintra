@@ -14,6 +14,7 @@ type ControlType =
   | "otp"
   | "phone"
   | "select"
+  | "flow-select-combobox"
   | "multi-selector"
   | "tag-input"
   | "combobox"
@@ -24,7 +25,9 @@ type ControlType =
   | "slider"
   | "textarea"
   | "ui-element-selector"
-  | "codeEditor";
+  | "codeEditor"
+  | "output-text-field"
+  | "output-switch-field";
 
 /** Accepted language types for DynamicForm codeEditor component */
 type LanguageType =
@@ -51,6 +54,10 @@ interface IRegOptions {
   required?: boolean;
   /** list of Field's key and value can be passed to make field required*/
   requiredBasedOnFields?: IRequiredBasedOnFields;
+  /** To disable a field */
+  disabled?: boolean;
+  /** list of Field's key and value can be passed to make field disabled* */
+  disabledBasedOnFields?: IRequiredBasedOnFields;
   /** To control number' min limit */
   min?: number;
   /** To control number' max limit */
@@ -119,6 +126,11 @@ interface ActivityConfig {
   fieldsToWatch: string[];
 }
 
+interface IFormValuesToFill {
+  key: string; 
+  value: string | number | any;
+}
+
 export {
   type ControlType,
   type IRegOptions,
@@ -126,4 +138,5 @@ export {
   type IDynamicFormKeysCategory,
   type IDynamicFormCategory,
   type ActivityConfig,
+  type IFormValuesToFill
 };

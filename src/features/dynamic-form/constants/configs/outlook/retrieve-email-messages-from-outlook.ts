@@ -6,11 +6,10 @@ import {
 const retrieveEmailMessagesFromOutlookFieldList: IDynamicFieldSchema[] = [
   {
     name: "outlookInstance",
-    type: "select",
+    type: "text",
     label: "Outlook instance",
     description:
       "The Outlook instance to work with. Specify this variable in a 'Launch Outlook' action",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -124,12 +123,29 @@ const retrieveEmailMessagesFromOutlookFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  // Output
   {
-    name: "retrievedEmails",
-    type: "switch",
-    label: "RetrievedEmails",
+    name: "o_retrievedEmailsOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The retrieved email messages for later processing. The variable contain a list of Outlook message objects",
+    defaultValue: "RetrievedEmails",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_retrievedEmailsSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_retrievedEmailsSwitch",
+    type: "output-switch-field",
+    label: "RetrievedEmails",
     defaultValue: true,
   },
 ];
@@ -147,19 +163,19 @@ const retrieveEmailMessagesFromOutlookFieldCategories: IDynamicFormKeysCategory[
         ["readBodyAsHtml"],
         ["fromContains"],
         ["toContains"],
-        ["subjectContains"],
         ["bodyContains"],
+        ["subjectContains"],
         ["attachments"],
         ["saveAttachmentsInto"],
       ],
     },
     {
       title: "Output",
-      formFieldKeys: [["retrievedEmails"]],
+      formFieldKeys: [["o_retrievedEmailsOutput", "o_retrievedEmailsSwitch"]],
     },
   ];
 
-const retrieveEmailMessagesFromOutlookFieldsToWatch: string[] = ["attachments"];
+const retrieveEmailMessagesFromOutlookFieldsToWatch: string[] = ["attachments", "o_retrievedEmailsOutput", "o_retrievedEmailsSwitch"];
 
 const retrieveEmailMessagesFromOutlook: ActivityConfig = {
   fieldList: retrieveEmailMessagesFromOutlookFieldList,

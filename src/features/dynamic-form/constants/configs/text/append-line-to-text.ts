@@ -19,13 +19,29 @@ const appendLineToTextFieldList: IDynamicFieldSchema[] = [
     description: "The text to add on as a new line",
     defaultValue: "",
   },
-
   //   output
+    //output
+    {
+      name: "o_resultOutput", //to watch
+      type: "output-text-field",
+      label: "",
+      description: "The new text",
+      defaultValue: "Result",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_resultSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
   {
-    name: "result",
-    type: "switch",
+    name: "o_resultSwitch",
+    type: "output-switch-field",
     label: "Result",
-    description: "The new text",
     defaultValue: true,
   },
 ];
@@ -37,14 +53,14 @@ const appendLineToTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["result"]],
+    formFieldKeys: [["o_resultOutput", "o_resultSwitch"]],
   },
 ];
 
 const appendLineToText: ActivityConfig = {
   fieldList: appendLineToTextFieldList,
   fieldCategories: appendLineToTextFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_resultOutput", "o_resultSwitch"],
 };
 
 export default appendLineToText;

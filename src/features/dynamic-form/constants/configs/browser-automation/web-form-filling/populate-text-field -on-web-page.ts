@@ -6,29 +6,65 @@ import {
 const populateTextFieldOnWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
     name: "uIElement",
-    type: "select",
+    type: "ui-element-selector",
     label: "UI element",
     description: "Select the text field to populate",
-    selectOptions: [],
     defaultValue: "",
   },
-
+  {
+    name: "inputTextAs",
+    type: "select",
+    label: "Input text as",
+    description: "The text to fill in the text field",
+    selectOptions: [
+      { label: "Input as text, variable or expression", value: "inputAsTextVariableExpression" },
+      { label: "Direct encrypted text input", value: "encryptedText" },
+    ],
+    defaultValue: "inputAsTextVariableExpression",
+  },
   {
     name: "text",
-    type: "text",
+    type: "textarea",
     label: "Text",
-    description: "	Enter the text to fill in the text field",
+    description: "The text to fill in the text field",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "inputTextAs", value: "inputAsTextVariableExpression" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
+  {
+    name: "textEncrypt",
+    type: "password",
+    label: "Text",
+    description: "The text to fill in the text field",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "inputTextAs", value: "encryptedText" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  // Advanced
   {
     name: "ifFieldIsn'tEmpty",
     type: "select",
@@ -46,7 +82,7 @@ const populateTextFieldOnWebPageFieldList: IDynamicFieldSchema[] = [
     label: "Populate text using physical keystrokes",
     description:
       "Emulate using physical keystrokes when populating text to UI text field elements. Physical keystrokes are required for cases that emulated text population doesn't perform the intentional action on the element. As this option requires the browser window to be focused, it will automatically bring it in the foreground.",
-    defaultValue: false,
+    defaultValue: true,
   },
   {
     name: "emulateTyping",
@@ -55,6 +91,16 @@ const populateTextFieldOnWebPageFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to fill the text field at once by setting the value of the text box, or emulate a user typing by sending characters one by one. The latter method is slower, but required in some complex web pages.",
     defaultValue: true,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "populateTextUsingPhysicalKeystrokes", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "unfocusTextBoxAfterFillingIt",
@@ -68,8 +114,7 @@ const populateTextFieldOnWebPageFieldList: IDynamicFieldSchema[] = [
     name: "waitForPageToLoad",
     type: "switch",
     label: "Wait for page to load",
-    description:
-      "Specify whether to wait for the new web page to load completely after populating the text field",
+    description: "",
     defaultValue: true,
   },
   {
@@ -77,27 +122,62 @@ const populateTextFieldOnWebPageFieldList: IDynamicFieldSchema[] = [
     type: "number",
     label: "Timeout for webpage to load",
     description:
-      "Set the time in seconds for page to load before the action throws an error",
+      "	Set the time in seconds for page to load before the action throws an error",
     defaultValue: "60",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
-    name: "ifAoPop-UpDialogAppears",
+    name: "ifAPop-UpDialogAppears",
     type: "select",
     label: "If a pop-up dialog appears",
     description:
-      "Specify what to do if a pop-up dialog appears after populating the text field",
+      "Specify what to do if a pop-up dialog appears after clicking the link",
     selectOptions: [
-      { label: "Close it, Press a button", value: "close it, Press a button" },
+      { label: "Close it", value: "close it" },
+      { label: "Press a button", value: "press a button" },
       { label: "Do nothing", value: "do nothing" },
     ],
     defaultValue: "do nothing",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "dialogButtonToPress",
     type: "text",
     label: "Dialog button to press",
-    description: "	Enter the dialog button to press if a pop-up dialog appears",
-    defaultValue: "ok",
+    description: "Enter the dialog button to press if a pop-up dialog appears",
+    defaultValue: "Ok",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "ifAPop-UpDialogAppears", value: "press a button" },
+              { key: "waitForPageToLoad", value: true },
+            ],
+            logicalOperator: "AND",
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -107,23 +187,31 @@ const populateTextFieldOnWebPageFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["webBrowserInstance"],
       ["uIElement"],
+      ["inputTextAs"],
       ["text"],
+      ["textEncrypt"],
+      
+    ],
+  },
+  {
+    title: "Advanced",
+    formFieldKeys: [
       ["ifFieldIsn'tEmpty"],
       ["populateTextUsingPhysicalKeystrokes"],
       ["emulateTyping"],
       ["unfocusTextBoxAfterFillingIt"],
       ["waitForPageToLoad"],
       ["timeoutForWebpageToLoad"],
-      ["ifAoPop-UpDialogAppears"],
+      ["ifAPop-UpDialogAppears"],
       ["dialogButtonToPress"],
-    ],
-  },
+    ]
+  }
 ];
 
 const populateTextFieldOnWebPage: ActivityConfig = {
   fieldList: populateTextFieldOnWebPageFieldList,
   fieldCategories: populateTextFieldOnWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["inputTextAs", "populateTextUsingPhysicalKeystrokes", "waitForPageToLoad"],
 };
 
 export default populateTextFieldOnWebPage;

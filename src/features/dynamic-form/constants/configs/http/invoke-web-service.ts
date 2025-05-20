@@ -112,7 +112,7 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     ],
     description:
       "Specify whether to keep the original file name of the downloaded file or specify a new name",
-    defaultValue: "",
+    defaultValue: "keepOriginalFileName",
     regOptions: {
       requiredBasedOnFields: {
         conditionList: [
@@ -136,7 +136,10 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
       requiredBasedOnFields: {
         conditionList: [
           {
-            fields: [{ key: "fileName", value: "keepOriginalFileName" }],
+            fields: [
+              { key: "fileName", value: "keepOriginalFileName" },
+              { key: "saveResponse", value: "saveToDisk" },
+            ],
             logicalOperator: "AND",
           },
         ],
@@ -155,7 +158,10 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
       requiredBasedOnFields: {
         conditionList: [
           {
-            fields: [{ key: "fileName", value: "specifyFullPath" }],
+            fields: [
+              { key: "fileName", value: "specifyFullPath" },
+              { key: "saveResponse", value: "saveToDisk" },
+            ],
             logicalOperator: "AND",
           },
         ],
@@ -194,6 +200,22 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to clear all cookies created by similar actions during this flow",
     defaultValue: false,
+  },
+  {
+    name: "failOnErrorStatus",
+    type: "switch",
+    label: "Fail on error status",
+    description:
+      "Specify whether the responses of the invoked web service that denote errors will be processed as if they were normal responses (supressing all exceptions), or will result in realted exceptions",
+    defaultValue: false,
+  },
+  {
+    name: "encodeRequestBody",
+    type: "switch",
+    label: "Encode request body",
+    description:
+      "Specify whether the body of request should be URL-econded before invoking",
+    defaultValue: true,
   },
   {
     name: "useAgent",
@@ -280,29 +302,83 @@ const invokeWebServiceFelidList: IDynamicFieldSchema[] = [
       "Enable this to trim the whitespaces at the end of the request body of the web service response",
     defaultValue: true,
   },
+
   //output
   {
-    name: "webServiceResponseHeader",
-    type: "switch",
-    label: "WebServiceResponseHeader",
+    name: "o_webServiceResponseHeaderOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The HTTP headers of the response",
-    defaultValue: true,
+    defaultValue: "webServiceResponseHeader",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_webServiceResponseHeaderSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "webServiceResponse",
-    type: "switch",
+    name: "o_webServiceResponseHeaderSwitch",//to watch
+    type: "output-switch-field",
     label: "WebServiceResponseHeader",
-    description: "The web service response text",
     defaultValue: true,
   },
+  
   {
-    name: "statusCode",
-    type: "switch",
-    label: "StatusCode",
+    name: "o_webServiceResponseOutput",//to watch
+    type: "output-text-field",
+    label: "",
+    description: "The web service response text",
+    defaultValue: "webServiceResponse",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_webServiceResponseSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_webServiceResponseSwitch",//to watch
+    type: "output-switch-field",
+    label: "WebServiceResponse",
+    defaultValue: true,
+  },
+
+
+
+ {
+    name: "o_statusCodeOutput",//to watch
+    type: "output-text-field",
+    label: "",
     description: "The status code returned",
+    defaultValue: "statusCode",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_statusCodeSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_statusCodeSwitch",//to watch
+    type: "output-switch-field",
+    label: "StatusCode",
     defaultValue: true,
   },
 ];
+
 
 const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
   {
@@ -311,10 +387,9 @@ const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
       ["url"],
       ["method"],
       ["postParams"],
-      ["postTest"],
       ["accept"],
-      ["contentType"],
       ["customHeaders"],
+      ["contentType"],
       ["requestBody"],
       ["saveResponse"],
       ["fileName"],
@@ -328,6 +403,8 @@ const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
       ["connectionTimeout"],
       ["followRedirection"],
       ["clearCookies"],
+      ["failOnErrorStatus"],
+      ["encodeRequestBody"],
       ["useAgent"],
       ["encoding"],
       ["acceptUntrustedCertificates"],
@@ -340,9 +417,9 @@ const invokeWebServiceFelidCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["webServiceResponseHeader"],
-      ["webServiceResponse"],
-      ["statusCode"],
+      ["o_webServiceResponseHeaderOutput", "o_webServiceResponseHeaderSwitch"],
+      ["o_webServiceResponseOutput", "o_webServiceResponseSwitch"],
+      ["o_statusCodeOutput", "o_statusCodeSwitch"],
     ],
   },
 ];
@@ -352,6 +429,12 @@ const invokeWebServiceFelidsToWatch: string[] = [
   "saveResponse",
   "fileName",
   "useCredentials",
+  "o_webServiceResponseHeaderOutput", 
+  "o_webServiceResponseHeaderSwitch",
+  "o_webServiceResponseOutput", 
+  "o_webServiceResponseSwitch",
+  "o_statusCodeOutput",
+  "o_statusCodeSwitch"
 ];
 
 const invokeWebService: ActivityConfig = {

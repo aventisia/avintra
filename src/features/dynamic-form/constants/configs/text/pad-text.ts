@@ -42,10 +42,26 @@ const padTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "paddedText",
-    type: "switch",
-    label: "PaddedText",
+    name: "o_paddedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new cropped text",
+    defaultValue: "PaddedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_paddedTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_paddedTextSwitch",
+    type: "output-switch-field",
+    label: "PaddedText",
     defaultValue: true,
   },
 ];
@@ -62,10 +78,10 @@ const padTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["paddedText"]],
+    formFieldKeys: [["o_paddedTextOutput", "o_paddedTextSwitch"]],
   },
 ];
-const padTextFieldsToWatch: string[] = [];
+const padTextFieldsToWatch: string[] = ["o_paddedTextOutput", "o_paddedTextSwitch"];
 
 const padText: ActivityConfig = {
   fieldList: padTextFieldList,

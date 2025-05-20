@@ -17,11 +17,11 @@ const removeDuplicateItemsFromListFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "ignoreTextCase",
-    type: "text",
+    type: "switch",
     label: "Ignore text case while searching for duplicate items",
     description:
-      "Specifies whether to perform case insensitive comparison of text while searching for duplicate items",
-    defaultValue: "",
+    "Specifies whether to perform case insensitive comparison of text while searching for duplicate items",
+    defaultValue: false,
     regOptions: {
       required: true,
     },

@@ -14,41 +14,72 @@ const extractTablesFromPdfFieldList:IDynamicFieldSchema[] = [
       defaultValue: "",
     },
     {
-      name: "page(s)ToExtract",
-      type: "select",
-      label: "Page(s) to extract",
-      description:
-        "Specifies how many pages to extract tables from: all pages, a single page or a range of pages",
-      selectOptions: [
-        { label: "All", value: "all" },
-        { label: "Single", value: "single" },
-        { label: "Range", value: "range" },
-      ],
-      defaultValue: "all",
+    name: "page(s)ToExtract",
+    type: "select",
+    label: "Page(s) to extract",
+    description:
+      "Specifies how many pages to extract: All pages, a single page or a range of pages",
+    selectOptions: [
+      { label: "All", value: "all" },
+      { label: "Single", value: "single" },
+      { label: "Range", value: "range" },
+    ],
+    defaultValue: "all",
+  },
+  {
+    name: "singlePageNumber",
+    type: "text",
+    label: "Single page number",
+    description: "The number of the single page to extract text from",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "single" }],
+          },
+        ],
+        initialState: false,
+      },
     },
-    {
-      name: "singlePageNumber",
-      type: "text",
-      label: "Single page number",
-      description: "The number of the single page to extract tables from",
-      defaultValue: "",
+  },
+  {
+    name: "fromPageNumber",
+    type: "text",
+    label: "From page number",
+    description:
+      "The first page number from the range of pages to extract text from",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "range" }],
+          },
+        ],
+        initialState: false,
+      },
     },
-    {
-      name: "fromPageNumber",
-      type: "text",
-      label: "From page number",
-      description:
-        "The first page number from the range of pages to extract tables from",
-      defaultValue: "",
+  },
+  {
+    name: "toPageNumber",
+    type: "text",
+    label: "To page number",
+    description:
+      "The last page number from the range of pages to extract text from",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "page(s)ToExtract", value: "range" }],
+          },
+        ],
+        initialState: false,
+      },
     },
-    {
-      name: "toPageNumber",
-      type: "text",
-      label: "To page number",
-      description:
-        "The last page number from the range of pages to extract tables from",
-      defaultValue: "",
-    },
+  },
+    // Advance
     {
       name: "password",
       type: "password",
@@ -75,11 +106,27 @@ const extractTablesFromPdfFieldList:IDynamicFieldSchema[] = [
     },
     // output
     {
-      name: "extractedPDFTables",
-      type: "switch",
-      label: "ExtractedPDFTables",
+      name: "o_extractedPDFTablesOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The extracted tables with their info as a list",
-      defaultValue: "",
+      defaultValue: "ExtractedPDFTables",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_extractedPDFTablesSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    {
+      name: "o_extractedPDFTablesSwitch",
+      type: "output-switch-field",
+      label: "ExtractedPDFTables",
+      defaultValue: true,
     },
   ];
   
@@ -89,26 +136,24 @@ const extractTablesFromPdfFieldList:IDynamicFieldSchema[] = [
       formFieldKeys: [
         ["pdfFile"],
         ["page(s)ToExtract"],
-        ["inglePageNumber"],
+        ["singlePageNumber"],
         ["fromPageNumber"],
         ["toPageNumber"],
-        ["mergeTablesThatCrossPageMargins"],
-        ["firstLineContainsColumnNames"],
       ],
     },
     {
       title: "Advanced",
-      formFieldKeys: [["password"]],
+      formFieldKeys: [["password"],  ["mergeTablesThatCrossPageMargins"], ["firstLineContainsColumnNames"]],
     },
     {
       title: "Output",
-      formFieldKeys: [["extractedPDFTables"]],
+      formFieldKeys: [["o_extractedPDFTablesOutput", "o_extractedPDFTablesSwitch"]],
     },
   ];
   const extractTablesFromPdf:ActivityConfig = {
     fieldList: extractTablesFromPdfFieldList,
     fieldCategories: extractTablesFromPdfFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["page(s)ToExtract", "o_extractedPDFTablesOutput", "o_extractedPDFTablesSwitch"],
   };
   
   export default extractTablesFromPdf;

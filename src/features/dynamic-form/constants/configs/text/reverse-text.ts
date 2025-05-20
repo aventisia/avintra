@@ -14,10 +14,26 @@ const reverseTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "reversedText",
-    type: "switch",
-    label: "ReversedText",
+    name: "o_reversedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The reversed text",
+    defaultValue: "ReversedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_reversedTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_reversedTextSwitch", //to watch
+    type: "output-switch-field",
+    label: "ReversedText",
     defaultValue: true,
   },
 ];
@@ -29,10 +45,10 @@ const reverseTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["reversedText"]],
+    formFieldKeys: [["o_reversedTextOutput","o_reversedTextSwitch"]],
   },
 ];
-const reverseTextFieldsToWatch: string[] = [];
+const reverseTextFieldsToWatch: string[] = ["o_reversedTextOutput","o_reversedTextSwitch"];
 
 const reverseText: ActivityConfig = {
   fieldList: reverseTextFieldList,

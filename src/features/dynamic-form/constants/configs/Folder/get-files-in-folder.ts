@@ -19,7 +19,7 @@ const getFilesInFolderFieldList: IDynamicFieldSchema[] = [
   {
     name: "filterFolder",
     type: "text",
-    label: "Filter folder",
+    label: "File filter",
     description: "Choose a filter to limit files retrieved",
     defaultValue: "",
     regOptions: {
@@ -66,16 +66,7 @@ const getFilesInFolderFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "noSort",
     regOptions: {
-      requiredBasedOnFields: {
-        conditionList: [
-          {
-            fields: [
-              { key: "failUponDeniedAccessToAnySubfolder", value: true },
-            ],
-          },
-        ],
-        initialState: false,
-      },
+      required: true
     },
   },
   {
@@ -86,16 +77,7 @@ const getFilesInFolderFieldList: IDynamicFieldSchema[] = [
       "Specify whether to sort items in descending or ascending order",
     defaultValue: false,
     regOptions: {
-      requiredBasedOnFields: {
-        conditionList: [
-          {
-            fields: [
-              { key: "failUponDeniedAccessToAnySubfolder", value: true },
-            ],
-          },
-        ],
-        initialState: false,
-      },
+      required: true
     },
   },
   {
@@ -122,25 +104,81 @@ const getFilesInFolderFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "noSort",
     regOptions: {
-      requiredBasedOnFields: {
+      required: true
+    },
+  },
+  {
+    name: "descending2",
+    type: "switch",
+    label: "Descending",
+    description:
+      "Specify whether to sort items in descending or ascending order",
+    defaultValue: false,
+    regOptions: {
+      required: true
+    },
+  },
+  {
+    name: "thenBy2",
+    type: "select",
+    label: "Then by",
+    selectOptions: [
+      { label: "No Sort", value: "noSort" },
+      { label: "Full name", value: "fullName" },
+      { label: "Root path", value: "rootPath" },
+      { label: "Directory", value: "directory" },
+      { label: "Name", value: "name" },
+      { label: "Name without extension", value: "nameWithoutExtension" },
+      { label: "Extension", value: "extension" },
+      { label: "Size", value: "size" },
+      { label: "Creation time", value: "creationTime" },
+      { label: "Last accessed", value: "lastAccessed" },
+      { label: "Last modified", value: "lastModified" },
+      { label: "Is hidden", value: "isHidden" },
+      { label: "Is system", value: "isSystem" },
+      { label: "Is read-only", value: "isReadOnly" },
+      { label: "Is archive", value: "isArchive" },
+      { label: "Exists", value: "exists" },
+    ],
+    defaultValue: "noSort",
+    regOptions: {
+      required: true
+    },
+  },
+  {
+    name: "descending3",
+    type: "switch",
+    label: "Descending",
+    description:
+      "Specify whether to sort items in descending or ascending order",
+    defaultValue: false,
+    regOptions: {
+      required: true
+    },
+  },
+  //   output
+  {
+    name: "o_filesOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The retrieved file as a list of file objects",
+    defaultValue: "Files",
+    regOptions: {
+      disabledBasedOnFields: {
         conditionList: [
           {
-            fields: [
-              { key: "failUponDeniedAccessToAnySubfolder", value: true },
-            ],
+            fields: [{ key: "o_filesSwitch", value: false }],
           },
         ],
         initialState: false,
       },
     },
   },
-  //   output
   {
-    name: "exists",
-    type: "switch",
-    label: "Exists",
-    description: "True if the folder exists, false otherwise",
-    defaultValue: false,
+    name: "o_filesSwitch",
+    type: "output-switch-field",
+    label: "Files",
+    defaultValue: true,
   },
 ];
 
@@ -156,11 +194,14 @@ const getFilesInFolderFieldCategories: IDynamicFormKeysCategory[] = [
       ["sortBy"],
       ["descending"],
       ["thenBy"],
+      ["descending2"],
+      ["thenBy2"],
+      ["descending3"]
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["exists"]],
+    formFieldKeys: [["o_filesOutput", "o_filesSwitch"]],
   },
 ];
 
@@ -168,7 +209,7 @@ const getFilesInFolderFieldCategories: IDynamicFormKeysCategory[] = [
 const getFilesInFolder: ActivityConfig = {
   fieldList: getFilesInFolderFieldList,
   fieldCategories: getFilesInFolderFieldCategories,
-  fieldsToWatch: ["failUponDeniedAccessToAnySubfolder"],
+  fieldsToWatch: ["failUponDeniedAccessToAnySubfolder", "o_filesOutput", "o_filesSwitch"],
 };
 
 export default getFilesInFolder;

@@ -33,11 +33,37 @@ const extractDataFromTableFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "excelInstance",
-    type: "switch",
-    label: "ExcelInstance",
+    name: "o_excelInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The Excel instance with the extracted data. Use this instance to manipulate the spreadsheet (or save and close it) by using the dedicated Excel actions.",
+    defaultValue: "ExcelInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_excelInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "storeExtractedDataIn", value: "anExcelSpreadsheet" },
+            ],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_excelInstanceSwitch",
+    type: "output-switch-field",
+    label: "ExcelInstance",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -53,10 +79,34 @@ const extractDataFromTableFieldList: IDynamicFieldSchema[] = [
     },
   },
   {
-    name: "dataFromTable",
-    type: "switch",
+    name: "o_dataFromTableOutput", //to watch
+    type: "output-text-field",
+    label: "",
+      description: "The extracted data in the form of a datatable",
+    defaultValue: "DataFromTable",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_dataFromTableSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "storeExtractedDataIn", value: "aVariable" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_dataFromTableSwitch",
+    type: "output-switch-field",
     label: "DataFromTable",
-    description: "The extracted data in the form of a datatable",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -78,7 +128,7 @@ const extractDataFromTableFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["excelInstance", "dataFromTable"]],
+    formFieldKeys: [["o_excelInstanceOutput", "o_excelInstanceSwitch", "o_dataFromTableOutput", "o_dataFromTableSwitch"]],
   },
 ];
 const extractDataFromTableFieldsToWatch: string[] = ["storeExtractedDataIn"];

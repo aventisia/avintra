@@ -1,14 +1,15 @@
 import { NodeDataType } from "@/types/node-data-type";
 
 export const browserAutomationActions: NodeDataType[] = [
-  {
-    type: "activityNode",
-    name: "extractDataFromWebPage",
-    label: "Extract data from web page",
-    description:
-      "Extract data from specific parts of a web page in the form of single values, lists, rows, or tables",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // TODO - to be implemeted later
+  // {
+  //   type: "activityNode",
+  //   name: "extractDataFromWebPage",
+  //   label: "Extract data from web page",
+  //   description:
+  //     "Extract data from specific parts of a web page in the form of single values, lists, rows, or tables",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "getDetailsOfWebPage",
@@ -63,7 +64,7 @@ export const browserAutomationActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "setDrop-downListValueOnWebPage",
+    name: "setDropdownListValueOnWebPage",
     label: "Set drop-down list value on web page",
     description:
       "Set or clear the selected options for a drop-down list in a web form",
@@ -90,22 +91,6 @@ export const browserAutomationActions: NodeDataType[] = [
     label: "Wait for web page content",
     description:
       "Suspend the flow until a specific piece of text or web page element appears or disappears from a web page",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
-    name: "launchNewInternetExplorer",
-    label: "Launch new Internet Explorer",
-    description:
-      "Launch a new instance or attach to a running instance of Internet Explorer for automating websites and web applications",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
-  {
-    type: "activityNode",
-    name: "launchNewFirefox",
-    label: "Launch new Firefox",
-    description:
-      "Launch a new instance or attach to a running instance of Firefox for automating websites and web applications",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -139,13 +124,14 @@ export const browserAutomationActions: NodeDataType[] = [
     description: "Navigate the web browser to a new page",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
-  {
-    type: "activityNode",
-    name: "clickLinkOnWebPage",
-    label: "Click link on web page",
-    description: "Click on a link or any other element of a web page",
-    img: `${import.meta.env.BASE_URL}function.png`,
-  },
+  // To be Done later
+  // {
+  //   type: "activityNode",
+  //   name: "clickLinkOnWebPage",
+  //   label: "Click link on web page",
+  //   description: "Click on a link or any other element of a web page",
+  //   img: `${import.meta.env.BASE_URL}function.png`,
+  // },
   {
     type: "activityNode",
     name: "clickDownloadLinkOnWebPage",

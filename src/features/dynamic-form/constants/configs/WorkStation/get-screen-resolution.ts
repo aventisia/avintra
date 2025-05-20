@@ -12,33 +12,101 @@ const getScreenResolutionFieldList: IDynamicFieldSchema[] = [
     description: "The number of the monitor to get the resolution of",
     defaultValue: "",
   },
+  // Output
   {
-    name: "monitorWidth",
-    type: "switch",
-    label: "MonitorWidth",
+    name: "o_monitorWidthOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The width of the monitor",
-    defaultValue: "",
+    defaultValue: "MonitorWidth",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_monitorWidthSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "monitorHeight",
-    type: "switch",
-    label: "MonitorHeight",
+    name: "o_monitorWidthSwitch",
+    type: "output-switch-field",
+    label: "MonitorWidth",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_monitorHeightOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The height of the monitor",
-    defaultValue: "",
+    defaultValue: "MonitorHeight",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_monitorHeightSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "monitorBitCount",
-    type: "switch",
-    label: "MonitorBitCount",
+    name: "o_monitorHeightSwitch",
+    type: "output-switch-field",
+    label: "MonitorHeight",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_monitorBitCountOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The monitor bit count",
-    defaultValue: "",
+    defaultValue: "MonitorBitCount",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_monitorBitCountSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "monitorFrequency",
-    type: "switch",
-    label: "MonitorFrequency",
+    name: "o_monitorBitCountSwitch",
+    type: "output-switch-field",
+    label: "MonitorBitCount",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_monitorFrequencyOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The monitor frequency",
-    defaultValue: "",
+    defaultValue: "MonitorFrequency",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_monitorFrequencySwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_monitorFrequencySwitch",
+    type: "output-switch-field",
+    label: "MonitorFrequency",
+    defaultValue: true,
   },
 ];
 
@@ -50,10 +118,10 @@ const getScreenResolutionFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["monitorWidth"],
-      ["monitorHeight"],
-      ["monitorBitCount"],
-      ["monitorFrequency"],
+      ["o_monitorWidthOutput", "o_monitorWidthSwitch"],
+      ["o_monitorHeightOutput", "o_monitorHeightSwitch"],
+      ["o_monitorBitCountOutput", "o_monitorBitCountSwitch"],
+      ["o_monitorFrequencyOutput", "o_monitorFrequencySwitch"],
     ],
   },
 ];
@@ -61,7 +129,7 @@ const getScreenResolutionFieldCategories: IDynamicFormKeysCategory[] = [
 const getScreenResolution: ActivityConfig = {
   fieldList: getScreenResolutionFieldList,
   fieldCategories: getScreenResolutionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_monitorWidthOutput", "o_monitorWidthSwitch", "o_monitorHeightOutput", "o_monitorHeightSwitch", "o_monitorBitCountOutput", "o_monitorBitCountSwitch", "o_monitorFrequencyOutput", "o_monitorFrequencySwitch"],
 };
 
 export default getScreenResolution;

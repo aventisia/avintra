@@ -6,12 +6,10 @@ import goToWebPage from "../constants/configs/browser-automation/go-to-web-page"
 import hoverMouseOverElementOnWebPage from "../constants/configs/browser-automation/hover-mouse-over-element-on-web-page";
 import ifWebPageContains from "../constants/configs/browser-automation/if-web-page-contains";
 import launchNewChrome from "../constants/configs/browser-automation/launch-new-chrome";
-import launchNewFirefox from "../constants/configs/browser-automation/launch-new-firefox";
-import launchNewInternetExplorer from "../constants/configs/browser-automation/launch-new-internet-explorer";
-import launchNewIMicrosoftEdge from "../constants/configs/browser-automation/launch-new-microsoft-edge";
+import launchNewMicrosoftEdge from "../constants/configs/browser-automation/launch-new-microsoft-edge";
 import runJavascriptFunctionOnWebPage from "../constants/configs/browser-automation/run-javascript-function-on-web-page";
 import waitForWebPageContent from "../constants/configs/browser-automation/wait-for-web-page-content";
-import extractDataFromWebPage from "../constants/configs/browser-automation/web-data-extraction/extract-data-from-web-page";
+// import extractDataFromWebPage from "../constants/configs/browser-automation/web-data-extraction/extract-data-from-web-page";
 import getDetailsOfElementOnWebPage from "../constants/configs/browser-automation/web-data-extraction/get-details-of-element-on-web-page";
 import getDetailsOfWebPage from "../constants/configs/browser-automation/web-data-extraction/get-details-of-web-page";
 import takeScreenshotOfWebPage from "../constants/configs/browser-automation/web-data-extraction/take-screenshot-of-web-page";
@@ -19,8 +17,8 @@ import focusTextFieldOnWebPage from "../constants/configs/browser-automation/web
 import populateTextFieldOnWebPage from "../constants/configs/browser-automation/web-form-filling/populate-text-field -on-web-page";
 import pressButtonOnWebPage from "../constants/configs/browser-automation/web-form-filling/press-button-on-web-page";
 import selectRadioButtonOnWebPage from "../constants/configs/browser-automation/web-form-filling/select-radio-button-on-web-page";
-import setCheckboxStateOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-checkbox-state-on-web-page";
-import setDropDownListValueOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-drop-down-list-value-on-web-page";
+import setCheckBoxStateOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-checkbox-state-on-web-page";
+import setDropdownListValueOnWebPage from "../constants/configs/browser-automation/web-form-filling/set-drop-down-list-value-on-web-page";
 import getClipboardText from "../constants/configs/clipboard/get-clipboard-text";
 import setClipboardText from "../constants/configs/clipboard/set-clipboard-text";
 import closeCmdSession from "../constants/configs/CMD Session/close-cmd-session";
@@ -45,7 +43,7 @@ import hashTextWithKey from "../constants/configs/cryptography/hash-text-with-ke
 import closeSQLConnection from "../constants/configs/Database/close-sql-connection";
 import executeSQLStatement from "../constants/configs/Database/execute-sql-statement";
 import openSQLConnection from "../constants/configs/Database/open-sql-connection";
-import addToDateTime from "../constants/configs/DateTime/add-to-data-time";
+import addToDatetime from "../constants/configs/DateTime/add-to-data-time";
 import getCurrentDateAndTime from "../constants/configs/DateTime/get-current-date-and-time";
 import subtractDates from "../constants/configs/DateTime/subtract-dates";
 import processEmailMessages from "../constants/configs/email/process-email-messages";
@@ -61,11 +59,11 @@ import deleteColumnFromExcelWorksheet from "../constants/configs/Excel/advanced/
 import deleteExcelWorksheet from "../constants/configs/Excel/advanced/delete-excel -worksheet";
 import deleteFromExcelWorksheet from "../constants/configs/Excel/advanced/delete-from-excel -worksheet";
 import deleteRowFromExcelWorksheet from "../constants/configs/Excel/advanced/delete-row-from-excel-worksheet";
-import findsAndReplaceCellsInExcelWorksheet from "../constants/configs/Excel/advanced/find-and-replace-cells-in-excel-worksheet";
+import findAndReplaceCellsInExcelWorksheet from "../constants/configs/Excel/advanced/find-and-replace-cells-in-excel-worksheet";
 import getActiveCellOnExcelWorksheet from "../constants/configs/Excel/advanced/get-active-excel-worksheet";
 import getActiveExcelWorksheet from "../constants/configs/Excel/advanced/get-active-excel-worksheet";
 import getAllExcelWorksheets from "../constants/configs/Excel/advanced/get-all-excel-worksheet";
-import getFirstFreeColumnRowFromExcelWorksheet from "../constants/configs/Excel/advanced/get-first-free-row-on-column-from-excel";
+import getFirstFreeColumnRowFromExcelWorksheet from "../constants/configs/Excel/get-first-free-column-row";
 import getFirstFreeRowOnColumnFromExcelWorksheet from "../constants/configs/Excel/advanced/get-first-free-row-on-column-from-excel";
 import getSelectedCellRangeFromExcelWorksheet from "../constants/configs/Excel/advanced/get-selected-cell-range-from-excel-worksheet";
 import getTableRangeFromExcelWorksheet from "../constants/configs/Excel/advanced/get-table-range-from-excel-worksheet";
@@ -85,7 +83,7 @@ import filterCellsInExcelWorksheet from "../constants/configs/Excel/filter-cells
 import getColumnNameOnExcelWorksheet from "../constants/configs/Excel/get-column-name-of-the-column";
 import launchExcel from "../constants/configs/Excel/launch-excel";
 import readFromExcelWorksheet from "../constants/configs/Excel/read-from-excel-worksheet";
-import resizeColumnsRows from "../constants/configs/Excel/resize-columns-rows";
+import resizeColumnsRowsInExcelWorksheet from "../constants/configs/Excel/resize-columns-rows";
 import saveExcel from "../constants/configs/Excel/save-excel";
 import setActiveExcelWorksheet from "../constants/configs/Excel/set-active-excel-worksheet";
 import writeToExcelWorksheet from "../constants/configs/Excel/write-to-excel-worksheet";
@@ -102,17 +100,18 @@ import getFilePathPart from "../constants/configs/Files/get-file-path-part";
 import getTemporaryFile from "../constants/configs/Files/get-temporary-file";
 import ifFileExists from "../constants/configs/Files/if-file-exists";
 import moveFiles from "../constants/configs/Files/move-files";
+import renameFile from "../constants/configs/Files/rename-files"
 import readFromCSVFile from "../constants/configs/Files/read-from-csv-file";
 import readTextFromFile from "../constants/configs/Files/read-text-from-file";
 import waitForFile from "../constants/configs/Files/wait-for-file";
-import writeFromCSVFile from "../constants/configs/Files/write-from-csv-file";
-import writeTextFromFile from "../constants/configs/Files/write-text-from-file";
+import writeToCSVFile from "../constants/configs/Files/write-to-csv-file";
+import writeTextToFile from "../constants/configs/Files/write-text-to-file";
 import comment from "../constants/configs/flow-control/comment";
 import getLastError from "../constants/configs/flow-control/get-last-error";
 import goTo from "../constants/configs/flow-control/go-to";
 import label from "../constants/configs/flow-control/label";
 import region from "../constants/configs/flow-control/region";
-import runSubFlow from "../constants/configs/flow-control/run-subflow";
+import runSubflow from "../constants/configs/flow-control/run-subflow";
 import stopFlow from "../constants/configs/flow-control/stop-flow";
 import wait from "../constants/configs/flow-control/wait";
 import copyFolder from "../constants/configs/Folder/copy-folder";
@@ -120,7 +119,7 @@ import createFolder from "../constants/configs/Folder/create-folder";
 import deleteFolder from "../constants/configs/Folder/delete-folder";
 import emptyFolder from "../constants/configs/Folder/empty-folder";
 import getFilesInFolder from "../constants/configs/Folder/get-files-in-folder";
-import getSpecialFolder from "../constants/configs/Folder/get-special-folder";
+import getspecialFolder from "../constants/configs/Folder/get-special-folder";
 import getSubFoldersInFolder from "../constants/configs/Folder/get-sub-folder-in-folder";
 import ifFolderExists from "../constants/configs/Folder/if-folder-exist";
 import moveFolder from "../constants/configs/Folder/move-folder";
@@ -129,6 +128,7 @@ import changeWorkingDirectory from "../constants/configs/FTP/change-working-dire
 import closeConnection from "../constants/configs/FTP/close-connection";
 import deleteFtpDirectory from "../constants/configs/FTP/delete-FTP-directory";
 import deleteFtpFile from "../constants/configs/FTP/delete-FTP-file";
+import createFtpDirectory from "../constants/configs/FTP/create-ftp-directory"
 import downloadFilesFromFtp from "../constants/configs/FTP/download-file(s)-from-FTP";
 import downloadFoldersFromFtp from "../constants/configs/FTP/download-folder(s)-from-FTP";
 import invokeFtpCommand from "../constants/configs/FTP/invoke-FTP-command";
@@ -140,7 +140,7 @@ import synchronizeDirectories from "../constants/configs/FTP/synchronizeDirector
 import uploadFilesToFtp from "../constants/configs/FTP/upload-file(s)-to-FTP";
 import uploadFoldersToFtp from "../constants/configs/FTP/upload-folder(s)-to-FTP";
 import downloadFromWeb from "../constants/configs/http/download-from-web";
-import invokeSOAPWebService from "../constants/configs/http/invoke-soap-web-service";
+import invokeSoapWebService from "../constants/configs/http/invoke-soap-web-service";
 import invokeWebService from "../constants/configs/http/invoke-web-service";
 import displayInputDialog from "../constants/configs/message-boxes/display-input-dialog";
 import displayMessage from "../constants/configs/message-boxes/display-message";
@@ -154,21 +154,22 @@ import getMousePosition from "../constants/configs/mouse-and-keyboard/get-mouse-
 import moveMouse from "../constants/configs/mouse-and-keyboard/move-mouse";
 import moveMouseToImage from "../constants/configs/mouse-and-keyboard/move-mouse-to-image";
 import moveMouseToTextOnScreenOcr from "../constants/configs/mouse-and-keyboard/move-mouse-to-text-on-screen-ocr";
-import pressReleaseKey from "../constants/configs/mouse-and-keyboard/press-release-key";
+import pressreleaseKey from "../constants/configs/mouse-and-keyboard/press-release-key";
 import sendKeys from "../constants/configs/mouse-and-keyboard/send-keys";
 import sendMouseClick from "../constants/configs/mouse-and-keyboard/send-mouse-click";
 import setKeyState from "../constants/configs/mouse-and-keyboard/set-key-state";
 import waitForMouse from "../constants/configs/mouse-and-keyboard/wait-for-mouse";
 import waitForShortcutKey from "../constants/configs/mouse-and-keyboard/wait-for-shortcut-key";
 import extractTextWithOcr from "../constants/configs/ocr/extract-text-with";
-import waitForTextOnScreen from "../constants/configs/ocr/wait-for-text-on-screen";
-import closeOutLook from "../constants/configs/outlook/close-outlook";
+// import waitForTextOnScreen from "../constants/configs/ocr/wait-for-text-on-screen";
+// import ifTextOnScreen from "../constants/configs/ocr/if-text-on-screen"
+import closeOutlook from "../constants/configs/outlook/close-outlook";
 import launchOutlook from "../constants/configs/outlook/launch-outlook";
 import processEmailMessagesInOutlook from "../constants/configs/outlook/process-email-messages-in-outlook";
 import respondToOutlookMailMessage from "../constants/configs/outlook/respond-to-outlook-message";
 import retrieveEmailMessagesFromOutlook from "../constants/configs/outlook/retrieve-email-messages-from-outlook";
 import saveOutlookEmailMessages from "../constants/configs/outlook/save-outlook-email-messages";
-import sendEmailMessageThroughOutlook from "../constants/configs/outlook/send-email-message-through-outlook";
+import sendEmailThroughOutlook from "../constants/configs/outlook/send-email-message-through-outlook";
 import extractImagesFromPdf from "../constants/configs/PDF/extract-images-from-pdf";
 import extractPdfFilePagesToNewPdfFile from "../constants/configs/PDF/extract-pdf-file-pages-to-new-pdf-file";
 import extractTablesFromPdf from "../constants/configs/PDF/extract-tables-from-pdf";
@@ -199,7 +200,8 @@ import appendLineToText from "../constants/configs/text/append-line-to-text";
 import changeTextCase from "../constants/configs/text/change-text-case";
 import convertNumberToText from "../constants/configs/text/convert-number-to-text";
 import convertTextToDatetime from "../constants/configs/text/convert-text-to-datetime";
-import ConvertTextToNumber from "../constants/configs/text/convert-text-to-number";
+import convertTextToNumber from "../constants/configs/text/convert-text-to-number";
+import convertDatetimeToText from "../constants/configs/text/convert-datetime-to-text"
 import createHtmlContent from "../constants/configs/text/create-html-content";
 import createRandomText from "../constants/configs/text/create-random-text";
 import cropText from "../constants/configs/text/crop-text";
@@ -213,7 +215,7 @@ import replaceText from "../constants/configs/text/replace-text";
 import reverseText from "../constants/configs/text/reverse-text";
 import splitText from "../constants/configs/text/split-text";
 import trimText from "../constants/configs/text/trim-text";
-import clickUiELementInWindow from "../constants/configs/ui-automation/click-ui-element-in-window";
+import clickUiElementInWindow from "../constants/configs/ui-automation/click-ui-element-in-window";
 import extractDataFromTable from "../constants/configs/ui-automation/data-extraction/extract-data-from-table";
 import extractDataFromWindow from "../constants/configs/ui-automation/data-extraction/extract-data-from-window";
 import getDetailsOfWindow from "../constants/configs/ui-automation/data-extraction/get-details-of-window";
@@ -221,14 +223,14 @@ import getDetailsOfAUiElementInWindow from "../constants/configs/ui-automation/d
 import getSelectedCheckboxesInWindow from "../constants/configs/ui-automation/data-extraction/get-selected-checkboxes-in-window";
 import getSelectedRadioButtonInWindow from "../constants/configs/ui-automation/data-extraction/get-selected-radio-button-in-window";
 import takeScreenshotOfUiElement from "../constants/configs/ui-automation/data-extraction/take-screenshot-of-ui-element";
-import dragDropUiELementInWindow from "../constants/configs/ui-automation/drag-drop-ui-element-in-window";
+import dragAndDropUiElementInWindow from "../constants/configs/ui-automation/drag-drop-ui-element-in-window";
 import expandCollapseTreeNodeInWindow from "../constants/configs/ui-automation/expand-collapse-tree-node";
 import focusTextFieldInWindow from "../constants/configs/ui-automation/form-filling/focus-text-field-in-Window";
 import populateTextFieldInWindow from "../constants/configs/ui-automation/form-filling/populate-text-field-in-window";
 import pressButtonInWindow from "../constants/configs/ui-automation/form-filling/press-button-in-window";
 import selectRadioButtonInWindow from "../constants/configs/ui-automation/form-filling/select-radio-button-in-window";
 import setCheckboxStateInWindow from "../constants/configs/ui-automation/form-filling/set-checkbox-state-in-window";
-import setDropdownListValueInWindow from "../constants/configs/ui-automation/form-filling/set-drop-down-list-value-in-window";
+import setDropDownListValueInWindow from "../constants/configs/ui-automation/form-filling/set-drop-down-list-value-in-window";
 import hoverMouseOverUiElementInWindow from "../constants/configs/ui-automation/hover-mouse-over-ui-element";
 import ifWindow from "../constants/configs/ui-automation/if-window";
 import ifWindowContains from "../constants/configs/ui-automation/if-window-contains";
@@ -247,21 +249,24 @@ import setWindowVisibility from "../constants/configs/ui-automation/windows/set-
 import addItemToList from "../constants/configs/variables/add-item-to-list";
 import clearList from "../constants/configs/variables/clear-list";
 import convertCustomObjectToJson from "../constants/configs/variables/convert-custom-object-to-json";
-import convertJSONToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
+import convertJsonToCustomObject from "../constants/configs/variables/convert-json-to-custom-object";
 import createNewList from "../constants/configs/variables/create-new-list";
-import clearDataTable from "../constants/configs/variables/data-table/clear-data-table";
-import convertDataTableToText from "../constants/configs/variables/data-table/convert-data-table-to-text";
-import deleteColumnFromDataTable from "../constants/configs/variables/data-table/delete-column-from-data-table";
-import deleteDuplicateRowsFromDataTable from "../constants/configs/variables/data-table/delete-duplicate-rows-from-data-table";
-import deleteEmptyRowsFromDataTable from "../constants/configs/variables/data-table/delete-empty-rows-from-data-table";
-import deleteRowFromDataTable from "../constants/configs/variables/data-table/delete-row-from-data-table";
-import findOrReplaceInDataTable from "../constants/configs/variables/data-table/find-or-replace-in-data-table";
-import insertColumnIntoDataTable from "../constants/configs/variables/data-table/insert-column-into-data-table";
-import insertRowIntoDataTable from "../constants/configs/variables/data-table/insert-row-into-data-table";
-import mergeDataTables from "../constants/configs/variables/data-table/merge-data-table";
-import readFromCsvTextVariable from "../constants/configs/variables/data-table/read-from-csv-text-variable";
-import sortDataTable from "../constants/configs/variables/data-table/sort-data-table";
-import updateDataTableItem from "../constants/configs/variables/data-table/update-data-table-item";
+import clearDataTable from "../constants/configs/DataTable/clear-data-table";
+import createNewDataTable from "../constants/configs/DataTable/create-data-table";
+import convertDataTableToText from "../constants/configs/DataTable/convert-data-table-to-text";
+import deleteColumnFromDataTable from "../constants/configs/DataTable/delete-column-from-data-table";
+import deleteDuplicateRowsFromDataTable from "../constants/configs/DataTable/delete-duplicate-rows-from-data-table";
+import deleteEmptyRowsFromDataTable from "../constants/configs/DataTable/delete-empty-rows-from-data-table";
+import deleteRowFromDataTable from "../constants/configs/DataTable/delete-row-from-data-table";
+import findOrReplaceInDataTable from "../constants/configs/DataTable/find-or-replace-in-data-table";
+import insertColumnIntoDataTable from "../constants/configs/DataTable/insert-column-into-data-table";
+import insertRowIntoDataTable from "../constants/configs/DataTable/insert-row-into-data-table";
+import mergeDataTables from "../constants/configs/DataTable/merge-data-table";
+import readFromCsvTextVariable from "../constants/configs/DataTable/read-from-csv-text-variable";
+import sortDataTable from "../constants/configs/DataTable/sort-data-table";
+import updateDataTableItem from "../constants/configs/DataTable/update-data-table-item";
+import joinDataTables from "../constants/configs/DataTable/join-data-table"
+import filterDataTable from "../constants/configs/DataTable/filter-data-table"
 import decreaseVariable from "../constants/configs/variables/decrease-variable";
 import findCommonListItems from "../constants/configs/variables/find-common-list-items";
 import generateRandomNumber from "../constants/configs/variables/generate-random-number";
@@ -271,11 +276,11 @@ import removeItemFromList from "../constants/configs/variables/remove-items-from
 import removeDuplicateItemsFromList from "../constants/configs/variables/reomve-duplicate-items-from-list";
 import retrieveDataTableColumnIntoList from "../constants/configs/variables/retrieve-data-table-column-into-list";
 import reverseList from "../constants/configs/variables/reverse-list";
-import setVariable from "../constants/configs/variables/set-variable";
 import shuffleList from "../constants/configs/variables/shuffle-list";
 import sortList from "../constants/configs/variables/sort-list";
 import subtractLists from "../constants/configs/variables/subtract-lists";
 import truncateNumber from "../constants/configs/variables/truncate-number";
+import runPowerFxExpression from "../constants/configs/variables/run-power-fx-expression";
 import ifService from "../constants/configs/windows-services/if-service";
 import pauseService from "../constants/configs/windows-services/pause-service";
 import resumeService from "../constants/configs/windows-services/resume-service";
@@ -292,25 +297,29 @@ import saveWord from "../constants/configs/Word/save-word";
 import writeToWordDocument from "../constants/configs/Word/write-to-word-document";
 import controlScreensaver from "../constants/configs/WorkStation/control-screen-saver";
 import getDefaultPrinter from "../constants/configs/WorkStation/get-default-printer";
+import setDefaultPrinter from "../constants/configs/WorkStation/set-default-printer"
 import getScreenResolution from "../constants/configs/WorkStation/get-screen-resolution";
+import setScreenResolution from "../constants/configs/WorkStation/set-screen-resolution"
+import shutdownComputer from "../constants/configs/WorkStation/shutdown-computer"
 import logOffUser from "../constants/configs/WorkStation/log-off-user";
 import playSound from "../constants/configs/WorkStation/play-sound";
 import printDocument from "../constants/configs/WorkStation/print-document";
 import showDesktop from "../constants/configs/WorkStation/show-desktop";
 import takeScreenshot from "../constants/configs/WorkStation/take-screenshot";
-import executexPathExpression from "../constants/configs/XML/execute-xPath-expression";
+import executeXpathExpression from "../constants/configs/XML/execute-xPath-expression";
 import getXmlElementAttribute from "../constants/configs/XML/get-xml-element-attribute";
-import getXMLElementValue from "../constants/configs/XML/get-xml-element-value";
-import insertXMLElement from "../constants/configs/XML/insert-xml-element";
+import getXmlElementValue from "../constants/configs/XML/get-xml-element-value";
+import insertXmlElement from "../constants/configs/XML/insert-xml-element";
 import readXmlFromFile from "../constants/configs/XML/read-xml-from-file";
 import removeXmlElement from "../constants/configs/XML/remove-xml-element";
-import removeXMLElementAttribute from "../constants/configs/XML/remove-xml-element-attribute";
+import removeXmlElementAttribute from "../constants/configs/XML/remove-xml-element-attribute";
 import setXmlElementAttribute from "../constants/configs/XML/set-xml-element-attribute";
-import setXMLElementValue from "../constants/configs/XML/set-xml-element-value";
+import setXmlElementValue from "../constants/configs/XML/set-xml-element-value";
 import writeXmlToFile from "../constants/configs/XML/write-xml-to-file";
 import scheduleTrigger from "../constants/configs/triggers/schedule-trigger";
 import { ActivityConfig } from "../types/dynamic-form-types";
 import forEachLoop from "../constants/configs/loops/for-each-loop";
+import runDesktopFlow from "../constants/configs/run-flow/run-desktop-flow"
 
 const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Triggers
@@ -326,10 +335,11 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   deleteEmptyRowsFromDataTable,
   deleteDuplicateRowsFromDataTable,
   clearDataTable,
+  createNewDataTable,
   sortDataTable,
-  // filterDataTable,
+  filterDataTable,
   mergeDataTables,
-  // joinDataTables,
+  joinDataTables,
   readFromCsvTextVariable,
   convertDataTableToText,
   truncateNumber,
@@ -344,14 +354,13 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   findCommonListItems,
   subtractLists,
   retrieveDataTableColumnIntoList,
-  convertJSONToCustomObject,
+  convertJsonToCustomObject,
   convertCustomObjectToJson,
   addItemToList,
   createNewList,
   increaseVariable,
   decreaseVariable,
-  // runPowerFxExpression,
-  setVariable,
+  runPowerFxExpression,
 
   //Conditional
   conditionalCase,
@@ -368,7 +377,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   goTo,
   label,
   region,
-  runSubFlow,
+  runSubflow,
   stopFlow,
   wait,
 
@@ -382,18 +391,19 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   copyFolder,
   moveFolder,
   renameFolder,
-  getSpecialFolder,
+  getspecialFolder,
 
   //File
   ifFileExists,
   waitForFile,
   copyFile,
   moveFiles,
+  renameFile,
   deleteFiles,
   readTextFromFile,
-  writeTextFromFile,
+  writeTextToFile,
   readFromCSVFile,
-  writeFromCSVFile,
+  writeToCSVFile,
   getFilePathPart,
   getTemporaryFile,
   convertBase64ToText,
@@ -412,6 +422,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Workstation
   printDocument,
   getDefaultPrinter,
+  setDefaultPrinter,
   showDesktop,
   // lockWorkstation,
   playSound,
@@ -419,6 +430,8 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   takeScreenshot,
   controlScreensaver,
   getScreenResolution,
+  setScreenResolution,
+  shutdownComputer,
   logOffUser,
 
   //Scripting
@@ -440,7 +453,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   findAndReplaceWordsInWordDocument,
 
   //Excel
-  resizeColumnsRows,
+  resizeColumnsRowsInExcelWorksheet,
   runExcelMacro,
   getActiveExcelWorksheet,
   getAllExcelWorksheets,
@@ -457,7 +470,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   deleteRowFromExcelWorksheet,
   insertColumnToExcelWorksheet,
   deleteColumnFromExcelWorksheet,
-  findsAndReplaceCellsInExcelWorksheet,
+  findAndReplaceCellsInExcelWorksheet,
   getFirstFreeRowOnColumnFromExcelWorksheet,
   readFormulaFromExcel,
   getTableRangeFromExcelWorksheet,
@@ -483,6 +496,9 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   zipFiles,
   unzipFiles,
 
+  // run flow
+  runDesktopFlow,
+
   //UI Automation
   getDetailsOfWindow,
   getDetailsOfAUiElementInWindow,
@@ -496,7 +512,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   pressButtonInWindow,
   selectRadioButtonInWindow,
   setCheckboxStateInWindow,
-  setDropdownListValueInWindow,
+  setDropDownListValueInWindow,
   getWindow,
   focusWindow,
   setWindowState,
@@ -511,35 +527,33 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   selectTabInWindow,
   // waitForImage,
   hoverMouseOverUiElementInWindow,
-  clickUiELementInWindow,
+  clickUiElementInWindow,
   selectMenuOptionInWindow,
-  dragDropUiELementInWindow,
+  dragAndDropUiElementInWindow,
   expandCollapseTreeNodeInWindow,
   ifWindow,
   waitForWindow,
 
   //HTTP
   downloadFromWeb,
-  invokeSOAPWebService,
+  invokeSoapWebService,
   invokeWebService,
 
   //Browser automation
-  extractDataFromWebPage,
+  // extractDataFromWebPage,
   getDetailsOfWebPage,
   getDetailsOfElementOnWebPage,
   takeScreenshotOfWebPage,
   focusTextFieldOnWebPage,
   populateTextFieldOnWebPage,
-  setCheckboxStateOnWebPage,
+  setCheckBoxStateOnWebPage,
   selectRadioButtonOnWebPage,
-  setDropDownListValueOnWebPage,
+  setDropdownListValueOnWebPage,
   pressButtonOnWebPage,
   ifWebPageContains,
   waitForWebPageContent,
-  launchNewInternetExplorer,
-  launchNewFirefox,
   launchNewChrome,
-  launchNewIMicrosoftEdge,
+  launchNewMicrosoftEdge,
   createNewTab,
   goToWebPage,
   clickLinkOnWebPage,
@@ -567,11 +581,11 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //Outlook
   launchOutlook,
   retrieveEmailMessagesFromOutlook,
-  sendEmailMessageThroughOutlook,
+  sendEmailThroughOutlook,
   processEmailMessagesInOutlook,
   saveOutlookEmailMessages,
   respondToOutlookMailMessage,
-  closeOutLook,
+  closeOutlook,
 
   //Message boxes
   displayMessage,
@@ -590,7 +604,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   moveMouseToTextOnScreenOcr,
   sendMouseClick,
   sendKeys,
-  pressReleaseKey,
+  pressreleaseKey,
   setKeyState,
   waitForMouse,
   getKeyboardIdentifier,
@@ -610,10 +624,10 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   trimText,
   reverseText,
   changeTextCase,
-  ConvertTextToNumber,
+  convertTextToNumber,
   convertNumberToText,
   convertTextToDatetime,
-  // convertDatetimeToText,
+  convertDatetimeToText,
   createRandomText,
   joinText,
   splitText,
@@ -624,7 +638,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   createHtmlContent,
 
   //Date time
-  addToDateTime,
+  addToDatetime,
   subtractDates,
   getCurrentDateAndTime,
 
@@ -654,7 +668,8 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
 
   //OCR
   // useTheWindowsOcrEngine,
-  waitForTextOnScreen,
+  // ifTextOnScreen, // To Be done later
+  // waitForTextOnScreen, // To be done later
   extractTextWithOcr,
 
   //Cryptography
@@ -678,13 +693,13 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   //XML
   readXmlFromFile,
   writeXmlToFile,
-  executexPathExpression,
+  executeXpathExpression,
   getXmlElementAttribute,
   setXmlElementAttribute,
-  removeXMLElementAttribute,
-  getXMLElementValue,
-  setXMLElementValue,
-  insertXMLElement,
+  removeXmlElementAttribute,
+  getXmlElementValue,
+  setXmlElementValue,
+  insertXmlElement,
   removeXmlElement,
 
   //FTP
@@ -699,7 +714,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   uploadFoldersToFtp,
   deleteFtpFile,
   renameFtpFile,
-  // createFtpDirectory,
+  createFtpDirectory,
   deleteFtpDirectory,
   invokeFtpCommand,
   synchronizeDirectories,

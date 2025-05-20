@@ -27,10 +27,27 @@ const mergeListsFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "outputList",
-    type: "switch",
-    label: "OutputList",
+    name: "o_outputListOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The merged list. The initial lists aren't affected",
+    defaultValue: "OutputList",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_outputListSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+
+  {
+    name: "o_outputListSwitch", //to watch
+    type: "output-switch-field",
+    label: "OutputList",
     defaultValue: true,
   },
 ];
@@ -42,13 +59,13 @@ const mergeListsFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["outputList"]],
+    formFieldKeys: [["o_outputListOutput", "o_outputListSwitch"]],
   },
 ];
 
 const mergeLists: ActivityConfig = {
   fieldList: mergeListsFieldList,
   fieldCategories: mergeListsFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_outputListOutput", "o_outputListSwitch"],
 };
 export default mergeLists;

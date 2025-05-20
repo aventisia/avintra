@@ -17,11 +17,27 @@ const convertFileToBase64FieldList: IDynamicFieldSchema[] = [
   },
   // output 
   {
-    name: "base64Text",
-    type: "switch",
-    label: "Base64Text",
+    name: "o_base64TextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The Base64 encoded text.",
-    defaultValue: "",
+    defaultValue: "Base64Text",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_base64TextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_base64TextSwitch",
+    type: "output-switch-field",
+    label: "Base64Text",
+    defaultValue: true,
   },
 ];
 
@@ -32,14 +48,14 @@ const convertFileToBase64FieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["base64Text"]],
+    formFieldKeys: [["o_base64TextOutput", "o_base64TextSwitch"]],
   },
 ];
 
 const convertFileToBase64: ActivityConfig = {
   fieldList: convertFileToBase64FieldList,
   fieldCategories: convertFileToBase64FieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_base64TextOutput", "o_base64TextSwitch"],
 };
 
 export default convertFileToBase64;

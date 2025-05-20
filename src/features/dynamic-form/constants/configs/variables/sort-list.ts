@@ -64,7 +64,7 @@ const sortListFieldList: IDynamicFieldSchema[] = [
   {
     name: "secondProperty",
     type: "text",
-    label: "First property to sort by",
+    label: "Second property to sort by",
     description: "The name of second property to sort the list by",
     defaultValue: "",
     regOptions: {

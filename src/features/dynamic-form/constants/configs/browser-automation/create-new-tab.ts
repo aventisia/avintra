@@ -7,11 +7,10 @@ import {
 const createNewTabFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "	Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -22,12 +21,12 @@ const createNewTabFieldList: IDynamicFieldSchema[] = [
       "Enter the URL, or a variable containing the URL, to navigate to",
     defaultValue: "",
   },
+  // Advance
   {
     name: "waitForPageToLoad",
     type: "switch",
     label: "Wait for page to load",
-    description:
-      "Specify whether to wait for the new web page to load completely before proceeding",
+    description: "",
     defaultValue: true,
   },
   {
@@ -37,6 +36,16 @@ const createNewTabFieldList: IDynamicFieldSchema[] = [
     description:
       "	Set the time in seconds for page to load before the action throws an error",
     defaultValue: "60",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "ifAPop-UpDialogAppears",
@@ -50,21 +59,63 @@ const createNewTabFieldList: IDynamicFieldSchema[] = [
       { label: "Do nothing", value: "do nothing" },
     ],
     defaultValue: "do nothing",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+
   },
   {
     name: "dialogButtonToPress",
     type: "text",
     label: "Dialog button to press",
     description: "Enter the dialog button to press if a pop-up dialog appears",
-    defaultValue: "Enter the dialog button to press if a pop-up dialog appears",
+    defaultValue: "OK",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForPageToLoad", value: true },
+              { key: "ifAPop-UpDialogAppears", value: "press a button" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
+
   },
   // output
   {
-    name: "newBrowser",
-    type: "switch",
-    label: "NewBrowser",
+    name: "o_newBrowserOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The new web browser instance to use with browser automation actions",
+    defaultValue: "NewBrowser",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_newBrowserSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_newBrowserSwitch",
+    type: "output-switch-field",
+    label: "NewBrowser",
     defaultValue: true,
   },
 ];
@@ -75,7 +126,6 @@ const createNewTabFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["webBrowserInstance"],
       ["uRLToNavigateTo"],
-      ["dialogButtonToPress"],
     ],
   },
   {
@@ -84,18 +134,19 @@ const createNewTabFieldCategories: IDynamicFormKeysCategory[] = [
       ["waitForPageToLoad"],
       ["timeoutForWebpageToLoad"],
       ["ifAPop-UpDialogAppears"],
+      ["dialogButtonToPress"],
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["newBrowser"]],
+    formFieldKeys: [["o_newBrowserOutput", "o_newBrowserSwitch"]],
   },
 ];
 
 const createNewTab: ActivityConfig = {
   fieldList: createNewTabFieldList,
   fieldCategories: createNewTabFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["waitForPageToLoad", "ifAPop-UpDialogAppears", "o_newBrowserOutput", "o_newBrowserSwitch"],
 };
 
 export default createNewTab;

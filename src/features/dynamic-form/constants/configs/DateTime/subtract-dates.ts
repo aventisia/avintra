@@ -35,11 +35,27 @@ const subtractDatesFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "timeDifference",
-    type: "switch",
-    label: "TimeDifference",
+    name: "o_timeDifferenceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The difference in time as a numeric value",
-    defaultValue: "",
+    defaultValue: "TimeDifference",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_timeDifferenceSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_timeDifferenceSwitch",
+    type: "output-switch-field",
+    label: "TimeDifference",
+    defaultValue: true,
   },
 ];
 
@@ -50,13 +66,13 @@ const subtractDatesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["timeDifference"]],
+    formFieldKeys: [["o_timeDifferenceOutput", "o_timeDifferenceSwitch"]],
   },
 ];
 const subtractDates: ActivityConfig = {
   fieldList: subtractDatesFieldList,
   fieldCategories: subtractDatesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_timeDifferenceOutput", "o_timeDifferenceSwitch"],
 };
 
 export default subtractDates;

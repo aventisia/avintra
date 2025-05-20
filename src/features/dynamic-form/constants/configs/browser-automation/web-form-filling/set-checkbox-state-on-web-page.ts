@@ -6,19 +6,17 @@ import {
 const setCheckboxStateOnWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "	Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
     name: "uIElement",
-    type: "select",
+    type: "ui-element-selector",
     label: "UI element",
     description: "	Select the UI element on web page to capture",
-    selectOptions: [],
     defaultValue: "",
   },
 
@@ -33,6 +31,7 @@ const setCheckboxStateOnWebPageFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "checked",
   },
+  // Advanced
   {
     name: "waitForPageToLoad",
     type: "switch",
@@ -48,6 +47,16 @@ const setCheckboxStateOnWebPageFieldList: IDynamicFieldSchema[] = [
     description:
       "Set the time in seconds for page to load before the action throws an error",
     defaultValue: 60,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "ifAPop-UpDialogAppears",
@@ -60,13 +69,37 @@ const setCheckboxStateOnWebPageFieldList: IDynamicFieldSchema[] = [
       { label: "Do nothing", value: "do nothing" },
     ],
     defaultValue: "do nothing",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "dialogButtonToPress",
     type: "text",
     label: "Dialog button to press",
     description: "	Enter the dialog button to press if a pop-up dialog appears",
-    defaultValue: "ok",
+    defaultValue: "OK",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForPageToLoad", value: true },
+              { key: "ifAPop-UpDialogAppears", value: "press a button" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -77,17 +110,23 @@ const setCheckboxStateOnWebPageFieldCategories: IDynamicFormKeysCategory[] = [
       ["webBrowserInstance"],
       ["uIElement"],
       ["checkBoxState"],
+      
+    ],
+  },
+  {
+    title: "Advanced",
+    formFieldKeys: [
       ["waitForPageToLoad"],
       ["timeoutForWebpageToLoad"],
       ["ifAPop-UpDialogAppears"],
       ["dialogButtonToPress"],
-    ],
-  },
+    ]
+  }
 ];
 const setCheckboxStateOnWebPage: ActivityConfig = {
   fieldList: setCheckboxStateOnWebPageFieldList,
   fieldCategories: setCheckboxStateOnWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["waitForPageToLoad", "ifAPop-UpDialogAppears"],
 };
 
 export default setCheckboxStateOnWebPage;

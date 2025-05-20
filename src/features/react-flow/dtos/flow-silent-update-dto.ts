@@ -5,4 +5,7 @@ export interface FlowSilentUpdateDto {
 
   /** Flow's nodes, edges, and viewport JSON data in string format */
   reactFlowObject: string;
+
+  /** Flow Output variables */
+  flowVariablesObject: string;
 }

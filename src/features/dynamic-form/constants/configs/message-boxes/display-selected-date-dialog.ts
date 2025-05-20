@@ -75,18 +75,60 @@ const displaySelectDateDialogFieldList: IDynamicFieldSchema[] = [
       "Specify whether the date selection dialog should always remain on top of all other windows",
     defaultValue: false,
   },
+  // Output
   {
-    name: "selectedDate",
-    type: "switch",
-    label: "SelectedDate",
+    name: "o_selectedDateOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The date entered by the user or the default date",
-    defaultValue: true,
+    defaultValue: "SelectedDate",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedDateSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "secondSelectedDate",
-    type: "switch",
-    label: "SecondSelectedDate",
+    name: "o_selectedDateSwitch",
+    type: "output-switch-field",
+    label: "SelectedDate",
+    defaultValue: true,
+  },
+  //
+  {
+    name: "o_secondSelectedDateOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The second date entered by the user or that default date",
+    defaultValue: "SecondSelectedDate",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_secondSelectedDateSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "dialogType", value: "Date range (two Dates)" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_secondSelectedDateSwitch",
+    type: "output-switch-field",
+    label: "SecondSelectedDate",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -99,12 +141,28 @@ const displaySelectDateDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "buttonPressed",
-    type: "switch",
-    label: "ButtonPressed",
+    name: "o_buttonPressedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
-      "The text of the button pressed by the user. The user will automatically be given the choice of OK or Cancel",
+    "The text of the button pressed by the user. The user will automatically be given the choice of OK or Cancel",    defaultValue: "ButtonPressed",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_buttonPressedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_buttonPressedSwitch",
+    type: "output-switch-field",
+    label: "ButtonPressed",
     defaultValue: true,
   },
 ];
@@ -125,14 +183,22 @@ const displaySelectDateDialogFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
     formFieldKeys: [
-      ["selectedDate"],
-      ["secondSelectedDate"],
-      ["buttonPressed"],
+      ["o_selectedDateOutput", "o_selectedDateSwitch"],
+      ["o_secondSelectedDateOutput", "o_secondSelectedDateSwitch"],
+      ["o_buttonPressedOutput", "o_buttonPressedSwitch"],
     ],
   },
 ];
 
-const displaySelectDateDialogFieldsToWatch: string[] = ["dialogType"];
+const displaySelectDateDialogFieldsToWatch: string[] = [
+  "dialogType", 
+  "o_selectedDateOutput", 
+  "o_selectedDateSwitch", 
+  "o_secondSelectedDateOutput", 
+  "o_secondSelectedDateSwitch", 
+  "o_buttonPressedOutput", 
+  "o_buttonPressedSwitch"
+];
 
 const displaySelectDateDialog: ActivityConfig = {
   fieldList: displaySelectDateDialogFieldList,

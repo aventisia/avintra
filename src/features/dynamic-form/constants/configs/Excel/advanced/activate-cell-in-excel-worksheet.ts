@@ -7,11 +7,10 @@ import {
 const activateCellInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "Specify the Excel instance. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -29,8 +28,12 @@ const activateCellInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
         label: "Relatively specified cell",
         value: "relatively specified cell",
       },
+      {
+        label: "Cells with name",
+        value: "cells with name"
+      }
     ],
-    defaultValue: "",
+    defaultValue: "absolutely specified cell",
   },
   {
     name: "column",
@@ -38,6 +41,18 @@ const activateCellInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Column",
     description: "	The numeric value or letter of the cell column.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "activate", value: "absolutely specified cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "direction",
@@ -52,6 +67,18 @@ const activateCellInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
       { label: "Below", value: "below" },
     ],
     defaultValue: "left",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "activate", value: "relatively specified cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "offsetFromActiveCell",
@@ -60,6 +87,18 @@ const activateCellInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The distance in cells between the currently active cell and the desired cell. The numbering starts from 0.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "activate", value: "relatively specified cell" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "row",
@@ -68,6 +107,37 @@ const activateCellInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The numeric value of the cell row. The numbering starts from 1.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "activate", value: "absolutely specified cell" },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    description: "The name of cells.",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "activate", value: "cells with name" },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 
@@ -82,6 +152,7 @@ const activateCellInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] =
         ["direction"],
         ["offsetFromActiveCell"],
         ["row"],
+        ["name"]
       ],
     },
   ];
@@ -89,7 +160,7 @@ const activateCellInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] =
 const activateCellInExcelWorksheet: ActivityConfig = {
   fieldList: activateCellInExcelWorksheetFieldList,
   fieldCategories: activateCellInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["activate"],
 };
 
 export default activateCellInExcelWorksheet;

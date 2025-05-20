@@ -7,19 +7,17 @@ import {
 const getDetailsOfElementOnWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "	Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
     name: "uIElement",
-    type: "select",
+    type: "ui-element-selector",
     label: "UI element",
     description: "	Select the UI element on web page to capture",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -31,10 +29,26 @@ const getDetailsOfElementOnWebPageFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "attributeValue",
-    type: "switch",
-    label: "AttributeValue",
+    name: "o_attributeValueOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The value of the web element's attribute",
+    defaultValue: "AttributeValue",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_attributeValueSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_attributeValueSwitch",
+    type: "output-switch-field",
+    label: "AttributeValue",
     defaultValue: true,
   },
 ];
@@ -47,14 +61,14 @@ const getDetailsOfElementOnWebPageFieldCategories: IDynamicFormKeysCategory[] =
     },
     {
       title: "Object",
-      formFieldKeys: [["attributeValue"]],
+      formFieldKeys: [["o_attributeValueOutput", "o_attributeValueSwitch"]],
     },
   ];
 
 const getDetailsOfElementOnWebPage: ActivityConfig = {
   fieldList: getDetailsOfElementOnWebPageFieldList,
   fieldCategories: getDetailsOfElementOnWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_attributeValueOutput", "o_attributeValueSwitch"],
 };
 
 export default getDetailsOfElementOnWebPage;

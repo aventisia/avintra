@@ -80,17 +80,50 @@ const cropTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "croppedText",
-    type: "switch",
-    label: "CroppedText",
+    name: "o_croppedTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new cropped text",
-    defaultValue: true,
+    defaultValue: "CroppedText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_croppedTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "isFlagFound",
-    type: "switch",
-    label: "IsFlagFound",
+    name: "o_croppedTextSwitch", //to watch
+    type: "output-switch-field",
+    label: "CroppedText",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_isFlagFoundOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "Indicates if flag(s) found or not",
+    defaultValue: "IsFlagFound",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_isFlagFoundSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_isFlagFoundSwitch", //to watch
+    type: "output-switch-field",
+    label: "IsFlagFound",
     defaultValue: true,
   },
 ];
@@ -108,10 +141,10 @@ const cropTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["croppedText"], ["isFlagFound"]],
+    formFieldKeys: [["o_croppedTextOutput", "o_croppedTextSwitch"], ["o_isFlagFoundOutput", "o_isFlagFoundSwitch"]],
   },
 ];
-const cropTextFieldsToWatch: string[] = ["mode"];
+const cropTextFieldsToWatch: string[] = ["mode", "o_croppedTextOutput", "o_croppedTextSwitch", "o_isFlagFoundOutput", "o_isFlagFoundSwitch"];
 
 const cropText: ActivityConfig = {
   fieldList: cropTextFieldList,

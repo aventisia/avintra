@@ -7,11 +7,10 @@ import {
 const readFromWordDocumentFieldList: IDynamicFieldSchema[] = [
   {
     name: "wordInstance",
-    type: "select",
+    type: "text",
     label: "Word Instance",
     description:
       "The Word instance to work with. This variable must have been previously specified in a Launch Word or Attach to running Word action",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -62,12 +61,29 @@ const readFromWordDocumentFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  // Output
   {
-    name: "wordData",
-    type: "switch",
-    label: "WordData",
+    name: "o_wordDataOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The value of the retrieved content",
-    defaultValue: "",
+    defaultValue: "WordData",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_wordDataSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_wordDataSwitch",
+    type: "output-switch-field",
+    label: "WordData",
+    defaultValue: true,
   },
 ];
 
@@ -78,14 +94,14 @@ const readFromWordDocumentFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["wordData"]],
+    formFieldKeys: [["o_wordDataOutput", "o_wordDataSwitch"]],
   },
 ];
 
 const readFromWordDocument: ActivityConfig = {
   fieldList: readFromWordDocumentFieldList,
   fieldCategories: readFromWordDocumentFieldCategories,
-  fieldsToWatch: ["retrieve"],
+  fieldsToWatch: ["retrieve", "o_wordDataOutput", "o_wordDataSwitch"],
 };
 
 export default readFromWordDocument;

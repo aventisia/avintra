@@ -1,7 +1,8 @@
-import { Popover, PopoverContent } from "@/react-toolkit/ui/popover";
 import React from "react";
 import { ActionSelectorContent } from "./ActionSelectorContent";
 import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogContent } from "@/react-toolkit/ui/dialog";
 
 /**
  * Renders the Node Selector (to add nodes to flow).
@@ -9,25 +10,22 @@ import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrappe
 export const NodeSelector = ({
   children,
   ...props
-}: React.ComponentPropsWithoutRef<typeof PopoverContent>) => {
+}: React.ComponentPropsWithoutRef<typeof DialogContent>) => {
   return (
     <StopPropagationWrapper className="flex">
-      <Popover>
+      <Dialog>
         {/* Custom trigger basis trigger location */}
         {children}
         {/* Popover content */}
-        <PopoverContent
-          collisionPadding={10}
-          align="start"
+        <DialogContent
           side="right"
-          variant={"responsive"}
-          className="mlg:h-[30rem]"
           {...props}
+          className="h-full !max-w-[40rem]"
         >
           {/* Node selector content */}
           <ActionSelectorContent />
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
     </StopPropagationWrapper>
   );
 };

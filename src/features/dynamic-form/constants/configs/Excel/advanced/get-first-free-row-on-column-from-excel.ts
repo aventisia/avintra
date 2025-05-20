@@ -8,11 +8,10 @@ const getFirstFreeColumnRowFromExcelWorksheetFieldList: IDynamicFieldSchema[] =
   [
     {
       name: "excelInstance",
-      type: "select",
+      type: "text",
       label: "Excel instance",
       description:
         "Specify the Excel instance. This variable must have been previously specified in a Launch Excel action.",
-      selectOptions: [],
       defaultValue: "",
     },
     {
@@ -25,11 +24,27 @@ const getFirstFreeColumnRowFromExcelWorksheetFieldList: IDynamicFieldSchema[] =
     },
     // output
     {
-      name: "firstFreeRowOnColumn",
-      type: "switch",
-      label: "FirstFreeRowOnColumn",
+      name: "o_firstFreeRowOnColumnOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description:
-        "The numeric value of the given column's first fully empty row",
+      "The numeric value of the given column's first fully empty row",
+      defaultValue: "FirstFreeRowOnColumn",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_firstFreeRowOnColumnSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    {
+      name: "o_firstFreeRowOnColumnSwitch",
+      type: "output-switch-field",
+      label: "FirstFreeRowOnColumn",
       defaultValue: true,
     },
   ];
@@ -42,14 +57,14 @@ const getFirstFreeColumnRowFromExcelWorksheetFieldCategories: IDynamicFormKeysCa
     },
     {
       title: "Output",
-      formFieldKeys: [["firstFreeRowOnColumn"]],
+      formFieldKeys: [["o_firstFreeRowOnColumnOutput", "o_firstFreeRowOnColumnSwitch"]],
     },
   ];
 
 const getFirstFreeColumnRowFromExcelWorksheet: ActivityConfig = {
   fieldList: getFirstFreeColumnRowFromExcelWorksheetFieldList,
   fieldCategories: getFirstFreeColumnRowFromExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_firstFreeRowOnColumnOutput", "o_firstFreeRowOnColumnSwitch"],
 };
 
 export default getFirstFreeColumnRowFromExcelWorksheet;

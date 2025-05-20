@@ -152,11 +152,27 @@ const retrieveEmailMessagesFieldList: IDynamicFieldSchema[] = [
 
   //output
   {
-    name: "retrieveEmails",
-    type: "switch",
-    label: "RetrieveEmails",
+    name: "o_retrieveEmailsOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The retrieved email message for later processing as a list of email message objects",
+    defaultValue: "RetrieveEmails",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_retrieveEmailsSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_retrieveEmailsSwitch",
+    type: "output-switch-field",
+    label: "RetrieveEmails",
     defaultValue: true,
   },
 ];
@@ -189,11 +205,11 @@ const retrieveEmailMessagesFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["retrieveEmails"]],
+    formFieldKeys: [["o_retrieveEmailsOutput", "o_retrieveEmailsSwitch"]],
   },
 ];
 
-const retrieveEmailMessagesFieldsToWatch: string[] = ["saveAttachments"];
+const retrieveEmailMessagesFieldsToWatch: string[] = ["saveAttachments", "o_retrieveEmailsOutput", "o_retrieveEmailsSwitch"];
 
 const retrieveEmailMessages: ActivityConfig = {
   fieldList: retrieveEmailMessagesFieldList,

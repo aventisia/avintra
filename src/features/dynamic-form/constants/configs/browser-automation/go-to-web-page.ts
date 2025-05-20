@@ -7,11 +7,10 @@ import {
 const goToWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -29,12 +28,23 @@ const goToWebPageFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "uRL",
-    type: "switch",
+    type: "text",
     label: "URL",
     description:
       "Specify whether to wait for the web page to load completely before proceeding",
-    defaultValue: true,
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "navigate", value: "to URL" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
+  // Advance
   {
     name: "waitForPageToLoad",
     type: "switch",
@@ -49,6 +59,16 @@ const goToWebPageFieldList: IDynamicFieldSchema[] = [
     description:
       "	Set the time in seconds for page to load before the action throws an error",
     defaultValue: "60",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "ifAPop-UpDialogAppears",
@@ -62,13 +82,39 @@ const goToWebPageFieldList: IDynamicFieldSchema[] = [
       { label: "Do nothing", value: "do nothing" },
     ],
     defaultValue: "do nothing",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+
   },
   {
     name: "dialogButtonToPress",
     type: "text",
     label: "Dialog button to press",
     description: "Enter the dialog button to press if a pop-up dialog appears",
-    defaultValue: "ok",
+    defaultValue: "OK",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "waitForPageToLoad", value: true },
+              { key: "ifAPop-UpDialogAppears", value: "press a button" },
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
+
   },
 ];
 
@@ -79,7 +125,6 @@ const goToWebPageFieldCategories: IDynamicFormKeysCategory[] = [
       ["webBrowserInstance"],
       ["navigate"],
       ["uRL"],
-      ["dialogButtonToPress"],
     ],
   },
   {
@@ -88,6 +133,7 @@ const goToWebPageFieldCategories: IDynamicFormKeysCategory[] = [
       ["waitForPageToLoad"],
       ["timeoutForWebpageToLoad"],
       ["ifAPop-UpDialogAppears"],
+      ["dialogButtonToPress"],
     ],
   },
 ];
@@ -95,7 +141,7 @@ const goToWebPageFieldCategories: IDynamicFormKeysCategory[] = [
 const goToWebPage: ActivityConfig = {
   fieldList: goToWebPageFieldList,
   fieldCategories: goToWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["navigate", "waitForPageToLoad", "ifAPop-UpDialogAppears"],
 };
 
 export default goToWebPage;

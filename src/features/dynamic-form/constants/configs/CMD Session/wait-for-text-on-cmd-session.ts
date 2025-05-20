@@ -10,8 +10,6 @@ const waitForTextOnCmdSessionFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "CMD session",
     description: "An open CMD session variable",
-
-    selectOptions: [],
     defaultValue: "",
   },
   {

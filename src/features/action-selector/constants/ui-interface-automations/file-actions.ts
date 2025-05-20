@@ -25,6 +25,13 @@ export const fileActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
+    name: "renameFile",
+    label: "Rename file(s)",
+    description: "Change the names of one or more files",
+    img: `${import.meta.env.BASE_URL}function.png`,
+  },
+  {
+    type: "activityNode",
     name: "moveFiles",
     label: "Move file(s)",
     description: "Move one or more files into a destination folder",
@@ -46,8 +53,8 @@ export const fileActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "writeTextFromFile",
-    label: "Write text from file",
+    name: "writeTextToFile",
+    label: "Write text to file",
     description: "Write or appends text to a file",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
@@ -60,8 +67,8 @@ export const fileActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "writeFromCSVFile",
-    label: "Write from CSV file",
+    name: "writeToCSVFile",
+    label: "Write to CSV file",
     description: "Write a data table, data row or list to a CSV file",
     img: `${import.meta.env.BASE_URL}function.png`,
   },

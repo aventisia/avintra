@@ -7,11 +7,10 @@ import {
   const writeToWordDocumentFieldList: IDynamicFieldSchema[] = [
     {
       name: "wordInstance",
-      type: "select",
+      type: "text",
       label: "Word Instance",
       description:
         "The Word instance to work with. This variable must have been previously specified in a Launch Word or Attach to running Word action",
-      selectOptions: [], 
       defaultValue: "",
     },
     {
@@ -50,6 +49,20 @@ import {
       description:
         "The target bookmark in the Word document where the text will be appended. This action appends text before or after the specified bookmark in the Word document",
       defaultValue: "",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [
+                { key: "writeTextTo", value: "Before Bookmark" },
+                { key: "writeTextTo", value: "After Bookmark" },
+              ],
+              logicalOperator:"OR"
+            },
+          ],
+          initialState: false,
+        },
+      },
     },
   ];
   
@@ -69,7 +82,7 @@ import {
   const writeToWordDocument: ActivityConfig = {
     fieldList: writeToWordDocumentFieldList,
     fieldCategories: writeToWordDocumentFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["writeTextTo"],
   };
   
   export default writeToWordDocument;

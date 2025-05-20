@@ -25,7 +25,7 @@ import {
       type: "text",
       label: "Attribute name",
       description: "The name of the attribute to retrieve its value",
-      defaultValue: false,
+      defaultValue: "",
     },
     {
         name: "getValueAs",
@@ -60,11 +60,28 @@ import {
       //   description: "The retrieved value of the XML attribute",
       //   defaultValue: false,
       // }
-      ,{
-        name: "XmlAttributeValue",
-        type: "switch",
-        label: "XmlAttributeValue",
+      ,
+      {
+        name: "o_XmlAttributeValueOutput", //to watch
+        type: "output-text-field",
+        label: "",
         description: "The retrieved value of the XML attribute",
+        defaultValue: "XmlAttributeValue",
+        regOptions: {
+          disabledBasedOnFields: {
+            conditionList: [
+              {
+                fields: [{ key: "o_XmlAttributeValueSwitch", value: false }],
+              },
+            ],
+            initialState: false,
+          },
+        },
+      },
+      {
+        name: "o_XmlAttributeValueSwitch",
+        type: "output-switch-field",
+        label: "XmlAttributeValue",
         defaultValue: true,
       },
   ];
@@ -77,14 +94,14 @@ import {
   
     {
       title: "Output",
-      formFieldKeys: [["XmlAttributeValue"]],
+      formFieldKeys: [["o_XmlAttributeValueOutput", "o_XmlAttributeValueSwitch"]],
     },
   ];
   
   const getXmlElementAttribute: ActivityConfig = {
     fieldList: getXmlElementAttributeFieldList,
     fieldCategories: getXmlElementAttributeFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["o_XmlAttributeValueOutput", "o_XmlAttributeValueSwitch"],
   };
   
   export default getXmlElementAttribute;

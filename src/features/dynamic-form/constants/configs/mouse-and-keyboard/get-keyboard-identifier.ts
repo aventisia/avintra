@@ -6,23 +6,39 @@ import {
 
 const getKeyboardIdentifierFieldList: IDynamicFieldSchema[] = [
   {
-    name: "keyboardLayoutId",
-    type: "switch",
-    label: "Keyboard Layout ID",
+    name: "o_keyboardLayoutIdOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The registry key of the active keyboard identifier.",
+    defaultValue: "Keyboard Layout ID",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_keyboardLayoutIdSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_keyboardLayoutIdSwitch",
+    type: "output-switch-field",
+    label: "Keyboard Layout ID",
     defaultValue: true,
   },
 ];
 const getKeyboardIdentifierFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
-    formFieldKeys: [["keyboardLayoutId"]],
+    formFieldKeys: [["o_keyboardLayoutIdOutput", "o_keyboardLayoutIdSwitch"]],
   },
 ];
 const getKeyboardIdentifier: ActivityConfig = {
   fieldList: getKeyboardIdentifierFieldList,
   fieldCategories: getKeyboardIdentifierFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_keyboardLayoutIdOutput", "o_keyboardLayoutIdSwitch"],
 };
 
 export default getKeyboardIdentifier;

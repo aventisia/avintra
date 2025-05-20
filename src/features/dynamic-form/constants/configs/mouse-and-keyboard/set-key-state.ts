@@ -35,10 +35,6 @@ const setKeyStateFieldCategories: IDynamicFormKeysCategory[] = [
     title: "Basic",
     formFieldKeys: [["key"], ["state"]],
   },
-  {
-    title: "Output",
-    formFieldKeys: [[""], [""]],
-  },
 ];
 const setKeyState: ActivityConfig = {
   fieldList: setKeyStateFieldList,

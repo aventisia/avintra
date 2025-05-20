@@ -8,11 +8,10 @@ import {
 const addNewWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel Instance",
     description:
       "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -34,13 +33,6 @@ const addNewWorksheetFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "last",
   },
-  {
-    name: "worksheetName",
-    type: "text",
-    label: "Worksheet name",
-    description: "The name of the worksheet to activate",
-    defaultValue: "",
-  },
 ];
 
 const addNewWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
@@ -51,10 +43,6 @@ const addNewWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
       ["newWorksheetName"],
       ["addWorksheetAs"],
     ],
-  },
-  {
-    title: "Advanced",
-    formFieldKeys: [["worksheetName"]],
   },
 ];
 

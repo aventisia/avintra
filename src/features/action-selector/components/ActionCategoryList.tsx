@@ -18,13 +18,16 @@ import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
 import ActionsList from "./ActionsList";
 import { triggersList } from "../constants/trigger-data";
+import { ActionCategoryType } from "../types/action-category-type";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
-  const { origin, originId } = useNodeSelectorStore(
+  const { origin, originId, query } = useNodeSelectorStore(
     useShallow((state) => ({
       origin: state.origin,
       originId: state.originId,
+      query: state.query,
     })),
   );
 
@@ -40,10 +43,49 @@ export const ActionCategoryList = () => {
   // Is used to render the list of triggers
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
-  // Get actionCategories based on primaryCategoryLabel
-  const actionCategories = actionSelectorData.find(
-    (item) => item.label === primaryCategoryLabel,
-  )?.actionCategories;
+  const { projectInfo } = useCurrentFlowStore(
+    useShallow((state) => ({
+      projectInfo: state.projectInfo,
+    })),
+  );
+
+  const getActionCategories = () => {
+    if (query) {
+      const result: ActionCategoryType[] = [];
+      actionSelectorData.forEach(({ name, actionCategories }) => {
+        if (
+          projectInfo?.type === "AutomationAgent" &&
+          name === "aiIntegrations"
+        )
+          return;
+        actionCategories.forEach((category) => {
+          const matchingActions = category.actions
+            ? category.actions?.filter((action) =>
+                action.label.toLowerCase().includes(query.toLowerCase()),
+              )
+            : [];
+
+          if (matchingActions.length > 0) {
+            result.push({
+              description: category.description,
+              img: category.img,
+              label: category.label,
+              name: category.name,
+              actions: matchingActions,
+            });
+          }
+        });
+      });
+
+      return result;
+    } else {
+      return actionSelectorData.find(
+        (item) => item.label === primaryCategoryLabel,
+      )?.actionCategories;
+    }
+  };
+
+  const actionCategories = getActionCategories();
 
   // Get add/replace Node handlers
   const addFirstNodeToFlow = useAddFirstNodeToFlow();
@@ -86,37 +128,53 @@ export const ActionCategoryList = () => {
         </>
       ) : (
         <>
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size="icon8"
-              className="min-w-[2rem]"
-              onClick={() => setPrimaryCategoryLabel(null)}
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-            </Button>
-            <h2 className="ml-2 w-full truncate text-sm">
-              {primaryCategoryLabel}
-            </h2>
-          </div>
+          {!query && (
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon8"
+                className="min-w-[2rem]"
+                onClick={() => {
+                  setPrimaryCategoryLabel(null);
+                }}
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+              </Button>
+              <h2 className="ml-2 w-full truncate text-sm">
+                {primaryCategoryLabel}
+              </h2>
+            </div>
+          )}
           {actionCategories?.map((item, index) => (
             <>
               <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value={item.name} className="border-none">
-                    <AccordionTrigger className="px-1.5 py-2">
-                      <div className="flex w-full gap-3 text-sm">
-                        {item.label}
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ActionsList
-                        item={item?.actions}
-                        nodeSelectionHandler={nodeSelectionHandler}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                {item.listType === "list" ? (
+                  <ActionsList
+                    item={item?.actions}
+                    nodeSelectionHandler={nodeSelectionHandler}
+                  />
+                ) : (
+                  <Accordion
+                    value={query ? item.name : undefined}
+                    type="single"
+                    collapsible
+                    className="w-full"
+                  >
+                    <AccordionItem value={item.name} className="border-none">
+                      <AccordionTrigger className="px-1.5 py-2">
+                        <div className="flex w-full gap-3 text-sm">
+                          {item.label}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ActionsList
+                          item={item?.actions}
+                          nodeSelectionHandler={nodeSelectionHandler}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
               </CommandItem>
               {/* Separator */}
               {index < actionSelectorData.length - 1 && (

@@ -22,11 +22,11 @@ const runDOSCommandFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "failAfterTimeout",
-    type: "text",
+    type: "switch",
     label: "Fail after timeout",
     description:
-      "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
-    defaultValue: "",
+      "Specify whether the DOS command or application will run indefinitely or fail after a set period of time",
+    defaultValue: false,
   },
   {
     name: "timeout",
@@ -35,7 +35,18 @@ const runDOSCommandFieldList: IDynamicFieldSchema[] = [
     description:
       "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
     defaultValue: "10",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "failAfterTimeout", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  // Advance 
   {
     name: "ChangeCodePage",
     type: "switch",
@@ -162,30 +173,90 @@ const runDOSCommandFieldList: IDynamicFieldSchema[] = [
     ],
     description: "The encoding to use when reading the output",
     defaultValue: "utf-8",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "ChangeCodePage", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  // Output
   {
-    name: "commandOutput",
-    type: "switch",
-    label: "CommandOutput",
+    name: "o_commandOutputOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The text output from the DOS command or application",
-    defaultValue: "",
+    defaultValue: "CommandOutput",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_commandOutputSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "commandErrorOutput",
-    type: "switch",
-    label: "CommandErrorOutput",
+    name: "o_commandOutputSwitch",
+    type: "output-switch-field",
+    label: "CommandOutput",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_commandErrorOutputOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The text describing the errors occurred (if any) during the execution of the DOS command or application",
-    defaultValue: "",
+    defaultValue: "CommandErrorOutput",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_commandErrorOutputSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "commandExitCode",
-    type: "switch",
-    label: "CommandExitCode",
-    description:
-      "The command or application exit code. This will be a numeric value",
-    defaultValue: "",
+    name: "o_commandErrorOutputSwitch",
+    type: "output-switch-field",
+    label: "CommandErrorOutput",
+    defaultValue: true,
   },
+  {
+    name: "o_commandExitCodeOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description:
+        "The command or application exit code. This will be a numeric value",
+    defaultValue: "CommandExitCode",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_commandExitCodeSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_commandExitCodeSwitch",
+    type: "output-switch-field",
+    label: "CommandExitCode",
+    defaultValue: true,
+    },
 ];
 
 const runDOSCommandFieldCategories: IDynamicFormKeysCategory[] = [
@@ -195,18 +266,19 @@ const runDOSCommandFieldCategories: IDynamicFormKeysCategory[] = [
       ["DOSCommandOrApplication"],
       ["workingFolder"],
       ["failAfterTimeout"],
+      ["timeout"]
     ],
   },
   {
     title: "Advanced",
-    formFieldKeys: [["encoding"]],
+    formFieldKeys: [["ChangeCodePage"], ["encoding"]],
   },
   {
     title: "Output",
     formFieldKeys: [
-      ["commandOutput"],
-      ["commandErrorOutput"],
-      ["commandExitCode"],
+      ["o_commandOutputOutput", "o_commandOutputSwitch"],
+      ["o_commandErrorOutputOutput", "o_commandErrorOutputSwitch"],
+      ["o_commandExitCodeOutput", "o_commandExitCodeSwitch"],
     ],
   },
 ];
@@ -214,7 +286,7 @@ const runDOSCommandFieldCategories: IDynamicFormKeysCategory[] = [
 const runDOSCommand: ActivityConfig = {
   fieldList: runDOSCommandFieldList,
   fieldCategories: runDOSCommandFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["failAfterTimeout", "ChangeCodePage", "o_commandOutputOutput", "o_commandOutputSwitch", "o_commandErrorOutputOutput", "o_commandErrorOutputSwitch", "o_commandExitCodeOutput", "o_commandExitCodeSwitch"],
 };
 
 export default runDOSCommand;

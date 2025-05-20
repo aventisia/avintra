@@ -7,11 +7,10 @@ import {
 const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
   {
     name: "wordInstance",
-    type: "select",
+    type: "text",
     label: "Word Instance",
     description:
       "The Word instance to work with. This variable must have been previously specified in a Launch Word or Attach to running Word action",
-    selectOptions: [], // Add available Word instances here if needed
     defaultValue: "",
     regOptions: {
       required: true,
@@ -34,7 +33,7 @@ const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
       { label: "Before specific text", value: "Before specific text" },
       { label: "After specific text", value: "After specific text" },
     ],
-    defaultValue: "End of the Word file",
+    defaultValue: "Beginning of the Word file",
     regOptions: {
       required: true,
     },
@@ -47,7 +46,18 @@ const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
       "The target bookmark in the Word document where the image will be inserted. This field is required only if 'Before Bookmark' or 'After Bookmark' is selected.",
     defaultValue: "",
     regOptions: {
-      required: false,
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "insertImageTo", value: "Before Bookmark" },
+              { key: "insertImageTo", value: "After Bookmark" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+      },
     },
   },
   {
@@ -58,7 +68,18 @@ const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
       "The text to find in the Word document for inserting the image. This field is required if 'Before specific text' or 'After specific text' is selected.",
     defaultValue: "",
     regOptions: {
-      required: false,
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "insertImageTo", value: "Before specific text" },
+              { key: "insertImageTo", value: "After specific text" },
+            ],
+            logicalOperator: "OR"
+          },
+        ],
+      },
     },
   },
   {
@@ -71,7 +92,7 @@ const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
       { label: "File", value: "File" },
       { label: "Clipboard", value: "Clipboard" },
     ],
-    defaultValue:""
+    defaultValue:"File"
   },
   {
     name: "imagePath",
@@ -82,7 +103,7 @@ const insertImageInWordDocumentFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
     regOptions: {
       requiredBasedOnFields: {
-        initialState: false,
+        initialState: true,
         conditionList: [
           {
             fields: [{ key: "insertImageFrom", value: "File" }],
@@ -110,7 +131,7 @@ const insertImageInWordDocumentFieldCategories: IDynamicFormKeysCategory[] = [
 const insertImageInWordDocument: ActivityConfig = {
   fieldList: insertImageInWordDocumentFieldList,
   fieldCategories: insertImageInWordDocumentFieldCategories,
-  fieldsToWatch: ["insertImageFrom"],
+  fieldsToWatch: ["insertImageFrom", "insertImageTo"],
 };
 
 export default insertImageInWordDocument;

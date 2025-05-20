@@ -7,11 +7,10 @@ import {
   const setActiveExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     {
       name: "excelInstance",
-      type: "select",
+      type: "text",
       label: "Excel Instance",
       description:
         "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action",
-      selectOptions: [],
       defaultValue: "",
     },
     {
@@ -23,7 +22,7 @@ import {
         { label: "Index", value: "index" },
         { label: "Name", value: "name" },
       ],
-      defaultValue: "",
+      defaultValue: "name",
     },
     {
       name: "worksheetIndex",
@@ -34,7 +33,7 @@ import {
       defaultValue: "",
       regOptions: {
         requiredBasedOnFields: {
-          initialState: true,
+          initialState: false,
           conditionList: [
             {
               fields: [{ key: "activateWorksheetWith", value: "index" }],
@@ -51,7 +50,7 @@ import {
       defaultValue: "",
       regOptions: {
         requiredBasedOnFields: {
-          initialState: false,
+          initialState: true,
           conditionList: [
             {
               fields: [{ key: "activateWorksheetWith", value: "name" }],

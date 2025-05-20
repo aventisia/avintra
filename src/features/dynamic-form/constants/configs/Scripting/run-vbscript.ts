@@ -15,24 +15,77 @@ import {
     },
     {
       name: "failAfterTimeout",
-      type: "text",
+      type: "switch",
       label: "Fail after timeout",
-      description: "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
-      defaultValue: "",
+      description:
+        "Specify whether the DOS command or application will run indefinitely or fail after a set period of time",
+      defaultValue: false,
     },
     {
-      name: "VBScriptOutput",
-      type: "switch",
-      label: "VBScriptOutput",
+      name: "timeout",
+      type: "text",
+      label: "Timeout",
+      description:
+        "The maximum number of seconds to wait for the script to complete (-1 for indefinitely)",
+      defaultValue: "10",
+      regOptions: {
+        requiredBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "failAfterTimeout", value: true }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    // Output
+    {
+      name: "o_VBScriptOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The script's output",
-      defaultValue: "",
+      defaultValue: "VBScriptOutput",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_VBScriptOutputSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
     },
     {
-      name: "scriptError",
-      type: "switch",
-      label: "ScriptError",
+      name: "o_VBScriptOutputSwitch",
+      type: "output-switch-field",
+      label: "VBScriptOutput",
+      defaultValue: true,
+    },
+    
+    {
+      name: "o_scriptErrorOutput", //to watch
+      type: "output-text-field",
+      label: "",
       description: "The errors that may occur during the execution of the VBScript code",
-      defaultValue: "",
+      defaultValue: "ScriptError",
+      regOptions: {
+        disabledBasedOnFields: {
+          conditionList: [
+            {
+              fields: [{ key: "o_scriptErrorSwitch", value: false }],
+            },
+          ],
+          initialState: false,
+        },
+      },
+    },
+    {
+      name: "o_scriptErrorSwitch",
+      type: "output-switch-field",
+      label: "ScriptError",
+      defaultValue: false,
     },
   ];
   
@@ -42,13 +95,14 @@ import {
       formFieldKeys: [
         ["VBScriptToRun"],
         ["failAfterTimeout"],
+        ["timeout"]
       ],
     },
     {
       title: "Output",
       formFieldKeys: [
-        ["VBScriptOutput"],
-        ["scriptError"],
+        ["o_VBScriptOutput", "o_VBScriptOutputSwitch"],
+        ["o_scriptErrorOutput", "o_scriptErrorSwitch"],
       ],
     },
   ];
@@ -56,7 +110,7 @@ import {
   const runVBScript: ActivityConfig = {
     fieldList: runVBScriptFieldList,
     fieldCategories: runVBScriptFieldCategories,
-    fieldsToWatch: [],
+    fieldsToWatch: ["failAfterTimeout", "o_VBScriptOutput", "o_VBScriptOutputSwitch", "o_scriptErrorOutput", "o_scriptErrorSwitch"],
   };
   
   export default runVBScript;

@@ -7,19 +7,35 @@ import {
 const attachToRunningExcelFieldList: IDynamicFieldSchema[] = [
   {
     name: "documentName",
-    type: "select",
+    type: "text",
     label: "Document name",
     description: "The name or path of the Excel document to attach to",
-    selectOptions: [],
     defaultValue: "",
   },
+  // Output
   {
-    name: "excelInstance",
-    type: "switch",
-    label: "ExcelInstance",
+    name: "o_excelInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The Excel instance this action has attached to for use with later Excel actions",
-    defaultValue: false,
+    defaultValue: "ExcelInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_excelInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_excelInstanceSwitch",
+    type: "output-switch-field",
+    label: "ExcelInstance",
+    defaultValue: true,
   },
 ];
 
@@ -30,14 +46,14 @@ const attachToRunningExcelFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["excelInstance"]],
+    formFieldKeys: [["o_excelInstanceOutput", "o_excelInstanceSwitch"]],
   },
 ];
 
 const attachToRunningExcel: ActivityConfig = {
   fieldList: attachToRunningExcelFieldList,
   fieldCategories: attachToRunningExcelFieldCategories,
-  fieldsToWatch: ["documentName"],
+  fieldsToWatch: ["documentName", "o_excelInstanceOutput", "o_excelInstanceSwitch"],
 };
 
 export default attachToRunningExcel;

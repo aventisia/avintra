@@ -36,11 +36,28 @@ const getXMLElementValueFieldList: IDynamicFieldSchema[] = [
     ],
     defaultValue: "Text value",
   },
+  // Output
   {
-    name: "XmlElementValue",
-    type: "switch",
-    label: "XmlElementValue",
+    name: "o_XmlElementValueOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The XML element value",
+    defaultValue: "XmlElementValue",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_XmlElementValueSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_XmlElementValueSwitch",
+    type: "output-switch-field",
+    label: "XmlElementValue",
     defaultValue: true,
   },
   // {
@@ -77,14 +94,14 @@ const getXMLElementValueFieldCategories: IDynamicFormKeysCategory[] = [
 
   {
     title: "Output",
-    formFieldKeys: [["XmlElementValue"]],
+    formFieldKeys: [["o_XmlElementValueOutput", "o_XmlElementValueSwitch"]],
   },
 ];
 
 const getXMLElementValue: ActivityConfig = {
   fieldList: getXMLElementValueFieldList,
   fieldCategories: getXMLElementValueFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_XmlElementValueOutput", "o_XmlElementValueSwitch"],
 };
 
 export default getXMLElementValue;

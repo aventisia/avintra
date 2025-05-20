@@ -7,11 +7,10 @@ import {
 const appendCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "The Excel instance. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -31,6 +30,18 @@ const appendCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Name",
     description: "The name of the range of cells",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "appendMode", value: "to named cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "firstRowHasHeaders",
@@ -47,6 +58,18 @@ const appendCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The starting column number or letter, where the data is appended beginning from the destination's first empty row. If the field is left empty, the first column of the specified destination is used instead.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "firstRowHasHeaders", value: false },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "startingColumnHeader",
@@ -55,6 +78,18 @@ const appendCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "	The header of the starting column, where the data is appended beginning from the destination's first empty row. If the field is left empty, the first column of the specified destination is used instead.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "firstRowHasHeaders", value: true },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 
@@ -75,7 +110,7 @@ const appendCellsInExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
 const appendCellsInExcelWorksheet: ActivityConfig = {
   fieldList: appendCellsInExcelWorksheetFieldList,
   fieldCategories: appendCellsInExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["appendMode", "firstRowHasHeaders"],
 };
 
 export default appendCellsInExcelWorksheet;

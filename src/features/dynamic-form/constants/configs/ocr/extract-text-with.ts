@@ -76,7 +76,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     label: "Tolerance",
     description:
       "	Specifies how much the image can differ from the originally chosen image",
-    selectOptions: [],
     defaultValue: "10",
   },
   {
@@ -190,7 +189,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Image width multiplier",
     description: "The width multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -198,7 +196,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Image height multiplier",
     description: "The height multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -215,7 +212,6 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
     label: "Timeout",
     description:
       "Specifies the time to wait for the operation to complete before the action fails",
-    selectOptions: [],
     defaultValue: "5",
   },
   {
@@ -231,11 +227,27 @@ const extractTextWithOcrFieldList: IDynamicFieldSchema[] = [
   },
   // output
   {
-    name: "ocrText",
-    type: "text",
-    label: "OcrText",
+    name: "o_ocrTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The result after the text extraction",
-    defaultValue: "",
+    defaultValue: "OcrText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_ocrTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_ocrTextSwitch",
+    type: "output-switch-field",
+    label: "OcrText",
+    defaultValue: true,
   },
 ];
 
@@ -250,7 +262,8 @@ const extractTextWithOcrFieldCategories: IDynamicFormKeysCategory[] = [
       ["searchMode"],
       ["image"],
       ["tolerance"],
-      ["x1"]["x2"],
+      ["x1"],
+      ["x2"],
       ["y1"],
       ["y2"],
       ["useOtherLanguage"],
@@ -266,14 +279,14 @@ const extractTextWithOcrFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["ocrText"]],
+    formFieldKeys: [["o_ocrTextOutput", "o_ocrTextSwitch"]],
   },
 ];
 
 const extractTextWithOcr: ActivityConfig = {
   fieldList: extractTextWithOcrFieldList,
   fieldCategories: extractTextWithOcrFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_ocrTextOutput", "o_ocrTextSwitch"],
 };
 
 export default extractTextWithOcr;

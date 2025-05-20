@@ -7,10 +7,26 @@ import {
 const createNewListFieldList: IDynamicFieldSchema[] = [
   //output
   {
-    name: "list",
-    type: "switch",
-    label: "List",
+    name: "o_listOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new list",
+    defaultValue: "List",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_listSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_listSwitch",
+    type: "output-switch-field",
+    label: "List",
     defaultValue: true,
   },
 ];
@@ -18,14 +34,14 @@ const createNewListFieldList: IDynamicFieldSchema[] = [
 const createNewListFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Output",
-    formFieldKeys: [["list"]],
+    formFieldKeys: [["o_listOutput", "o_listSwitch"]],
   },
 ];
 
 const createNewList: ActivityConfig = {
   fieldList: createNewListFieldList,
   fieldCategories: createNewListFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_listOutput", "o_listSwitch"],
 };
 
 export default createNewList;

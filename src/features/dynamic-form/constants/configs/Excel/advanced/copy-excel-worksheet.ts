@@ -31,6 +31,18 @@ const copyExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "The index of the worksheet to copy. The numbering starts from 1, meaning that the index of the first worksheet is 1, the second is 2, and so on.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyWorksheetWith", value: "index" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "worksheetName",
@@ -38,6 +50,18 @@ const copyExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Worksheet name",
     description: "The name of the worksheet to copy.",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyWorksheetWith", value: "name" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "targetExcelInstance",

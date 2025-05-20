@@ -51,11 +51,36 @@ const displaySelectFileDialogFieldList: IDynamicFieldSchema[] = [
     description: "Whether only files that already exist will be accepted",
     defaultValue: false,
   },
+  // Output
   {
-    name: "selectedFile",
-    type: "switch",
+  name: "o_selectedFileOutput", //to watch
+  type: "output-text-field",
+  label: "",
+  description: "The file that will be selected through the dialog",
+  defaultValue: "SelectedFile",
+  regOptions: {
+    disabledBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "o_selectedFileSwitch", value: false }],
+        },
+      ],
+      initialState: false,
+    },
+    requiredBasedOnFields: {
+      conditionList: [
+        {
+          fields: [{ key: "allowMultipleSelections", value: false }],
+        },
+      ],
+      initialState: true,
+    },
+  },
+},
+  {
+    name: "o_selectedFileSwitch",
+    type: "output-switch-field",
     label: "SelectedFile",
-    description: "The file that will be selected through the dialog",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -68,11 +93,36 @@ const displaySelectFileDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "selectedFiles",
-    type: "switch",
-    label: "SelectedFiles",
+    name: "o_selectedFilesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The file(s) selected",
+    defaultValue: "SelectedFiles",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedFilesSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "allowMultipleSelections", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_selectedFilesSwitch",
+    type: "output-switch-field",
+    label: "SelectedFiles",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -85,12 +135,29 @@ const displaySelectFileDialogFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  //
   {
-    name: "buttonPressed",
-    type: "switch",
-    label: "ButtonPressed",
+    name: "o_buttonPressedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The text of the button pressed. The user will automatically be given the choice of Open or Cancel",
+    defaultValue: "ButtonPressed",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_buttonPressedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_buttonPressedSwitch",
+    type: "output-switch-field",
+    label: "ButtonPressed",
     defaultValue: true,
   },
 ];
@@ -109,12 +176,18 @@ const displaySelectFileDialogFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["selectedFile"], ["selectedFiles"], ["buttonPressed"]],
+    formFieldKeys: [["o_selectedFileOutput", "o_selectedFileSwitch"], ["o_selectedFilesOutput", "o_selectedFilesSwitch"], ["o_buttonPressedOutput", "o_buttonPressedSwitch"]],
   },
 ];
 
 const displaySelectFileDialogFieldsToWatch: string[] = [
   "allowMultipleSelections",
+  "o_selectedFileOutput", 
+  "o_selectedFileSwitch",
+  "o_selectedFilesOutput", 
+  "o_selectedFilesSwitch",
+  "o_buttonPressedOutput", 
+  "o_buttonPressedSwitch"
 ];
 const displaySelectFileDialog: ActivityConfig = {
   fieldList: displaySelectFileDialogFieldList,

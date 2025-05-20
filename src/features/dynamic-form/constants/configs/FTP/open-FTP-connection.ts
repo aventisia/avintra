@@ -9,7 +9,6 @@ const openFtpConnectionFieldList: IDynamicFieldSchema[] = [
     name: "host",
     type: "text",
     label: "Host",
-
     description: "Enter the FTP server address here.",
     defaultValue: "",
   },
@@ -28,7 +27,7 @@ const openFtpConnectionFieldList: IDynamicFieldSchema[] = [
     defaultValue: false,
   },
   {
-    name: "username",
+    name: "userName",
     type: "text",
     label: "Username",
     description: "Specify the username of the FTP account to use",
@@ -49,6 +48,30 @@ const openFtpConnectionFieldList: IDynamicFieldSchema[] = [
       "Set the time in seconds that you want to wait for the connection to be established before the action fails",
     defaultValue: 10,
   },
+  // Output
+  {
+    name: "o_ftpConnectionOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The FTP Connection",
+    defaultValue: "FTPConnection",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_ftpConnectionSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_ftpConnectionSwitch", //to watch
+    type: "output-switch-field",
+    label: "FTPConnection",
+    defaultValue: true,
+  },
 ];
 
 const openFtpConnectionFieldCategories: IDynamicFormKeysCategory[] = [
@@ -63,12 +86,18 @@ const openFtpConnectionFieldCategories: IDynamicFormKeysCategory[] = [
       ["timeout"],
     ],
   },
+  {
+    title: "Output",
+    formFieldKeys: [
+      ["o_ftpConnectionOutput", "o_ftpConnectionSwitch"]
+    ]
+  }
 ];
 
 const openFtpConnection: ActivityConfig = {
   fieldList: openFtpConnectionFieldList,
   fieldCategories: openFtpConnectionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_ftpConnectionOutput", "o_ftpConnectionSwitch"],
 };
 
 export default openFtpConnection;

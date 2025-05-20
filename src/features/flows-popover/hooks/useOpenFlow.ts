@@ -13,9 +13,8 @@ export const useOpenFlow = () => {
   const navigate = useNavigate();
 
   // Get store state and actions
-  const { projectId, togglePopoverOpen } = useFlowsPopoverStore(
+  const { togglePopoverOpen } = useFlowsPopoverStore(
     useShallow((state) => ({
-      projectId: state.projectId,
       togglePopoverOpen: state.togglePopoverOpen,
     })),
   );
@@ -36,7 +35,7 @@ export const useOpenFlow = () => {
     setIsFlowLoading(true);
 
     // Navigate to flow
-    navigate(`/flow?p=${projectId}&f=${rowId}`);
+    navigate(`/flow?f=${rowId}`);
   };
 
   // Return the handle open flow action function

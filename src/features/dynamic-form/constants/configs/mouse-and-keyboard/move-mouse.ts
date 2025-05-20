@@ -71,10 +71,6 @@ const moveMouseFieldCategories: IDynamicFormKeysCategory[] = [
       ["moveMouse"],
     ],
   },
-  {
-    title: "Output",
-    formFieldKeys: [[""], [""]],
-  },
 ];
 const moveMouse: ActivityConfig = {
   fieldList: moveMouseFieldList,

@@ -7,21 +7,15 @@ import {
   const deleteWindowsEnvironmentVariableFieldList: IDynamicFieldSchema[] = [
     {
       name: "environmentVariableName",
-      type: "select",
+      type: "text",
       label: "Environment variable name",
-      selectOptions: [
-        { label: "ChocolateyLastPathUpdate", value: "ChocolateyLastPathUpdate" },
-        { label: "OneDrive", value: "OneDrive" },
-        { label: "Path", value: "Path" },
-        { label: "TEMP", value: "TEMP" },
-      ],
       description: "The name of the environment variable to delete",
-      defaultValue: "Path",
+      defaultValue: "",
     },
     {
       name: "type",
       type: "select",
-      label: "Scope",
+      label: "Type",
       selectOptions: [
         { label: "User", value: "User" },
         { label: "System", value: "System" },

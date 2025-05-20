@@ -7,9 +7,8 @@ import {
 const invokeFtpCommandFieldList: IDynamicFieldSchema[] = [
   {
     name: "FTPConnection",
-    type: "select",
+    type: "text",
     label: "FTP connection",
-    selectOptions: [],
 
     description:
       "The FTP connection to work with. This variable must have been previously specified in an Open FTP connection action",
@@ -34,39 +33,72 @@ const invokeFtpCommandFieldList: IDynamicFieldSchema[] = [
       "The code(s) that could be returned by the command, separated by semi-colon. If the FTP command returns a code that wasn't entered here, this action will throw an exception. Only applies over simple FTP or FTPS connections",
     defaultValue: "",
   },
+  // Output
   {
-    name: "replyCode",
-    type: "switch",
-    label: "ReplyCode",
-
+    name: "o_replyCodeOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The actual code that was returned. Only applies over simple FTP or FTPS connections",
-    defaultValue: false,
+    defaultValue: "ReplyCode",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_replyCodeSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "replyText",
-    type: "switch",
-    label: "ReplyText",
+    name: "o_replyCodeSwitch",
+    type: "output-switch-field",
+    label: "ReplyCode",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_replyTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The text returned by the FTP server",
-    defaultValue: false,
+    defaultValue: "ReplyText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_replyTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_replyTextSwitch",
+    type: "output-switch-field",
+    label: "ReplyText",
+    defaultValue: true,
   },
 ];
 
 const invokeFtpCommandFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["FTPConnection"], ["FTP"], ["validReplyCode(s)"]],
+    formFieldKeys: [["FTPConnection"], ["FTPCommand"], ["validReplyCode(s)"]],
   },
   {
     title: "Output",
-    formFieldKeys: [["replyCode"], ["replyText"]],
+    formFieldKeys: [["o_replyCodeOutput", "o_replyCodeSwitch"], ["o_replyTextOutput", "o_replyTextSwitch"]],
   },
 ];
 
 const invokeFtpCommand: ActivityConfig = {
   fieldList: invokeFtpCommandFieldList,
   fieldCategories: invokeFtpCommandFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_replyCodeOutput", "o_replyCodeSwitch", "o_replyTextOutput", "o_replyTextSwitch"],
 };
 
 export default invokeFtpCommand;

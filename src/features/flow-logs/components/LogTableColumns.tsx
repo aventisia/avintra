@@ -11,7 +11,7 @@ import { FlowExecutionLogCell } from "./FlowExecutionLogCell";
 export const logsTableColumns: ColumnDef<FlowLogsDTO>[] = [
   {
     accessorKey: "flowName",
-    header: ({ column }) => <DTColumnHeader column={column} title={"Flow"} />,
+    header: ({ column }) => <DTColumnHeader column={column} title={"Agent"} />,
     cell: ({ row }) => (
       <FlowExecutionLogCell
         flowId={row.original.flowId}

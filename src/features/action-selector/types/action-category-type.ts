@@ -19,6 +19,8 @@ export type ActionCategoryType = {
   /** The image associated with the action category. */
   img?: string;
 
+  listType? : "accordion" | "list",
+
   /** The list of actions associated with the action category. */
   actions?: NodeDataType[];
 };

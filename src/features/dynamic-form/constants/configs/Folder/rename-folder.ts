@@ -28,11 +28,27 @@ const renameFolderFieldList: IDynamicFieldSchema[] = [
   },
   //   output 
   {
-    name: "renamedFolder",
-    type: "switch",
+    name: "o_renamedFolderOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The renamed folder object(which is a representation and can access the folder and all its information)",
+    defaultValue: "RenamedFolder",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_renamedFolderSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_renamedFolderSwitch",
+    type: "output-switch-field",
     label: "RenamedFolder",
-    description: "The renamed folder object",
-    defaultValue: "",
+    defaultValue: true,
   },
 ];
 
@@ -43,14 +59,14 @@ const renameFolderFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["renamedFolder"]],
+    formFieldKeys: [["o_renamedFolderOutput", "o_renamedFolderSwitch"]],
   },
 ];
 
 const renameFolder: ActivityConfig = {
   fieldList: renameFolderFieldList,
   fieldCategories: renameFolderFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_renamedFolderOutput", "o_renamedFolderSwitch"],
 };
 
 export default renameFolder;

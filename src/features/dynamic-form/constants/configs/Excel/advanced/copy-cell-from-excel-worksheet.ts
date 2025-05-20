@@ -7,11 +7,10 @@ import {
 const copyCellsFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -21,14 +20,18 @@ const copyCellsFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to copy a single cell, a range of cells or the current selection of cells",
     selectOptions: [
-      { label: "Single Cell's Values", value: "single Cell's Values" },
+      { label: "The value of a single cell", value: "single cell value" },
       {
         label: "Values from a Range of Cells",
-        value: "values from a Range of Cells",
+        value: "values from a range of cells",
       },
-      { label: "Values from Selection", value: "values from Selection" },
+      { label: "Values from Selection", value: "values from selection" },
+      { label: "All avaialble values from worksheet", value: "all avaialble values from worksheet" },
+      { label: "Values of named cells", value: "named cells" },
+
+
     ],
-    defaultValue: "single Cell's Values",
+    defaultValue: "single cell value",
   },
   {
     name: "startColumn",
@@ -36,6 +39,20 @@ const copyCellsFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start column",
     description: "The index or letter of the first column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyMode", value: "single cell value" },
+              { key: "copyMode", value: "values from a range of cells" },
+            ],
+            logicalOperator : "OR"
+          },
+        ],
+      },
+    },
   },
   {
     name: "startRow",
@@ -43,6 +60,21 @@ const copyCellsFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "Start row",
     description: "The index of the first row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: true,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyMode", value: "single cell value" },
+              { key: "copyMode", value: "values from a range of cells" },
+            ],
+            logicalOperator : "OR"
+
+          },
+        ],
+      },
+    },
   },
   {
     name: "endColumn",
@@ -50,6 +82,18 @@ const copyCellsFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End column",
     description: "The index or letter of the last column",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyMode", value: "values from a range of cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
   {
     name: "endRow",
@@ -57,6 +101,37 @@ const copyCellsFromExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     label: "End row",
     description: "The index of the last row",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyMode", value: "values from a range of cells" },
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    description: "The name of cells.",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [
+              { key: "copyMode", value: "named cells" },
+            ],
+          },
+        ],
+      },
+    },
   },
 ];
 
@@ -70,6 +145,7 @@ const copyCellsFromExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
       ["startRow"],
       ["endColumn"],
       ["endRow"],
+      ["name"]
     ],
   },
 ];
@@ -77,7 +153,7 @@ const copyCellsFromExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
 const copyCellsFromExcelWorksheet: ActivityConfig = {
   fieldList: copyCellsFromExcelWorksheetFieldList,
   fieldCategories: copyCellsFromExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["copyMode"],
 };
 
 export default copyCellsFromExcelWorksheet;

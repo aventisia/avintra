@@ -7,19 +7,17 @@ import {
 const pressButtonOnWebPageFieldList: IDynamicFieldSchema[] = [
   {
     name: "webBrowserInstance",
-    type: "select",
+    type: "text",
     label: "Web browser instance",
     description:
       "	Enter or choose the variable that contains the web browser instance to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {
     name: "uIElement",
-    type: "select",
+    type: "ui-element-selector",
     label: "UI element",
     description: "	Select the UI element on web page to capture",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -37,6 +35,16 @@ const pressButtonOnWebPageFieldList: IDynamicFieldSchema[] = [
     description:
       "Set the time in seconds for page to load before the action throws an error",
     defaultValue: "60",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "ifAoPop-UpDialogAppears",
@@ -49,6 +57,16 @@ const pressButtonOnWebPageFieldList: IDynamicFieldSchema[] = [
       { label: "Do nothing", value: "do nothing" },
     ],
     defaultValue: "do nothing",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "waitForPageToLoad", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
   },
   {
     name: "dialogButtonToPress",
@@ -56,6 +74,20 @@ const pressButtonOnWebPageFieldList: IDynamicFieldSchema[] = [
     label: "Dialog button to press",
     description: "The dialog button to press if a pop-up dialog appears",
     defaultValue: "ok",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [
+              { key: "ifAoPop-UpDialogAppears", value: "close it, Press a button" },
+              { key: "waitForPageToLoad", value: true }
+            ],
+            logicalOperator: "AND"
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
 ];
 
@@ -65,18 +97,23 @@ const pressButtonOnWebPageFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["webBrowserInstance"],
       ["uIElement"],
+    ],
+  },
+  {
+    title: "Advanced",
+    formFieldKeys:[
       ["waitForPageToLoad"],
       ["timeoutForWebpageToLoad"],
       ["ifAoPop-UpDialogAppears"],
       ["dialogButtonToPress"],
-    ],
-  },
+    ]
+  }
 ];
 
 const pressButtonOnWebPage: ActivityConfig = {
   fieldList: pressButtonOnWebPageFieldList,
   fieldCategories: pressButtonOnWebPageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["ifAoPop-UpDialogAppears", "waitForPageToLoad"],
 };
 
 export default pressButtonOnWebPage;

@@ -29,11 +29,27 @@ const moveFolderFieldList: IDynamicFieldSchema[] = [
   },
   //   output 
   {
-    name: "movedFolder",
-    type: "switch",
+    name: "o_movedFolderOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The moved folder object(which is a representation and can access the folder and all its information)",
+    defaultValue: "MovedFolder",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_movedFolderSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_movedFolderSwitch",
+    type: "output-switch-field",
     label: "MovedFolder",
-    description: "The moved folder object",
-    defaultValue: "",
+    defaultValue: true,
   },
 ];
 
@@ -44,14 +60,14 @@ const moveFolderFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["movedFolder"]],
+    formFieldKeys: [["o_movedFolderOutput", "o_movedFolderSwitch"]],
   },
 ];
 
 const moveFolder: ActivityConfig = {
   fieldList: moveFolderFieldList,
   fieldCategories: moveFolderFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_movedFolderOutput", "o_movedFolderSwitch"],
 };
 
 export default moveFolder;

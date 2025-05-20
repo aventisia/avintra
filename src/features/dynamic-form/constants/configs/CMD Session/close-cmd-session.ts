@@ -7,11 +7,10 @@ import {
 const closeCmdSessionFieldList: IDynamicFieldSchema[] = [
   {
     name: "cmdSession",
-    type: "select",
+    type: "text",
     label: "CMD session",
     description:
       "The CMD session to close. Specify this variable in an open CMD session action",
-    selectOptions: [],
     defaultValue: "",
   },
 ];

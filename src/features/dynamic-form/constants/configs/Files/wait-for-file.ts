@@ -42,7 +42,7 @@ const waitForFileFieldList: IDynamicFieldSchema[] = [
     type: "text",
     label: "Duration",
     description: "Duration in seconds",
-    defaultValue: "",
+    defaultValue: "5",
     regOptions: {
       requiredBasedOnFields: {
         conditionList: [

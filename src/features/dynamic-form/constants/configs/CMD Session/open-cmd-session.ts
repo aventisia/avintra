@@ -130,38 +130,64 @@ const openCmdSessionFieldList: IDynamicFieldSchema[] = [
       { label: "Chinese Traditional (CNS)", value: "x-Chinese-CNS" },
       { label: "Chinese Traditional (Eten)", value: "x-Chinese-E" },
     ],
-    defaultValue: "utf-8 : Unicode (UTF-8)",
+    defaultValue: "utf-8",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "changeCodePage", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   //output
   {
-    name: "cmdSession",
-    type: "switch",
-    label: "CmdSession",
+    name: "o_cmdSessionOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The CMD session for use with later CMD actions",
-    defaultValue: "",
+    defaultValue: "CmdSession",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_cmdSessionSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_cmdSessionSwitch",
+    type: "output-switch-field",
+    label: "CmdSession",
+    defaultValue: true,
   },
 ];
 
 const openCmdSessionFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["workingFolder"], ["changeCodePage"], ["encoding"]],
+    formFieldKeys: [["workingFolder"], ],
   },
 
   {
     title: "Advanced",
-    formFieldKeys: [["changeCodePage"]],
+    formFieldKeys: [["changeCodePage"], ["encoding"]],
   },
   {
     title: "Output",
-    formFieldKeys: [["cmdSession"]],
+    formFieldKeys: [["o_cmdSessionOutput", "o_cmdSessionSwitch"]],
   },
 ];
 
 const openCmdSession: ActivityConfig = {
   fieldList: openCmdSessionFieldList,
   fieldCategories: openCmdSessionFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["changeCodePage", "o_cmdSessionOutput", "o_cmdSessionSwitch"],
 };
 
 export default openCmdSession;

@@ -7,11 +7,10 @@ import {
 const sendEmailMessageThroughOutlookFieldList: IDynamicFieldSchema[] = [
   {
     name: "outlookInstance",
-    type: "select",
+    type: "text",
     label: "Outlook instance",
     description:
       "The Outlook instance to work with. Specify this variable in a 'Launch Outlook' action",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -90,10 +89,9 @@ const sendEmailMessageThroughOutlookFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "body",
-    type: "text",
+    type: "textarea",
     label: "Body",
     description: "The text of the body",
-
     defaultValue: "",
   },
   {

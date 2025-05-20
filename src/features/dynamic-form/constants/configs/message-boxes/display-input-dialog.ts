@@ -48,19 +48,53 @@ const displayInputDialogFieldList: IDynamicFieldSchema[] = [
       "Specify whether the input dialog should always remain on top of all other windows",
     defaultValue: false,
   },
+  // Output
   {
-    name: "userInput",
-    type: "switch",
-    label: "UserInput",
+    name: "o_userInputOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The text entered by the user, or the default text",
-    defaultValue: true,
+    defaultValue: "UserInput",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_userInputSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "buttonPressed",
-    type: "switch",
-    label: "ButtonPressed",
+    name: "o_userInputSwitch",
+    type: "output-switch-field",
+    label: "UserInput",
+    defaultValue: true,
+  },
+
+  {
+    name: "o_buttonPressedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The text of the button pressed. The user will automatically be given the choice of OK or Cancel",
+    defaultValue: "ButtonPressed",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_buttonPressedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_buttonPressedSwitch",
+    type: "output-switch-field",
+    label: "ButtonPressed",
     defaultValue: true,
   },
 ];
@@ -78,13 +112,13 @@ const displayInputDialogFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["userInput"], ["buttonPressed"]],
+    formFieldKeys: [["o_userInputOutput", "o_userInputSwitch"], ["o_buttonPressedOutput", "o_buttonPressedSwitch"]],
   },
 ];
 const displayInputDialog: ActivityConfig = {
   fieldList: displayInputDialogFieldList,
   fieldCategories: displayInputDialogFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_userInputOutput", "o_userInputSwitch", "o_buttonPressedOutput", "o_buttonPressedSwitch"],
 };
 
 export default displayInputDialog;

@@ -22,7 +22,7 @@ export const PlusNode = ({
 
   return (
     <>
-      <NodeSelector sideOffset={10} alignOffset={-10}>
+      <NodeSelector>
         <PlusNodeTrigger
           onClick={() => setOrigin(type as ActionSelectorOriginType, id)}
         />

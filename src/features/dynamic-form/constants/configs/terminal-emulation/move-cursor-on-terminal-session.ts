@@ -7,10 +7,9 @@ import {
 const moveCursorOnTerminalSessionFieldList: IDynamicFieldSchema[] = [
   {
     name: "terminalSession",
-    type: "select",
+    type: "text",
     label: "Terminal session",
     description: "The terminal session to work with",
-    selectOptions: [],
     defaultValue: "",
   },
   {

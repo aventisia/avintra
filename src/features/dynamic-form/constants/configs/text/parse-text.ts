@@ -53,11 +53,35 @@ const parseTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "position",
-    type: "switch",
-    label: "Position",
+    name: "o_positionOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The position of the 'Text to find' into the 'Text to parse'. If the text isn't found within the original text, this variable will hold the value -1",
+    defaultValue: "Position",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_positionSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+       requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "firstOccurrenceOnly", value: true }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_positionSwitch",
+    type: "output-switch-field",
+    label: "Position",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -70,12 +94,37 @@ const parseTextFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
-  {
-    name: "positions",
-    type: "switch",
-    label: "Positions",
+
+  {  
+    name: "o_positionsOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The positions of the 'Text to find' into the 'Text to parse'. If the text isn't found within the original text, this variable will hold the value -1",
+    defaultValue: "Positions",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_positionsSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "firstOccurrenceOnly", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_positionsSwitch",
+    type: "output-switch-field",
+    label: "Positions",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -88,11 +137,36 @@ const parseTextFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
-  {
-    name: "matches",
-    type: "switch",
-    label: "Matches",
+
+  {  
+    name: "o_matchesOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The results that match the given regular expression",
+    defaultValue: "Match",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_matchesSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "isRegularExpression", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_matchesSwitch",
+    type: "output-switch-field",
+    label: "Match",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -122,12 +196,15 @@ const parseTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["position"], ["positions"], ["matches"]],
+    formFieldKeys: [["o_positionOutput", "o_positionSwitch"], ["o_positionsOutput", "o_positionsSwitch"], ["o_matchesOutput", "o_matchesSwitch"]],
   },
 ];
 const parseTextFieldsToWatch: string[] = [
   "isRegularExpression",
   "firstOccurrenceOnly",
+  "o_positionOutput", "o_positionSwitch",
+  "o_positionsOutput", "o_positionsSwitch",
+  "o_matchesOutput", "o_matchesSwitch"
 ];
 
 const parseText: ActivityConfig = {

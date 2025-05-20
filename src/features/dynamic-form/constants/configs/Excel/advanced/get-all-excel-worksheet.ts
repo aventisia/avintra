@@ -7,20 +7,35 @@ import {
 const getAllExcelWorksheetFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel instance",
     description:
       "Specify the Excel instance. This variable must have been previously specified in a Launch Excel action.",
-    selectOptions: [],
     defaultValue: "",
   },
   // output
   {
-    name: "sheetName",
-    type: "switch",
-    label: "SheetName",
+    name: "o_sheetNamesOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    defaultValue: "SheetNames",
     description: "The names of all worksheets",
-    defaultValue: false,
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_sheetNamesSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_sheetNamesSwitch",
+    type: "output-switch-field",
+    label: "SheetName",
+    defaultValue: true,
   },
 ];
 
@@ -31,14 +46,14 @@ const getAllExcelWorksheetFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["sheetName"]],
+    formFieldKeys: [["o_sheetNamesOutput", "o_sheetNamesSwitch"]],
   },
 ];
 
 const getAllExcelWorksheets: ActivityConfig = {
   fieldList: getAllExcelWorksheetFieldList,
   fieldCategories: getAllExcelWorksheetFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_sheetNamesOutput", "o_sheetNamesSwitch"],
 };
 
 export default getAllExcelWorksheets;

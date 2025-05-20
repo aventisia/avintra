@@ -7,11 +7,10 @@ import {
   const clearFiltersInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     {
       name: "excelInstance",
-      type: "select",
+      type: "text",
       label: "Excel Instance",
       description:
         "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action",
-      selectOptions: [],  
       defaultValue: "",
     },
     {

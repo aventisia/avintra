@@ -5,17 +5,10 @@ import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
 import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
 import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
 
-// Project Id
-const projectIdProps: InputFieldProps = {
-  name: "projectId",
-  label: "Project Id",
-  disabled: true,
-};
-
-// Flow Id
+// Agent Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Flow Id",
+  label: "Agent Id",
   disabled: true,
 };
 
@@ -54,6 +47,5 @@ export {
   idProps,
   isDisabledProps,
   nameProps,
-  projectIdProps,
   typeProps,
 };

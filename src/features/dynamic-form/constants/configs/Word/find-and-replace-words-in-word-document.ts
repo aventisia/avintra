@@ -7,11 +7,10 @@ import {
 const findAndReplaceWordsInWordDocumentFieldList: IDynamicFieldSchema[] = [
   {
     name: "wordInstance",
-    type: "select",
+    type: "text",
     label: "Word Instance",
     description:
       "The Word instance to work with. This variable must have been previously specified in a Launch Word or Attach to running Word action",
-    selectOptions: [],
     defaultValue: "",
     regOptions: {
       required: true,
@@ -44,7 +43,7 @@ const findAndReplaceWordsInWordDocumentFieldList: IDynamicFieldSchema[] = [
     type: "switch",
     label: "Use wildcards",
     description: "Whether to use wildcards for the text to find",
-    defaultValue: true,
+    defaultValue: false,
   },
   {
     name: "matchCase",
@@ -54,7 +53,7 @@ const findAndReplaceWordsInWordDocumentFieldList: IDynamicFieldSchema[] = [
     defaultValue: false,
     regOptions: {
         requiredBasedOnFields: {
-          initialState: false,
+          initialState: true,
           conditionList: [
             {
               fields: [{ key: "useWildcards", value: false }],
@@ -73,7 +72,7 @@ const findAndReplaceWordsInWordDocumentFieldList: IDynamicFieldSchema[] = [
     defaultValue: false,
     regOptions: {
         requiredBasedOnFields: {
-          initialState: false,
+          initialState: true,
           conditionList: [
             {
               fields: [{ key: "useWildcards", value: false }],

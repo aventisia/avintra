@@ -7,9 +7,8 @@ import {
 const deleteFtpDirectoryFieldList: IDynamicFieldSchema[] = [
   {
     name: "FTPConnection",
-    type: "select",
+    type: "text",
     label: "FTP connection",
-    selectOptions: [],
 
     description:
       "The FTP connection to work with. This variable must have been previously specified in an Open FTP connection action",
@@ -18,9 +17,8 @@ const deleteFtpDirectoryFieldList: IDynamicFieldSchema[] = [
 
   {
     name: "directoryToDelete",
-    type: "select",
+    type: "text",
     label: "Directory to delete",
-    selectOptions: [],
     description:
       "The folder to be deleted. Everything in the folder will be deleted as well",
     defaultValue: "",

@@ -7,11 +7,10 @@ import {
 const closeExcelFieldList: IDynamicFieldSchema[] = [
   {
     name: "excelInstance",
-    type: "select",
+    type: "text",
     label: "Excel Instance",
     description:
       "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action",
-    selectOptions: [],
     defaultValue: "",
   },
   {
@@ -97,6 +96,16 @@ const closeExcelFieldList: IDynamicFieldSchema[] = [
     description:
       "The full path of the document. Insert the desired document file extension according to the selection in the Document format parameter",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        initialState: false,
+        conditionList: [
+          {
+            fields: [{ key: "beforeClosingExcel", value: "saveDocumentAs" }],
+          },
+        ],
+      },
+    },
   },
 ];
 

@@ -34,6 +34,13 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
     defaultValue: "",
   },
   {
+    name: "decryptToFile",
+    type: "text",
+    label: "Decrypt to file",
+    description: "The file to save the decrypted text into",
+    defaultValue: "",
+  },
+  {
     name: "ifFileExists",
     type: "select",
     label: "If file exists",
@@ -44,7 +51,7 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
       { label: "Don't decrypt to file", value: "don't decrypt to file" },
       { label: "Add sequential suffix", value: "add sequential suffix" },
     ],
-    defaultValue: "",
+    defaultValue: "add sequential suffix",
   },
   {
     name: "padding",
@@ -81,6 +88,40 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
     defaultValue: false,
   },
   {
+    name: "salt",
+    type: "text",
+    label: "Salt",
+    description: "The randomly generated salt value for later processing",
+    defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useSalt", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "iterations",
+    type: "text",
+    label: "Iterations",
+    description: "The number of iterations to use. Note that, in order to decrypt the output, the same iterations must be used. Use iteration count of at least 100000, to reduce risks against brute force attacks.",
+    defaultValue: "100000",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useSalt", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
     name: "useInitializationVector",
     type: "switch",
     label: "Use initialization vector",
@@ -95,14 +136,63 @@ const decryptToFileWithAesFieldList: IDynamicFieldSchema[] = [
     description:
       "The randomly generated initialization vector value for later processing",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useInitializationVector", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "hashAlgorithm",
+    type: "select",
+    label: "Hash algorithm",
+    description: "The size of the key in bits to use for the encryption",
+    selectOptions: [
+      { label: "SHA1", value: "sha1" },
+      { label: "SHA256", value: "sha256" },
+      { label: "SHA384", value: "sha384" },
+      { label: "SHA512", value: "sha512" },
+    ],
+    defaultValue: "sha256",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "useSalt", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   // output
   {
-    name: "decryptedFile",
-    type: "text",
-    label: "DecryptedFile",
+    name: "o_decryptedFileOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The decrypted file for later processing",
-    defaultValue: "",
+    defaultValue: "DecryptedFile",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_decryptedFileSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_decryptedFileSwitch",
+    type: "output-switch-field",
+    label: "DecryptedFile",
+    defaultValue: true,
   },
 ];
 
@@ -113,8 +203,8 @@ const decryptToFileWithAesFieldCategories: IDynamicFormKeysCategory[] = [
       ["encoding"],
       ["TextToDecrypt"],
       ["decryptionKey"],
+      ["decryptToFile"],
       ["ifFileExists"],
-      ["initializationVector"],
     ],
   },
   {
@@ -123,19 +213,23 @@ const decryptToFileWithAesFieldCategories: IDynamicFormKeysCategory[] = [
       ["padding"],
       ["keySize"],
       ["useSalt"],
+      ["salt"],
+      ["iterations"],
       ["useInitializationVector"],
+      ["initializationVector"],
+      ["hashAlgorithm"]
     ],
   },
   {
     title: "Output",
-    formFieldKeys: [["decryptedFile"]],
+    formFieldKeys: [["o_decryptedFileOutput", "o_decryptedFileSwitch"]],
   },
 ];
 
 const decryptToFileWithAes: ActivityConfig = {
   fieldList: decryptToFileWithAesFieldList,
   fieldCategories: decryptToFileWithAesFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["useSalt", "useInitializationVector", "o_decryptedFileOutput", "o_decryptedFileSwitch"],
 };
 
 export default decryptToFileWithAes;

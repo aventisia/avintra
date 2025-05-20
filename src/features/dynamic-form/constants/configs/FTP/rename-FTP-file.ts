@@ -7,9 +7,8 @@ import {
 const renameFtpFileFieldList: IDynamicFieldSchema[] = [
   {
     name: "FTPConnection",
-    type: "select",
+    type: "text",
     label: "FTP connection",
-    selectOptions: [],
 
     description:
       "The FTP connection to work with. This variable must have been previously specified in an Open FTP connection action",
@@ -18,9 +17,8 @@ const renameFtpFileFieldList: IDynamicFieldSchema[] = [
 
   {
     name: "fileToRename",
-    type: "select",
+    type: "text",
     label: "File to rename",
-    selectOptions: [],
 
     description: "The files to rename",
     defaultValue: "",

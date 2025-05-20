@@ -1,5 +1,5 @@
 import React from "react";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { EditorView } from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { html } from "@codemirror/lang-html";
@@ -74,7 +74,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         value={value}
         height="100%"
         theme={githubLight}
-        extensions={[getLanguageExtension()]}
+        extensions={[
+          getLanguageExtension(),
+          EditorView.lineWrapping, // ✅ this enables word wrap
+        ]}
         onChange={(value) => onChange?.(value)}
         className="h-full w-full overflow-hidden rounded-md text-sm"
         basicSetup={{

@@ -30,10 +30,26 @@ const convertNumberToTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "formattedNumber",
-    type: "switch",
-    label: "FormattedNumber",
+    name: "o_formattedNumberOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The formatted number as text",
+    defaultValue: "FormattedNumber",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_formattedNumberSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_formattedNumberSwitch",
+    type: "output-switch-field",
+    label: "FormattedNumber",
     defaultValue: true,
   },
 ];
@@ -49,15 +65,14 @@ const convertNumberToTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["formattedNumber"]],
+    formFieldKeys: [["o_formattedNumberOutput", "o_formattedNumberSwitch"]],
   },
 ];
-const convertNumberToTextFieldsToWatch: string[] = [];
 
 const convertNumberToText: ActivityConfig = {
   fieldList: convertNumberToTextFieldList,
   fieldCategories: convertNumberToTextFieldCategories,
-  fieldsToWatch: convertNumberToTextFieldsToWatch,
+  fieldsToWatch: ["o_formattedNumberOutput", "o_formattedNumberSwitch"],
 };
 
 export default convertNumberToText;

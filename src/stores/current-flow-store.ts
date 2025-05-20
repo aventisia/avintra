@@ -1,3 +1,5 @@
+import { IProjectInfoDTO } from "@/features/react-flow/dtos/load-flow-dto";
+import { FlowStateType } from "@/types/flow-state-literal-type";
 import { create } from "zustand";
 
 interface ICurrentFlowDetails {
@@ -16,8 +18,10 @@ type State = {
   /** Flag to indicate if flow is saving in the background */
   isFlowSaving: boolean;
 
-  /** Flag to indicate if flow is executing */
-  isFlowExecuting: boolean;
+  /** Indicates flow execution state */
+  flowState: FlowStateType;
+
+  projectInfo: IProjectInfoDTO
 };
 
 type Actions = {
@@ -31,16 +35,25 @@ type Actions = {
   setIsFlowSaving: (isSaving: boolean) => void;
 
   /** Sets the executing state of the flow */
-  setIsFlowExecuting: (isExecuting: boolean) => void;
+  setFlowState: (flowState: FlowStateType) => void;
+
+  /** Set Project info of the flow */
+  setProjectInfo: (projectInfo : IProjectInfoDTO) => void;
+
 };
 
 export const useCurrentFlowStore = create<State & Actions>((set) => ({
-  projectId: "",
   currentFlow: { id: "", name: "" },
-  flowsQueryKey: [],
   isFlowLoading: false,
   isFlowSaving: false,
-  isFlowExecuting: false,
+  flowState: "stopped",
+  projectInfo: { 
+    versionId: "",
+    versionNumber: null,
+    name: "",
+    type: "",
+  },
+
 
   setCurrentFlow: (flowDetails) => set({ currentFlow: flowDetails }),
 
@@ -48,5 +61,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
 
   setIsFlowSaving: (isSaving) => set({ isFlowSaving: isSaving }),
 
-  setIsFlowExecuting: (isExecuting) => set({ isFlowExecuting: isExecuting }),
+  setFlowState: (flowState) => set({ flowState }),
+
+  setProjectInfo: (projectInfo) => set({ projectInfo : projectInfo })
 }));

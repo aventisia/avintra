@@ -7,11 +7,10 @@ import {
   const filterCellsInExcelWorksheetFieldList: IDynamicFieldSchema[] = [
     {
       name: "excelInstance",
-      type: "select",
+      type: "text",
       label: "Excel Instance",
       description:
         "The Excel instance to work with. This variable must have been previously specified in a Launch Excel action",
-      selectOptions: [],  
       defaultValue: "",
     },
     {
@@ -55,6 +54,16 @@ import {
         { label: "Specific range", value: "Specific range" },
       ],
       defaultValue: "Named cells",
+      regOptions: {
+        requiredBasedOnFields: {
+          initialState: false,
+          conditionList: [
+            {
+              fields: [{ key: "filterColumnIn", value: "Range" }],
+            },
+          ],
+        },
+      },
     },
     {
       name: "cellsName",
@@ -66,7 +75,11 @@ import {
           initialState: false,
           conditionList: [
             {
-              fields: [{ key: "range", value: "Named cells" }],
+              fields: [
+                { key: "filterColumnIn", value: "Range" }, 
+                { key: "range", value: "Named cells" }
+              ],
+              logicalOperator: "AND"
             },
           ],
         },
@@ -96,6 +109,16 @@ import {
       label: "Start row",
       description: "The first row number.",
       defaultValue: "",
+      regOptions: {
+        requiredBasedOnFields: {
+          initialState: false,
+          conditionList: [
+            {
+              fields: [{ key: "range", value: "Specific range" }],
+            },
+          ],
+        },
+      },
     },
     {
       name: "endColumn",
@@ -103,12 +126,32 @@ import {
       label: "End column",
       description: "The index or letter of the last column",
       defaultValue: "",
+      regOptions: {
+        requiredBasedOnFields: {
+          initialState: false,
+          conditionList: [
+            {
+              fields: [{ key: "range", value: "Specific range" }],
+            },
+          ],
+        },
+      },
     },
     {
       name: "endRow",
       type: "text",
       label: "End row",
       description: "The last row number.",
+      regOptions: {
+        requiredBasedOnFields: {
+          initialState: false,
+          conditionList: [
+            {
+              fields: [{ key: "range", value: "Specific range" }],
+            },
+          ],
+        },
+      },
       defaultValue: "",
     },
     {

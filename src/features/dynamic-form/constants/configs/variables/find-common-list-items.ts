@@ -27,10 +27,26 @@ const findCommonListItemsFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "intersectionList",
-    type: "switch",
-    label: "IntersectionList",
+    name: "o_intersectionListOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new list of common items",
+    defaultValue: "IntersectionList",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_intersectionListSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_intersectionListSwitch", //to watch
+    type: "output-switch-field",
+    label: "IntersectionList",
     defaultValue: true,
   },
 ];
@@ -42,16 +58,15 @@ const findCommonListItemsFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["intersectionList"]],
+    formFieldKeys: [["o_intersectionListOutput", "o_intersectionListSwitch"]],
   },
 ];
 
-const findCommonListItemsFieldsToWatch: string[] = [];
 
 const findCommonListItems: ActivityConfig = {
   fieldList: findCommonListItemsFieldList,
   fieldCategories: findCommonListItemsFieldCategories,
-  fieldsToWatch: findCommonListItemsFieldsToWatch,
+  fieldsToWatch: ["o_intersectionListOutput", "o_intersectionListSwitch"],
 };
 
 export default findCommonListItems;

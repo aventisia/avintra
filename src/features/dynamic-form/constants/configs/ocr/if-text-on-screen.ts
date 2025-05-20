@@ -25,16 +25,8 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
     selectOptions: [
       { label: "Windows OCR engine", value: "windows OCR engine" },
       { label: "Tesseract engine", value: "tesseract engine" },
-      { label: "OCR engine variable", value: "oCR engine variable" },
     ],
     defaultValue: "windows OCR engine",
-  },
-  {
-    name: "oCREngineVariable",
-    type: "text",
-    label: "OCR engine variable",
-    description: "The engine to use for the OCR operation",
-    defaultValue: "",
   },
   {
     name: "textToFind",
@@ -100,11 +92,10 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "tolerance",
-    type: "select",
+    type: "text",
     label: "Tolerance",
     description:
       "Specifies how much the image(s) searched for can differ from the originally chosen image",
-    selectOptions: [],
     defaultValue: "10",
   },
   {
@@ -254,7 +245,6 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
     type: "number",
     label: "Image width multiplier",
     description: "The width multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -262,7 +252,6 @@ const ifTextOnScreenOCRFieldList: IDynamicFieldSchema[] = [
     type: "number",
     label: "Image height multiplier",
     description: "The height multiplier of the image",
-    selectOptions: [],
     defaultValue: "1",
   },
   {
@@ -301,7 +290,6 @@ const ifTextOnScreenOCRFieldCategories: IDynamicFormKeysCategory[] = [
     formFieldKeys: [
       ["ifText"],
       ["OCREngineType"],
-      ["oCREngineVariable"],
       ["textToFind"],
       ["isRegularExpression"],
       ["searchForTextOn"],

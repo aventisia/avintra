@@ -37,10 +37,34 @@ const getSelectedRadioButtonInWindowFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "selectedRadioButton",
-    type: "switch",
-    label: "selectedRadioButton",
+    name: "o_selectedRadioButtonOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The selected radio button inside the specified radio group",
+    defaultValue: "selectedRadioButton",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_selectedRadioButtonSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "operation", value: "selectedRadioButtons" }],
+          },
+        ],
+        initialState: true,
+      },
+    },
+  },
+  {
+    name: "o_selectedRadioButtonSwitch",
+    type: "output-switch-field",
+    label: "selectedRadioButton",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -53,11 +77,36 @@ const getSelectedRadioButtonInWindowFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+
   {
-    name: "isChecked",
-    type: "switch",
+    name: "o_isCheckedOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The state of the selected checkbox",
+    defaultValue: "IsChecked",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_isCheckedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "operation", value: "stateOfRadioButton" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_isCheckedSwitch",
+    type: "output-switch-field",
     label: "IsChecked",
-    description: "The state of the selected radio button",
     defaultValue: true,
     regOptions: {
       requiredBasedOnFields: {
@@ -80,10 +129,13 @@ const getSelectedRadioButtonInWindowFieldCategories: IDynamicFormKeysCategory[] 
     },
     {
       title: "Output",
-      formFieldKeys: [["selectedRadioButton", "isChecked"]],
+      formFieldKeys: [
+        ["o_selectedRadioButtonOutput", "o_selectedRadioButtonSwitch"],
+        ["o_isCheckedOutput", "o_isCheckedSwitch"]
+      ],
     },
   ];
-const getSelectedRadioButtonInWindowFieldsToWatch: string[] = ["operation"];
+const getSelectedRadioButtonInWindowFieldsToWatch: string[] = ["operation", "o_selectedRadioButtonOutput", "o_selectedRadioButtonSwitch", "o_isCheckedOutput", "o_isCheckedSwitch"];
 
 const getSelectedRadioButtonInWindow: ActivityConfig = {
   fieldList: getSelectedRadioButtonInWindowFieldList,

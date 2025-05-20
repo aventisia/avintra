@@ -38,7 +38,7 @@ const FlowLogHeader = () => {
           className="flex h-screen min-w-[75vw] flex-col"
         >
           <DialogDefaultHeader
-            heading={flowExecutionLogId ? "Flow execution logs" : "Flow logs"}
+            heading={flowExecutionLogId ? "Agent execution logs" : "Agent logs"}
           />
           <ScrollArea className="h-[calc(100vh-3rem)]">
             {flowExecutionLogId ? <FlowExecutionLog /> : <FlowLogsTable />}

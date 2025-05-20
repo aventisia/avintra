@@ -63,10 +63,26 @@ const recognizeEntitiesInTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "recognizeEntitiesInText",
-    type: "switch",
-    label: "recognizeEntitiesInText",
+    name: "o_recognizeEntitiesInTextOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The recognized entities",
+    defaultValue: "recognizeEntitiesInText",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_recognizeEntitiesInTextSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_recognizeEntitiesInTextSwitch",
+    type: "output-switch-field",
+    label: "recognizeEntitiesInText",
     defaultValue: true,
   },
 ];
@@ -78,10 +94,10 @@ const recognizeEntitiesInTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["recognizeEntitiesInText"]],
+    formFieldKeys: [["o_recognizeEntitiesInTextOutput", "o_recognizeEntitiesInTextSwitch"]],
   },
 ];
-const recognizeEntitiesInTextFieldsToWatch: string[] = [];
+const recognizeEntitiesInTextFieldsToWatch: string[] = ["o_recognizeEntitiesInTextOutput", "o_recognizeEntitiesInTextSwitch"];
 
 const recognizeEntitiesInText: ActivityConfig = {
   fieldList: recognizeEntitiesInTextFieldList,

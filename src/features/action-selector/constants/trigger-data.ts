@@ -28,6 +28,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger at fixed intervals (e.g., every hour, every 15 minutes)",
     icon: "IntervalTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -36,6 +37,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger when files are created, modified, or deleted in a specific directory",
     icon: "FileSystemEventTrigger",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -45,6 +47,7 @@ export const triggersList: NodeDataType[] = [
       "Trigger when a new email arrives, particularly with specific criteria (e.g., subject line, sender)",
     icon: "EmailTriggerIcon",
     ...commonProps,
+    disabled: true
   },
   {
     name: "databaseEventTrigger",
@@ -52,6 +55,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger when changes occur in a database, such as a new record being added",
     icon: "DatabaseEventTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -59,6 +63,7 @@ export const triggersList: NodeDataType[] = [
     label: "Form Submission Trigger",
     description: "Trigger when a user submits a form",
     icon: "FormSubmissionTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -67,6 +72,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger when a specific system events occur, such as system startup or shutdown",
     icon: "SystemEventTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -75,6 +81,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger based on changes in the state of a system service (e.g., a Windows service starts or stops)",
     icon: "ServiceEventTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -83,6 +90,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger when a specific webhook notification, typically from an external service",
     icon: "WebhookTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -90,6 +98,7 @@ export const triggersList: NodeDataType[] = [
     label: "HTTP (API) Trigger",
     description: "Trigger based on an HTTP (API) request",
     icon: "HttpTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -98,6 +107,7 @@ export const triggersList: NodeDataType[] = [
     description:
       "Trigger a flow in response to error detection in other automated processes",
     icon: "ErrorDetectionTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
   {
@@ -105,6 +115,7 @@ export const triggersList: NodeDataType[] = [
     label: "Custom Trigger",
     description: "Trigger based on one or more conditions defined by the user",
     icon: "CustomTriggerIcon",
+    hidden: true,
     ...commonProps,
   },
 ];

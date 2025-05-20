@@ -1,5 +1,7 @@
 import { CrudActionType } from "@/react-toolkit/types/literal-types";
 
+export const FLOWS_QUERY_KEY = ["flows"];
+
 /**
  * Returns the heading and description based on the provided CRUD action type.
  * @param crudAction - The CRUD action type.
@@ -8,11 +10,11 @@ import { CrudActionType } from "@/react-toolkit/types/literal-types";
 export const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Flow", description: "" };
+      return { heading: "Create Agent", description: "" };
     case "read":
-      return { heading: "Flow", description: "" };
+      return { heading: "Agent", description: "" };
     case "update":
-      return { heading: "Edit Flow", description: "" };
+      return { heading: "Edit Agent", description: "" };
     default:
       return { heading: "", description: "" };
   }

@@ -129,6 +129,7 @@ const connectToExchangeServerFieldList: IDynamicFieldSchema[] = [
       },
     },
   },
+  // Advance
   {
     name: "timeout",
     type: "text",
@@ -137,12 +138,29 @@ const connectToExchangeServerFieldList: IDynamicFieldSchema[] = [
       "The time in seconds to wait for the connection to be established before the action fails",
     defaultValue: 30,
   },
+  // Output
   {
-    name: "exchangeConnection",
-    type: "switch",
-    label: "ExchangeConnection",
+    name: "o_exchangeConnectionOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The specific Exchange connection for use with later Exchange actions",
+    defaultValue: "ExchangeConnection",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_exchangeConnectionSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_exchangeConnectionSwitch",
+    type: "output-switch-field",
+    label: "ExchangeConnection",
     defaultValue: true,
   },
 ];
@@ -159,18 +177,20 @@ const connectToExchangeServerFieldCategories: IDynamicFormKeysCategory[] = [
       ["domain"],
       ["username"],
       ["password"],
-      ["timeout"],
     ],
   },
+  {title: "Advance", formFieldKeys: [["timeout"]]},
   {
     title: "Output",
-    formFieldKeys: [["exchangeConnection"]],
+    formFieldKeys: [["o_exchangeConnectionOutput", "o_exchangeConnectionSwitch"]],
   },
 ];
 
 const connectToExchangeServerFieldsToWatch: string[] = [
   "connectionType",
   "credentials",
+  "o_exchangeConnectionOutput", 
+  "o_exchangeConnectionSwitch"
 ];
 
 const connectToExchangeServer: ActivityConfig = {

@@ -14,7 +14,7 @@ const displayMessageFieldList: IDynamicFieldSchema[] = [
   },
   {
     name: "messageToDisplay",
-    type: "text",
+    type: "textarea",
     label: "Message to display",
     description: "The text to display as the actual message",
     defaultValue: "",
@@ -84,12 +84,39 @@ const displayMessageFieldList: IDynamicFieldSchema[] = [
     description:
       "The seconds to pause the automation while waiting for input, until continuing automatically",
     defaultValue: 3,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "closeMessageBoxAutomatically", value: true }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  // Output
+  {
+    name: "o_buttonPressedOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The text of the button pressed",
+    defaultValue: "ButtonPressed",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_buttonPressedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
-    name: "buttonPressed",
-    type: "switch",
+    name: "o_buttonPressedSwitch",
+    type: "output-switch-field",
     label: "ButtonPressed",
-    description: "The text of the button pressed",
     defaultValue: true,
   },
 ];
@@ -110,13 +137,13 @@ const displayMessageFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["buttonPressed"]],
+    formFieldKeys: [["o_buttonPressedOutput", "o_buttonPressedSwitch"]],
   },
 ];
 const displayMessage: ActivityConfig = {
   fieldList: displayMessageFieldList,
   fieldCategories: displayMessageFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["closeMessageBoxAutomatically", "o_buttonPressedOutput", "o_buttonPressedSwitch"],
 };
 
 export default displayMessage;

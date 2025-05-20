@@ -51,10 +51,26 @@ const truncateNumberFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "truncatedValue",
-    type: "switch",
-    label: "TruncatedValue",
+    name: "o_truncateValueOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The truncated or rounded number",
+    defaultValue: "truncateValue",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_truncateValueSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_truncateValueSwitch", //to watch
+    type: "output-switch-field",
+    label: "TruncatedValue",
     defaultValue: true,
   },
 ];
@@ -66,14 +82,14 @@ const truncateNumberFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["truncatedValue"]],
+    formFieldKeys: [["o_truncateValueOutput", "o_truncateValueSwitch"]],
   },
 ];
 
 const truncateNumber: ActivityConfig = {
   fieldList: truncateNumberFieldList,
   fieldCategories: truncateNumberFieldCategories,
-  fieldsToWatch: ["operation"],
+  fieldsToWatch: ["operation", "o_truncateValueSwitch", "o_truncateValueOutput"],
 };
 
 export default truncateNumber;

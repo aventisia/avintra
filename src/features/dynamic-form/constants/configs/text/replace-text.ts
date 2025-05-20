@@ -52,10 +52,26 @@ const replaceTextFieldList: IDynamicFieldSchema[] = [
   },
   //   output
   {
-    name: "replaced",
-    type: "switch",
-    label: "Replaced",
+    name: "o_replacedOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new updated text",
+    defaultValue: "Replaced",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_replacedSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_replacedSwitch",
+    type: "output-switch-field",
+    label: "Replaced",
     defaultValue: true,
   },
 ];
@@ -74,10 +90,10 @@ const replaceTextFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["replaced"]],
+    formFieldKeys: [["o_replacedOutput", "o_replacedSwitch"]],
   },
 ];
-const replaceTextFieldsToWatch: string[] = [];
+const replaceTextFieldsToWatch: string[] = ["o_replacedOutput", "o_replacedSwitch"];
 
 const replaceText: ActivityConfig = {
   fieldList: replaceTextFieldList,

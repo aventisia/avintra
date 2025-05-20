@@ -15,11 +15,28 @@ const convertJSONToCustomObjectFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "jsonAsCustomObject",
-    type: "switch",
-    label: "JsonAsCustomObject",
+    name: "o_jsonAsCustomObjectOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The new list that holds the contents of the specified data table",
+    defaultValue: "JsonAsCustomObject",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_jsonAsCustomObjectSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  
+  {
+    name: "o_jsonAsCustomObjectSwitch", //to watch
+    type: "output-switch-field",
+    label: "JsonAsCustomObject",
     defaultValue: true,
   },
 ];
@@ -31,16 +48,15 @@ const convertJSONToCustomObjectFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["jsonAsCustomObject"]],
+    formFieldKeys: [["o_jsonAsCustomObjectOutput", "o_jsonAsCustomObjectSwitch"]],
   },
 ];
 
-const convertJSONToCustomObjectFieldsToWatch: string[] = [];
 
 const convertJSONToCustomObject: ActivityConfig = {
   fieldList: convertJSONToCustomObjectFieldList,
   fieldCategories: convertJSONToCustomObjectFieldCategories,
-  fieldsToWatch: convertJSONToCustomObjectFieldsToWatch,
+  fieldsToWatch: ["o_jsonAsCustomObjectOutput", "o_jsonAsCustomObjectSwitch"],
 };
 
 export default convertJSONToCustomObject;

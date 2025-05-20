@@ -33,36 +33,63 @@ const getSpecialFolderFieldList: IDynamicFieldSchema[] = [
       { label: "Pictures", value: "Pictures" },
       { label: "Common program files", value: "CommonProgramFiles" },
     ],
-    defaultValue: "Documents",
+    defaultValue: "Desktop",
+    regOptions: {
+      required: true,
+    },
+  },
+  {
+    name: "folderPath",
+    type: "text",
+    label: "Special folder path",
+    description:
+      "This is the path of the selected special folder for this computer",
+    defaultValue: "",
     regOptions: {
       required: true,
     },
   },
   //   output 
   {
-    name: "specialFolderPath",
-    type: "switch",
+    name: "o_specialFolderPathOutput", //to watch
+    type: "output-text-field",
+    label: "",
+    description: "The special folder object(which is a representation and can access the folder and all its information)",
+    defaultValue: "SpecialFolderPath",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_specialFolderPathSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_specialFolderPathSwitch",
+    type: "output-switch-field",
     label: "SpecialFolderPath",
-    description: "The special folder object",
-    defaultValue: "",
+    defaultValue:true,
   },
 ];
 
 const getSpecialFolderFieldCategories: IDynamicFormKeysCategory[] = [
   {
     title: "Basic",
-    formFieldKeys: [["specialFolderName"]],
+    formFieldKeys: [["specialFolderName"], ["folderPath"]],
   },
   {
     title: "Output",
-    formFieldKeys: [["specialFolderPath"]],
+    formFieldKeys: [["o_specialFolderPathOutput", "o_specialFolderPathSwitch"]],
   },
 ];
 
 const getSpecialFolder: ActivityConfig = {
   fieldList: getSpecialFolderFieldList,
   fieldCategories: getSpecialFolderFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_specialFolderPathOutput", "o_specialFolderPathSwitch"],
 };
 
 export default getSpecialFolder;

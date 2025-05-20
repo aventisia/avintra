@@ -26,13 +26,23 @@ const launchWordFieldList: IDynamicFieldSchema[] = [
     label: "Document path",
     description: "The full path of the existing Word document to open",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchWord", value: "and open the following document" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "makeInstanceVisible",
     type: "switch",
     label: "Make instance visible",
     description: "Specify whether to make the Word window visible or hide it",
-    defaultValue: false,
+    defaultValue: true,
   },
   {
     name: "openAsReadonly",
@@ -41,7 +51,18 @@ const launchWordFieldList: IDynamicFieldSchema[] = [
     description:
       "Specify whether to open stored document in read-only mode or not",
     defaultValue: false,
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchWord", value: "and open the following document" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  // Advance
   {
     name: "readProtectionPassword",
     type: "password",
@@ -49,6 +70,16 @@ const launchWordFieldList: IDynamicFieldSchema[] = [
     description:
       "The read protection password on the Word document, if it's password protected",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchWord", value: "and open the following document" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
   {
     name: "writeProtectionPassword",
@@ -57,14 +88,42 @@ const launchWordFieldList: IDynamicFieldSchema[] = [
     description:
       "The write protection password on the Word document, if it's password protected",
     defaultValue: "",
+    regOptions: {
+      requiredBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "launchWord", value: "and open the following document" }],
+          },
+        ],
+        initialState: false,
+      },
+    },
   },
+  
+  // Output
   {
-    name: "wordInstance",
-    type: "switch",
-    label: "WordInstance",
+    name: "o_wordInstanceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description:
       "The specific Word instance for use with later Word actions. This allows the user to specify which of possibly several Word documents to access",
-    defaultValue: "",
+    defaultValue: "WordInstance",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_wordInstanceSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+  {
+    name: "o_wordInstanceSwitch",
+    type: "output-switch-field",
+    label: "WordInstance",
+    defaultValue: true,
   },
 ];
 
@@ -84,14 +143,14 @@ const launchWordFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["wordInstance"]],
+    formFieldKeys: [["o_wordInstanceOutput", "o_wordInstanceSwitch"]],
   },
 ];
 
 const launchWord: ActivityConfig = {
   fieldList: launchWordFieldList,
   fieldCategories: launchWordFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["launchWord", "o_wordInstanceOutput", "o_wordInstanceSwitch"] ,
 };
 
 export default launchWord;

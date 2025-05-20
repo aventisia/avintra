@@ -27,10 +27,27 @@ const subtractListsFieldList: IDynamicFieldSchema[] = [
   },
   //output
   {
-    name: "listDifference",
-    type: "switch",
-    label: "ListDifference",
+    name: "o_listDifferenceOutput", //to watch
+    type: "output-text-field",
+    label: "",
     description: "The new resulting list",
+    defaultValue: "ListDifference",
+    regOptions: {
+      disabledBasedOnFields: {
+        conditionList: [
+          {
+            fields: [{ key: "o_listDifferenceSwitch", value: false }],
+          },
+        ],
+        initialState: false,
+      },
+    },
+  },
+
+  {
+    name: "o_listDifferenceSwitch", //to watch
+    type: "output-switch-field",
+    label: "ListDifference",
     defaultValue: true,
   },
 ];
@@ -42,14 +59,14 @@ const subtractListsFieldCategories: IDynamicFormKeysCategory[] = [
   },
   {
     title: "Output",
-    formFieldKeys: [["listDifference"]],
+    formFieldKeys: [["o_listDifferenceOutput", "o_listDifferenceSwitch"]],
   },
 ];
 
 const subtractLists: ActivityConfig = {
   fieldList: subtractListsFieldList,
   fieldCategories: subtractListsFieldCategories,
-  fieldsToWatch: [],
+  fieldsToWatch: ["o_listDifferenceOutput", "o_listDifferenceSwitch"],
 };
 
 export default subtractLists;
