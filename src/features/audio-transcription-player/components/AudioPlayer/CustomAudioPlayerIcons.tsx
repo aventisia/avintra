@@ -9,7 +9,7 @@ import {
 
 const iconWrapperStyle = "relative h-6 w-6";
 const iconTextStyle =
-  "text-xs absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2";
+  "text-xs absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-slate-400";
 
 export const customAudioPlayerIcons = {
   forward: (
@@ -30,6 +30,6 @@ export const customAudioPlayerIcons = {
   pause: (
     <PauseIcon className="border-2 border-primary text-primary rounded-full p-1 w-8 h-8 fill-primary" />
   ),
-  volume: <Volume2Icon className="text-muted-foreground" />,
-  volumeMute: <VolumeXIcon className="text-muted-foreground" />,
+  volume: <Volume2Icon className="text-slate-400" />,
+  volumeMute: <VolumeXIcon className="text-slate-400" />,
 };

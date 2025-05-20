@@ -71,7 +71,7 @@ const AudioTranscriptionPlayer = () => {
   return (
     <div className="overflow-hidden rounded-lg border shadow bg-white">
       <ControlPanel />
-      <ScrollArea className="h-[calc(100vh-11.2rem)] w-full p-4 bg-accent scroll-smooth">
+      <ScrollArea className="h-[calc(100vh-11.2rem)] w-full p-4 bg-slate-50 scroll-smooth">
         <AudioPlayer
           ref={playerRef}
           className="shadow-xl rounded-lg mb-10 !p-5 sticky top-0 z-10"
