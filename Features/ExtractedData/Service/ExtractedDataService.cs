@@ -74,7 +74,7 @@ public class ExtractedDataService : IExtractedDataService
                         // Add item to the ExtractedFieldList to maintain the original structure
                         finalData.ExtractedFieldList.Add(item.Adapt<ExtractedFieldDto>());
                     }
-                     
+
                 }
                 foreach (var dynamicField in finalData.DynamicFields)
                 {
@@ -287,6 +287,62 @@ public class ExtractedDataService : IExtractedDataService
         return serviceResponse;
     }
 
+    // Updates an extracted data record without triggering notifications or other side effects
+    public async Task<ServiceResponse<bool>> UpdateExtractedDataSilentlyAsync(ExtractedDataSilentUpdateDataDto silentUpdateDataDto)
+    {
+        // Initialize the service response with a failure message
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Message = "Failed to update extracted data. Please try again later."
+        };
+
+        try
+        {
+            // Trim any string properties in the DTO to ensure clean data
+            silentUpdateDataDto = TrimDtoStringPropsUtil.TrimDtoStringProps(silentUpdateDataDto);
+
+            // Check if the extracted data exists in the repository
+            var existingExtractedData = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(record => record.Id == silentUpdateDataDto.Id)
+                .SingleOrDefaultAsync();
+
+            // If the extracted data doesn't exist, return a failure response
+            if (existingExtractedData == null)
+            {
+                _logger.LogInformation("No extracted data found with the provided ID.");
+                serviceResponse.Message = "Extracted data not found.";
+                return serviceResponse;
+            }
+
+            // Update the extracted data with the new values from the DTO
+            existingExtractedData.DataObject = silentUpdateDataDto.DataObject;
+            existingExtractedData.SubmitForFineTuning = silentUpdateDataDto.SubmitForFineTuning;
+            existingExtractedData.CreatedByUserId = _userId;
+            existingExtractedData.LastModifiedByUserId = _userId;
+
+            // Apply the changes to the repository
+            _unitOfWork.ExtractedDataRepo.Update(existingExtractedData);
+
+            // Attempt to save the changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Failed to save changes to the extracted data record.");
+                return serviceResponse;
+            }
+
+            // If the update was successful, set the response with success details
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extracted data updated successfully.";
+
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError($"An error occurred while updating the extracted data: {exception.Message}");
+        }
+
+        return serviceResponse;
+    }
     #endregion
 
 }

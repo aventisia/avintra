@@ -37,4 +37,11 @@ public interface IExtractedDataService
     /// <param name="id">Identifier</param>
     /// <returns>An existing data of a specific identifier</returns>
     Task<ServiceResponse<ExtractedDataDto>> GetExtractedDataByIdAsync(Guid id);
+
+    /// <summary>
+    /// Update extracted data silently in the background whenever the user makes any changes.
+    /// </summary>
+    /// <param name="extractedDataSilentUpdateDataDto">The DTO containing the updated information for the extracted data.</param>
+    /// <returns>A task representing the asynchronous operation, with a service response indicating the success or failure of the update.</returns>
+    Task<ServiceResponse<bool>> UpdateExtractedDataSilentlyAsync(ExtractedDataSilentUpdateDataDto extractedDataSilentUpdateDataDto);
 }

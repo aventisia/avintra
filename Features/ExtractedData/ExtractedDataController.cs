@@ -54,6 +54,13 @@ public class ExtractedDataController : BaseApiController
         return ResultHelper(await _extractedDataService.GetExtractedDataByIdAsync(id));
     }
 
+    // Update extracted data silently in the background whenever the user makes any changes
+    [HttpPut("silent-update")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateExtractedDataSilently([FromBody] ExtractedDataSilentUpdateDataDto extractedDataSilentUpdateDataDto)
+    {
+        return ResultHelper(await _extractedDataService.UpdateExtractedDataSilentlyAsync(extractedDataSilentUpdateDataDto));
+    }
+
     #endregion
 
 }
