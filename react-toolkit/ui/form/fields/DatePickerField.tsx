@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { Calendar } from "@/react-toolkit/ui/calendar";
 import { FormControl } from "@/react-toolkit/ui/form/FormControl";

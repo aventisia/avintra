@@ -5,7 +5,7 @@ import { Navbar } from "@/react-toolkit/layout/navbar";
 import { NavbarOnSheet } from "@/react-toolkit/layout/NavbarOnSheet";
 import { Sidebar } from "@/react-toolkit/layout/sidebar";
 import { SidebarToggle } from "@/react-toolkit/layout/SidebarToggle";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { NavLocation } from "@/react-toolkit/types/nav-data-types";

@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
 import { FormControl } from "@/react-toolkit/ui/form/FormControl";
 import { FormField } from "@/react-toolkit/ui/form/FormField";

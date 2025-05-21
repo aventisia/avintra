@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { IconProps } from "@/react-toolkit/types/icon-props";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import React from "react";

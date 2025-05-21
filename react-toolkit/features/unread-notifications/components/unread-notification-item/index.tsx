@@ -1,7 +1,7 @@
 import { UNIActions } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIActions";
 import { UNIAvatar } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIAvatar";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
 import { formatDistanceToNow } from "date-fns";
 import { memo } from "react";

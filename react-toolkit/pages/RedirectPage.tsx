@@ -1,6 +1,6 @@
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";

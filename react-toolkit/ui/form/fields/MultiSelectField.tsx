@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { ISelectOption } from "@/react-toolkit/types/select-option";
 import {
   MultiSelector,

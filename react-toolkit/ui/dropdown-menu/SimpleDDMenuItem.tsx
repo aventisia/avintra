@@ -1,6 +1,6 @@
 import { IconProps } from "@/react-toolkit/types/icon-props";
 import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import React from "react";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 

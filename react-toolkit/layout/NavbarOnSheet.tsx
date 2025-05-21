@@ -1,7 +1,7 @@
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { UpgradeCard } from "@/react-toolkit/layout/sidebar/UpgradeCard";
 import { SidebarMenuItems } from "@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItems";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { IAppConfig } from "@/react-toolkit/types/app-config";
 import { Button } from "@/react-toolkit/ui/buttons/Button";

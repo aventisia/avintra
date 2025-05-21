@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { PositionType } from "@/react-toolkit/types/literal-types";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 

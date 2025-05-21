@@ -1,5 +1,5 @@
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import React, { useEffect, useRef } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { useBlocker, useNavigate } from "react-router-dom";

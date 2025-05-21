@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";

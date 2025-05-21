@@ -1,6 +1,6 @@
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
 import { Button } from "@/react-toolkit/ui/buttons/Button";

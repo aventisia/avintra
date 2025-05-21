@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
 import { ISelectOption } from "@/react-toolkit/types/select-option";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";

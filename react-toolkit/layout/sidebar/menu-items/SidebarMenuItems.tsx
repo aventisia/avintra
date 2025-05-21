@@ -4,7 +4,7 @@ import { MultiLevelMenuButton } from "@/react-toolkit/layout/sidebar/menu-items/
 import { SectionHeader } from "@/react-toolkit/layout/sidebar/menu-items/SectionHeader";
 import { SidebarMenuItem } from "@/react-toolkit/layout/sidebar/menu-items/SidebarMenuItem";
 import { SubMenuItems } from "@/react-toolkit/layout/sidebar/menu-items/SubMenuItems";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { ISideNavMenuSection } from "@/react-toolkit/types/nav-data-types";

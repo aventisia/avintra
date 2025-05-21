@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
 
 export interface TextareaProps

@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { Input } from "@/react-toolkit/ui/input";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 

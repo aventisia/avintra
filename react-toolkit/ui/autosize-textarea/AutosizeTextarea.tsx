@@ -1,6 +1,6 @@
 // Code available at: https://shadcnui-expansions.typeart.cc/docs/autosize-textarea
 
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useAutosizeTextarea } from "@/react-toolkit/ui/autosize-textarea/useAutosizeTextarea";
 import * as React from "react";
 import { useImperativeHandle } from "react";

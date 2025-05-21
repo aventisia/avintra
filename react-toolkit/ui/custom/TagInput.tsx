@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { Badge } from "@/react-toolkit/ui/badge";
 import { Input, InputProps } from "@/react-toolkit/ui/input";
 import { X as RemoveIcon } from "lucide-react";

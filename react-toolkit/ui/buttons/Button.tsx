@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { type VariantProps } from "class-variance-authority";
 import * as React from "react";

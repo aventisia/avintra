@@ -1,6 +1,6 @@
 import { MenuItem } from "@/react-toolkit/layout/navbar/MenuItem";
 import { MultiLevelMenuItem } from "@/react-toolkit/layout/navbar/MultiLevelMenuItem";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { ITopNavMenuItem } from "@/react-toolkit/types/nav-data-types";
 
 interface MenuItemsProps {

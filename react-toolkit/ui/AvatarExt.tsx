@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
 interface AvatarExtProps {

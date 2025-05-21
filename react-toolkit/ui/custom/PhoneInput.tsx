@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import {
   Command,

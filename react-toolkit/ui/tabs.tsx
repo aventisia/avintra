@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import * as React from "react";
 

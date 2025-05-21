@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { KeyValueLookupType } from "@/react-toolkit/types/key-value-lookup-type";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import {

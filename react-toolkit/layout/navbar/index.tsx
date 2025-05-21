@@ -1,5 +1,5 @@
 import { MenuItems } from "@/react-toolkit/layout/navbar/MenuItems";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import {
   INavDataType,
   ITopNavMenuItem,
