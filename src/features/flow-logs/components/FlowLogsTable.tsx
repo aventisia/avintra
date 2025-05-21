@@ -1,8 +1,8 @@
-import { useDataTable } from "@/react-toolkit/hooks/useDataTable";
-import { DataTable } from "@/react-toolkit/ui/data-table";
-import { DataTableSkeleton } from "@/react-toolkit/ui/data-table/DataTableSkeleton";
-import { DTPagination } from "@/react-toolkit/ui/data-table/DTPagination";
-import { DTSearchBox } from "@/react-toolkit/ui/data-table/toolbar/DTSearchBox";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { DataTable } from "@aventisia/ui/data-table";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { DTPagination } from "@aventisia/ui/data-table";
+import { DTSearchBox } from "@aventisia/ui/data-table";
 import { SEARCH_COLUMN } from "../constants";
 import { logsTableColumns } from "./LogTableColumns";
 import { columnVisibilityState } from "../constants/columns-visibility-state";

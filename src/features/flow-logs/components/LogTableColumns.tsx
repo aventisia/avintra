@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { FlowLogsDTO } from "../dtos/flow-logs-dtos";
-import { DTColumnHeader } from "@/react-toolkit/ui/data-table/DTColumnHeader";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { getFormattedDate } from "../utils";
 import { FlowExecutionLogCell } from "./FlowExecutionLogCell";
 
