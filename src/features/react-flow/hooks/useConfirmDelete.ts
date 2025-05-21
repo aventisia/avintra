@@ -1,4 +1,4 @@
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { OnBeforeDelete } from "@xyflow/react";
 import { useCallback } from "react";

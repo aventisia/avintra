@@ -2,7 +2,7 @@ import { flowCommentOptimisticMutationFn } from "@/features/flow-comments/apis/f
 import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { useShallow } from "zustand/react/shallow";
 

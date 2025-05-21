@@ -32,7 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogCancel,
-} from "@/react-toolkit/ui/alert-dialog";
+} from "@aventisia/ui/alert-dialog";
 import { buttonVariants } from "@aventisia/ui/buttons";
 
 type Table = NonNullable<

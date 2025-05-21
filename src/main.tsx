@@ -1,5 +1,5 @@
 import "@/react-toolkit/styles/react-perfect-scrollbar.css";
-import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper.tsx";
+import { AlertDialogWrapper } from "@aventisia/ui/alert-dialog";
 import { ToasterExt } from "@/react-toolkit/ui/custom/ToasterExt.tsx";
 import { TooltipProvider } from "@/react-toolkit/ui/custom/Tooltip.tsx";
 import React from "react";
