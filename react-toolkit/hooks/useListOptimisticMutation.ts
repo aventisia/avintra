@@ -1,5 +1,5 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { OrderByType } from "@/react-toolkit/types/literal-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";

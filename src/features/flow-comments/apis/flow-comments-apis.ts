@@ -1,5 +1,5 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { IOptimisticMutation } from "@/react-toolkit/dtos/optimistic-mutation";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { IOptimisticMutation } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { FlowCommentDto } from "../dtos/flow-comment-dto";
 

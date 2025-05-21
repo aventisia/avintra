@@ -1,6 +1,6 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
+import { TrueFalseResultDto } from "@aventisia/ui/dtos";
 import {
   CustomFormMessage,
   CustomMessageType,

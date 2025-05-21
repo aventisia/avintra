@@ -1,4 +1,4 @@
-import { UserAvatarBaseDto } from "@/react-toolkit/dtos/response/user-avatar-base-dto";
+import { UserAvatarBaseDto } from "@aventisia/ui/dtos";
 
 /**
  * Represents the data structure for an unread notification.

@@ -1,11 +1,11 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { CheckAvailabilityDto } from "@/react-toolkit/dtos/request/check-availability-dto";
+import { IHttpResponse } from "@aventisia/ui/dtos";
+import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
 import { CheckVerificationCodeDto } from "@/react-toolkit/dtos/request/check-verification-code-dto";
 import { CreateVerificationCodeDto } from "@/react-toolkit/dtos/request/create-verification-code-dto";
 import { EmailDto } from "@/react-toolkit/dtos/request/email-dto";
 import { CreatedVerificationCodeDto } from "@/react-toolkit/dtos/response/created-verification-code-dto";
 import { TenantInfoDto } from "@/react-toolkit/dtos/response/tenant-info-dto";
-import { TrueFalseResultDto } from "@/react-toolkit/dtos/response/true-false-result-dto";
+import { TrueFalseResultDto } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/auth`;
