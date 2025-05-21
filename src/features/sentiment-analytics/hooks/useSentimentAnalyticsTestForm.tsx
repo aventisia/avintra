@@ -12,6 +12,7 @@ export const useSentimentalAnalyticsTestForm = () => {
     resolver: zodResolver(sentimentalAnalyticsTestFormZodSchema),
     defaultValues: {
       categories: [],
+      submitForFineTuning: false,
     },
   });
 

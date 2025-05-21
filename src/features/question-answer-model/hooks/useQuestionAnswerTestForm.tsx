@@ -12,6 +12,7 @@ export const useQuestionAnswersTestForm = () => {
     resolver: zodResolver(questionAnswerTestFormZodSchema),
     defaultValues: {
       questionAnswers: [],
+      submitForFineTuning: false,
     },
   });
 

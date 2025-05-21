@@ -1,4 +1,4 @@
-import { InputFieldProps } from "@aventisia/ui/form";
+import { CheckboxFieldProps, InputFieldProps } from "@aventisia/ui/form";
 
 const fieldValueProps : InputFieldProps = {
     name: "",
@@ -7,4 +7,10 @@ const fieldValueProps : InputFieldProps = {
     placeholder: "Field Value"
 }
 
-export {fieldValueProps}
+const submitForFineTuningProps: CheckboxFieldProps = {
+    name: "submitForFineTuning",
+    label: "",
+    className: "text-sm",
+}
+
+export {fieldValueProps, submitForFineTuningProps}

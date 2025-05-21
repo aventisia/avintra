@@ -1,10 +1,12 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
+import { CheckboxField, Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
+import { submitForFineTuningProps } from "../../constants/info-extractor-test-form-field-props";
 import { infoExtractorTestFormZodSchema } from "../../constants/info-extractor-test-zod-schema";
 import { useAddInformationExtractorTestForm } from "../../hooks/useAddInfoExtractorTestForm";
 import DataFields from "./fields";
@@ -21,8 +23,10 @@ const InformationExtractorTestForm = () => {
   } = useAddInformationExtractorTestForm();
   const {
     formState: { isSubmitting, isDirty },
-    // getValues,
+    setValue,
+    watch,
   } = form;
+  const submitForFinetuningValue = watch("submitForFineTuning");
 
   // Submit handler
   function submitHandler(
@@ -32,15 +36,20 @@ const InformationExtractorTestForm = () => {
     console.log(formData);
   }
 
-  if ((!dataFields.length || !dataFields[0].name) && !tableFields.length) {
-    return (
-      <p className="text-center text-md py-6">
-        No fields were configured in the setup form.
-        <br />
-        Please make sure to fill out the required fields during setup
-      </p>
-    );
-  }
+  const [userToggled, setUserToggled] = useState<boolean>(false);
+
+  // Update checkbox automatically when form becomes dirty — only if user hasn’t manually toggled
+  useEffect(() => {
+    if (!userToggled) {
+      setValue("submitForFineTuning", isDirty);
+    }
+  }, [isDirty, userToggled, setValue]);
+
+  // Handler for manual toggle
+  const handleToggle = () => {
+    setUserToggled(true); // Mark that the user has toggled manually
+    setValue("submitForFineTuning", !submitForFinetuningValue);
+  };
 
   return (
     <Form
@@ -65,9 +74,17 @@ const InformationExtractorTestForm = () => {
       </ScrollArea>
 
       <Separator />
-      <div className="flex items-center justify-end gap-2 px-4 py-1 pb-4">
+      <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
+        <div className="flex items-center gap-1">
+          <CheckboxField
+            {...submitForFineTuningProps}
+            checked={submitForFinetuningValue}
+            onCheckedChange={handleToggle}
+          />
+          <span className="text-sm">Submit for Fine-tuning</span>
+        </div>
         <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
-          Save
+          Save & Next
         </Button>
       </div>
     </Form>

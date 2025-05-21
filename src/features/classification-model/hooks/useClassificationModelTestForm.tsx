@@ -12,6 +12,7 @@ export const useClassificationModelTestForm = () => {
     resolver: zodResolver(classificationModelTestFormZodSchema),
     defaultValues: {
       categories: [],
+      submitForFineTuning: false,
     },
   });
 

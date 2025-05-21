@@ -1,4 +1,4 @@
-import {  AutosizeTextareaFieldProps } from "@aventisia/ui/form";
+import {  AutosizeTextareaFieldProps, CheckboxFieldProps } from "@aventisia/ui/form";
 
 const answerProps : AutosizeTextareaFieldProps = {
     name: "",
@@ -7,4 +7,11 @@ const answerProps : AutosizeTextareaFieldProps = {
     placeholder: "Field Value",
 }
 
-export {answerProps}
+const submitForFineTuningProps: CheckboxFieldProps = {
+    name: "submitForFineTuning",
+    label: "",
+    className: "text-sm",
+}
+
+
+export {answerProps, submitForFineTuningProps}

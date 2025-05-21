@@ -1,22 +1,43 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { AutosizeTextareaField, Form } from "@aventisia/ui/form";
+import { AutosizeTextareaField, CheckboxField, Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
-import { summarizedTextProps } from "../../constants/summarization-model-test-form-field-props";
+import {
+  submitForFineTuningProps,
+  summarizedTextProps,
+} from "../../constants/summarization-model-test-form-field-props";
 import { summarizationModelTestFormZodSchema } from "../../constants/summarization-model-test-form-zod-schema";
 import { useSummarizationModelTestForm } from "../../hooks/useSummarizationModelTestForm";
 
 const SummarizationModelTestForm = () => {
   const { form, isDirty, isSubmitting } = useSummarizationModelTestForm();
+  const { setValue, watch } = form;
+  const submitForFinetuningValue = watch("submitForFineTuning");
 
   function submitHandler(
     formData: z.infer<typeof summarizationModelTestFormZodSchema>,
   ) {
     console.log(formData);
   }
+
+  const [userToggled, setUserToggled] = useState<boolean>(false);
+
+  // Update checkbox automatically when form becomes dirty — only if user hasn’t manually toggled
+  useEffect(() => {
+    if (!userToggled) {
+      setValue("submitForFineTuning", isDirty);
+    }
+  }, [isDirty, userToggled, setValue]);
+
+  // Handler for manual toggle
+  const handleToggle = () => {
+    setUserToggled(true); // Mark that the user has toggled manually
+    setValue("submitForFineTuning", !submitForFinetuningValue);
+  };
 
   return (
     <Form
@@ -36,7 +57,15 @@ const SummarizationModelTestForm = () => {
       </ScrollArea>
 
       <Separator />
-      <div className="flex items-center justify-end gap-2 px-4 py-1 pb-4">
+      <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
+        <div className="flex items-center gap-1">
+          <CheckboxField
+            {...submitForFineTuningProps}
+            checked={submitForFinetuningValue}
+            onCheckedChange={handleToggle}
+          />
+          <span className="text-sm">Submit for Fine-tuning</span>
+        </div>{" "}
         <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
           Save
         </Button>

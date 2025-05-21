@@ -14,4 +14,5 @@ const categoriesSchema = z.object({
 export const classificationModelTestFormZodSchema = z
   .object({
     categories: z.array(categoriesSchema),
+    submitForFineTuning: z.boolean()
 })

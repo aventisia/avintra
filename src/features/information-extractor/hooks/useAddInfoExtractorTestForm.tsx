@@ -13,6 +13,7 @@ export const useAddInformationExtractorTestForm = () => {
     defaultValues: {
       fields: [],
       tables: [],
+      submitForFineTuning: false,
     },
   });
 

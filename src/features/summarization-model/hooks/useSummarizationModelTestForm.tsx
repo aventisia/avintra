@@ -11,6 +11,7 @@ export const useSummarizationModelTestForm = () => {
     defaultValues: {
       summarizedText: "",
       totalWords: 0,
+      submitForFineTuning: false,
     },
   });
 

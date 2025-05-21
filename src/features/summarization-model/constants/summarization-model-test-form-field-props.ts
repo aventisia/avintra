@@ -1,4 +1,4 @@
-import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
+import { AutosizeTextareaFieldProps, CheckboxFieldProps } from "@aventisia/ui/form";
 
 const summarizedTextProps: AutosizeTextareaFieldProps = {
     name: "summarizedText",
@@ -7,4 +7,11 @@ const summarizedTextProps: AutosizeTextareaFieldProps = {
     isRequired: true,
     className: "text-sm resize-none"
 } 
-export {summarizedTextProps}
+
+const submitForFineTuningProps: CheckboxFieldProps = {
+    name: "submitForFineTuning",
+    label: "",
+    className: "text-sm",
+}
+
+export {summarizedTextProps, submitForFineTuningProps}
