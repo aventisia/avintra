@@ -5,7 +5,7 @@ import {
   TableExtHead,
   TableExtHeader,
   TableExtRow,
-} from "@/react-toolkit/ui/TableExt";
+} from "@aventisia/ui/table";
 import { Table, flexRender } from "@tanstack/react-table";
 
 interface DataTableProps<TData> {
