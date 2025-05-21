@@ -1,0 +1,19 @@
+meta {
+  name: Extract classification data
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/classification/extract-via-llm
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  req.setBody({
+    modelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    fileIds: [bru.getGlobalEnvVar("DOC_ID")]
+  });
+  
+}
