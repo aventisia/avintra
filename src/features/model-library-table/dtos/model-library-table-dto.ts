@@ -32,7 +32,7 @@ export interface ModelLibraryTableDto {
   /**
    * Gets or sets the status of the model.
    */
-  status?: string;
+  setupStatus?: string;
 
   /**
    * Gets or sets the accuracy of the model.

@@ -1,9 +1,12 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { updateSummarizationSetupFormData } from "../apis/summarization-setup-api";
 import { summarizationModelSetupFormZodSchema } from "../constants/summarization-model-setup-zod-schema";
@@ -59,11 +62,19 @@ export const useSummarizationModelSetupForm = () => {
   }, [form, queryClient]);
 
   // Mutation to update form data
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
   const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
     mutationFn: updateSummarizationSetupFormData,
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["SUMMARIZATION_SETUP_FORM_DATA"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["model", modelId],
       });
     },
     onError: (error) => {

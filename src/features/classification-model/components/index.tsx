@@ -1,10 +1,12 @@
 import ErrorFetchingTemplate from "@/components/templates/ErrorFetchingTemplate";
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useTabStore } from "@/store/tab-store";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
@@ -21,13 +23,28 @@ const ClassificationModel = () => {
     })),
   );
   const { activeTab, setActiveTab } = useTabStore();
+  const { data: modelData } = useFetchModel();
+
+  // Disable "Test" tab when setupStatus is "Pending"
+  const isTestTabDisabled = modelData?.data?.setupStatus === "Pending";
+
+  // Handle Test tab click
+  const handleTabClick = (tabValue: string) => {
+    if (tabValue === "test" && isTestTabDisabled) {
+      toast("Please configure the setup fields first.");
+    } else {
+      console.log("inside 2");
+
+      setActiveTab(tabValue);
+    }
+  };
 
   return (
     <div className="ml-2 rounded-lg bg-white shadow h-full flex flex-col">
       {/* Only ONE Tabs wrapper */}
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabClick}
         className="flex flex-col flex-1"
       >
         {" "}
@@ -48,6 +65,7 @@ const ClassificationModel = () => {
             <TabsTrigger
               value="test"
               className="rounded-full data-[state=active]:text-primary"
+              disabled={isTestTabDisabled}
             >
               Test
             </TabsTrigger>

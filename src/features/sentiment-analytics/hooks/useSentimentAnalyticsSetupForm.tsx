@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { updateSentimentAnalyticsSetupFormData } from "../apis/sentiment-analytics-setup-form-apis";
 import { sentimentAnalyticsSetupFormZodSchema } from "../constants/setiment-analytics-setup-zod-schema";
@@ -64,11 +67,19 @@ export const useSentimentAnalyticsSetupForm = () => {
   }, [form, queryClient]);
 
   // Mutation to update form data
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
   const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
     mutationFn: updateSentimentAnalyticsSetupFormData,
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["SENTIMENT_SETUP_FORM_DATA"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["model", modelId],
       });
     },
     onError: (error) => {

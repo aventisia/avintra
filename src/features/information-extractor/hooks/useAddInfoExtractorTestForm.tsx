@@ -101,7 +101,7 @@ export const useAddInformationExtractorTestForm = () => {
         extractedData:
           table.tableHeaders?.map((item) => ({
             name: item.name,
-            values: [], // or omit if your Zod schema allows
+            values: [""], // or omit if your Zod schema allows
           })) ?? [],
       })) ?? [];
 

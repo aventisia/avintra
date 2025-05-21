@@ -1,9 +1,12 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { updateClassificationSetupFormData } from "../apis/classification-model-setup-apis";
 import { classificationModelSetupFormZodSchema } from "../constants/classification-model-setup-zod-schema";
@@ -67,11 +70,19 @@ export const useClassificationModelSetupForm = () => {
   }, [form, queryClient]);
 
   // Mutation to update form data
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
   const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
     mutationFn: updateClassificationSetupFormData,
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["CLASSIFICATION_SETUP_FORM_DATA"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["model", modelId],
       });
     },
     onError: (error) => {
