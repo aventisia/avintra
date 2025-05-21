@@ -1,9 +1,4 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/react-toolkit/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
 const OnErrorTabs = () => {
   return (

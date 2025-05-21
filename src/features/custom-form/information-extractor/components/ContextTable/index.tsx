@@ -13,8 +13,8 @@ import {
 } from "../../constants/info-extractor-form-field-props";
 import { z } from "zod";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
-import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
-import { TabsContent } from "@radix-ui/react-tabs";
+import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { TabsContent } from "@aventisia/ui/tabs";
 import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
 import { DropdownMenu } from "@aventisia/ui/dropdown-menu";

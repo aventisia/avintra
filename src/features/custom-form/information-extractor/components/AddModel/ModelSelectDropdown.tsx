@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from "@/react-toolkit/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Switch } from "@/react-toolkit/ui/switch";
+import { Switch } from "@aventisia/ui";
 import { cn } from "@aventisia/ui/lib";
 import { UseFormReturn } from "react-hook-form";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
