@@ -1,5 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";

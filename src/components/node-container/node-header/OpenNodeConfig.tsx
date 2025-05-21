@@ -6,7 +6,7 @@ import {
 } from "@/features/dynamic-form";
 import { dynamicActionMapper } from "@/features/dynamic-form/utils/utils";
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { buttonVariants } from "@aventisia/ui/buttons";
 // import {
 //   Popover,
 //   PopoverContent,

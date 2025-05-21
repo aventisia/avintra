@@ -33,7 +33,7 @@ import {
   AlertDialogTitle,
   AlertDialogCancel,
 } from "@/react-toolkit/ui/alert-dialog";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { buttonVariants } from "@aventisia/ui/buttons";
 
 type Table = NonNullable<
   z.infer<typeof addInfoExtractorFormZodSchema>["tables"]

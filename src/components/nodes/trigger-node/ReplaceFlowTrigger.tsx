@@ -1,5 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { NodeToolbar, Position } from "@xyflow/react";
 import { DialogTrigger } from "@/react-toolkit/ui/dialog";
