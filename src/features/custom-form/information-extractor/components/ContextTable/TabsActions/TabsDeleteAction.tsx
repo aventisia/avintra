@@ -1,5 +1,5 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
+import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
 import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useInformationExtractorTableStore } from "../../../stores/info-extractor-table-store";

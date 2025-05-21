@@ -1,5 +1,5 @@
-import { DropdownMenuContent } from "@/react-toolkit/ui/dropdown-menu";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
+import { DropdownMenuContent } from "@aventisia/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
 import { FVIViewAction } from "./FVIViewAction";
 import { FVIActionsTrigger } from "./FVIActionsTrigger";
 import { FVIDraftAction } from "./FVIDraftAction";
