@@ -294,6 +294,15 @@ public class ExtractionSetupService : IExtractionSetupService
                     continue;
                 }
 
+                // Check if the LLM response does not contain the expected structure (i.e., '[')
+                if (!llmResponse.Data.Contains("["))
+                {
+                    _logger.LogError("005: Data extraction failed for FileId: {fileId}.", fileId);
+                    extractedData.Remarks = $"005: Failed to extract valid data for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+                
                 // Attempt to deserialize the extracted data
                 var options = new JsonSerializerOptions
                 {

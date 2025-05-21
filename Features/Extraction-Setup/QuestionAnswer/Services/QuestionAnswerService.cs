@@ -239,6 +239,15 @@ public class QuestionAnswerService : IQuestionAnswerService
                     continue;
                 }
 
+                // Check if the LLM response does not contain the expected structure (i.e., '[')
+                if (!llmResponse.Data.Contains("["))
+                {
+                    _logger.LogError("005: Data extraction failed for FileId: {fileId}.", fileId);
+                    extractedData.Remarks = $"005: Failed to extract valid data for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+                
                 // Deserialize the extracted Q&A data
                 var options = new JsonSerializerOptions
                 {

@@ -242,6 +242,15 @@ public class ClassificationService : IClassificationService
                     continue;
                 }
 
+                // Check if the LLM response does not contain the expected structure (i.e., '[')
+                if (!llmResponse.Data.Contains("["))
+                {
+                    _logger.LogError("005: Data extraction failed for FileId: {fileId}.", fileId);
+                    extractedData.Remarks = $"005: Failed to extract valid data for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
                 // Deserialize the extracted data into a list of classification setup data
                 var options = new JsonSerializerOptions
                 {
@@ -249,7 +258,7 @@ public class ClassificationService : IClassificationService
                 };
 
                 extractedData.ExtractedData = JsonSerializer.Deserialize<List<ClassificationSetupData>>(llmResponse.Data, options) ?? new List<ClassificationSetupData>();
-                extractedData.Remarks = "000: Success"; // Mark successful extraction
+                extractedData.Remarks = "";
 
                 _logger.LogInformation("Successfully extracted and deserialized data for FileId: {FileId}", fileId);
 
