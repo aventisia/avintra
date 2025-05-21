@@ -11,7 +11,6 @@ global using AspNetToolkit.Utils;
 global using AspNetToolkit.Attributes;
 global using AspNetToolkit.Enums;
 
-global using MLModelBuilderAPIs.Config;
 global using MLModelBuilderAPIs.Data;
 global using MLModelBuilderAPIs.Services;
 global using MLModelBuilderAPIs.Extensions;
