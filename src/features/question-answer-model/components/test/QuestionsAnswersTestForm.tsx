@@ -1,3 +1,6 @@
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { CheckboxField, Form } from "@aventisia/ui/form";
@@ -5,6 +8,7 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 import { useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { submitForFineTuningProps } from "../../constants/question-answer-test-form-field-props";
 import { questionAnswerTestFormZodSchema } from "../../constants/question-answer-test-form-zod-schema";
@@ -20,12 +24,32 @@ const QuestionsAnswersTestForm = () => {
     watch,
   } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
+  const { data: fileList } = useFetchUploadedFiles();
+
+  const { selectedFile, setSelectedFile } = useFileListStore(
+    useShallow((state) => ({
+      selectedFile: state.selectedFile,
+      setSelectedFile: state.setSelectedFile,
+    })),
+  );
+
+  const handleNextFile = () => {
+    const files = Array.isArray(fileList?.data) ? fileList.data : [];
+    if (!files.length || !selectedFile) return;
+
+    const currentIndex = files.findIndex((pdf) => pdf.id === selectedFile.id);
+    if (currentIndex < files.length - 1) {
+      const nextFile = files[currentIndex + 1];
+      setSelectedFile(nextFile);
+    }
+  };
 
   function submitHandler(
     formData: z.infer<typeof questionAnswerTestFormZodSchema>,
   ) {
     refineFormData(formData);
     console.log(formData);
+    handleNextFile();
   }
 
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -40,7 +64,9 @@ const QuestionsAnswersTestForm = () => {
   // Handler for manual toggle
   const handleToggle = () => {
     setUserToggled(true); // Mark that the user has toggled manually
-    setValue("submitForFineTuning", !submitForFinetuningValue);
+    setValue("submitForFineTuning", !submitForFinetuningValue, {
+      shouldDirty: true,
+    });
   };
 
   return (
