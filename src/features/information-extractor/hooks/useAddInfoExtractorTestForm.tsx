@@ -5,7 +5,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { infoExtractorTestFormZodSchema } from "../constants/info-extractor-test-zod-schema";
-import { InformationExtractorTestDTO } from "../dtos/info-extractor-test-dto";
+import { InformationExtractorSetupDTO } from "../dtos/info-extractor-setup-dto";
 
 export const useAddInformationExtractorTestForm = () => {
   const form = useForm<z.infer<typeof infoExtractorTestFormZodSchema>>({
@@ -83,7 +83,7 @@ export const useAddInformationExtractorTestForm = () => {
 
   useEffect(() => {
     const data = queryClient.getQueryData<{
-      data: InformationExtractorTestDTO;
+      data: InformationExtractorSetupDTO;
     }>(["EXTRACTOR_SETUP_FORM_DATA"]);
 
     // Extract setupObject from fetched data

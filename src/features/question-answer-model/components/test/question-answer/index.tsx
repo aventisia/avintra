@@ -27,7 +27,7 @@ const QuestionAnswerFields = ({
   return (
     <div className="space-y-4">
       {questionAnswerFields.map((field, index) => {
-        const fieldName = field.question;
+        const fieldName = field.name;
         const accuracy = field.accuracy || 0;
 
         return (
@@ -55,7 +55,7 @@ const QuestionAnswerFields = ({
             <FormControl>
               <Controller
                 control={control}
-                name={`questionAnswers.${index}.answer`}
+                name={`questionAnswers.${index}.instructions`}
                 render={({ field }) => (
                   <AutosizeTextareaField
                     {...answerProps}

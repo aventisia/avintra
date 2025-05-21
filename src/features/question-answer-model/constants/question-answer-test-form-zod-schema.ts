@@ -1,8 +1,8 @@
 import * as z from "zod";
 
 const questionAnswerSchema = z.object({
-    question: z.string().optional(),
-    answer: z.string().optional(),
+    name: z.string().optional(),
+    instructions: z.string().optional(),
     accuracy: z.number().optional(),
 })
 

@@ -1,31 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { sentimentalAnalyticsTestFormZodSchema } from "../constants/sentiment-analytics-test-form-zod-schema";
+import { SentimentAnalyticsSetupDTO } from "../dtos/sentiment-analytics-setup-dto";
 
 export const useSentimentalAnalyticsTestForm = () => {
   const form = useForm<z.infer<typeof sentimentalAnalyticsTestFormZodSchema>>({
     resolver: zodResolver(sentimentalAnalyticsTestFormZodSchema),
     defaultValues: {
-      categories: [
-        {
-          fieldName: "Field 1",
-          accuracy: 85,
-        },
-        {
-          fieldName: "Field 2",
-          accuracy: 75,
-        },
-        {
-          fieldName: "Field 3",
-          accuracy: 20,
-        },
-        {
-          fieldName: "Field 4",
-          accuracy: 60,
-        },
-      ],
+      categories: [],
     },
   });
 
@@ -40,6 +26,26 @@ export const useSentimentalAnalyticsTestForm = () => {
   ) => {
     return formData;
   };
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const data = queryClient.getQueryData<{
+      data: SentimentAnalyticsSetupDTO;
+    }>(["SENTIMENT_SETUP_FORM_DATA"]);
+
+    // Extract setupObject from fetched data
+    const setupFormData = data?.data.setupObject;
+
+    // Only extract `name` field from fieldSetups
+    const categories = setupFormData?.categories?.map((category) => ({
+      name: category?.name ?? "",
+      accuracy: 0,
+    })) ?? [{}];
+
+    form.reset({
+      categories,
+    });
+  }, [form, queryClient]);
 
   return {
     form,

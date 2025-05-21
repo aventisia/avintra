@@ -19,10 +19,10 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
 
   return (
     <div className="space-y-4">
-      <p className="text-base">Categories</p>
+      <p className="text-base">Fields</p>
 
       {categoryFields.map((field, index) => {
-        const label = field.fieldName;
+        const label = field.name;
 
         return (
           <FormItem>

@@ -9,8 +9,7 @@ export const useSummarizationModelTestForm = () => {
   const form = useForm<z.infer<typeof summarizationModelTestFormZodSchema>>({
     resolver: zodResolver(summarizationModelTestFormZodSchema),
     defaultValues: {
-      summarizedText:
-        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque doloribus repellat est pariatur aut alias impedit cumque laudantium reiciendis. Magni officia voluptatibus repellendus magnam, quibusdam tempore quos blanditiis hic nihil. Porro repellat enim dicta distinctio necessitatibus earum voluptate! Beatae incidunt at labore maxime ipsum? Aut laudantium sed officia nesciunt dolore?",
+      summarizedText: "",
       totalWords: 0,
     },
   });

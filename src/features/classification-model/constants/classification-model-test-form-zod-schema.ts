@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 const categoriesSchema = z.object({
-    fieldName: z.string().optional(),
+    name: z.string().optional(),
     // Ensuring 'accuracy' is always a number, even if it comes as a string
     accuracy: z
       .union([z.string(), z.number()]) // Allow both string and number inputs

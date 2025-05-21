@@ -23,7 +23,7 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
       <p className="text-base">Categories</p>
 
       {categoryFields.map((field, index) => {
-        const label = field.fieldName;
+        const label = field.name;
 
         return (
           <FormItem>

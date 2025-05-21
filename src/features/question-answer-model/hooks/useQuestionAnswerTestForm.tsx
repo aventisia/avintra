@@ -1,39 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { questionAnswerTestFormZodSchema } from "../constants/question-answer-test-form-zod-schema";
+import { QuestionAnswersSetupDTO } from "../dtos/question-answer-setup-dto";
 
 export const useQuestionAnswersTestForm = () => {
   const form = useForm<z.infer<typeof questionAnswerTestFormZodSchema>>({
     resolver: zodResolver(questionAnswerTestFormZodSchema),
     defaultValues: {
-      questionAnswers: [
-        {
-          question: "What's a skill you're currently working on developing?",
-          answer:
-            "My plans for the future include advancing my career and traveling more.",
-          accuracy: 85,
-        },
-        {
-          question: "What's a skill you're currently working on developing?",
-          answer:
-            "My plans for the future include advancing my career and traveling more.",
-          accuracy: 75,
-        },
-        {
-          question: "How do you handle conflicts at work?",
-          answer:
-            "I handle conflicts by staying calm, listening to all parties involved, and finding a fair solution.",
-          accuracy: 20,
-        },
-        {
-          question: "What is the most interesting place you have been to?",
-          answer:
-            "The most interesting place I’ve been to is the Great Wall of China.",
-          accuracy: 60,
-        },
-      ],
+      questionAnswers: [],
     },
   });
 
@@ -48,6 +26,27 @@ export const useQuestionAnswersTestForm = () => {
   ) => {
     return formData;
   };
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const data = queryClient.getQueryData<{
+      data: QuestionAnswersSetupDTO;
+    }>(["QUESTION_ANSWER_SETUP_FORM_DATA"]);
+
+    // Extract setupObject from fetched data
+    const setupFormData = data?.data.setupObject;
+
+    // Only extract `name` field from fieldSetups
+    const questionAnswers = setupFormData?.questionAnswers?.map((quesAns) => ({
+      name: quesAns?.name ?? "",
+      instructions: quesAns?.instructions ?? "",
+      accuracy: 0,
+    })) ?? [{}];
+
+    form.reset({
+      questionAnswers,
+    });
+  }, [form, queryClient]);
 
   return {
     form,
