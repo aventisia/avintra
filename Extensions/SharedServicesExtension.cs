@@ -97,4 +97,11 @@ public static class SharedServicesExtension
         // Register PermissionValidator as a singleton implementation of IPermissionValidator
         services.AddSingleton<IPermissionValidator, PermissionValidator>();
     }
+
+    // Extension method to register the LLM data extraction service
+    public static void AddLLMExtractionService(this IServiceCollection services)
+    {
+        // Registers LLMDataExtractionService as a singleton implementation of ILLMDataExtractionService
+        services.AddSingleton<ILLMDataExtractionService, LLMDataExtractionService>();
+    }
 }
