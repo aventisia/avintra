@@ -6,15 +6,20 @@ Classification Settings:
 1. Multiple category assignment allowed: {{AllowMultipleClasses}}
 2. If no suitable category is found: {{UncertaintyAction}}
 
-Please extract the values for each category based on the context and classify them accordingly. Ensure each value reflects the strength or relevance of the category in relation to the context.
-Also, extract the values for the following categories: {{Categories}}.
+Please classify the input text into predefined categories based on its content. The categories are listed below, and your objective is to identify which categories are relevant to the provided context. Extract values only for the following categories: {{Categories}}.
+
+Instructions:
+- Do not include any numbers, explanations, or extra text outside the JSON.
+- Analyze the provided input and context.
+- For each category, return "true" if it matches or is relevant, otherwise return "false".
+- If AllowMultipleClasses is true, return "true" for all categories that are relevant or match the input.
+- If AllowMultipleClasses is false, return "true" for only the single most accurate category and "false" for the rest.
+- Use "false" for any category that does not match or is irrelevant.
+- Format the output as a JSON array. Each object must include:
+    - "name": the category name
+    - "value": a string value "true" or "false"
+- Use only the given input and context.
 
 Output Format:
-Return the results as a JSON array. Each object must include a categories and its corresponding value (ranging from 0 to 100), formatted as shown below:
 
-"[{\"name\": \"category_name\", \"value\": \"category_value\"}, {\"name\": \"another_category_name\", \"value\": \"another_category_value\"}]";
-
-Writing Instructions:
-- Use only the provided input and context.
-- Assign a value between 0 and 100 to each category based on strength, relevance, or intensity.
-- Do not include any explanation, comments, or text outside the JSON string.
+"[{"name": "category_name", "value": "true"}, {"name": "another_category_name", "value": "false"}]"

@@ -9,10 +9,11 @@ Length Requirements:
 - Chunk Overlap (Characters): {{ChunkOverlap}}
 - Total Word Count Range: {{TotalMinimumWords}}–{{TotalMaximumWords}} words
 
+Instructions:
+- Focus on key points and essential details: Highlight the most crucial aspects of the original content.
+- Avoid unnecessary repetition and irrelevant content: Strip away anything that doesn’t directly contribute to the core message.
+- Maintain original tone: Ensure the tone of the summary aligns with the tone of the original content.
+- Ensure accurate meaning: The summary should reflect the content's intent without adding or changing its core ideas
+
 Output Format:
 "{"summary":"summary_content"}"
-
-Writing Instructions:
-- Focus on key points and essential details.
-- Eliminate repetition and irrelevant content.
-- Maintain the original tone and accurately convey the intended meaning.

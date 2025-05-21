@@ -6,9 +6,15 @@ Please extract the following fields:
 Please extract the following table column data as per the instructions if any:
 {{Tables}}
 
-Expected Output Format:
-The output must be formatted as a JSON object:
+Instructions:
+- Do not add any comments, explanations, or content outside of the JSON string.
+- Ensure strict accuracy and consistency throughout the output.
+- If the `{{Tables}}` section does not contain any table details, return the `"tables"` array as an empty array `[]` accordingly.
+- If the table has no rows but only headers, ensure the `"values"` array for each column is empty (e.g., `"values": []`).
+- Maintain proper structure, making sure each field and table column is correctly formatted.
 
+Expected Output Format: 
+- The output must be formatted as a JSON object.
 "{\"fields\": [
   {\"name\": \"field_name\", \"value\": \"field_value\"},
   {\"name\": \"another_field\", \"value\": \"another_value\"}
@@ -36,8 +42,3 @@ The output must be formatted as a JSON object:
     ]
   }
 ]}"
-
-Writing Instructions:
-- Do not add any comments, explanations, or content outside of the JSON string.
-- Maintain strict accuracy and structural consistency throughout the output.
-- If `{{Tables}}` does not contain any table details, return the `"tables"` array as empty `[]` accordingly.

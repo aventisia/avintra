@@ -2,16 +2,22 @@
 
 Context: {{Context}}
 
-Analyze the sentiment of the main points, staying true to the original content. Ensure the sentiment matches the tone and meaning.
-
-Also, extract the values for the following categories: {{Categories}}.
-
-Output Format:
-Return the results as a JSON array. Each object must include a categories and its corresponding value (ranging from 0 to 100), formatted as shown below:
-
-"[{\"name\": \"category_name\", \"value\": \"category_value\"}, {\"name\": \"another_category_name\", \"value\": \"another_category_value\"}]";
+Please analyze the sentiment conveyed in the text. Identify the tone as positive, negative, or neutral. Determine which predefined categories are clearly relevant to that sentiment.
+Categories to Evaluate: {{Categories}}
 
 Instructions:
-- Only output the JSON as a string — no extra text, comments, or explanations.
-- Include only categories that can be clearly determined from the input.
-- Omit any category if the value is ambiguous or not present in the text.
+- Analyze the sentiment and meaning expressed in the context.
+- For each category:
+    - Return "true" if the category is clearly reflected or supported by the sentiment and content.
+    - Return "false" if the category does not apply or is not relevant.
+- Only include categories that can be confidently evaluated.
+- If a category cannot be determined from the text, exclude it from the output.
+- Only return the JSON array. Do not include sentiment summaries, explanations, numbers, or any additional text- No sentiment summary or additional commentary will be included
+- Use "false" for any category that does not match or is irrelevant.
+- Format the output as a JSON array. Each object must include:
+    - "name": the category name
+    - "value": a string value "true" or "false"
+- Use only the given input and context.
+
+Output Format:
+"[{"name": "category_name", "value": "true"}, {"name": "another_category_name", "value": "false"}]"
