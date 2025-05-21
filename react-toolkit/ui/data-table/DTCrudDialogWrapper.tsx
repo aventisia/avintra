@@ -1,4 +1,4 @@
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useAlertDialogStore } from "@/react-toolkit/stores/alert-dialog-store";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import * as DialogPrimitive from "@radix-ui/react-dialog";

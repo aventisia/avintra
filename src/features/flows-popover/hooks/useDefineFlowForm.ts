@@ -1,4 +1,4 @@
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
+import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";

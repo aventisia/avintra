@@ -1,4 +1,4 @@
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { cn } from "@/react-toolkit/lib/utils";
 import React, { useEffect, useRef } from "react";
 import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";

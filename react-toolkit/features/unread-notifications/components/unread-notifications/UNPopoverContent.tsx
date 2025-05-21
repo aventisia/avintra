@@ -2,7 +2,7 @@ import { UnreadNotificationItem } from "@/react-toolkit/features/unread-notifica
 import { UNNoContentMessage } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNNoContentMessage";
 import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
-import { useQueryData } from "@/react-toolkit/hooks/useQueryData";
+import { useQueryData } from "@aventisia/ui/hooks";
 import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
 
 /**

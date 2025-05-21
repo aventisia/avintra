@@ -1,4 +1,4 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
 import { AutosizeTextarea } from "@/react-toolkit/ui/autosize-textarea/AutosizeTextarea";
 import { Button } from "@aventisia/ui/buttons";

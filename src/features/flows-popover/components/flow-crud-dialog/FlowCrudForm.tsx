@@ -1,4 +1,4 @@
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { Button } from "@aventisia/ui/buttons";
 import { InputField } from "@aventisia/ui/form";
 import { SelectField } from "@aventisia/ui/form";

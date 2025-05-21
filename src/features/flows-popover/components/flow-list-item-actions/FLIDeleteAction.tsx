@@ -1,6 +1,6 @@
 import { flowOptimisticMutationFn } from "@/features/flows-popover/apis/flows-table-apis";
 import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { FLOWS_QUERY_KEY } from "../../constants/constants";
