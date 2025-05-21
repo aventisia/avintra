@@ -5,7 +5,7 @@ import { FELActionList } from "./FELActionList";
 import { useFlowExecutionLogStore } from "../../stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
 import { FlowExecutionLogsDTO } from "../../dtos/flow-execution-log-dto";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import FELSearchBox from "./FELSearchBox";
 import { NoContentMessage } from "@aventisia/ui";
 

@@ -1,7 +1,7 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { cn } from "@aventisia/ui/lib";
 import { Button } from "@aventisia/ui/buttons";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { useReactFlow, useStore } from "@xyflow/react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";

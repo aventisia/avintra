@@ -1,5 +1,5 @@
 import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 

@@ -1,5 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 
 export const FCBUndo = () => {

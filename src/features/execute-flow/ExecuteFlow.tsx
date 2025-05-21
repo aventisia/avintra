@@ -3,7 +3,7 @@ import {
   refreshSession,
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { Button } from "@aventisia/ui/buttons";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTauriStore } from "@/stores/tauri-store";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";

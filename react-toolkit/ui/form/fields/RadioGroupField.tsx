@@ -1,7 +1,7 @@
 import { cn } from "@aventisia/ui/lib";
 import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
 import { ISelectOption } from "@/react-toolkit/types/select-option";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
 import { FormControl } from "@/react-toolkit/ui/form/FormControl";
 import { FormField } from "@/react-toolkit/ui/form/FormField";

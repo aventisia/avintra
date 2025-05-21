@@ -1,6 +1,6 @@
 import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@aventisia/ui/buttons";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { PopoverTrigger } from "@/react-toolkit/ui/popover";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";

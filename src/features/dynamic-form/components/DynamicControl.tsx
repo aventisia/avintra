@@ -32,7 +32,7 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from "@/react-toolkit/ui/custom/MultiSelector";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { TagInput } from "@/react-toolkit/ui/custom/TagInput";
 import {
   Popover,
