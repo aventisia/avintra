@@ -3,7 +3,7 @@
 Please extract the following fields:
 {{Fields}}
 
-Please extract the following table column data as per the instructions provided:
+Please extract the following table column data as per the instructions if any:
 {{Tables}}
 
 Expected Output Format:
@@ -40,3 +40,4 @@ The output must be formatted as a JSON object:
 Writing Instructions:
 - Do not add any comments, explanations, or content outside of the JSON string.
 - Maintain strict accuracy and structural consistency throughout the output.
+- If `{{Tables}}` does not contain any table details, return the `"tables"` array as empty `[]` accordingly.

@@ -3,13 +3,12 @@
 Context: {{Context}}
 
 Please extract the answers to the following questions and format them as shown below.
-
 {{Questions}}
 
 Output Format:
 Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
 
-"[{"question": "question_1", "response": "answer_1."}, {"question": "another_question", "response": "another_answer"}]"
+"[{"question": "question_1", "answer": "answer_1."}, {"question": "another_question", "answer": "another_answer"}]"
 
 Instructions:
 Use only the provided question for answer.
