@@ -1,5 +1,5 @@
-import { RadioGroupFieldProps } from "@/react-toolkit/ui/form/fields/RadioGroupField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { RadioGroupFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
 
 // Layout Direction
 const layoutDirectionProps: RadioGroupFieldProps = {
@@ -42,7 +42,8 @@ const intractivityToggleProps: SwitchFieldProps = {
   showBorder: false,
   name: "intractivityToggle",
   label: "Intractivity Toggle",
-  description: "Show a toggle button to enable or disable intractivity in the flow",
+  description:
+    "Show a toggle button to enable or disable intractivity in the flow",
 };
 
 // Hide Zoom Controls
@@ -51,7 +52,8 @@ const zoomControlsProps: SwitchFieldProps = {
   showBorder: false,
   name: "zoomControls",
   label: "Zoom Controls",
-  description: "Show zoom in and zoom out buttons to adjust the flow zoom level",
+  description:
+    "Show zoom in and zoom out buttons to adjust the flow zoom level",
 };
 
 // Enable Delete Alert

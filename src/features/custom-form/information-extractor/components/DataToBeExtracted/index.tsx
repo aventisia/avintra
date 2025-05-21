@@ -1,8 +1,8 @@
 // components/DataToBeExtractedSection.tsx
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Button } from "@aventisia/ui/buttons";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   fieldNameProps,

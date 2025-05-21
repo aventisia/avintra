@@ -5,7 +5,7 @@ import { IDynamicFieldSchema, IDynamicFormCategory, renderFormField } from "..";
 import { cn } from "@aventisia/ui/lib";
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { IFormValuesToFill } from "../types/dynamic-form-types";

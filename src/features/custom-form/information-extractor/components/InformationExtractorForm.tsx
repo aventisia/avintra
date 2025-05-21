@@ -8,12 +8,12 @@ import {
   nodePropmptProps,
   saveInModelLibraryProps,
 } from "../constants/info-extractor-form-field-props";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { TextareaField } from "@aventisia/ui/form";
 import { Button } from "@aventisia/ui/buttons";
 import { Separator } from "@aventisia/ui";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
+import { InputField } from "@aventisia/ui/form";
+import { CheckboxField } from "@aventisia/ui/form";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import DataToBeExtracted from "./DataToBeExtracted";
 import ContextTables from "./ContextTable";

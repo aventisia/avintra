@@ -2,15 +2,15 @@
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { FormProvider } from "react-hook-form";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
+import { InputField } from "@aventisia/ui/form";
 import {
   valueProps,
   variableProps,
 } from "../constants/set-variable-form-field-props";
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { TextareaField } from "@aventisia/ui/form";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useShallow } from "zustand/react/shallow";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";

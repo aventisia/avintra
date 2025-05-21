@@ -1,6 +1,6 @@
 import { Form } from "@/react-toolkit/ui/form/Form";
-import { RadioGroupField } from "@/react-toolkit/ui/form/fields/RadioGroupField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
+import { RadioGroupField } from "@aventisia/ui/form";
+import { SwitchField } from "@aventisia/ui/form";
 import { Separator } from "@aventisia/ui";
 import { useCallback, useEffect } from "react";
 import { z } from "zod";
