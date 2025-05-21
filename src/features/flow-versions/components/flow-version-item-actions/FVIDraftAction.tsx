@@ -1,4 +1,4 @@
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useFlowsVersionsStore } from "../../stores/flow-versions-store";
 import { useShallow } from "zustand/react/shallow";

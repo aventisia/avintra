@@ -1,4 +1,4 @@
-import { DTRowAction } from "@/react-toolkit/ui/data-table/row-actions/DTRowAction";
+import { DTRowAction } from "@aventisia/ui/data-table";
 import {
   DropdownMenuContent,
   DropdownMenuSeparator,

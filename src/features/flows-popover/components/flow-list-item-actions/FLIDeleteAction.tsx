@@ -2,7 +2,7 @@ import { flowOptimisticMutationFn } from "@/features/flows-popover/apis/flows-ta
 import { FlowsTableDto } from "@/features/flows-popover/dtos/flows-table-dto";
 import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
 import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { FLOWS_QUERY_KEY } from "../../constants/constants";
 
 interface FLIDeleteActionProps {
