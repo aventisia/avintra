@@ -1,5 +1,5 @@
 import { useCheckAvailability } from "@aventisia/ui/hooks";
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";

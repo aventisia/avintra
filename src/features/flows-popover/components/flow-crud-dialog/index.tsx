@@ -1,4 +1,4 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { DTCrudDialogWrapper } from "@/react-toolkit/ui/data-table/DTCrudDialogWrapper";
 import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
 import { ScrollArea } from "@aventisia/ui/scroll";

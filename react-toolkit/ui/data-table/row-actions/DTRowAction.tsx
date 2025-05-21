@@ -1,4 +1,4 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import {
   ArrowUpRightIcon,
   PencilSquareIcon,

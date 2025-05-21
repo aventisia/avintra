@@ -1,4 +1,4 @@
-import { useAlertDialogStore } from "@/react-toolkit/stores/alert-dialog-store";
+import { useAlertDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
 interface DefaultOptions {

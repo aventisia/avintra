@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/react-toolkit/ui/alert-dialog";
-import { useAlertDialogStore } from "@/react-toolkit/stores/alert-dialog-store";
+import { useAlertDialogStore } from "@aventisia/ui/stores";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { useShallow } from "zustand/react/shallow";
 

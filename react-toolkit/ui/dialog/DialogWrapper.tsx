@@ -1,5 +1,5 @@
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
-import { useAlertDialogStore } from "@/react-toolkit/stores/alert-dialog-store";
+import { useAlertDialogStore } from "@aventisia/ui/stores";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useShallow } from "zustand/react/shallow";
 
