@@ -25,4 +25,11 @@ public class ExtractionSetupController : BaseApiController
     {
         return ResultHelper(await _extractionSetupService.GetExtractionSetupByMLModelIdAsync(mlModelId));
     }
+
+    // Extracts data via a Language Learning Model (LLM)
+    [HttpPost("extract-via-llm")]
+    public async Task<ActionResult<ServiceResponse<ExtractionResponseDto>>> ExtractViaLLM(ExtractRequestDto extractRequestDto)
+    {
+        return ResultHelper(await _extractionSetupService.ExtractViaLLMAsync(extractRequestDto));
+    }
 }
