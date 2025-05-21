@@ -1,9 +1,10 @@
 {{Prompt}}
 
-Please extract answers for the following questions and format them as specified below.
 Context: {{Context}}
 
-Questions: {{Questions}}
+Please extract the answers to the following questions and format them as shown below.
+
+{{Questions}}
 
 Output Format:
 Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:

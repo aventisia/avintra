@@ -2,7 +2,9 @@
 
 Context: {{Context}}
 
-Please extract the values for the following categories: {{Categories}}
+Analyze the sentiment of the main points, staying true to the original content. Ensure the sentiment matches the tone and meaning.
+
+Also, extract the values for the following categories: {{Categories}}.
 
 Output Format:
 Return the results as a JSON array. Each object must include a categories and its corresponding value (ranging from 0 to 100), formatted as shown below:
