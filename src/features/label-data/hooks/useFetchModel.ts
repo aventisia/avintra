@@ -17,6 +17,7 @@ export const useFetchModel = () => {
   // Get models using react query
   const { data, 
     // isError, error, 
+    isLoading,
     refetch } = useQuery({
     queryKey: ["model", modelId],
     queryFn: () => getModel(modelId),
@@ -28,5 +29,5 @@ export const useFetchModel = () => {
   // }, [error, isError]);
 
   // Return data and refetch
-  return { data, refetch };
+  return { data, refetch, isLoading };
 };

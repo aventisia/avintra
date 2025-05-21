@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { extractViaLLM } from "../apis/extract-via-llm-apis";
 import { updateFieldValueByFieldName } from "../utils";
+import { ExtractRequestDto } from "../dtos/extract-request-dto";
 
 export const useExtractViaLLMMutation = () => {
   // Get current annotation object and set annotation object
@@ -15,31 +16,34 @@ export const useExtractViaLLMMutation = () => {
   );
 
   // Define mutation to extract via LLM
-  const { mutate: extractViaLLMMutation, isPending: isExtractionPending } =
-    useMutation({
-      mutationFn: extractViaLLM,
-      onSuccess: (httpResponse) => {
-        // If no extracted data, return
-        if (!httpResponse.data.filesExtractedData.length) return;
+  const { mutate: extractViaLLMMutation, isPending: isExtractionPending } = useMutation({
+    mutationFn: ({
+      postObj,
+      modelType,
+    }: {
+      postObj: ExtractRequestDto;
+      modelType: string;
+    }) => extractViaLLM(postObj, modelType),
 
-        // Update annotation object with extracted data
-        const updatedAnnotationObj = updateFieldValueByFieldName(
-          currAnnotationObj,
-          httpResponse.data.filesExtractedData[0].extractedData,
-        );
+    onSuccess: (httpResponse) => {
+      if (!httpResponse.data.filesExtractedData.length) return;
 
-        // Set updated annotation object
-        setAnnotationObject(updatedAnnotationObj);
+      // Update annotation object with extracted data
+      const updatedAnnotationObj = updateFieldValueByFieldName(
+        currAnnotationObj,
+        httpResponse.data.filesExtractedData[0].extractedData,
+      );
 
-        // Show toast
-        toast.success("Data extracted successfully");
-      },
-      onError: (error) => {
-        // Show toast on error
-        toast.error(error.toString());
-      },
-    });
+      setAnnotationObject(updatedAnnotationObj);
 
-  // Return mutation and pending status
+      // Show toast
+      toast.success("Data extracted successfully");
+    },
+
+    onError: (error) => {
+      toast.error(error.toString());
+    },
+  });
+
   return { extractViaLLMMutation, isExtractionPending };
 };

@@ -3,14 +3,14 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { ExtractRequestDto } from "../dtos/extract-request-dto";
 import { ExtractResponseDto } from "../dtos/extract-response-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extract-via-llm`;
+const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
 
 /**
  * Extract data fields from a PDF file via LLM.
  */
-const extractViaLLM = (postObj: ExtractRequestDto) => {
+const extractViaLLM = (postObj: ExtractRequestDto, modelType: string) => {
   return axiosInstance
-    .post<IHttpResponse<ExtractResponseDto>>(`${baseAPIURL}`, postObj)
+    .post<IHttpResponse<ExtractResponseDto>>(`${baseAPIURL}/${modelType}/extract-via-llm`, postObj)
     .then((res) => res.data);
 };
 

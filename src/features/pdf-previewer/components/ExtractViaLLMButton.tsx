@@ -1,3 +1,4 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useTabStore } from "@/store/tab-store";
 
 import { Button } from "@aventisia/ui/buttons";
@@ -6,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFileListStore } from "../../multi-format-viewer/store/file-list-store";
+import { ModelNamesEnum } from "../enums/model-name-enum";
 import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {
@@ -20,15 +22,25 @@ function ExtractViaLLMButton() {
     })),
   );
   const { activeTab } = useTabStore();
+  const { data: modelData, isLoading: isModelLoading } = useFetchModel();
 
   // Get extract via LLM mutation and pending status
   const { extractViaLLMMutation, isExtractionPending } =
     useExtractViaLLMMutation();
 
   const handleExtract = () => {
+    const modelType = modelData?.data.type;
+    const modelName =
+      modelType && modelType in ModelNamesEnum
+        ? ModelNamesEnum[modelType as keyof typeof ModelNamesEnum]
+        : "";
+
     extractViaLLMMutation({
-      modelId: modelId,
-      fileIds: [selectedPdf?.id || ""],
+      postObj: {
+        modelId: modelId,
+        fileIds: [selectedPdf?.id || ""],
+      },
+      modelType: modelName,
     });
   };
 
@@ -37,7 +49,7 @@ function ExtractViaLLMButton() {
       size="xs"
       className="gap-2 pl-2 pr-3.5 text-sm"
       onClick={handleExtract}
-      disabled={isExtractionPending || activeTab == "setup"}
+      disabled={isExtractionPending || activeTab == "setup" || isModelLoading}
     >
       {isExtractionPending ? (
         <>
