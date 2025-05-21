@@ -1,0 +1,22 @@
+meta {
+  name: Silent update extracted data
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data/silent-update
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    Id: bru.getGlobalEnvVar("EDATA_ID"),
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    docId: bru.getGlobalEnvVar("DOC_ID"),
+    dataObject: faker.lorem.sentence()
+  })
+}
