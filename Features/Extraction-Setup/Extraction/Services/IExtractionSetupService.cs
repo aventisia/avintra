@@ -19,9 +19,9 @@ public interface IExtractionSetupService
     Task<ServiceResponse<MLModelSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId);
 
     /// <summary>
-    /// Extracts data via a Language Learning Model (LLM) asynchronously.
+    /// Extracts data asynchronously using a Language Learning Model (LLM).
     /// </summary>
-    /// <param name="extractRequestDto">The request data transfer object containing the parameters for extraction.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a service response with an enumerable of extraction response DTOs.</returns>
+    /// <param name="extractRequestDto">The DTO containing the parameters for the extraction process.</param>
+    /// <returns>An asynchronous task that, upon completion, returns a service response with an enumeration of extraction result DTOs.</returns>
     Task<ServiceResponse<ExtractionResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
 }

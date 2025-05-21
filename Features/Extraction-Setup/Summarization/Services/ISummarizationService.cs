@@ -26,4 +26,13 @@ public interface ISummarizationService
     /// containing the summarization configuration for the given model ID.
     /// </returns>
     Task<ServiceResponse<SummarizationDto>> GetSummarizationSetupByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Extracts data asynchronously using a Language Learning Model (LLM).
+    /// </summary>
+    /// <param name="extractRequestDto">The data transfer object containing the extraction parameters.</param>
+    /// <returns>
+    /// An asynchronous task that returns a service response containing an enumeration of extraction response DTOs.
+    /// </returns>
+    Task<ServiceResponse<SummarizationResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
 }

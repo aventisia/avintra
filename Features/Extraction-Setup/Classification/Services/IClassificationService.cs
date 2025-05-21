@@ -26,4 +26,13 @@ public interface IClassificationService
     /// containing the classification configuration tied to the given model ID.
     /// </returns>
     Task<ServiceResponse<ClassificationDto>> GetClassificationSetupByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Extracts data asynchronously using a Language Learning Model (LLM).
+    /// </summary>
+    /// <param name="extractRequestDto">The data transfer object containing the parameters required for the extraction process.</param>
+    /// <returns>
+    /// An asynchronous task that returns a service response with a collection of extraction response DTOs.
+    /// </returns>
+    Task<ServiceResponse<ClassificationResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
 }

@@ -4,18 +4,21 @@ public class QuestionAnswerService : IQuestionAnswerService
 {
     private readonly ILogger<QuestionAnswerService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILLMDataExtractionService _llmDataExtractionService;
     private readonly Guid _userId;
 
     public QuestionAnswerService(
         ILogger<QuestionAnswerService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ILLMDataExtractionService llmDataExtractionService)
     {
         // Extract the user ID from the current HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _llmDataExtractionService = llmDataExtractionService;
     }
 
     // Updates the QuestionAnswer configuration for the specified ML model
@@ -145,6 +148,133 @@ public class QuestionAnswerService : IQuestionAnswerService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving the QuestionAnswer setup | ML Model ID: {MLModelId}", mlModelId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Extracts question-answer pairs using a Language Learning Model (LLM).
+    public async Task<ServiceResponse<QuestionAnswerResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto)
+    {
+        // Initialize ServiceResponse with a default failure message
+        var serviceResponse = new ServiceResponse<QuestionAnswerResponseDto>
+        {
+            Data = null,
+            Message = "Failed to extract question and answer data via LLM. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Starting Q&A extraction process for ModelId: {ModelId}", extractRequestDto.ModelId);
+
+            // Retrieve the model from the repository
+            var model = await _unitOfWork.MLModelRepo
+                                          .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .SingleOrDefaultAsync();
+
+            // If model is not found, log and return a failure response
+            if (model == null)
+            {
+                _logger.LogWarning("Model not found for ModelId: {ModelId}", extractRequestDto.ModelId);
+                serviceResponse.Message = "Model not found";
+                return serviceResponse;
+            }
+
+            // Check if the model has a prompt available for Q&A extraction
+            if (string.IsNullOrEmpty(model.GeneratedPrompt))
+            {
+                _logger.LogWarning("No prompt found for ModelId: {ModelId}", extractRequestDto.ModelId);
+                serviceResponse.Message = "Missing prompt for question-answer extraction";
+                return serviceResponse;
+            }
+
+            // Prepare the list to hold extracted Q&A data for each file
+            var extractedDataList = new List<QuestionAnswerSetupFileData>();
+
+            _logger.LogInformation("Starting Q&A extraction for {FileCount} files", extractRequestDto.FileIds.Count);
+
+            // Loop through each file ID and process extraction
+            foreach (var fileId in extractRequestDto.FileIds)
+            {
+                _logger.LogInformation("Processing extraction for FileId: {FileId}", fileId);
+
+                var extractedData = new QuestionAnswerSetupFileData
+                {
+                    ExtractedData = new List<QuestionAnswerSetupData>(),
+                    FileId = fileId,
+                    Remarks = $"001: Failed to extract Q&A data for FileId: {fileId}."
+                };
+
+                // Retrieve file from repository
+                var file = await _unitOfWork.UploadedDocRepo
+                                             .GetByConditionAsync(w => w.Id == fileId)
+                                             .SingleOrDefaultAsync();
+
+                if (file == null)
+                {
+                    _logger.LogWarning("File not found for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"002: File not found for FileId: {fileId}.";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Call the LLM extraction service for Q&A data
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+
+                // Check if LLM extraction was successful
+                if (llmResponse.StatusCode != 200)
+                {
+                    _logger.LogWarning("LLM extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
+                    extractedData.Remarks = $"003: {llmResponse.Message}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Check if LLM returned empty data
+                if (string.IsNullOrEmpty(llmResponse.Data))
+                {
+                    _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Deserialize the extracted Q&A data
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                extractedData.ExtractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(llmResponse.Data, options) ?? new List<QuestionAnswerSetupData>();
+                extractedData.Remarks = "";
+
+                _logger.LogInformation("Successfully extracted and deserialized Q&A data for FileId: {FileId}", fileId);
+
+                extractedDataList.Add(extractedData);
+
+                // Optionally push the extracted data to the client UI
+                // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
+            }
+
+            // Prepare the final response DTO with the extracted Q&A data
+            var extractResponseDto = new QuestionAnswerResponseDto
+            {
+                ModelId = extractRequestDto.ModelId,
+                FilesExtractedData = extractedDataList
+            };
+
+            // Set the final status and message based on the extraction results
+            serviceResponse.Data = extractResponseDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed")) ?
+                                        "Failed to extract question-answer data for one or more files" :
+                                        "Question-answer data extracted successfully";
+
+            _logger.LogInformation("Q&A extraction process completed. Summary: {Message}", serviceResponse.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred during the Q&A extraction process.");
         }
 
         return serviceResponse;

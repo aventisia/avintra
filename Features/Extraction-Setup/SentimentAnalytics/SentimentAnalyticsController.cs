@@ -25,4 +25,11 @@ public class SentimentAnalyticsController : BaseApiController
     {
         return ResultHelper(await _sentimentAnalyticsService.GetSentimentAnalyticsSetupByMLModelIdAsync(mlModelId));
     }
+
+    // Extracts data via a Language Learning Model (LLM)
+    [HttpPost("extract-via-llm")]
+    public async Task<ActionResult<ServiceResponse<SentimentAnalyticsResponseDto>>> ExtractViaLLM(ExtractRequestDto extractRequestDto)
+    {
+        return ResultHelper(await _sentimentAnalyticsService.ExtractViaLLMAsync(extractRequestDto));
+    }
 }

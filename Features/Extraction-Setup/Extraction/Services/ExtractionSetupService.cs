@@ -208,14 +208,14 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
-    // Extracts data via a Language Learning Model (LLM) asynchronously.
+    // Extracts data using a Language Learning Model (LLM).
     public async Task<ServiceResponse<ExtractionResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto)
     {
         // Initialize ServiceResponse with a default failure message
         var serviceResponse = new ServiceResponse<ExtractionResponseDto>
         {
             Data = null,
-            Message = "Failed to extract data via LLM."
+            Message = "Failed to extract extraction data via LLM. Please try again."
         };
 
         try
@@ -224,10 +224,10 @@ public class ExtractionSetupService : IExtractionSetupService
 
             // Retrieve the model from the repository
             var model = await _unitOfWork.MLModelRepo
-                                         .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
-                                         .SingleOrDefaultAsync();
+                                          .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .SingleOrDefaultAsync();
 
-            // If model is not found
+            // If model is not found, log and return failure response
             if (model == null)
             {
                 _logger.LogWarning("Model not found for ModelId: {ModelId}", extractRequestDto.ModelId);
@@ -262,8 +262,8 @@ public class ExtractionSetupService : IExtractionSetupService
 
                 // Retrieve file from repository
                 var file = await _unitOfWork.UploadedDocRepo
-                                            .GetByConditionAsync(w => w.Id == fileId)
-                                            .SingleOrDefaultAsync();
+                                             .GetByConditionAsync(w => w.Id == fileId)
+                                             .SingleOrDefaultAsync();
 
                 if (file == null)
                 {
@@ -285,6 +285,7 @@ public class ExtractionSetupService : IExtractionSetupService
                     continue;
                 }
 
+                // Check if LLM returned empty data
                 if (string.IsNullOrEmpty(llmResponse.Data))
                 {
                     _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
@@ -300,7 +301,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 };
 
                 extractedData.ExtractedData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse.Data, options) ?? new ExtractionSetupData();
-                extractedData.Remarks = "000: Success";
+                extractedData.Remarks = "";
 
                 _logger.LogInformation("Successfully extracted and deserialized data for FileId: {FileId}", fileId);
 
@@ -310,7 +311,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
             }
 
-            // Prepare the final response DTO
+            // Prepare the final response DTO with the extracted data
             var extractResponseDto = new ExtractionResponseDto
             {
                 ModelId = extractRequestDto.ModelId,

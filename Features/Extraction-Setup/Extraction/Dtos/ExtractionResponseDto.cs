@@ -3,12 +3,12 @@ namespace MLModelBuilderAPIs.DTOs;
 public class ExtractionResponseDto
 {
     /// <summary>
-    /// Gets or sets the model id for which the file is being extracted.
+    /// Gets or sets the identifier for the model associated with the file extraction process.
     /// </summary>
     public Guid ModelId { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of extracted data for each file.
+    /// Gets or sets the list of extracted data for each processed file.
     /// </summary>
     public required List<ExtractionSetupFileData> FilesExtractedData { get; set; }
 }
@@ -16,39 +16,40 @@ public class ExtractionResponseDto
 public class ExtractionSetupFileData
 {
     /// <summary>
-    /// Gets or sets the file id for which the data has been extracted.
+    /// Gets or sets the identifier for the file from which data has been extracted.
     /// </summary>
     public Guid FileId { get; set; }
 
     /// <summary>
-    /// Gets or sets the remarks for the extracted data. For example, if the data is not extracted properly, the remarks can be used to provide the reason.
+    /// Gets or sets remarks related to the extracted data. 
+    /// Remarks can indicate if the extraction process encountered issues, such as incomplete or inaccurate data.
     /// </summary>
     public required string Remarks { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of structured data segments extracted from the document.
+    /// Gets or sets the structured data segments extracted from the file.
     /// </summary>
     public required ExtractionSetupData ExtractedData { get; set; }
 }
 
 /// <summary>
-/// Represents a structured data section extracted from a document, which may include fields and tables.
+/// Represents the structured data extracted from a document, including fields and tables.
 /// </summary>
 public class ExtractionSetupData
 {
     /// <summary>
-    /// Gets or sets the list of extracted fields in this section.
+    /// Gets or sets the list of fields extracted from this section of the document.
     /// </summary>
     public List<ExtractionSetupFieldValueSchema>? Fields { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of extracted tables in this section.
+    /// Gets or sets the list of tables extracted from this section of the document.
     /// </summary>
     public List<ExtractionSetupTableSchema>? Tables { get; set; }
 }
 
 /// <summary>
-/// Represents a single field extracted from the document, containing a name and an optional value.
+/// Represents a single field extracted from the document, including its name and an optional value.
 /// </summary>
 public class ExtractionSetupFieldValueSchema
 {
@@ -58,13 +59,13 @@ public class ExtractionSetupFieldValueSchema
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the value of the extracted field, if available.
+    /// Gets or sets the value of the extracted field.
     /// </summary>
     public string? Value { get; set; }
 }
 
 /// <summary>
-/// Represents a table extracted from the document, containing a name and a collection of headers with values.
+/// Represents a table extracted from the document, containing its name and a collection of headers with values.
 /// </summary>
 public class ExtractionSetupTableSchema
 {
@@ -74,13 +75,13 @@ public class ExtractionSetupTableSchema
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of headers with their corresponding row values.
+    /// Gets or sets the list of headers associated with the table, along with their corresponding row values.
     /// </summary>
     public List<ExtractionSetupTableHeaderSchema>? Headers { get; set; }
 }
 
 /// <summary>
-/// Represents a header in an extracted table and the associated values under that header.
+/// Represents a header in an extracted table, along with its associated values under the header.
 /// </summary>
 public class ExtractionSetupTableHeaderSchema
 {
@@ -90,7 +91,7 @@ public class ExtractionSetupTableHeaderSchema
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of values under this header column.
+    /// Gets or sets the list of values under this header in the table.
     /// </summary>
     public List<string>? Values { get; set; }
 }

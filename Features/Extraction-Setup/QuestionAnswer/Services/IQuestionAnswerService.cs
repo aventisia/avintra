@@ -27,4 +27,13 @@ public interface IQuestionAnswerService
     /// The result includes a service response with the corresponding QuestionAnswer configuration.
     /// </returns>
     Task<ServiceResponse<QuestionAnswerDto>> GetQuestionAnswerSetupByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Extracts data asynchronously using a Language Learning Model (LLM).
+    /// </summary>
+    /// <param name="extractRequestDto">The data transfer object containing the parameters for the extraction process.</param>
+    /// <returns>
+    /// An asynchronous task that returns a service response containing an enumeration of extraction response DTOs.
+    /// </returns>
+    Task<ServiceResponse<QuestionAnswerResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
 }

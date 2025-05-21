@@ -4,18 +4,21 @@ public class SummarizationService : ISummarizationService
 {
     private readonly ILogger<SummarizationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILLMDataExtractionService _llmDataExtractionService;
     private readonly Guid _userId;
 
     public SummarizationService(
         ILogger<SummarizationService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ILLMDataExtractionService llmDataExtractionService)
     {
         // Extract the user ID from the current HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _llmDataExtractionService = llmDataExtractionService;
     }
 
     // Updates the summarization setup for a specific ML model
@@ -219,5 +222,129 @@ public class SummarizationService : ISummarizationService
         }
 
         return response;
+    }
+
+    // Extracts summarization data using a Language Learning Model (LLM).
+    public async Task<ServiceResponse<SummarizationResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto)
+    {
+        // Initialize ServiceResponse with a default failure message
+        var serviceResponse = new ServiceResponse<SummarizationResponseDto>
+        {
+            Data = null,
+            Message = "Failed to extract summarization data via LLM. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Starting summarization extraction for ModelId: {ModelId}", extractRequestDto.ModelId);
+
+            // Retrieve the model from the repository
+            var model = await _unitOfWork.MLModelRepo
+                                          .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .SingleOrDefaultAsync();
+
+            // If the model is not found, log and return a failure response
+            if (model == null)
+            {
+                _logger.LogWarning("Model not found for ModelId: {ModelId}", extractRequestDto.ModelId);
+                serviceResponse.Message = "Model not found";
+                return serviceResponse;
+            }
+
+            // Check if the model has a generated prompt for summarization
+            if (string.IsNullOrEmpty(model.GeneratedPrompt))
+            {
+                _logger.LogWarning("No summarization prompt found for ModelId: {ModelId}", extractRequestDto.ModelId);
+                serviceResponse.Message = "Missing summarization prompt for the model";
+                return serviceResponse;
+            }
+
+            // List to store extracted summarization data for each file
+            var extractedDataList = new List<SummarizationSetupFileData>();
+
+            _logger.LogInformation("Starting extraction for {FileCount} files", extractRequestDto.FileIds.Count);
+
+            // Process each file ID to extract summarization data
+            foreach (var fileId in extractRequestDto.FileIds)
+            {
+                _logger.LogInformation("Processing extraction for FileId: {FileId}", fileId);
+
+                var extractedData = new SummarizationSetupFileData
+                {
+                    ExtractedData = new SummarizationSetupData(),
+                    FileId = fileId,
+                    Remarks = $"001: Summarization extraction failed for FileId: {fileId}."
+                };
+
+                // Retrieve file from repository
+                var file = await _unitOfWork.UploadedDocRepo
+                                             .GetByConditionAsync(w => w.Id == fileId)
+                                             .SingleOrDefaultAsync();
+
+                if (file == null)
+                {
+                    _logger.LogWarning("File not found for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"002: File not found for FileId: {fileId}.";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Call LLM extraction service for summarization
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+
+                // Check if LLM extraction was successful
+                if (llmResponse.StatusCode != 200)
+                {
+                    _logger.LogWarning("LLM summarization extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
+                    extractedData.Remarks = $"003: LLM summarization extraction failed. {llmResponse.Message}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Check if LLM returned empty data
+                if (string.IsNullOrEmpty(llmResponse.Data))
+                {
+                    _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Deserialize the extracted summarization data
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse.Data, options) ?? new SummarizationSetupData();
+                extractedData.Remarks = "";
+
+                _logger.LogInformation("Successfully extracted and deserialized summarization data for FileId: {FileId}", fileId);
+
+                extractedDataList.Add(extractedData);
+            }
+
+            // Prepare the response DTO with extracted summarization data
+            var extractResponseDto = new SummarizationResponseDto
+            {
+                ModelId = extractRequestDto.ModelId,
+                FilesExtractedData = extractedDataList
+            };
+
+            // Finalize the service response based on the extraction results
+            serviceResponse.Data = extractResponseDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed")) ?
+                                        "Summarization extraction failed for one or more files" :
+                                        "Summarization extraction completed successfully";
+
+            _logger.LogInformation("Summarization extraction process finished. Status: {Message}", serviceResponse.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred during summarization extraction via LLM.");
+        }
+
+        return serviceResponse;
     }
 }

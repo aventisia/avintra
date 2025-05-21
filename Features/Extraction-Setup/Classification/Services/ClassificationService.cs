@@ -4,18 +4,21 @@ public class ClassificationService : IClassificationService
 {
     private readonly ILogger<ClassificationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILLMDataExtractionService _llmDataExtractionService;
     private readonly Guid _userId;
 
     public ClassificationService(
         ILogger<ClassificationService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ILLMDataExtractionService llmDataExtractionService)
     {
         // Retrieve the current user's ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _llmDataExtractionService = llmDataExtractionService;
     }
 
     // Updates the classification setup for a given ML model
@@ -147,6 +150,134 @@ public class ClassificationService : IClassificationService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while retrieving classification setup | ML Model ID: {MLModelId}", mlModelId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Extracts classification data via a Language Learning Model (LLM).
+    public async Task<ServiceResponse<ClassificationResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto)
+    {
+        // Initialize ServiceResponse with a default failure message
+        var serviceResponse = new ServiceResponse<ClassificationResponseDto>
+        {
+            Data = null,
+            Message = "Failed to extract classification data via LLM. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Starting LLM extraction process for ModelId: {ModelId}", extractRequestDto.ModelId);
+
+            // Retrieve the classification model from the repository
+            var model = await _unitOfWork.MLModelRepo
+                                          .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .SingleOrDefaultAsync();
+
+            // If model is not found, log and return failure
+            if (model == null)
+            {
+                _logger.LogWarning("Model not found for ModelId: {ModelId}", extractRequestDto.ModelId);
+                serviceResponse.Message = "Model not found";
+                return serviceResponse;
+            }
+
+            // Check for prompt availability
+            if (string.IsNullOrEmpty(model.GeneratedPrompt))
+            {
+                _logger.LogWarning("Prompt not found for ModelId: {ModelId}", extractRequestDto.ModelId);
+                serviceResponse.Message = "Prompt not found for the model";
+                return serviceResponse;
+            }
+
+            // Prepare the list to hold extracted data for each file
+            var extractedDataList = new List<ClassificationSetupFileData>();
+
+            _logger.LogInformation("Starting extraction for {FileCount} files", extractRequestDto.FileIds.Count);
+
+            // Loop through each file ID and process
+            foreach (var fileId in extractRequestDto.FileIds)
+            {
+                _logger.LogInformation("Processing extraction for FileId: {FileId}", fileId);
+
+                var extractedData = new ClassificationSetupFileData
+                {
+                    ExtractedData = new List<ClassificationSetupData>(),
+                    FileId = fileId,
+                    Remarks = $"001: Failed to extract data for FileId: {fileId}."
+                };
+
+                // Retrieve the file from the repository
+                var file = await _unitOfWork.UploadedDocRepo
+                                             .GetByConditionAsync(w => w.Id == fileId)
+                                             .SingleOrDefaultAsync();
+
+                // Handle case where file is not found
+                if (file == null)
+                {
+                    _logger.LogWarning("File not found for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"002: Failed, file not found for FileId: {fileId}.";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Call the LLM extraction service
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+
+                // Handle response from LLM service
+                if (llmResponse.StatusCode != 200)
+                {
+                    _logger.LogWarning("LLM extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
+                    extractedData.Remarks = $"003: {llmResponse.Message}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Check for empty data in LLM response
+                if (string.IsNullOrEmpty(llmResponse.Data))
+                {
+                    _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
+
+                // Deserialize the extracted data into a list of classification setup data
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                extractedData.ExtractedData = JsonSerializer.Deserialize<List<ClassificationSetupData>>(llmResponse.Data, options) ?? new List<ClassificationSetupData>();
+                extractedData.Remarks = "000: Success"; // Mark successful extraction
+
+                _logger.LogInformation("Successfully extracted and deserialized data for FileId: {FileId}", fileId);
+
+                extractedDataList.Add(extractedData);
+
+                // Optionally push the extracted data to the client UI (uncomment if necessary)
+                // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
+            }
+
+            // Prepare the final response DTO with the extracted classification data
+            var extractResponseDto = new ClassificationResponseDto
+            {
+                ModelId = extractRequestDto.ModelId,
+                FilesExtractedData = extractedDataList
+            };
+
+            // Set final status and message based on the results
+            serviceResponse.Data = extractResponseDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed")) ?
+                                        "Failed to extract data for one or more files" :
+                                        "Data extracted successfully";
+
+            _logger.LogInformation("Extraction process completed. Summary: {Message}", serviceResponse.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred during the LLM extraction process.");
         }
 
         return serviceResponse;

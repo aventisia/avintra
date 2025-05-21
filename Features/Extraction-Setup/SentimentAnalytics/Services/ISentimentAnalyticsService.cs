@@ -25,4 +25,13 @@ public interface ISentimentAnalyticsService
     /// with the sentiment analysis configuration associated with the given model ID.
     /// </returns>
     Task<ServiceResponse<SentimentAnalyticDto>> GetSentimentAnalyticsSetupByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Extracts data asynchronously using a Language Learning Model (LLM).
+    /// </summary>
+    /// <param name="extractRequestDto">The data transfer object containing the parameters for the extraction process.</param>
+    /// <returns>
+    /// An asynchronous task that returns a service response containing an enumeration of extraction response DTOs.
+    /// </returns>
+    Task<ServiceResponse<SentimentAnalyticsResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
 }
