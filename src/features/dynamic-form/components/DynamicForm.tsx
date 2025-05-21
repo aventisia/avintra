@@ -6,7 +6,7 @@ import { cn } from "@aventisia/ui/lib";
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";

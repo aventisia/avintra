@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAddInformationExtractorForm } from "../hooks/useAddInfoExtractorForm";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { Form } from "@aventisia/ui/form";
 import {
   documentContextProps,
   inputTextProps,

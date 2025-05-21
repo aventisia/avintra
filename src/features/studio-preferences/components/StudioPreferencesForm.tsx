@@ -1,4 +1,4 @@
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { Form } from "@aventisia/ui/form";
 import { RadioGroupField } from "@aventisia/ui/form";
 import { SwitchField } from "@aventisia/ui/form";
 import { Separator } from "@aventisia/ui";

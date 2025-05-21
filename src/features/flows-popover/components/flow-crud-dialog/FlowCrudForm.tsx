@@ -4,8 +4,8 @@ import { InputField } from "@aventisia/ui/form";
 import { SelectField } from "@aventisia/ui/form";
 import { SwitchField } from "@aventisia/ui/form";
 import { TextareaField } from "@aventisia/ui/form";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { AutherCard } from "@/react-toolkit/ui/form/non-field/AutherCard";
+import { Form } from "@aventisia/ui/form";
+import { AutherCard } from "@aventisia/ui/form";
 import { z } from "zod";
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
 import {

@@ -6,7 +6,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@aventisia/ui/command";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
+import { FormControl } from "@aventisia/ui/form";
 import {
   Popover,
   PopoverContent,
