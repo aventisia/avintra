@@ -297,33 +297,32 @@ public class SummarizationService : ISummarizationService
                 }
 
                 // Call LLM extraction service for summarization
-                // var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
 
-                // // Check if LLM extraction was successful
-                // if (llmResponse.StatusCode != 200)
-                // {
-                //     _logger.LogWarning("LLM summarization extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
-                //     extractedData.Remarks = $"003: LLM summarization extraction failed. {llmResponse.Message}";
-                //     extractedDataList.Add(extractedData);
-                //     continue;
-                // }
+                // Check if LLM extraction was successful
+                if (llmResponse.StatusCode != 200)
+                {
+                    _logger.LogWarning("LLM summarization extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
+                    extractedData.Remarks = $"003: LLM summarization extraction failed. {llmResponse.Message}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
 
-                // // Check if LLM returned empty data
-                // if (string.IsNullOrEmpty(llmResponse.Data))
-                // {
-                //     _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
-                //     extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
-                //     extractedDataList.Add(extractedData);
-                //     continue;
-                // }
+                // Check if LLM returned empty data
+                if (string.IsNullOrEmpty(llmResponse.Data))
+                {
+                    _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
 
                 // Deserialize the extracted summarization data
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var llmResponse = "{\"summary\": \"In 2025, OpenAI launched a new AI model capable of handling complex reasoning and multimodal inputs, such as images and video. The model demonstrates enhanced language accuracy and integrates with productivity tools, supporting real-time collaboration. While experts commend its performance, they emphasize the need for responsible deployment and attention to privacy concerns.\"}";
-                extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse, options) ?? new SummarizationSetupData();
+                extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse.Data, options) ?? new SummarizationSetupData();
                 extractedData.Remarks = "";
 
                 _logger.LogInformation("Successfully extracted and deserialized summarization data for FileId: {FileId}", fileId);
@@ -397,7 +396,7 @@ public class SummarizationService : ISummarizationService
                     _logger.LogError("Failed to save extracted data to the database after update.");
                 }
             }
-            
+
             // Prepare the response DTO with extracted summarization data
             var extractResponseDto = new SummarizationResponseDto
             {
