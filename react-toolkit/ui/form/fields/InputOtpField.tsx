@@ -1,10 +1,10 @@
 import { cn } from "@aventisia/ui/lib";
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
+import { BaseFieldProps } from "@aventisia/ui/form";
+import { FormControl } from "@aventisia/ui/form";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
+import { FormLabelExt } from "@aventisia/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@aventisia/ui/input-otp";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";

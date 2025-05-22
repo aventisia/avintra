@@ -1,7 +1,7 @@
 import { cn } from "@aventisia/ui/lib";
-import { CustomMessageType } from "@/react-toolkit/types/custom-form-message";
-import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
-import { useFormField } from "@/react-toolkit/ui/form/useFormField";
+import { CustomMessageType } from "@aventisia/ui/types";
+import { FormFieldSizeType } from "@aventisia/ui/types";
+import { useFormField } from "@aventisia/ui/form";
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,

@@ -1,11 +1,11 @@
 import { cn } from "@aventisia/ui/lib";
-import { AutosizeTextarea } from "@/react-toolkit/ui/autosize-textarea/AutosizeTextarea";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
+import { AutosizeTextarea } from "@aventisia/ui";
+import { FormControl } from "@aventisia/ui/form";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
+import { FormLabelExt } from "@aventisia/ui/form";
+import { BaseFieldProps } from "@aventisia/ui/form";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 

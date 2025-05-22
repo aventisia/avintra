@@ -1,6 +1,6 @@
 import { cn } from "@aventisia/ui/lib";
-import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
-import { FormItemContext } from "@/react-toolkit/ui/form/FormItemContext";
+import { FormFieldSizeType } from "@aventisia/ui/types";
+import { FormItemContext } from "@aventisia/ui/form";
 import * as React from "react";
 
 // FormItem

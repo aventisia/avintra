@@ -1,10 +1,10 @@
 import { cn } from "@aventisia/ui/lib";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormDescription } from "@/react-toolkit/ui/form/FormDescription";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
+import { FormControl } from "@aventisia/ui/form";
+import { FormDescription } from "@aventisia/ui/form";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { FormLabel } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
 import { Switch } from "@/react-toolkit/ui/switch";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";

@@ -1,22 +1,18 @@
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Calendar } from "@/react-toolkit/ui/calendar";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
-import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
-import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@aventisia/ui/popover";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { Calendar } from "@aventisia/ui";
+import { FormControl } from "@aventisia/ui/form";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
+import { FormLabelExt } from "@aventisia/ui/form";
+import { BaseFieldProps } from "@aventisia/ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
-import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
+import { FormFieldSizeType } from "@aventisia/ui/types";
 
 interface DatePickerFieldProps
   extends React.ComponentPropsWithoutRef<typeof PopoverTrigger>,

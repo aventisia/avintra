@@ -1,4 +1,4 @@
-import { CustomFormMessage } from "@/react-toolkit/types/custom-form-message";
+import { CustomFormMessage } from "@aventisia/ui/types";
 
 export interface BaseFieldProps {
   /** The label of the form field. */

@@ -1,8 +1,8 @@
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
+import { Checkbox } from "@aventisia/ui";
+import { FormControl } from "@aventisia/ui/form";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
