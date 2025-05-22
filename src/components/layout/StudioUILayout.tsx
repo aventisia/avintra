@@ -1,6 +1,6 @@
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { cn } from "@aventisia/ui/lib";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { AppRedirectPage } from "./AppRedirectPage";
 import { Outlet } from "react-router-dom";
 
 export const StudioUILayout = () => {
@@ -10,7 +10,7 @@ export const StudioUILayout = () => {
   return (
     <>
       {isPending ? (
-        <RedirectPage />
+        <AppRedirectPage />
       ) : (
         <main
           className={cn(
