@@ -5,11 +5,7 @@ import { FormField } from "@/react-toolkit/ui/form/FormField";
 import { FormItem } from "@/react-toolkit/ui/form/FormItem";
 import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
 import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/react-toolkit/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@aventisia/ui/input-otp";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 

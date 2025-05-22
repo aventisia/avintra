@@ -14,7 +14,7 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/react-toolkit/ui/input-otp";
+} from "@aventisia/ui/input-otp";
 import { PhoneInput } from "@/react-toolkit/ui/custom/PhoneInput";
 import {
   Select,
