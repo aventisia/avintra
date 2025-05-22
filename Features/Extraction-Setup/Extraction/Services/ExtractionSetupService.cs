@@ -128,10 +128,14 @@ public class ExtractionSetupService : IExtractionSetupService
             // Iterate through the list of table metadata in the model setup object
             foreach (var table in mlModelSetupDto.SetupObject.TableMetadata)
             {
-                // Add a new line and display table name with optional context if available
-                tableInstruction.AppendLine();
+                // Add a new line and introduce the table extraction step
+                tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
+
+                // Display the table name with context if provided
                 tableInstruction.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
-                tableInstruction.AppendLine("Please extract following columns:");
+
+                // Inform the user about the columns to extract
+                tableInstruction.AppendLine("Please extract the following columns:");
 
                 // Check if table headers exist and loop through them to extract column info
                 if (table.TableHeaders != null)
@@ -149,7 +153,10 @@ public class ExtractionSetupService : IExtractionSetupService
                 }
             }
         }
-
+        else
+        {
+            tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
+        }
         // Load a template file and replace placeholders with the generated prompt sections
         var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
                     {
@@ -302,7 +309,7 @@ public class ExtractionSetupService : IExtractionSetupService
                     extractedDataList.Add(extractedData);
                     continue;
                 }
-                
+
                 // Attempt to deserialize the extracted data
                 var options = new JsonSerializerOptions
                 {

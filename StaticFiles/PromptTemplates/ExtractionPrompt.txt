@@ -7,14 +7,14 @@ Please extract the following table column data as per the instructions if any:
 {{Tables}}
 
 Instructions:
-- Do not add any comments, explanations, or content outside of the JSON string.
-- Ensure strict accuracy and consistency throughout the output.
-- If the `{{Tables}}` section does not contain any table details, return the `"tables"` array as an empty array `[]` accordingly.
-- If the table has no rows but only headers, ensure the `"values"` array for each column is empty (e.g., `"values": []`).
-- Maintain proper structure, making sure each field and table column is correctly formatted.
+- Provide the response as a valid JSON string only.
+- Do not include any additional text, explanation, or commentary outside the JSON.
+- Ensure complete structural accuracy and formatting consistency.
+- Include only the specified columns. Do not include extra headers or columns not listed above.
 
 Expected Output Format: 
-- The output must be formatted as a JSON object.
+- Provide the response as a valid JSON string only. Ensure the response follows this exact structure
+
 "{\"fields\": [
   {\"name\": \"field_name\", \"value\": \"field_value\"},
   {\"name\": \"another_field\", \"value\": \"another_value\"}
