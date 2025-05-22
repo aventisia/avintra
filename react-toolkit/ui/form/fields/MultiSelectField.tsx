@@ -7,7 +7,7 @@ import {
   MultiSelectorItem,
   MultiSelectorList,
   MultiSelectorTrigger,
-} from "@/react-toolkit/ui/custom/MultiSelector";
+} from "@aventisia/ui/multi-selector";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { BaseFieldProps } from "@/react-toolkit/ui/form/fields/base-field-props";
 import { FormControl } from "@/react-toolkit/ui/form/FormControl";

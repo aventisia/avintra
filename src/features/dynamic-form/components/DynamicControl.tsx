@@ -31,14 +31,10 @@ import {
   MultiSelectorItem,
   MultiSelectorList,
   MultiSelectorTrigger,
-} from "@/react-toolkit/ui/custom/MultiSelector";
+} from "@aventisia/ui/multi-selector";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { TagInput } from "@/react-toolkit/ui/custom/TagInput";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@aventisia/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import {
   Command,
   CommandEmpty,
