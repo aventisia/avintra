@@ -5,9 +5,9 @@ import {
   ContextMenuContent,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/react-toolkit/ui/context-menu";
-import { DeleteCMItem } from "@/react-toolkit/ui/context-menu/DeleteCMItem";
-import { SimpleCMItem } from "@/react-toolkit/ui/context-menu/SimpleCMItem";
+} from "@aventisia/ui/context-menu";
+import { DeleteCMItem } from "@aventisia/ui/context-menu";
+import { SimpleCMItem } from "@aventisia/ui/context-menu";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { Clipboard, Copy, Library, Scissors } from "lucide-react";
 
