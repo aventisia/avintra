@@ -1,4 +1,4 @@
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { DotSeparator } from "@aventisia/ui";
 
 /** Component renders a simple and small footer with copyright information
  * and Terms of service, Privecy policy links */
@@ -23,4 +23,3 @@ const MinimalFooter = () => {
 };
 
 export { MinimalFooter };
-
