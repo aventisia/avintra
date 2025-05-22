@@ -5,8 +5,9 @@ import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-
 import { useTabStore } from "@/store/tab-store";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
+// import { toast } from "@aventisia/ui/sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
@@ -31,10 +32,8 @@ const SummarizationModel = () => {
   // Handle Test tab click
   const handleTabClick = (tabValue: string) => {
     if (tabValue === "test" && isTestTabDisabled) {
-      toast("Please configure the setup fields first.");
+      toast.error("Please configure the setup fields first.");
     } else {
-      console.log("inside 2");
-
       setActiveTab(tabValue);
     }
   };

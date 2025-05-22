@@ -4,7 +4,7 @@ import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-not
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 
 /**

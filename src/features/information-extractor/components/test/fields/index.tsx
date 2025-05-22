@@ -40,7 +40,10 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
                 <div className="flex items-center gap-0 ">
                   {fieldName}
                   <DotSeparator
-                    className={cn("mx-0.5 -mt-5 text-[2.3rem]", dotColor)}
+                    className={cn(
+                      "mx-0.5 -mt-5 text-[2.3rem] hidden",
+                      dotColor,
+                    )}
                   />
                 </div>
                 <div>

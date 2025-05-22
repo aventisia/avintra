@@ -10,10 +10,10 @@ import { useLabelDataStore } from "@/features/label-data/stores/label-data-store
 import PaginatedSelect from "@/features/pdf-previewer/components/PaginationSelect";
 
 import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
+import { toast } from "@aventisia/ui/sonner";
 import html2canvas from "html2canvas";
 import React, { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";

@@ -1,6 +1,6 @@
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 /**
  * Custom hook for performing an optimistic mutation.

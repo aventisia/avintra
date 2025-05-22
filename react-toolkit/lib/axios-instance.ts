@@ -8,7 +8,7 @@ import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 
 import { sleep } from "@aventisia/ui/utils";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 /**
  * Creates an Axios instance with predefined configuration.

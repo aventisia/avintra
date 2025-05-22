@@ -40,7 +40,7 @@ export const useSentimentalAnalyticsTestForm = () => {
     // Only extract `name` field from fieldSetups
     const categories = setupFormData?.categories?.map((category) => ({
       name: category?.name ?? "",
-      accuracy: 0,
+      checked: false,
     })) ?? [{}];
 
     form.reset({

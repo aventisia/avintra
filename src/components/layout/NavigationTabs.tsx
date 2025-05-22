@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 
 const tabs = [
   { id: "setup-test", label: "Setup & Test" },
+  { id: "run-review", label: "Run & Review" },
   { id: "fineTune", label: "Fine-tune" },
-  { id: "monitor", label: "Monitor" },
 ];
 
 export const NavigationTabs = () => {

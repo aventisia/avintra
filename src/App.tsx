@@ -27,7 +27,7 @@ const router = createBrowserRouter(
         { path: "/", element: <Navigate to="/setup-test" /> },
         { path: "/setup-test", element: <LabelDataPage /> },
         { path: "/model", element: <h1>Model </h1> },
-        { path: "/monitor", element: <ModelTestPage /> },
+        { path: "/run-review", element: <ModelTestPage /> },
         { path: "/*", element: <NotFoundPage /> },
       ],
     },

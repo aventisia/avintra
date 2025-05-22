@@ -1,8 +1,6 @@
-import { accuracyValueProps } from "@/features/classification-model/constants/classification-model-test-form-field-props";
 import { classificationModelTestFormZodSchema } from "@/features/classification-model/constants/classification-model-test-form-zod-schema";
-import { SliderField } from "@/shared/Slider/SliderField";
 
-import { FormItem, FormLabel, InputField } from "@aventisia/ui/form";
+import { CheckboxField, FormItem, FormLabel } from "@aventisia/ui/form";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -19,42 +17,34 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
 
   return (
     <div className="space-y-4">
-      <p className="text-base">Fields</p>
+      <p className="text-base">Categories</p>
 
-      {categoryFields.map((field, index) => {
-        const label = field.name;
+      <div className="grid grid-cols-2 gap-4">
+        {categoryFields.map((field, index) => {
+          const label = field.name;
 
-        return (
-          <FormItem>
-            <FormLabel className="flex items-center justify-between text-sm">
-              {label}
-            </FormLabel>
-            <Controller
-              control={control}
-              name={`categories.${index}.accuracy`}
-              render={({ field }) => {
-                return (
-                  <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
-                    <span className="text-sm">0%</span>
-                    <SliderField
-                      name={field.name}
-                      value={[field.value ?? 0]}
-                      onValueChange={(val) => field.onChange(val[0])}
-                      onValueCommit={field.onBlur}
-                      min={0}
-                      max={100}
-                      step={1}
-                    />
-                    <span className="text-sm">100%</span>
-
-                    <InputField {...field} {...accuracyValueProps} />
-                  </div>
-                );
-              }}
-            />
-          </FormItem>
-        );
-      })}
+          return (
+            <FormItem
+              key={field.id}
+              className="flex items-center gap-2 border rounded-lg px-1.5 py-2"
+            >
+              <Controller
+                control={control}
+                name={`categories.${index}.checked`}
+                render={({ field }) => (
+                  <CheckboxField
+                    name={field.name}
+                    checked={!!field.value}
+                    onCheckedChange={field.onChange}
+                    label=""
+                  />
+                )}
+              />
+              <FormLabel className="text-sm !mt-0">{label}</FormLabel>
+            </FormItem>
+          );
+        })}
+      </div>
     </div>
   );
 };

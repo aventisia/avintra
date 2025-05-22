@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { getUploadedFiles } from "@/features/file-uploader/apis/file-upload-apis";
 import { useFileListStore } from "../store/file-list-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";

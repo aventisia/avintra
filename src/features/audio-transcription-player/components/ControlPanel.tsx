@@ -1,4 +1,4 @@
-import ExtractViaLLMButton from "@/features/pdf-previewer/components/ExtractViaLLMButton";
+import ExtractViaLLMButton from "@/components/extract-via-llm/ExtractViaLLMButton";
 
 const ControlPanel = () => {
   return (

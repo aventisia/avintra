@@ -12,8 +12,8 @@ import {
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import ExtractViaLLMButton from "../../../components/extract-via-llm/ExtractViaLLMButton";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
-import ExtractViaLLMButton from "./ExtractViaLLMButton";
 
 interface PageControlProps {
   numPages: number | null;

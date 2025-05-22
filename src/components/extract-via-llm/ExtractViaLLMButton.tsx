@@ -6,9 +6,9 @@ import { Loader2, SparklesIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { useFileListStore } from "../../multi-format-viewer/store/file-list-store";
-import { ModelNamesEnum } from "../enums/model-name-enum";
-import { useExtractViaLLMMutation } from "../hooks/useExtractViaLLMMutation";
+import { useFileListStore } from "../../features/multi-format-viewer/store/file-list-store";
+import { ModelNamesEnum } from "../../features/pdf-previewer/enums/model-name-enum";
+import { useExtractViaLLMMutation } from "../../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {
   // Get modelId from query params
@@ -54,12 +54,12 @@ function ExtractViaLLMButton() {
       {isExtractionPending ? (
         <>
           <Loader2 className="h-4 w-4 animate-spin" />
-          Extracting...
+          Executing...
         </>
       ) : (
         <>
           <SparklesIcon className="ml-1 h-4 w-4" />
-          Extract
+          Execute
         </>
       )}
     </Button>

@@ -1,9 +1,9 @@
 // src/features/file-management/hooks/use-file-delete.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FileState } from "../stores/file-uploader-store";
-import { toast } from "sonner";
 import { deleteFile } from "../apis/file-upload-apis";
 import { FileUploadDto } from "../dtos/file-upload-dto";
+import { toast } from "@aventisia/ui/sonner";
 interface FileDeleteParams {
   modelId: string;
   filesToUpload: FileUploadDto[];

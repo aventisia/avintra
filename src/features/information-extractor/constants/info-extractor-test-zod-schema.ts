@@ -8,7 +8,7 @@ const fieldsSchema = z.object({
 
 const tableSchema = z.object({
     name: z.string(),
-    extractedData: z.array(
+    headers: z.array(
       z.object({
         name: z.string(),
         values: z.array(z.string().optional())

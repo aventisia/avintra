@@ -81,7 +81,7 @@ const ExtractedTablesData = ({
                     {/* Table Headers */}
                     <div className="inline-block bg-accent rounded-t-lg border-b w-full px-1 py-4">
                       <div className="flex text-sm gap-3 ">
-                        {table.extractedData.map((item, rowIndex) => {
+                        {table.headers.map((item, rowIndex) => {
                           return (
                             <div
                               key={rowIndex}
@@ -98,23 +98,21 @@ const ExtractedTablesData = ({
                     <div className="!mt-0">
                       {Array.from({
                         length: Math.max(
-                          ...table.extractedData.map(
-                            (col) => col.values.length,
-                          ),
+                          ...table.headers.map((col) => col.values.length),
                         ),
                       }).map((_, rowIndex) => (
                         <div
                           key={rowIndex}
                           className="flex text-sm border-b py-1"
                         >
-                          {table.extractedData.map((_, colIndex) => (
+                          {table.headers.map((_, colIndex) => (
                             <div
                               key={colIndex}
                               className="flex items-center gap-1 px-3 py-1"
                             >
                               <Controller
                                 control={control}
-                                name={`tables.${tableIndex}.extractedData.${colIndex}.values.${rowIndex}`}
+                                name={`tables.${tableIndex}.headers.${colIndex}.values.${rowIndex}`}
                                 render={({ field }) => (
                                   <InputField
                                     {...field}
@@ -130,9 +128,9 @@ const ExtractedTablesData = ({
                                   />
                                 )}
                               />
-                              {colIndex === table.extractedData.length - 1 &&
+                              {colIndex === table.headers.length - 1 &&
                                 // Check if there's more than one row before showing delete button
-                                table.extractedData[0].values.length > 1 && (
+                                table.headers[0].values.length > 1 && (
                                   <Button
                                     type="button"
                                     className="m-0 p-0"

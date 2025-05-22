@@ -1,6 +1,7 @@
 import { updateModel } from "@/features/model-library-table/apis/model-library-table-apis";
 import { ModelLibraryTableDto } from "@/features/model-library-table/dtos/model-library-table-dto";
 import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+
 import {
   Select,
   SelectContent,
@@ -8,10 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
+import { toast } from "@aventisia/ui/sonner";
 import { enumToArray } from "@aventisia/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+
 import { useFetchModel } from "../../features/label-data/hooks/useFetchModel";
 
 export function LLMSelector() {

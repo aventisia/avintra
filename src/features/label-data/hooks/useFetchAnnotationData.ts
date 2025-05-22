@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-// import { toast } from "sonner";
+// import { toast } from "@aventisia/ui/sonner";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
 import { getAnnotationList } from "../apis/annotation-apis";

@@ -1,4 +1,4 @@
-import ExtractViaLLMButton from "@/features/pdf-previewer/components/ExtractViaLLMButton";
+import ExtractViaLLMButton from "@/components/extract-via-llm/ExtractViaLLMButton";
 
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";

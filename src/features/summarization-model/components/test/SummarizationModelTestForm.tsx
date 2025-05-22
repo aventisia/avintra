@@ -93,7 +93,7 @@ const SummarizationModelTestForm = () => {
           <span className="text-sm">Submit for Fine-tuning</span>
         </div>{" "}
         <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
-          Save
+          Save & Next
         </Button>
       </div>
     </Form>

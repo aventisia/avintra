@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
 import { uploadFile } from "../apis/file-upload-apis";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { FileUploadDto } from "../dtos/file-upload-dto";
 import { useState } from "react";
 interface FileUploadParams {

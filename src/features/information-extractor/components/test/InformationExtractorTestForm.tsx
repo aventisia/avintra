@@ -1,5 +1,7 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -21,9 +23,11 @@ const InformationExtractorTestForm = () => {
     form,
     dataFields,
     tableFields,
-    refineFormData,
     handleAddRow,
     handleDeleteRow,
+    resetFormWithFieldNames,
+    updateExtractedFormData,
+    isUpdatePending,
   } = useAddInformationExtractorTestForm();
   const {
     formState: { isSubmitting, isDirty },
@@ -39,7 +43,19 @@ const InformationExtractorTestForm = () => {
       setSelectedFile: state.setSelectedFile,
     })),
   );
+  const { setExtractedData } = useExtractedDataStore(
+    useShallow((state) => ({
+      setExtractedData: state.setExtractedData,
+    })),
+  );
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
 
+  const isLastFile =
+    selectedFile?.id === fileList?.data[fileList.data.length - 1].id;
   const handleNextFile = () => {
     const files = Array.isArray(fileList?.data) ? fileList.data : [];
     if (!files.length || !selectedFile) return;
@@ -55,9 +71,19 @@ const InformationExtractorTestForm = () => {
   function submitHandler(
     formData: z.infer<typeof infoExtractorTestFormZodSchema>,
   ) {
-    refineFormData(formData);
-    console.log(formData);
+    const { submitForFineTuning, ...dataToSend } = formData;
+    updateExtractedFormData({
+      id: modelId,
+      mlModelId: modelId,
+      accuracy: null,
+      type: "LabelData",
+      dataObject: JSON.stringify(dataToSend),
+      submitForFineTuning,
+      docId: selectedFile?.id ?? "",
+    });
     handleNextFile();
+    setExtractedData({});
+    if (!isLastFile) resetFormWithFieldNames();
   }
 
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -109,8 +135,12 @@ const InformationExtractorTestForm = () => {
           />
           <span className="text-sm">Submit for Fine-tuning</span>
         </div>
-        <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
-          Save & Next
+        <Button
+          size="xs"
+          type="submit"
+          disabled={!isDirty || isSubmitting || isUpdatePending}
+        >
+          {isLastFile ? "Save" : "Save & Next"}
         </Button>
       </div>
     </Form>

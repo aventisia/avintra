@@ -1,7 +1,7 @@
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ExtractRequestDto } from "../dtos/extract-request-dto";
-import { ExtractResponseDto } from "../dtos/extract-response-dto";
+import { ExtractRequestDto } from "../features/pdf-previewer/dtos/extract-request-dto";
+import { ExtractResponseDto } from "../features/pdf-previewer/dtos/extract-response-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
 
