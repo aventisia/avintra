@@ -1,4 +1,4 @@
-import { Skeleton } from "@/react-toolkit/ui/skeleton";
+import { Skeleton } from "@aventisia/ui";
 
 export const DataTableSkeleton: React.FC = () => {
   return (
