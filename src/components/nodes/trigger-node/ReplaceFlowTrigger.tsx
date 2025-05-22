@@ -2,7 +2,7 @@ import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { NodeToolbar, Position } from "@xyflow/react";
-import { DialogTrigger } from "@/react-toolkit/ui/dialog";
+import { DialogTrigger } from "@aventisia/ui/dialog";
 
 export const ReplaceFlowTrigger = (
   props: React.ComponentPropsWithoutRef<typeof DialogTrigger>,

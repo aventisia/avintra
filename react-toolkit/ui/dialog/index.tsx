@@ -1,6 +1,6 @@
 import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { dialogVariants } from "@/react-toolkit/ui/dialog/dialog-variants";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { dialogVariants } from "@aventisia/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
@@ -161,5 +161,15 @@ const DialogDefaultHeader = ({
 DialogDefaultHeader.displayName = "DialogDefaultHeader";
 
 export {
-  Dialog, DialogClose, DialogContent, DialogDefaultHeader, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDefaultHeader,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
 };

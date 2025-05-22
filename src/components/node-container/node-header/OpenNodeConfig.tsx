@@ -13,7 +13,7 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 //   PopoverDefaultHeader,
 //   PopoverTrigger,
 // } from "@aventisia/ui/popover";
-import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
+import { StopPropagationWrapper } from "@aventisia/ui";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
@@ -29,7 +29,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog";
+} from "@aventisia/ui/dialog";
 
 interface OpenNodeConfigProps {
   data: NodeDataType;

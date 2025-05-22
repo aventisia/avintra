@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog";
+} from "@aventisia/ui/dialog";
 import { FlowLogsTable } from "./FlowLogsTable";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import FlowExecutionLog from "@/features/flow-execution-log/components";

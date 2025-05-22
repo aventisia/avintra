@@ -4,7 +4,7 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 // import { PopoverTrigger } from "@aventisia/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
-import { DialogTrigger } from "@/react-toolkit/ui/dialog";
+import { DialogTrigger } from "@aventisia/ui/dialog";
 
 interface PlusEdgeLabelProps {
   edgeId?: string;

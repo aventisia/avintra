@@ -1,7 +1,7 @@
 import { CommandItem } from "@aventisia/ui/command";
 import { ActionToSelect } from "./ActionToSelect";
 import { NodeDataType } from "@/types/node-data-type";
-import { DialogClose } from "@/react-toolkit/ui/dialog";
+import { DialogClose } from "@aventisia/ui/dialog";
 
 interface ActionsListProps {
   item: NodeDataType[] | undefined;

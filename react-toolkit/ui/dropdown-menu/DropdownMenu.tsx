@@ -1,4 +1,4 @@
-import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
+import { StopPropagationWrapper } from "@aventisia/ui";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 
 /**

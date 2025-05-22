@@ -1,5 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
-import { Dialog, DialogContent } from "@/react-toolkit/ui/dialog";
+import { Dialog, DialogContent } from "@aventisia/ui/dialog";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
@@ -152,6 +152,5 @@ export {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut
+  CommandShortcut,
 };
-
