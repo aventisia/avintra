@@ -8,7 +8,7 @@ import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@/react-toolkit/stores/base-layout-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { ISideNavMenuSection } from "@/react-toolkit/types/nav-data-types";
-import { Accordion, AccordionItem } from "@/react-toolkit/ui/accordion";
+import { Accordion, AccordionItem } from "@aventisia/ui/accordion";
 
 interface SidebarMenuItemsProps {
   sideNavMenuSections?: ISideNavMenuSection[];
@@ -86,9 +86,7 @@ const SidebarMenuItems = ({
                 )}
               </Accordion>
             </>
-          ) : (
-            null
-          )}
+          ) : null}
         </div>
       ))}
     </div>
