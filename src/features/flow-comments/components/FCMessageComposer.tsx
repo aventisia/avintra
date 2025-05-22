@@ -1,6 +1,6 @@
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
-import { AutosizeTextarea } from "@/react-toolkit/ui/autosize-textarea/AutosizeTextarea";
+import { AutosizeTextarea } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { FormControl } from "@aventisia/ui/form";

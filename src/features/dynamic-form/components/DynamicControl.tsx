@@ -15,14 +15,14 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@aventisia/ui/input-otp";
-import { PhoneInput } from "@/react-toolkit/ui/custom/PhoneInput";
+import { PhoneInput } from "@aventisia/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/react-toolkit/ui/select";
+} from "@aventisia/ui/select";
 import { Button } from "@aventisia/ui/buttons";
 import {
   MultiSelector,
@@ -33,7 +33,7 @@ import {
   MultiSelectorTrigger,
 } from "@aventisia/ui/multi-selector";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import { TagInput } from "@/react-toolkit/ui/custom/TagInput";
+import { TagInput } from "@aventisia/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import {
   Command,
@@ -42,11 +42,11 @@ import {
   CommandInput,
   CommandItem,
 } from "@aventisia/ui/command";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { Switch } from "@/react-toolkit/ui/switch";
+import { Checkbox } from "@aventisia/ui";
+import { Switch } from "@aventisia/ui";
 import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
-import { Calendar } from "@/react-toolkit/ui/calendar";
-import { Textarea } from "@/react-toolkit/ui/textarea";
+import { Calendar } from "@aventisia/ui";
+import { Textarea } from "@aventisia/ui";
 import { Slider } from "@/features/dynamic-form/components/slider";
 import { FormControl } from "@aventisia/ui/form";
 import { FormDescription } from "@aventisia/ui/form";
