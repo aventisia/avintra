@@ -158,8 +158,9 @@ public class ExtractedDataService : IExtractedDataService
         {
             // Validate data existence
             var data = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(v => v.Id == extractedDataDto.Id)
-                .SingleOrDefaultAsync();
+                        .GetByConditionAsync(w => w.Id == extractedDataDto.Id ||
+                          (w.MLModelId == extractedDataDto.MLModelId && w.DocId == extractedDataDto.DocId))
+                        .SingleOrDefaultAsync();
 
             // data does not exist
             if (data == null)
@@ -303,8 +304,9 @@ public class ExtractedDataService : IExtractedDataService
 
             // Check if the extracted data exists in the repository
             var existingExtractedData = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(record => record.Id == silentUpdateDataDto.Id)
-                .SingleOrDefaultAsync();
+                        .GetByConditionAsync(w => w.Id == silentUpdateDataDto.Id ||
+                          (w.MLModelId == silentUpdateDataDto.MLModelId && w.DocId == silentUpdateDataDto.DocId))
+                        .SingleOrDefaultAsync();
 
             // If the extracted data doesn't exist, return a failure response
             if (existingExtractedData == null)
