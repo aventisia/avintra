@@ -28,7 +28,7 @@ public class QuestionAnswerController : BaseApiController
 
     // Extracts data via a Language Learning Model (LLM)
     [HttpPost("extract-via-llm")]
-    public async Task<ActionResult<ServiceResponse<ClassificationResponseDto>>> ExtractViaLLM(ExtractRequestDto extractRequestDto)
+    public async Task<ActionResult<ServiceResponse<QuestionAnswerResponseDto>>> ExtractViaLLM(ExtractRequestDto extractRequestDto)
     {
         return ResultHelper(await _questionAnswerService.ExtractViaLLMAsync(extractRequestDto));
     }
