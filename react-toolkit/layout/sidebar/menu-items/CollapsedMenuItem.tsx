@@ -3,7 +3,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/react-toolkit/ui/hover-card";
+} from "@aventisia/ui/hover-card";
 import { NavLink } from "react-router-dom";
 
 interface MenuItemProps {

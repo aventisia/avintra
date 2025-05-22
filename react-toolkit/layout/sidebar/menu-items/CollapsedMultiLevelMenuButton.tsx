@@ -5,7 +5,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/react-toolkit/ui/hover-card";
+} from "@aventisia/ui/hover-card";
 import { useState } from "react";
 
 interface CollapsedMultiLevelMenuButtonProps {
