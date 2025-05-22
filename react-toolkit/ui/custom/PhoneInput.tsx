@@ -13,7 +13,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { CheckIcon, ChevronsUpDown } from "lucide-react";
 import * as React from "react";

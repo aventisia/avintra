@@ -11,7 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Switch } from "@aventisia/ui";
 import { cn } from "@aventisia/ui/lib";

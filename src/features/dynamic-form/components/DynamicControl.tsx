@@ -38,7 +38,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import {
   Command,
   CommandEmpty,

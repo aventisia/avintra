@@ -1,6 +1,6 @@
 import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@aventisia/ui/buttons";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { PopoverTrigger } from "@aventisia/ui/popover";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";

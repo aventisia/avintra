@@ -1,9 +1,9 @@
 import {
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 
-import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
+import { PopoverWrapper } from "@aventisia/ui/popover";
 import VariableSelectorPopoverTrigger from "./VariableSelectorPopoverTrigger";
 import VariablePopoverContent from "./variable-popover-content/VariablePopoverContent";
 import React, { useState } from "react";

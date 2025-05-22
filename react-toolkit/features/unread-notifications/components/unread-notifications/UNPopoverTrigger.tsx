@@ -4,7 +4,7 @@ import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-not
 import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { PopoverTrigger } from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 
 interface UNPopoverTriggerProps {

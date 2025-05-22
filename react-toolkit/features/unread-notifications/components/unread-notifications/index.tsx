@@ -10,7 +10,7 @@ import {
   Popover,
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 
 interface UnreadNotificationsProps {

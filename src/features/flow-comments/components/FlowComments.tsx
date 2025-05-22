@@ -2,8 +2,8 @@ import { cn } from "@aventisia/ui/lib";
 import {
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/ui/popover";
-import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
+} from "@aventisia/ui/popover";
+import { PopoverWrapper } from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 import { FC_POPOVER_HEADING } from "../constants/constatns";
 import { useDefineCreateCommentForm } from "../hooks/useDefineCreateCommentForm";

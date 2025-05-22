@@ -2,8 +2,8 @@ import { cn } from "@aventisia/ui/lib";
 import {
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/ui/popover";
-import { PopoverWrapper } from "@/react-toolkit/ui/popover/PopoverWrapper";
+} from "@aventisia/ui/popover";
+import { PopoverWrapper } from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 import { FlowCrudDialog } from "./flow-crud-dialog";

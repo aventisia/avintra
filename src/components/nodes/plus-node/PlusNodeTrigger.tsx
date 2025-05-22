@@ -1,5 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { PopoverTrigger } from "@aventisia/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { DialogTrigger } from "@/react-toolkit/ui/dialog";
 

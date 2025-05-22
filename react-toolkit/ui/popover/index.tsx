@@ -1,6 +1,6 @@
 import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { popoverVariants } from "@/react-toolkit/ui/popover/popover-variants";
+import { popoverVariants } from "@aventisia/ui/popover/popover-variants";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";

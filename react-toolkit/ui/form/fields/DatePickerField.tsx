@@ -11,7 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import * as React from "react";

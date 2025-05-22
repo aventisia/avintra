@@ -9,7 +9,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { Separator } from "@/react-toolkit/ui/separator";
 import { removeUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
