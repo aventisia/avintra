@@ -48,7 +48,7 @@ import {
 } from "@aventisia/ui/command";
 import { Checkbox } from "@/react-toolkit/ui/checkbox";
 import { Switch } from "@/react-toolkit/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/react-toolkit/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
 import { Calendar } from "@/react-toolkit/ui/calendar";
 import { Textarea } from "@/react-toolkit/ui/textarea";
 import { Slider } from "@/features/dynamic-form/components/slider";

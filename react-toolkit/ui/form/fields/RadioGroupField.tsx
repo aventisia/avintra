@@ -8,7 +8,7 @@ import { FormField } from "@/react-toolkit/ui/form/FormField";
 import { FormItem } from "@/react-toolkit/ui/form/FormItem";
 import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
 import { FormLabelExt } from "@/react-toolkit/ui/form/non-field/FormLabelExt";
-import { RadioGroup, RadioGroupItem } from "@/react-toolkit/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
