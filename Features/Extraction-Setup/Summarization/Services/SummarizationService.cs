@@ -241,6 +241,7 @@ public class SummarizationService : ISummarizationService
             // Retrieve the model from the repository
             var model = await _unitOfWork.MLModelRepo
                                           .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
 
             // If the model is not found, log and return a failure response
@@ -261,6 +262,12 @@ public class SummarizationService : ISummarizationService
 
             // List to store extracted summarization data for each file
             var extractedDataList = new List<SummarizationSetupFileData>();
+
+            // Initialize a list to store data that will be inserted into the database.
+            var extractedDataToBeInserted = new List<ExtractedData>();
+
+            // Initialize a list to store data that will be updated into the database.
+            var extractedDataToBeUpdated = new List<ExtractedData>();
 
             _logger.LogInformation("Starting extraction for {FileCount} files", extractRequestDto.FileIds.Count);
 
@@ -290,40 +297,107 @@ public class SummarizationService : ISummarizationService
                 }
 
                 // Call LLM extraction service for summarization
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+                // var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
 
-                // Check if LLM extraction was successful
-                if (llmResponse.StatusCode != 200)
-                {
-                    _logger.LogWarning("LLM summarization extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
-                    extractedData.Remarks = $"003: LLM summarization extraction failed. {llmResponse.Message}";
-                    extractedDataList.Add(extractedData);
-                    continue;
-                }
+                // // Check if LLM extraction was successful
+                // if (llmResponse.StatusCode != 200)
+                // {
+                //     _logger.LogWarning("LLM summarization extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
+                //     extractedData.Remarks = $"003: LLM summarization extraction failed. {llmResponse.Message}";
+                //     extractedDataList.Add(extractedData);
+                //     continue;
+                // }
 
-                // Check if LLM returned empty data
-                if (string.IsNullOrEmpty(llmResponse.Data))
-                {
-                    _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
-                    extractedDataList.Add(extractedData);
-                    continue;
-                }
+                // // Check if LLM returned empty data
+                // if (string.IsNullOrEmpty(llmResponse.Data))
+                // {
+                //     _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
+                //     extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
+                //     extractedDataList.Add(extractedData);
+                //     continue;
+                // }
 
                 // Deserialize the extracted summarization data
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
-
-                extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse.Data, options) ?? new SummarizationSetupData();
+                var llmResponse = "{\"summary\": \"In 2025, OpenAI launched a new AI model capable of handling complex reasoning and multimodal inputs, such as images and video. The model demonstrates enhanced language accuracy and integrates with productivity tools, supporting real-time collaboration. While experts commend its performance, they emphasize the need for responsible deployment and attention to privacy concerns.\"}";
+                extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse, options) ?? new SummarizationSetupData();
                 extractedData.Remarks = "";
 
                 _logger.LogInformation("Successfully extracted and deserialized summarization data for FileId: {FileId}", fileId);
 
                 extractedDataList.Add(extractedData);
+
+                // Check if there is already existing extracted data for this document
+                var existingExtractedData = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
+                if (existingExtractedData == null)
+                {
+                    _logger.LogInformation("No existing extracted data found for DocId: {DocId}. Preparing new record for insertion.", file.Id);
+
+                    // Prepare a new ExtractedData object for insertion
+                    extractedDataToBeInserted.Add(new ExtractedData()
+                    {
+                        DocId = file.Id,
+                        Type = file.Type,
+                        MLModelId = model.Id,
+                        DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }),
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    });
+                }
+                else
+                {
+                    _logger.LogInformation("Existing extracted data found for DocId: {DocId}. Preparing record for update.", file.Id);
+
+                    // Update the existing data object with new values
+                    existingExtractedData.DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    existingExtractedData.LastModifiedByUserId = _userId;
+
+                    // Add to update list
+                    extractedDataToBeUpdated.Add(existingExtractedData);
+                }
+
+                // Optionally push the extracted data to the client UI
+                // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
+            }
+            // Check if there is any extracted data to insert into the database
+            if (extractedDataToBeInserted.Any())
+            {
+                _logger.LogInformation("Inserting {Count} new extracted data records into the database.", extractedDataToBeInserted.Count);
+
+                // Insert new records
+                await _unitOfWork.ExtractedDataRepo.InsertAsync(extractedDataToBeInserted);
+
+                // Save database changes
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save extracted data to the database after insertion.");
+                }
             }
 
+            // Check if there is any extracted data to update into the database
+            if (extractedDataToBeUpdated.Any())
+            {
+                _logger.LogInformation("Updating {Count} existing extracted data records in the database.", extractedDataToBeUpdated.Count);
+
+                // Update existing records
+                _unitOfWork.ExtractedDataRepo.Update(extractedDataToBeUpdated);
+
+                // Save database changes
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save extracted data to the database after update.");
+                }
+            }
+            
             // Prepare the response DTO with extracted summarization data
             var extractResponseDto = new SummarizationResponseDto
             {

@@ -172,6 +172,7 @@ public class ClassificationService : IClassificationService
             // Retrieve the classification model from the repository
             var model = await _unitOfWork.MLModelRepo
                                           .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
 
             // If model is not found, log and return failure
@@ -192,6 +193,12 @@ public class ClassificationService : IClassificationService
 
             // Prepare the list to hold extracted data for each file
             var extractedDataList = new List<ClassificationSetupFileData>();
+
+            // Initialize a list to store data that will be updated into the database.
+            var extractedDataToBeUpdated = new List<ExtractedData>();
+
+            // Initialize a list to store data that will be inserted into the database.
+            var extractedDataToBeInserted = new List<ExtractedData>();
 
             _logger.LogInformation("Starting extraction for {FileCount} files", extractRequestDto.FileIds.Count);
 
@@ -264,8 +271,72 @@ public class ClassificationService : IClassificationService
 
                 extractedDataList.Add(extractedData);
 
-                // Optionally push the extracted data to the client UI (uncomment if necessary)
+                // Check if there is already existing extracted data for this document
+                var existingExtractedData = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
+                if (existingExtractedData == null)
+                {
+                    _logger.LogInformation("No existing extracted data found for DocId: {DocId}. Preparing new record for insertion.", file.Id);
+
+                    // Prepare a new ExtractedData object for insertion
+                    extractedDataToBeInserted.Add(new ExtractedData()
+                    {
+                        DocId = file.Id,
+                        Type = file.Type,
+                        MLModelId = model.Id,
+                        DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }),
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    });
+                }
+                else
+                {
+                    _logger.LogInformation("Existing extracted data found for DocId: {DocId}. Preparing record for update.", file.Id);
+
+                    // Update the existing data object with new values
+                    existingExtractedData.DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    existingExtractedData.LastModifiedByUserId = _userId;
+
+                    // Add to update list
+                    extractedDataToBeUpdated.Add(existingExtractedData);
+                }
+
+                // Optionally push the extracted data to the client UI
                 // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
+            }
+            // Check if there is any extracted data to insert into the database
+            if (extractedDataToBeInserted.Any())
+            {
+                _logger.LogInformation("Inserting {Count} new extracted data records into the database.", extractedDataToBeInserted.Count);
+
+                // Insert new records
+                await _unitOfWork.ExtractedDataRepo.InsertAsync(extractedDataToBeInserted);
+
+                // Save database changes
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save extracted data to the database after insertion.");
+                }
+            }
+
+            // Check if there is any extracted data to update into the database
+            if (extractedDataToBeUpdated.Any())
+            {
+                _logger.LogInformation("Updating {Count} existing extracted data records in the database.", extractedDataToBeUpdated.Count);
+
+                // Update existing records
+                _unitOfWork.ExtractedDataRepo.Update(extractedDataToBeUpdated);
+
+                // Save database changes
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save extracted data to the database after update.");
+                }
             }
 
             // Prepare the final response DTO with the extracted classification data
