@@ -1,7 +1,7 @@
 import { cn } from "@aventisia/ui/lib";
 import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
 import { useFormField } from "@/react-toolkit/ui/form/useFormField";
-import { Label } from "@/react-toolkit/ui/label";
+import { Label } from "@aventisia/ui/label";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import * as React from "react";
 
