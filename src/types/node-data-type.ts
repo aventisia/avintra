@@ -6,11 +6,20 @@ type NodeTypeAndCategory = {
   category: string;
 };
 
-export type NodeDataInputsOutputs = {
-  key: string,
-  value: string | number | boolean,
-}
+type NodeInputType = {
+  key: string;
+  value: string | number | boolean;
+};
 
+type NodeOutputValueType = {
+  value: string | number | boolean;
+  enabled: boolean;
+};
+
+type NodeOutputType = {
+  key: string;
+  value: NodeOutputValueType;
+};
 
 type NodeDataType = {
   type: CustomNodeType;
@@ -18,14 +27,21 @@ type NodeDataType = {
   name: string;
   label: string;
   description: string;
+  docsLink?: string;
   icon?: string;
   img?: string;
   fieldValues?: { [key: string]: any };
-  inputs?: NodeDataInputsOutputs[];
-  outputs?: NodeDataInputsOutputs[];
+  inputs?: NodeInputType[];
+  outputs?: NodeOutputType[];
   disabled?: boolean;
   hidden?: boolean;
-  formType?: "custom" | "dynamic"
+  formType?: "custom" | "dynamic";
 };
 
-export type { NodeTypeAndCategory, NodeDataType };
+export type {
+  NodeTypeAndCategory,
+  NodeInputType,
+  NodeOutputType,
+  NodeOutputValueType,
+  NodeDataType,
+};

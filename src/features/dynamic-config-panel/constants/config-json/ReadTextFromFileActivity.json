@@ -1,0 +1,30 @@
+[
+  {
+    "direction": "Input",
+    "name": "FilePath",
+    "type": "text",
+    "label": "File path",
+    "description": "The file to read.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "name": "TrimContent",
+    "type": "switch",
+    "label": "Trim content",
+    "description": "Set to true to trim the content after reading",
+    "defaultValue": true
+  },
+  {
+    "direction": "Output",
+    "name": "FileContent",
+    "type": "config-panel-output",
+    "label": "fileContent",
+    "description": "The text content read from the file",
+    "defaultValue": {
+      "value": "fileContent",
+      "enabled": true
+    }
+  }
+]

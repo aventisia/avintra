@@ -1,12 +1,12 @@
-import { useEffect, useRef, useCallback } from "react";
-import { WebSocketMessage } from "./websocket-messsage";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShallow } from "zustand/react/shallow";
-import { FlowStateType } from "@/types/flow-state-literal-type";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { getActivityNodeData } from "./get-activity-node-data";
+import { FlowStateType } from "@/types/flow-state-literal-type";
+import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
-import { ActivityNodeDataType } from "@/types/activity-node-data-type";
+import { useCallback, useEffect, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { getActivityNodeData } from "./get-activity-node-data";
+import { WebSocketMessage } from "./websocket-messsage";
 
 // Create mapping of command to flow state - "start" | "abort" | "pause" | "resume"
 const commandToFlowState: Record<string, string> = {
@@ -57,9 +57,7 @@ export default function useWebSocket() {
     console.log("Trigger node id", triggerNodeId);
 
     // Get edge id of trigger node
-    const triggerNodeEdge = edges.find(
-      (edge) => edge.source === triggerNodeId,
-    );
+    const triggerNodeEdge = edges.find((edge) => edge.source === triggerNodeId);
 
     console.log("Trigger node edge", triggerNodeEdge);
 
@@ -69,7 +67,9 @@ export default function useWebSocket() {
     console.log("Target node id", targetNodeId);
 
     // Get the target node
-    const targetNode = nodes.find((node) => node.id === targetNodeId) as Node<ActivityNodeDataType>;
+    const targetNode = nodes.find(
+      (node) => node.id === targetNodeId,
+    ) as Node<NodeDataType>;
 
     // Get activity node data
     const nodeData = getActivityNodeData(targetNode);
@@ -80,23 +80,33 @@ export default function useWebSocket() {
   }, [nodes, edges, sendCommand]);
 
   // Get the next node from Nodes list
-  const sendNextNode = useCallback((preNodeId: string) => {
-    // Get edge of preNode node
-    const preNodeEdge = edges.find(
-      (edge) => edge.source === preNodeId,
-    );
+  const sendNextNode = useCallback(
+    (preNodeId: string) => {
+      // Get edge of preNode node
+      const preNodeEdge = edges.find((edge) => edge.source === preNodeId);
 
-    // Get the target node id
-    const targetNodeId = preNodeEdge?.target;
+      // If we don't have an edge, return send abort command
+      if (!preNodeEdge) {
+        console.warn("No edge found for preNode");
+        sendCommand("abort");
+        return;
+      }
 
-    // Get the target node
-    const targetNode = nodes.find((node) => node.id === targetNodeId) as Node<ActivityNodeDataType>;
+      // Get the target node id
+      const targetNodeId = preNodeEdge?.target;
 
-    // Get activity node data
-    const nodeData = getActivityNodeData(targetNode);
+      // Get the target node
+      const targetNode = nodes.find(
+        (node) => node.id === targetNodeId,
+      ) as Node<NodeDataType>;
 
-    sendCommand("nextnode", JSON.stringify(nodeData));
-  }, [edges, nodes, sendCommand]);
+      // Get activity node data
+      const nodeData = getActivityNodeData(targetNode);
+
+      sendCommand("nextnode", JSON.stringify(nodeData));
+    },
+    [edges, nodes, sendCommand],
+  );
 
   useEffect(() => {
     // Create WebSocket connection
@@ -122,8 +132,8 @@ export default function useWebSocket() {
           ) {
             // Update the state
             setFlowState(commandToFlowState[data.command] as FlowStateType);
-          } 
-          
+          }
+
           if (data.command === "start") {
             console.log("Sending first node to WPF");
             sendFirstNode();
@@ -149,8 +159,6 @@ export default function useWebSocket() {
       socket.close();
     };
   }, [sendFirstNode, sendNextNode, setFlowState]);
-
-  
 
   return { sendCommand };
 }

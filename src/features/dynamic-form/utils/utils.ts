@@ -102,7 +102,7 @@ import ifFileExists from "../constants/configs/Files/if-file-exists";
 import moveFiles from "../constants/configs/Files/move-files";
 import renameFile from "../constants/configs/Files/rename-files"
 import readFromCSVFile from "../constants/configs/Files/read-from-csv-file";
-import readTextFromFile from "../constants/configs/Files/read-text-from-file";
+import ReadTextFromFileActivity from "../constants/configs/Files/read-text-from-file";
 import waitForFile from "../constants/configs/Files/wait-for-file";
 import writeToCSVFile from "../constants/configs/Files/write-to-csv-file";
 import WriteTextToFileActivity from "../constants/configs/Files/write-text-to-file";
@@ -400,7 +400,7 @@ const dynamicActionMapper: { [key: string]: ActivityConfig } = {
   moveFiles,
   renameFile,
   deleteFiles,
-  readTextFromFile,
+  ReadTextFromFileActivity,
   WriteTextToFileActivity,
   readFromCSVFile,
   writeToCSVFile,

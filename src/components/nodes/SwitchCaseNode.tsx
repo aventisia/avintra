@@ -23,7 +23,7 @@ export const SwitchCaseNode = ({
 
   return (
     <>
-      <BaseNode selected={selected} data={data}>
+      <BaseNode selected={selected} nodeData={data} nodeId={id}>
         <InputHandle position={targetPosition} />
         <OutputHandle position={sourcePosition} connectionCount={2} />
       </BaseNode>
@@ -36,7 +36,7 @@ export const SwitchCaseNode = ({
             "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
             "nodrag nopan",
           )}
-          onClick={() => addSwitchCaseBranch(data,id)}
+          onClick={() => addSwitchCaseBranch(data, id)}
         >
           <PlusIcon
             className={cn(
