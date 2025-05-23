@@ -1,13 +1,17 @@
 import { NodeData } from "./node-data";
 import { Node } from "@xyflow/react";
-import { NodeDataType, NodeInputType, NodeOutputType } from "@/types/node-data-type";
+import {
+  NodeDataType,
+  NodeInputType,
+  NodeOutputType,
+} from "@/types/node-data-type";
 
 export function getActivityNodeData(
   nodeObj: Node<NodeDataType> | undefined,
 ): NodeData {
   return {
     id: nodeObj?.id ?? "",
-    type: "activityNode",
+    type: nodeObj?.type ?? "flowEndNode",
     nodeName: nodeObj?.data?.label ?? "",
     codeActivityName: nodeObj?.data?.name ?? "",
     nodeInputs:
@@ -18,7 +22,10 @@ export function getActivityNodeData(
     nodeOutputs:
       nodeObj?.data?.outputs?.map((output: NodeOutputType) => ({
         key: output.key,
-        value: String(output.value),
+        value: {
+          value: String(output.value.value),
+          enabled: output.value.enabled,
+        },
       })) ?? [],
   };
 }
