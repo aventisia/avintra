@@ -1,13 +1,10 @@
 import { ErrorPage } from "@aventisia/ui/layout";
 
-import { AppLogo } from "./AppLogo";
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { AppMinimalFooter } from "./AppMinimalFooter";
 
 export const AppErrorPage = () => {
   return (
-    <ErrorPage
-      appLogo={<AppLogo logoSrc="logo.svg" />}
-      minimalFooter={<AppMinimalFooter />}
-    />
+    <ErrorPage appLogo={<AppLogo />} minimalFooter={<AppMinimalFooter />} />
   );
 };
