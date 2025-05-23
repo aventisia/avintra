@@ -18,7 +18,9 @@ export * from "./stores/dcp-store";
 // types
 export * from "./types/dcp-field-literal-type";
 export * from "./types/dcp-field-schema-type";
+export * from "./types/render-if-type";
 
 // utils
 export * from "./utils/generate-zod-schema";
 export * from "./utils/get-default-values-for-form";
+export * from "./utils/should-render-field";

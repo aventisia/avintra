@@ -19,7 +19,7 @@ const AutosizeInput = React.forwardRef<HTMLInputElement, AutosizeInputProps>(
 
     useEffect(() => {
       if (spanRef.current) {
-        const width = spanRef.current.offsetWidth;
+        const width = spanRef.current.offsetWidth - 2;
         setInputWidth(width);
       }
     }, [value]);
@@ -29,8 +29,12 @@ const AutosizeInput = React.forwardRef<HTMLInputElement, AutosizeInputProps>(
         {/* Hidden mirror span */}
         <span
           ref={spanRef}
-          className="invisible absolute left-0 top-0 whitespace-pre"
-          style={{ fontSize: "1rem", padding: "4px" }}
+          className={cn(
+            "invisible absolute left-0 top-0 whitespace-pre",
+            fieldSize === "xs" && "px-[0.45rem] text-2xs",
+            fieldSize === "sm" && "px-[0.55rem] text-xs",
+            fieldSize === "base" && "px-3 text-sm",
+          )}
         >
           {value || placeholder || ""}
         </span>

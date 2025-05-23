@@ -1,0 +1,59 @@
+[
+  {
+    "direction": "Input",
+    "name": "RemoveItemsBy",
+    "type": "select",
+    "label": "Remove Items By",
+    "description": "Specifies whether to remove the item at a specified index or the item(s) with specific value.",
+    "required": true,
+    "selectOptions": [
+      { "label": "Index", "value": "Index" },
+      { "label": "Value", "value": "Value" }
+    ],
+    "defaultValue": "Index"
+  },
+  {
+    "direction": "Input",
+    "name": "AtIndex",
+    "type": "number",
+    "label": "At Index",
+    "description": "The index number of the item to remove.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "WithValue",
+    "type": "text",
+    "label": "With Value",
+    "description": "The item value to remove from the list.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "RemoveAllItemOccurrences",
+    "type": "switch",
+    "label": "Remove All Occurrences",
+    "description": "Remove all items that match the specified value.",
+    "defaultValue": false
+  },
+  {
+    "direction": "Input",
+    "name": "FormList",
+    "type": "text",
+    "label": "Form List",
+    "description": "The list with items to remove.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "ModifiedList",
+    "type": "config-panel-output",
+    "label": "Modified List",
+    "description": "The resulting list after removing the item(s).",
+    "defaultValue": {
+      "value": "modifiedList",
+      "enabled": true
+    }
+  }
+]

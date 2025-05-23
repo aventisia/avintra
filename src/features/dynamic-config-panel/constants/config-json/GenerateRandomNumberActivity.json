@@ -1,0 +1,66 @@
+[
+  {
+    "direction": "Input",
+    "name": "MinimumValue",
+    "type": "number",
+    "label": "Minimum Value",
+    "description": "The lower boundary for the random number(s) to generate.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "MaximumValue",
+    "type": "number",
+    "label": "Maximum Value",
+    "description": "The upper boundary for the random number(s) to generate.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "GenerateMultipleNumbers",
+    "type": "switch",
+    "label": "Generate Multiple Numbers",
+    "description": "Specify whether to generate a single number or multiple numbers.",
+    "defaultValue": false
+  },
+  {
+    "direction": "Input",
+    "name": "HowManyNumbers",
+    "type": "number",
+    "label": "How Many Numbers",
+    "description": "Specify how many random numbers to generate.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "AllowDuplicates",
+    "type": "switch",
+    "label": "Allow Duplicates",
+    "description": "Specify whether to permit duplicate values in the generated list.",
+    "defaultValue": false
+  },
+  {
+    "direction": "Output",
+    "name": "RandomNumberOutput",
+    "type": "config-panel-output",
+    "label": "Random Number Output",
+    "description": "The newly generated random number (for single mode).",
+    "defaultValue": {
+      "value": "rendomNumber",
+      "enabled": true
+    }
+  },
+  {
+    "direction": "Output",
+    "name": "RandomNumbersOutput",
+    "type": "config-panel-output",
+    "label": "Random Numbers List Output",
+    "description": "The newly generated list of random numbers (for multi-mode).",
+    "defaultValue": {
+      "value": "randomNumberList",
+      "enabled": true
+    }
+  }
+]

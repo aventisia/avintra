@@ -82,7 +82,7 @@ const ConfigPanelOuputField = ({
       <FormField
         {...{ name: enabledFieldName, enabledField }}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="flex items-center">
             <FormControl>
               <Switch
                 size={"sm"}

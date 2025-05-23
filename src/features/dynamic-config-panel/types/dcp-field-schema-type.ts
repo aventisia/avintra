@@ -1,5 +1,5 @@
 import { ISelectOption } from "@aventisia/ui/types";
-import { DCPControlType } from "..";
+import { DCPControlType, RenderIfType } from "..";
 
 /**
  * Describes the schema for a single form field used in dynamic configuration panels.
@@ -37,4 +37,5 @@ export type DCPFieldSchemaType = {
   max?: number;
   minLength?: number;
   maxLength?: number;
+  renderIf?: RenderIfType; // Not a html attribute
 };

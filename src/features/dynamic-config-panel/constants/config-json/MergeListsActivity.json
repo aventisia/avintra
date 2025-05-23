@@ -1,0 +1,31 @@
+[
+  {
+    "direction": "Input",
+    "name": "FirstList",
+    "type": "text",
+    "label": "First List",
+    "description": "The first list of items to merge.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "SecondList",
+    "type": "text",
+    "label": "Second List",
+    "description": "The second list of items to merge.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "OutputListOutput",
+    "type": "config-panel-output",
+    "label": "Output List",
+    "description": "The merged result from both input lists.",
+    "defaultValue": {
+      "value": "mergedList",
+      "enabled": true
+    }
+  }
+]

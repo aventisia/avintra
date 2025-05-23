@@ -1,0 +1,22 @@
+[
+  {
+    "direction": "Input",
+    "name": "CustomObject",
+    "type": "text",
+    "label": "Custom Object",
+    "description": "The custom object to convert to JSON.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "CustomObjectAsJsonOutput",
+    "type": "config-panel-output",
+    "label": "JSON Output",
+    "description": "The converted JSON string from the provided custom object.",
+    "defaultValue": {
+      "value": "jsonOutput",
+      "enabled": true
+    }
+  }
+]

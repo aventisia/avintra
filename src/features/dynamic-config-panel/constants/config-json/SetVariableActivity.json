@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "name": "Variable",
+    "type": "text",
+    "label": "Variable Name",
+    "description": "The name of the variable to set",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "name": "Value",
+    "type": "text",
+    "label": "Value",
+    "description": "The value to assign to the variable.",
+    "defaultValue": "",
+    "required": true
+  }
+]

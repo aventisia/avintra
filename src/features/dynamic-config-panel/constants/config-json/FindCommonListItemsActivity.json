@@ -1,0 +1,31 @@
+[
+  {
+    "direction": "Input",
+    "name": "FirstList",
+    "type": "text",
+    "label": "First List",
+    "description": "The variable that contains the first list to compare.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "SecondList",
+    "type": "text",
+    "label": "Second List",
+    "description": "The variable that contains the second list to compare.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "IntersectionListOutput",
+    "type": "config-panel-output",
+    "label": "Intersection List Output",
+    "description": "The output list containing common items from both input lists.",
+    "defaultValue": {
+      "value": "IntersectedList",
+      "enabled": true
+    }
+  }
+]

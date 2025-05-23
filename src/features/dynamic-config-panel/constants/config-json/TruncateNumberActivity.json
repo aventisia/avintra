@@ -40,7 +40,15 @@
     "type": "text",
     "label": "Decimal Places",
     "description": "The number of decimal places to round to. Required only if the operation is 'RoundNumber'.",
-    "defaultValue": "2"
+    "defaultValue": "2",
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "Operation",
+          "equals": "GetRoundNumber"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

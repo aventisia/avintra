@@ -1,0 +1,31 @@
+[
+  {
+    "direction": "Input",
+    "name": "FirstList",
+    "type": "text",
+    "label": "First List",
+    "description": "The variable that holds the first list to compare.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "SecondList",
+    "type": "text",
+    "label": "Second List",
+    "description": "The variable that contains the second list used to subtract items from the first list.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "ListDifferenceOutput",
+    "type": "config-panel-output",
+    "label": "List Difference Output",
+    "description": "The resulting list after subtracting items from the second list.",
+    "defaultValue": {
+      "value": "listDifferenceOutput",
+      "enabled": true
+    }
+  }
+]
