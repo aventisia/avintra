@@ -3,10 +3,11 @@ import { NodeDataType } from "@/types/node-data-type";
 export const variableActions: NodeDataType[] = [
   {
     type: "activityNode",
-    name: "truncateNumber",
+    name: "TruncateNumberActivity",
     label: "Truncate number",
     description:
-      "Get the integral or fractional digits of a numeric value, or round up the value to a specified number of decimal places",
+      "Performs various operations on a number, such as getting the integer part, decimal part, or rounding.",
+    docsLink: "/agent-builder/workflow-logics/variable/truncate-number",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
