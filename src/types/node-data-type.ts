@@ -11,9 +11,14 @@ type NodeInputType = {
   value: string | number | boolean;
 };
 
+type NodeOutputValueType = {
+  value: string | number | boolean;
+  enabled: boolean;
+};
+
 type NodeOutputType = {
   key: string;
-  value: string | number | boolean;
+  value: NodeOutputValueType;
 };
 
 type NodeDataType = {
@@ -37,5 +42,6 @@ export type {
   NodeTypeAndCategory,
   NodeInputType,
   NodeOutputType,
+  NodeOutputValueType,
   NodeDataType,
 };
