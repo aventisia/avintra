@@ -36,4 +36,23 @@ public interface IQuestionAnswerService
     /// An asynchronous task that returns a service response containing an enumeration of extraction response DTOs.
     /// </returns>
     Task<ServiceResponse<QuestionAnswerResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
+
+    /// <summary>
+    /// Asynchronously retrieves a list of extracted data records linked to a specific machine learning model.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, with a result containing a service response
+    /// that includes a collection of <see cref="QuestionAnswerExtractedDataDto"/> objects.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<QuestionAnswerExtractedDataDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Asynchronously retrieves a list of extracted review data records associated with a specific machine learning model.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing a service response with a collection of <see cref="ExtractedReviewDataDto"/> objects.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId);
 }

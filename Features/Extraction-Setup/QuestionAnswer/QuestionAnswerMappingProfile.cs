@@ -32,5 +32,54 @@ public class QuestionAnswerMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
+ // Mapping of DTO to get list of extracted data.
+        config.NewConfig<ExtractedData, QuestionAnswerExtractedDataDto>()
+            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
+                src.DataObject, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }))
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
+
+        // Mapping of DTO to get list of extracted review data.
+        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+            .Map(dest => dest.Columns, src => DeserializeQuestionAnswerSetupDto(src.DataObject))
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
+    }
+
+    private static Dictionary<string, string>? DeserializeQuestionAnswerSetupDto(string dataObject)
+    {
+        var extractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
+            dataObject,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        if (extractedData == null || !extractedData.Any())
+            return null;
+
+        // Convert Fields to Dictionary<string, string>
+        return extractedData.ToDictionary(s => s.Question, s => s.Answer)!;
     }
 }
