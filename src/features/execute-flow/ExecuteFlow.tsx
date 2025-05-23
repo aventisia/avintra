@@ -1,7 +1,3 @@
-import {
-  getMySession,
-  refreshSession,
-} from "@/react-toolkit/apis/accounts-me-apis";
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
