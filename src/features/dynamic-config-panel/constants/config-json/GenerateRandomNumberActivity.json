@@ -59,7 +59,7 @@
     "label": "Random Numbers List Output",
     "description": "The newly generated list of random numbers (for multi-mode).",
     "defaultValue": {
-      "value": "rendomNumberList",
+      "value": "randomNumberList",
       "enabled": true
     }
   }
