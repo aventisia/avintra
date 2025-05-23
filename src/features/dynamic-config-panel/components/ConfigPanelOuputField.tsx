@@ -1,8 +1,8 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { Switch } from "@/react-toolkit/ui/switch";
+import { cn } from "@aventisia/ui/lib";
+import { FormControl } from "@aventisia/ui/form";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { Switch } from "@aventisia/ui";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import * as React from "react";
 import {
@@ -11,7 +11,7 @@ import {
   useController,
   useFormContext,
 } from "react-hook-form";
-import { Tooltip } from "../../../../react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { AutosizeInput } from "./AutosizeInput";
 
 interface ConfigPanelOuputFieldProps

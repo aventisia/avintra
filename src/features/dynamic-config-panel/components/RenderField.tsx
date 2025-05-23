@@ -1,8 +1,8 @@
 import { ConfigPanelOuputField } from "@/features/dynamic-config-panel/components/ConfigPanelOuputField";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchField } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
+import { SwitchField } from "@aventisia/ui/form";
+import { TextareaField } from "@aventisia/ui/form";
 import { DCPFieldSchemaType } from "..";
 
 // Helper to render the correct field type

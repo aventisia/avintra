@@ -1,5 +1,5 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { FormFieldSizeType } from "@/react-toolkit/types/literal-types";
+import { cn } from "@aventisia/ui/lib";
+import { FormFieldSizeType } from "@aventisia/ui/types";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 
