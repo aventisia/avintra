@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "name": "JsonData",
+    "type": "text",
+    "label": "JSON Data",
+    "description": "A JSON text or variable containing JSON to convert to a custom object.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "JsonAsCustomObjectOutput",
+    "type": "text",
+    "label": "Custom Object Output",
+    "description": "The resulting custom object after converting from JSON.",
+    "required": true,
+    "defaultValue": ""
+  }
+]

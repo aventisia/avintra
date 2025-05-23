@@ -1,0 +1,36 @@
+[
+  {
+    "direction": "Input",
+    "name": "DataTable",
+    "type": "text",
+    "label": "Data Table",
+    "description": "The data table with the column to convert into a list.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "ColumnNameOrIndex",
+    "type": "text",
+    "label": "Column Name or Index",
+    "description": "The column name (if defined) or index number to retrieve.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "ColumnAsListOutput",
+    "type": "text",
+    "label": "Column as List Output",
+    "description": "The new list containing the contents of the specified data table column.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "ColumnAsListSwitch",
+    "type": "switch",
+    "label": "Enable Column as List Output",
+    "description": "Switch to enable or disable setting the output list field.",
+    "defaultValue": true
+  }
+]
