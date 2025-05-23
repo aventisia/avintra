@@ -2,14 +2,19 @@ import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Form } from "@/react-toolkit/ui/form/Form";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { z } from "zod";
-import { RenderField, useDefineDCPForm, useUpdateNodeDataIO } from "..";
+import {
+  RenderField,
+  useDefineDCPForm,
+  useUpdateNodeDataIO,
+  shouldRenderField,
+} from "..";
 import { toast } from "sonner";
 
 export const DCPForm = () => {
   // Define form
   const {
     form,
-    isDirty,
+    watch,
     nodeConfig,
     isFormReady,
     nodeConfigZodSchema,
@@ -18,6 +23,9 @@ export const DCPForm = () => {
     outputKeys,
     setShowDialog,
   } = useDefineDCPForm();
+
+  // Watch all form values
+  const watchedValues = watch();
 
   // Get handlers to update node inputs and outputs
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
@@ -66,9 +74,12 @@ export const DCPForm = () => {
           {/* Input fields */}
           <div className="mt-1 space-y-3.5">
             {nodeConfig.map((field) => {
-              if (field.direction === "Input")
-                return <RenderField {...field} />;
-              return null;
+              // Check if the field should be rendered based on direction and renderIf conditions
+              if (!shouldRenderField("Input", field, watchedValues))
+                return null;
+
+              // Render the field
+              return <RenderField {...field} />;
             })}
           </div>
 
@@ -84,9 +95,11 @@ export const DCPForm = () => {
 
               <div className="rounded-lg border bg-slate-50 px-3.5 py-3">
                 {nodeConfig.map((field) => {
-                  if (field.direction === "Output")
-                    return <RenderField {...field} />;
-                  return null;
+                  // Check if the field should be rendered based on direction and renderIf conditions
+                  if (!shouldRenderField("Output", field, watchedValues))
+                    return null;
+
+                  return <RenderField {...field} />;
                 })}
               </div>
             </>
@@ -94,7 +107,7 @@ export const DCPForm = () => {
 
           {/* Save button */}
           <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
+            <Button type="submit" className="min-w-[5rem]">
               Save
             </Button>
           </div>

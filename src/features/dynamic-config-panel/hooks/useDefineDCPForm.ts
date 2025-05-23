@@ -71,14 +71,12 @@ export const useDefineDCPForm = () => {
   }, [nodeConfig]);
 
   // Destructor form values and methods
-  const {
-    formState: { isDirty },
-  } = form;
+  const { watch } = form;
 
   // Return form and methods
   return {
     form,
-    isDirty,
+    watch,
     nodeConfig,
     isFormReady,
     nodeConfigZodSchema,
