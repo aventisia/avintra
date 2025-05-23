@@ -24,4 +24,11 @@ public interface IExtractionSetupService
     /// <param name="extractRequestDto">The DTO containing the parameters for the extraction process.</param>
     /// <returns>An asynchronous task that, upon completion, returns a service response with an enumeration of extraction result DTOs.</returns>
     Task<ServiceResponse<ExtractionResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
+
+    /// <summary>
+    /// Asynchronously retrieves a collection of extracted data records associated with a specific machine learning model.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a service response with a collection of <see cref="ExtractionSetupData"/> objects.</returns>
+    Task<ServiceResponse<IEnumerable<ExtractionSetupData>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId);
 }

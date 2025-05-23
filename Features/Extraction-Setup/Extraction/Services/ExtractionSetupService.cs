@@ -421,4 +421,45 @@ public class ExtractionSetupService : IExtractionSetupService
 
         return serviceResponse;
     }
+
+    // Retrieves a collection of extracted data records associated with a specific machine learning model.
+    public async Task<ServiceResponse<IEnumerable<ExtractionSetupData>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
+    {
+        {
+            // Initialize the response with a default failure message and null data
+            var serviceResponse = new ServiceResponse<IEnumerable<ExtractionSetupData>>
+            {
+                Data = null,
+                Message = "Failed to retrieve extracted data. Please try again later."
+            };
+
+            try
+            {
+                // Log the beginning of the retrieval process
+                _logger.LogInformation("Attempting to retrieve extracted data for ML model with ID: {MLModelId}", mlModelId);
+
+                // Fetch the extracted data based on the provided ML model ID and map it to the DTO
+                var extractedDataList = await _unitOfWork.ExtractedDataRepo
+                    .GetByConditionAsync(w => w.Id == mlModelId)
+                    .Include(i => i.CreatedByUser)
+                    .ProjectToType<ExtractionSetupData>()
+                    .ToListAsync();
+
+
+                // Log the successful retrieval of the setup
+                _logger.LogInformation("Successfully retrieved extracted data for ML model with ID: {MLModelId}", mlModelId);
+
+                // Set the successful response data
+                serviceResponse.Data = extractedDataList;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Extracted data retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error occurred while retrieving extracted data for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+            }
+
+            return serviceResponse;
+        }
+    }
 }

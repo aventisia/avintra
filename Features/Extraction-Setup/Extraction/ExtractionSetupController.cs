@@ -32,4 +32,11 @@ public class ExtractionSetupController : BaseApiController
     {
         return ResultHelper(await _extractionSetupService.ExtractViaLLMAsync(extractRequestDto));
     }
+
+    // Retrieves a collection of extracted data records associated with a specific machine learning model.
+    [HttpGet("extracted-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<ExtractionSetupData>>> GetExtractedDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _extractionSetupService.GetExtractedDataByMLModelIdAsync(mlModelId));
+    }
 }
