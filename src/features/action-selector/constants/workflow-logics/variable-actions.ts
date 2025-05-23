@@ -138,7 +138,7 @@ export const variableActions: NodeDataType[] = [
     type: "activityNode",
     name: "IncreaseVariableActivity",
     label: "Increase variable",
-    description: "Increase the value of a variable by a specific amount.",
+    description: "Increases a numeric variable by a specified value",
     docsLink: "/agent-builder/workflow-logics/variable/increase-variable",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
