@@ -51,6 +51,9 @@
     "type": "config-panel-output",
     "label": "Modified List",
     "description": "The resulting list after removing the item(s).",
-    "defaultValue": ""
+    "defaultValue": {
+      "value": "modifiedList",
+      "enabled": true
+    }
   }
 ]

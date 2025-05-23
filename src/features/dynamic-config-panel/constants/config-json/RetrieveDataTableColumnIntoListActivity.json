@@ -23,14 +23,9 @@
     "type": "config-panel-output",
     "label": "Column as List Output",
     "description": "The new list containing the contents of the specified data table column.",
-    "defaultValue": ""
-  },
-  {
-    "direction": "Output",
-    "name": "ColumnAsListSwitch",
-    "type": "config-panel-output",
-    "label": "Enable Column as List Output",
-    "description": "Switch to enable or disable setting the output list field.",
-    "defaultValue": true
+    "defaultValue": {
+      "value": "columnAsListOutput",
+      "enabled": true
+    }
   }
 ]

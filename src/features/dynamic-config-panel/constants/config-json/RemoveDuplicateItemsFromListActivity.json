@@ -22,6 +22,9 @@
     "type": "config-panel-output",
     "label": "Deduplicated List",
     "description": "The list after removing duplicate items.",
-    "defaultValue": ""
+    "defaultValue": {
+      "value": "deduplicatedList",
+      "enabled": true
+    }
   }
 ]

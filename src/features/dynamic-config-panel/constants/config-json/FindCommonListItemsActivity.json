@@ -23,6 +23,9 @@
     "type": "config-panel-output",
     "label": "Intersection List Output",
     "description": "The output list containing common items from both input lists.",
-    "defaultValue": ""
+    "defaultValue": {
+      "value": "IntersectedList",
+      "enabled": true
+    }
   }
 ]

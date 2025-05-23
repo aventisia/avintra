@@ -23,6 +23,9 @@
     "type": "config-panel-output",
     "label": "Output List",
     "description": "The merged result from both input lists.",
-    "defaultValue": ""
+    "defaultValue": {
+      "value": "mergedList",
+      "enabled": true
+    }
   }
 ]
