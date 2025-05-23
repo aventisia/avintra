@@ -57,7 +57,10 @@ export const DCPForm = () => {
       ) : (
         <Form
           methods={form}
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(form.getValues());
+          }}
           className="px-2.5 pb-5"
         >
           {/* Input fields */}
