@@ -1,0 +1,22 @@
+[
+  {
+    "direction": "Input",
+    "name": "ListToReverse",
+    "type": "text",
+    "label": "List to Reverse",
+    "description": "The list whose items' order will be reversed.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Output",
+    "name": "ReversedList",
+    "type": "config-panel-output",
+    "label": "Reversed List",
+    "description": "The list after reversing the order of its items.",
+    "defaultValue": {
+      "value": "reversedList",
+      "enabled": true
+    }
+  }
+]
