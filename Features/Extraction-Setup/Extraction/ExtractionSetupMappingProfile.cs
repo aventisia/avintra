@@ -35,7 +35,7 @@ public class ExtractionSetupMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, ExtractedDataResponseDto>()
-            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<ExtractionSetupDto>(
+            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<ExtractionSetupData>(
                 src.DataObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -51,5 +51,35 @@ public class ExtractionSetupMappingProfile : IRegister
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
                 ? src.CreatedByUser.UserName
                 : null);
+
+        // Mapping of DTO to get list of extracted review data.
+        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+            .Map(dest => dest.Columns, src => DeserializeExtractionSetupDto(src.DataObject))
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
+    }
+    private static Dictionary<string, string>? DeserializeExtractionSetupDto(string dataObject)
+    {
+        var extractedData = JsonSerializer.Deserialize<ExtractionSetupData>(
+            dataObject,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        if (extractedData == null || extractedData.Fields == null)
+            return null;
+
+        // Convert Fields to Dictionary<string, string>
+        return extractedData.Fields.ToDictionary(s => s.Name, s => s.Value)!;
     }
 }

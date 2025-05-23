@@ -425,42 +425,78 @@ public class ExtractionSetupService : IExtractionSetupService
     // Retrieves a collection of extracted data records associated with a specific machine learning model.
     public async Task<ServiceResponse<IEnumerable<ExtractedDataResponseDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
     {
+        // Initialize the response with a default failure message and null data
+        var serviceResponse = new ServiceResponse<IEnumerable<ExtractedDataResponseDto>>
         {
-            // Initialize the response with a default failure message and null data
-            var serviceResponse = new ServiceResponse<IEnumerable<ExtractedDataResponseDto>>
-            {
-                Data = null,
-                Message = "Failed to retrieve extracted data. Please try again later."
-            };
+            Data = null,
+            Message = "Failed to retrieve extracted data. Please try again later."
+        };
 
-            try
-            {
-                // Log the beginning of the retrieval process
-                _logger.LogInformation("Attempting to retrieve extracted data for ML model with ID: {MLModelId}", mlModelId);
+        try
+        {
+            // Log the beginning of the retrieval process
+            _logger.LogInformation("Attempting to retrieve extracted data for ML model with ID: {MLModelId}", mlModelId);
 
-                // Fetch the extracted data based on the provided ML model ID and map it to the DTO
-                var extractedDataList = await _unitOfWork.ExtractedDataRepo
-                    .GetByConditionAsync(w => w.Id == mlModelId)
-                    .Include(i => i.CreatedByUser)
-                    .Include(i => i.UploadedDoc)
-                    .ProjectToType<ExtractedDataResponseDto>()
-                    .ToListAsync();
+            // Fetch the extracted data based on the provided ML model ID and map it to the DTO
+            var extractedDataList = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.UploadedDoc)
+                .ProjectToType<ExtractedDataResponseDto>()
+                .ToListAsync();
 
 
-                // Log the successful retrieval of the setup
-                _logger.LogInformation("Successfully retrieved extracted data for ML model with ID: {MLModelId}", mlModelId);
+            // Log the successful retrieval of the setup
+            _logger.LogInformation("Successfully retrieved extracted data for ML model with ID: {MLModelId}", mlModelId);
 
-                // Set the successful response data
-                serviceResponse.Data = extractedDataList;
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "Extracted data retrieved successfully.";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error occurred while retrieving extracted data for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
-            }
-
-            return serviceResponse;
+            // Set the successful response data
+            serviceResponse.Data = extractedDataList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extracted data retrieved successfully.";
         }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error occurred while retrieving extracted data for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves a collection of extracted review data records associated with a specific machine learning model.
+    public async Task<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId)
+    {// Initialize the response with a default failure message and null data
+        var serviceResponse = new ServiceResponse<IEnumerable<ExtractedReviewDataDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve extracted review data. Please try again later."
+        };
+
+        try
+        {
+            // Log the beginning of the retrieval process
+            _logger.LogInformation("Attempting to retrieve extracted review data for ML model with ID: {MLModelId}", mlModelId);
+
+            // Fetch the extracted review data based on the provided ML model ID and map it to the DTO
+            var extractedReviewDataList = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.UploadedDoc)
+                .ProjectToType<ExtractedReviewDataDto>()
+                .ToListAsync();
+
+            // Log the successful retrieval of the setup
+            _logger.LogInformation("Successfully retrieved extracted review data for ML model with ID: {MLModelId}", mlModelId);
+
+            // Set the successful response data
+            serviceResponse.Data = extractedReviewDataList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extracted review data retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error occurred while retrieving extracted review data for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+        }
+
+        return serviceResponse;
     }
 }

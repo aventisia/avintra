@@ -38,7 +38,7 @@ public class ExtractedReviewDataDto
     /// Gets or sets the collection of extracted fields, categories, or structured data elements 
     /// identified within the document. These represent labeled or meaningful units such as names, dates,  totals, or classification tags.
     /// </summary>
-    public List<string>? Columns { get; set; }
+    public Dictionary<string, string>? Columns { get; set; }
 
     /// <summary>
     /// Gets or sets the type of data extracted, categorizing the nature of the content in the record.
