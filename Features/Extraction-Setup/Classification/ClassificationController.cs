@@ -32,4 +32,18 @@ public class ClassificationController : BaseApiController
     {
         return ResultHelper(await _classificationService.ExtractViaLLMAsync(extractRequestDto));
     }
+
+    // Retrieves a collection of extracted data records associated with a specific machine learning model.
+    [HttpGet("extracted-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ClassificationExtractedDataDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _classificationService.GetExtractedDataByMLModelIdAsync(mlModelId));
+    }
+
+    // Retrieves a collection of extracted review data records associated with a specific machine learning model.
+    [HttpGet("review-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>>> GetExtractedReviewDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _classificationService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
+    }
 }
