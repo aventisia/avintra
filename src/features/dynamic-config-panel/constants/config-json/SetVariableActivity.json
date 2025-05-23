@@ -14,6 +14,7 @@
       "type": "text",
       "label": "Value",
       "description": "The value to assign to the variable.",
+      "defaultValue": "",
       "required": true
     }
     
