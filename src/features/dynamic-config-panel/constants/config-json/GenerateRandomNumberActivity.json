@@ -44,7 +44,7 @@
   {
     "direction": "Output",
     "name": "RandomNumberOutput",
-    "type": "number",
+    "type": "config-panel-output",
     "label": "Random Number Output",
     "description": "The newly generated random number (for single mode).",
     "defaultValue": ""
@@ -52,7 +52,7 @@
   {
     "direction": "Output",
     "name": "RandomNumbersOutput",
-    "type": "list",
+    "type": "config-panel-output",
     "label": "Random Numbers List Output",
     "description": "The newly generated list of random numbers (for multi-mode).",
     "defaultValue": ""

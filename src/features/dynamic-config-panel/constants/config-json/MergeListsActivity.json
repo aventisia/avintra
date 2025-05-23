@@ -20,17 +20,9 @@
   {
     "direction": "Output",
     "name": "OutputListOutput",
-    "type": "text",
+    "type": "config-panel-output",
     "label": "Output List",
     "description": "The merged result from both input lists.",
     "defaultValue": ""
-  },
-  {
-    "direction": "Output",
-    "name": "OutputListSwitch",
-    "type": "switch",
-    "label": "Enable Output List",
-    "description": "Switch to enable or disable setting the output list field.",
-    "defaultValue": true
   }
 ]

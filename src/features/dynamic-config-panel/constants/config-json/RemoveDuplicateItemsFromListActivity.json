@@ -19,7 +19,7 @@
   {
     "direction": "Output",
     "name": "DeduplicatedList",
-    "type": "text",
+    "type": "config-panel-output",
     "label": "Deduplicated List",
     "description": "The list after removing duplicate items.",
     "defaultValue": ""

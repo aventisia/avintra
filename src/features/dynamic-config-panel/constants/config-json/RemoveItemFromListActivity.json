@@ -48,7 +48,7 @@
   {
     "direction": "Output",
     "name": "ModifiedList",
-    "type": "text",
+    "type": "config-panel-output",
     "label": "Modified List",
     "description": "The resulting list after removing the item(s).",
     "defaultValue": ""

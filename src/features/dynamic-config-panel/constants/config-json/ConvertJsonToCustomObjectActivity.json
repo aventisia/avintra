@@ -11,7 +11,7 @@
   {
     "direction": "Output",
     "name": "JsonAsCustomObjectOutput",
-    "type": "text",
+    "type": "config-panel-output",
     "label": "Custom Object Output",
     "description": "The resulting custom object after converting from JSON.",
     "required": true,
