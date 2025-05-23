@@ -146,7 +146,7 @@ export const variableActions: NodeDataType[] = [
     type: "activityNode",
     name: "DecreaseVariableActivity",
     label: "Decrease variable",
-    description: "Decrease the value of a variable by a specific amount.",
+    description: "Decreases a numeric variable by a specified value",
     docsLink: "/agent-builder/workflow-logics/variable/decrease-variable",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
