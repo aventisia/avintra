@@ -33,7 +33,7 @@ public class SentimentAnalyticsController : BaseApiController
         return ResultHelper(await _sentimentAnalyticsService.ExtractViaLLMAsync(extractRequestDto));
     }
 
-      // Retrieves a collection of extracted data records associated with a specific machine learning model.
+    // Retrieves a collection of extracted data records associated with a specific machine learning model.
     [HttpGet("extracted-data/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SentimentAnalyticsExtractedDataDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
     {

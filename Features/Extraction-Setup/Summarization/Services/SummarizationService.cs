@@ -124,67 +124,6 @@ public class SummarizationService : ISummarizationService
         return response;
     }
 
-    // Builds the prompt string for the summarization model using the setup settings
-    private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
-    {
-        var defaultPrompt = new StringBuilder();
-
-        switch (summarizationDto.SetupObject.SummarizationMethod)
-        {
-            case SummarizationMethodTypesEnum.MapReduce:
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
-                {
-                    defaultPrompt.AppendLine("Map Phase Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
-                }
-
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
-                {
-                    defaultPrompt.AppendLine("Reduce Phase Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
-                }
-                break;
-
-            case SummarizationMethodTypesEnum.Refine:
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
-                {
-                    defaultPrompt.AppendLine("Initial Refinement Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
-                }
-
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
-                {
-                    defaultPrompt.AppendLine("Subsequent Refinement Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
-                }
-                break;
-
-            case SummarizationMethodTypesEnum.Stuff:
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
-                {
-                    defaultPrompt.AppendLine("Stuff Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.StuffPrompt.Trim());
-                }
-                break;
-        }
-
-        // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SummarizationPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Context}}, {{CharactersPerChunk}}, {{ChunkOverlap}}, {{TotalMinimumWords}}, and {{TotalMaximumWords}} in the template with the respective sections
-                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                        {"{{Context}}", summarizationDto.SetupObject.Context.ToString()  },
-                        {"{{CharactersPerChunk}}", summarizationDto.SetupObject.CharactersPerChunk.ToString()},
-                        {"{{ChunkOverlap}}", summarizationDto.SetupObject.ChunkOverlap.ToString()},
-                        {"{{TotalMinimumWords}}", summarizationDto.SetupObject.TotalMinimumWords.ToString() },
-                        {"{{TotalMaximumWords}}", summarizationDto.SetupObject.TotalMaximumWords.ToString()}
-                    }
-                );
-
-        // Return the final generated prompt after replacing newline characters and returning the string
-        return generatedPrompt.Replace("\n", "").ToString();
-    }
-
     // Retrieves the summarization setup for a given ML model ID
     public async Task<ServiceResponse<SummarizationDto>> GetSummarizationSetupByMLModelIdAsync(Guid mlModelId)
     {
@@ -236,7 +175,7 @@ public class SummarizationService : ISummarizationService
 
         try
         {
-            _logger.LogInformation("Starting summarization extraction for ModelId: {ModelId}", extractRequestDto.ModelId);
+            _logger.LogInformation("Starting summarization for ModelId: {ModelId}", extractRequestDto.ModelId);
 
             // Retrieve the model from the repository
             var model = await _unitOfWork.MLModelRepo
@@ -269,18 +208,18 @@ public class SummarizationService : ISummarizationService
             // Initialize a list to store data that will be updated into the database.
             var extractedDataToBeUpdated = new List<ExtractedData>();
 
-            _logger.LogInformation("Starting extraction for {FileCount} files", extractRequestDto.FileIds.Count);
+            _logger.LogInformation("Starting for {FileCount} files", extractRequestDto.FileIds.Count);
 
             // Process each file ID to extract summarization data
             foreach (var fileId in extractRequestDto.FileIds)
             {
-                _logger.LogInformation("Processing extraction for FileId: {FileId}", fileId);
+                _logger.LogInformation("Processing for FileId: {FileId}", fileId);
 
                 var extractedData = new SummarizationSetupFileData
                 {
                     ExtractedData = new SummarizationSetupData(),
                     FileId = fileId,
-                    Remarks = $"001: Summarization extraction failed for FileId: {fileId}."
+                    Remarks = $"001: Summarization failed for FileId: {fileId}."
                 };
 
                 // Retrieve file from repository
@@ -302,8 +241,8 @@ public class SummarizationService : ISummarizationService
                 // Check if LLM extraction was successful
                 if (llmResponse.StatusCode != 200)
                 {
-                    _logger.LogWarning("LLM summarization extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
-                    extractedData.Remarks = $"003: LLM summarization extraction failed. {llmResponse.Message}";
+                    _logger.LogWarning("LLM summarization failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
+                    extractedData.Remarks = $"003: LLM summarization failed. {llmResponse.Message}";
                     extractedDataList.Add(extractedData);
                     continue;
                 }
@@ -408,14 +347,14 @@ public class SummarizationService : ISummarizationService
             serviceResponse.Data = extractResponseDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed")) ?
-                                        "Summarization extraction failed for one or more files" :
-                                        "Summarization extraction completed successfully";
+                                        "Summarization failed for one or more files" :
+                                        "Summarization completed successfully";
 
-            _logger.LogInformation("Summarization extraction process finished. Status: {Message}", serviceResponse.Message);
+            _logger.LogInformation("Summarization process finished. Status: {Message}", serviceResponse.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred during summarization extraction via LLM.");
+            _logger.LogError(ex, "Error occurred during summarization via LLM.");
         }
 
         return serviceResponse;
@@ -497,5 +436,66 @@ public class SummarizationService : ISummarizationService
         }
 
         return serviceResponse;
+    }
+
+    // Builds the prompt string for the summarization model using the setup settings
+    private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
+    {
+        var defaultPrompt = new StringBuilder();
+
+        switch (summarizationDto.SetupObject.SummarizationMethod)
+        {
+            case SummarizationMethodTypesEnum.MapReduce:
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
+                {
+                    defaultPrompt.AppendLine("Map Phase Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
+                }
+
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
+                {
+                    defaultPrompt.AppendLine("Reduce Phase Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
+                }
+                break;
+
+            case SummarizationMethodTypesEnum.Refine:
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
+                {
+                    defaultPrompt.AppendLine("Initial Refinement Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
+                }
+
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
+                {
+                    defaultPrompt.AppendLine("Subsequent Refinement Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
+                }
+                break;
+
+            case SummarizationMethodTypesEnum.Stuff:
+                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
+                {
+                    defaultPrompt.AppendLine("Stuff Prompt:");
+                    defaultPrompt.AppendLine(summarizationDto.SetupObject.StuffPrompt.Trim());
+                }
+                break;
+        }
+
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SummarizationPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, {{CharactersPerChunk}}, {{ChunkOverlap}}, {{TotalMinimumWords}}, and {{TotalMaximumWords}} in the template with the respective sections
+                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
+                        {"{{Context}}", summarizationDto.SetupObject.Context.ToString()  },
+                        {"{{CharactersPerChunk}}", summarizationDto.SetupObject.CharactersPerChunk.ToString()},
+                        {"{{ChunkOverlap}}", summarizationDto.SetupObject.ChunkOverlap.ToString()},
+                        {"{{TotalMinimumWords}}", summarizationDto.SetupObject.TotalMinimumWords.ToString() },
+                        {"{{TotalMaximumWords}}", summarizationDto.SetupObject.TotalMaximumWords.ToString()}
+                    }
+                );
+
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 }

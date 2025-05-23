@@ -32,6 +32,7 @@ public class SummarizationMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
+            
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, SummarizationExtractedDataDto>()
             .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<SummarizationSetupData>(
@@ -67,8 +68,11 @@ public class SummarizationMappingProfile : IRegister
                 : null);
     }
 
+    // Deserializes a JSON string into a SummarizationSetupData object,
     private static Dictionary<string, string>? DeserializeSummarizationSetupDto(string dataObject)
     {
+        // Attempt to deserialize the input JSON string into a SummarizationSetupData object.
+        // PropertyNameCaseInsensitive allows matching JSON keys regardless of casing.
         var extractedData = JsonSerializer.Deserialize<SummarizationSetupData>(
             dataObject,
             new JsonSerializerOptions
@@ -76,12 +80,14 @@ public class SummarizationMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
+        // If deserialization fails or the Summary property is null, return null.
         if (extractedData == null || extractedData?.Summary == null)
             return null;
 
+        // Return a dictionary containing the "Summary" property from the deserialized object.
         return new Dictionary<string, string>
-    {
-        { "Summary", extractedData.Summary }
-    };
+        {
+            { "Summary", extractedData.Summary }
+        };
     }
 }

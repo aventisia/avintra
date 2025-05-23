@@ -77,43 +77,6 @@ public class QuestionAnswerService : IQuestionAnswerService
         return serviceResponse;
     }
 
-    // Builds the prompt string for the QuestionAnswer model based on provided setup details
-    private string? GenerateQuestionAnswerModelPrompt(QuestionAnswerDto QuestionAnswerDto)
-    {
-        var promptBuilder = new StringBuilder();
-
-        // Use a custom prompt if provided; otherwise, use the default instruction
-        promptBuilder.AppendLine(!string.IsNullOrEmpty(QuestionAnswerDto.SetupObject?.Prompt)
-            ? QuestionAnswerDto.SetupObject.Prompt.Trim()
-            : "You are an expert in answering questions. Your task is to analyze and classify the content provided.");
-
-        var questionAnswerBuilder = new StringBuilder();
-
-        // Add instructions based on predefined question and answer, if available
-        if (QuestionAnswerDto.SetupObject?.QuestionAnswers != null && QuestionAnswerDto.SetupObject.QuestionAnswers.Any())
-        {
-            for (int i = 0; i < QuestionAnswerDto.SetupObject.QuestionAnswers.Count; i++)
-            {
-                var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
-                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                questionAnswerBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
-            }
-        }
-
-        // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("QuestionAnswerPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Questions}} in the template with the respective sections
-                        {"{{Prompt}}", promptBuilder.Replace("\n","").ToString()  },
-                        {"{{Context}}", QuestionAnswerDto.SetupObject.Context.Replace("\n","").ToString() },
-                        {"{{Questions}}", questionAnswerBuilder.Replace("\n","").ToString() },
-                    }
-                );
-
-        // Return the final generated prompt after replacing newline characters and returning the string
-        return generatedPrompt.Replace("\n", "").ToString();
-    }
-
     // Retrieves the QuestionAnswer setup associated with a specific ML model
     public async Task<ServiceResponse<QuestionAnswerDto>> GetQuestionAnswerSetupByMLModelIdAsync(Guid mlModelId)
     {
@@ -360,7 +323,7 @@ public class QuestionAnswerService : IQuestionAnswerService
         return serviceResponse;
     }
 
-        // Retrieves a collection of extracted data records associated with a specific machine learning model.
+    // Retrieves a collection of extracted data records associated with a specific machine learning model.
     public async Task<ServiceResponse<IEnumerable<QuestionAnswerExtractedDataDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
     {
         // Initialize the response with a default failure message and null data
@@ -436,5 +399,42 @@ public class QuestionAnswerService : IQuestionAnswerService
         }
 
         return serviceResponse;
+    }
+
+    // Builds the prompt string for the QuestionAnswer model based on provided setup details
+    private string? GenerateQuestionAnswerModelPrompt(QuestionAnswerDto QuestionAnswerDto)
+    {
+        var promptBuilder = new StringBuilder();
+
+        // Use a custom prompt if provided; otherwise, use the default instruction
+        promptBuilder.AppendLine(!string.IsNullOrEmpty(QuestionAnswerDto.SetupObject?.Prompt)
+            ? QuestionAnswerDto.SetupObject.Prompt.Trim()
+            : "You are an expert in answering questions. Your task is to analyze and classify the content provided.");
+
+        var questionAnswerBuilder = new StringBuilder();
+
+        // Add instructions based on predefined question and answer, if available
+        if (QuestionAnswerDto.SetupObject?.QuestionAnswers != null && QuestionAnswerDto.SetupObject.QuestionAnswers.Any())
+        {
+            for (int i = 0; i < QuestionAnswerDto.SetupObject.QuestionAnswers.Count; i++)
+            {
+                var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
+                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
+                questionAnswerBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
+            }
+        }
+
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("QuestionAnswerPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Questions}} in the template with the respective sections
+                        {"{{Prompt}}", promptBuilder.Replace("\n","").ToString()  },
+                        {"{{Context}}", QuestionAnswerDto.SetupObject.Context.Replace("\n","").ToString() },
+                        {"{{Questions}}", questionAnswerBuilder.Replace("\n","").ToString() },
+                    }
+                );
+
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 }

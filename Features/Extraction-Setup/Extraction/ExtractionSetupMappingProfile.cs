@@ -67,8 +67,12 @@ public class ExtractionSetupMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
     }
+
+    // Deserializes a JSON string into an ExtractionSetupData object, and returns a dictionary containing field names and values if present.
     private static Dictionary<string, string>? DeserializeExtractionSetupDto(string dataObject)
     {
+        // Attempt to deserialize the input JSON string into an ExtractionSetupData object.
+        // Case-insensitive property matching is enabled for flexibility with JSON input.
         var extractedData = JsonSerializer.Deserialize<ExtractionSetupData>(
             dataObject,
             new JsonSerializerOptions
@@ -76,10 +80,12 @@ public class ExtractionSetupMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
+        // If deserialization fails or the Fields property is null, return null.
         if (extractedData == null || extractedData.Fields == null)
             return null;
 
-        // Convert Fields to Dictionary<string, string>
+        // Convert the list of fields into a dictionary using Name as the key and Value as the value.
+        // The null-forgiving operator (!) is used here since we've already checked for null.
         return extractedData.Fields.ToDictionary(s => s.Name, s => s.Value)!;
     }
 }

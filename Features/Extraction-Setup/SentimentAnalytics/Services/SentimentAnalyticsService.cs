@@ -77,43 +77,6 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
         return serviceResponse;
     }
 
-    // Builds the prompt string used by the ML model to perform sentiment analysis based on the configuration
-    private string? GenerateSentimentAnalyticsModelPrompt(SentimentAnalyticDto sentimentAnalyticDto)
-    {
-        var defaultPrompt = new StringBuilder();
-
-        // Use the custom prompt if provided, otherwise use a default instruction
-        defaultPrompt.AppendLine(!string.IsNullOrEmpty(sentimentAnalyticDto.SetupObject?.Prompt)
-            ? sentimentAnalyticDto.SetupObject.Prompt.Trim()
-            : "You are a sentiment analysis expert. Your task is to accurately classify the sentiment of the provided content.");
-
-        var categoriesPrompt = new StringBuilder();
-
-        // Add category-based classification instructions if defined
-        if (sentimentAnalyticDto.SetupObject?.Categories != null && sentimentAnalyticDto.SetupObject.Categories.Any())
-        {
-            for (int i = 0; i < sentimentAnalyticDto.SetupObject.Categories.Count; i++)
-            {
-                var category = sentimentAnalyticDto.SetupObject.Categories[i];
-                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                categoriesPrompt.AppendLine($"{i + 1}. {category.Name}{instructions}");
-            }
-        }
-
-        // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SentimentAnalyticsPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Categories}} in the template with the respective sections
-                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                        {"{{Context}}", sentimentAnalyticDto.SetupObject.Context.Replace("\n","").ToString() },
-                        {"{{Categories}}", categoriesPrompt.Replace("\n","").ToString() },
-                    }
-                );
-
-        // Return the final generated prompt after replacing newline characters and returning the string
-        return generatedPrompt.Replace("\n", "").ToString();
-    }
-
     // Retrieves the sentiment analytics setup for a given machine learning model ID
     public async Task<ServiceResponse<SentimentAnalyticDto>> GetSentimentAnalyticsSetupByMLModelIdAsync(Guid mlModelId)
     {
@@ -402,7 +365,8 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
 
     // Retrieves a collection of extracted review data records associated with a specific machine learning model.
     public async Task<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId)
-    {// Initialize the response with a default failure message and null data
+    {
+        // Initialize the response with a default failure message and null data
         var serviceResponse = new ServiceResponse<IEnumerable<ExtractedReviewDataDto>>
         {
             Data = null,
@@ -436,5 +400,42 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
         }
 
         return serviceResponse;
+    }
+
+    // Builds the prompt string used by the ML model to perform sentiment analysis based on the configuration
+    private string? GenerateSentimentAnalyticsModelPrompt(SentimentAnalyticDto sentimentAnalyticDto)
+    {
+        var defaultPrompt = new StringBuilder();
+
+        // Use the custom prompt if provided, otherwise use a default instruction
+        defaultPrompt.AppendLine(!string.IsNullOrEmpty(sentimentAnalyticDto.SetupObject?.Prompt)
+            ? sentimentAnalyticDto.SetupObject.Prompt.Trim()
+            : "You are a sentiment analysis expert. Your task is to accurately classify the sentiment of the provided content.");
+
+        var categoriesPrompt = new StringBuilder();
+
+        // Add category-based classification instructions if defined
+        if (sentimentAnalyticDto.SetupObject?.Categories != null && sentimentAnalyticDto.SetupObject.Categories.Any())
+        {
+            for (int i = 0; i < sentimentAnalyticDto.SetupObject.Categories.Count; i++)
+            {
+                var category = sentimentAnalyticDto.SetupObject.Categories[i];
+                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
+                categoriesPrompt.AppendLine($"{i + 1}. {category.Name}{instructions}");
+            }
+        }
+
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SentimentAnalyticsPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Categories}} in the template with the respective sections
+                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
+                        {"{{Context}}", sentimentAnalyticDto.SetupObject.Context.Replace("\n","").ToString() },
+                        {"{{Categories}}", categoriesPrompt.Replace("\n","").ToString() },
+                    }
+                );
+
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 }

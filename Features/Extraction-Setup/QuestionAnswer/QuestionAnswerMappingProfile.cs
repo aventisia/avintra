@@ -32,7 +32,8 @@ public class QuestionAnswerMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
- // Mapping of DTO to get list of extracted data.
+            
+        // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, QuestionAnswerExtractedDataDto>()
             .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
                 src.DataObject, new JsonSerializerOptions
@@ -67,8 +68,11 @@ public class QuestionAnswerMappingProfile : IRegister
                 : null);
     }
 
+    // Deserializes a JSON string representing a list of QuestionAnswerSetupData objects, and returns a dictionary mapping each Question to its corresponding Answer.
     private static Dictionary<string, string>? DeserializeQuestionAnswerSetupDto(string dataObject)
     {
+        // Deserialize the input JSON string into a list of QuestionAnswerSetupData objects.
+        // Case-insensitive deserialization ensures matching JSON keys regardless of casing.
         var extractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
             dataObject,
             new JsonSerializerOptions
@@ -76,10 +80,12 @@ public class QuestionAnswerMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
+        // If deserialization fails or the resulting list is empty, return null.
         if (extractedData == null || !extractedData.Any())
             return null;
 
-        // Convert Fields to Dictionary<string, string>
+        // Convert the list into a dictionary using Question as the key and Answer as the value.
+        // The null-forgiving operator (!) is used because null has already been checked above.
         return extractedData.ToDictionary(s => s.Question, s => s.Answer)!;
     }
 }

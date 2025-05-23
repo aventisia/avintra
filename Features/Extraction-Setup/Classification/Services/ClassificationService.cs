@@ -77,45 +77,6 @@ public class ClassificationService : IClassificationService
         return serviceResponse;
     }
 
-    // Constructs the prompt string for the classification model based on configuration details
-    private string? GenerateClassificationModelPrompt(ClassificationDto classificationDto)
-    {
-        var promptStringBuilder = new StringBuilder();
-
-        // Use custom prompt if provided; otherwise, default to a generic classification instruction
-        promptStringBuilder.AppendLine(!string.IsNullOrEmpty(classificationDto.SetupObject?.Prompt)
-            ? classificationDto.SetupObject.Prompt.Trim()
-            : "You are a classification expert. Your task is to classify the provided content.");
-
-        var categoriesStringBuilder = new StringBuilder();
-
-        // Include category-based classification instructions if defined
-        if (classificationDto.SetupObject?.Categories != null && classificationDto.SetupObject.Categories.Any())
-        {
-            for (int i = 0; i < classificationDto.SetupObject.Categories.Count; i++)
-            {
-                var category = classificationDto.SetupObject.Categories[i];
-                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                categoriesStringBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
-            }
-        }
-
-        // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ClassificationPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Categories}} in the template with the respective sections
-                        {"{{Prompt}}", promptStringBuilder.Replace("\n","").ToString()  },
-                        {"{{Context}}", classificationDto.SetupObject.Context.Replace("\n","").ToString() },
-                        {"{{AllowMultipleClasses}}", classificationDto.SetupObject.AllowMultipleClasses.ToString() },
-                        {"{{UncertaintyAction}}", classificationDto.SetupObject.UncertaintyAction.ToString() },
-                        {"{{Categories}}", categoriesStringBuilder.Replace("\n","").ToString() },
-                    }
-                );
-
-        // Return the final generated prompt after replacing newline characters and returning the string
-        return generatedPrompt.Replace("\n", "").ToString();
-    }
-
     // Retrieves the classification setup for a specific ML model
     public async Task<ServiceResponse<ClassificationDto>> GetClassificationSetupByMLModelIdAsync(Guid mlModelId)
     {
@@ -439,5 +400,44 @@ public class ClassificationService : IClassificationService
         }
 
         return serviceResponse;
+    }
+
+    // Constructs the prompt string for the classification model based on configuration details
+    private string? GenerateClassificationModelPrompt(ClassificationDto classificationDto)
+    {
+        var promptStringBuilder = new StringBuilder();
+
+        // Use custom prompt if provided; otherwise, default to a generic classification instruction
+        promptStringBuilder.AppendLine(!string.IsNullOrEmpty(classificationDto.SetupObject?.Prompt)
+            ? classificationDto.SetupObject.Prompt.Trim()
+            : "You are a classification expert. Your task is to classify the provided content.");
+
+        var categoriesStringBuilder = new StringBuilder();
+
+        // Include category-based classification instructions if defined
+        if (classificationDto.SetupObject?.Categories != null && classificationDto.SetupObject.Categories.Any())
+        {
+            for (int i = 0; i < classificationDto.SetupObject.Categories.Count; i++)
+            {
+                var category = classificationDto.SetupObject.Categories[i];
+                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
+                categoriesStringBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
+            }
+        }
+
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ClassificationPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{Categories}} in the template with the respective sections
+                        {"{{Prompt}}", promptStringBuilder.Replace("\n","").ToString()  },
+                        {"{{Context}}", classificationDto.SetupObject.Context.Replace("\n","").ToString() },
+                        {"{{AllowMultipleClasses}}", classificationDto.SetupObject.AllowMultipleClasses.ToString() },
+                        {"{{UncertaintyAction}}", classificationDto.SetupObject.UncertaintyAction.ToString() },
+                        {"{{Categories}}", categoriesStringBuilder.Replace("\n","").ToString() },
+                    }
+                );
+
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
     }
 }

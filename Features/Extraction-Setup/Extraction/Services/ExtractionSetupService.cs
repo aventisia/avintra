@@ -88,89 +88,6 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
-    // Generates a prompt string used to guide the ML model for extracting data from documents, based on the provided model setup.
-    private string? GenerateExtractionModelPrompt(MLModelSetupDto mlModelSetupDto)
-    {
-        // Initialize a StringBuilder to build the default prompt string
-        var defaultPrompt = new StringBuilder();
-
-        // Add the base instruction or use the provided NodePrompt from the setup object
-        // If mlModelSetupDto.SetupObject.Prompt is not null or empty, it will be used. Otherwise, a default message is added.
-        defaultPrompt.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.Prompt)
-            ? mlModelSetupDto.SetupObject.Prompt.Trim()
-            : "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
-
-        // Initialize a StringBuilder for storing field extraction instructions
-        var fieldInstruction = new StringBuilder();
-
-        // Section: Field extraction instructions
-        if (mlModelSetupDto.SetupObject?.FieldSetups != null && mlModelSetupDto.SetupObject.FieldSetups.Any())
-        {
-            // Iterate through the list of field setups in the model setup object
-            for (int i = 0; i < mlModelSetupDto.SetupObject.FieldSetups.Count; i++)
-            {
-                var field = mlModelSetupDto.SetupObject.FieldSetups[i];
-
-                // If there are specific instructions for the field, append them, otherwise leave it blank
-                var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
-
-                // Append each field's details, including its name, type, and instructions if available
-                fieldInstruction.AppendLine($"{i + 1}. {field.Name} (type: {field.Type}){instructions}");
-            }
-        }
-
-        // Initialize a StringBuilder for storing table extraction instructions
-        var tableInstruction = new StringBuilder();
-
-        // Section: Table extraction instructions
-        if (mlModelSetupDto.SetupObject?.TableMetadata != null && mlModelSetupDto.SetupObject.TableMetadata.Any())
-        {
-            // Iterate through the list of table metadata in the model setup object
-            foreach (var table in mlModelSetupDto.SetupObject.TableMetadata)
-            {
-                // Add a new line and introduce the table extraction step
-                tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
-
-                // Display the table name with context if provided
-                tableInstruction.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
-
-                // Inform the user about the columns to extract
-                tableInstruction.AppendLine("Please extract the following columns:");
-
-                // Check if table headers exist and loop through them to extract column info
-                if (table.TableHeaders != null)
-                {
-                    for (int i = 0; i < table.TableHeaders.Count; i++)
-                    {
-                        var column = table.TableHeaders[i];
-
-                        // Append instructions for the column, if any
-                        var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
-
-                        // Append each column's details, including its name, type, and instructions if available
-                        tableInstruction.AppendLine($"{i + 1}. {column.Name} (type: {column.Type}){instructions}");
-                    }
-                }
-            }
-        }
-        else
-        {
-            tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
-        }
-        // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Fields}}, and {{Tables}} in the template with the respective sections
-                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                        {"{{Fields}}", fieldInstruction.Replace("\n","").ToString() },
-                        {"{{Tables}}", tableInstruction.Replace("\n","").ToString() }
-                    }
-                );
-
-        // Return the final generated prompt after replacing newline characters and returning the string
-        return generatedPrompt.Replace("\n", "").ToString();
-    }
-
     public async Task<ServiceResponse<MLModelSetupDto>> GetExtractionSetupByMLModelIdAsync(Guid mlModelId)
     {
         // Initialize the response with a default failure message and null data
@@ -499,4 +416,88 @@ public class ExtractionSetupService : IExtractionSetupService
 
         return serviceResponse;
     }
+
+    // Generates a prompt string used to guide the ML model for extracting data from documents, based on the provided model setup.
+    private string? GenerateExtractionModelPrompt(MLModelSetupDto mlModelSetupDto)
+    {
+        // Initialize a StringBuilder to build the default prompt string
+        var defaultPrompt = new StringBuilder();
+
+        // Add the base instruction or use the provided NodePrompt from the setup object
+        // If mlModelSetupDto.SetupObject.Prompt is not null or empty, it will be used. Otherwise, a default message is added.
+        defaultPrompt.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.Prompt)
+            ? mlModelSetupDto.SetupObject.Prompt.Trim()
+            : "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
+
+        // Initialize a StringBuilder for storing field extraction instructions
+        var fieldInstruction = new StringBuilder();
+
+        // Section: Field extraction instructions
+        if (mlModelSetupDto.SetupObject?.FieldSetups != null && mlModelSetupDto.SetupObject.FieldSetups.Any())
+        {
+            // Iterate through the list of field setups in the model setup object
+            for (int i = 0; i < mlModelSetupDto.SetupObject.FieldSetups.Count; i++)
+            {
+                var field = mlModelSetupDto.SetupObject.FieldSetups[i];
+
+                // If there are specific instructions for the field, append them, otherwise leave it blank
+                var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
+
+                // Append each field's details, including its name, type, and instructions if available
+                fieldInstruction.AppendLine($"{i + 1}. {field.Name} (type: {field.Type}){instructions}");
+            }
+        }
+
+        // Initialize a StringBuilder for storing table extraction instructions
+        var tableInstruction = new StringBuilder();
+
+        // Section: Table extraction instructions
+        if (mlModelSetupDto.SetupObject?.TableMetadata != null && mlModelSetupDto.SetupObject.TableMetadata.Any())
+        {
+            // Iterate through the list of table metadata in the model setup object
+            foreach (var table in mlModelSetupDto.SetupObject.TableMetadata)
+            {
+                // Add a new line and introduce the table extraction step
+                tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
+
+                // Display the table name with context if provided
+                tableInstruction.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
+
+                // Inform the user about the columns to extract
+                tableInstruction.AppendLine("Please extract the following columns:");
+
+                // Check if table headers exist and loop through them to extract column info
+                if (table.TableHeaders != null)
+                {
+                    for (int i = 0; i < table.TableHeaders.Count; i++)
+                    {
+                        var column = table.TableHeaders[i];
+
+                        // Append instructions for the column, if any
+                        var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
+
+                        // Append each column's details, including its name, type, and instructions if available
+                        tableInstruction.AppendLine($"{i + 1}. {column.Name} (type: {column.Type}){instructions}");
+                    }
+                }
+            }
+        }
+        else
+        {
+            tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
+        }
+        // Load a template file and replace placeholders with the generated prompt sections
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
+                    {
+                        // Replace the placeholders {{Prompt}}, {{Fields}}, and {{Tables}} in the template with the respective sections
+                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
+                        {"{{Fields}}", fieldInstruction.Replace("\n","").ToString() },
+                        {"{{Tables}}", tableInstruction.Replace("\n","").ToString() }
+                    }
+                );
+
+        // Return the final generated prompt after replacing newline characters and returning the string
+        return generatedPrompt.Replace("\n", "").ToString();
+    }
 }
+

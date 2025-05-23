@@ -54,7 +54,7 @@ public class ClassificationMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted review data.
         config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
-            .Map(dest => dest.Columns, src => DeserializeExtractionSetupDto(src.DataObject))
+            .Map(dest => dest.Columns, src => DeserializeClassificationSetupDto(src.DataObject))
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name
@@ -67,8 +67,12 @@ public class ClassificationMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
     }
-    private static Dictionary<string, string>? DeserializeExtractionSetupDto(string dataObject)
+
+    // Deserializes a JSON string representing a list of ClassificationSetupData objects, and returns a dictionary mapping each Name to its corresponding Value.
+    private static Dictionary<string, string>? DeserializeClassificationSetupDto(string dataObject)
     {
+        // Deserialize the input JSON string into a list of ClassificationSetupData objects.
+        // PropertyNameCaseInsensitive enables case-insensitive property name matching during deserialization.
         var extractedData = JsonSerializer.Deserialize<List<ClassificationSetupData>>(
             dataObject,
             new JsonSerializerOptions
@@ -76,10 +80,11 @@ public class ClassificationMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
-        if (extractedData == null || !extractedData?.Any() == null)
+        // Corrected: Check if extractedData is null or empty.
+        if (extractedData == null || !extractedData.Any())
             return null;
 
-        // Convert Fields to Dictionary<string, string>
+        // Convert the list into a dictionary using Name as the key and Value as the value.
         return extractedData.ToDictionary(s => s.Name, s => s.Value)!;
     }
 }
