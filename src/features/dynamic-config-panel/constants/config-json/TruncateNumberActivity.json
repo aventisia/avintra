@@ -1,0 +1,56 @@
+[
+  {
+    "direction": "Input",
+    "name": "Number",
+    "type": "text",
+    "label": "Number",
+    "description": "The number to operate on. This can be a number, or a variable containing a number",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "name": "Operation",
+    "type": "select",
+    "label": "Operation",
+    "description": "Specifies the operation to perform on the number.",
+    "selectOptions": [
+      {
+        "label": "Get Integer Part",
+        "value": "GetIntegerPart",
+        "description": "Extracts the integer part of the number."
+      },
+      {
+        "label": "Get Decimal Part",
+        "value": "GetDecimalPart",
+        "description": "Extracts the decimal part of the number."
+      },
+      {
+        "label": "Round Number",
+        "value": "GetRoundNumber",
+        "GetRoundNumber": "Rounds the number to a specified number of decimal places."
+      }
+    ],
+    "defaultValue": "GetIntegerPart",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "name": "DecimalPlaces",
+    "type": "text",
+    "label": "Decimal Places",
+    "description": "The number of decimal places to round to. Required only if the operation is 'RoundNumber'.",
+    "defaultValue": "2"
+  },
+  {
+    "direction": "Output",
+    "name": "Result",
+    "type": "config-panel-output",
+    "label": "Result",
+    "description": "Returns the result of the operation.",
+    "defaultValue": {
+      "value": "truncatedNumber",
+      "enabled": true
+    }
+  }
+]
