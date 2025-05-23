@@ -1,7 +1,3 @@
-import {
-  getMySession,
-  refreshSession,
-} from "@/react-toolkit/apis/accounts-me-apis";
 import { Button } from "@/react-toolkit/ui/buttons/Button";
 import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -49,22 +45,12 @@ const ExecuteFlow = () => {
   // Tauri API to open desktop executor
   const openDesktopExecutor = async () => {
     try {
-      // Get fresh JWT token
-      const response = import.meta.env.DEV
-        ? await getMySession()
-        : await refreshSession();
-
-      // Once promise is resolved
-      if (response) {
-        // Call the Tauri command to launch the desktop executor
-        await invoke("launch_desktop_executor", {
-          agentName: currentFlow.name,
-          agentId: currentFlow.id,
-          jwt: response.data.accessToken ?? "jwt",
-        })
-          .then((res) => console.log(res))
-          .catch((e) => console.error(e));
-      }
+      // Call the Tauri command to launch the desktop executor
+      await invoke("launch_desktop_executor", {
+        agentName: currentFlow.name,
+      })
+        .then((res) => console.log(res))
+        .catch((e) => console.error(e));
     } catch (error) {
       console.error("Failed to launch node executor", error);
       setFlowState("stopped"); // Reset the executing state on failure
