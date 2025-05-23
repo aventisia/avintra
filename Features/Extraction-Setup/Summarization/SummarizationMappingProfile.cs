@@ -32,5 +32,56 @@ public class SummarizationMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
+        // Mapping of DTO to get list of extracted data.
+        config.NewConfig<ExtractedData, SummarizationExtractedDataDto>()
+            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<SummarizationSetupData>(
+                src.DataObject, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }))
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
+
+        // Mapping of DTO to get list of extracted review data.
+        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+            .Map(dest => dest.Columns, src => DeserializeSummarizationSetupDto(src.DataObject))
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
+    }
+
+    private static Dictionary<string, string>? DeserializeSummarizationSetupDto(string dataObject)
+    {
+        var extractedData = JsonSerializer.Deserialize<SummarizationSetupData>(
+            dataObject,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        if (extractedData == null || extractedData?.Summary == null)
+            return null;
+
+        return new Dictionary<string, string>
+    {
+        { "Summary", extractedData.Summary }
+    };
     }
 }

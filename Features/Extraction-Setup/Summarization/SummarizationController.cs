@@ -32,4 +32,18 @@ public class SummarizationController : BaseApiController
     {
         return ResultHelper(await _summarizationService.ExtractViaLLMAsync(extractRequestDto));
     }
+
+    // Retrieves a collection of extracted data records associated with a specific machine learning model.
+    [HttpGet("extracted-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SummarizationExtractedDataDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _summarizationService.GetExtractedDataByMLModelIdAsync(mlModelId));
+    }
+
+    // Retrieves a collection of extracted review data records associated with a specific machine learning model.
+    [HttpGet("review-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>>> GetExtractedReviewDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _summarizationService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
+    }
 }
