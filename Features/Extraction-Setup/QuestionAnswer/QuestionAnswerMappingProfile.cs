@@ -32,7 +32,7 @@ public class QuestionAnswerMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
-            
+
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, QuestionAnswerExtractedDataDto>()
             .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
@@ -53,7 +53,7 @@ public class QuestionAnswerMappingProfile : IRegister
                 : null);
 
         // Mapping of DTO to get list of extracted review data.
-        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+        config.NewConfig<ExtractedData, QuestionAnswerReviewDataDto>()
             .Map(dest => dest.Columns, src => DeserializeQuestionAnswerSetupDto(src.DataObject))
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null

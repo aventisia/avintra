@@ -53,7 +53,7 @@ public class ClassificationMappingProfile : IRegister
                 : null);
 
         // Mapping of DTO to get list of extracted review data.
-        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+        config.NewConfig<ExtractedData, ClassificationReviewDataDto>()
             .Map(dest => dest.Columns, src => DeserializeClassificationSetupDto(src.DataObject))
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null

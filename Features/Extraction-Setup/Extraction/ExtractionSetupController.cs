@@ -42,7 +42,7 @@ public class ExtractionSetupController : BaseApiController
 
     // Retrieves a collection of extracted review data records associated with a specific machine learning model.
     [HttpGet("review-data/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>>> GetExtractedReviewDataByMLModelId(Guid mlModelId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractionReviewDataDto>>>> GetExtractedReviewDataByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _extractionSetupService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
     }

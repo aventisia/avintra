@@ -52,7 +52,7 @@ public interface IQuestionAnswerService
     /// </summary>
     /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
     /// <returns>
-    /// A task representing the asynchronous operation, containing a service response with a collection of <see cref="ExtractedReviewDataDto"/> objects.
+    /// A task representing the asynchronous operation, containing a service response with a collection of <see cref="QuestionAnswerReviewDataDto"/> objects.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId);
+    Task<ServiceResponse<IEnumerable<QuestionAnswerReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId);
 }

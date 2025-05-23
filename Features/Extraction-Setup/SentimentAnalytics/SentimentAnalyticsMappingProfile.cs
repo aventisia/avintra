@@ -53,7 +53,7 @@ public class SentimentAnalyticsMappingProfile : IRegister
                 : null);
 
         // Mapping of DTO to get list of extracted review data.
-        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+        config.NewConfig<ExtractedData, SentimentAnalyticsReviewDataDto>()
             .Map(dest => dest.Columns, src => DeserializeSentimentAnalyticsSetupDto(src.DataObject))
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null

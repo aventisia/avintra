@@ -53,7 +53,7 @@ public class SummarizationMappingProfile : IRegister
                 : null);
 
         // Mapping of DTO to get list of extracted review data.
-        config.NewConfig<ExtractedData, ExtractedReviewDataDto>()
+        config.NewConfig<ExtractedData, SummarizationReviewDataDto>()
             .Map(dest => dest.Columns, src => DeserializeSummarizationSetupDto(src.DataObject))
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null

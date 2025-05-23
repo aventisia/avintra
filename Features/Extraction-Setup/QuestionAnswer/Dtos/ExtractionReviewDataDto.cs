@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-public class ExtractedReviewDataDto
+public class QuestionAnswerReviewDataDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for this extracted data record.

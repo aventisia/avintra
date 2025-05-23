@@ -364,10 +364,10 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
     }
 
     // Retrieves a collection of extracted review data records associated with a specific machine learning model.
-    public async Task<ServiceResponse<IEnumerable<ExtractedReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId)
+    public async Task<ServiceResponse<IEnumerable<SentimentAnalyticsReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId)
     {
         // Initialize the response with a default failure message and null data
-        var serviceResponse = new ServiceResponse<IEnumerable<ExtractedReviewDataDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SentimentAnalyticsReviewDataDto>>
         {
             Data = null,
             Message = "Failed to retrieve extracted review data. Please try again later."
@@ -383,7 +383,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 .GetByConditionAsync(w => w.MLModelId == mlModelId)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.UploadedDoc)
-                .ProjectToType<ExtractedReviewDataDto>()
+                .ProjectToType<SentimentAnalyticsReviewDataDto>()
                 .ToListAsync();
 
             // Log the successful retrieval of the setup
