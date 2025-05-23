@@ -1,19 +1,19 @@
 [
-  {
+    {
     "direction": "Input",
     "name": "AddItem",
     "type": "text",
-    "label": "Add item",
-    "description": "A value or a variable to add to the list. Provide a list of values to append multiple elements. If the list has a specific type of elements, the new element is converted over to that type.",
+    "label": "Add Item",
+    "description": "A value or variable to add to the list. Can be a single item or comma-separated list of items",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "name": "IntoList",
     "type": "text",
-    "label": "Into list",
-    "description": "A list variable to append the new elements to",
+    "label": "Into List",
+    "description": "The list variable to append new elements to",
     "defaultValue": "",
     "required": true
   }

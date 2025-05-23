@@ -122,7 +122,7 @@ export const variableActions: NodeDataType[] = [
     type: "activityNode",
     name: "AddItemToListActivity",
     label: "Add item to list",
-    description: "Append a new item to a list.",
+    description: "Adds one or more items to a list. Converts types if necessary",
     docsLink: "/agent-builder/workflow-logics/list/add-item",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
