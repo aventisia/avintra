@@ -1,6 +1,6 @@
 {{Prompt}}
 
-Please extract the following fields:
+Please extract the following fields along with their confidence scores:
 {{Fields}}
 
 Please extract the following table column data as per the instructions if any:
@@ -11,13 +11,15 @@ Instructions:
 - Do not include any additional text, explanation, or commentary outside the JSON.
 - Ensure complete structural accuracy and formatting consistency.
 - Include only the specified columns. Do not include extra headers or columns not listed above.
+- For each extracted field, include a confidence score representing the model's certainty about the accuracy of the extracted value.
+- Confidence scores must be returned as string values.
 
 Expected Output Format: 
 - Provide the response as a valid JSON string only. Ensure the response follows this exact structure
 
 "{\"fields\": [
-  {\"name\": \"field_name\", \"value\": \"field_value\"},
-  {\"name\": \"another_field\", \"value\": \"another_value\"}
+  {\"name\": \"field_name\", \"value\": \"field_value\", \"confidenceScore\": \"confidence_score_1\"},
+  {\"name\": \"another_field\", \"value\": \"another_value\", \"confidenceScore\": \"confidence_score_2\"}
 ],
 \"tables\": [
   {
