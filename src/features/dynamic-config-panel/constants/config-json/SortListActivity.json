@@ -1,0 +1,90 @@
+[
+  {
+    "direction": "Input",
+    "name": "ListToSort",
+    "type": "text",
+    "label": "List to Sort",
+    "description": "The variable that holds the list to sort.",
+    "required": true,
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "SortBy",
+    "type": "switch",
+    "label": "Sort By Properties",
+    "description": "Enable if sorting based on object properties (e.g., files, folders).",
+    "defaultValue": false
+  },
+  {
+    "direction": "Input",
+    "name": "FirstProperty",
+    "type": "text",
+    "label": "First Property to Sort By",
+    "description": "The first property name to sort the list by.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "FirstSort",
+    "type": "select",
+    "label": "First Sort Direction",
+    "description": "Specifies whether to sort the first property in ascending or descending order.",
+    "selectOptions": [
+      { "label": "Ascending", "value": "Ascending" },
+      { "label": "Descending", "value": "Descending" }
+    ],
+    "defaultValue": "Ascending"
+  },
+  {
+    "direction": "Input",
+    "name": "SecondProperty",
+    "type": "text",
+    "label": "Second Property to Sort By",
+    "description": "The second property name to sort the list by.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "SecondSort",
+    "type": "select",
+    "label": "Second Sort Direction",
+    "description": "Specifies whether to sort the second property in ascending or descending order.",
+    "selectOptions": [
+      { "label": "Ascending", "value": "Ascending" },
+      { "label": "Descending", "value": "Descending" }
+    ],
+    "defaultValue": "Ascending"
+  },
+  {
+    "direction": "Input",
+    "name": "ThirdProperty",
+    "type": "text",
+    "label": "Third Property to Sort By",
+    "description": "The third property name to sort the list by.",
+    "defaultValue": ""
+  },
+  {
+    "direction": "Input",
+    "name": "ThirdSort",
+    "type": "select",
+    "label": "Third Sort Direction",
+    "description": "Specifies whether to sort the third property in ascending or descending order.",
+    "selectOptions": [
+      { "label": "Ascending", "value": "Ascending" },
+      { "label": "Descending", "value": "Descending" }
+    ],
+    "defaultValue": "Ascending"
+  },
+  {
+    "direction": "Output",
+    "name": "SortedList",
+    "type": "config-panel-output",
+    "label": "Sorted List",
+    "description": "The sorted version of the input list.",
+    "defaultValue": {
+      "value": "sortedList",
+      "enabled": true
+    }
+  }
+]
