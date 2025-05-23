@@ -1,10 +1,10 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { ActivityNodeDataType } from "@/types/activity-node-data-type";
+import { NodeDataType } from "@/types/node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
 import BaseNode from "./BaseNode";
 
-type ActivityNode = Node<ActivityNodeDataType, "activityNode">;
+type ActivityNode = Node<NodeDataType, "activityNode">;
 
 export const ActivityNode = ({
   data,
@@ -14,7 +14,7 @@ export const ActivityNode = ({
   id,
 }: NodeProps<ActivityNode>) => {
   return (
-    <BaseNode id={id} selected={selected} data={data}>
+    <BaseNode selected={selected} nodeData={data} nodeId={id}>
       <InputHandle position={targetPosition} />
       <OutputHandle position={sourcePosition} />
     </BaseNode>

@@ -1,15 +1,16 @@
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { TriggerNodeDataType } from "@/types/trigger-node-data-type";
+import { NodeSelector } from "@/features/action-selector/components";
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
+import { NodeDataType } from "@/types/node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 import BaseNode from "../BaseNode";
 import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
-import { NodeSelector } from "@/features/action-selector/components";
-import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 
-type TriggerNode = Node<TriggerNodeDataType, "triggerNode">;
+type TriggerNode = Node<NodeDataType, "triggerNode">;
 
 export const TriggerNode = ({
+  id,
   data,
   selected,
   sourcePosition,
@@ -28,7 +29,8 @@ export const TriggerNode = ({
       </NodeSelector>
       <BaseNode
         selected={selected}
-        data={data}
+        nodeData={data}
+        nodeId={id}
         className="border-green-600 ring-1 ring-green-600"
       >
         <OutputHandle position={sourcePosition} />

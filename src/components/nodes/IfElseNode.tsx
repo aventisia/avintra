@@ -1,20 +1,20 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { IfElseNodeDataType } from "@/types/if-else-node-data-type";
+import { NodeDataType } from "@/types/node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
 import BaseNode from "./BaseNode";
 
-type IfElseNode = Node<IfElseNodeDataType, "ifElseNode">;
+type IfElseNode = Node<NodeDataType, "ifElseNode">;
 
 export const IfElseNode = ({
+  id,
   data,
   selected,
   sourcePosition,
   targetPosition,
-  id
 }: NodeProps<IfElseNode>) => {
   return (
-    <BaseNode selected={selected} data={data} id={id} >
+    <BaseNode selected={selected} nodeData={data} nodeId={id}>
       <InputHandle position={targetPosition} />
       <OutputHandle position={sourcePosition} connectionCount={2} />
     </BaseNode>
