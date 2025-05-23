@@ -46,9 +46,11 @@ export const fileActions: NodeDataType[] = [
   },
   {
     type: "activityNode",
-    name: "readTextFromFile",
+    name: "ReadTextFromFileActivity",
     label: "Read text from file",
-    description: "Read the contents of a text file",
+    description: "Read the contents of a text file.",
+    docsLink:
+      "/agent-builder/ui-interface-automations/file/read-text-from-file",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -56,6 +58,8 @@ export const fileActions: NodeDataType[] = [
     name: "WriteTextToFileActivity",
     label: "Write text to file",
     description: "Write or appends text to a file",
+    docsLink:
+      "/agent-builder/ui-interface-automations/file/write-text-from-file",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
