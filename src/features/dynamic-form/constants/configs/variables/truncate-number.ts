@@ -42,7 +42,7 @@ const truncateNumberFieldList: IDynamicFieldSchema[] = [
       requiredBasedOnFields: {
         conditionList: [
           {
-            fields: [{ key: "operation", value: "roundNumber" }],
+            fields: [{ key: "operation", value: "getDecimalPart" }],
           },
         ],
         initialState: false,
