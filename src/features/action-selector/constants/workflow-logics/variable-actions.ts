@@ -7,7 +7,7 @@ export const variableActions: NodeDataType[] = [
     label: "Truncate number",
     description:
       "Performs various operations on a number, such as getting the integer part, decimal part, or rounding.",
-    docsLink: "/agent-builder/workflow-logics/variable/truncate-number",
+    docsLink: "/workflow-logics/variable/truncate-number",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -16,7 +16,7 @@ export const variableActions: NodeDataType[] = [
     label: "Generate random number",
     description:
       "Generate a random number or a list of random numbers that fall between a minimum and maximum value.",
-    docsLink: "/agent-builder/workflow-logics/variable/generate-random-number",
+    docsLink: "/workflow-logics/variable/generate-randome-number",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -24,7 +24,7 @@ export const variableActions: NodeDataType[] = [
     name: "ClearListActivity",
     label: "Clear list",
     description: "Remove all items from a list.",
-    docsLink: "/agent-builder/workflow-logics/list/clear-list",
+    docsLink: "/workflow-logics/variable/clear-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -32,7 +32,7 @@ export const variableActions: NodeDataType[] = [
     name: "RemoveItemFromListActivity",
     label: "Remove item from list",
     description: "Remove one or multiple items from a list.",
-    docsLink: "/agent-builder/workflow-logics/list/remove-item-from-list",
+    docsLink: "/workflow-logics/variable/remove-item-from-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -40,7 +40,7 @@ export const variableActions: NodeDataType[] = [
     name: "SortListActivity",
     label: "Sort list",
     description: "Sort the items of a list. Use items of the same type.",
-    docsLink: "/agent-builder/workflow-logics/list/sort-list",
+    docsLink: "/workflow-logics/variable/sort-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -48,7 +48,7 @@ export const variableActions: NodeDataType[] = [
     name: "ShuffleListActivity",
     label: "Shuffle list",
     description: "Create a random permutation of a list.",
-    docsLink: "/agent-builder/workflow-logics/list/shuffle-list",
+    docsLink: "/agent-builder/workflow-logics/shuffle-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -56,7 +56,7 @@ export const variableActions: NodeDataType[] = [
     name: "MergeListsActivity",
     label: "Merge lists",
     description: "Merge two lists into one.",
-    docsLink: "/agent-builder/workflow-logics/list/merge-lists",
+    docsLink: "/workflow-logics/variable/merge-lists",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -64,7 +64,7 @@ export const variableActions: NodeDataType[] = [
     name: "ReverseListActivity",
     label: "Reverse list",
     description: "Reverse the order of the items of a list.",
-    docsLink: "/agent-builder/workflow-logics/list/reverse-list",
+    docsLink: "/agent-builder/workflow-logics/reverse-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -73,7 +73,7 @@ export const variableActions: NodeDataType[] = [
     label: "Remove duplicate items from list",
     description:
       "Remove the multiple occurrences of items in a list, so that in the resulting list each item is unique.",
-    docsLink: "/agent-builder/workflow-logics/list/remove-duplicates",
+    docsLink: "/workflow-logics/variable/remove-duplicate-items-from-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -82,7 +82,7 @@ export const variableActions: NodeDataType[] = [
     label: "Find common list items",
     description:
       "Compare two lists and create a new list with the items that are common to both.",
-    docsLink: "/agent-builder/workflow-logics/list/find-common-items",
+    docsLink: "/workflow-logics/variable/find-common-list-items",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -91,7 +91,7 @@ export const variableActions: NodeDataType[] = [
     label: "Subtract lists",
     description:
       "Compare two lists and create a new list with the items that are in the first list but not in the second.",
-    docsLink: "/agent-builder/workflow-logics/list/subtract-lists",
+    docsLink: "/workflow-logics/variable/subtract-lists",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -99,7 +99,7 @@ export const variableActions: NodeDataType[] = [
     name: "RetrieveDataTableColumnIntoListActivity",
     label: "Retrieve data table column into list",
     description: "Convert the contents of a data table column into a list.",
-    docsLink: "/agent-builder/workflow-logics/data-table/retrieve-column-into-list",
+    docsLink: "/workflow-logics/variable/retrieve-data-table-column-into-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -115,15 +115,16 @@ export const variableActions: NodeDataType[] = [
     name: "ConvertCustomObjectToJsonActivity",
     label: "Convert custom object to JSON",
     description: "Convert a custom object to a JSON string.",
-    docsLink: "/agent-builder/workflow-logics/json/convert-object-to-json",
+    docsLink: "/workflow-logics/variable/convert-custom-object-to-JSON",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
     type: "activityNode",
     name: "AddItemToListActivity",
     label: "Add item to list",
-    description: "Adds one or more items to a list. Converts types if necessary",
-    docsLink: "/agent-builder/workflow-logics/list/add-item",
+    description:
+      "Adds one or more items to a list. Converts types if necessary",
+    docsLink: "/workflow-logics/variable/add-item-to-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -131,7 +132,7 @@ export const variableActions: NodeDataType[] = [
     name: "CreateNewListActivity",
     label: "Create new list",
     description: "Create a new empty list.",
-    docsLink: "/agent-builder/workflow-logics/list/create-new-list",
+    docsLink: "/agent-builder/workflow-logics/create-new-list",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -139,7 +140,7 @@ export const variableActions: NodeDataType[] = [
     name: "IncreaseVariableActivity",
     label: "Increase variable",
     description: "Increases a numeric variable by a specified value",
-    docsLink: "/agent-builder/workflow-logics/variable/increase-variable",
+    docsLink: "/workflow-logics/variable/increase-variable",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -147,7 +148,7 @@ export const variableActions: NodeDataType[] = [
     name: "DecreaseVariableActivity",
     label: "Decrease variable",
     description: "Decreases a numeric variable by a specified value",
-    docsLink: "/agent-builder/workflow-logics/variable/decrease-variable",
+    docsLink: "/workflow-logics/variable/decrease-variable",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {
@@ -162,9 +163,9 @@ export const variableActions: NodeDataType[] = [
     type: "activityNode",
     name: "SetVariableActivity",
     label: "Set variable",
-    description:"Sets the value of a named variable within the workflow context",
-    docsLink:  "/agent-builder/workflow-logics/variable/set-variable",
+    description:
+      "Sets the value of a named variable within the workflow context",
+    docsLink: "/workflow-logics/variable/set-variable",
     img: `${import.meta.env.BASE_URL}function.png`,
-    
   },
 ];
