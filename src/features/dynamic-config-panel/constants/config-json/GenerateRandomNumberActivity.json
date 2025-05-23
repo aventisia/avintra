@@ -48,7 +48,7 @@
     "label": "Random Number Output",
     "description": "The newly generated random number (for single mode).",
     "defaultValue": {
-      "value": "rendomNumber",
+      "value": "randomNumber",
       "enabled": true
     }
   },
