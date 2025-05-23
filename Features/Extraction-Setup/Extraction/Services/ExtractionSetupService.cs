@@ -423,11 +423,11 @@ public class ExtractionSetupService : IExtractionSetupService
     }
 
     // Retrieves a collection of extracted data records associated with a specific machine learning model.
-    public async Task<ServiceResponse<IEnumerable<ExtractionSetupData>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
+    public async Task<ServiceResponse<IEnumerable<ExtractedDataResponseDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
     {
         {
             // Initialize the response with a default failure message and null data
-            var serviceResponse = new ServiceResponse<IEnumerable<ExtractionSetupData>>
+            var serviceResponse = new ServiceResponse<IEnumerable<ExtractedDataResponseDto>>
             {
                 Data = null,
                 Message = "Failed to retrieve extracted data. Please try again later."
@@ -442,7 +442,8 @@ public class ExtractionSetupService : IExtractionSetupService
                 var extractedDataList = await _unitOfWork.ExtractedDataRepo
                     .GetByConditionAsync(w => w.Id == mlModelId)
                     .Include(i => i.CreatedByUser)
-                    .ProjectToType<ExtractionSetupData>()
+                    .Include(i => i.UploadedDoc)
+                    .ProjectToType<ExtractedDataResponseDto>()
                     .ToListAsync();
 
 
