@@ -35,10 +35,9 @@ public class ClassificationReviewDataDto
     public decimal? Accuracy { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of extracted fields, categories, or structured data elements 
-    /// identified within the document. These represent labeled or meaningful units such as names, dates,  totals, or classification tags.
+    /// Gets or sets the list of extracted data fields from the document, such as names, dates, or categories.
     /// </summary>
-    public Dictionary<string, string>? Columns { get; set; }
+    public List<ColumnsDto>? Columns { get; set; }
 
     /// <summary>
     /// Gets or sets the type of data extracted, categorizing the nature of the content in the record.

@@ -68,11 +68,10 @@ public class ExtractionSetupMappingProfile : IRegister
                 : null);
     }
 
-    // Deserializes a JSON string into an ExtractionSetupData object, and returns a dictionary containing field names and values if present.
-    private static Dictionary<string, string>? DeserializeExtractionSetupDto(string dataObject)
+    // Deserializes a JSON string into an ExtractionSetupData object and converts its fields into a list of ColumnsDto, where each item contains a field name and its corresponding value.
+    private static List<ColumnsDto>? DeserializeExtractionSetupDto(string dataObject)
     {
-        // Attempt to deserialize the input JSON string into an ExtractionSetupData object.
-        // Case-insensitive property matching is enabled for flexibility with JSON input.
+        // Deserialize the JSON string into an ExtractionSetupData object with case-insensitive property matching.
         var extractedData = JsonSerializer.Deserialize<ExtractionSetupData>(
             dataObject,
             new JsonSerializerOptions
@@ -80,12 +79,15 @@ public class ExtractionSetupMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
-        // If deserialization fails or the Fields property is null, return null.
+        // Return null if deserialization fails or if the Fields property is null.
         if (extractedData == null || extractedData.Fields == null)
             return null;
 
-        // Convert the list of fields into a dictionary using Name as the key and Value as the value.
-        // The null-forgiving operator (!) is used here since we've already checked for null.
-        return extractedData.Fields.ToDictionary(s => s.Name, s => s.Value)!;
+        // Map each field to a ColumnsDto object and return the list.
+        return extractedData.Fields.Select(s => new ColumnsDto
+        {
+            Name = s.Name,
+            Value = s.Value
+        }).ToList();
     }
 }

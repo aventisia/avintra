@@ -68,24 +68,23 @@ public class SentimentAnalyticsMappingProfile : IRegister
                 : null);
     }
 
-    // Deserializes a JSON string representing a list of SentimentAnalyticsSetupData objects,
-    private static Dictionary<string, string>? DeserializeSentimentAnalyticsSetupDto(string dataObject)
+    // Deserializes a JSON string into a list of SentimentAnalyticsSetupData objects and converts it into a list of ColumnsDto objects
+    private static List<ColumnsDto>? DeserializeSentimentAnalyticsSetupDto(string dataObject)
     {
-        // Deserialize the input JSON string into a list of SentimentAnalyticsSetupData objects.
-        // PropertyNameCaseInsensitive allows matching JSON keys regardless of casing.
+        // Deserialize the JSON string into a list of SentimentAnalyticsSetupData objects.
         var extractedData = JsonSerializer.Deserialize<List<SentimentAnalyticsSetupData>>(
             dataObject,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         // If deserialization fails or the list is empty, return null.
         if (extractedData == null || !extractedData.Any())
             return null;
 
-        // Convert the list of SentimentAnalyticsSetupData to a dictionary
-        // using the Name as the key and the Value as the value.
-        return extractedData.ToDictionary(s => s.Name, s => s.Value)!;
+        // Convert the deserialized data into a list of ColumnsDto objects.
+        return extractedData.Select(s => new ColumnsDto
+        {
+            Name = s.Name,
+            Value = s.Value
+        }).ToList();
     }
 }

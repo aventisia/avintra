@@ -32,7 +32,7 @@ public class SummarizationMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
-            
+
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, SummarizationExtractedDataDto>()
             .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<SummarizationSetupData>(
@@ -68,11 +68,10 @@ public class SummarizationMappingProfile : IRegister
                 : null);
     }
 
-    // Deserializes a JSON string into a SummarizationSetupData object,
-    private static Dictionary<string, string>? DeserializeSummarizationSetupDto(string dataObject)
+    // Deserializes a JSON string into a list of SummarizationSetupData objects and converts it into a list of ColumnsDto objects
+    private static List<ColumnsDto>? DeserializeSummarizationSetupDto(string dataObject)
     {
-        // Attempt to deserialize the input JSON string into a SummarizationSetupData object.
-        // PropertyNameCaseInsensitive allows matching JSON keys regardless of casing.
+        // Deserialize the JSON string into a SummarizationSetupData object with case-insensitive property matching.
         var extractedData = JsonSerializer.Deserialize<SummarizationSetupData>(
             dataObject,
             new JsonSerializerOptions
@@ -80,14 +79,14 @@ public class SummarizationMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
-        // If deserialization fails or the Summary property is null, return null.
-        if (extractedData == null || extractedData?.Summary == null)
+        // Return null if deserialization fails or if the "Summary" property is missing.
+        if (extractedData?.Summary == null)
             return null;
 
-        // Return a dictionary containing the "Summary" property from the deserialized object.
-        return new Dictionary<string, string>
-        {
-            { "Summary", extractedData.Summary }
-        };
+        // Create a ColumnsDto with the "Summary" value and return it in a list.
+        return new List<ColumnsDto>
+    {
+        new ColumnsDto { Name = "Summary", Value = extractedData.Summary }
+    };
     }
 }

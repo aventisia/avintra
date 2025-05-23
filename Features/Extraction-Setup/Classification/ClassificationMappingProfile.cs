@@ -68,11 +68,10 @@ public class ClassificationMappingProfile : IRegister
                 : null);
     }
 
-    // Deserializes a JSON string representing a list of ClassificationSetupData objects, and returns a dictionary mapping each Name to its corresponding Value.
-    private static Dictionary<string, string>? DeserializeClassificationSetupDto(string dataObject)
+    // Deserializes a JSON string into a list of ClassificationSetupData objects and converts it into a list of ColumnsDto, where each Name is mapped to its corresponding Value.
+    private static List<ColumnsDto>? DeserializeClassificationSetupDto(string dataObject)
     {
-        // Deserialize the input JSON string into a list of ClassificationSetupData objects.
-        // PropertyNameCaseInsensitive enables case-insensitive property name matching during deserialization.
+        // Deserialize the JSON string into a list of ClassificationSetupData objects with case-insensitive key matching.
         var extractedData = JsonSerializer.Deserialize<List<ClassificationSetupData>>(
             dataObject,
             new JsonSerializerOptions
@@ -80,11 +79,15 @@ public class ClassificationMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
-        // Corrected: Check if extractedData is null or empty.
+        // Return null if deserialization fails or the list is empty.
         if (extractedData == null || !extractedData.Any())
             return null;
 
-        // Convert the list into a dictionary using Name as the key and Value as the value.
-        return extractedData.ToDictionary(s => s.Name, s => s.Value)!;
+        // Map each item to a ColumnsDto using Name as the key and Value as the value.
+        return extractedData.Select(s => new ColumnsDto
+        {
+            Name = s.Name,
+            Value = s.Value
+        }).ToList();
     }
 }

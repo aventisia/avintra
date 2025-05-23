@@ -68,11 +68,10 @@ public class QuestionAnswerMappingProfile : IRegister
                 : null);
     }
 
-    // Deserializes a JSON string representing a list of QuestionAnswerSetupData objects, and returns a dictionary mapping each Question to its corresponding Answer.
-    private static Dictionary<string, string>? DeserializeQuestionAnswerSetupDto(string dataObject)
+    // Deserializes a JSON string into a list of QuestionAnswerSetupData objects and converts it into a list of ColumnsDto objects
+    private static List<ColumnsDto>? DeserializeQuestionAnswerSetupDto(string dataObject)
     {
-        // Deserialize the input JSON string into a list of QuestionAnswerSetupData objects.
-        // Case-insensitive deserialization ensures matching JSON keys regardless of casing.
+        // Deserialize the JSON string into a list of QuestionAnswerSetupData objects with case-insensitive key matching.
         var extractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
             dataObject,
             new JsonSerializerOptions
@@ -80,12 +79,16 @@ public class QuestionAnswerMappingProfile : IRegister
                 PropertyNameCaseInsensitive = true
             });
 
-        // If deserialization fails or the resulting list is empty, return null.
+        // Return null if deserialization fails or the list is empty.
         if (extractedData == null || !extractedData.Any())
             return null;
 
-        // Convert the list into a dictionary using Question as the key and Answer as the value.
-        // The null-forgiving operator (!) is used because null has already been checked above.
-        return extractedData.ToDictionary(s => s.Question, s => s.Answer)!;
+        // Convert the list of QuestionAnswerSetupData to a list of ColumnsDto, 
+        // mapping each Question to its corresponding Answer.
+        return extractedData.Select(s => new ColumnsDto
+        {
+            Name = s.Question,
+            Value = s.Answer
+        }).ToList();
     }
 }
