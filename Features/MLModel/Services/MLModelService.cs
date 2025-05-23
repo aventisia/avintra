@@ -341,11 +341,6 @@ public class MLModelService : IMLModelService
     // Initializes and serializes the default setup configuration based on the model type.
     private string GetDefaultSerializedSetupByModel(MLModel newMLModel)
     {
-        // Default prompt text used for all model types.
-        var defaultPrompt = "You are an expert extraction algorithm.\n" +
-                            "Extract only the relevant information from the provided text.\n" +
-                            "If you do not know the value of an attribute, leave it blank.";
-
         // Set up configuration based on the model type in the provided newMLModel object.
         switch (newMLModel.Type)
         {
@@ -354,7 +349,7 @@ public class MLModelService : IMLModelService
                 var extractionSetup = new ExtractionSetupDto
                 {
                     Context = string.Empty,
-                    Prompt = defaultPrompt,
+                    Prompt = string.Empty,
                     TableMetadata = null,
                     FieldSetups = new List<FieldSetupDto>
                 {
@@ -375,7 +370,7 @@ public class MLModelService : IMLModelService
                 var classificationSetup = new ClassificationSetupDto
                 {
                     Context = string.Empty,
-                    Prompt = defaultPrompt,
+                    Prompt = string.Empty,
                     UncertaintyAction = ClassificationUncertaintyAction.DiscardItem,
                     AllowMultipleClasses = false,
                     Categories = new List<ClassificationCategoryDto>
@@ -396,7 +391,7 @@ public class MLModelService : IMLModelService
                 var sentimentAnalyticsSetup = new SentimentAnalyticSetupDto
                 {
                     Context = string.Empty,
-                    Prompt = defaultPrompt,
+                    Prompt = string.Empty,
                     Categories = new List<SentimentAnalyticsSetupCategoryDto>
                 {
                     new SentimentAnalyticsSetupCategoryDto
@@ -432,7 +427,7 @@ public class MLModelService : IMLModelService
                 var questionAnswerSetup = new QuestionAnswerSetupDto
                 {
                     Context = string.Empty,
-                    Prompt = defaultPrompt,
+                    Prompt = string.Empty,
                     QuestionAnswers = new List<QuestionAnswerLabelDto>()
                 {
                     new QuestionAnswerLabelDto()
