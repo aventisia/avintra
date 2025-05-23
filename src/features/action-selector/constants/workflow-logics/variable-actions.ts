@@ -162,10 +162,9 @@ export const variableActions: NodeDataType[] = [
     type: "activityNode",
     name: "SetVariableActivity",
     label: "Set variable",
-    description:
-      "Set the value of a new or existing variable, create a new variable or overwrite a previously created variable.",
-    docsLink: "/agent-builder/workflow-logics/variable/set-variable",
+    description:"Sets the value of a named variable within the workflow context",
+    docsLink:  "/agent-builder/workflow-logics/variable/set-variable",
     img: `${import.meta.env.BASE_URL}function.png`,
-    formType: "custom",
+    
   },
 ];
