@@ -77,6 +77,7 @@ public static class AppServicesExtension
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();
         services.AddScoped<ITriggerService, TriggerService>();
+        services.AddScoped<IFileUploadService, FileUploadService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
