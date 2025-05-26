@@ -1,5 +1,5 @@
-import { Command, CommandEmpty, CommandList } from "@/react-toolkit/ui/command";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { Command, CommandEmpty, CommandList } from "@aventisia/ui/command";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { useFetchFlows } from "../../hooks/useFetchFlows";
 import { FPCFlowsList } from "./FPCFlowsList";
 import { FPCNoContentMessage } from "./FPCNoContentMessage";

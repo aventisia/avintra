@@ -5,15 +5,15 @@ import {
   getFormFields,
 } from "@/features/dynamic-form";
 import { dynamicActionMapper } from "@/features/dynamic-form/utils/utils";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
 // import {
 //   Popover,
 //   PopoverContent,
 //   PopoverDefaultHeader,
 //   PopoverTrigger,
-// } from "@/react-toolkit/ui/popover";
-import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
+// } from "@aventisia/ui/popover";
+import { StopPropagationWrapper } from "@aventisia/ui";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
@@ -29,7 +29,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog";
+} from "@aventisia/ui/dialog";
 
 interface OpenNodeConfigProps {
   data: NodeDataType;

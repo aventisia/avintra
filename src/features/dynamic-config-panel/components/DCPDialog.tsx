@@ -1,10 +1,10 @@
-import { DialogContent, DialogDefaultHeader } from "@/react-toolkit/ui/dialog";
-import { DialogWrapper } from "@/react-toolkit/ui/dialog/DialogWrapper";
+import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
+import { DialogWrapper } from "@aventisia/ui/dialog";
 import { useShallow } from "zustand/react/shallow";
 import { DCPForm, useDynamicConfigPanelStore } from "..";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { cn } from "@/react-toolkit/lib/utils";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { SquareArrowOutUpRightIcon } from "lucide-react";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {

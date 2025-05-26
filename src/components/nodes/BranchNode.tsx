@@ -1,7 +1,7 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { NodeProps } from "@xyflow/react";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 
 export const BranchNode = ({
   targetPosition,

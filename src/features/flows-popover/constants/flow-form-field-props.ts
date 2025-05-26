@@ -1,9 +1,9 @@
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectFieldProps } from "@/react-toolkit/ui/form/fields/SelectField";
-import { SwitchFieldProps } from "@/react-toolkit/ui/form/fields/SwitchField";
-import { TextareaFieldProps } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { enumToArray } from "@/react-toolkit/utils/enum-to-array";
+import { InputFieldProps } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@aventisia/ui/form";
+import { SwitchFieldProps } from "@aventisia/ui/form";
+import { TextareaFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
 // Agent Id
 const idProps: InputFieldProps = {
@@ -42,10 +42,4 @@ const isDisabledProps: SwitchFieldProps = {
     "Disable this record if it's been outdated, or not required anymore",
 };
 
-export {
-  descriptionProps,
-  idProps,
-  isDisabledProps,
-  nameProps,
-  typeProps,
-};
+export { descriptionProps, idProps, isDisabledProps, nameProps, typeProps };

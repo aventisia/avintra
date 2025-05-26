@@ -1,4 +1,4 @@
-import { IHttpResponse } from "@/react-toolkit/dtos/http-response";
+import { IHttpResponse } from "@aventisia/ui/dtos";
 import { TerminateSessionDto } from "@/react-toolkit/dtos/request/terminate-session-dto";
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";

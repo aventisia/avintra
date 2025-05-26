@@ -6,7 +6,7 @@ import {
   minError,
   maxError,
   reqError,
-} from "@/react-toolkit/utils/error-message-list";
+} from "@aventisia/ui/utils";
 
 function applyFieldOptions<T extends ZodString | ZodNumber | ZodBoolean>(
   schema: T,

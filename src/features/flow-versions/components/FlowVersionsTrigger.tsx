@@ -1,7 +1,7 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { PopoverTrigger } from "@aventisia/ui/popover";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 
 export const FlowVersionsTrigger = () => {

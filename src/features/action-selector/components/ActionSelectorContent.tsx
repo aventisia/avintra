@@ -1,6 +1,6 @@
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import { Command } from "@/react-toolkit/ui/command";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { Command } from "@aventisia/ui/command";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
@@ -8,8 +8,8 @@ import { NoActionsMessage } from "./NoActionsMessage";
 import { PrimaryCategoryList } from "./PrimaryCategoryList";
 import { ActionCategoryList } from "./ActionCategoryList";
 import { ArrowLeftIcon, Search } from "lucide-react";
-import { Input } from "@/react-toolkit/ui/input";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Input } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
 
 export const ActionSelectorContent = () => {
   // Get the origin and originId from the store

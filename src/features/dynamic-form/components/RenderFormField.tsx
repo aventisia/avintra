@@ -25,9 +25,9 @@ import {
 } from "..";
 import { RegisterOptions } from "react-hook-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
-import { FormField } from "@/react-toolkit/ui/form/FormField";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
-import { FormMessage } from "@/react-toolkit/ui/form/FormMessage";
+import { FormField } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
+import { FormMessage } from "@aventisia/ui/form";
 
 // Create error messages for required, minLength, maxLength
 export const getFormRules = (

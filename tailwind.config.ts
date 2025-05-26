@@ -8,6 +8,7 @@ const config = {
     "./app/**/*.{html,js,jsx,ts,tsx,md,mdx}",
     "./src/**/*.{html,js,jsx,ts,tsx,md,mdx}",
     "./react-toolkit/**/*.{html,js,jsx,ts,tsx,md,mdx}",
+    "./node_modules/@aventisia/ui/**/*.js",
   ],
   prefix: "",
   theme: {

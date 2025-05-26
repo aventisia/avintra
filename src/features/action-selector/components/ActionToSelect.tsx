@@ -1,7 +1,7 @@
 import { iconMapper } from "@/components/icon-mapper";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 import { NodeDataType } from "@/types/node-data-type";
-import { Badge } from "@/react-toolkit/ui/badge";
+import { Badge } from "@aventisia/ui/badge";
 
 interface ActionToSelectProps {
   data: NodeDataType;

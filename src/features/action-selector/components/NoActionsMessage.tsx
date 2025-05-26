@@ -1,5 +1,5 @@
-import { CommandEmpty } from "@/react-toolkit/ui/command";
-import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
+import { CommandEmpty } from "@aventisia/ui/command";
+import { NoContentMessage } from "@aventisia/ui";
 import { TextSearch } from "lucide-react";
 
 /**

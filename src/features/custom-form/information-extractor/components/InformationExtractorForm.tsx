@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAddInformationExtractorForm } from "../hooks/useAddInfoExtractorForm";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { Form } from "@aventisia/ui/form";
 import {
   documentContextProps,
   inputTextProps,
@@ -8,13 +8,13 @@ import {
   nodePropmptProps,
   saveInModelLibraryProps,
 } from "../constants/info-extractor-form-field-props";
-import { TextareaField } from "@/react-toolkit/ui/form/fields/TextareaField";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { TextareaField } from "@aventisia/ui/form";
+import { Button } from "@aventisia/ui/buttons";
+import { Separator } from "@aventisia/ui";
+import { InputField } from "@aventisia/ui/form";
+import { CheckboxField } from "@aventisia/ui/form";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import DataToBeExtracted from "./DataToBeExtracted";
 import ContextTables from "./ContextTable";
 import { FormProvider } from "react-hook-form";

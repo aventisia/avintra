@@ -2,8 +2,8 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/react-toolkit/ui/command";
-import { Separator } from "@/react-toolkit/ui/separator";
+} from "@aventisia/ui/command";
+import { Separator } from "@aventisia/ui";
 import { PrimaryCategory } from "./PrimaryCategory";
 import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";

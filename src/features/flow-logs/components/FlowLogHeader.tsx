@@ -3,9 +3,9 @@ import {
   DialogContent,
   DialogDefaultHeader,
   DialogTrigger,
-} from "@/react-toolkit/ui/dialog";
+} from "@aventisia/ui/dialog";
 import { FlowLogsTable } from "./FlowLogsTable";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import FlowExecutionLog from "@/features/flow-execution-log/components";
 import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";

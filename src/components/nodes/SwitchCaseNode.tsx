@@ -4,9 +4,9 @@ import { SwitchCaseNodeDataType } from "@/types/switch-case-node-data-type";
 import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
 import BaseNode from "./BaseNode";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { cn } from "@aventisia/ui/lib";
+import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { useAddSwitchCaseBranch } from "@/hooks/useAddSwitchCaseBranch";
 
 type SwitchCaseNode = Node<SwitchCaseNodeDataType, "switchCaseNode">;

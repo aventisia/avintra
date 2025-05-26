@@ -1,5 +1,5 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
+import { cn } from "@aventisia/ui/lib";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { format } from "date-fns";
 import { FlowVersionItemActions } from "./flow-version-item-actions";
 import { EyeIcon } from "@heroicons/react/24/outline";

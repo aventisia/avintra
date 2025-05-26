@@ -1,20 +1,20 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { Button } from "@aventisia/ui/buttons";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/react-toolkit/ui/command";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
+} from "@aventisia/ui/command";
+import { FormControl } from "@aventisia/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Switch } from "@/react-toolkit/ui/switch";
-import { cn } from "@/react-toolkit/lib/utils";
+import { Switch } from "@aventisia/ui";
+import { cn } from "@aventisia/ui/lib";
 import { UseFormReturn } from "react-hook-form";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
 import { z } from "zod";

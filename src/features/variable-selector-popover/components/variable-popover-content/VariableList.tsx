@@ -1,4 +1,4 @@
-import { CommandItem } from "@/react-toolkit/ui/command";
+import { CommandItem } from "@aventisia/ui/command";
 import { useVariableSelectorInputStore } from "@/stores/variable-selector-input-value-store";
 import { useShallow } from "zustand/react/shallow";
 

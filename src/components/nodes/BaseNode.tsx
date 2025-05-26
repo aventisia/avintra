@@ -4,7 +4,7 @@ import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { NodeDataType } from "@/types/node-data-type";
 import React from "react";
 import { OpenNodeConfig2 } from "../node-container/node-header/OpenNodeConfig2";

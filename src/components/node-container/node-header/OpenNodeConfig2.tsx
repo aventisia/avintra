@@ -1,7 +1,7 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { DialogTrigger } from "@/react-toolkit/ui/dialog";
+import { DialogTrigger } from "@aventisia/ui/dialog";
 import {
   DCPDialog,
   useDynamicConfigPanelStore,

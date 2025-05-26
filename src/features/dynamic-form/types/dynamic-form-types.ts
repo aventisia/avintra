@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ISelectOption } from "@/react-toolkit/types/select-option";
+import { ISelectOption } from "@aventisia/ui/types";
 
 /** Accepted control/input types for DynamicForm component */
 type ControlType =
@@ -127,7 +127,7 @@ interface ActivityConfig {
 }
 
 interface IFormValuesToFill {
-  key: string; 
+  key: string;
   value: string | number | any;
 }
 
@@ -138,5 +138,5 @@ export {
   type IDynamicFormKeysCategory,
   type IDynamicFormCategory,
   type ActivityConfig,
-  type IFormValuesToFill
+  type IFormValuesToFill,
 };

@@ -1,9 +1,9 @@
 import { flowCommentOptimisticMutationFn } from "@/features/flow-comments/apis/flow-comments-apis";
 import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
-import { useListOptimisticMutation } from "@/react-toolkit/hooks/useListOptimisticMutation";
-import { useShowAlertHandler } from "@/react-toolkit/hooks/useShowAlertHandler";
-import { DeleteDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/DeleteDDMenuItem";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { useShallow } from "zustand/react/shallow";
 
 interface FCIDeleteActionProps {

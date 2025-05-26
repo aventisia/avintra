@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IDynamicFieldSchema, DynamicFieldLabel } from "..";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { format } from "date-fns";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 import {
@@ -8,22 +8,22 @@ import {
   CalendarIcon,
 } from "@heroicons/react/24/outline";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Input } from "@/react-toolkit/ui/input";
+import { Input } from "@aventisia/ui";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/react-toolkit/ui/input-otp";
-import { PhoneInput } from "@/react-toolkit/ui/custom/PhoneInput";
+} from "@aventisia/ui/input-otp";
+import { PhoneInput } from "@aventisia/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/react-toolkit/ui/select";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+} from "@aventisia/ui/select";
+import { Button } from "@aventisia/ui/buttons";
 import {
   MultiSelector,
   MultiSelectorContent,
@@ -31,30 +31,26 @@ import {
   MultiSelectorItem,
   MultiSelectorList,
   MultiSelectorTrigger,
-} from "@/react-toolkit/ui/custom/MultiSelector";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
-import { TagInput } from "@/react-toolkit/ui/custom/TagInput";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/multi-selector";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { TagInput } from "@aventisia/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/react-toolkit/ui/command";
-import { Checkbox } from "@/react-toolkit/ui/checkbox";
-import { Switch } from "@/react-toolkit/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/react-toolkit/ui/radio-group";
-import { Calendar } from "@/react-toolkit/ui/calendar";
-import { Textarea } from "@/react-toolkit/ui/textarea";
+} from "@aventisia/ui/command";
+import { Checkbox } from "@aventisia/ui";
+import { Switch } from "@aventisia/ui";
+import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
+import { Calendar } from "@aventisia/ui";
+import { Textarea } from "@aventisia/ui";
 import { Slider } from "@/features/dynamic-form/components/slider";
-import { FormControl } from "@/react-toolkit/ui/form/FormControl";
-import { FormDescription } from "@/react-toolkit/ui/form/FormDescription";
-import { FormItem } from "@/react-toolkit/ui/form/FormItem";
+import { FormControl } from "@aventisia/ui/form";
+import { FormDescription } from "@aventisia/ui/form";
+import { FormItem } from "@aventisia/ui/form";
 import { CodeEditor } from "./code-editor/CodeEditor";
 import VariableSelectorPopover from "@/features/variable-selector-popover/components/VariableSelectorPopover";
 import { useEffect, useMemo } from "react";

@@ -1,6 +1,6 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { cn } from "@aventisia/ui/lib";
+import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";

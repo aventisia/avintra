@@ -1,5 +1,5 @@
 import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
-import { DotSeparator } from "@/react-toolkit/ui/custom/DotSeparator";
+import { DotSeparator } from "@aventisia/ui";
 import { formatDistanceToNow } from "date-fns";
 import { memo } from "react";
 

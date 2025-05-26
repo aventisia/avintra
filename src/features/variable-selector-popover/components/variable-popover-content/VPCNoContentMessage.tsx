@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
+import { NoContentMessage } from "@aventisia/ui";
 import { Workflow } from "lucide-react";
 
 /**

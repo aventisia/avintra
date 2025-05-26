@@ -2,7 +2,7 @@ import { iconMapper } from "@/components/icon-mapper";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
-import { Badge } from "@/react-toolkit/ui/badge";
+import { Badge } from "@aventisia/ui/badge";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
 

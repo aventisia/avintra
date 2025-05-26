@@ -1,4 +1,4 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 
 interface TriggerNodeIconProps {
   Icon: React.FC<React.SVGProps<SVGSVGElement>>;

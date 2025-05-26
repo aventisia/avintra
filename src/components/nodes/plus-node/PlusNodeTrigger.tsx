@@ -1,7 +1,7 @@
-import { cn } from "@/react-toolkit/lib/utils";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { cn } from "@aventisia/ui/lib";
+import { PopoverTrigger } from "@aventisia/ui/popover";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { DialogTrigger } from "@/react-toolkit/ui/dialog";
+import { DialogTrigger } from "@aventisia/ui/dialog";
 
 export const PlusNodeTrigger = (
   props: React.ComponentPropsWithoutRef<typeof PopoverTrigger>,

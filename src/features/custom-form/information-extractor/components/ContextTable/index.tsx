@@ -1,8 +1,8 @@
 // components/ContextTablesSection.tsx
 import { Controller, UseFormReturn } from "react-hook-form";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-import { SelectField } from "@/react-toolkit/ui/form/fields/SelectField";
+import { Button } from "@aventisia/ui/buttons";
+import { InputField } from "@aventisia/ui/form";
+import { SelectField } from "@aventisia/ui/form";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   headerNameProps,
@@ -13,12 +13,12 @@ import {
 } from "../../constants/info-extractor-form-field-props";
 import { z } from "zod";
 import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
-import { Tabs, TabsList, TabsTrigger } from "@/react-toolkit/ui/tabs";
-import { TabsContent } from "@radix-ui/react-tabs";
-import { ScrollArea, ScrollBar } from "@/react-toolkit/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { TabsContent } from "@aventisia/ui/tabs";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
-import { DropdownMenu } from "@/react-toolkit/ui/dropdown-menu/DropdownMenu";
-import { DropdownMenuContent } from "@/react-toolkit/ui/dropdown-menu";
+import { DropdownMenu } from "@aventisia/ui/dropdown-menu";
+import { DropdownMenuContent } from "@aventisia/ui/dropdown-menu";
 import { TabsActionsTrigger } from "./TabsActionsTrigger";
 import { TabsDeleteAction } from "./TabsActions/TabsDeleteAction";
 import { TabsRenameAction } from "./TabsActions/TabsRenameAction";
@@ -32,8 +32,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogCancel,
-} from "@/react-toolkit/ui/alert-dialog";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+} from "@aventisia/ui/alert-dialog";
+import { buttonVariants } from "@aventisia/ui/buttons";
 
 type Table = NonNullable<
   z.infer<typeof addInfoExtractorFormZodSchema>["tables"]

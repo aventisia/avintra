@@ -1,5 +1,5 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Form } from "@/react-toolkit/ui/form/Form";
+import { Button } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { z } from "zod";
 import {

@@ -1,7 +1,7 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { DropdownMenuItem } from "@/react-toolkit/ui/dropdown-menu";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import { useInformationExtractorTableStore } from "../../../stores/info-extractor-table-store";
 import { useShallow } from "zustand/react/shallow";
 

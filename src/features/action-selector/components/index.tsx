@@ -1,8 +1,8 @@
 import React from "react";
 import { ActionSelectorContent } from "./ActionSelectorContent";
-import { StopPropagationWrapper } from "@/react-toolkit/ui/StopPropagationWrapper";
-import { Dialog } from "@radix-ui/react-dialog";
-import { DialogContent } from "@/react-toolkit/ui/dialog";
+import { StopPropagationWrapper } from "@aventisia/ui";
+import { Dialog } from "@aventisia/ui/dialog";
+import { DialogContent } from "@aventisia/ui/dialog";
 
 /**
  * Renders the Node Selector (to add nodes to flow).

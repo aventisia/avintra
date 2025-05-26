@@ -1,16 +1,12 @@
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Avatar, AvatarFallback } from "@/react-toolkit/ui/avatar";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
+import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
+import { Separator } from "@aventisia/ui";
 import { removeUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
@@ -26,7 +22,10 @@ interface UserAccountModalProps {
   sizeClassName?: string;
 }
 
-const UserAccountModal = ({ className, sizeClassName ="h-9 w-9" }: UserAccountModalProps) => {
+const UserAccountModal = ({
+  className,
+  sizeClassName = "h-9 w-9",
+}: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
 
@@ -56,7 +55,7 @@ const UserAccountModal = ({ className, sizeClassName ="h-9 w-9" }: UserAccountMo
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon9" }),
           "rounded-full",
-          sizeClassName
+          sizeClassName,
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>

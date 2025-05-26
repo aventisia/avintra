@@ -1,10 +1,10 @@
 import { UNBellIcon } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNBellIcon";
 import { UN_POPOVER_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
-import { PopoverTrigger } from "@/react-toolkit/ui/popover";
+import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { PopoverTrigger } from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 
 interface UNPopoverTriggerProps {
@@ -16,9 +16,9 @@ interface UNPopoverTriggerProps {
  * Renders a trigger component for the notifications popover.
  * This component displays a bell icon button with a tooltip.
  */
-export const UNPopoverTrigger = (
-  { triggerSize="icon8" }: UNPopoverTriggerProps,
-) => {
+export const UNPopoverTrigger = ({
+  triggerSize = "icon8",
+}: UNPopoverTriggerProps) => {
   // Get store state and actions
   const { isPopoverOpen, togglePopoverOpen } = useUnreadNotificationsStore(
     useShallow((state) => ({

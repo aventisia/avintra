@@ -1,5 +1,5 @@
 import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
-import { SimpleDDMenuItem } from "@/react-toolkit/ui/dropdown-menu/SimpleDDMenuItem";
+import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 interface FLIOpenActionProps {

@@ -1,9 +1,9 @@
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 interface ChatAssistantProps {

@@ -5,12 +5,12 @@ import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/compon
 import { UN_POPOVER_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import {
   Popover,
   PopoverContent,
   PopoverDefaultHeader,
-} from "@/react-toolkit/ui/popover";
+} from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 
 interface UnreadNotificationsProps {

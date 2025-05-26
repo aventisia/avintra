@@ -1,5 +1,5 @@
 import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
-import { cn } from "@/react-toolkit/lib/utils";
+import { cn } from "@aventisia/ui/lib";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";

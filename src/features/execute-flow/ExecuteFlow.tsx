@@ -1,5 +1,5 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTauriStore } from "@/stores/tauri-store";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";

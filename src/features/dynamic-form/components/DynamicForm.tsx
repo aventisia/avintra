@@ -2,12 +2,12 @@
 // Inspired from: https://nainacodes.com/blog/create-form-from-json-schema
 import { FormProvider, useForm } from "react-hook-form";
 import { IDynamicFieldSchema, IDynamicFormCategory, renderFormField } from "..";
-import { cn } from "@/react-toolkit/lib/utils";
-import { Separator } from "@/react-toolkit/ui/separator";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { cn } from "@aventisia/ui/lib";
+import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { IFormValuesToFill } from "../types/dynamic-form-types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 // import { PopoverClose } from "@radix-ui/react-popover";

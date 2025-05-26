@@ -1,4 +1,4 @@
-import { Badge } from "@/react-toolkit/ui/badge";
+import { Badge } from "@aventisia/ui/badge";
 import React from "react";
 
 export const BaseEdgeLabel = ({ children }: React.PropsWithChildren) => {

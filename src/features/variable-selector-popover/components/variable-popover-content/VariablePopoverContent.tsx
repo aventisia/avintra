@@ -1,9 +1,9 @@
-import { Command, CommandEmpty, CommandList } from "@/react-toolkit/ui/command";
+import { Command, CommandEmpty, CommandList } from "@aventisia/ui/command";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useShallow } from "zustand/react/shallow";
 import { VPCSearchBox } from "./VPCSearchBox";
 import { VPCNoContentMessage } from "./VPCNoContentMessage";
-import { ScrollArea } from "@/react-toolkit/ui/scroll-area";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { VariablesList } from "./VariableList";
 import React from "react";
 

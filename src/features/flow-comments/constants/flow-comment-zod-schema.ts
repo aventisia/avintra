@@ -1,7 +1,4 @@
-import {
-  maxLenError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
+import { maxLenError, reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**

@@ -1,5 +1,5 @@
-import { useDTCrudDialogStore } from "@/react-toolkit/stores/dt-crud-dialog-store";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { Button } from "@aventisia/ui/buttons";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 

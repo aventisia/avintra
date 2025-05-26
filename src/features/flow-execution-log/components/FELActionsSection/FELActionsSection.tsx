@@ -1,13 +1,13 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-import { Command, CommandEmpty, CommandList } from "@/react-toolkit/ui/command";
+import { Button } from "@aventisia/ui/buttons";
+import { Command, CommandEmpty, CommandList } from "@aventisia/ui/command";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { FELActionList } from "./FELActionList";
 import { useFlowExecutionLogStore } from "../../stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
 import { FlowExecutionLogsDTO } from "../../dtos/flow-execution-log-dto";
-import { Tooltip } from "@/react-toolkit/ui/custom/Tooltip";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import FELSearchBox from "./FELSearchBox";
-import { NoContentMessage } from "@/react-toolkit/ui/custom/NoContentMessage";
+import { NoContentMessage } from "@aventisia/ui";
 
 interface FELActionsSectionProps {
   actionList: FlowExecutionLogsDTO[];

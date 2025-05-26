@@ -1,4 +1,4 @@
-import { CommandItem, CommandList } from "@/react-toolkit/ui/command";
+import { CommandItem, CommandList } from "@aventisia/ui/command";
 import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
@@ -7,10 +7,10 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/react-toolkit/ui/accordion";
-import { Button } from "@/react-toolkit/ui/buttons/Button";
+} from "@aventisia/ui/accordion";
+import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { Separator } from "@/react-toolkit/ui/separator";
+import { Separator } from "@aventisia/ui";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
