@@ -120,46 +120,19 @@ public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConf
 
             _logger.LogInformation("Starting file deletion process for file URL: {FileUrl}.", fileUrl);
 
-            // Remove the leading '/' from the fileUrl if present and split the path by '/'
-            var pathParts = fileUrl.TrimStart('/').Split('/');
+            var response = _uploadFileService.DeleteFileAsync(fileUrl);
 
-            // Ensure the URL has at least 2 parts: 'files', the subdirectory, and the file name
-            if (pathParts.Length < 2)
+            if (response.StatusCode != 200)
             {
-                serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogError("Invalid file URL structure. Expected format: '/files/{filename}'.", pathParts.Last());
+                serviceResponse.Message = response.Message;
                 return serviceResponse;
             }
 
-            var fileName = pathParts.Last();  // The file name is the last part, e.g., "2290a6c2-74d4-4f37-8bac-e1befb2242ce.pdf"
-
-            // Construct the full file path using the base upload directory, subdirectory, and file name
-            var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory);
-
-            var filePath = Path.Combine(fullDirectoryPath, fileName);
-
-            _logger.LogInformation("Resolved file path: {FilePath}.", filePath);
-
-            // Check if the file exists at the resolved path
-            if (File.Exists(filePath))
-            {
-                _logger.LogInformation("File {FileName} exists at {FilePath}, proceeding with deletion.", fileName, filePath);
-
-                // Attempt to delete the file
-                File.Delete(filePath);
-
-                // Update the response to indicate success
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Data = true;
-                serviceResponse.Message = "File deleted successfully.";
-                _logger.LogInformation("File {FileName} deleted from {FilePath}.", fileName, filePath);
-            }
-            else
-            {
-                // If the file doesn't exist, log the warning
-                serviceResponse.Message = $"File {fileName} does not exist";
-                _logger.LogWarning($"File {fileName} does not exist at {filePath}.");
-            }
+            // If successful, assign the file path to the newQueue's SpecificDataSchemaPath
+            serviceResponse.Data = response.Data;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Files deleted successfully.";
+            _logger.LogInformation(response.Message);
 
         }
         catch (Exception ex)
@@ -169,74 +142,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConf
         }
 
         // Return the service response with the status of the operation
-        return serviceResponse;
-    }
-    
-    // Downloads a file based on the provided file URL.
-    public ServiceResponse<FileDetailDto> DownloadFileAsync(string fileUrl)
-    {
-        var serviceResponse = new ServiceResponse<FileDetailDto>
-        {
-            Data = null,
-            Message = "File download failed."
-        };
-
-        try
-        {
-            if (string.IsNullOrWhiteSpace(fileUrl))
-            {
-                serviceResponse.Message = "File URL is null or empty.";
-                _logger.LogError(serviceResponse.Message);
-                return serviceResponse;
-            }
-
-            _logger.LogInformation("Starting file download process for file URL: {FileUrl}.", fileUrl);
-
-            // Split file URL to extract subdirectory and file name
-            var pathParts = fileUrl.TrimStart('/').Split('/');
-
-            if (pathParts.Length < 2)
-            {
-                serviceResponse.Message = "Invalid file URL structure.";
-                _logger.LogWarning("Invalid file URL structure. Expected format: '/files/{filename}'.", pathParts.Last());
-                return serviceResponse;
-
-            }
-
-            var fileName = pathParts.Last();   // The file name
-
-            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, fileName);
-
-            if (File.Exists(filePath))
-            {
-
-                _logger.LogInformation("File {FileName} exists at {FilePath}, proceeding with download.", fileName, filePath);
-
-                // Prepare the file details for response
-                var fileDetail = new FileDetailDto
-                {
-                    Path = filePath,
-                    Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
-                    Name = fileName,
-                    Size = new FileInfo(filePath).Length,
-                };
-
-                serviceResponse.Data = fileDetail;
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "File ready for download.";
-                _logger.LogInformation("File {FileName} is ready for download.", fileName);
-            }
-            else
-            {
-                serviceResponse.Message = $"File does not exist.";
-                _logger.LogWarning($"File {fileName} does not exist at {filePath}.");
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error during file download: {ErrorMessage}.", ex.Message);
-        }
-
         return serviceResponse;
     }
 }
