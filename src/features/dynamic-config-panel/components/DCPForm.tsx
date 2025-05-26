@@ -8,7 +8,7 @@ import {
   useUpdateNodeDataIO,
   shouldRenderField,
 } from "..";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 export const DCPForm = () => {
   // Define form

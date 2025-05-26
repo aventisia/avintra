@@ -3,7 +3,7 @@ import { TerminateSessionDto } from "@/react-toolkit/dtos/request/terminate-sess
 import { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { redirectToLoginUtil } from "@/react-toolkit/utils/redirect-utils";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/me`;
 
@@ -48,6 +48,5 @@ export {
   getMySession,
   logOffFromCurrentSession,
   refreshSession,
-  terminateUserSelectedSessions
+  terminateUserSelectedSessions,
 };
-

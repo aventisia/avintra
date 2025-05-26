@@ -1,11 +1,15 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { ARTIFICIAL_DELAY, DEV_JWT_LS_KEY, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
+import {
+  ARTIFICIAL_DELAY,
+  DEV_JWT_LS_KEY,
+  REQUEST_TIMEOUT,
+} from "@/react-toolkit/constants";
 import {
   removeUserSessionLocally,
   setUserSessionLocally,
 } from "@/react-toolkit/utils/user-session-utils";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 const axiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
@@ -25,7 +29,7 @@ axiosInstance.interceptors.request.use(
 
     // Include cookies with the request
     request.withCredentials = true;
-    
+
     return request;
   },
   (error) => {
@@ -122,4 +126,3 @@ function sleep(ms = 2000): Promise<void> {
 }
 
 export { axiosInstance };
-

@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 interface FELInputOutput {
   jsonData: string;

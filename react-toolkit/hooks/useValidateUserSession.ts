@@ -9,7 +9,7 @@ import {
 } from "@/react-toolkit/utils/user-session-utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 /**
  * Custom hook to validate user session and handle session refresh.
@@ -24,19 +24,19 @@ export const useValidateUserSession = () => {
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;
-      
+
       // Set authenticated user locally and session obj in store
       setUserSession(setUserSessionLocally(httpResponse.data));
     },
     onError: (error) => {
       // Show error toast
       toast.error(error.toString());
-      
+
       // Remove user session from store
       setUserSession(null);
 
       // Remove user session from local storage and redirect to login page
-      removeUserSessionLocally(true); 
+      removeUserSessionLocally(true);
     },
   });
 

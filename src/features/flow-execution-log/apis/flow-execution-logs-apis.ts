@@ -1,6 +1,6 @@
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { FlowExecutionLogsDTO } from "../dtos/flow-execution-log-dto";
 
 // Base URL for the flow execution log API

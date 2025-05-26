@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 import { getFlows } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants/constants";
@@ -12,13 +12,12 @@ import { useFlowsPopoverStore } from "../stores/flows-popover-store";
  */
 export const useFetchFlows = () => {
   // Get flows store state and actions
-  const { isPopoverOpen, setFlowsCount } =
-    useFlowsPopoverStore(
-      useShallow((state) => ({
-        isPopoverOpen: state.isPopoverOpen,
-        setFlowsCount: state.setFlowsCount,
-      })),
-    );
+  const { isPopoverOpen, setFlowsCount } = useFlowsPopoverStore(
+    useShallow((state) => ({
+      isPopoverOpen: state.isPopoverOpen,
+      setFlowsCount: state.setFlowsCount,
+    })),
+  );
 
   // Get flows using react query
   const { data, refetch, isFetching, isLoading, isError, error } = useQuery({
