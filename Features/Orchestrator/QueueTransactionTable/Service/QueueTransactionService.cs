@@ -6,11 +6,13 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly FileUploadConfig _fileUploadConfig;
 
     public QueueTransactionService(
         ILogger<QueueTransactionService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService)
+        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService,
+        FileUploadConfig fileUploadConfig)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -18,6 +20,7 @@ public class QueueTransactionService : IQueueTransactionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
+        _fileUploadConfig = fileUploadConfig;
     }
 
     // Retrieve all transactions for a specific queue
@@ -193,7 +196,7 @@ public class QueueTransactionService : IQueueTransactionService
                 return response;
             }
 
-            var inputJson = await File.ReadAllTextAsync(queue.SpecificDataSchemaPath);
+            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queue.SpecificDataSchemaPath));
             if (string.IsNullOrWhiteSpace(inputJson))
             {
                 _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
@@ -287,7 +290,7 @@ public class QueueTransactionService : IQueueTransactionService
                 return response;
             }
 
-            var inputJson = await File.ReadAllTextAsync(queueTransaction.Queue.SpecificDataSchemaPath);
+            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queueTransaction.Queue.SpecificDataSchemaPath));
             if (string.IsNullOrWhiteSpace(inputJson))
             {
                 _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
