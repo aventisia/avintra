@@ -58,12 +58,13 @@ public static class SharedServicesExtension
     {
         // Singleton
         services.AddSingleton(config);
-        services.AddSingleton(Guard.Against.Null(config.GetSection("ConnectionStringConfig").Get<ConnectionStringConfig>(), "ConnectionStringConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("GeneralConfig").Get<GeneralConfig>(), "GeneralConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("CookiePolicyConfig").Get<CookiePolicyConfig>(), "CookiePolicyConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("JwtConfig").Get<JwtConfig>(), "JwtConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), "TenantResolverConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), "FileUploadConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("ConnectionStringConfig").Get<ConnectionStringConfig>(), message: "ConnectionStringConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("GeneralConfig").Get<GeneralConfig>(), message: "GeneralConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("CookiePolicyConfig").Get<CookiePolicyConfig>(), message: "CookiePolicyConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("JwtConfig").Get<JwtConfig>(), message: "JwtConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), message: "TenantResolverConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), message: "FileUploadConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("CronJobs").Get<CronJobConfig>(), message: "CronJobsConfig cannot be null"));
 
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
