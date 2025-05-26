@@ -2,7 +2,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
 

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { useLocation } from "react-router-dom";
 import { getFlowExecutionLog } from "../apis/flow-execution-logs-apis";
 import { DATA_QUERY_KEY } from "../constants";

@@ -12,7 +12,7 @@ import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
