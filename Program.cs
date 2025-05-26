@@ -16,12 +16,11 @@ var config = configurationBuilder.Build();
 if (!builder.Environment.IsEnvironment("Localhost"))
 {
     // Get sensitive data from environment variables
-    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
-    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
-    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
-    var AES_ENCRYPTION_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_ENCRYPTION_KEY"), "AES_ENCRYPTION_KEY cannot be null");
-    var AES_INITIALIZATION_VECTOR = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_INITIALIZATION_VECTOR"), "AES_INITIALIZATION_VECTOR cannot be null");
-
+    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), message: "DB_HOST cannot be null");
+    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), message: "DB_CREDENTIALS cannot be null");
+    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), message: "JWT_SECRET_KEY cannot be null");
+    var AES_ENCRYPTION_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_ENCRYPTION_KEY"), message: "AES_ENCRYPTION_KEY cannot be null");
+    var AES_INITIALIZATION_VECTOR = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_INITIALIZATION_VECTOR"), message: "AES_INITIALIZATION_VECTOR cannot be null");
 
     // Update sensitive data in configuration
     config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
