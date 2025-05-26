@@ -3,23 +3,15 @@ namespace AspNetToolkit.Services;
 public class UploadFileService : IUploadFileService
 {
     private readonly ILogger<UploadFileService> _logger;
-    private readonly Guid _userId;
     private readonly FileUploadConfig _fileUploadConfig;
-    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public UploadFileService(
-        ILogger<UploadFileService> logger,
-        FileUploadConfig fileUploadConfig,
-        IWebHostEnvironment webHostEnvironment,
-        IHttpContextAccessor httpContextAccessor)
+    public UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig)
     {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
         _logger = logger;
         _fileUploadConfig = fileUploadConfig;
-        _webHostEnvironment = webHostEnvironment;
     }
+
+    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files) => await CoreUploadFilesAsync(files, _fileUploadConfig.TempUploadDirectory);
 
     // Uploads a single file and returns the result in a service response.
     public async Task<ServiceResponse<FileUploadResponseDto>> UploadSingleFileAsync(IFormFile file)
@@ -51,7 +43,9 @@ public class UploadFileService : IUploadFileService
     }
 
     // Uploads multiple files for a given step and returns the saved file URLs.
-    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesAsync(List<IFormFile> files)
+    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesAsync(List<IFormFile> files) => await CoreUploadFilesAsync(files, _fileUploadConfig.UploadDirectory);
+
+    private async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> CoreUploadFilesAsync(List<IFormFile> files, string fileUploadDirectory)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FileUploadResponseDto>>
@@ -107,7 +101,7 @@ public class UploadFileService : IUploadFileService
             }
 
             // Write files to storage after validation
-            await WriteFilesToStorage(fileStreams, uploadedFiles);
+            await WriteFilesToStorage(fileStreams, uploadedFiles, fileUploadDirectory);
 
             serviceResponse.Data = uploadedFiles;
             serviceResponse.StatusCode = 200;
@@ -135,9 +129,8 @@ public class UploadFileService : IUploadFileService
         return serviceResponse;
     }
 
-
     // Deletes a file from the server's storage based on the file URL.
-    public ServiceResponse<bool> DeleteFileAsync(string fileUrl)
+    public ServiceResponse<bool> DeleteFileAsync(string fileUrl, bool isTemp = false)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
@@ -170,7 +163,7 @@ public class UploadFileService : IUploadFileService
             var fileName = pathParts.Last();  // The file name is the last part, e.g., "2290a6c2-74d4-4f37-8bac-e1befb2242ce.pdf"
 
             // Construct the full file path using the base upload directory, subdirectory, and file name
-            var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory);
+            var fullDirectoryPath = Path.Combine(isTemp ? _fileUploadConfig.TempUploadDirectory : _fileUploadConfig.UploadDirectory);
 
             var filePath = Path.Combine(fullDirectoryPath, fileName);
 
@@ -208,7 +201,7 @@ public class UploadFileService : IUploadFileService
         return serviceResponse;
     }
 
-    private async Task WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, List<FileUploadResponseDto> uploadedFiles)
+    private async Task WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, List<FileUploadResponseDto> uploadedFiles, string fileUploadDirectory)
     {
         foreach (var (fileName, stream) in fileStreams)
         {
@@ -217,7 +210,7 @@ public class UploadFileService : IUploadFileService
             try
             {
                 // Construct the full directory path for the file upload
-                var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory);
+                var fullDirectoryPath = Path.Combine(fileUploadDirectory);
 
                 // Create the directory if it doesn't exist
                 if (!Directory.Exists(fullDirectoryPath))
@@ -262,7 +255,6 @@ public class UploadFileService : IUploadFileService
     }
 
     // Identifies the file category based on the file extension
-
     private string GetFileCategory(string extension)
     {
         _logger.LogInformation("Determining file category for extension: {Extension}.", extension);
@@ -361,7 +353,7 @@ public class UploadFileService : IUploadFileService
     }
 
     // Downloads a file based on the provided file URL.
-    public ServiceResponse<FileUploadResponseDto> DownloadFileAsync(string fileUrl)
+    public ServiceResponse<FileUploadResponseDto> DownloadFileAsync(string fileUrl, bool isTemp = false)
     {
         var serviceResponse = new ServiceResponse<FileUploadResponseDto>
         {
@@ -393,7 +385,7 @@ public class UploadFileService : IUploadFileService
 
             var fileName = pathParts.Last();
 
-            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, fileName);
+            var filePath = Path.Combine(isTemp ? _fileUploadConfig.TempUploadDirectory : _fileUploadConfig.UploadDirectory, fileName);
 
             if (File.Exists(filePath))
             {

@@ -12,6 +12,11 @@ public class FileUploadConfig
     public required string UploadDirectory { get; set; }
 
     /// <summary>
+    /// The directory where temporary files will be uploaded.
+    /// </summary>
+    public required string TempUploadDirectory { get; set; }
+
+    /// <summary>
     /// Configuration for the allowed file types, including extensions and size limits.
     /// </summary>
     public required AllowedFileTypesConfig AllowedFileTypes { get; set; }
