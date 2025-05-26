@@ -64,7 +64,6 @@ public static class SharedServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("JwtConfig").Get<JwtConfig>(), message: "JwtConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), message: "TenantResolverConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), message: "FileUploadConfig cannot be null"));
-        services.AddSingleton(Guard.Against.Null(config.GetSection("CronJobs").Get<CronJobConfig>(), message: "CronJobsConfig cannot be null"));
 
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
