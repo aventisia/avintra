@@ -21,4 +21,8 @@ public class AllowedFileTypesConfig
     /// </summary>
     public required FileTypeConfig Videos { get; set; }
 
+    /// <summary>
+    /// Configuration for audio files.
+    /// </summary>
+    public required FileTypeConfig Audio { get; set; }
 }

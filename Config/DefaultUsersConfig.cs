@@ -6,7 +6,7 @@ namespace AspNetToolkit.Config;
 public class DefaultUsersConfig
 {
     /// <summary>
-    /// Gets or sets the default super user for the "AVENTISIA Technologies Private Limited" tenant
+    /// Gets or sets the default super user for the "Aventisia Technologies Private Limited" tenant
     /// </summary>
     public required DefaultUser SuperUser { get; set; }
 

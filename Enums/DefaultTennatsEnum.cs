@@ -15,8 +15,8 @@ public enum DefaultTenantsEnum
     IndividualUsers,
 
     /// <summary>
-    /// Represents AVENTISIA Technologies Private Limited.
+    /// Represents Aventisia Technologies Private Limited.
     /// </summary>
-    [Description("AVENTISIA Technologies Private Limited")]
+    [Description("Aventisia Technologies Private Limited")]
     Aventisia,
 }
