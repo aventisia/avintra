@@ -16,8 +16,9 @@ public class FileUploadController(IFileUploadService uploadedDocService) : BaseA
 
     //Upload files
     [HttpPost("multiple")]
-    public async Task<ActionResult<ServiceResponse<string[]>>> UploadFiles(IFormFile[] files)
+    public async Task<ActionResult<ServiceResponse<string[]>>> UploadFiles()
     {
+        var files = Request?.Form?.Files.ToArray();
         return ResultHelper(await _uploadedDocService.UploadFilesAsync(files));
     }
 
