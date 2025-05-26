@@ -8,18 +8,18 @@ public class FileUploadController(IFileUploadService uploadedDocService) : BaseA
     private readonly IFileUploadService _uploadedDocService = uploadedDocService;
 
     //Upload file
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<string>>> UploadFile(IFormFile file)
+    [HttpPost("{isTemp?}")]
+    public async Task<ActionResult<ServiceResponse<string>>> UploadFile(IFormFile file, bool isTemp = true)
     {
-        return ResultHelper(await _uploadedDocService.UploadFileAsync(file));
+        return ResultHelper(await _uploadedDocService.UploadFileAsync(file, isTemp));
     }
 
     //Upload files
-    [HttpPost("multiple")]
-    public async Task<ActionResult<ServiceResponse<string[]>>> UploadFiles()
+    [HttpPost("multiple/{isTemp?}")]
+    public async Task<ActionResult<ServiceResponse<string[]>>> UploadFiles(bool isTemp = true)
     {
         var files = Request?.Form?.Files.ToArray();
-        return ResultHelper(await _uploadedDocService.UploadFilesAsync(files));
+        return ResultHelper(await _uploadedDocService.UploadFilesAsync(files, isTemp));
     }
 
     //Delete files

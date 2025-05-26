@@ -1,17 +1,16 @@
 namespace WorkspaceAPIs.Services;
 
-public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConfig fileUploadConfig, IUploadFileService uploadFileService) : IFileUploadService
+public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileService uploadFileService) : IFileUploadService
 {
     #region Fields
     private readonly ILogger<FileUploadService> _logger = logger;
-    private readonly FileUploadConfig _fileUploadConfig = fileUploadConfig;
     private readonly IUploadFileService _uploadFileService = uploadFileService;
 
     #endregion
 
     // Uploads multiple files for a given step and returns the saved file URLs.
 
-    public async Task<ServiceResponse<string[]>> UploadFilesAsync(IFormFile[] files)
+    public async Task<ServiceResponse<string[]>> UploadFilesAsync(IFormFile[] files, bool isTemp = true)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<string[]>
@@ -30,7 +29,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConf
                 return serviceResponse;
             }
 
-            var response = await _uploadFileService.UploadFilesAsync(files.ToList());
+            var response = isTemp ? await _uploadFileService.UploadFilesTemporaryAsync([.. files]) : await _uploadFileService.UploadFilesAsync([.. files]);
 
             // Check if the upload was successful; if not, set the error message and return
             if (response.StatusCode != 200)
@@ -55,7 +54,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConf
     }
 
 
-    public async Task<ServiceResponse<string>> UploadFileAsync(IFormFile file)
+    public async Task<ServiceResponse<string>> UploadFileAsync(IFormFile file, bool isTemp = true)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<string>
@@ -74,7 +73,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConf
                 return serviceResponse;
             }
 
-            var response = await _uploadFileService.UploadSingleFileAsync(file);
+            var response = isTemp ? await _uploadFileService.UploadFilesTemporaryAsync([file]) : await _uploadFileService.UploadFilesAsync([file]);
 
             // Check if the upload was successful; if not, set the error message and return
             if (response.StatusCode != 200)
@@ -84,7 +83,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, FileUploadConf
             }
 
             // If successful, assign the file path to the newQueue's SpecificDataSchemaPath
-            serviceResponse.Data = response.Data.Path;
+            serviceResponse.Data = response.Data?.FirstOrDefault()?.Path;
 
 
             serviceResponse.StatusCode = 200;
