@@ -87,6 +87,7 @@ public static class SharedServicesExtension
     // Method to add the upload file service to the service collection
     public static void AddUploadFileService(this IServiceCollection services)
     {
+        services.AddHttpClient();
         // Register UploadFileService as a singleton for IUploadFileService
         services.AddSingleton<IUploadFileService, UploadFileService>();
     }
