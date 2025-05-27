@@ -81,6 +81,7 @@ export const useSentimentAnalyticsSetupForm = () => {
       queryClient.invalidateQueries({
         queryKey: ["model", modelId],
       });
+      toast.success("Data saved successfully");
     },
     onError: (error) => {
       console.error("Error updating data:", error);
