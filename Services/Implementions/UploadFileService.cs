@@ -1,13 +1,23 @@
 namespace AspNetToolkit.Services;
 
-public class UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig, IHttpClientFactory httpClientFactory) : IUploadFileService
+public class UploadFileService : IUploadFileService
 {
-    private readonly ILogger<UploadFileService> _logger = logger;
-    private readonly FileUploadConfig _fileUploadConfig = fileUploadConfig;
+    private readonly ILogger<UploadFileService> _logger;
+    private readonly FileUploadConfig _fileUploadConfig;
 
-    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files) => await CoreUploadFilesAsync(files, _fileUploadConfig.TempUploadDirectory);
+    public UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig, IHttpClientFactory httpClientFactory)
+    {
+        _logger = logger;
+        _fileUploadConfig = fileUploadConfig;
+        _httpClientFactory = httpClientFactory;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files)
+    {
+        return await CoreUploadFilesAsync(files, _fileUploadConfig.TempUploadDirectory);
+    }
 
     // Uploads a single file and returns the result in a service response.
     public async Task<ServiceResponse<FileUploadResponseDto>> UploadSingleFileAsync(IFormFile file)
@@ -39,7 +49,10 @@ public class UploadFileService(ILogger<UploadFileService> logger, FileUploadConf
     }
 
     // Uploads multiple files for a given step and returns the saved file URLs.
-    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesAsync(List<IFormFile> files) => await CoreUploadFilesAsync(files, _fileUploadConfig.UploadDirectory);
+    public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesAsync(List<IFormFile> files)
+    {
+        return await CoreUploadFilesAsync(files, _fileUploadConfig.UploadDirectory);
+    }
 
     private async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> CoreUploadFilesAsync(List<IFormFile> files, string fileUploadDirectory)
     {
