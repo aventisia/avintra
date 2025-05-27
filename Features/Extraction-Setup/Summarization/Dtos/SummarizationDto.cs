@@ -59,12 +59,12 @@ public class SummarizationSetupDto
     /// <summary>
     /// Maximum number of characters in each chunk of text during preprocessing.
     /// </summary>
-    public int CharactersPerChunk { get; set; }
+    public int CharactersPerChunk { get; set; } = 0;
 
     /// <summary>
     /// Number of characters overlapping between consecutive chunks.
     /// </summary>
-    public int ChunkOverlap { get; set; }
+    public int ChunkOverlap { get; set; } = 0;
 
     /// <summary>
     /// Minimum total word count expected in the summary output.

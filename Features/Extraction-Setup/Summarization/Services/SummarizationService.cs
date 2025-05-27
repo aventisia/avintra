@@ -37,37 +37,38 @@ public class SummarizationService : ISummarizationService
             // Validate based on summarization method
             switch (summarizationDto.SetupObject.SummarizationMethod)
             {
-                case SummarizationMethodTypesEnum.MapReduce:
-                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
-                    {
-                        _logger.LogWarning("'MapIndividualSummaryPrompt' is required and cannot be null or empty.");
-                        response.Message = "'MapIndividualSummaryPrompt' is required.";
-                        return response;
-                    }
+                // TODO: It will be used letter 
+                // case SummarizationMethodTypesEnum.MapReduce:
+                //     if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
+                //     {
+                //         _logger.LogWarning("'MapIndividualSummaryPrompt' is required and cannot be null or empty.");
+                //         response.Message = "'MapIndividualSummaryPrompt' is required.";
+                //         return response;
+                //     }
 
-                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
-                    {
-                        _logger.LogWarning("'MapFinalCombinePrompt' is required and cannot be null or empty.");
-                        response.Message = "'MapFinalCombinePrompt' is required.";
-                        return response;
-                    }
-                    break;
+                //     if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
+                //     {
+                //         _logger.LogWarning("'MapFinalCombinePrompt' is required and cannot be null or empty.");
+                //         response.Message = "'MapFinalCombinePrompt' is required.";
+                //         return response;
+                //     }
+                //     break;
 
-                case SummarizationMethodTypesEnum.Refine:
-                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
-                    {
-                        _logger.LogWarning("'RefineInitialPrompt' is required and cannot be null or empty.");
-                        response.Message = "'RefineInitialPrompt' is required.";
-                        return response;
-                    }
+                // case SummarizationMethodTypesEnum.Refine:
+                //     if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
+                //     {
+                //         _logger.LogWarning("'RefineInitialPrompt' is required and cannot be null or empty.");
+                //         response.Message = "'RefineInitialPrompt' is required.";
+                //         return response;
+                //     }
 
-                    if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
-                    {
-                        _logger.LogWarning("'RefineSubsequentPrompt' is required and cannot be null or empty.");
-                        response.Message = "'RefineSubsequentPrompt' is required.";
-                        return response;
-                    }
-                    break;
+                //     if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
+                //     {
+                //         _logger.LogWarning("'RefineSubsequentPrompt' is required and cannot be null or empty.");
+                //         response.Message = "'RefineSubsequentPrompt' is required.";
+                //         return response;
+                //     }
+                //     break;
 
                 case SummarizationMethodTypesEnum.Stuff:
                     if (string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
@@ -446,38 +447,38 @@ public class SummarizationService : ISummarizationService
 
         switch (summarizationDto.SetupObject.SummarizationMethod)
         {
-            case SummarizationMethodTypesEnum.MapReduce:
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
-                {
-                    defaultPrompt.AppendLine("Map Phase Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
-                }
+            // TODO: It will be used letter 
+            // case SummarizationMethodTypesEnum.MapReduce:
+            //     if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapIndividualSummaryPrompt))
+            //     {
+            //         defaultPrompt.AppendLine("Map Phase Prompt:");
+            //         defaultPrompt.AppendLine(summarizationDto.SetupObject.MapIndividualSummaryPrompt.Trim());
+            //     }
 
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
-                {
-                    defaultPrompt.AppendLine("Reduce Phase Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
-                }
-                break;
+            //     if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.MapFinalCombinePrompt))
+            //     {
+            //         defaultPrompt.AppendLine("Reduce Phase Prompt:");
+            //         defaultPrompt.AppendLine(summarizationDto.SetupObject.MapFinalCombinePrompt.Trim());
+            //     }
+            //     break;
 
-            case SummarizationMethodTypesEnum.Refine:
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
-                {
-                    defaultPrompt.AppendLine("Initial Refinement Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
-                }
+            // case SummarizationMethodTypesEnum.Refine:
+            //     if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineInitialPrompt))
+            //     {
+            //         defaultPrompt.AppendLine("Initial Refinement Prompt:");
+            //         defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineInitialPrompt.Trim());
+            //     }
 
-                if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
-                {
-                    defaultPrompt.AppendLine("Subsequent Refinement Prompt:");
-                    defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
-                }
-                break;
+            //     if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.RefineSubsequentPrompt))
+            //     {
+            //         defaultPrompt.AppendLine("Subsequent Refinement Prompt:");
+            //         defaultPrompt.AppendLine(summarizationDto.SetupObject.RefineSubsequentPrompt.Trim());
+            //     }
+            //     break;
 
             case SummarizationMethodTypesEnum.Stuff:
                 if (!string.IsNullOrWhiteSpace(summarizationDto.SetupObject.StuffPrompt))
                 {
-                    defaultPrompt.AppendLine("Stuff Prompt:");
                     defaultPrompt.AppendLine(summarizationDto.SetupObject.StuffPrompt.Trim());
                 }
                 break;
