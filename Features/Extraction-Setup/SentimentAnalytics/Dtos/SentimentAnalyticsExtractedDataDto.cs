@@ -26,7 +26,7 @@ public class SentimentAnalyticsExtractedDataDto
     /// <summary>
     /// Gets or sets the list of structured data segments that have been extracted from the document.
     /// </summary>
-    public required List<QuestionAnswerSetupData> ExtractedData { get; set; }
+    public required List<SentimentAnalyticsSetupData> ExtractedData { get; set; }
 
     /// <summary>
     /// Gets or sets the accuracy for the record

@@ -35,7 +35,7 @@ public class SentimentAnalyticsMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, SentimentAnalyticsExtractedDataDto>()
-            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
+            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<SentimentAnalyticsSetupData>>(
                 src.DataObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
