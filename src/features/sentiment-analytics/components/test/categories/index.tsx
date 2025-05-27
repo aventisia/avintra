@@ -34,8 +34,10 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
                 render={({ field }) => (
                   <CheckboxField
                     name={field.name}
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
+                    checked={field.value === "true"}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked ? "true" : "false")
+                    }
                     label=""
                   />
                 )}

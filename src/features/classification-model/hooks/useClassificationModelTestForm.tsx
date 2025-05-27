@@ -1,4 +1,5 @@
 import { updateExtractedData } from "@/apis/extracted-data-api";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { toast } from "@aventisia/ui/sonner";
@@ -11,8 +12,10 @@ import { useShallow } from "zustand/react/shallow";
 
 import { classificationModelTestFormZodSchema } from "../constants/classification-model-test-form-zod-schema";
 import { ClassficationModelSetupDTO } from "../dtos/classfication-model-setup-dto";
+import { useFetchTestFormData } from "./useFetchTestFormData";
 
 export const useClassificationModelTestForm = () => {
+  const { data: fieldDataValues } = useFetchTestFormData();
   const form = useForm<z.infer<typeof classificationModelTestFormZodSchema>>({
     resolver: zodResolver(classificationModelTestFormZodSchema),
     defaultValues: {
@@ -23,6 +26,11 @@ export const useClassificationModelTestForm = () => {
   const { extractedData } = useExtractedDataStore(
     useShallow((state) => ({
       extractedData: state.extractedData,
+    })),
+  );
+  const { selectedFile } = useFileListStore(
+    useShallow((state) => ({
+      selectedFile: state.selectedFile,
     })),
   );
 
@@ -51,25 +59,60 @@ export const useClassificationModelTestForm = () => {
     // Only extract `name` field from fieldSetups
     const categories = setupFormData?.categories?.map((category) => ({
       name: category?.name ?? "",
-      value: false,
+      value: "false",
     })) ?? [{}];
 
     form.reset({
       categories,
+      submitForFineTuning: false,
     });
   }, [form, queryClient]);
+
+  // Function to populate field values
+  const populateFieldValues = useCallback(() => {
+    if (!fieldDataValues || !selectedFile) return;
+
+    const matchingExtractedData = fieldDataValues.data.find(
+      (item) => item.docId === selectedFile.id,
+    );
+
+    if (
+      matchingExtractedData &&
+      Array.isArray(matchingExtractedData.extractedData)
+    ) {
+      const existingFields = form.getValues("categories") ?? [];
+
+      const updatedFields = existingFields.map((field) => {
+        const match = matchingExtractedData.extractedData.find(
+          (item) =>
+            item.name.trim().toLowerCase() ===
+            (field.name ?? "").trim().toLowerCase(),
+        );
+
+        return {
+          ...field,
+          value: match?.value ?? field.value ?? "false",
+        };
+      });
+
+      form.reset({
+        categories: updatedFields,
+        submitForFineTuning: matchingExtractedData.submitForFineTuning ?? false,
+      });
+    }
+  }, [form, selectedFile, fieldDataValues]);
 
   useEffect(() => {
     const setupForm = async () => {
       try {
         await initializeFieldNames();
-        // await populateFieldValues();
+        populateFieldValues();
       } catch (error) {
         toast.error(error?.toString());
       }
     };
     setupForm();
-  }, [initializeFieldNames]);
+  }, [initializeFieldNames, populateFieldValues]);
 
   useEffect(() => {
     const finalExtractedData = extractedData.extractedData ?? [];
@@ -86,7 +129,7 @@ export const useClassificationModelTestForm = () => {
 
       return {
         ...field,
-        value: match.value === "true",
+        value: match.value,
       };
     });
 
