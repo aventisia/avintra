@@ -22,4 +22,11 @@ public interface IFileUploadService
     /// <param name="fileUrl">File Url</param>
     /// <returns>True if delete job is successful, else false</returns>
     ServiceResponse<bool> DeleteFileAsync(string fileUrl);
+
+    /// <summary>
+    /// Delete file
+    /// </summary>
+    /// <param name="fileUrl">File Url</param>
+    /// <returns>True if delete job is successful, else false</returns>
+    Task<ServiceResponse<string>> GetFileByUrlOrFileIdAsync(string fileOrRemoteUrl, bool isTemp = true);
 }

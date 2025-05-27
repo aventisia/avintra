@@ -5,7 +5,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
     #region Fields
     private readonly ILogger<FileUploadService> _logger = logger;
     private readonly IUploadFileService _uploadFileService = uploadFileService;
-
     #endregion
 
     // Uploads multiple files for a given step and returns the saved file URLs.
@@ -133,6 +132,48 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             serviceResponse.Message = "Files deleted successfully.";
             _logger.LogInformation(response.Message);
 
+        }
+        catch (Exception ex)
+        {
+            // Catch any unexpected exceptions during the file deletion process
+            _logger.LogError(serviceResponse.Message, ex);
+        }
+
+        // Return the service response with the status of the operation
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<string>> GetFileByUrlOrFileIdAsync(string fileOrRemoteUrl, bool isTemp = true)
+    {
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = "No file found",
+            Message = "File deletion failed."
+        };
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(fileOrRemoteUrl) || !Uri.IsWellFormedUriString(fileOrRemoteUrl, UriKind.Absolute))
+            {
+                serviceResponse.Message = "File URL is null or empty.";
+                _logger.LogError(serviceResponse.Message);
+                return serviceResponse;
+            }
+
+            if (Uri.IsWellFormedUriString(fileOrRemoteUrl, UriKind.Absolute))
+            {
+                var downloadResponse = await _uploadFileService.DownloadFileOnServerAsync(fileOrRemoteUrl, isTemp);
+                serviceResponse.Data = downloadResponse.Data;
+                _logger.LogInformation(downloadResponse.Message);
+            }
+            else
+            {
+                var downloadResponse = _uploadFileService.DownloadFileAsync(fileOrRemoteUrl, isTemp);
+                serviceResponse.Data = downloadResponse.Data.Path;
+                _logger.LogInformation(downloadResponse.Message);
+            }
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "File downloaded at server successfully.";
         }
         catch (Exception ex)
         {
