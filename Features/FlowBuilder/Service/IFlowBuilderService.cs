@@ -19,4 +19,11 @@ public interface IFlowBuilderService
     /// <param name="flowSilentUpdateDto">The data required to update the flow silently.</param>
     /// <returns>The task result contains the service response indicating whether the update job was successful.</returns>
     Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto);
+
+    /// <summary>
+    /// Updates the Is Published ,flow's nodes, edges, etc. silently in the background whenever the user makes any changes
+    /// </summary>
+    /// <param name="flowSilentUpdateDto">The data required to update the flow silently.</param>
+    /// <returns>The task result contains the service response indicating whether the update job was successful.</returns>
+    Task<ServiceResponse<bool>> PublishFlowVersionAsync(FlowSilentUpdateDto flowSilentUpdateDto);
 }
