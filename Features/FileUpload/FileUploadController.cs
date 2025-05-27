@@ -9,7 +9,7 @@ public class FileUploadController(IFileUploadService uploadedDocService) : BaseA
 
     //Upload file
     [HttpGet("{isTemp?}")]
-    public async Task<ActionResult<ServiceResponse<string>>> UploadFile(string fileOrRemoteUrl, bool isTemp = true)
+    public async Task<ActionResult<ServiceResponse<string>>> GetFileByUrlOrFileId(string fileOrRemoteUrl, bool isTemp = true)
     {
         return ResultHelper(await _uploadedDocService.GetFileByUrlOrFileIdAsync(fileOrRemoteUrl, isTemp));
     }
