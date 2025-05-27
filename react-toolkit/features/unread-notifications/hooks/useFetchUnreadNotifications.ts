@@ -1,10 +1,11 @@
+import { toast } from "@aventisia/ui/sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { getUnreadNotifications } from "@/react-toolkit/features/unread-notifications/apis/unread-notifications-apis";
 import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Hook to fetch unread notifications for the user
@@ -12,9 +13,9 @@ import { useShallow } from "zustand/react/shallow";
  */
 export const useFetchUnreadNotifications = () => {
   // Get store state and actions
-  const { isPopoverOpen, setUnreadCount } = useUnreadNotificationsStore(
+  const { isOpen, setUnreadCount } = useUnreadNotificationsStore(
     useShallow((state) => ({
-      isPopoverOpen: state.isPopoverOpen,
+      isOpen: state.isOpen,
       setUnreadCount: state.setUnreadCount,
     })),
   );
@@ -35,13 +36,13 @@ export const useFetchUnreadNotifications = () => {
     if (data) setUnreadCount(data?.data.length);
   }, [data, setUnreadCount]);
 
-  // Refetch unread notifications on popover open
+  // Refetch unread notifications on dialog open
   useEffect(() => {
-    if (isPopoverOpen) {
+    if (isOpen) {
       // Refetch unread notifications
       refetch();
     }
-  }, [isPopoverOpen, refetch]);
+  }, [isOpen, refetch]);
 
   // Return the fetching and loading status
   return { isFetching, isLoading };

@@ -1,20 +1,20 @@
-import { UNPopverContent } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNPopoverContent";
-import { UNPopoverTrigger } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNPopoverTrigger";
-import { UNSettingsLink } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNSettingsLink";
-import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNSkeleton";
-import { UN_POPOVER_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
-import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
-import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { cn } from "@aventisia/ui/lib";
 import {
-  Popover,
-  PopoverContent,
-  PopoverDefaultHeader,
-} from "@aventisia/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogDefaultHeader,
+} from "@aventisia/ui/dialog";
+import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
+import { UNDialogContent } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogContent";
+import { UNDialogTrigger } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogTrigger";
+import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNSkeleton";
+import { UN_DIALOG_HEADING } from "@/react-toolkit/features/unread-notifications/constants/constants";
+import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
+import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
+
 interface UnreadNotificationsProps {
-  /** Additional class name to override popover content container style */
+  /** Additional class name to override notification dialog content container style */
   className?: string;
 
   /** Additional class name to override notification trigger icon button */
@@ -22,41 +22,38 @@ interface UnreadNotificationsProps {
 }
 
 /**
- * Renders the Unread Notifications in popover
+ * Renders the Unread Notifications in dialog
  */
 export const UnreadNotifications = ({
   className,
-  triggerSize="icon8",
+  triggerSize = "icon8",
 }: UnreadNotificationsProps) => {
   // Get store state and actions
-  const { isPopoverOpen, togglePopoverOpen } = useUnreadNotificationsStore(
+  const { isOpen, toggleOpen } = useUnreadNotificationsStore(
     useShallow((state) => ({
-      isPopoverOpen: state.isPopoverOpen,
-      togglePopoverOpen: state.togglePopoverOpen,
+      isOpen: state.isOpen,
+      toggleOpen: state.toggleOpen,
     })),
   );
 
   // Fetch unread notifications
   const { isLoading } = useFetchUnreadNotifications();
 
-  // Return Unread Notifications Popover
+  // Return Unread Notifications Dialog
   return (
-    <Popover open={isPopoverOpen} onOpenChange={togglePopoverOpen}>
-      {/* Custom notification popover trigger */}
-      <UNPopoverTrigger triggerSize={triggerSize} />
-      {/* Popover content */}
-      <PopoverContent
-        align="end"
-        variant={"responsive"}
-        className={cn(className)}
-      >
+    <Dialog open={isOpen} onOpenChange={toggleOpen}>
+      {/* Custom notification Dialog trigger */}
+      <UNDialogTrigger triggerSize={triggerSize} />
+      {/* Dialog content */}
+      <DialogContent side={"right"} className={cn("!max-w-[26rem]", className)}>
         {/* Notification default header */}
-        <PopoverDefaultHeader heading={UN_POPOVER_HEADING}>
-          <UNSettingsLink />
-        </PopoverDefaultHeader>
+        <DialogDefaultHeader
+          className="px-3.5 py-4 text-lg tracking-wide"
+          heading={UN_DIALOG_HEADING}
+        />
         {/* Load skeleton or notification list */}
-        {isLoading ? <UNSkeleton /> : <UNPopverContent />}
-      </PopoverContent>
-    </Popover>
+        {isLoading ? <UNSkeleton /> : <UNDialogContent />}
+      </DialogContent>
+    </Dialog>
   );
 };

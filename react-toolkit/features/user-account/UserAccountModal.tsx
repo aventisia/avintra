@@ -1,18 +1,20 @@
-import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
-import { cn } from "@aventisia/ui/lib";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
-import { Button } from "@aventisia/ui/buttons";
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { Separator } from "@aventisia/ui";
-import { removeUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
+import { Button, buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
+import { toast } from "@aventisia/ui/sonner";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@aventisia/ui/sonner";
+import { Loader2, MailCheckIcon, Smartphone, UserIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useTauriStore } from "@/stores/tauri-store";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -24,10 +26,25 @@ interface UserAccountModalProps {
 
 const UserAccountModal = ({
   className,
-  sizeClassName = "h-9 w-9",
+  sizeClassName = "h-8 w-8",
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
+
+  // Get the state if app is open in tauri window
+  const { isTauri } = useTauriStore(
+    useShallow((state) => ({
+      isTauri: state.isTauri,
+    })),
+  );
+
+  //state to close the popover
+  const { isPopOverOpen, setisPopOverOpen } = useBaseLayoutStore(
+    useShallow((state) => ({
+      isPopOverOpen: state.isPopOverOpen,
+      setisPopOverOpen: state.setIsPopOverOpen,
+    })),
+  );
 
   // Get navigate function
   const navigate = useNavigate();
@@ -38,7 +55,6 @@ const UserAccountModal = ({
     onSuccess: (httpResponse) => {
       if (httpResponse.data) {
         setUserSession(null);
-        removeUserSessionLocally();
         navigate(
           "/redirect?msg=Logging out...&url=" + import.meta.env.VITE_LOGIN_URL,
         );
@@ -50,16 +66,15 @@ const UserAccountModal = ({
   });
 
   return (
-    <Popover>
+    <Popover open={isPopOverOpen} onOpenChange={setisPopOverOpen}>
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "ghost", size: "icon9" }),
-          "rounded-full",
-          sizeClassName,
+          buttonVariants({ variant: "ghost", size: "icon10" }),
+          "rounded-full border-[4px] border-[#363082] hover:border-primary",
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>
-          <AvatarFallback className="capitalize">
+          <AvatarFallback className="bg-[#aba7e7] font-bold capitalize tracking-wider text-secondary">
             {userSession ? userSession?.userInitials : "--"}
           </AvatarFallback>
         </Avatar>
@@ -74,11 +89,15 @@ const UserAccountModal = ({
             "flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5",
           )}
         >
-          <span className="truncate whitespace-nowrap text-base font-medium uppercase leading-4">
+          <Link
+            to="/account"
+            onClick={() => setisPopOverOpen(false)}
+            className="truncate whitespace-nowrap text-base font-medium uppercase leading-4 hover:text-primary"
+          >
             {userSession
               ? userSession?.firstName + " " + userSession?.lastName
               : "User Name"}
-          </span>
+          </Link>
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}
           </span>
@@ -90,10 +109,48 @@ const UserAccountModal = ({
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
+        {!isTauri && (
+          <>
+            <Button
+              variant={"ghost"}
+              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+              onClick={() => {
+                navigate("/account");
+                setisPopOverOpen(false);
+              }}
+            >
+              <UserIcon className="h-4 w-4" />
+              My Account
+            </Button>
+            <Button
+              variant={"ghost"}
+              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+              onClick={() => {
+                navigate("/account/email-settings");
+                setisPopOverOpen(false);
+              }}
+            >
+              <MailCheckIcon className="h-4 w-4" />
+              Email settings
+            </Button>
+            <Button
+              variant={"ghost"}
+              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+              onClick={() => {
+                navigate("/account/device-history");
+                setisPopOverOpen(false);
+              }}
+            >
+              <Smartphone className="h-4 w-4" />
+              Device history
+            </Button>
+            <Separator className="my-1 h-[0.5px]" />{" "}
+          </>
+        )}
         {/* Logout */}
         <Button
           variant={"ghost"}
-          className="h-9 justify-start gap-2 rounded-sm font-normal"
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
           onClick={() => mutate()}
         >
           {isPending ? (

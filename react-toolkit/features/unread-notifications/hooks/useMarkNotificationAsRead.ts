@@ -1,10 +1,11 @@
+import { useOptimisticMutation } from "@aventisia/ui/hooks";
+import { useQueryData } from "@aventisia/ui/hooks";
+import { useShallow } from "zustand/react/shallow";
+
 import { markNotificationAsRead } from "@/react-toolkit/features/unread-notifications/apis/unread-notifications-apis";
 import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-import { useOptimisticMutation } from "@aventisia/ui/hooks";
-import { useQueryData } from "@aventisia/ui/hooks";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Custom hook to mark a notification as read.
@@ -33,7 +34,7 @@ export const useMarkNotificationAsRead = (id: string) => {
     string,
     boolean,
     UnreadNotificationDto
-  >(markNotificationAsRead, UN_QUERY_KEY, updatedQueryData);
+  >(markNotificationAsRead, UN_QUERY_KEY, updatedQueryData, false);
 
   // Handle mark as read mutate
   const handleMutateMarkAsRead = () => {
