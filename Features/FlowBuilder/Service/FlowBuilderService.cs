@@ -35,7 +35,6 @@ public class FlowBuilderService : IFlowBuilderService
                 .GetByConditionAsync(w =>
                     w.FlowId == flowId &&
                     w.CreatedByUserId == _userId &&
-                    !w.IsPublished &&
                     (versionId == null || w.Id == versionId)
                 )
                 .Include(u => u.CreatedByUser)
