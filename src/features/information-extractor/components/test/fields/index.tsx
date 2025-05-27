@@ -31,7 +31,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
       {dataFields.map((field, index) => {
         const fieldName = field.name;
         const dotColor = textColorClassMap[index % textColorClassMap.length];
-        const accuracy = field.accuracy || 0;
+        const confidenceScore = field.confidenceScore || "0";
 
         return (
           <FormItem key={field.id} className="space-y-0.5">
@@ -49,14 +49,14 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
                 <div>
                   <span
                     className={
-                      accuracy < 35
+                      parseFloat(confidenceScore) < 35
                         ? "text-destructive"
-                        : accuracy > 70
+                        : parseFloat(confidenceScore) > 70
                           ? "text-green-500"
                           : "text-yellow-500"
                     }
                   >
-                    {field.accuracy ? field.accuracy : 0}%
+                    {field.confidenceScore ? field.confidenceScore : 0}%
                   </span>
                 </div>
               </div>

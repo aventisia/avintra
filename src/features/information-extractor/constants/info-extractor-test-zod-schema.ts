@@ -3,7 +3,7 @@ import * as z from "zod";
 const fieldsSchema = z.object({
     name: z.string().optional(),
     value: z.string().optional(),
-    accuracy: z.number().optional(),
+    confidenceScore: z.string().optional(),
 })
 
 const tableSchema = z.object({
