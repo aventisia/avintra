@@ -1,32 +1,15 @@
 import { ActionCategoryType } from "../../types/action-category-type";
-import { conditionalsActions } from "./conditonals-actions";
+import { conditionsLoopsActions } from "./conditons-loops-actions";
 import { flowControlActions } from "./flow-control-actions";
-import { loopsActions } from "./loops-actions";
-import { runFlowActions } from "./run-flow-actions";
-import { variableActions } from "./variable-actions";
 
 export const workFlowLogicsActions: ActionCategoryType[] = [
   {
-    name: "variable",
-    label: "Variable",
-    description: "Create and manage variables of different datatypes",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: variableActions,
-  },
-  {
-    name: "conditionals",
-    label: "Conditionals",
+    name: "conditionsLoops",
+    label: "Conditionals and Loops",
     description:
-      "Perform decision making and manage the flow according to set rules",
+      "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
     img: `${import.meta.env.BASE_URL}function.png`,
-    actions: conditionalsActions,
-  },
-  {
-    name: "loops",
-    label: "Loops",
-    description: "Repeat blocks of actions and iterate through stacks of items",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: loopsActions,
+    actions: conditionsLoopsActions,
   },
   {
     name: "flowControl",
@@ -35,11 +18,4 @@ export const workFlowLogicsActions: ActionCategoryType[] = [
     img: `${import.meta.env.BASE_URL}function.png`,
     actions: flowControlActions,
   },
-  {
-    name: "runFlow",
-    label: "Run flow",
-    description: "Set your automation to trigger other flows",
-    img: `${import.meta.env.BASE_URL}function.png`,
-    actions: runFlowActions,
-  }
 ];

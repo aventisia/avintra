@@ -5,7 +5,16 @@ import { databaseActions } from "./database-actions";
 import { textActions } from "./text-actions";
 import { ocrActions } from "./ocr-actions";
 import { cryptographyActions } from "./cryptography-actions";
+import { variableActions } from "./variable-actions";
+
 export const dataTransformationsActions: ActionCategoryType[] = [
+  {
+    name: "variable",
+    label: "Variable",
+    description: "Create and manage variables of different datatypes",
+    img: `${import.meta.env.BASE_URL}function.png`,
+    actions: variableActions,
+  },
   {
     name: "text",
     label: "Text",
