@@ -1,4 +1,5 @@
 import { updateExtractedData } from "@/apis/extracted-data-api";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { toast } from "@aventisia/ui/sonner";
@@ -11,8 +12,11 @@ import { useShallow } from "zustand/react/shallow";
 
 import { questionAnswerTestFormZodSchema } from "../constants/question-answer-test-form-zod-schema";
 import { QuestionAnswersSetupDTO } from "../dtos/question-answer-setup-dto";
+import { useFetchTestFormData } from "./useFetchTestFormData";
 
 export const useQuestionAnswersTestForm = () => {
+  const { data: fieldDataValues } = useFetchTestFormData();
+
   const form = useForm<z.infer<typeof questionAnswerTestFormZodSchema>>({
     resolver: zodResolver(questionAnswerTestFormZodSchema),
     defaultValues: {
@@ -27,6 +31,11 @@ export const useQuestionAnswersTestForm = () => {
       extractedData: state.extractedData,
     })),
   );
+  const { selectedFile } = useFileListStore(
+    useShallow((state) => ({
+      selectedFile: state.selectedFile,
+    })),
+  );
 
   const { fields: questionAnswerFields } = useFieldArray({
     control,
@@ -35,6 +44,7 @@ export const useQuestionAnswersTestForm = () => {
 
   const queryClient = useQueryClient();
 
+  // Function to initialize empty field names using setup form data
   const initializeFieldNames = useCallback(async () => {
     const data = queryClient.getQueryData<{ data: QuestionAnswersSetupDTO }>([
       "QUESTION_ANSWER_SETUP_FORM_DATA",
@@ -49,18 +59,52 @@ export const useQuestionAnswersTestForm = () => {
     form.reset({ questionAnswers });
   }, [form, queryClient]);
 
+  // Function to populate field values
+  const populateFieldValues = useCallback(() => {
+    if (!fieldDataValues || !selectedFile) return;
+
+    const matchingExtractedData = fieldDataValues.data.find(
+      (item) => item.docId === selectedFile.id,
+    );
+
+    if (
+      matchingExtractedData &&
+      Array.isArray(matchingExtractedData.extractedData)
+    ) {
+      const existingFields = form.getValues("questionAnswers") ?? [];
+
+      const updatedFields = existingFields.map((field) => {
+        const match = matchingExtractedData.extractedData.find(
+          (item) =>
+            item.question.trim().toLowerCase() ===
+            (field.question ?? "").trim().toLowerCase(),
+        );
+
+        return {
+          ...field,
+          answer: match?.answer ?? field.answer ?? "",
+        };
+      });
+
+      form.reset({
+        questionAnswers: updatedFields,
+        submitForFineTuning: matchingExtractedData.submitForFineTuning ?? false,
+      });
+    }
+  }, [form, selectedFile, fieldDataValues]);
+
   useEffect(() => {
     const setupForm = async () => {
       try {
         await initializeFieldNames();
-        // await populateFieldValues();
+        populateFieldValues();
       } catch (error) {
         toast.error(error?.toString());
       }
     };
 
     setupForm();
-  }, [initializeFieldNames]);
+  }, [initializeFieldNames, populateFieldValues]);
 
   useEffect(() => {
     const finalExtractedData = extractedData.extractedData ?? [];
@@ -87,6 +131,9 @@ export const useQuestionAnswersTestForm = () => {
   const { mutateAsync: updateExtractedFormData, isPending: isUpdatePending } =
     useMutation({
       mutationFn: updateExtractedData,
+      onSuccess: () => {
+        toast.success("Data successfully updated.");
+      },
       onError: () => {
         toast.error("Failed to update data.");
       },

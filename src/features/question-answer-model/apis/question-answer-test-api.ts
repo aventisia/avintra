@@ -1,7 +1,6 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { IHttpResponse } from "@aventisia/ui/dtos";
-// Update the DTO
-import { QuestionAnswersSetupDTO } from "../dtos/question-answer-setup-dto";
+import { QuestionAnswersTestDTO } from "../dtos/question-answer-test-dto";
 
 
 const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/question-answer/extracted-data`;
@@ -11,7 +10,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/question-a
  */
 const getQuestionAnswersTestFormDataByModelId = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<QuestionAnswersSetupDTO>>(`${baseAPIURL}/${modelId}`)
+    .get<IHttpResponse<QuestionAnswersTestDTO[]>>(`${baseAPIURL}/${modelId}`)
     .then((res) => res.data);
 };
 

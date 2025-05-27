@@ -113,7 +113,7 @@ const SummarizationModelTestForm = () => {
           <div className="space-y-4 px-4 pb-1 ">
             <AutosizeTextareaField
               {...summarizedTextProps}
-              label={`Summarized Text (${form.getValues("totalWords")})`}
+              label={`Summarized Text (${form.getValues("summarizedText").trim().split(/\s+/).length ?? 0})`}
             />
           </div>
         </FormProvider>

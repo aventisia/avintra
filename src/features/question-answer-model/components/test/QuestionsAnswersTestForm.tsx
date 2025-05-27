@@ -14,7 +14,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { submitForFineTuningProps } from "../../constants/question-answer-test-form-field-props";
 import { questionAnswerTestFormZodSchema } from "../../constants/question-answer-test-form-zod-schema";
-// import { useFetchTestFormData } from "../../hooks/useFetchTestFormData";
 import { useQuestionAnswersTestForm } from "../../hooks/useQuestionAnswerTestForm";
 import QuestionAnswerFields from "./question-answer";
 
@@ -40,8 +39,6 @@ const QuestionsAnswersTestForm = () => {
       setSelectedFile: state.setSelectedFile,
     })),
   );
-
-  // const { data: testFieldValues } = useFetchTestFormData();
 
   const { setExtractedData } = useExtractedDataStore(
     useShallow((state) => ({
