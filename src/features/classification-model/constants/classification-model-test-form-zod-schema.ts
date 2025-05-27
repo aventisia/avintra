@@ -2,7 +2,7 @@ import * as z from "zod";
 
 const categoriesSchema = z.object({
     name: z.string().optional(),
-    checked: z.boolean().optional(),
+    value: z.boolean().optional(),
 })
 
 export const classificationModelTestFormZodSchema = z

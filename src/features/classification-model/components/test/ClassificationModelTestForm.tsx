@@ -1,5 +1,7 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -16,8 +18,13 @@ import { useClassificationModelTestForm } from "../../hooks/useClassificationMod
 import CategoryFields from "./categories";
 
 const ClassificationModelTestForm = () => {
-  const { form, refineFormData, categoryFields } =
-    useClassificationModelTestForm();
+  const {
+    form,
+    categoryFields,
+    updateExtractedFormData,
+    isUpdatePending,
+    initializeFieldNames,
+  } = useClassificationModelTestForm();
   const {
     formState: { isSubmitting, isDirty },
     setValue,
@@ -26,6 +33,17 @@ const ClassificationModelTestForm = () => {
   const submitForFinetuningValue = watch("submitForFineTuning");
   const { data: fileList } = useFetchUploadedFiles();
 
+  const { setExtractedData } = useExtractedDataStore(
+    useShallow((state) => ({
+      setExtractedData: state.setExtractedData,
+    })),
+  );
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
+
   const { selectedFile, setSelectedFile } = useFileListStore(
     useShallow((state) => ({
       selectedFile: state.selectedFile,
@@ -33,6 +51,8 @@ const ClassificationModelTestForm = () => {
     })),
   );
 
+  const isLastFile =
+    selectedFile?.id === fileList?.data[fileList.data.length - 1].id;
   const handleNextFile = () => {
     const files = Array.isArray(fileList?.data) ? fileList.data : [];
     if (!files.length || !selectedFile) return;
@@ -44,12 +64,28 @@ const ClassificationModelTestForm = () => {
     }
   };
 
-  function submitHandler(
+  async function submitHandler(
     formData: z.infer<typeof classificationModelTestFormZodSchema>,
   ) {
-    refineFormData(formData);
-    console.log(formData);
-    handleNextFile(); // go to next file after save
+    const { submitForFineTuning, ...dataToSend } = formData;
+
+    try {
+      await updateExtractedFormData({
+        id: modelId,
+        mlModelId: modelId,
+        accuracy: null,
+        type: "LabelData",
+        dataObject: JSON.stringify(dataToSend.categories),
+        submitForFineTuning,
+        docId: selectedFile?.id ?? "",
+      });
+
+      setExtractedData({});
+      handleNextFile(); // ✅ Called only on success
+      if (!isLastFile) initializeFieldNames();
+    } catch {
+      // error handled in onError mutation fn
+    }
   }
 
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -93,8 +129,12 @@ const ClassificationModelTestForm = () => {
           />
           <span className="text-sm">Submit for Fine-tuning</span>
         </div>
-        <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
-          Save & Next
+        <Button
+          size="xs"
+          type="submit"
+          disabled={isSubmitting || isUpdatePending}
+        >
+          {isLastFile ? "Save" : "Save & Next"}
         </Button>
       </div>
     </Form>

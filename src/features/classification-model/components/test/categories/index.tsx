@@ -30,7 +30,7 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
             >
               <Controller
                 control={control}
-                name={`categories.${index}.checked`}
+                name={`categories.${index}.value`}
                 render={({ field }) => (
                   <CheckboxField
                     name={field.name}

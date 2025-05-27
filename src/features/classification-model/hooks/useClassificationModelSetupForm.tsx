@@ -20,7 +20,7 @@ export const useClassificationModelSetupForm = () => {
       categories: [{ name: "", instructions: "" }],
       allowMultipleClasses: false,
       uncertaintyAction: "",
-      prompt: `You are a reliable text classification assistant. Your task is to analyse the given input text and accurately classify it into the predefined categories based on its content, tone, and intent.\nSelect the most appropriate category from the provided list. Do not infer or guess beyond the information present in the input.\nReturn only the category label as the output. If the text does not clearly fit into any category, return "Uncategorised" or "Other" as appropriate.`,
+      prompt: `You are a reliable text classification assistant. Your task is to analyse the given input text and accurately classify it into the predefined categories based on its content, tone, and intent.\nSelect the most appropriate category from the provided list. Do not infer or guess beyond the information present in the input.\nReturn only the category label as the output. If the text does not clearly fit into any category.`,
     },
   });
 
