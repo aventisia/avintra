@@ -67,6 +67,64 @@ public class FlowBuilderService : IFlowBuilderService
         return serviceResponse;
     }
 
+    public async Task<ServiceResponse<bool>> PublishFlowVersionAsync(FlowSilentUpdateDto flowSilentUpdateDto)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            StatusCode = 400,
+            Message = "Failed to publish the flow version. Please try again."
+        };
+
+        try
+        {
+            // Validate that the flow version exists and is owned by the current user
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w =>
+                    (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
+                    w.FlowId == flowSilentUpdateDto.Id &&
+                    w.CreatedByUserId == _userId)
+                .OrderByDescending(a => a.CreatedOn)
+                .SingleOrDefaultAsync();
+
+            if (flowVersion == null)
+            {
+                _logger.LogInformation($"No flow version found for FlowId {flowSilentUpdateDto.Id}.");
+                serviceResponse.Message = "Flow version does not exist.";
+                return serviceResponse;
+            }
+
+            flowSilentUpdateDto.VersionId = flowVersion.Id;
+
+            // Adapt DTO changes and set publish status
+            flowSilentUpdateDto.Adapt(flowVersion);
+            flowVersion.IsPublished = true;
+            flowVersion.LastModifiedByUserId = _userId;
+            flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Update and save
+            _unitOfWork.FlowVersionRepo.Update(flowVersion);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Failed to save changes while publishing the flow version.");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow version published successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+
     // Updates the flow version nodes, edges, and viewport in the background when the user makes changes
     public async Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto)
     {
