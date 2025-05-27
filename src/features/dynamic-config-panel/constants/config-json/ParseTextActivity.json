@@ -19,7 +19,7 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "FindAllOccurrences",
     "label": "Find All Occurrences",
     "description": "Specifies whether to find all occurrences or just the first one.",
@@ -33,7 +33,7 @@
     "label": "Result Matches",
     "description": "The resulting list of matches or the first match found.",
     "defaultValue": {
-      "value": "",
+      "value": "resultMatches",
       "enabled": true
     },
     "required": false
@@ -45,7 +45,7 @@
     "label": "Status Message",
     "description": "Returns the result status message.",
     "defaultValue": {
-      "value": "",
+      "value": "statusMessage",
       "enabled": true
     },
     "required": false

@@ -23,7 +23,7 @@
     "name": "InputTextAs",
     "label": "Input Text As",
     "description": "Choose how to input the text (plain or encrypted).",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -62,7 +62,7 @@
     "name": "IfFieldIsnTEmpty",
     "label": "If Field Isn\u0027t Empty",
     "description": "Specify what to do if the text field already contains data.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -79,16 +79,16 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "PopulateTextUsingPhysicalKeystrokes",
     "label": "Populate Using Physical Keystrokes",
     "description": "Emulate physical keystrokes when populating text to ensure compatibility with complex fields.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "EmulateTyping",
     "label": "Emulate Typing",
     "description": "Fill the text field character by character to simulate typing behavior.",
@@ -97,20 +97,20 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "UnfocusTextBoxAfterFillingIt",
     "label": "Unfocus Text Box After Filling It",
     "description": "Unfocus the text box after filling it. Set to false if scraping auto-completion lists.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "WaitForPageToLoad",
     "label": "Wait for Page to Load",
     "description": "Specify whether to wait for the new web page to load completely before proceeding.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
@@ -119,7 +119,7 @@
     "name": "TimeoutForWebpageToLoad",
     "label": "Timeout for Webpage to Load",
     "description": "Set the time in seconds for the page to load before the action throws an error.",
-    "defaultValue": "",
+    "defaultValue": 60,
     "required": false
   },
   {
@@ -128,7 +128,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
-    "defaultValue": "",
+    "defaultValue": 2,
     "required": false,
     "selectOptions": [
       {
@@ -159,7 +159,7 @@
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
     "description": "Enter the dialog button to press if a pop-up dialog appears.",
-    "defaultValue": "",
+    "defaultValue": "Ok",
     "required": false
   }
 ]

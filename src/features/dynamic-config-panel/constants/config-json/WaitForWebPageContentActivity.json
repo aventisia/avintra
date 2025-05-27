@@ -14,7 +14,7 @@
     "name": "WaitForWebPageTo",
     "label": "Wait For Web Page To",
     "description": "Select what condition to wait for in the current web page.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -41,11 +41,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "CheckUiElementState",
     "label": "Check UI Element State",
     "description": "Check whether a specific UI element is enabled or disabled.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -72,7 +72,7 @@
     "name": "State",
     "label": "State",
     "description": "The expected state of the UI element (enabled or disabled).",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -89,11 +89,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "FailWithTimeoutError",
     "label": "Fail With Timeout Error",
     "description": "Specify whether to fail if the condition isn\u0027t met within the specified time.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -102,7 +102,7 @@
     "name": "Duration",
     "label": "Duration (Seconds)",
     "description": "How long to wait before failing if the condition isn\u0027t met.",
-    "defaultValue": "",
+    "defaultValue": 5,
     "required": false
   }
 ]

@@ -40,11 +40,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "RemoveAllItemOccurrences",
     "label": "Remove All Occurrences",
     "description": "Remove all items that match the specified value.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -63,7 +63,7 @@
     "label": "Modified List",
     "description": "The resulting list after removing the item(s).",
     "defaultValue": {
-      "value": "",
+      "value": "modifiedList",
       "enabled": true
     },
     "required": false

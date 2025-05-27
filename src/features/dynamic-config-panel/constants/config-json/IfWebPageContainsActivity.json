@@ -14,7 +14,7 @@
     "name": "CheckIfWebPage",
     "label": "Check Condition",
     "description": "Select what condition to check in the web page.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -41,11 +41,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "CheckUiElementState",
     "label": "Check UI Element State",
     "description": "Check whether a specific UI element is enabled or disabled.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -72,7 +72,7 @@
     "name": "State",
     "label": "State",
     "description": "The expected state of the UI element (enabled or disabled).",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -94,7 +94,7 @@
     "label": "Result",
     "description": "True if the condition is met; otherwise, false.",
     "defaultValue": {
-      "value": "",
+      "value": "result",
       "enabled": true
     },
     "required": false

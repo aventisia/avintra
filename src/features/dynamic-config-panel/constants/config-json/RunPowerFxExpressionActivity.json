@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "The result of the evaluated Power Fx expression.",
     "defaultValue": {
-      "value": "",
+      "value": "result",
       "enabled": true
     },
     "required": false

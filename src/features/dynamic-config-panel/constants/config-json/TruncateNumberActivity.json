@@ -58,7 +58,7 @@
     "label": "Result",
     "description": "Returns the result of the operation.",
     "defaultValue": {
-      "value": "truncatedNumber",
+      "value": "result",
       "enabled": true
     },
     "required": false

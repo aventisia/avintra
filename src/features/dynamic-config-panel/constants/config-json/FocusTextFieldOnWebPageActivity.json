@@ -19,11 +19,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "WaitForPageToLoad",
     "label": "Wait for Page to Load",
     "description": "Specify whether to wait for the new web page to load completely before proceeding.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
@@ -32,7 +32,7 @@
     "name": "TimeoutForWebpageToLoad",
     "label": "Timeout for Webpage to Load",
     "description": "Set the time in seconds for the page to load before the action throws an error.",
-    "defaultValue": "",
+    "defaultValue": 60,
     "required": false
   },
   {
@@ -41,7 +41,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears.",
-    "defaultValue": "",
+    "defaultValue": 2,
     "required": false,
     "selectOptions": [
       {
@@ -72,7 +72,7 @@
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
     "description": "Enter the dialog button to press if a pop-up dialog appears.",
-    "defaultValue": "",
+    "defaultValue": "Ok",
     "required": false
   }
 ]

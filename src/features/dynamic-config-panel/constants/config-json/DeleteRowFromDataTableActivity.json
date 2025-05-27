@@ -24,7 +24,7 @@
     "label": "Status Message",
     "description": "Returns the result status message.",
     "defaultValue": {
-      "value": "",
+      "value": "statusMessage",
       "enabled": true
     },
     "required": false

@@ -15,7 +15,7 @@
     "label": "JSON Output",
     "description": "The converted JSON string from the provided custom object.",
     "defaultValue": {
-      "value": "",
+      "value": "customObjectAsJsonOutput",
       "enabled": true
     },
     "required": false

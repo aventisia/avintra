@@ -15,7 +15,7 @@
     "label": "New Data Table Output",
     "description": "The newly created or cloned data table.",
     "defaultValue": {
-      "value": "",
+      "value": "oDataTableOutput",
       "enabled": true
     },
     "required": false

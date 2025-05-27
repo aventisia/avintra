@@ -14,7 +14,7 @@
     "name": "JavaScriptFunction",
     "label": "JavaScript Function",
     "description": "Enter the JavaScript function to run on the current web page.",
-    "defaultValue": "",
+    "defaultValue": "function ExecuteScript() { /*your code here, return something (optionally); */ }",
     "required": true
   },
   {
@@ -24,7 +24,7 @@
     "label": "Result Output",
     "description": "The result returned after executing the JavaScript function.",
     "defaultValue": {
-      "value": "",
+      "value": "result",
       "enabled": true
     },
     "required": false

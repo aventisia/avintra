@@ -24,7 +24,7 @@
     "label": "Intersection List Output",
     "description": "The output list containing common items from both input lists.",
     "defaultValue": {
-      "value": "",
+      "value": "intersectionListOutput",
       "enabled": true
     },
     "required": false

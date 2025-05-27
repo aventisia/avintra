@@ -23,7 +23,7 @@
     "name": "ClickType",
     "label": "Click Type",
     "description": "The kind of click to perform.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -70,20 +70,20 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "SendPhysicalClick",
     "label": "Send Physical Click",
     "description": "Physically move the mouse cursor over the element prior to clicking.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "WaitForPageToLoad",
     "label": "Wait for Page to Load",
     "description": "Specify whether to wait for the new web page to load after the click.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
@@ -92,7 +92,7 @@
     "name": "TimeoutForWebpageToLoad",
     "label": "Timeout for Webpage to Load",
     "description": "Set the time in seconds for the page to load before the action throws an error.",
-    "defaultValue": "",
+    "defaultValue": 60,
     "required": false
   },
   {
@@ -101,7 +101,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
-    "defaultValue": "",
+    "defaultValue": 2,
     "required": false,
     "selectOptions": [
       {
@@ -132,7 +132,7 @@
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
     "description": "Enter the dialog button to press if a pop-up dialog appears.",
-    "defaultValue": "",
+    "defaultValue": "Ok",
     "required": false
   },
   {
@@ -197,7 +197,7 @@
     "name": "OffsetX",
     "label": "Offset X",
     "description": "Move the mouse this many pixels to the right from the selected position.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false
   },
   {
@@ -206,7 +206,7 @@
     "name": "OffsetY",
     "label": "Offset Y",
     "description": "Move the mouse this many pixels down from the selected position.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false
   }
 ]

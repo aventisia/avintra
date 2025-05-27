@@ -19,11 +19,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "MoveMouseToHover",
     "label": "Move Mouse to Hover",
     "description": "Physically move the mouse cursor over the element to simulate hover.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   }
 ]

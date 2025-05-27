@@ -10,11 +10,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "IgnoreTextCase",
     "label": "Ignore Text Case",
     "description": "Specifies whether to perform case-insensitive comparison while searching for duplicates.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -24,7 +24,7 @@
     "label": "Deduplicated List",
     "description": "The list after removing duplicate items.",
     "defaultValue": {
-      "value": "",
+      "value": "duplicatedList",
       "enabled": true
     },
     "required": false

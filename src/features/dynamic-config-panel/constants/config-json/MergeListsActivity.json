@@ -24,7 +24,7 @@
     "label": "Output List",
     "description": "The merged result from both input lists.",
     "defaultValue": {
-      "value": "",
+      "value": "outputListOutput",
       "enabled": true
     },
     "required": false

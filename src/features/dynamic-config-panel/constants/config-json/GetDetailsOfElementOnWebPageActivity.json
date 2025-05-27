@@ -6,7 +6,7 @@
     "label": "Attribute Value",
     "description": "The value of the web element\u0027s attribute.",
     "defaultValue": {
-      "value": "",
+      "value": "oAttributeValueOutput",
       "enabled": true
     },
     "required": false
@@ -35,7 +35,7 @@
     "name": "AttributeName",
     "label": "Attribute Name",
     "description": "Enter or select the attribute whose value to retrieve.",
-    "defaultValue": "",
+    "defaultValue": "Own Text",
     "required": false
   }
 ]

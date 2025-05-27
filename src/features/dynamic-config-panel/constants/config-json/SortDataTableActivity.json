@@ -19,7 +19,7 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "Ascending",
     "label": "Ascending",
     "description": "Sort in ascending order. Set to false for descending order.",
@@ -33,7 +33,7 @@
     "label": "Status Message",
     "description": "Returns the result status message.",
     "defaultValue": {
-      "value": "",
+      "value": "statusMessage",
       "enabled": true
     },
     "required": false

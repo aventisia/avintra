@@ -24,7 +24,7 @@
     "label": "Column as List Output",
     "description": "The new list containing the contents of the specified data table column.",
     "defaultValue": {
-      "value": "",
+      "value": "columnAsListOutput",
       "enabled": true
     },
     "required": false

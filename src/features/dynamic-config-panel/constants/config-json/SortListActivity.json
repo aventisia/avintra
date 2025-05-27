@@ -10,11 +10,11 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "SortBy",
     "label": "Sort By Properties",
     "description": "Enable if sorting based on object properties (e.g., files, folders).",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -32,7 +32,7 @@
     "name": "FirstSort",
     "label": "First Sort Direction",
     "description": "Specifies whether to sort the first property in ascending or descending order.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -62,7 +62,7 @@
     "name": "SecondSort",
     "label": "Second Sort Direction",
     "description": "Specifies whether to sort the second property in ascending or descending order.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -92,7 +92,7 @@
     "name": "ThirdSort",
     "label": "Third Sort Direction",
     "description": "Specifies whether to sort the third property in ascending or descending order.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -114,7 +114,7 @@
     "label": "Sorted List",
     "description": "The sorted version of the input list.",
     "defaultValue": {
-      "value": "",
+      "value": "sortedList",
       "enabled": true
     },
     "required": false

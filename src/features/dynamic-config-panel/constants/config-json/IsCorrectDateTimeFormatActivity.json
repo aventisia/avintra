@@ -24,7 +24,7 @@
     "label": "Is Valid Format",
     "description": "Returns true if the input date/time string matches the specified format.",
     "defaultValue": {
-      "value": "",
+      "value": "result",
       "enabled": true
     },
     "required": false

@@ -10,20 +10,20 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "IncludeColumnNames",
     "label": "Include Column Names",
     "description": "Specifies whether to include column names as the first row in the CSV output.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "UseCustomColumnsSeparator",
     "label": "Use Custom Column Separator",
     "description": "Specifies whether to use a custom column separator instead of a predefined one.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {
@@ -32,7 +32,7 @@
     "name": "Separator",
     "label": "Separator",
     "description": "The column separator to use in the CSV text.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {
@@ -73,7 +73,7 @@
     "label": "CSV Text Output",
     "description": "The CSV text representation of the data table.",
     "defaultValue": {
-      "value": "",
+      "value": "oCsvTextOutput",
       "enabled": true
     },
     "required": false

@@ -24,7 +24,7 @@
     "label": "Result HTML",
     "description": "The generated HTML content.",
     "defaultValue": {
-      "value": "",
+      "value": "resultHtml",
       "enabled": true
     },
     "required": false

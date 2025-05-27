@@ -6,7 +6,7 @@
     "label": "Web Page Property",
     "description": "The value retrieved from the web page based on the selected detail type.",
     "defaultValue": {
-      "value": "",
+      "value": "oWebPagePropertyOutput",
       "enabled": true
     },
     "required": false
@@ -26,7 +26,7 @@
     "name": "Get",
     "label": "Get",
     "description": "Select what detail you want to retrieve from the web page.",
-    "defaultValue": "",
+    "defaultValue": 0,
     "required": false,
     "selectOptions": [
       {

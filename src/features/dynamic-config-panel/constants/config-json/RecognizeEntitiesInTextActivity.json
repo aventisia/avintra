@@ -15,7 +15,7 @@
     "label": "Recognized Entities",
     "description": "The recognized entities in the text.",
     "defaultValue": {
-      "value": "",
+      "value": "recognizedEntities",
       "enabled": true
     },
     "required": false
@@ -27,7 +27,7 @@
     "label": "Status Message",
     "description": "Returns the result status message.",
     "defaultValue": {
-      "value": "",
+      "value": "statusMessage",
       "enabled": true
     },
     "required": false

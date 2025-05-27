@@ -10,7 +10,7 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "switch",
     "name": "TrimContent",
     "label": "Trim Content",
     "description": "Set to true to trim the content after reading.",
@@ -24,7 +24,7 @@
     "label": "File Content",
     "description": "The text content read from the file.",
     "defaultValue": {
-      "value": "",
+      "value": "fileContent",
       "enabled": true
     },
     "required": false

@@ -6,7 +6,7 @@
     "label": "Current DateTime",
     "description": "Outputs the current system date and time.",
     "defaultValue": {
-      "value": "",
+      "value": "result",
       "enabled": true
     },
     "required": false
@@ -18,7 +18,7 @@
     "label": "Status Message",
     "description": "Returns the result status message.",
     "defaultValue": {
-      "value": "",
+      "value": "statusMessage",
       "enabled": true
     },
     "required": false
