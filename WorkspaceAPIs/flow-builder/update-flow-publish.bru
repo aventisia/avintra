@@ -24,6 +24,7 @@ script:pre-request {
   req.setBody({
     id: bru.getGlobalEnvVar("FLOW_ID"),
     thumbnail: "none",
-    reactFlowObject: "{nodes: [], edges: [], viewport: {x: 0, y: 0,zoom: 1}}"
+    reactFlowObject: "{nodes: [], edges: [], viewport: {x: 0, y: 0,zoom: 1}}",
+    isPublished: true
   })
 }
