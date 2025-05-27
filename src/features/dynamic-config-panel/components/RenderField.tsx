@@ -33,22 +33,23 @@ export const RenderField = ({
         <InputField key={name} {...baseProps} type={type} fieldSize="sm" />
       );
     case "textarea":
-      return <TextareaField key={name} {...baseProps} />;
+      return <TextareaField key={name} {...baseProps} size="sm" />;
     case "select":
       return (
         <SelectField
           key={name}
           {...baseProps}
           selectOptions={selectOptions || []}
+          size="sm"
         />
       );
     case "switch":
       return (
         <SwitchField
-          size="sm"
           key={name}
           {...baseProps}
           description={description || ""}
+          size="sm"
         />
       );
     case "config-panel-output":
