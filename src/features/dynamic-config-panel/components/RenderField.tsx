@@ -29,7 +29,9 @@ export const RenderField = ({
     case "color":
     case "time":
     case "password":
-      return <InputField key={name} {...baseProps} type={type} />;
+      return (
+        <InputField key={name} {...baseProps} type={type} fieldSize="sm" />
+      );
     case "textarea":
       return <TextareaField key={name} {...baseProps} />;
     case "select":

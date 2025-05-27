@@ -61,7 +61,7 @@ export const DCPForm = () => {
   return (
     <>
       {!isFormReady ? (
-        <div>TODO: Loading...</div>
+        <div>Not found</div>
       ) : (
         <Form
           methods={form}
@@ -93,7 +93,7 @@ export const DCPForm = () => {
                 <span className="h-[0.06rem] flex-grow rounded bg-indigo-100"></span>
               </h3>
 
-              <div className="rounded-lg border bg-slate-50 px-3.5 py-3">
+              <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
                 {nodeConfig.map((field) => {
                   // Check if the field should be rendered based on direction and renderIf conditions
                   if (!shouldRenderField("Output", field, watchedValues))
