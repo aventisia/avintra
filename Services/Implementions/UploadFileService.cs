@@ -1,15 +1,11 @@
 namespace AspNetToolkit.Services;
 
-public class UploadFileService : IUploadFileService
+public class UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig, IHttpClientFactory httpClientFactory) : IUploadFileService
 {
-    private readonly ILogger<UploadFileService> _logger;
-    private readonly FileUploadConfig _fileUploadConfig;
+    private readonly ILogger<UploadFileService> _logger = logger;
+    private readonly FileUploadConfig _fileUploadConfig = fileUploadConfig;
 
-    public UploadFileService(ILogger<UploadFileService> logger, FileUploadConfig fileUploadConfig)
-    {
-        _logger = logger;
-        _fileUploadConfig = fileUploadConfig;
-    }
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
     public async Task<ServiceResponse<IEnumerable<FileUploadResponseDto>>> UploadFilesTemporaryAsync(List<IFormFile> files) => await CoreUploadFilesAsync(files, _fileUploadConfig.TempUploadDirectory);
 
@@ -419,4 +415,72 @@ public class UploadFileService : IUploadFileService
 
         return serviceResponse;
     }
+
+    public async Task<ServiceResponse<string>> DownloadFileOnServerAsync(string fileUrl, bool isTemp = false)
+    {
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "File download failed from remote server."
+        };
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(fileUrl) || !Uri.IsWellFormedUriString(fileUrl, UriKind.Absolute))
+            {
+                serviceResponse.Message = "File URL is null or empty.";
+                _logger.LogError(serviceResponse.Message);
+                return serviceResponse;
+            }
+            _logger.LogInformation("Starting file download process for file URL: {FileUrl}.", fileUrl);
+            var client = _httpClientFactory.CreateClient();
+
+            var response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                serviceResponse.Message = "Failed to download file from the remote server.";
+                _logger.LogError(serviceResponse.Message);
+                return serviceResponse;
+            }
+
+            var fileUploadDirectory = isTemp ? _fileUploadConfig.TempUploadDirectory : _fileUploadConfig.UploadDirectory;
+
+            // Construct the full directory path for the file upload
+            var fullDirectoryPath = Path.Combine(fileUploadDirectory);
+
+            // Create the directory if it doesn't exist
+            if (!Directory.Exists(fullDirectoryPath))
+            {
+                Directory.CreateDirectory(fullDirectoryPath);
+                _logger.LogInformation("Created directory: {DirectoryPath}.", fullDirectoryPath);
+            }
+
+            var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+            var fileName = Path.GetFileName(new Uri(fileUrl).AbsolutePath);
+
+            // Generate a unique name for the uploaded file
+            var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(fileName).ToLower()}";
+
+            var filePath = Path.Combine(fullDirectoryPath, uniqueFileName);
+
+            var stream = await response.Content.ReadAsStreamAsync();
+
+            // Save the file to the disk
+            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+
+            await stream.CopyToAsync(fileStream);
+
+            serviceResponse.Message = "File added successfully.";
+            serviceResponse.StatusCode = 200;
+            return serviceResponse;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error during file download from remote server: {ErrorMessage}.", ex.Message);
+        }
+
+        return serviceResponse;
+    }
+
 }

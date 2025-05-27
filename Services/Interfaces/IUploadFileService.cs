@@ -36,4 +36,12 @@ public interface IUploadFileService
     /// <param name="fileUrl">The URL of the file to download.</param>
     /// <returns>The response containing details about the downloaded file.</returns>
     ServiceResponse<FileUploadResponseDto> DownloadFileAsync(string fileUrl, bool isTemp = false);
+
+    /// <summary>
+    /// Retrieve a file for download from remote server.
+    /// </summary>
+    /// <param name="fileUrl">The  remote URL of the file to download.</param>
+    /// <returns>The response is path of the downloaded file.</returns>
+    Task<ServiceResponse<string>> DownloadFileOnServerAsync(string fileUrl, bool isTemp = false);
+
 }
