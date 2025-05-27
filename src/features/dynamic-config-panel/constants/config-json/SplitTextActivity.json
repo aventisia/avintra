@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToSplit",
+    "label": "Text To Split",
+    "description": "The text to split.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SplitPattern",
+    "label": "Split Pattern",
+    "description": "The delimiter or regular expression pattern to use for splitting.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultList",
+    "label": "Resulting Substring List",
+    "description": "The resulting list of substrings.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

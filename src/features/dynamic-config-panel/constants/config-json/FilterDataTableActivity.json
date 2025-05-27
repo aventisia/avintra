@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table",
+    "description": "The data table to filter.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilterExpression",
+    "label": "FilterExpression",
+    "description": "The filter expression (e.g., \u0022Age \u003E 30\u0022).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FilteredDataTable",
+    "label": "Filtered Data Table",
+    "description": "The filtered data table.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table",
+    "description": "The data table from which the row will be deleted.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "RowIndex",
+    "label": "RowIndex",
+    "description": "The index of the row to delete.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

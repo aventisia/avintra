@@ -1,0 +1,35 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToConvert",
+    "label": "Text to Convert",
+    "description": "The text to convert to a number.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultNumber",
+    "label": "Result Number",
+    "description": "The resulting numeric value.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

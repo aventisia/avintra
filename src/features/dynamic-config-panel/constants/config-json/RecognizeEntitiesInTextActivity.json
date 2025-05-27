@@ -1,0 +1,35 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToAnalyze",
+    "label": "Text To Analyze",
+    "description": "The text to analyze.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "RecognizedEntities",
+    "label": "Recognized Entities",
+    "description": "The recognized entities in the text.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

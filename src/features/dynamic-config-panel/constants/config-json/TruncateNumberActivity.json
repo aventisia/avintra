@@ -1,8 +1,8 @@
 [
   {
     "direction": "Input",
-    "name": "Number",
     "type": "text",
+    "name": "Number",
     "label": "Number",
     "description": "The number to operate on. This can be a number, or a variable containing a number",
     "defaultValue": "",
@@ -10,10 +10,12 @@
   },
   {
     "direction": "Input",
-    "name": "Operation",
     "type": "select",
+    "name": "Operation",
     "label": "Operation",
     "description": "Specifies the operation to perform on the number.",
+    "defaultValue": "GetIntegerPart",
+    "required": true,
     "selectOptions": [
       {
         "label": "Get Integer Part",
@@ -28,19 +30,18 @@
       {
         "label": "Round Number",
         "value": "GetRoundNumber",
-        "GetRoundNumber": "Rounds the number to a specified number of decimal places."
+        "description": "Rounds the number to a specified number of decimal places."
       }
-    ],
-    "defaultValue": "GetIntegerPart",
-    "required": true
+    ]
   },
   {
     "direction": "Input",
-    "name": "DecimalPlaces",
     "type": "text",
+    "name": "DecimalPlaces",
     "label": "Decimal Places",
-    "description": "The number of decimal places to round to. Required only if the operation is 'RoundNumber'.",
-    "defaultValue": "2",
+    "description": "The number of decimal places to round to. Required only if the operation is \u0027RoundNumber\u0027.",
+    "defaultValue": 2,
+    "required": false,
     "renderIf": {
       "conditions": [
         {
@@ -52,13 +53,14 @@
   },
   {
     "direction": "Output",
-    "name": "Result",
     "type": "config-panel-output",
+    "name": "Result",
     "label": "Result",
     "description": "Returns the result of the operation.",
     "defaultValue": {
       "value": "truncatedNumber",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

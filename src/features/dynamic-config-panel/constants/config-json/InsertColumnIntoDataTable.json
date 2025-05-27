@@ -1,0 +1,50 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table",
+    "description": "The data table to modify.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnName",
+    "label": "ColumnName",
+    "description": "The name of the new column.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataType",
+    "label": "DataType",
+    "description": "The data type of the new column.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnIndex",
+    "label": "ColumnIndex",
+    "description": "The index at which to insert the column. Use -1 to append at the end.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

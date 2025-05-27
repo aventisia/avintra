@@ -1,0 +1,41 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table",
+    "description": "The data table to sort.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnName",
+    "label": "ColumnName",
+    "description": "The name of the column to sort by.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Ascending",
+    "label": "Ascending",
+    "description": "Sort in ascending order. Set to false for descending order.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

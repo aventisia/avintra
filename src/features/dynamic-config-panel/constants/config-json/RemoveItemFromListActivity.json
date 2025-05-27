@@ -1,59 +1,71 @@
 [
   {
     "direction": "Input",
-    "name": "RemoveItemsBy",
     "type": "select",
+    "name": "RemoveItemsBy",
     "label": "Remove Items By",
     "description": "Specifies whether to remove the item at a specified index or the item(s) with specific value.",
+    "defaultValue": "Index",
     "required": true,
     "selectOptions": [
-      { "label": "Index", "value": "Index" },
-      { "label": "Value", "value": "Value" }
-    ],
-    "defaultValue": "Index"
+      {
+        "label": "Index",
+        "value": "Index",
+        "description": "Remove item based on its position in the list."
+      },
+      {
+        "label": "Value",
+        "value": "Value",
+        "description": "Remove item(s) based on their value."
+      }
+    ]
   },
   {
     "direction": "Input",
+    "type": "text",
     "name": "AtIndex",
-    "type": "number",
     "label": "At Index",
     "description": "The index number of the item to remove.",
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
-    "name": "WithValue",
     "type": "text",
+    "name": "WithValue",
     "label": "With Value",
     "description": "The item value to remove from the list.",
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
+    "type": "text",
     "name": "RemoveAllItemOccurrences",
-    "type": "switch",
     "label": "Remove All Occurrences",
     "description": "Remove all items that match the specified value.",
-    "defaultValue": false
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
-    "name": "FormList",
     "type": "text",
+    "name": "FormList",
     "label": "Form List",
     "description": "The list with items to remove.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
-    "name": "ModifiedList",
     "type": "config-panel-output",
+    "name": "ModifiedList",
     "label": "Modified List",
     "description": "The resulting list after removing the item(s).",
     "defaultValue": {
-      "value": "modifiedList",
+      "value": "",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

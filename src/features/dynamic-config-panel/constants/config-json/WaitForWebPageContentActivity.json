@@ -1,0 +1,108 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "WaitForWebPageTo",
+    "label": "Wait For Web Page To",
+    "description": "Select what condition to wait for in the current web page.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Contain Element",
+        "value": "ContainElement",
+        "description": "Wait until the web page contains the specified UI element."
+      },
+      {
+        "label": "Not Contain Element",
+        "value": "NotContainElement",
+        "description": "Wait until the web page no longer contains the specified UI element."
+      },
+      {
+        "label": "Contain Text",
+        "value": "ContainText",
+        "description": "Wait until the web page contains the specified text."
+      },
+      {
+        "label": "Not Contain Text",
+        "value": "NotContainText",
+        "description": "Wait until the web page no longer contains the specified text."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CheckUiElementState",
+    "label": "Check UI Element State",
+    "description": "Check whether a specific UI element is enabled or disabled.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "The UI element to look for in the web page.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Text",
+    "label": "Text",
+    "description": "The text to look for in the web page content.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "State",
+    "label": "State",
+    "description": "The expected state of the UI element (enabled or disabled).",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Enabled",
+        "value": "Enabled",
+        "description": "UI element must be enabled."
+      },
+      {
+        "label": "Disabled",
+        "value": "Disabled",
+        "description": "UI element must be disabled."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FailWithTimeoutError",
+    "label": "Fail With Timeout Error",
+    "description": "Specify whether to fail if the condition isn\u0027t met within the specified time.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Duration",
+    "label": "Duration (Seconds)",
+    "description": "How long to wait before failing if the condition isn\u0027t met.",
+    "defaultValue": "",
+    "required": false
+  }
+]

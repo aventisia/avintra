@@ -1,31 +1,32 @@
 [
   {
     "direction": "Input",
-    "name": "FirstList",
     "type": "text",
+    "name": "FirstList",
     "label": "First List",
     "description": "The first list of items to merge.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
-    "name": "SecondList",
     "type": "text",
+    "name": "SecondList",
     "label": "Second List",
     "description": "The second list of items to merge.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
-    "name": "OutputListOutput",
     "type": "config-panel-output",
+    "name": "OutputListOutput",
     "label": "Output List",
     "description": "The merged result from both input lists.",
     "defaultValue": {
-      "value": "mergedList",
+      "value": "",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

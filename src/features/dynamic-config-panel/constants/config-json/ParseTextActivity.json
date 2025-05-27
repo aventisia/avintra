@@ -1,0 +1,53 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToParse",
+    "label": "Text To Parse",
+    "description": "The text to parse.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchPattern",
+    "label": "Search Pattern",
+    "description": "The subtext or regular expression pattern to search for.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FindAllOccurrences",
+    "label": "Find All Occurrences",
+    "description": "Specifies whether to find all occurrences or just the first one.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultMatches",
+    "label": "Result Matches",
+    "description": "The resulting list of matches or the first match found.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -1,23 +1,23 @@
 [
   {
     "direction": "Input",
-    "name": "JsonData",
     "type": "text",
+    "name": "JsonData",
     "label": "JSON Data",
     "description": "A JSON text or variable containing JSON to convert to a custom object.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
-    "name": "JsonAsCustomObjectOutput",
     "type": "config-panel-output",
+    "name": "JsonAsCustomObjectOutput",
     "label": "Custom Object Output",
     "description": "The resulting custom object after converting from JSON.",
-    "required": true,
     "defaultValue": {
-      "value": "objectOutput",
+      "value": "",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

@@ -1,8 +1,8 @@
 [
   {
     "direction": "Input",
-    "name": "ListToClear",
     "type": "text",
+    "name": "ListToClear",
     "label": "List to Clear",
     "description": "A list variable to remove its elements.",
     "defaultValue": "",

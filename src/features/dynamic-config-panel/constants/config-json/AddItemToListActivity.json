@@ -1,19 +1,19 @@
 [
-    {
+  {
     "direction": "Input",
-    "name": "AddItem",
     "type": "text",
+    "name": "AddItem",
     "label": "Add Item",
-    "description": "A value or variable to add to the list. Can be a single item or comma-separated list of items",
+    "description": "A value or variable to add to the list. Can be a single item or comma-separated list of items.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "name": "IntoList",
     "type": "text",
+    "name": "IntoList",
     "label": "Into List",
-    "description": "The list variable to append new elements to",
+    "description": "The list variable to append new elements to.",
     "defaultValue": "",
     "required": true
   }

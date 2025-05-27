@@ -1,0 +1,99 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "Select the checkbox UI element on the web page to interact with.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "CheckBoxState",
+    "label": "Check Box State",
+    "description": "Set the desired state of the checkbox.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Checked",
+        "value": "Checked",
+        "description": "Set the checkbox to checked state."
+      },
+      {
+        "label": "Unchecked",
+        "value": "Unchecked",
+        "description": "Set the checkbox to unchecked state."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WaitForPageToLoad",
+    "label": "Wait for Page to Load",
+    "description": "Specify whether to wait for the new web page to load completely after changing the checkbox state.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutForWebpageToLoad",
+    "label": "Timeout for Webpage to Load",
+    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfAPopUpDialogAppears",
+    "label": "If a Pop-Up Dialog Appears",
+    "description": "Specify what to do if a pop-up dialog appears after setting the checkbox state.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Close It",
+        "value": "CloseIt",
+        "description": "Automatically close any pop-up dialog that appears."
+      },
+      {
+        "label": "Press a Button",
+        "value": "PressAButton",
+        "description": "Press a specified button on the dialog."
+      },
+      {
+        "label": "Do Nothing",
+        "value": "DoNothing",
+        "description": "Ignore any pop-up dialog."
+      },
+      {
+        "label": "Close It / Press a Button",
+        "value": "CloseOrPress",
+        "description": "Close or press a button on the dialog."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogButtonToPress",
+    "label": "Dialog Button to Press",
+    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "defaultValue": "",
+    "required": false
+  }
+]

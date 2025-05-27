@@ -1,19 +1,19 @@
 [
-    {
+  {
     "direction": "Input",
-    "name": "VariableName",
     "type": "text",
+    "name": "VariableName",
     "label": "Variable Name",
-    "description": "The name of the variable containing the numeric value to increase",
+    "description": "The name of the variable containing the numeric value to increase.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "name": "IncreaseBy",
     "type": "text",
+    "name": "IncreaseBy",
     "label": "Increase By",
-    "description": "The amount to add to the variable. Can be a number or another variable containing a number",
+    "description": "The amount to add to the variable. Can be a number or another variable containing a number.",
     "defaultValue": "",
     "required": true
   }

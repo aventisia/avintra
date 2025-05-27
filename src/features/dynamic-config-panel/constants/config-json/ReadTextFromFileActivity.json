@@ -1,30 +1,32 @@
 [
   {
     "direction": "Input",
-    "name": "FilePath",
     "type": "text",
-    "label": "File path",
-    "description": "The file to read.",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "The full path of the file to read.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "text",
     "name": "TrimContent",
-    "type": "switch",
-    "label": "Trim content",
-    "description": "Set to true to trim the content after reading",
-    "defaultValue": true
+    "label": "Trim Content",
+    "description": "Set to true to trim the content after reading.",
+    "defaultValue": true,
+    "required": false
   },
   {
     "direction": "Output",
-    "name": "FileContent",
     "type": "config-panel-output",
-    "label": "fileContent",
-    "description": "The text content read from the file",
+    "name": "FileContent",
+    "label": "File Content",
+    "description": "The text content read from the file.",
     "defaultValue": {
-      "value": "fileContent",
+      "value": "",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

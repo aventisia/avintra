@@ -1,0 +1,109 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Navigate",
+    "label": "Navigate Action",
+    "description": "Specify where to navigate to.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "To URL",
+        "value": "ToUrl",
+        "description": "Navigate to a specific URL."
+      },
+      {
+        "label": "Back",
+        "value": "Back",
+        "description": "Navigate back in the browser history."
+      },
+      {
+        "label": "Forward",
+        "value": "Forward",
+        "description": "Navigate forward in the browser history."
+      },
+      {
+        "label": "Reload Web Page",
+        "value": "Reload",
+        "description": "Reload the current web page."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Url",
+    "label": "URL",
+    "description": "The URL to navigate to.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WaitForPageToLoad",
+    "label": "Wait for Page to Load",
+    "description": "Specify whether to wait for the new page to load completely after navigating.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutForWebpageToLoad",
+    "label": "Timeout for Webpage to Load",
+    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfAPopUpDialogAppears",
+    "label": "If a Pop-Up Dialog Appears",
+    "description": "Specify what to do if a pop-up dialog appears after navigating.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Close It",
+        "value": "CloseIt",
+        "description": "Automatically close any pop-up dialog that appears."
+      },
+      {
+        "label": "Press a Button",
+        "value": "PressAButton",
+        "description": "Press a specified button on the dialog."
+      },
+      {
+        "label": "Do Nothing",
+        "value": "DoNothing",
+        "description": "Ignore any pop-up dialog."
+      },
+      {
+        "label": "Close It / Press a Button",
+        "value": "CloseOrPress",
+        "description": "Close or press a button on the dialog."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogButtonToPress",
+    "label": "Dialog Button to Press",
+    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "defaultValue": "",
+    "required": false
+  }
+]

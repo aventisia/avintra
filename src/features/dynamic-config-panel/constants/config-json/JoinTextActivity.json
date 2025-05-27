@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextList",
+    "label": "Text List",
+    "description": "The list of strings to join.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Delimiter",
+    "label": "Delimiter",
+    "description": "The delimiter to use for joining the strings.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultText",
+    "label": "Result Text",
+    "description": "The resulting joined text.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

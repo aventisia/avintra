@@ -1,0 +1,165 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "Select the text field to populate.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "InputTextAs",
+    "label": "Input Text As",
+    "description": "Choose how to input the text (plain or encrypted).",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Input as Text, Variable or Expression",
+        "value": "InputAsTextVariableExpression",
+        "description": "Use regular text, variable, or expression."
+      },
+      {
+        "label": "Direct Encrypted Text Input",
+        "value": "EncryptedText",
+        "description": "Use secure string or masked input."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Text",
+    "label": "Text",
+    "description": "The text to fill in the text field.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextEncrypt",
+    "label": "Encrypted Text",
+    "description": "The text to fill in the text field securely.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfFieldIsnTEmpty",
+    "label": "If Field Isn\u0027t Empty",
+    "description": "Specify what to do if the text field already contains data.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Replace Text",
+        "value": "ReplaceText",
+        "description": "Clear existing content and replace with new text."
+      },
+      {
+        "label": "Append Text",
+        "value": "AppendText",
+        "description": "Add new text to the end of existing content."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PopulateTextUsingPhysicalKeystrokes",
+    "label": "Populate Using Physical Keystrokes",
+    "description": "Emulate physical keystrokes when populating text to ensure compatibility with complex fields.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EmulateTyping",
+    "label": "Emulate Typing",
+    "description": "Fill the text field character by character to simulate typing behavior.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UnfocusTextBoxAfterFillingIt",
+    "label": "Unfocus Text Box After Filling It",
+    "description": "Unfocus the text box after filling it. Set to false if scraping auto-completion lists.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WaitForPageToLoad",
+    "label": "Wait for Page to Load",
+    "description": "Specify whether to wait for the new web page to load completely before proceeding.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutForWebpageToLoad",
+    "label": "Timeout for Webpage to Load",
+    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfAPopUpDialogAppears",
+    "label": "If a Pop-Up Dialog Appears",
+    "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Close It",
+        "value": "CloseIt",
+        "description": "Automatically close any pop-up dialog that appears."
+      },
+      {
+        "label": "Press a Button",
+        "value": "PressAButton",
+        "description": "Press a specified button on the dialog."
+      },
+      {
+        "label": "Do Nothing",
+        "value": "DoNothing",
+        "description": "Ignore any pop-up dialog."
+      },
+      {
+        "label": "Close It / Press a Button",
+        "value": "CloseOrPress",
+        "description": "Close or press a button on the dialog."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogButtonToPress",
+    "label": "Dialog Button to Press",
+    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "defaultValue": "",
+    "required": false
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OriginalText",
+    "label": "Original Text",
+    "description": "The original text to trim.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultText",
+    "label": "Trimmed Text",
+    "description": "The trimmed text result.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

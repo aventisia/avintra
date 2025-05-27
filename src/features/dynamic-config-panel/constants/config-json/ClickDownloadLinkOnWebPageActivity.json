@@ -1,0 +1,41 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "Select the UI element (download link) on the web page to click.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DestinationFolder",
+    "label": "Destination Folder",
+    "description": "The full path of the folder where the downloaded file will be saved.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "DownloadedFile",
+    "label": "Downloaded File Output",
+    "description": "The file path where the downloaded file was saved.",
+    "defaultValue": {
+      "value": "",
+      "enabled": true
+    },
+    "required": false
+  }
+]

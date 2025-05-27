@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "Select the UI element on the web page to hover over.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MoveMouseToHover",
+    "label": "Move Mouse to Hover",
+    "description": "Physically move the mouse cursor over the element to simulate hover.",
+    "defaultValue": "",
+    "required": false
+  }
+]
