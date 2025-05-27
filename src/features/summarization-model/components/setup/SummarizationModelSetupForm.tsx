@@ -8,17 +8,9 @@ import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { SelectField } from "../../../../shared/select-field/SelectField";
 import {
-  charactersPerChunkProps,
-  chunkOverlapProps,
   contextProps,
-  finalPromptToCombineProps,
-  individualSummaryPromptProps,
-  initialPromptProps,
   promptProps,
-  subsequentPromptProps,
-  summarizationMethodProps,
   totalMaxWordsProps,
   totalMinWordsProps,
 } from "../../constants/summarization-model-setup-form-field-props";
@@ -27,29 +19,20 @@ import { SummarizationSetupDTO } from "../../dtos/summarization-setup-dto";
 import { useSummarizationModelSetupForm } from "../../hooks/useSummarizationModelSetupForm";
 
 const SummarizationModelSetupForm = () => {
-  const {
-    form,
-    isSubmitting,
-    isDirty,
-    isUpdatePending,
-    updateFormData,
-    refineFormData,
-  } = useSummarizationModelSetupForm();
-  const { watch } = form;
+  const { form, isSubmitting, isDirty, isUpdatePending, updateFormData } =
+    useSummarizationModelSetupForm();
   const { modelId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
     })),
   );
 
-  const summarizationMethodValue = watch("summarizationMethod");
-
   // Submit handler
   function submitHandler(
     formData: z.infer<typeof summarizationModelSetupFormZodSchema>,
   ) {
     updateFormData({
-      setupObject: refineFormData(formData),
+      setupObject: formData,
       id: modelId,
     } as SummarizationSetupDTO);
   }
@@ -67,14 +50,6 @@ const SummarizationModelSetupForm = () => {
             <AutosizeTextareaField {...contextProps} />
 
             <div className="grid grid-cols-2 gap-2">
-              {/* Character Per Chunk */}
-              <InputField {...charactersPerChunkProps} />
-
-              {/* Chunk Overlap (Characters) */}
-              <InputField {...chunkOverlapProps} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
               {/* Total Min Words */}
               <InputField {...totalMinWordsProps} />
 
@@ -82,35 +57,7 @@ const SummarizationModelSetupForm = () => {
               <InputField {...totalMaxWordsProps} />
             </div>
 
-            {/* Summarization Method */}
-            <SelectField {...summarizationMethodProps} />
-
-            {summarizationMethodValue === "MapReduce" && (
-              <>
-                {/* Individual Summary Prompt */}
-                <AutosizeTextareaField {...individualSummaryPromptProps} />
-
-                {/* Final Prompt to combine */}
-                <AutosizeTextareaField {...finalPromptToCombineProps} />
-              </>
-            )}
-
-            {summarizationMethodValue === "Refine" && (
-              <>
-                {/* Subsequent Refine Prompt */}
-                <AutosizeTextareaField {...subsequentPromptProps} />
-
-                {/* Initial Prompt */}
-                <AutosizeTextareaField {...initialPromptProps} />
-              </>
-            )}
-
-            {summarizationMethodValue === "Stuff" && (
-              <>
-                {/* Prompt */}
-                <AutosizeTextareaField {...promptProps} />
-              </>
-            )}
+            <AutosizeTextareaField {...promptProps} />
           </div>
         </FormProvider>
       </ScrollArea>

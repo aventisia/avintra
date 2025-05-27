@@ -63,8 +63,7 @@ const SummarizationModel = () => {
             </TabsTrigger>
             <TabsTrigger
               value="test"
-              className="rounded-full data-[state=active]:text-primary"
-              disabled={isTestTabDisabled}
+              className={`rounded-full data-[state=active]:text-primary ${isTestTabDisabled && "opacity-50 cursor-default"}`}
             >
               Test
             </TabsTrigger>

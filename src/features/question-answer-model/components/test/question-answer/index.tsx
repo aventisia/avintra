@@ -27,40 +27,24 @@ const QuestionAnswerFields = ({
   return (
     <div className="space-y-4">
       {questionAnswerFields.map((field, index) => {
-        const fieldName = field.name;
-        const accuracy = field.accuracy || 0;
+        const fieldName = field.question;
 
         return (
           <FormItem key={field.id} className="space-y-0.5">
             <FormLabel className="flex items-center justify-between">
-              <div className="flex justify-between items-end w-full px-1">
-                <p className="text-sm">
-                  {index + 1}. {fieldName}
-                </p>
-                <div>
-                  <span
-                    className={
-                      accuracy < 35
-                        ? "text-destructive"
-                        : accuracy > 70
-                          ? "text-green-500"
-                          : "text-yellow-500"
-                    }
-                  >
-                    {field.accuracy}%
-                  </span>
-                </div>
-              </div>
+              <p className="text-sm">
+                {index + 1}. {fieldName}
+              </p>
             </FormLabel>
             <FormControl>
               <Controller
                 control={control}
-                name={`questionAnswers.${index}.instructions`}
+                name={`questionAnswers.${index}.answer`}
                 render={({ field }) => (
                   <AutosizeTextareaField
                     {...answerProps}
                     {...field}
-                    placeholder={`Enter value for ${fieldName}`}
+                    placeholder="Type..."
                   />
                 )}
               />

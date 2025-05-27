@@ -60,8 +60,7 @@ const InformationExtractor = () => {
             </TabsTrigger>
             <TabsTrigger
               value="test"
-              disabled={isTestTabDisabled}
-              className="rounded-full data-[state=active]:text-primary"
+              className={`rounded-full data-[state=active]:text-primary ${isTestTabDisabled && "opacity-50 cursor-default"}`}
             >
               Test
             </TabsTrigger>

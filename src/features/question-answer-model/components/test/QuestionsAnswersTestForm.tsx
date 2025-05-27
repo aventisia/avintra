@@ -1,5 +1,7 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -12,12 +14,18 @@ import { useShallow } from "zustand/react/shallow";
 
 import { submitForFineTuningProps } from "../../constants/question-answer-test-form-field-props";
 import { questionAnswerTestFormZodSchema } from "../../constants/question-answer-test-form-zod-schema";
+// import { useFetchTestFormData } from "../../hooks/useFetchTestFormData";
 import { useQuestionAnswersTestForm } from "../../hooks/useQuestionAnswerTestForm";
 import QuestionAnswerFields from "./question-answer";
 
 const QuestionsAnswersTestForm = () => {
-  const { form, refineFormData, questionAnswerFields } =
-    useQuestionAnswersTestForm();
+  const {
+    form,
+    questionAnswerFields,
+    updateExtractedFormData,
+    isUpdatePending,
+    initializeFieldNames,
+  } = useQuestionAnswersTestForm();
   const {
     formState: { isSubmitting, isDirty },
     setValue,
@@ -33,6 +41,21 @@ const QuestionsAnswersTestForm = () => {
     })),
   );
 
+  // const { data: testFieldValues } = useFetchTestFormData();
+
+  const { setExtractedData } = useExtractedDataStore(
+    useShallow((state) => ({
+      setExtractedData: state.setExtractedData,
+    })),
+  );
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
+
+  const isLastFile =
+    selectedFile?.id === fileList?.data[fileList.data.length - 1].id;
   const handleNextFile = () => {
     const files = Array.isArray(fileList?.data) ? fileList.data : [];
     if (!files.length || !selectedFile) return;
@@ -44,12 +67,28 @@ const QuestionsAnswersTestForm = () => {
     }
   };
 
-  function submitHandler(
+  async function submitHandler(
     formData: z.infer<typeof questionAnswerTestFormZodSchema>,
   ) {
-    refineFormData(formData);
-    console.log(formData);
-    handleNextFile();
+    const { submitForFineTuning, ...dataToSend } = formData;
+
+    try {
+      await updateExtractedFormData({
+        id: modelId,
+        mlModelId: modelId,
+        accuracy: null,
+        type: "LabelData",
+        dataObject: JSON.stringify(dataToSend.questionAnswers),
+        submitForFineTuning,
+        docId: selectedFile?.id ?? "",
+      });
+
+      setExtractedData({});
+      handleNextFile(); // ✅ Called only on success
+      if (!isLastFile) initializeFieldNames();
+    } catch {
+      // error handled in onError mutation fn
+    }
   }
 
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -96,8 +135,12 @@ const QuestionsAnswersTestForm = () => {
           />
           <span className="text-sm">Submit for Fine-tuning</span>
         </div>{" "}
-        <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
-          Save & Next
+        <Button
+          size="xs"
+          type="submit"
+          disabled={isSubmitting || isUpdatePending}
+        >
+          {isLastFile ? "Save" : "Save & Next"}
         </Button>
       </div>
     </Form>

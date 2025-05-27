@@ -1,17 +1,17 @@
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { getExtractedDataByModelId } from "@/apis/extracted-data-api";
+import { getQuestionAnswersTestFormDataByModelId } from "../apis/question-answer-test-api";
 
 /**
  * Custom hook to fetch model using react query.
  * @returns An object containing the fetched data, error, and refetch method.
  */
-export const useFetchExtractedData = () => {
+export const useFetchTestFormData = () => {
   // Get modelId (mid) from store
   const { modelId } = useLabelDataStore(
     useShallow((state) => ({
@@ -21,17 +21,15 @@ export const useFetchExtractedData = () => {
 
   // Get models using react query
   const { data, isError, error, refetch, isLoading } = useQuery({
-    queryKey: ["EXTRACTED_DATA"],
-    queryFn: () => getExtractedDataByModelId(modelId, "LabelData"),
+    queryKey: ["QUESTION_ANSWER_TEST_FORM_DATA"],
+    queryFn: () => getQuestionAnswersTestFormDataByModelId(modelId),
     enabled: !!modelId, // prevents query from running with empty modelId
   });
 
   // Show toast on fetch error
   useEffect(() => {
     if (isError && error) {
-      toast.error(
-        `Failed to fetch extracted data: ${error.message || error.toString()}`,
-      );
+      toast.error(` ${error.message || error.toString()}`);
     }
   }, [isError, error]);
 

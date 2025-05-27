@@ -10,7 +10,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extracted-
  */
 const getAnnotationList = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<AnnotationDataDto[]>>(`${baseAPIURL}/list/${modelId}`)
+    .get<IHttpResponse<AnnotationDataDto[]>>(`${baseAPIURL}/list/${modelId}/LabelData`)
     .then((res) => res.data);
 };
 

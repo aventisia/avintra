@@ -17,16 +17,10 @@ export const useSummarizationModelSetupForm = () => {
     resolver: zodResolver(summarizationModelSetupFormZodSchema),
     defaultValues: {
       context: "",
-      charactersPerChunk: 0,
-      chunkOverlap: 0,
       totalMinimumWords: 0,
       totalMaximumWords: 0,
-      summarizationMethod: "",
-      mapIndividualSummaryPrompt: "",
-      mapFinalCombinePrompt: "",
-      refineSubsequentPrompt: "",
-      refineInitialPrompt: "",
-      stuffPrompt: "",
+      summarizationMethod: "stuff",
+      stuffPrompt: `You are an expert summarisation assistant. Your task is to read the provided content and generate a clear, concise, and accurate summary that captures the key ideas, main points, and critical information, while removing redundant or unimportant details.\nFocus on preserving the original intent and tone of the content. The summary should be easily understandable and suitable for someone who has not read the full text.\nIf the content is structured (like emails, reports, meeting transcripts, articles), maintain the logical flow and structure in the summary.\nBe objective, factual, and avoid adding personal opinions or interpretations.`,
     },
   });
 
@@ -47,17 +41,10 @@ export const useSummarizationModelSetupForm = () => {
 
     form.reset({
       context: setupFormData?.context ?? "",
-      charactersPerChunk: setupFormData?.charactersPerChunk ?? 0,
-      chunkOverlap: setupFormData?.chunkOverlap ?? 0,
       totalMinimumWords: setupFormData?.totalMinimumWords ?? 0,
       totalMaximumWords: setupFormData?.totalMaximumWords ?? 0,
-      summarizationMethod: setupFormData?.summarizationMethod ?? "",
-      mapIndividualSummaryPrompt:
-        setupFormData?.mapIndividualSummaryPrompt ?? "",
-      mapFinalCombinePrompt: setupFormData?.mapFinalCombinePrompt ?? "",
-      refineSubsequentPrompt: setupFormData?.refineSubsequentPrompt ?? "",
-      refineInitialPrompt: setupFormData?.refineInitialPrompt ?? "",
-      stuffPrompt: setupFormData?.stuffPrompt ?? "",
+      summarizationMethod: "stuff",
+      stuffPrompt: setupFormData?.stuffPrompt || form.getValues("stuffPrompt"),
     });
   }, [form, queryClient]);
 
@@ -86,37 +73,7 @@ export const useSummarizationModelSetupForm = () => {
   const refineFormData = (
     formData: z.infer<typeof summarizationModelSetupFormZodSchema>,
   ) => {
-    let refinedValues = { ...formData };
-
-    switch (formData.summarizationMethod) {
-      case "MapReduce":
-        refinedValues = {
-          ...refinedValues,
-          refineSubsequentPrompt: "",
-          refineInitialPrompt: "",
-          stuffPrompt: "",
-        };
-        break;
-      case "Refine":
-        refinedValues = {
-          ...refinedValues,
-          mapIndividualSummaryPrompt: "",
-          mapFinalCombinePrompt: "",
-          stuffPrompt: "",
-        };
-        break;
-      case "Stuff":
-        refinedValues = {
-          ...refinedValues,
-          mapIndividualSummaryPrompt: "",
-          mapFinalCombinePrompt: "",
-          refineSubsequentPrompt: "",
-          refineInitialPrompt: "",
-        };
-        break;
-    }
-
-    return refinedValues;
+    return formData;
   };
 
   return {

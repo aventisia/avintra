@@ -1,5 +1,7 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -18,7 +20,14 @@ import { summarizationModelTestFormZodSchema } from "../../constants/summarizati
 import { useSummarizationModelTestForm } from "../../hooks/useSummarizationModelTestForm";
 
 const SummarizationModelTestForm = () => {
-  const { form, isDirty, isSubmitting } = useSummarizationModelTestForm();
+  const {
+    form,
+    isDirty,
+    isSubmitting,
+    isUpdatePending,
+    resetFormValues,
+    updateExtractedFormData,
+  } = useSummarizationModelTestForm();
   const { setValue, watch } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
   const { data: fileList } = useFetchUploadedFiles();
@@ -30,6 +39,19 @@ const SummarizationModelTestForm = () => {
     })),
   );
 
+  const { setExtractedData } = useExtractedDataStore(
+    useShallow((state) => ({
+      setExtractedData: state.setExtractedData,
+    })),
+  );
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
+
+  const isLastFile =
+    selectedFile?.id === fileList?.data[fileList.data.length - 1].id;
   const handleNextFile = () => {
     const files = Array.isArray(fileList?.data) ? fileList.data : [];
     if (!files.length || !selectedFile) return;
@@ -41,11 +63,26 @@ const SummarizationModelTestForm = () => {
     }
   };
 
-  function submitHandler(
+  async function submitHandler(
     formData: z.infer<typeof summarizationModelTestFormZodSchema>,
   ) {
-    console.log(formData);
-    handleNextFile();
+    const { submitForFineTuning, ...dataToSend } = formData;
+    try {
+      await updateExtractedFormData({
+        id: modelId,
+        mlModelId: modelId,
+        accuracy: null,
+        type: "LabelData",
+        dataObject: JSON.stringify({ summary: dataToSend.summarizedText }),
+        submitForFineTuning,
+        docId: selectedFile?.id ?? "",
+      });
+      setExtractedData({});
+      handleNextFile();
+      if (!isLastFile) resetFormValues();
+    } catch {
+      // error handled in onError mutation fn
+    }
   }
 
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -92,8 +129,12 @@ const SummarizationModelTestForm = () => {
           />
           <span className="text-sm">Submit for Fine-tuning</span>
         </div>{" "}
-        <Button size="xs" type="submit" disabled={!isDirty || isSubmitting}>
-          Save & Next
+        <Button
+          size="xs"
+          type="submit"
+          disabled={isSubmitting || isUpdatePending}
+        >
+          {isLastFile ? "Save" : "Save & Next"}
         </Button>
       </div>
     </Form>

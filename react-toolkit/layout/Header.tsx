@@ -1,8 +1,9 @@
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
+// import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { cn } from "@aventisia/ui/lib";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { cn } from "@aventisia/ui/lib";
 import React from "react";
 
 interface HeaderProps {
@@ -51,7 +52,7 @@ const Header = ({
           {extraContentRight}
           {userSession ? (
             <>
-              <UnreadNotifications />
+              {/* <UnreadNotifications /> */}
               <UserAccountModal />
             </>
           ) : null}

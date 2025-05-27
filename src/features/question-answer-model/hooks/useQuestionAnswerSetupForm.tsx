@@ -19,7 +19,7 @@ export const useQuestionAnswerSetupForm = () => {
     defaultValues: {
       context: "",
       questionAnswers: [{ name: "", instructions: "" }],
-      prompt: "",
+      prompt: `You are a question answering assistant. Your task is to read the provided context and accurately answer the user’s question based only on the information present in the given text.\nIf the answer is clearly stated, provide a precise and concise response. If the answer is not found or cannot be determined from the context, respond with "Answer not found in the provided content."\nDo not guess or rely on external knowledge. Only use the information provided in the context.`,
     },
   });
 
@@ -61,7 +61,7 @@ export const useQuestionAnswerSetupForm = () => {
 
     form.reset({
       context: setupFormData?.context ?? "",
-      prompt: setupFormData?.prompt ?? "",
+      prompt: setupFormData?.prompt || form.getValues("prompt"),
       questionAnswers: setupFormData?.questionAnswers ?? [
         { name: "", instructions: "" },
       ],

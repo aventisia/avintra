@@ -21,7 +21,7 @@ export const useAddInformationExtractorForm = () => {
       context: "",
       fieldSetups: [{ name: "", type: "", instructions: "" }],
       tableMetadata: null,
-      prompt: "",
+      prompt: `You are a highly accurate information extraction assistant. Your task is to carefully analyse the provided text and extract specific pieces of information based on predefined fields or entities.\nOnly extract relevant, factual data as it appears in the input. Do not infer, assume, or create information that is not explicitly present in the text.\nReturn the output with clearly labeled fields as per the extraction schema.\nIf a field is not present in the input, return null or "" without making assumptions.\nEnsure the extracted data is clean, free from noise, and maintains the original context.`,
     },
   });
   const { setActiveTab } = useInformationExtractorTableStore(
@@ -152,7 +152,7 @@ export const useAddInformationExtractorForm = () => {
 
     form.reset({
       context: setupFormData?.context ?? "",
-      prompt: setupFormData?.prompt ?? "",
+      prompt: setupFormData?.prompt || form.getValues("prompt"),
       fieldSetups: setupFormData?.fieldSetups ?? [
         { name: "", type: "", instructions: "" },
       ],
