@@ -63,7 +63,6 @@ public class UploadFileService : IUploadFileService
             Message = "Files not uploaded."
         };
 
-        var uploadedFiles = new List<FileUploadResponseDto>();
         var fileStreams = new List<(string FileName, MemoryStream Stream)>();
 
         try
@@ -110,7 +109,7 @@ public class UploadFileService : IUploadFileService
             }
 
             // Write files to storage after validation
-            await WriteFilesToStorage(fileStreams, uploadedFiles, fileUploadDirectory);
+            var uploadedFiles = await WriteFilesToStorage(fileStreams, fileUploadDirectory);
 
             serviceResponse.Data = uploadedFiles;
             serviceResponse.StatusCode = 200;
@@ -210,8 +209,11 @@ public class UploadFileService : IUploadFileService
         return serviceResponse;
     }
 
-    private async Task WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, List<FileUploadResponseDto> uploadedFiles, string fileUploadDirectory)
+    private async Task<List<FileUploadResponseDto>> WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, string fileUploadDirectory)
     {
+
+        var uploadedFiles = new List<FileUploadResponseDto>();
+
         foreach (var (fileName, stream) in fileStreams)
         {
             _logger.LogInformation("Uploading file: {FileName}.", fileName);
@@ -244,7 +246,7 @@ public class UploadFileService : IUploadFileService
                 // Construct the file URL for referencing later
                 var fileUrl = $"/files/{uniqueFileName}".Replace("\\", "/");
 
-                uploadedFiles.Add(new FileUploadResponseDto
+                uploadedFiles.Add(new()
                 {
                     Path = fileUrl,
                     Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
@@ -253,7 +255,6 @@ public class UploadFileService : IUploadFileService
                 });
 
                 _logger.LogInformation("File uploaded successfully: {FileName}, Path: {FilePath}.", fileName, filePath);
-
             }
             catch (Exception ex)
             {
@@ -261,6 +262,7 @@ public class UploadFileService : IUploadFileService
                 _logger.LogError("Error uploading file '{FileName}': {ErrorMessage}.", fileName, ex.Message);
             }
         }
+        return uploadedFiles;
     }
 
     // Identifies the file category based on the file extension
