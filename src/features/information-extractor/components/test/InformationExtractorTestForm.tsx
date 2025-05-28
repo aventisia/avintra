@@ -25,7 +25,7 @@ const InformationExtractorTestForm = () => {
     tableFields,
     handleAddRow,
     handleDeleteRow,
-    resetFormWithFieldNames,
+    initializeFieldNames,
     updateExtractedFormData,
     isUpdatePending,
   } = useAddInformationExtractorTestForm();
@@ -67,23 +67,28 @@ const InformationExtractorTestForm = () => {
     }
   };
 
-  // Submit handler
-  function submitHandler(
+  async function submitHandler(
     formData: z.infer<typeof infoExtractorTestFormZodSchema>,
   ) {
     const { submitForFineTuning, ...dataToSend } = formData;
-    updateExtractedFormData({
-      id: modelId,
-      mlModelId: modelId,
-      accuracy: null,
-      type: "LabelData",
-      dataObject: JSON.stringify(dataToSend),
-      submitForFineTuning,
-      docId: selectedFile?.id ?? "",
-    });
-    handleNextFile();
-    setExtractedData({});
-    if (!isLastFile) resetFormWithFieldNames();
+
+    try {
+      await updateExtractedFormData({
+        id: modelId,
+        mlModelId: modelId,
+        accuracy: null,
+        type: "LabelData",
+        dataObject: JSON.stringify(dataToSend),
+        submitForFineTuning,
+        docId: selectedFile?.id ?? "",
+      });
+
+      setExtractedData({});
+      handleNextFile(); // ✅ Called only on success
+      if (!isLastFile) initializeFieldNames();
+    } catch {
+      // error handled in onError mutation fn
+    }
   }
 
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -138,7 +143,7 @@ const InformationExtractorTestForm = () => {
         <Button
           size="xs"
           type="submit"
-          disabled={!isDirty || isSubmitting || isUpdatePending}
+          disabled={isSubmitting || isUpdatePending}
         >
           {isLastFile ? "Save" : "Save & Next"}
         </Button>

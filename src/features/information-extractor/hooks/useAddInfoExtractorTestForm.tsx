@@ -6,15 +6,17 @@ import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { toast } from "@aventisia/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { infoExtractorTestFormZodSchema } from "../constants/info-extractor-test-zod-schema";
 import { InformationExtractorSetupDTO } from "../dtos/info-extractor-setup-dto";
+import { useFetchTestFormData } from "./useFetchTestFormData";
 
 export const useAddInformationExtractorTestForm = () => {
+  const { data: fieldDataValues } = useFetchTestFormData();
   const form = useForm<z.infer<typeof infoExtractorTestFormZodSchema>>({
     resolver: zodResolver(infoExtractorTestFormZodSchema),
     defaultValues: {
@@ -33,6 +35,8 @@ export const useAddInformationExtractorTestForm = () => {
       selectedFile: state.selectedFile,
     })),
   );
+
+  console.log("fdv", fieldDataValues);
 
   const { control } = form;
 
@@ -99,18 +103,12 @@ export const useAddInformationExtractorTestForm = () => {
 
   const queryClient = useQueryClient();
 
-  const resetFormWithFieldNames = () => {
+  // Function to initialize empty field names using setup form data
+  const initializeFieldNames = useCallback(async () => {
     const data = queryClient.getQueryData<{
       data: InformationExtractorSetupDTO;
     }>(["EXTRACTOR_SETUP_FORM_DATA"]);
-
-    // Extract setupObject from fetched data
     const setupFormData = data?.data.setupObject;
-
-    // Only extract `name` field from fieldSetups
-    const fields = setupFormData?.fieldSetups?.map((field) => ({
-      name: field?.name ?? "",
-    })) ?? [{}];
 
     // Only extract `tableName` and `headerName` from tables
     const tables =
@@ -124,14 +122,61 @@ export const useAddInformationExtractorTestForm = () => {
       })) ?? [];
 
     form.reset({
-      fields,
+      fields: setupFormData?.fieldSetups ?? [],
       tables,
     });
-  };
+  }, [form, queryClient]);
+
+  // Function to populate field values
+  const populateFieldValues = useCallback(() => {
+    if (!fieldDataValues || !selectedFile) return;
+
+    const matchingExtractedData = fieldDataValues.data.find(
+      (item) => item.docId === selectedFile.id,
+    );
+
+    if (!matchingExtractedData || !matchingExtractedData.extractedData) return;
+
+    const { extractedData, submitForFineTuning } = matchingExtractedData;
+
+    // --- Populate Fields ---
+    const existingFields = form.getValues("fields") ?? [];
+
+    const updatedFields = existingFields.map((field) => {
+      const match = extractedData.fields.find(
+        (item) =>
+          item.name.trim().toLowerCase() ===
+          (field.name ?? "").trim().toLowerCase(),
+      );
+
+      return {
+        ...field,
+        value: match?.value ?? field.value ?? "",
+        confidenceScore: match?.confidenceScore ?? field.confidenceScore ?? "",
+      };
+    });
+
+    // --- Populate Tables ---
+    const updatedTables = (extractedData.tables ?? []).map((table) => ({
+      name: table.name,
+      headers: table.headers.map((header) => ({
+        name: header.name,
+        values:
+          header.values && header.values.length > 0 ? header.values : [""],
+      })),
+    }));
+
+    form.reset({
+      fields: updatedFields,
+      tables: updatedTables,
+      submitForFineTuning: submitForFineTuning ?? false,
+    });
+  }, [form, selectedFile, fieldDataValues]);
 
   useEffect(() => {
-    resetFormWithFieldNames();
-  }, [selectedFile]);
+    initializeFieldNames();
+    populateFieldValues();
+  }, [initializeFieldNames, populateFieldValues]);
 
   useEffect(() => {
     const finalExtractedData = extractedData.extractedData ?? {};
@@ -158,13 +203,14 @@ export const useAddInformationExtractorTestForm = () => {
     }
   }, [extractedData, form]);
 
-  const { mutate: updateExtractedFormData, isPending: isUpdatePending } =
+  const { mutateAsync: updateExtractedFormData, isPending: isUpdatePending } =
     useMutation({
       mutationFn: updateExtractedData,
-      onSuccess: async () => {},
-      onError: (error) => {
-        console.error("Error updating data:", error);
-        toast.error("Failed to update form data");
+      onSuccess: () => {
+        toast.success("Data successfully updated.");
+      },
+      onError: () => {
+        toast.error("Failed to update data.");
       },
     });
 
@@ -174,7 +220,7 @@ export const useAddInformationExtractorTestForm = () => {
     tableFields,
     handleAddRow,
     handleDeleteRow,
-    resetFormWithFieldNames,
+    initializeFieldNames,
     updateExtractedFormData,
     isUpdatePending,
   };
