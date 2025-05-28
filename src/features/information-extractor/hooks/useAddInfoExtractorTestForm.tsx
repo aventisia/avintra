@@ -156,15 +156,37 @@ export const useAddInformationExtractorTestForm = () => {
       };
     });
 
-    // --- Populate Tables ---
-    const updatedTables = (extractedData.tables ?? []).map((table) => ({
-      name: table.name,
-      headers: table.headers.map((header) => ({
-        name: header.name,
-        values:
-          header.values && header.values.length > 0 ? header.values : [""],
-      })),
-    }));
+    // --- Simplified Table Merge ---
+    const existingTables = form.getValues("tables") ?? [];
+
+    const updatedTables = (extractedData.tables ?? []).map((newTable) => {
+      const existingTable = existingTables.find(
+        (t) =>
+          t.name.trim().toLowerCase() === newTable.name.trim().toLowerCase(),
+      );
+
+      const mergedHeaders = [
+        ...(existingTable?.headers ?? []),
+        ...newTable.headers,
+      ].reduce<Record<string, { name: string; values: string[] }>>((acc, h) => {
+        const key = h.name.trim().toLowerCase();
+        acc[key] = {
+          name: h.name,
+          values:
+            h.values?.length > 0
+              ? h.values.map((v) => v ?? "")
+              : acc[key]?.values?.length > 0
+                ? acc[key].values.map((v) => v ?? "")
+                : [""],
+        };
+        return acc;
+      }, {});
+
+      return {
+        name: newTable.name,
+        headers: Object.values(mergedHeaders),
+      };
+    });
 
     form.reset({
       fields: updatedFields,

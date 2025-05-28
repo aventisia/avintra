@@ -108,7 +108,7 @@ const ExtractedTablesData = ({
                           {table.headers.map((_, colIndex) => (
                             <div
                               key={colIndex}
-                              className="flex items-center gap-1 px-3 py-1"
+                              className="flex-1 items-center gap-1 px-3 py-1"
                             >
                               <Controller
                                 control={control}
