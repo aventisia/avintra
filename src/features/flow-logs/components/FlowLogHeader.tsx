@@ -9,6 +9,7 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 import FlowExecutionLog from "@/features/flow-execution-log/components";
 import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
+import { CircleUserIcon } from "lucide-react";
 // import { useLocation } from "react-router-dom";
 
 const FlowLogHeader = () => {
@@ -24,14 +25,9 @@ const FlowLogHeader = () => {
   return (
     <>
       <Dialog onOpenChange={() => setFlowExecutionLogId(null)}>
-        <DialogTrigger>
-          <span
-            className={
-              "flex h-6 items-center justify-center gap-2 text-sm font-semibold"
-            }
-          >
-            Logs
-          </span>
+        <DialogTrigger className="relative inline-flex h-8 w-full cursor-default select-none items-center !justify-start gap-2 whitespace-nowrap rounded-md border border-transparent bg-transparent !px-2 py-2 text-sm font-medium outline-none ring-offset-background transition-colors duration-0 hover:bg-accent focus:border-accent focus:!bg-accent focus:text-accent-foreground focus:ring-transparent focus-visible:outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-80 data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+          <CircleUserIcon className="h-4 w-4" />
+          <span>Agent Runs</span>
         </DialogTrigger>
         <DialogContent
           side="right"
