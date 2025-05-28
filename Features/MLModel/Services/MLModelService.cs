@@ -207,7 +207,7 @@ public class MLModelService : IMLModelService
 
 
             // Prevent changing setup status from 'Completed' to any other status
-            if (modelAlreadyExists.SetupStatus == SetupStatusTypesEnum.Completed &&
+            if (mlModel.SetupStatus == SetupStatusTypesEnum.Completed &&
                 mlModelDto.SetupStatus != SetupStatusTypesEnum.Completed)
             {
                 _logger.LogInformation("Cannot change setup status from 'Completed'.");
