@@ -64,6 +64,7 @@ public static class SharedServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("JwtConfig").Get<JwtConfig>(), message: "JwtConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), message: "TenantResolverConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), message: "FileUploadConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("HttpClientUrlConfig").Get<HttpClientUrlConfig>(), message: "HttpClientUrlConfig cannot be null"));
 
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
@@ -84,10 +85,29 @@ public static class SharedServicesExtension
         services.AddSingleton<IStringEncryptionService, StringEncryptionService>();
     }
 
+    // Method to add the http client service to the service collection
+    public static void AddHttpClientService(this IServiceCollection services, IConfiguration config)
+    {
+        var urlConfig = Guard.Against.Null(config.GetSection("HttpClientUrlConfig").Get<HttpClientUrlConfig>(),
+            message: "HttpClientUrlConfig cannot be null");
+
+        services.AddHttpClient(nameof(HttpClientNamesEnum.ModelStudioApis), config =>
+            config.BaseAddress = new(urlConfig.ModelStudioApisBaseUrl));
+
+        services.AddHttpClient(nameof(HttpClientNamesEnum.WorkspaceApis), config =>
+            config.BaseAddress = new(urlConfig.WorkspaceApisBaseUrl));
+
+        services.AddHttpClient(nameof(HttpClientNamesEnum.AccountsApis), config =>
+            config.BaseAddress = new(urlConfig.AccountsApisBaseUrl));
+
+        services.AddHttpClient(nameof(HttpClientNamesEnum.LlmPipelineApis), config =>
+            config.BaseAddress = new(urlConfig.LlmPipelineApisBaseUrl));
+
+    }
+
     // Method to add the upload file service to the service collection
     public static void AddUploadFileService(this IServiceCollection services)
     {
-        services.AddHttpClient();
         // Register UploadFileService as a singleton for IUploadFileService
         services.AddSingleton<IUploadFileService, UploadFileService>();
     }
