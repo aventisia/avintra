@@ -1,19 +1,19 @@
 [
-    {
+  {
     "direction": "Input",
-    "name": "VariableName",
     "type": "text",
+    "name": "VariableName",
     "label": "Variable Name",
-    "description": "A numeric variable to decrease",
+    "description": "A numeric variable to decrease.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "name": "DecreaseBy",
     "type": "text",
+    "name": "DecreaseBy",
     "label": "Decrease By",
-    "description": "The amount to subtract from the variable. Can be a number or another variable containing a number",
+    "description": "The amount to subtract from the variable. Can be a number or another variable containing a number.",
     "defaultValue": "",
     "required": true
   }

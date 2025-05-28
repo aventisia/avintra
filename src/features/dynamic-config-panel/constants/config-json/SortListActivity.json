@@ -1,90 +1,122 @@
 [
   {
     "direction": "Input",
-    "name": "ListToSort",
     "type": "text",
+    "name": "ListToSort",
     "label": "List to Sort",
     "description": "The variable that holds the list to sort.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
-    "name": "SortBy",
     "type": "switch",
+    "name": "SortBy",
     "label": "Sort By Properties",
     "description": "Enable if sorting based on object properties (e.g., files, folders).",
-    "defaultValue": false
+    "defaultValue": false,
+    "required": false
   },
   {
     "direction": "Input",
-    "name": "FirstProperty",
     "type": "text",
+    "name": "FirstProperty",
     "label": "First Property to Sort By",
     "description": "The first property name to sort the list by.",
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
-    "name": "FirstSort",
     "type": "select",
+    "name": "FirstSort",
     "label": "First Sort Direction",
     "description": "Specifies whether to sort the first property in ascending or descending order.",
+    "defaultValue": 0,
+    "required": false,
     "selectOptions": [
-      { "label": "Ascending", "value": "Ascending" },
-      { "label": "Descending", "value": "Descending" }
-    ],
-    "defaultValue": "Ascending"
+      {
+        "label": "Ascending",
+        "value": "Ascending",
+        "description": "Sort in ascending order"
+      },
+      {
+        "label": "Descending",
+        "value": "Descending",
+        "description": "Sort in descending order"
+      }
+    ]
   },
   {
     "direction": "Input",
-    "name": "SecondProperty",
     "type": "text",
+    "name": "SecondProperty",
     "label": "Second Property to Sort By",
     "description": "The second property name to sort the list by.",
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
-    "name": "SecondSort",
     "type": "select",
+    "name": "SecondSort",
     "label": "Second Sort Direction",
     "description": "Specifies whether to sort the second property in ascending or descending order.",
+    "defaultValue": 0,
+    "required": false,
     "selectOptions": [
-      { "label": "Ascending", "value": "Ascending" },
-      { "label": "Descending", "value": "Descending" }
-    ],
-    "defaultValue": "Ascending"
+      {
+        "label": "Ascending",
+        "value": "Ascending",
+        "description": "Sort in ascending order"
+      },
+      {
+        "label": "Descending",
+        "value": "Descending",
+        "description": "Sort in descending order"
+      }
+    ]
   },
   {
     "direction": "Input",
-    "name": "ThirdProperty",
     "type": "text",
+    "name": "ThirdProperty",
     "label": "Third Property to Sort By",
     "description": "The third property name to sort the list by.",
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
-    "name": "ThirdSort",
     "type": "select",
+    "name": "ThirdSort",
     "label": "Third Sort Direction",
     "description": "Specifies whether to sort the third property in ascending or descending order.",
+    "defaultValue": 0,
+    "required": false,
     "selectOptions": [
-      { "label": "Ascending", "value": "Ascending" },
-      { "label": "Descending", "value": "Descending" }
-    ],
-    "defaultValue": "Ascending"
+      {
+        "label": "Ascending",
+        "value": "Ascending",
+        "description": "Sort in ascending order"
+      },
+      {
+        "label": "Descending",
+        "value": "Descending",
+        "description": "Sort in descending order"
+      }
+    ]
   },
   {
     "direction": "Output",
-    "name": "SortedList",
     "type": "config-panel-output",
+    "name": "SortedList",
     "label": "Sorted List",
     "description": "The sorted version of the input list.",
     "defaultValue": {
       "value": "sortedList",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

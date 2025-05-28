@@ -1,0 +1,26 @@
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Current DateTime",
+    "description": "Outputs the current system date and time.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

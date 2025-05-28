@@ -1,0 +1,23 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table (Optional)",
+    "description": "An optional input data table to clone or use as a template.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ODataTableOutput",
+    "label": "New Data Table Output",
+    "description": "The newly created or cloned data table.",
+    "defaultValue": {
+      "value": "oDataTableOutput",
+      "enabled": true
+    },
+    "required": false
+  }
+]

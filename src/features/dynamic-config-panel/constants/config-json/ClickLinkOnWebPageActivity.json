@@ -1,0 +1,212 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "Select the UI element (link, button, etc.) on the web page to click.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ClickType",
+    "label": "Click Type",
+    "description": "The kind of click to perform.",
+    "defaultValue": 0,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Left Click",
+        "value": "LeftClick",
+        "description": "Standard left mouse click."
+      },
+      {
+        "label": "Right Click",
+        "value": "RightClick",
+        "description": "Right mouse click."
+      },
+      {
+        "label": "Double Click",
+        "value": "DoubleClick",
+        "description": "Double-click with the left mouse button."
+      },
+      {
+        "label": "Left Button Down",
+        "value": "LeftButtonDown",
+        "description": "Mouse left button down only."
+      },
+      {
+        "label": "Left Button Up",
+        "value": "LeftButtonUp",
+        "description": "Mouse left button up only."
+      },
+      {
+        "label": "Right Button Down",
+        "value": "RightButtonDown",
+        "description": "Mouse right button down only."
+      },
+      {
+        "label": "Right Button Up",
+        "value": "RightButtonUp",
+        "description": "Mouse right button up only."
+      },
+      {
+        "label": "Middle Click",
+        "value": "MiddleClick",
+        "description": "Middle mouse button click."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "SendPhysicalClick",
+    "label": "Send Physical Click",
+    "description": "Physically move the mouse cursor over the element prior to clicking.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForPageToLoad",
+    "label": "Wait for Page to Load",
+    "description": "Specify whether to wait for the new web page to load after the click.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutForWebpageToLoad",
+    "label": "Timeout for Webpage to Load",
+    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "defaultValue": 60,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfAPopUpDialogAppears",
+    "label": "If a Pop-Up Dialog Appears",
+    "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
+    "defaultValue": 2,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Close It",
+        "value": "CloseIt",
+        "description": "Automatically close any pop-up dialog that appears."
+      },
+      {
+        "label": "Press a Button",
+        "value": "PressAButton",
+        "description": "Press a specified button on the dialog."
+      },
+      {
+        "label": "Do Nothing",
+        "value": "DoNothing",
+        "description": "Ignore any pop-up dialog."
+      },
+      {
+        "label": "Close It / Press a Button",
+        "value": "CloseOrPress",
+        "description": "Close or press a button on the dialog."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogButtonToPress",
+    "label": "Dialog Button to Press",
+    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "defaultValue": "Ok",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "MousePosition",
+    "label": "Mouse Position Relative to Element",
+    "description": "Specify where to position the mouse relative to the element before clicking.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "TopLeft",
+        "value": "TopLeft",
+        "description": ""
+      },
+      {
+        "label": "MiddleLeft",
+        "value": "MiddleLeft",
+        "description": ""
+      },
+      {
+        "label": "BottomLeft",
+        "value": "BottomLeft",
+        "description": ""
+      },
+      {
+        "label": "TopCenter",
+        "value": "TopCenter",
+        "description": ""
+      },
+      {
+        "label": "MiddleCenter",
+        "value": "MiddleCenter",
+        "description": ""
+      },
+      {
+        "label": "BottomCenter",
+        "value": "BottomCenter",
+        "description": ""
+      },
+      {
+        "label": "TopRight",
+        "value": "TopRight",
+        "description": ""
+      },
+      {
+        "label": "MiddleRight",
+        "value": "MiddleRight",
+        "description": ""
+      },
+      {
+        "label": "BottomRight",
+        "value": "BottomRight",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OffsetX",
+    "label": "Offset X",
+    "description": "Move the mouse this many pixels to the right from the selected position.",
+    "defaultValue": 0,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OffsetY",
+    "label": "Offset Y",
+    "description": "Move the mouse this many pixels down from the selected position.",
+    "defaultValue": 0,
+    "required": false
+  }
+]

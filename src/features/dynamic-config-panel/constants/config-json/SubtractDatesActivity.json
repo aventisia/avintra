@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartDate",
+    "label": "Start Date",
+    "description": "The start date of the subtraction.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndDate",
+    "label": "End Date",
+    "description": "The end date of the subtraction.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Time Difference",
+    "description": "The difference between the two dates as a TimeSpan.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

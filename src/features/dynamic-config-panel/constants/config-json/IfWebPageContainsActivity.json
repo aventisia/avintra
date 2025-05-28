@@ -1,0 +1,102 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "CheckIfWebPage",
+    "label": "Check Condition",
+    "description": "Select what condition to check in the web page.",
+    "defaultValue": 0,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Contains Element",
+        "value": "ContainsElement",
+        "description": "Check if the web page contains a specific UI element."
+      },
+      {
+        "label": "Doesn\u0027t Contain Element",
+        "value": "DoesNotContainElement",
+        "description": "Check if the web page does not contain a specific UI element."
+      },
+      {
+        "label": "Contains Text",
+        "value": "ContainsText",
+        "description": "Check if the web page contains a specific text."
+      },
+      {
+        "label": "Doesn\u0027t Contain Text",
+        "value": "DoesNotContainText",
+        "description": "Check if the web page does not contain a specific text."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "CheckUiElementState",
+    "label": "Check UI Element State",
+    "description": "Check whether a specific UI element is enabled or disabled.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "The UI element to look for in the web page.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Text",
+    "label": "Text",
+    "description": "The text to look for in the web page content.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "State",
+    "label": "State",
+    "description": "The expected state of the UI element (enabled or disabled).",
+    "defaultValue": 0,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Enabled",
+        "value": "Enabled",
+        "description": "UI element must be enabled."
+      },
+      {
+        "label": "Disabled",
+        "value": "Disabled",
+        "description": "UI element must be disabled."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "True if the condition is met; otherwise, false.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

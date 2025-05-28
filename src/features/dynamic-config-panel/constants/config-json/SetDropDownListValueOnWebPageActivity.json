@@ -1,0 +1,131 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UiElement",
+    "label": "UI Element",
+    "description": "Select the drop-down list UI element on the web page to interact with.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Operation",
+    "label": "Operation",
+    "description": "Choose the operation to perform on the drop-down list.",
+    "defaultValue": 0,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Clear All Options",
+        "value": "ClearAllOptions",
+        "description": "Clears all selected values from the drop-down list."
+      },
+      {
+        "label": "Select Options by Name",
+        "value": "SelectOptionsByName",
+        "description": "Selects one or more options by their display text."
+      },
+      {
+        "label": "Select Options by Index",
+        "value": "SelectOptionsByIndex",
+        "description": "Selects one or more options by their index position."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OptionNames",
+    "label": "Option Names",
+    "description": "Enter an option or a list of options to be selected. Only first used if single-select.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseRegularExpressions",
+    "label": "Use Regular Expressions",
+    "description": "Match option names using regular expressions.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OptionIndices",
+    "label": "Option Indices",
+    "description": "Enter an index or list of indices to select in the drop-down list.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForPageToLoad",
+    "label": "Wait for Page to Load",
+    "description": "Specify whether to wait for the new web page to load completely after setting the dropdown value.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutForWebpageToLoad",
+    "label": "Timeout for Webpage to Load",
+    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "defaultValue": 60,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfAPopUpDialogAppears",
+    "label": "If a Pop-Up Dialog Appears",
+    "description": "Specify what to do if a pop-up dialog appears after setting the dropdown value.",
+    "defaultValue": 2,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Close It",
+        "value": "CloseIt",
+        "description": "Automatically close any pop-up dialog that appears."
+      },
+      {
+        "label": "Press a Button",
+        "value": "PressAButton",
+        "description": "Press a specified button on the dialog."
+      },
+      {
+        "label": "Do Nothing",
+        "value": "DoNothing",
+        "description": "Ignore any pop-up dialog."
+      },
+      {
+        "label": "Close It / Press a Button",
+        "value": "CloseOrPress",
+        "description": "Close or press a button on the dialog."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogButtonToPress",
+    "label": "Dialog Button to Press",
+    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "defaultValue": "OK",
+    "required": false
+  }
+]

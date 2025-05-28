@@ -1,6 +1,6 @@
 import { NodeDataType } from "@/types/node-data-type";
 
-export const conditionalsActions: NodeDataType[] = [
+export const conditionsLoopsActions: NodeDataType[] = [
   // {
   //   type: "activityNode",
   //   name: "case",
@@ -47,6 +47,13 @@ export const conditionalsActions: NodeDataType[] = [
     label: "Conditional",
     description:
       "Dispatches execution to different parts of the switch body based on the value of the expression.",
+    img: `${import.meta.env.BASE_URL}function.png`,
+  },
+  {
+    type: "forLoopNode",
+    name: "loop",
+    label: "Loop",
+    description: "Iterates a block of actions for a specified number of times",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
 ];

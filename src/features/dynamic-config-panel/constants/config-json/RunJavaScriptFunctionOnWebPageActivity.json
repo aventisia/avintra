@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "JavaScriptFunction",
+    "label": "JavaScript Function",
+    "description": "Enter the JavaScript function to run on the current web page.",
+    "defaultValue": "function ExecuteScript() { /*your code here, return something (optionally); */ }",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result Output",
+    "description": "The result returned after executing the JavaScript function.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

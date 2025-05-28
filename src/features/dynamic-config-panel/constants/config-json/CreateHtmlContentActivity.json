@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Title",
+    "label": "Title",
+    "description": "The title of the HTML document.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BodyContent",
+    "label": "Body Content",
+    "description": "The body content of the HTML document.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultHtml",
+    "label": "Result HTML",
+    "description": "The generated HTML content.",
+    "defaultValue": {
+      "value": "resultHtml",
+      "enabled": true
+    },
+    "required": false
+  }
+]

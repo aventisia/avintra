@@ -1,31 +1,32 @@
 [
   {
     "direction": "Input",
-    "name": "DataTable",
     "type": "text",
+    "name": "DataTable",
     "label": "Data Table",
     "description": "The data table with the column to convert into a list.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
-    "name": "ColumnNameOrIndex",
     "type": "text",
+    "name": "ColumnNameOrIndex",
     "label": "Column Name or Index",
     "description": "The column name (if defined) or index number to retrieve.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
-    "name": "ColumnAsListOutput",
     "type": "config-panel-output",
+    "name": "ColumnAsListOutput",
     "label": "Column as List Output",
     "description": "The new list containing the contents of the specified data table column.",
     "defaultValue": {
       "value": "columnAsListOutput",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

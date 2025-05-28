@@ -1,0 +1,64 @@
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "OWebPagePropertyOutput",
+    "label": "Web Page Property",
+    "description": "The value retrieved from the web page based on the selected detail type.",
+    "defaultValue": {
+      "value": "oWebPagePropertyOutput",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Get",
+    "label": "Get",
+    "description": "Select what detail you want to retrieve from the web page.",
+    "defaultValue": 0,
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Web Page Description",
+        "value": "WebPageDescription",
+        "description": "Gets the meta description of the web page."
+      },
+      {
+        "label": "Web Page Meta Keywords",
+        "value": "WebPageMetaKeywords",
+        "description": "Gets the meta keywords of the web page."
+      },
+      {
+        "label": "Web Page Title",
+        "value": "WebPageTitle",
+        "description": "Gets the title of the web page."
+      },
+      {
+        "label": "Web Page Text",
+        "value": "WebPageText",
+        "description": "Gets the visible text content of the web page."
+      },
+      {
+        "label": "Web Page Source",
+        "value": "WebPageSource",
+        "description": "Gets the full HTML source of the web page."
+      },
+      {
+        "label": "Current URL Address",
+        "value": "CurrentUrlAddress",
+        "description": "Gets the current URL address of the browser."
+      }
+    ]
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BaseDateTime",
+    "label": "Base DateTime",
+    "description": "The original DateTime to which time will be added.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeToAdd",
+    "label": "Time To Add",
+    "description": "The TimeSpan (can be negative) to add or subtract from the base DateTime.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Resulting DateTime",
+    "description": "The DateTime value after the addition.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

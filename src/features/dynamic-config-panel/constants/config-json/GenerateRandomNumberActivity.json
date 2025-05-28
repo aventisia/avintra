@@ -1,66 +1,103 @@
 [
   {
     "direction": "Input",
+    "type": "text",
     "name": "MinimumValue",
-    "type": "number",
     "label": "Minimum Value",
     "description": "The lower boundary for the random number(s) to generate.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
+    "type": "text",
     "name": "MaximumValue",
-    "type": "number",
     "label": "Maximum Value",
     "description": "The upper boundary for the random number(s) to generate.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
-    "name": "GenerateMultipleNumbers",
     "type": "switch",
+    "name": "GenerateMultipleNumbers",
     "label": "Generate Multiple Numbers",
     "description": "Specify whether to generate a single number or multiple numbers.",
-    "defaultValue": false
+    "defaultValue": false,
+    "required": false
   },
   {
     "direction": "Input",
+    "type": "text",
     "name": "HowManyNumbers",
-    "type": "number",
     "label": "How Many Numbers",
     "description": "Specify how many random numbers to generate.",
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "GenerateMultipleNumbers",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
-    "name": "AllowDuplicates",
     "type": "switch",
+    "name": "AllowDuplicates",
     "label": "Allow Duplicates",
     "description": "Specify whether to permit duplicate values in the generated list.",
-    "defaultValue": false
+    "defaultValue": false,
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "GenerateMultipleNumbers",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Output",
-    "name": "RandomNumberOutput",
     "type": "config-panel-output",
+    "name": "RandomNumber",
     "label": "Random Number Output",
     "description": "The newly generated random number (for single mode).",
     "defaultValue": {
       "value": "randomNumber",
       "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "GenerateMultipleNumbers",
+          "equals": false
+        }
+      ]
     }
   },
   {
     "direction": "Output",
-    "name": "RandomNumbersOutput",
     "type": "config-panel-output",
+    "name": "RandomNumbers",
     "label": "Random Numbers List Output",
     "description": "The newly generated list of random numbers (for multi-mode).",
     "defaultValue": {
-      "value": "randomNumberList",
+      "value": "randomNumbers",
       "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "GenerateMultipleNumbers",
+          "equals": true
+        }
+      ]
     }
   }
 ]

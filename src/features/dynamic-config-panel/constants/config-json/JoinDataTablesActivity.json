@@ -1,0 +1,53 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FirstDataTable",
+    "label": "First Data Table",
+    "description": "The first data table to join.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SecondDataTable",
+    "label": "Second Data Table",
+    "description": "The second data table to join.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "JoinColumn",
+    "label": "JoinColumn",
+    "description": "The column name to join on.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "JoinedDataTable",
+    "label": "Joined Data Table",
+    "description": "The joined data table.",
+    "defaultValue": {
+      "value": "joinedDataTable",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToConvert",
+    "label": "Text to Convert",
+    "description": "The text to convert to a DateTime.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Format",
+    "label": "Format String",
+    "description": "The format string to use for parsing the date/time (e.g., \u0027yyyy-MM-dd\u0027).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultDateTime",
+    "label": "Result DateTime",
+    "description": "The resulting DateTime value.",
+    "defaultValue": {
+      "value": "resultDateTime",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

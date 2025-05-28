@@ -1,0 +1,53 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OriginalText",
+    "label": "Original Text",
+    "description": "The original text from which the substring will be extracted.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartIndex",
+    "label": "Start Index",
+    "description": "The starting index of the substring.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Length",
+    "label": "Length",
+    "description": "The length of the substring to extract. If not provided, extracts until the end.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultText",
+    "label": "Result Text",
+    "description": "The resulting substring.",
+    "defaultValue": {
+      "value": "resultText",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

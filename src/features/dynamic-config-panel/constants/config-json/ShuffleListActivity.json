@@ -1,22 +1,23 @@
 [
   {
     "direction": "Input",
-    "name": "ListToShuffle",
     "type": "text",
+    "name": "ListToShuffle",
     "label": "List to Shuffle",
     "description": "The list to be randomly reordered.",
-    "required": true,
-    "defaultValue": ""
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
-    "name": "ShuffledList",
     "type": "config-panel-output",
+    "name": "ShuffledList",
     "label": "Shuffled List",
     "description": "The shuffled version of the input list.",
     "defaultValue": {
       "value": "shuffledList",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]

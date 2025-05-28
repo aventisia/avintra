@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to close.",
+    "defaultValue": "",
+    "required": true
+  }
+]

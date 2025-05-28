@@ -1,0 +1,35 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToEscape",
+    "label": "Text to Escape",
+    "description": "The text to escape.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultText",
+    "label": "Result Text",
+    "description": "The escaped text.",
+    "defaultValue": {
+      "value": "resultText",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessage",
+    "label": "Status Message",
+    "description": "Returns the result status message.",
+    "defaultValue": {
+      "value": "statusMessage",
+      "enabled": true
+    },
+    "required": false
+  }
+]

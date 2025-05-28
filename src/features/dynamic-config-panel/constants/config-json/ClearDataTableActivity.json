@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table",
+    "description": "The data table variable to clear. Must have been previously created or assigned.",
+    "defaultValue": "",
+    "required": true
+  }
+]

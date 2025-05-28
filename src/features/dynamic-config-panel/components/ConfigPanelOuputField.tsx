@@ -57,6 +57,7 @@ const ConfigPanelOuputField = ({
             <div className="flex flex-row items-center gap-1.5">
               <FormControl>
                 <AutosizeInput
+                  fieldSize="sm"
                   className={cn(
                     "h-auto w-auto rounded-xl bg-accent",
                     "p-[0.15rem] px-2.5 text-sm",

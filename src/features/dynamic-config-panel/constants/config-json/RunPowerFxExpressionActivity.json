@@ -1,22 +1,23 @@
 [
   {
     "direction": "Input",
-    "name": "RunPowerFxExpression",
     "type": "text",
+    "name": "RunPowerFxExpression",
     "label": "Run Power Fx Expression",
-    "description": "The Power Fx expression to evaluate",
+    "description": "The Power Fx expression to evaluate.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
-    "name": "Result",
     "type": "config-panel-output",
+    "name": "Result",
     "label": "Result",
-    "description": "The value to assign to the variable.",
+    "description": "The result of the evaluated Power Fx expression.",
     "defaultValue": {
-      "value": "Result",
+      "value": "result",
       "enabled": true
-    }
+    },
+    "required": false
   }
 ]
