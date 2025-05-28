@@ -1,4 +1,4 @@
-import { StudioHeader } from "@/components/layout/StudioHeader";
+// import { StudioHeader } from "@/components/layout/StudioHeader";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
@@ -105,7 +105,7 @@ export const ReactFlowExt = () => {
         nodesConnectable={!isLocked}
         elementsSelectable={!isLocked}
       >
-        <StudioHeader />
+        {/* <StudioHeader /> */}
         <ViewControls />
         <BackgroundExt />
         <MiniMapExt />
