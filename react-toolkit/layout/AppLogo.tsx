@@ -18,7 +18,7 @@ const AppLogo = ({
 }: AppLogoProps) => {
   return (
     <a
-      href={import.meta.env.VITE_WORKSPACE_URL}
+      href={"/"}
       className={cn(
         "flex items-center justify-center gap-2 font-medium",
         className,
@@ -29,9 +29,9 @@ const AppLogo = ({
         src={import.meta.env.BASE_URL + "favicon.svg"}
         alt={import.meta.env.VITE_COMPANY_NAME + " Logo"}
       />
-      <h1>
+      <h1 className="text-lg text-white">
         {import.meta.env.VITE_APP_NAME && !doNotShowAppName
-          ? import.meta.env.VITE_APP_NAME
+          ? import.meta.env.VITE_APP_NAME?.replace(/([A-Z])/g, " $1")
           : import.meta.env.VITE_COMPANY_NAME}
       </h1>
     </a>
