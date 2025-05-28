@@ -55,7 +55,7 @@ export const AppLayout = () => {
         <div className="relative min-h-screen overflow-hidden">
           <AppHeader />
           {!isTauri && <Sidebar />}
-          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding)))]">
+          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
             <main
               className={cn(
                 "px-7 py-0 transition-[margin] duration-500",
