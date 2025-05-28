@@ -120,30 +120,30 @@ const ExtractedTablesData = ({
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
                                     onKeyDown={(e) => {
-                                      e.preventDefault();
                                       if (e.key === "Enter") {
+                                        e.preventDefault();
                                         handleAddRow(tableIndex, rowIndex);
                                       }
                                     }}
                                   />
                                 )}
                               />
-                              {colIndex === table.headers.length - 1 &&
-                                // Check if there's more than one row before showing delete button
-                                table.headers[0].values.length > 1 && (
-                                  <Button
-                                    type="button"
-                                    className="m-0 p-0"
-                                    variant="ghost"
-                                    onClick={() =>
-                                      handleDeleteRow(tableIndex, rowIndex)
-                                    }
-                                  >
-                                    <TrashIcon className="h-4 w-4" />
-                                  </Button>
-                                )}
                             </div>
                           ))}
+                          {table.headers[0].values.length > 1 && (
+                            <div className="w-6 px-1 flex justify-center items-center">
+                              <Button
+                                type="button"
+                                className="m-0 p-0 mr-3"
+                                variant="ghost"
+                                onClick={() =>
+                                  handleDeleteRow(tableIndex, rowIndex)
+                                }
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
