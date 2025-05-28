@@ -106,7 +106,7 @@ const ExecuteFlow = () => {
           <Button
             variant="ghost"
             size={"icon8"}
-            className="`hover:bg-white/10"
+            className="hover:bg-white/10"
             onClick={startExecution}
           >
             {flowState === "launching-executor" ? (
