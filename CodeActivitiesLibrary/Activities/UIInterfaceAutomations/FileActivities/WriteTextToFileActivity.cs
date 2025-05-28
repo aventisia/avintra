@@ -1,0 +1,90 @@
+﻿using System;
+using System.Activities;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+{
+    [DisplayName("Write Text to File")]
+    [Description("Writes the given text to the specified file using either Replace or Append mode.")]
+    public class WriteTextToFileActivity : CodeActivity
+    {
+        #region Arguments
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("File Path")]
+        [Description("The full file path where the text should be written.")]
+        public InArgument<string> FilePath { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Text to Write")]
+        [Description("The text content to write to the file.")]
+        public InArgument<string> TextToWrite { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Write Mode")]
+        [Description("Specifies the write mode: Append (default) or Overwrite.")]
+        public InArgument<WriteModeEnum> WriteMode { get; set; } = new InArgument<WriteModeEnum>(WriteModeEnum.Append);
+
+        [Category("Output")]
+        [Description("Returns the result status message.")]
+        public OutArgument<string> StatusMessage { get; set; }
+
+        #endregion
+
+        protected override void Execute(CodeActivityContext context)
+        {
+            var filePath = FilePath.Get(context);
+            var text = TextToWrite.Get(context);
+            var writeMode = WriteMode.Get(context);
+
+            string status = "";
+
+            try
+            {
+                // Validate input
+                if (string.IsNullOrWhiteSpace(filePath))
+                    throw new ArgumentException("FilePath cannot be empty.");
+
+                if (string.IsNullOrWhiteSpace(text))
+                    throw new ArgumentException("Text cannot be empty.");
+
+                string dir = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir); // auto-create directories
+                }
+
+                if (writeMode == WriteModeEnum.Append)
+                {
+                    File.AppendAllText(filePath, text + Environment.NewLine);
+                    status = $"Text appended to file at {filePath}";
+                }
+                else
+                {
+                    File.WriteAllText(filePath, text + Environment.NewLine);
+                    status = $"Text overwritten (replaced) to file at {filePath}";
+                }
+
+                StatusMessage.Set(context, status);
+            }
+            catch (Exception ex)
+            {
+                status = $"Error: {ex.Message}";
+                StatusMessage.Set(context, status);
+            }
+        }
+    }
+
+    public enum WriteModeEnum
+    {
+        [Display(Name = "Append", Description = "Add to file content")]
+        Append,
+
+        [Display(Name = "Overwrite", Description = "Replace file content")]
+        Overwrite
+    }
+}

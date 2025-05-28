@@ -1,0 +1,428 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E4E64CBE-324A-470A-93FC-5C5D7E4D1B26}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeActivitiesLibrary</RootNamespace>
+    <AssemblyName>CodeActivitiesLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.5\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Pipelines, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Pipelines.9.0.5\lib\net462\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encodings.Web, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.9.0.5\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.9.0.5\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationClient" />
+    <Reference Include="UIAutomationTypes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Activities\AppIntegrations\EmailActivities\ProcessEmailMessagesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\EmailActivities\RetrieveEmailMessagesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\EmailActivities\SendEmailActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\ActivateCellInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\AppendCellsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\AttachToRunningExcelActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\AutoFillCellsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\ClearCellsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\CloseExcelActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\CopyCellsFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\CopyExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteColumnFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteRowFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\FilterCellsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\FindAndReplaceCellsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetActiveCellOnExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetActiveExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetAllExcelWorksheetsActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetColumnNameOnExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetFirstFreeColumnRowFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetFirstFreeRowOnColumnFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetSelectedCellRangeFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\GetTableRangeFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\InsertColumnToExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\InsertRowToExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\LaunchExcelActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\LookupRangeInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\PasteCellsToExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\ReadFormulaFromExcelActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\ReadFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\RenameExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\ResizeColumnsRowsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\RunExcelMacroActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\SaveExcelActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\SelectCellsInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\SetActiveExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\SetColorInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\WriteToExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExchangeServerActivities\ConnectToExchangeServerActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExchangeServerActivities\ProcessExchangeEmailMessagesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExchangeServerActivities\RetrieveExchangeEmailMessagesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExchangeServerActivities\SendExchangeEmailMessageActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\ChangeFtpWorkingDirectoryActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\CloseFtpConnectionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\CreateFtpDirectoryActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\DeleteFtpDirectoryActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\DeleteFtpFileActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\DownloadFilesFromFtpActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\DownloadFoldersFromFtpActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\InvokeFtpCommandActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\ListFtpDirectoryActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\OpenFtpConnectionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\OpenSecureFTPConnectionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\RenameFtpFileActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\SynchronizeDirectoriesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\UploadFilesToFtpActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\UploadFoldersToFtpActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\HTTPActivities\DownloadFromWebActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\HTTPActivities\InvokeSoapWebServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\HTTPActivities\InvokeWebServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractImagesFromPdfActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractPdfPagesToNewPdfFileActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractTablesFromPdfActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractTextFromPdfActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\PDFActivities\MergePdfFilesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\CloseTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\GetTextFromTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\MoveCursorOnTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\OpenTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SearchForTextOnTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SendKeyToTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SetTextOnTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\WaitForTextOnTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\IfServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\PauseServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\ResumeServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\StartServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\StopServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\WaitForServiceActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\AttachToRunningWordActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\CloseWordActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\FindAndReplaceWordsInWordDocumentActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\InsertImageInWordDocumentActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\LaunchWordActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\ReadFromWordDocumentActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\SaveWordActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\WordActivities\WriteToWordDocumentActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\DecryptTextWithAesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\DecryptToFileWithAesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\EncryptFromFileWithAesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\EncryptTextWithAesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\HashFromFileActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\HashFromFileWithKeyActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\HashTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\CryptographyActivities\HashTextWithKeyActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\ClearDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\ConvertDataTableToTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\CreateDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteColumnFromDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteDuplicateRowsFromDataTable.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteEmptyRowsFromDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteRowFromDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\FilterDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\FindAndReplaceInDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\InsertColumnIntoDataTable.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\InsertRowIntoDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\JoinDataTablesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\MergeDataTablesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\ReadFromCSVTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\SortDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\UpdateDataTableItemActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatebaseActivities\CloseSqlConnectionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatebaseActivities\ExecuteSqlStatementActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatebaseActivities\OpenSqlConnectionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DateTimeActivities\AddToDateTimeActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DateTimeActivities\GetCurrentDateTimeActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DateTimeActivities\IsCorrectDateTimeFormatActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DateTimeActivities\SubtractDatesActivity.cs" />
+    <Compile Include="Activities\DataTransformations\OCRActivities\ExtractTextWithOcrActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\AppendLineToTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ChangeTextCaseActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ConvertDateTimeToTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ConvertNumberToTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToDateTimeActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToNumberActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\CreateHTMLContentActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\CreateRandomTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\CropTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\EscapeTextForRegularExpressionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\GetSubtextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\JoinTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\PadTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ParseTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\RecognizeEntitiesInTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ReplaceTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ReverseTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\SplitTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\TrimTextActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ClickDownloadLinkOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ClickLinkOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CloseWebBrowserActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CreateNewTabActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\DialogActionEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\ElementStateEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\LaunchModeEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\TargetDesktopEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\WaitConditionEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\WindowStateEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ExtractDataFromWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\FocusTextFieldOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetDetailsOfElementOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetDetailsOfWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetElementAttributeValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GoToWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\HoverMouseOverElementActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\HoverMouseOverElementOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\IfWebPageContainsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchNewChromeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchNewEdgeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchNewMicrosoftEdgeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PopulateTextFieldActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PopulateTextFieldOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PressButtonOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\RunJavaScriptFunctionOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SelectRadioButtonOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetCheckboxStateOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetDropDownListValueOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetFocusOnInputElementActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\TakeScreenshotOfWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\WaitForWebPageContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\ClearClipboardContentsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\GetClipboardTextActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\SetClipboardTextActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\CloseCmdSessionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\OpenCmdSessionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\ReadFromCmdSessionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\WaitForTextOnCmdSessionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CMDSessionActivities\WriteToCmdSessionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CompressionActivities\UnzipFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CompressionActivities\ZipFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertBase64ToTextActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertBinaryDataToFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertFileToBinaryDataActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\CopyFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\DeleteFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetFilePathPartActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetTemporaryFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\IfFileExistsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\MoveFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ReadFromCsvFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ReadTextFromFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\RenameFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\WaitForFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\WriteTextToFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\WriteToCsvFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\CopyFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\CreateFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\DeleteFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\EmptyFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetFilesInFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetSpecialFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetSubfoldersInFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\IfFolderExistsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\MoveFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\RenameFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplayInputDialogActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplayMessageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectDateDialogActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectFileDialogActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectFolderDialogActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectFromListDialogActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\BlockInputActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetKeyboardIdentifierActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetMousePositionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\MoveMouseActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\MoveMouseToImageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\PressReleaseKeyActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\SetKeyStateActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\WaitForMouseActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunDosCommandActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunDotNetScriptActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunJavaScriptActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunPowerShellScriptActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunPythonScriptActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunVbScriptActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\DeleteWindowsEnvironmentVariableActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\GetWindowsEnvironmentVariableActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\IfProcessActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\PingActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\RunApplicationActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\SetWindowsEnvironmentVariableActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\TerminateProcessActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ClickUiElementInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\CloseWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\DragAndDropUiElementInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExpandCollapseTreeNodeInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExtractDataFromTableActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExtractDataFromWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\FocusTextFieldInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\FocusWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\GetSelectedCheckboxesInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\GetSelectedRadioButtonInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\GetUiElementDetailsInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\GetWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\GetWindowsDetailsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\HoverMouseOverUiElementActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\IfImageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\IfWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\IfWindowContainsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\MoveWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PopulateTextFieldInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PressButtonInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ResizeWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectMenuOptionInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectRadioButtonInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectTabInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SetCheckboxStateInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SetDropDownListValueInWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SetWindowStateActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SetWindowVisibilityActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\TakeUiElementScreenshotActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\UseDesktopActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\WaitForImageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\WaitForWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\WaitForWindowContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\ControlScreensaverActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\EmptyRecycleBinActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\GetDefaultPrinterActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\GetScreenResolutionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\LockWorkstationActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\LogOffUserActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\PlaySoundActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\PrintDocumentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\SetDefaultPrinterActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\SetScreenResolutionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\ShowDesktopActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\ShutdownComputerActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\TakeScreenshotActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\GetXmlElementAttributeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\GetXmlElementValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\InsertXmlElementActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\ReadXmlFromFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\RemoveXmlElementActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\RemoveXmlElementAttributeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\SetXmlElementAttributeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\SetXmlElementValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\WriteXmlToFileActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\ExecuteXPathExpressionActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\ConditionalsActivities\ConditionalActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\CommentActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\EndActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\EndRegionActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\ExitSubflowActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\GetLastErrorActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\GoToActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\LabelActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\RegionActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\RunSubflowActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\StopFlowActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\WaitActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\LoopsActivities\LoopActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\RunFlowActivities\RunDesktopFlowActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\AddItemToListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\ClearListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\ConvertCustomObjectToJsonActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\ConvertJsonToCustomObjectActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\CreateNewList.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\DecreaseVariableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\FindCommonListItemsActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\GenerateRandomNumberActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\IncreaseVariableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\MergeListsActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\_VariablesCategoryMetaData.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\RemoveDuplicateItemsFromListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\RemoveItemFromListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\RetrieveDataTableColumnIntoListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\ReverseListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\RunPowerFxExpressionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\SetVariableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\ShuffleListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\SortListActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\SubtractListsActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\TruncateNumberActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\AttachModeEnum.cs" />
+    <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
+    <Compile Include="Extensions\RenderIfAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Activities\AppIntegrations\OutlookActivities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

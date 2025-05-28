@@ -1,0 +1,40 @@
+﻿using System;
+using System.Activities;
+using System.ComponentModel;
+
+namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
+{
+    // Activity to send a control key to a terminal session
+    [DisplayName("Send Key to Terminal Session"), Description("Send a control key to a terminal session.")]
+    public class SendKeyToTerminalSessionActivity : CodeActivity
+    {
+        [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
+        public InArgument<int> SessionId { get; set; }
+
+        [RequiredArgument, Category("Input"), Description("The key to send (e.g., 'Enter', 'Tab').")]
+        public InArgument<string> Key { get; set; }
+
+        [Category("Output"), Description("Returns the status message of the operation.")]
+        public OutArgument<string> StatusMessage { get; set; }
+
+        protected override void Execute(CodeActivityContext context)
+        {
+            var sessionId = SessionId.Get(context);
+            var key = Key.Get(context);
+            var status = "";
+
+            try
+            {
+                // Simulate sending a key to the terminal session (actual implementation would use a terminal library like PoshConsole or similar)
+                status = $"Simulated sending key '{key}' to terminal session with ID: {sessionId}";
+            }
+            catch (Exception ex)
+            {
+                status = $"Error sending key to terminal session: {ex.Message}";
+            }
+
+            StatusMessage.Set(context, status);
+        }
+    }
+
+}

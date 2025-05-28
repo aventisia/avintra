@@ -1,0 +1,39 @@
+﻿using System;
+using System.Activities;
+using System.ComponentModel;
+
+namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
+{
+    // Activity to set text on a terminal session
+    [DisplayName("Set Text on Terminal Session"), Description("Set text on a terminal session.")]
+    public class SetTextOnTerminalSessionActivity : CodeActivity
+    {
+        [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
+        public InArgument<int> SessionId { get; set; }
+
+        [RequiredArgument, Category("Input"), Description("The text to set on the terminal session.")]
+        public InArgument<string> Text { get; set; }
+
+        [Category("Output"), Description("Returns the status message of the operation.")]
+        public OutArgument<string> StatusMessage { get; set; }
+
+        protected override void Execute(CodeActivityContext context)
+        {
+            var sessionId = SessionId.Get(context);
+            var text = Text.Get(context);
+            var status = "";
+
+            try
+            {
+                // Simulate setting text on the terminal session (actual implementation would use a terminal library like PoshConsole or similar)
+                status = $"Simulated setting text '{text}' on terminal session with ID: {sessionId}";
+            }
+            catch (Exception ex)
+            {
+                status = $"Error setting text on terminal session: {ex.Message}";
+            }
+
+            StatusMessage.Set(context, status);
+        }
+    }
+}
