@@ -33,7 +33,7 @@ public class FlowVersionService : IFlowVersionService
             //Try to get flow versions
             var flowVersions = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(v => v.FlowId == flowId).Include(c => c.CreatedByUser)
-            .OrderBy(o => o.VersionNumber).ToListAsync();
+            .OrderByDescending(o => o.VersionNumber).ToListAsync();
 
             // Task successful
             serviceResponse.Data = flowVersions.Adapt<IEnumerable<FlowVersionDto>>();
