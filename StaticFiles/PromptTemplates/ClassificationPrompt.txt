@@ -4,7 +4,6 @@ Context: {{Context}}
 
 Classification Settings:
 1. Multiple category assignment allowed: {{AllowMultipleClasses}}
-2. If no suitable category is found: {{UncertaintyAction}}
 
 Please classify the input text into predefined categories based on its content. The categories are listed below, and your objective is to identify which categories are relevant to the provided context. Extract values only for the following categories: {{Categories}}.
 
@@ -12,9 +11,8 @@ Instructions:
 - Do not include any numbers, explanations, or extra text outside the JSON.
 - Analyze the provided input and context.
 - For each category, return "true" if it matches or is relevant, otherwise return "false".
-- If AllowMultipleClasses is true, return "true" for all categories that are relevant or match the input.
-- If AllowMultipleClasses is false, return "true" for only the single most accurate category and "false" for the rest.
-- Use "false" for any category that does not match or is irrelevant.
+- If AllowMultipleClasses is set to true, return "true" for all categories that are relevant or match the input.
+- If AllowMultipleClasses is set to false, return "true" only for the single most accurate category, and "false" for all others.- Use "false" for any category that does not match or is irrelevant.
 - Format the output as a JSON array. Each object must include:
     - "name": the category name
     - "value": a string value "true" or "false"

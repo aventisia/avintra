@@ -490,7 +490,6 @@ public class ClassificationService : IClassificationService
                         {"{{Prompt}}", promptStringBuilder.Replace("\n","").ToString()  },
                         {"{{Context}}", classificationDto.SetupObject.Context.Replace("\n","").ToString() },
                         {"{{AllowMultipleClasses}}", classificationDto.SetupObject.AllowMultipleClasses.ToString() },
-                        {"{{UncertaintyAction}}", classificationDto.SetupObject.UncertaintyAction.ToString() },
                         {"{{Categories}}", categoriesStringBuilder.Replace("\n","").ToString() },
                     }
                 );

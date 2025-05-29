@@ -62,8 +62,8 @@ public class ClassificationSetupDto
     /// <summary>
     /// Enum to define behavior when no clear match is found during classification.
     /// </summary>
-    [Required]
-    public required ClassificationUncertaintyAction UncertaintyAction { get; set; }
+    // [Required]
+    // public required ClassificationUncertaintyAction UncertaintyAction { get; set; }
 
     /// <summary>
     /// Enum to control the multiple class scenario when no single match is found.

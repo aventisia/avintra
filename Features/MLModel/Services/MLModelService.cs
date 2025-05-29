@@ -371,7 +371,6 @@ public class MLModelService : IMLModelService
                 {
                     Context = string.Empty,
                     Prompt = string.Empty,
-                    UncertaintyAction = ClassificationUncertaintyAction.DiscardItem,
                     AllowMultipleClasses = false,
                     Categories = new List<ClassificationCategoryDto>
                 {
