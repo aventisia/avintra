@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FtpServerUrl",
+    "label": "FtpServerUrl",
+    "description": "The FTP server URL (e.g., ftp://example.com).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Username",
+    "label": "Username",
+    "description": "The username for authentication.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "The password for authentication.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FoldersToUpload",
+    "label": "FoldersToUpload",
+    "description": "The list of local folder paths to upload.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "RemoteDirectory",
+    "label": "RemoteDirectory",
+    "description": "The remote directory on the FTP server.",
+    "defaultValue": "",
+    "required": true
+  }
+]

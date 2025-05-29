@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceFilePaths",
+    "label": "SourceFilePaths",
+    "description": "The source file paths to move.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DestinationFolder",
+    "label": "DestinationFolder",
+    "description": "The destination folder where files should be moved.",
+    "defaultValue": "",
+    "required": true
+  }
+]

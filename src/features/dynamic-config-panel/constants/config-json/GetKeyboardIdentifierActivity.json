@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the active keyboard identifier.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

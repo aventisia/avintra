@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CellRangeOrName",
+    "label": "CellRangeOrName",
+    "description": "The range of cells to clear (e.g., \u0027A1:B10\u0027) or the name of the cell to clear.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CellRange",
+    "label": "CellRange",
+    "description": "The range of cells to apply the color to (e.g., \u0027A1:B10\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Color",
+    "label": "Color",
+    "description": "The color to apply (e.g., \u0027Red\u0027, \u0027Blue\u0027).",
+    "defaultValue": "",
+    "required": true
+  }
+]

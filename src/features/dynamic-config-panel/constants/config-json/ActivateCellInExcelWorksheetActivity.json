@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Activate",
+    "label": "Activate",
+    "description": "Select whether to specify the cell to activate absolutely or relatively.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Column",
+    "label": "Column",
+    "description": "The numeric value or letter of the cell column.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Row",
+    "label": "Row",
+    "description": "The numeric value of the cell row. The numbering starts from 1.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Name",
+    "label": "Name",
+    "description": "The name of the cells.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Direction",
+    "label": "Direction",
+    "description": "Select where to look for the cell to activate based on the position of the currently active cell.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OffsetFromActiveCell",
+    "label": "OffsetFromActiveCell",
+    "description": "Offset distance between the currently active cell and the desired cell. The numbering starts from 0.",
+    "defaultValue": "",
+    "required": false
+  }
+]

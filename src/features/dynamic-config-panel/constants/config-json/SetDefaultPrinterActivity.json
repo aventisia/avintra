@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PrinterName",
+    "label": "PrinterName",
+    "description": "The name of the printer to set as default.",
+    "defaultValue": "",
+    "required": true
+  }
+]

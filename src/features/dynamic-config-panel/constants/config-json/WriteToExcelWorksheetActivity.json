@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CellRange",
+    "label": "CellRange",
+    "description": "The range of cells to write to (e.g., \u0027A1:B10\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ValueToWrite",
+    "label": "ValueToWrite",
+    "description": "The value to write.",
+    "defaultValue": "",
+    "required": true
+  }
+]

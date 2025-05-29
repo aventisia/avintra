@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SavePath",
+    "label": "SavePath",
+    "description": "The path to save the Word document.",
+    "defaultValue": "",
+    "required": true
+  }
+]

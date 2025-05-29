@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The full path of the file to convert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "BinaryData",
+    "label": "BinaryData",
+    "description": "Returns the binary data of the file.",
+    "defaultValue": {
+      "value": "binaryData",
+      "enabled": true
+    },
+    "required": false
+  }
+]

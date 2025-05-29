@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The path to the XML file.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "XmlContent",
+    "label": "XmlContent",
+    "description": "Returns the XML content as a string.",
+    "defaultValue": {
+      "value": "xmlContent",
+      "enabled": true
+    },
+    "required": false
+  }
+]

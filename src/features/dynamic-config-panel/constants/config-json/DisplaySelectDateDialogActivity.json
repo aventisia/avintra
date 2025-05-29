@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "InitialDate",
+    "label": "InitialDate",
+    "description": "The initial date to display in the dialog.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the selected date or null if canceled.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

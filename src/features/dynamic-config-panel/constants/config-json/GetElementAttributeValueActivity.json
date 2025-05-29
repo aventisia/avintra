@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Url",
+    "label": "Url",
+    "description": "The URL of the web page.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ElementSelector",
+    "label": "ElementSelector",
+    "description": "The selector for the element (e.g., CSS selector).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AttributeName",
+    "label": "AttributeName",
+    "description": "The name of the attribute to retrieve.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the value of the attribute.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "XmlContent",
+    "label": "XmlContent",
+    "description": "The XML content to query with XPath.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "XPathExpression",
+    "label": "XPathExpression",
+    "description": "The XPath expression to execute.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultValue",
+    "label": "ResultValue",
+    "description": "Returns the value of the first matching node or null if not found.",
+    "defaultValue": {
+      "value": "resultValue",
+      "enabled": true
+    },
+    "required": false
+  }
+]

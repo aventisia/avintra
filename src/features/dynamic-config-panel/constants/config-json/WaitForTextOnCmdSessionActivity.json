@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProcessId",
+    "label": "ProcessId",
+    "description": "The process ID of the open CMD session.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExpectedText",
+    "label": "ExpectedText",
+    "description": "The text to wait for in the CMD session output.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "TextFound",
+    "label": "TextFound",
+    "description": "Returns true if the expected text was found, otherwise false.",
+    "defaultValue": {
+      "value": "textFound",
+      "enabled": true
+    },
+    "required": false
+  }
+]

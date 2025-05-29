@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ClipboardTextOutput",
+    "label": "ClipboardTextOutput",
+    "description": "The text retrieved from the clipboard.",
+    "defaultValue": {
+      "value": "clipboardTextOutput",
+      "enabled": true
+    },
+    "required": false
+  }
+]

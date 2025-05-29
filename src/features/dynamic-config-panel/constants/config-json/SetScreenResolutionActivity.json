@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Width",
+    "label": "Width",
+    "description": "The width of the screen.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Height",
+    "label": "Height",
+    "description": "The height of the screen.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BitCount",
+    "label": "BitCount",
+    "description": "The bit count of the screen.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Frequency",
+    "label": "Frequency",
+    "description": "The frequency (refresh rate) of the screen.",
+    "defaultValue": "",
+    "required": true
+  }
+]

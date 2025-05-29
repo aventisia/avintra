@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CurrentFolderPath",
+    "label": "CurrentFolderPath",
+    "description": "The current path of the folder to rename.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewFolderName",
+    "label": "NewFolderName",
+    "description": "The new name for the folder.",
+    "defaultValue": "",
+    "required": true
+  }
+]

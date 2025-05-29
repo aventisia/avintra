@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SessionId",
+    "label": "SessionId",
+    "description": "The session ID of the terminal session.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The key to send (e.g., \u0027Enter\u0027, \u0027Tab\u0027).",
+    "defaultValue": "",
+    "required": true
+  }
+]

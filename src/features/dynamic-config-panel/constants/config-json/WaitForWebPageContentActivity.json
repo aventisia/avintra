@@ -14,7 +14,7 @@
     "name": "WaitForWebPageTo",
     "label": "Wait For Web Page To",
     "description": "Select what condition to wait for in the current web page.",
-    "defaultValue": 0,
+    "defaultValue": "ContainElement",
     "required": false,
     "selectOptions": [
       {
@@ -72,7 +72,7 @@
     "name": "State",
     "label": "State",
     "description": "The expected state of the UI element (enabled or disabled).",
-    "defaultValue": 0,
+    "defaultValue": "Enabled",
     "required": false,
     "selectOptions": [
       {

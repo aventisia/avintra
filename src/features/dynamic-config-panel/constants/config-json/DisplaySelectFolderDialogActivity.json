@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "InitialDirectory",
+    "label": "InitialDirectory",
+    "description": "The initial directory path to display in the dialog.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the path of the selected folder.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

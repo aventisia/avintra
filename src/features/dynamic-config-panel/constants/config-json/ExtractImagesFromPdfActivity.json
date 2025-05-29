@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourcePdfPath",
+    "label": "SourcePdfPath",
+    "description": "The path to the source PDF file.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TargetFolder",
+    "label": "TargetFolder",
+    "description": "The target folder to save the extracted images.",
+    "defaultValue": "",
+    "required": true
+  }
+]

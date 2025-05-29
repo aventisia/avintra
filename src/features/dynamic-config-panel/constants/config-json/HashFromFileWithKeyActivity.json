@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The path to the file to hash.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The key to use in hashing.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Algorithm",
+    "label": "Algorithm",
+    "description": "The hashing algorithm to use.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "HashedContent",
+    "label": "HashedContent",
+    "description": "Returns the hashed content of the file.",
+    "defaultValue": {
+      "value": "hashedContent",
+      "enabled": true
+    },
+    "required": false
+  }
+]

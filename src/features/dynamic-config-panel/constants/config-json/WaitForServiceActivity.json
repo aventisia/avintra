@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ServiceName",
+    "label": "ServiceName",
+    "description": "The name of the service to wait for.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DesiredState",
+    "label": "DesiredState",
+    "description": "The desired state of the service (e.g., Running, Stopped).",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Stopped",
+        "value": "Stopped",
+        "description": ""
+      },
+      {
+        "label": "StartPending",
+        "value": "StartPending",
+        "description": ""
+      },
+      {
+        "label": "StopPending",
+        "value": "StopPending",
+        "description": ""
+      },
+      {
+        "label": "Running",
+        "value": "Running",
+        "description": ""
+      },
+      {
+        "label": "ContinuePending",
+        "value": "ContinuePending",
+        "description": ""
+      },
+      {
+        "label": "PausePending",
+        "value": "PausePending",
+        "description": ""
+      },
+      {
+        "label": "Paused",
+        "value": "Paused",
+        "description": ""
+      }
+    ]
+  }
+]

@@ -1,1 +1,54 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToConvert",
+    "label": "Text to Convert",
+    "description": "The text to convert.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ConvertTo",
+    "label": "Convert To",
+    "description": "Specify the target case style: Upper, Lower, Title, or Sentence.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Uppercase",
+        "value": "Uppercase",
+        "description": ""
+      },
+      {
+        "label": "Lowercase",
+        "value": "Lowercase",
+        "description": ""
+      },
+      {
+        "label": "TitleCase",
+        "value": "TitleCase",
+        "description": ""
+      },
+      {
+        "label": "SentenceCase",
+        "value": "SentenceCase",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "The converted text based on selected case style.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

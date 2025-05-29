@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Mode",
+    "label": "Mode",
+    "description": "The shutdown mode (e.g., power off, restart).",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Power Off",
+        "value": "PowerOff",
+        "description": "Turns off the computer."
+      },
+      {
+        "label": "Restart",
+        "value": "Restart",
+        "description": "Restarts the computer."
+      },
+      {
+        "label": "Logoff",
+        "value": "Logoff",
+        "description": "Logs off the current user."
+      }
+    ]
+  }
+]

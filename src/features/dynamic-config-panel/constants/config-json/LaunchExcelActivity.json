@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The path to the Excel file to open (optional).",
+    "defaultValue": "",
+    "required": true
+  }
+]

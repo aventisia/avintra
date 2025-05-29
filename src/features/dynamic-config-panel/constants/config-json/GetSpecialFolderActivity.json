@@ -1,1 +1,260 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SpecialFolderType",
+    "label": "SpecialFolderType",
+    "description": "The type of special folder to retrieve.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Desktop",
+        "value": "Desktop",
+        "description": ""
+      },
+      {
+        "label": "Programs",
+        "value": "Programs",
+        "description": ""
+      },
+      {
+        "label": "MyDocuments",
+        "value": "MyDocuments",
+        "description": ""
+      },
+      {
+        "label": "MyDocuments",
+        "value": "MyDocuments",
+        "description": ""
+      },
+      {
+        "label": "Favorites",
+        "value": "Favorites",
+        "description": ""
+      },
+      {
+        "label": "Startup",
+        "value": "Startup",
+        "description": ""
+      },
+      {
+        "label": "Recent",
+        "value": "Recent",
+        "description": ""
+      },
+      {
+        "label": "SendTo",
+        "value": "SendTo",
+        "description": ""
+      },
+      {
+        "label": "StartMenu",
+        "value": "StartMenu",
+        "description": ""
+      },
+      {
+        "label": "MyMusic",
+        "value": "MyMusic",
+        "description": ""
+      },
+      {
+        "label": "MyVideos",
+        "value": "MyVideos",
+        "description": ""
+      },
+      {
+        "label": "DesktopDirectory",
+        "value": "DesktopDirectory",
+        "description": ""
+      },
+      {
+        "label": "MyComputer",
+        "value": "MyComputer",
+        "description": ""
+      },
+      {
+        "label": "NetworkShortcuts",
+        "value": "NetworkShortcuts",
+        "description": ""
+      },
+      {
+        "label": "Fonts",
+        "value": "Fonts",
+        "description": ""
+      },
+      {
+        "label": "Templates",
+        "value": "Templates",
+        "description": ""
+      },
+      {
+        "label": "CommonStartMenu",
+        "value": "CommonStartMenu",
+        "description": ""
+      },
+      {
+        "label": "CommonPrograms",
+        "value": "CommonPrograms",
+        "description": ""
+      },
+      {
+        "label": "CommonStartup",
+        "value": "CommonStartup",
+        "description": ""
+      },
+      {
+        "label": "CommonDesktopDirectory",
+        "value": "CommonDesktopDirectory",
+        "description": ""
+      },
+      {
+        "label": "ApplicationData",
+        "value": "ApplicationData",
+        "description": ""
+      },
+      {
+        "label": "PrinterShortcuts",
+        "value": "PrinterShortcuts",
+        "description": ""
+      },
+      {
+        "label": "LocalApplicationData",
+        "value": "LocalApplicationData",
+        "description": ""
+      },
+      {
+        "label": "InternetCache",
+        "value": "InternetCache",
+        "description": ""
+      },
+      {
+        "label": "Cookies",
+        "value": "Cookies",
+        "description": ""
+      },
+      {
+        "label": "History",
+        "value": "History",
+        "description": ""
+      },
+      {
+        "label": "CommonApplicationData",
+        "value": "CommonApplicationData",
+        "description": ""
+      },
+      {
+        "label": "Windows",
+        "value": "Windows",
+        "description": ""
+      },
+      {
+        "label": "System",
+        "value": "System",
+        "description": ""
+      },
+      {
+        "label": "ProgramFiles",
+        "value": "ProgramFiles",
+        "description": ""
+      },
+      {
+        "label": "MyPictures",
+        "value": "MyPictures",
+        "description": ""
+      },
+      {
+        "label": "UserProfile",
+        "value": "UserProfile",
+        "description": ""
+      },
+      {
+        "label": "SystemX86",
+        "value": "SystemX86",
+        "description": ""
+      },
+      {
+        "label": "ProgramFilesX86",
+        "value": "ProgramFilesX86",
+        "description": ""
+      },
+      {
+        "label": "CommonProgramFiles",
+        "value": "CommonProgramFiles",
+        "description": ""
+      },
+      {
+        "label": "CommonProgramFilesX86",
+        "value": "CommonProgramFilesX86",
+        "description": ""
+      },
+      {
+        "label": "CommonTemplates",
+        "value": "CommonTemplates",
+        "description": ""
+      },
+      {
+        "label": "CommonDocuments",
+        "value": "CommonDocuments",
+        "description": ""
+      },
+      {
+        "label": "CommonAdminTools",
+        "value": "CommonAdminTools",
+        "description": ""
+      },
+      {
+        "label": "AdminTools",
+        "value": "AdminTools",
+        "description": ""
+      },
+      {
+        "label": "CommonMusic",
+        "value": "CommonMusic",
+        "description": ""
+      },
+      {
+        "label": "CommonPictures",
+        "value": "CommonPictures",
+        "description": ""
+      },
+      {
+        "label": "CommonVideos",
+        "value": "CommonVideos",
+        "description": ""
+      },
+      {
+        "label": "Resources",
+        "value": "Resources",
+        "description": ""
+      },
+      {
+        "label": "LocalizedResources",
+        "value": "LocalizedResources",
+        "description": ""
+      },
+      {
+        "label": "CommonOemLinks",
+        "value": "CommonOemLinks",
+        "description": ""
+      },
+      {
+        "label": "CDBurning",
+        "value": "CDBurning",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FolderPath",
+    "label": "FolderPath",
+    "description": "Returns the path of the special folder.",
+    "defaultValue": {
+      "value": "folderPath",
+      "enabled": true
+    },
+    "required": false
+  }
+]

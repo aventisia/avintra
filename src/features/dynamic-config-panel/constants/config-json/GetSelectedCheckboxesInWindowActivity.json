@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SelectedCheckboxes",
+    "label": "SelectedCheckboxes",
+    "description": "Returns the list of selected checkbox names or states.",
+    "defaultValue": {
+      "value": "selectedCheckboxes",
+      "enabled": true
+    },
+    "required": false
+  }
+]

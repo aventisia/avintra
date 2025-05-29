@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ExtractedData",
+    "label": "ExtractedData",
+    "description": "Returns the extracted data as a string.",
+    "defaultValue": {
+      "value": "extractedData",
+      "enabled": true
+    },
+    "required": false
+  }
+]

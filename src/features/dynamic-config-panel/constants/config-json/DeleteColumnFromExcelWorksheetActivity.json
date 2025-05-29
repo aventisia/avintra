@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnIndex",
+    "label": "ColumnIndex",
+    "description": "The column index to delete.",
+    "defaultValue": "",
+    "required": true
+  }
+]

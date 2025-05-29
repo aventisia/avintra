@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ArchivePath",
+    "label": "ArchivePath",
+    "description": "The full path of the ZIP file to extract.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DestinationFolder",
+    "label": "DestinationFolder",
+    "description": "The full path of the folder to extract the archive to. Existing files may be overwritten.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "The password used for this archive, if any.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "IncludeMask",
+    "label": "IncludeMask",
+    "description": "Limits the extracted files to those matching the mask. Use wildcards like \u0027*.txt\u0027. Multiple filters separated by \u0027;\u0027.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcludeMask",
+    "label": "ExcludeMask",
+    "description": "Excludes files matching the mask. Use wildcards like \u0027*.log\u0027. Multiple filters separated by \u0027;\u0027.",
+    "defaultValue": "",
+    "required": false
+  }
+]

@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Url",
+    "label": "Url",
+    "description": "The URL of the web page.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextFieldSelector",
+    "label": "TextFieldSelector",
+    "description": "The selector for the text field element (e.g., CSS selector).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToPopulate",
+    "label": "TextToPopulate",
+    "description": "The text to populate the field with.",
+    "defaultValue": "",
+    "required": true
+  }
+]

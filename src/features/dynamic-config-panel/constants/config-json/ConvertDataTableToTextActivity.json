@@ -32,7 +32,7 @@
     "name": "Separator",
     "label": "Separator",
     "description": "The column separator to use in the CSV text.",
-    "defaultValue": 0,
+    "defaultValue": "SystemDefault",
     "required": false,
     "selectOptions": [
       {

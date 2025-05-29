@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DocumentPath",
+    "label": "DocumentPath",
+    "description": "The path to the Word document.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FindText",
+    "label": "FindText",
+    "description": "The text to find.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ReplaceText",
+    "label": "ReplaceText",
+    "description": "The text to replace with.",
+    "defaultValue": "",
+    "required": true
+  }
+]

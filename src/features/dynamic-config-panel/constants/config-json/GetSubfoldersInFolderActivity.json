@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FolderPath",
+    "label": "FolderPath",
+    "description": "The path of the folder to retrieve subfolders from.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Subfolders",
+    "label": "Subfolders",
+    "description": "Returns the list of subfolder paths in the folder.",
+    "defaultValue": {
+      "value": "subfolders",
+      "enabled": true
+    },
+    "required": false
+  }
+]

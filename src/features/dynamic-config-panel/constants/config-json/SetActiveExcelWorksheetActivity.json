@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WorksheetName",
+    "label": "WorksheetName",
+    "description": "The name of the worksheet to activate.",
+    "defaultValue": "",
+    "required": true
+  }
+]

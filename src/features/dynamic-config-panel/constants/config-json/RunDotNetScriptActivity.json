@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ScriptCode",
+    "label": "ScriptCode",
+    "description": "The .NET script code to execute.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ScriptOutput",
+    "label": "ScriptOutput",
+    "description": "Returns the output of the script.",
+    "defaultValue": {
+      "value": "scriptOutput",
+      "enabled": true
+    },
+    "required": false
+  }
+]

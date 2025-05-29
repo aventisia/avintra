@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToFind",
+    "label": "TextToFind",
+    "description": "The text to find.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToReplaceWith",
+    "label": "TextToReplaceWith",
+    "description": "The text to replace with.",
+    "defaultValue": "",
+    "required": true
+  }
+]

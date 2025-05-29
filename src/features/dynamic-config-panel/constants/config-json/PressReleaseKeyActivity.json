@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The key to press or release (e.g., \u0027Alt\u0027, \u0027Control\u0027, \u0027Shift\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "Press",
+    "label": "Press",
+    "description": "Whether to press (true) or release (false) the key.",
+    "defaultValue": "",
+    "required": true
+  }
+]

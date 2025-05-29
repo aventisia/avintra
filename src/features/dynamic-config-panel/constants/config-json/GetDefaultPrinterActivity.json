@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "DefaultPrinterName",
+    "label": "DefaultPrinterName",
+    "description": "Returns the name of the default printer.",
+    "defaultValue": {
+      "value": "defaultPrinterName",
+      "enabled": true
+    },
+    "required": false
+  }
+]

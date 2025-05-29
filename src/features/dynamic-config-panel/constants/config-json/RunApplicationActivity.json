@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The path of the application or document to run.",
+    "defaultValue": "",
+    "required": true
+  }
+]

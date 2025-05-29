@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProcessId",
+    "label": "ProcessId",
+    "description": "The process ID of the open CMD session.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Command",
+    "label": "Command",
+    "description": "The command to be executed in the CMD session.",
+    "defaultValue": "",
+    "required": true
+  }
+]

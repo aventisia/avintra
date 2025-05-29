@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CurrentWorksheetName",
+    "label": "CurrentWorksheetName",
+    "description": "The current name of the worksheet.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewWorksheetName",
+    "label": "NewWorksheetName",
+    "description": "The new name for the worksheet.",
+    "defaultValue": "",
+    "required": true
+  }
+]

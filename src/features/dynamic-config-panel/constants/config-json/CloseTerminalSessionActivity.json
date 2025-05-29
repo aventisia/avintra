@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SessionId",
+    "label": "SessionId",
+    "description": "The session ID of the terminal session to close.",
+    "defaultValue": "",
+    "required": true
+  }
+]

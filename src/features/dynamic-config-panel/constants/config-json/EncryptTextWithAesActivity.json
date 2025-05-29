@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Plaintext",
+    "label": "Plaintext",
+    "description": "The plaintext to encrypt.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The encryption key.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "EncodingFormat",
+    "label": "EncodingFormat",
+    "description": "The encoding format for the encrypted text.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Base64",
+        "value": "Base64",
+        "description": "Base64 encoding"
+      },
+      {
+        "label": "Hex",
+        "value": "Hex",
+        "description": "Hexadecimal encoding"
+      },
+      {
+        "label": "UTF8",
+        "value": "Utf8",
+        "description": "UTF-8 encoding"
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "EncryptedText",
+    "label": "EncryptedText",
+    "description": "Returns the encrypted text.",
+    "defaultValue": {
+      "value": "encryptedText",
+      "enabled": true
+    },
+    "required": false
+  }
+]

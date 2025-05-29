@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndpointUrl",
+    "label": "EndpointUrl",
+    "description": "The URL of the web service endpoint.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "HttpMethod",
+    "label": "HttpMethod",
+    "description": "The HTTP method (e.g., GET, POST).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the response text from the web service.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

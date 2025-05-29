@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ServerUrl",
+    "label": "ServerUrl",
+    "description": "The URL of the Exchange server.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Username",
+    "label": "Username",
+    "description": "The username for authentication.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "The password for authentication.",
+    "defaultValue": "",
+    "required": true
+  }
+]

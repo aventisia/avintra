@@ -28,17 +28,5 @@
       "enabled": true
     },
     "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "StatusMessage",
-    "label": "Status Message",
-    "description": "Returns the result status message.",
-    "defaultValue": {
-      "value": "statusMessage",
-      "enabled": true
-    },
-    "required": false
   }
 ]

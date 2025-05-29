@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ProcessId",
+    "label": "ProcessId",
+    "description": "Returns the process ID of the opened CMD session.",
+    "defaultValue": {
+      "value": "processId",
+      "enabled": true
+    },
+    "required": false
+  }
+]

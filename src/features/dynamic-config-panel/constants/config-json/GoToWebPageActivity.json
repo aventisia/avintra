@@ -14,7 +14,7 @@
     "name": "Navigate",
     "label": "Navigate Action",
     "description": "Specify where to navigate to.",
-    "defaultValue": 0,
+    "defaultValue": "ToUrl",
     "required": false,
     "selectOptions": [
       {
@@ -72,7 +72,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after navigating.",
-    "defaultValue": 2,
+    "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
       {
