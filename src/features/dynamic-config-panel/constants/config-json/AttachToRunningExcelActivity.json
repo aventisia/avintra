@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProcessId",
+    "label": "ProcessId",
+    "description": "The process ID of the running Excel instance.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SoundFilePath",
+    "label": "SoundFilePath",
+    "description": "The path to the WAV file.",
+    "defaultValue": "",
+    "required": true
+  }
+]

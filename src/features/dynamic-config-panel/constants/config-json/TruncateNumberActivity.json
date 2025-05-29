@@ -54,11 +54,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
+    "name": "TruncatedNumber",
+    "label": "Truncated Number",
     "description": "Returns the result of the operation.",
     "defaultValue": {
-      "value": "result",
+      "value": "truncatedNumber",
       "enabled": true
     },
     "required": false

@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Base64String",
+    "label": "Base64String",
+    "description": "The Base64-encoded string to convert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "PlainText",
+    "label": "PlainText",
+    "description": "Returns the converted plain text.",
+    "defaultValue": {
+      "value": "plainText",
+      "enabled": true
+    },
+    "required": false
+  }
+]

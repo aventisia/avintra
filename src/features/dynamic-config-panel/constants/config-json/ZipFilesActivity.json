@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourcePaths",
+    "label": "SourcePaths",
+    "description": "The list of file or folder paths to zip.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OutputZipPath",
+    "label": "OutputZipPath",
+    "description": "The path to save the resulting zip file.",
+    "defaultValue": "",
+    "required": true
+  }
+]

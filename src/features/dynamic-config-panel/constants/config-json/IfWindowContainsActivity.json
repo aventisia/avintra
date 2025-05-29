@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchTerm",
+    "label": "SearchTerm",
+    "description": "The text or UI element to search for in the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns true if the search term is found, false otherwise.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

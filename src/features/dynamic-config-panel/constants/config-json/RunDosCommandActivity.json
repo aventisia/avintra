@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Command",
+    "label": "Command",
+    "description": "The DOS command to execute.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "CommandOutput",
+    "label": "CommandOutput",
+    "description": "Returns the output of the command.",
+    "defaultValue": {
+      "value": "commandOutput",
+      "enabled": true
+    },
+    "required": false
+  }
+]

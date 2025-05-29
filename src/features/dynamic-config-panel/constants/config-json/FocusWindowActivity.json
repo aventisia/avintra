@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  }
+]

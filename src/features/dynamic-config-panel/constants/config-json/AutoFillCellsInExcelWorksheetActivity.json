@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelInstanceId",
+    "label": "ExcelInstanceId",
+    "description": "The Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceRange",
+    "label": "SourceRange",
+    "description": "The source range to base the auto-fill on (e.g., \u0027A1:A5\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TargetRange",
+    "label": "TargetRange",
+    "description": "The target range to auto-fill (e.g., \u0027A6:A10\u0027).",
+    "defaultValue": "",
+    "required": true
+  }
+]

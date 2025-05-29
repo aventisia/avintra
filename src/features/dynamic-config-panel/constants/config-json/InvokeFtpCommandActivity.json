@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ConnectionId",
+    "label": "ConnectionId",
+    "description": "The connection ID or token for the FTP connection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Command",
+    "label": "Command",
+    "description": "The FTP command to execute.",
+    "defaultValue": "",
+    "required": true
+  }
+]

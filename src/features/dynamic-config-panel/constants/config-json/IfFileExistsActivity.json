@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The full path of the file to check.",
+    "defaultValue": "",
+    "required": true
+  }
+]

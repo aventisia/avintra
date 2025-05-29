@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TreeNodeSelector",
+    "label": "TreeNodeSelector",
+    "description": "The selector or identifier of the tree node.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "Expand",
+    "label": "Expand",
+    "description": "Whether to expand or collapse the tree node.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ConnectionId",
+    "label": "ConnectionId",
+    "description": "The connection ID or token for the FTP connection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilesToDownload",
+    "label": "FilesToDownload",
+    "description": "The list of file names to download.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "LocalDirectory",
+    "label": "LocalDirectory",
+    "description": "The local directory to save the downloaded files.",
+    "defaultValue": "",
+    "required": true
+  }
+]

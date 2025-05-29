@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SessionId",
+    "label": "SessionId",
+    "description": "The session ID of the terminal session.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToWaitFor",
+    "label": "TextToWaitFor",
+    "description": "The text to wait for.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns true if the specified text was found, otherwise false.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

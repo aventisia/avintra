@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "VariableName",
+    "label": "VariableName",
+    "description": "The name of the environment variable to delete.",
+    "defaultValue": "",
+    "required": true
+  }
+]

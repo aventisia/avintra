@@ -1,19 +1,15 @@
-import {
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@aventisia/ui/command";
+import { CommandGroup, CommandItem, CommandList } from "@aventisia/ui/command";
 import { Separator } from "@aventisia/ui";
 import { PrimaryCategory } from "./PrimaryCategory";
-import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const PrimaryCategoryList = () => {
   // Get the setPrimaryCategory function from the store
-  const { setPrimaryCategoryLabel } = useNodeSelectorStore(
+  const { actionSelectorData, setPrimaryCategoryLabel } = useNodeSelectorStore(
     useShallow((state) => ({
+      actionSelectorData: state.actionSelectorData,
       setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
     })),
   );
@@ -29,7 +25,7 @@ export const PrimaryCategoryList = () => {
     <CommandList>
       <CommandGroup>
         {actionSelectorData.map((item, index) => (
-          <div key={item.name}>
+          <div key={item.label}>
             <CommandItem
               value={item.label}
               className="rounded-lg p-1"
@@ -37,7 +33,7 @@ export const PrimaryCategoryList = () => {
               // disabled={!item.actionCategories.length}
               disabled={
                 projectInfo?.type === "AutomationAgent" &&
-                item.name === "aiIntegrations" &&
+                item.label === "AI Integrations" &&
                 true
               }
             >

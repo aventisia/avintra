@@ -1,5 +1,4 @@
 import { CommandItem, CommandList } from "@aventisia/ui/command";
-import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
 import {
@@ -23,11 +22,12 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
-  const { origin, originId, query } = useNodeSelectorStore(
+  const { origin, originId, query, actionSelectorData } = useNodeSelectorStore(
     useShallow((state) => ({
       origin: state.origin,
       originId: state.originId,
       query: state.query,
+      actionSelectorData: state.actionSelectorData,
     })),
   );
 
@@ -52,10 +52,10 @@ export const ActionCategoryList = () => {
   const getActionCategories = () => {
     if (query) {
       const result: ActionCategoryType[] = [];
-      actionSelectorData.forEach(({ name, actionCategories }) => {
+      actionSelectorData.forEach(({ label, actionCategories }) => {
         if (
           projectInfo?.type === "AutomationAgent" &&
-          name === "aiIntegrations"
+          label === "AI Integrations"
         )
           return;
         actionCategories.forEach((category) => {
@@ -70,7 +70,6 @@ export const ActionCategoryList = () => {
               description: category.description,
               img: category.img,
               label: category.label,
-              name: category.name,
               actions: matchingActions,
             });
           }
@@ -155,12 +154,12 @@ export const ActionCategoryList = () => {
                   />
                 ) : (
                   <Accordion
-                    value={query ? item.name : undefined}
+                    value={query ? item.label : undefined}
                     type="single"
                     collapsible
                     className="w-full"
                   >
-                    <AccordionItem value={item.name} className="border-none">
+                    <AccordionItem value={item.label} className="border-none">
                       <AccordionTrigger className="px-1.5 py-2">
                         <div className="flex w-full gap-3 text-sm">
                           {item.label}
@@ -177,7 +176,7 @@ export const ActionCategoryList = () => {
                 )}
               </CommandItem>
               {/* Separator */}
-              {index < actionSelectorData.length - 1 && (
+              {index < actionCategories.length - 1 && (
                 <div className="flex justify-center">
                   <Separator
                     orientation="horizontal"

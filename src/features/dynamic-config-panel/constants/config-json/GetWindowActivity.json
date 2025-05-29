@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowIdentifier",
+    "label": "WindowIdentifier",
+    "description": "The title or handle of the window to retrieve.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "Returns the handle or identifier of the window.",
+    "defaultValue": {
+      "value": "windowHandle",
+      "enabled": true
+    },
+    "required": false
+  }
+]

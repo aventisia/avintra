@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BinaryData",
+    "label": "BinaryData",
+    "description": "The binary data to convert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The full path where the file should be saved.",
+    "defaultValue": "",
+    "required": true
+  }
+]

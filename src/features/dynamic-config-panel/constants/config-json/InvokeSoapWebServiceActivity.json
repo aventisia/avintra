@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndpointUrl",
+    "label": "EndpointUrl",
+    "description": "The endpoint URL of the SOAP web service.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MethodName",
+    "label": "MethodName",
+    "description": "The name of the SOAP method to invoke.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Parameters",
+    "label": "Parameters",
+    "description": "The parameters for the SOAP method (as a dictionary).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the response from the SOAP web service.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

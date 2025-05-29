@@ -58,62 +58,56 @@ const ExecuteFlow = () => {
   };
 
   return (
-    <div className="flex h-7 items-center justify-center">
+    <div className="flex items-center gap-2">
       {flowState === "executing" || flowState === "paused" ? (
-        <>
+        <div className="group flex h-8 gap-1 rounded-lg bg-white/10">
           {flowState === "executing" ? (
             <Tooltip content="Pause">
               <Button
                 variant="ghost"
-                size={"icon8"}
+                size="icon8"
                 className="hover:bg-white/10"
                 onClick={() => sendCommand("pause")}
               >
-                <PauseIcon className="h-5 w-5 text-slate-500" />
+                <PauseIcon className="h-[1.1rem] w-[1.1rem] text-slate-500" />
               </Button>
             </Tooltip>
           ) : (
             <Tooltip content="Resume">
               <Button
                 variant="ghost"
-                size={"icon8"}
+                size="icon8"
                 className="hover:bg-white/10"
                 onClick={() => sendCommand("resume")}
               >
-                <PlayIcon className="h-5 w-5 text-green-500" />
+                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
               </Button>
             </Tooltip>
           )}
           <Tooltip content="Abort">
             <Button
               variant="ghost"
-              size={"icon8"}
+              size="icon8"
               className="hover:bg-white/10"
               onClick={() => sendCommand("abort")}
             >
-              <StopIcon className="h-5 w-5 text-red-500" />
+              <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
             </Button>
           </Tooltip>
-        </>
+        </div>
       ) : (
-        <Tooltip
-          content={
-            flowState === "launching-executor"
-              ? "Launching Executor"
-              : "Execute"
-          }
-        >
+        <Tooltip content="Execute">
           <Button
+            size="icon8"
             variant="ghost"
-            size={"icon8"}
             className="hover:bg-white/10"
             onClick={startExecution}
           >
             {flowState === "launching-executor" ? (
-              <Loader2 className="h-5 w-5 animate-spin text-primary-foreground" />
+              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
             ) : (
               <>
-                <PlayIcon className="h-5 w-5 text-green-500" />
+                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
               </>
             )}
           </Button>

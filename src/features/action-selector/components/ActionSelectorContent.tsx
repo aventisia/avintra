@@ -69,7 +69,7 @@ export const ActionSelectorContent = () => {
         <NoActionsMessage />
 
         {/* List of Nodes */}
-        <ScrollArea className="p-2">
+        <ScrollArea className="h-[calc(100vh-3rem)] p-2">
           {isOriginReplaceTrigger || query ? (
             // Contains the list of all triggers
             <ActionCategoryList />

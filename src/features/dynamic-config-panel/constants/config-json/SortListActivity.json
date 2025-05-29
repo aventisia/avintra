@@ -32,7 +32,7 @@
     "name": "FirstSort",
     "label": "First Sort Direction",
     "description": "Specifies whether to sort the first property in ascending or descending order.",
-    "defaultValue": 0,
+    "defaultValue": "Ascending",
     "required": false,
     "selectOptions": [
       {
@@ -62,7 +62,7 @@
     "name": "SecondSort",
     "label": "Second Sort Direction",
     "description": "Specifies whether to sort the second property in ascending or descending order.",
-    "defaultValue": 0,
+    "defaultValue": "Ascending",
     "required": false,
     "selectOptions": [
       {
@@ -92,7 +92,7 @@
     "name": "ThirdSort",
     "label": "Third Sort Direction",
     "description": "Specifies whether to sort the third property in ascending or descending order.",
-    "defaultValue": 0,
+    "defaultValue": "Ascending",
     "required": false,
     "selectOptions": [
       {

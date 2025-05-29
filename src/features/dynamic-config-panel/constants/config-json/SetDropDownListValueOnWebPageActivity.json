@@ -23,7 +23,7 @@
     "name": "Operation",
     "label": "Operation",
     "description": "Choose the operation to perform on the drop-down list.",
-    "defaultValue": 0,
+    "defaultValue": "ClearAllOptions",
     "required": false,
     "selectOptions": [
       {
@@ -94,7 +94,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after setting the dropdown value.",
-    "defaultValue": 2,
+    "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
       {

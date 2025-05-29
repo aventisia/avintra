@@ -5,7 +5,7 @@
     "name": "LaunchMode",
     "label": "Launch Mode",
     "description": "Specify whether to launch a new browser instance or attach to an existing one.",
-    "defaultValue": 0,
+    "defaultValue": "LaunchNewInstance",
     "required": false,
     "selectOptions": [
       {
@@ -79,7 +79,7 @@
     "name": "WindowState",
     "label": "Window State",
     "description": "Specify whether to launch the browser window in normal, minimized, or maximized state.",
-    "defaultValue": 0,
+    "defaultValue": "Normal",
     "required": false,
     "selectOptions": [
       {
@@ -105,7 +105,7 @@
     "name": "TargetDesktop",
     "label": "Target Desktop",
     "description": "Set the connection string of the target desktop where the browser should launch.",
-    "defaultValue": 0,
+    "defaultValue": "LocalComputer",
     "required": false,
     "selectOptions": [
       {
@@ -157,7 +157,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears while loading the initial web page.",
-    "defaultValue": 0,
+    "defaultValue": "CloseIt",
     "required": false,
     "selectOptions": [
       {

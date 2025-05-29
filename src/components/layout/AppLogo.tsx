@@ -9,7 +9,10 @@ const AppLogo = (
 ) => {
   return (
     <LogoLink>
-      <LogoImage src={logoSrc ? logoSrc : "app_logo_light.svg"} />
+      <LogoImage
+        className="h-[1.3rem]"
+        src={logoSrc ? logoSrc : "app_logo_light.svg"}
+      />
     </LogoLink>
   );
 };

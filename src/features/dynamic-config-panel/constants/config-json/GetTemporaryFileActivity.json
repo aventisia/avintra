@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "TempFilePath",
+    "label": "TempFilePath",
+    "description": "Returns the path of the temporary file.",
+    "defaultValue": {
+      "value": "tempFilePath",
+      "enabled": true
+    },
+    "required": false
+  }
+]

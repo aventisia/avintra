@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ConnectionId",
+    "label": "ConnectionId",
+    "description": "The connection ID or token for the FTP connection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilesToUpload",
+    "label": "FilesToUpload",
+    "description": "The list of local file paths to upload.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "RemoteDirectory",
+    "label": "RemoteDirectory",
+    "description": "The remote directory on the FTP server.",
+    "defaultValue": "",
+    "required": true
+  }
+]

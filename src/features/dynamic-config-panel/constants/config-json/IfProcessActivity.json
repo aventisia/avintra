@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProcessName",
+    "label": "ProcessName",
+    "description": "The name of the process to check.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsRunning",
+    "label": "IsRunning",
+    "description": "Returns true if the process is running, otherwise false.",
+    "defaultValue": {
+      "value": "isRunning",
+      "enabled": true
+    },
+    "required": false
+  }
+]

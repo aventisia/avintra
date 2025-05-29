@@ -1,1 +1,55 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EncryptedFilePath",
+    "label": "EncryptedFilePath",
+    "description": "The path to the encrypted file.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The decryption key.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "EncodingFormat",
+    "label": "EncodingFormat",
+    "description": "The encoding format of the encrypted content.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Base64",
+        "value": "Base64",
+        "description": "Base64 encoding"
+      },
+      {
+        "label": "Hex",
+        "value": "Hex",
+        "description": "Hexadecimal encoding"
+      },
+      {
+        "label": "UTF8",
+        "value": "Utf8",
+        "description": "UTF-8 encoding"
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OutputFilePath",
+    "label": "OutputFilePath",
+    "description": "The path to the output file.",
+    "defaultValue": "",
+    "required": true
+  }
+]

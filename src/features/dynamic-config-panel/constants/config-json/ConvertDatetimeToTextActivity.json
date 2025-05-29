@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DatetimeToConvert",
+    "label": "DatetimeToConvert",
+    "description": "The datetime value to convert to text.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomFormat",
+    "label": "CustomFormat",
+    "description": "A custom format string for formatting the datetime value (e.g., yyyyMMdd).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "The formatted datetime as a text value.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

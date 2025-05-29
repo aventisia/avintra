@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Action",
+    "label": "Action",
+    "description": "The action to perform (e.g., Move, Delete, MarkAsUnread).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MessageIds",
+    "label": "MessageIds",
+    "description": "The IDs of the email messages to process.",
+    "defaultValue": "",
+    "required": true
+  }
+]

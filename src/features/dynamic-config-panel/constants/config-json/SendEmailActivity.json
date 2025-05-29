@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SmtpServer",
+    "label": "SmtpServer",
+    "description": "The SMTP server URL.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "From",
+    "label": "From",
+    "description": "The sender\u0027s email address.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "To",
+    "label": "To",
+    "description": "The recipient\u0027s email address.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Subject",
+    "label": "Subject",
+    "description": "The subject of the email.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Body",
+    "label": "Body",
+    "description": "The body of the email.",
+    "defaultValue": "",
+    "required": true
+  }
+]

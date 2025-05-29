@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "XPosition",
+    "label": "XPosition",
+    "description": "The X-coordinate of the new position.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "YPosition",
+    "label": "YPosition",
+    "description": "The Y-coordinate of the new position.",
+    "defaultValue": "",
+    "required": true
+  }
+]

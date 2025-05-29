@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OriginalText",
+    "label": "OriginalText",
+    "description": "The original text to which a new line will be appended.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewLine",
+    "label": "NewLine",
+    "description": "The new line of text to append.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "OResultOutput",
+    "label": "OResultOutput",
+    "description": "The resulting text after appending the new line.",
+    "defaultValue": {
+      "value": "oResultOutput",
+      "enabled": true
+    },
+    "required": false
+  }
+]

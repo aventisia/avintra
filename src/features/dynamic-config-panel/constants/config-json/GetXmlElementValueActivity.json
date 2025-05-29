@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "XmlContent",
+    "label": "XmlContent",
+    "description": "The XML content as a string.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "XPath",
+    "label": "XPath",
+    "description": "The XPath expression to locate the element.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ElementValue",
+    "label": "ElementValue",
+    "description": "Returns the element value.",
+    "defaultValue": {
+      "value": "elementValue",
+      "enabled": true
+    },
+    "required": false
+  }
+]

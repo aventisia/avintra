@@ -4,9 +4,6 @@ import { NodeDataType } from "@/types/node-data-type";
  * Represents a action Category for list of actions.
  */
 export type ActionCategoryType = {
-  /** The unique name of the action category. */
-  name: string;
-
   /** The display label for the action category. */
   label: string;
   

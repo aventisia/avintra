@@ -1,1 +1,33 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Action",
+    "label": "Action",
+    "description": "The action to perform on the screensaver.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Enable",
+        "value": "Enable",
+        "description": "Enables the screensaver."
+      },
+      {
+        "label": "Disable",
+        "value": "Disable",
+        "description": "Disables the screensaver."
+      },
+      {
+        "label": "Start",
+        "value": "Start",
+        "description": "Starts the screensaver."
+      },
+      {
+        "label": "Stop",
+        "value": "Stop",
+        "description": "Stops the screensaver."
+      }
+    ]
+  }
+]

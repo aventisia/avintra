@@ -23,7 +23,7 @@
     "name": "InputTextAs",
     "label": "Input Text As",
     "description": "Choose how to input the text (plain or encrypted).",
-    "defaultValue": 0,
+    "defaultValue": "InputAsTextVariableExpression",
     "required": false,
     "selectOptions": [
       {
@@ -62,7 +62,7 @@
     "name": "IfFieldIsnTEmpty",
     "label": "If Field Isn\u0027t Empty",
     "description": "Specify what to do if the text field already contains data.",
-    "defaultValue": 0,
+    "defaultValue": "ReplaceText",
     "required": false,
     "selectOptions": [
       {
@@ -128,7 +128,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
-    "defaultValue": 2,
+    "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
       {

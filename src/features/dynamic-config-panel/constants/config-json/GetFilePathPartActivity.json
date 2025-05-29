@@ -1,1 +1,54 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The full path of the file.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Part",
+    "label": "Part",
+    "description": "Specifies which part of the file path to retrieve.",
+    "defaultValue": "Directory",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Directory",
+        "value": "Directory",
+        "description": "Directory of file."
+      },
+      {
+        "label": "FileName",
+        "value": "FileName",
+        "description": "FileName of file."
+      },
+      {
+        "label": "Directory",
+        "value": "Extension",
+        "description": "Extension of file."
+      },
+      {
+        "label": "Directory",
+        "value": "FullFileName",
+        "description": "FullFileName of file."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the requested part of the file path.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

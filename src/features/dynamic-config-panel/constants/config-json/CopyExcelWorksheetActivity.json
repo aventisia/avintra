@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceExcelInstanceId",
+    "label": "SourceExcelInstanceId",
+    "description": "The source Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceWorksheetName",
+    "label": "SourceWorksheetName",
+    "description": "The name of the worksheet to copy.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TargetExcelInstanceId",
+    "label": "TargetExcelInstanceId",
+    "description": "The target Excel instance ID or token.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -23,7 +23,7 @@
     "name": "CheckBoxState",
     "label": "Check Box State",
     "description": "Set the desired state of the checkbox.",
-    "defaultValue": 0,
+    "defaultValue": "Checked",
     "required": false,
     "selectOptions": [
       {
@@ -62,7 +62,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after setting the checkbox state.",
-    "defaultValue": 2,
+    "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
       {

@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Text",
+    "label": "Text",
+    "description": "The text to hash.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The key to use in hashing.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Algorithm",
+    "label": "Algorithm",
+    "description": "The hashing algorithm to use.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "HashedText",
+    "label": "HashedText",
+    "description": "Returns the hashed text.",
+    "defaultValue": {
+      "value": "hashedText",
+      "enabled": true
+    },
+    "required": false
+  }
+]

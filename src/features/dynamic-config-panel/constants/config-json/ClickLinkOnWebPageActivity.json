@@ -23,7 +23,7 @@
     "name": "ClickType",
     "label": "Click Type",
     "description": "The kind of click to perform.",
-    "defaultValue": 0,
+    "defaultValue": "LeftClick",
     "required": false,
     "selectOptions": [
       {
@@ -101,7 +101,7 @@
     "name": "IfAPopUpDialogAppears",
     "label": "If a Pop-Up Dialog Appears",
     "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
-    "defaultValue": 2,
+    "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
       {

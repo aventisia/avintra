@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ClipboardText",
+    "label": "ClipboardText",
+    "description": "The text to set to the clipboard.",
+    "defaultValue": "",
+    "required": false
+  }
+]

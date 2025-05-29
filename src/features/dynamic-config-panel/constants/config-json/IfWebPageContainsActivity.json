@@ -14,7 +14,7 @@
     "name": "CheckIfWebPage",
     "label": "Check Condition",
     "description": "Select what condition to check in the web page.",
-    "defaultValue": 0,
+    "defaultValue": "ContainsElement",
     "required": false,
     "selectOptions": [
       {
@@ -72,7 +72,7 @@
     "name": "State",
     "label": "State",
     "description": "The expected state of the UI element (enabled or disabled).",
-    "defaultValue": 0,
+    "defaultValue": "Enabled",
     "required": false,
     "selectOptions": [
       {

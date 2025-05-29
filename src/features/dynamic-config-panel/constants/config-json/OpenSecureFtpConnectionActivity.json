@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FtpServerUrl",
+    "label": "FtpServerUrl",
+    "description": "The FTP server URL (e.g., ftp://example.com).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Username",
+    "label": "Username",
+    "description": "The username for authentication.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "The password for authentication.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the connection ID or token for the opened FTPS connection.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

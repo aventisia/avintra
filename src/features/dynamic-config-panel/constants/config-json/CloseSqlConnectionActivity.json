@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ConnectionString",
+    "label": "ConnectionString",
+    "description": "The connection string to the database.",
+    "defaultValue": "",
+    "required": true
+  }
+]

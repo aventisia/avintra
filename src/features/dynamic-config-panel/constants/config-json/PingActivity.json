@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Host",
+    "label": "Host",
+    "description": "The IP address or hostname to ping.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsReachable",
+    "label": "IsReachable",
+    "description": "Returns true if the host is reachable, otherwise false.",
+    "defaultValue": {
+      "value": "isReachable",
+      "enabled": true
+    },
+    "required": false
+  }
+]

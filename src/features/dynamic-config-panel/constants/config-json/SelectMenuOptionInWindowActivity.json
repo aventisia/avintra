@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MenuOptionSelector",
+    "label": "MenuOptionSelector",
+    "description": "The selector or identifier of the menu option.",
+    "defaultValue": "",
+    "required": true
+  }
+]

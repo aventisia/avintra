@@ -5,7 +5,7 @@ type RenderIfConditionType = {
 
 type RenderIfType = {
   conditions: RenderIfConditionType[];
-  operator?: "AND" | "OR";
+  _operator?: "AND" | "OR";
 };
 
 export type { RenderIfType, RenderIfConditionType };

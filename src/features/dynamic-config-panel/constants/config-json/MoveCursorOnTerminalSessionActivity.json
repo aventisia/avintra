@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SessionId",
+    "label": "SessionId",
+    "description": "The session ID of the terminal session.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "X",
+    "label": "X",
+    "description": "The X-coordinate of the target position.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Y",
+    "label": "Y",
+    "description": "The Y-coordinate of the target position.",
+    "defaultValue": "",
+    "required": true
+  }
+]

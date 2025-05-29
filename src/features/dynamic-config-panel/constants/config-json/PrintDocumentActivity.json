@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DocumentPath",
+    "label": "DocumentPath",
+    "description": "The path to the document to print.",
+    "defaultValue": "",
+    "required": true
+  }
+]

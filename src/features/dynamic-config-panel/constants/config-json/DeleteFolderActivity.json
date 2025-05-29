@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FolderPath",
+    "label": "FolderPath",
+    "description": "The path of the folder to delete.",
+    "defaultValue": "",
+    "required": true
+  }
+]

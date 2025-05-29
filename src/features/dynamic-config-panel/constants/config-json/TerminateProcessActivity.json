@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProcessName",
+    "label": "ProcessName",
+    "description": "The name of the process to terminate.",
+    "defaultValue": "",
+    "required": true
+  }
+]

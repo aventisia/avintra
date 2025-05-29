@@ -7,7 +7,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { StudioUILayout } from "./components/layout/StudioUILayout";
+import { AppLayout } from "./components/layout/AppLayout";
 import { FlowPage } from "./pages/FlowPage";
 import { LogsPage } from "./pages/LogsPage";
 
@@ -23,7 +23,7 @@ const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <StudioUILayout />,
+      element: <AppLayout />,
       errorElement: <AppErrorPage />,
       children: [
         {

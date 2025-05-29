@@ -26,7 +26,7 @@
     "name": "Get",
     "label": "Get",
     "description": "Select what detail you want to retrieve from the web page.",
-    "defaultValue": 0,
+    "defaultValue": "WebPageDescription",
     "required": false,
     "selectOptions": [
       {

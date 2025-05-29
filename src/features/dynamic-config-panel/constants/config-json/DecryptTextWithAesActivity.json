@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Ciphertext",
+    "label": "Ciphertext",
+    "description": "The ciphertext to decrypt.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Key",
+    "label": "Key",
+    "description": "The decryption key.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "EncodingFormat",
+    "label": "EncodingFormat",
+    "description": "The encoding format of the ciphertext.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Base64",
+        "value": "Base64",
+        "description": "Base64 encoding"
+      },
+      {
+        "label": "Hex",
+        "value": "Hex",
+        "description": "Hexadecimal encoding"
+      },
+      {
+        "label": "UTF8",
+        "value": "Utf8",
+        "description": "UTF-8 encoding"
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "DecryptedText",
+    "label": "DecryptedText",
+    "description": "Returns the decrypted text.",
+    "defaultValue": {
+      "value": "decryptedText",
+      "enabled": true
+    },
+    "required": false
+  }
+]

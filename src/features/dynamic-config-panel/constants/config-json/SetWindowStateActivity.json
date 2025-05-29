@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WindowHandle",
+    "label": "WindowHandle",
+    "description": "The handle or identifier of the window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DesiredState",
+    "label": "DesiredState",
+    "description": "The desired state of the window (e.g., restore, maximize, minimize).",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Normal",
+        "value": "Normal",
+        "description": "Launch browser in normal state."
+      },
+      {
+        "label": "Maximized",
+        "value": "Maximized",
+        "description": "Launch browser maximized."
+      },
+      {
+        "label": "Minimized",
+        "value": "Minimized",
+        "description": "Launch browser minimized."
+      }
+    ]
+  }
+]

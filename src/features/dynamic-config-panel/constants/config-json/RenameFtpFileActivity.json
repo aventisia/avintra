@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ConnectionId",
+    "label": "ConnectionId",
+    "description": "The connection ID or token for the FTP connection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OldFileName",
+    "label": "OldFileName",
+    "description": "The old file name.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewFileName",
+    "label": "NewFileName",
+    "description": "The new file name.",
+    "defaultValue": "",
+    "required": true
+  }
+]

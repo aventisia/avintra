@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "VariableName",
+    "label": "VariableName",
+    "description": "The name of the environment variable.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Value",
+    "label": "Value",
+    "description": "The value to set for the environment variable.",
+    "defaultValue": "",
+    "required": true
+  }
+]

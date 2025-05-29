@@ -14,7 +14,7 @@
     "name": "Capture",
     "label": "Capture Mode",
     "description": "Specify whether to capture the entire web page or only a specific element.",
-    "defaultValue": 0,
+    "defaultValue": "EntireWebPage",
     "required": false,
     "selectOptions": [
       {
@@ -44,7 +44,7 @@
     "name": "SaveMode",
     "label": "Save Mode",
     "description": "Specify whether to save the image into a file or store it in the clipboard.",
-    "defaultValue": 0,
+    "defaultValue": "Clipboard",
     "required": false,
     "selectOptions": [
       {
@@ -74,7 +74,7 @@
     "name": "FileFormat",
     "label": "Image Format",
     "description": "Choose the format in which the image will be saved.",
-    "defaultValue": 0,
+    "defaultValue": "Bmp",
     "required": false,
     "selectOptions": [
       {
