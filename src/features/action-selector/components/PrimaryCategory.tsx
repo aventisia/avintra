@@ -32,7 +32,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
           <h2 className="flex items-center text-xs font-medium text-foreground">
             {data.label}
             {projectInfo.type === "AutomationAgent" &&
-              data.name === "aiIntegrations" && (
+              data.label === "AI Integrations" && (
                 <Badge variant="outline" className="ml-1">
                   Coming Soon
                 </Badge>

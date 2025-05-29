@@ -25,7 +25,7 @@ export const PrimaryCategoryList = () => {
     <CommandList>
       <CommandGroup>
         {actionSelectorData.map((item, index) => (
-          <div key={item.name}>
+          <div key={item.label}>
             <CommandItem
               value={item.label}
               className="rounded-lg p-1"
@@ -33,7 +33,7 @@ export const PrimaryCategoryList = () => {
               // disabled={!item.actionCategories.length}
               disabled={
                 projectInfo?.type === "AutomationAgent" &&
-                item.name === "aiIntegrations" &&
+                item.label === "AI Integrations" &&
                 true
               }
             >

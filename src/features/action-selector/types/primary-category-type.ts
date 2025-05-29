@@ -4,9 +4,6 @@ import { ActionCategoryType } from "./action-category-type";
  * Represents a primary category with its associated properties.
  */
 export type PrimaryCategoryType = {
-  /** The unique name of the primary category. */
-  name: string;
-
   /** The display label for the primary category. */
   label: string;
   

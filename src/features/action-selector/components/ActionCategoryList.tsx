@@ -52,10 +52,10 @@ export const ActionCategoryList = () => {
   const getActionCategories = () => {
     if (query) {
       const result: ActionCategoryType[] = [];
-      actionSelectorData.forEach(({ name, actionCategories }) => {
+      actionSelectorData.forEach(({ label, actionCategories }) => {
         if (
           projectInfo?.type === "AutomationAgent" &&
-          name === "aiIntegrations"
+          label === "AI Integrations"
         )
           return;
         actionCategories.forEach((category) => {
@@ -70,7 +70,6 @@ export const ActionCategoryList = () => {
               description: category.description,
               img: category.img,
               label: category.label,
-              name: category.name,
               actions: matchingActions,
             });
           }
@@ -155,12 +154,12 @@ export const ActionCategoryList = () => {
                   />
                 ) : (
                   <Accordion
-                    value={query ? item.name : undefined}
+                    value={query ? item.label : undefined}
                     type="single"
                     collapsible
                     className="w-full"
                   >
-                    <AccordionItem value={item.name} className="border-none">
+                    <AccordionItem value={item.label} className="border-none">
                       <AccordionTrigger className="px-1.5 py-2">
                         <div className="flex w-full gap-3 text-sm">
                           {item.label}
