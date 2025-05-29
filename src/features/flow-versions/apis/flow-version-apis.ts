@@ -26,4 +26,13 @@ const insertFlowVersion = (newFlowVersion: FlowVersionDto) => {
     .then((res) => res.data);
 };
 
-export { getFlowVersions, insertFlowVersion };
+/**
+ * Delete flow version.
+ */
+const deleteFlowVersion = (id: string) => {
+  return axiosInstance
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/delete/${id}`)
+    .then((res) => res.data);
+};
+
+export { getFlowVersions, insertFlowVersion, deleteFlowVersion };

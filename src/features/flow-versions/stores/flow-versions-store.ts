@@ -3,11 +3,14 @@ import { create } from "zustand";
 type State = {
   /** Version id of the flow */
   versionID: string;
+
+  /** Version number of the flow */
+  versionNumber: number | null;
 };
 
 type Actions = {
   /** Set Version id*/
-  setVersionID: (versionID: string) => void;
+  setVersion: (versionID: string, versionNumber: number | null) => void;
 };
 
 /**
@@ -17,9 +20,11 @@ type Actions = {
  */
 export const useFlowsVersionsStore = create<State & Actions>((set) => ({
   versionID: "",
+  versionNumber: null,
 
-  setVersionID: (versionID) =>
+  setVersion: (versionID, versionNumber) =>
     set(() => ({
-      versionID: versionID,
+      versionID,
+      versionNumber,
     })),
 }));

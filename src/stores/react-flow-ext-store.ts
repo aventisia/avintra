@@ -24,8 +24,11 @@ type State = {
   /** Flag to track if Reactflow is locked */
   isLocked: boolean;
 
+  /** Flag to track if Reactflow is published */
+  isPublished: boolean;
+
   /** Output flow variables */
-  flowVariablesObject: FlowVariablesObjectType[] | [],
+  flowVariablesObject: FlowVariablesObjectType[] | [];
 
   /** Flag to track pending flow save */
   isSavePending: boolean;
@@ -56,6 +59,9 @@ type Actions = {
   /** To toggle ReactFlow lock/unlock state */
   toggleIsLocked: (isLocked: boolean) => void;
 
+  /** To toggle ReactFlow publish state */
+  setIsPublished: (isPublished: boolean) => void;
+
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
 
@@ -72,6 +78,7 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   isLocked: false,
   isSavePending: false,
   contextMenuOrigin: null,
+  isPublished: false,
 
   onNodesChange: (changes: NodeChange[]) => {
     set({
@@ -98,12 +105,16 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
     set({ isSavePending: true, nodes });
   },
 
+  setIsPublished: (isPublished: boolean) => {
+    set({ isPublished });
+  },
+
   setEdges: (edges: Edge[]) => {
     set({ isSavePending: true, edges });
   },
 
   setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => {
-    set({flowVariablesObject: variables})
+    set({ flowVariablesObject: variables });
   },
 
   toggleIsLocked: (value) => {

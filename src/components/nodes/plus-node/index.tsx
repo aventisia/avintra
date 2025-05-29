@@ -6,6 +6,7 @@ import { PlusNodeTrigger } from "./PlusNodeTrigger";
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { NodeSelector } from "@/features/action-selector/components";
 import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 export const PlusNode = ({
   id,
@@ -19,6 +20,15 @@ export const PlusNode = ({
       setOrigin: state.setOrigin,
     })),
   );
+
+  // Get ReactFlowExt store state & actions
+  const { isPublished } = useReactFlowExtStore(
+    useShallow((state) => ({
+      isPublished: state.isPublished,
+    })),
+  );
+
+  if (isPublished) return <></>;
 
   return (
     <>

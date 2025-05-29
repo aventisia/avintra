@@ -1,7 +1,7 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useFlowsPopoverStore } from "../stores/flows-popover-store";
+import { useFlowVersionPopoverStore } from "@/features/flow-versions/stores/flow-version-popover-store";
 
 /**
  * Custom hook to handle opening a flow.
@@ -13,7 +13,7 @@ export const useOpenFlow = () => {
   const navigate = useNavigate();
 
   // Get store state and actions
-  const { togglePopoverOpen } = useFlowsPopoverStore(
+  const { togglePopoverOpen } = useFlowVersionPopoverStore(
     useShallow((state) => ({
       togglePopoverOpen: state.togglePopoverOpen,
     })),
@@ -27,15 +27,18 @@ export const useOpenFlow = () => {
   );
 
   // Handle open flow action
-  const handleOpenFlowAction = (rowId: string) => {
+  const handleOpenFlowAction = (rowId: string, versionId?: string) => {
     // Close popover
     togglePopoverOpen(false);
 
     // Set flow loading state
     setIsFlowLoading(true);
 
+    // Build URL with optional versionId
+    const query = versionId ? `?f=${rowId}&v=${versionId}` : `?f=${rowId}`;
+
     // Navigate to flow
-    navigate(`/flow?f=${rowId}`);
+    navigate(`/flow${query}`);
   };
 
   // Return the handle open flow action function

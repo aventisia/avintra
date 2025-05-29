@@ -8,4 +8,6 @@ export interface FlowSilentUpdateDto {
 
   /** Flow Output variables */
   flowVariablesObject: string;
+
+  versionId?: string;
 }
