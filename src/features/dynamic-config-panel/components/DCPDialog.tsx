@@ -38,7 +38,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
               "ml-1 gap-1 text-xs",
             )}
             target="_blank"
-            href={import.meta.env.VITE_DOCS_URL + nodeData?.docsLink || "#"}
+            href={nodeData?.docsLink || "#"}
           >
             Docs{" "}
             <SquareArrowOutUpRightIcon className="h-2.5 w-2.5 stroke-[2.5]" />

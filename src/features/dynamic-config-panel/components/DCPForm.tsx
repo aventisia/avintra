@@ -1,14 +1,15 @@
+import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
-import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
+import { toast } from "@aventisia/ui/sonner";
+import { SearchCodeIcon } from "lucide-react";
 import { z } from "zod";
 import {
   RenderField,
+  shouldRenderField,
   useDefineDCPForm,
   useUpdateNodeDataIO,
-  shouldRenderField,
 } from "..";
-import { toast } from "@aventisia/ui/sonner";
 
 export const DCPForm = () => {
   // Define form
@@ -61,7 +62,10 @@ export const DCPForm = () => {
   return (
     <>
       {!isFormReady ? (
-        <div>Not found</div>
+        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+          <SearchCodeIcon className="text-icon h-5 w-5" />
+          Configuration not found for this node.
+        </div>
       ) : (
         <Form
           methods={form}
