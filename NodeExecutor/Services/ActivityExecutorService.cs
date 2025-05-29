@@ -86,16 +86,16 @@ namespace NodeExecutor.Services
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
 
                 // Set OutArguments via reflection
-                foreach (var output in node.NodeOutputs)
+                foreach (var nodeOutput in node.NodeOutputs)
                 {
                     // Get the property info for the output key
-                    var prop = activityType.GetProperty(output.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    var prop = activityType.GetProperty(nodeOutput.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                     if (prop == null) continue;
 
                     // Set the output value in the execution context
-                    if (outputs != null && outputs.ContainsKey(output.Key))
+                    if (outputs != null && outputs.ContainsKey(nodeOutput.Key))
                     {
-                        executionContext.Set(output.Value.Value, outputs[output.Key]);
+                        executionContext.Set(nodeOutput.Value.Value, outputs[nodeOutput.Key]);
                     }
                 }
 
