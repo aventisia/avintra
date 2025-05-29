@@ -59,6 +59,10 @@ namespace NodeExecutor.Services
                 // Set InArguments via reflection
                 foreach (var input in node.NodeInputs)
                 {
+                    // TODO: if input does not have value return (in case of optional fields. all activity optional arugments should have default value)
+                    // We can check using reflaction if the property has a default value or not and throw error later
+                    if (string.IsNullOrEmpty(input.Value)) continue;
+
                     // Get the property info for the input key
                     var prop = activityType.GetProperty(input.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                     if (prop == null) continue;
