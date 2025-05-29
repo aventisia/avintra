@@ -39,7 +39,12 @@ const AppHeader: React.FC = () => {
         <div className="flex flex-grow items-center gap-3 text-white">
           {/* Back Button */}
           <Tooltip content="Back">
-            <Button size="icon8" variant="ghost" className="hover:bg-white/10">
+            <Button
+              size="icon8"
+              variant="ghost"
+              className="hover:bg-white/10"
+              onClick={() => window.history.back()}
+            >
               <ArrowLeftIcon className="h-4 w-4 text-white/80" />
             </Button>
           </Tooltip>
