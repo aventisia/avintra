@@ -141,8 +141,7 @@ public class FlowBuilderService : IFlowBuilderService
                                         .GetByConditionAsync(w =>
                                             (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
                                             w.FlowId == flowSilentUpdateDto.Id &&
-                                            w.CreatedByUserId == _userId &&
-                                            !w.IsPublished
+                                            w.CreatedByUserId == _userId 
                                         )
                                         .OrderByDescending(a => a.CreatedOn)
                                         .SingleOrDefaultAsync();
