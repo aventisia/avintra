@@ -17,7 +17,7 @@ export const HeaderActionMenu: React.FC = () => {
       <HeaderActionMenuTrigger />
 
       {/* Header actions menu content */}
-      <DropdownMenuContent align="end" className="w-[12rem] min-w-[12rem]">
+      <DropdownMenuContent align="end" className="mt-2 w-[12rem] min-w-[12rem]">
         <FlowLogHeader />
         <SimpleDDMenuItem size="md" Icon={UploadIcon} content="Export" />
 

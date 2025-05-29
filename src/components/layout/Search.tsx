@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { SearchIcon } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,6 +9,7 @@ import {
 } from "@aventisia/ui/command";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { Button } from "@aventisia/ui/buttons";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const SearchCommandDialog = () => {
   const [open, setOpen] = useState(false);
@@ -18,12 +18,12 @@ const SearchCommandDialog = () => {
     <div>
       <Tooltip content="Search">
         <Button
+          size="icon8"
           variant="ghost"
-          size={"icon8"}
           className="hover:bg-white/10"
           onClick={() => setOpen(true)}
         >
-          <SearchIcon className="h-4 w-4 text-primary-foreground" />
+          <MagnifyingGlassIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
         </Button>
       </Tooltip>
 

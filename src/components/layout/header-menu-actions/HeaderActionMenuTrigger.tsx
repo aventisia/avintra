@@ -11,7 +11,7 @@ export const HeaderActionMenuTrigger = () => {
         "hover:bg-white/10",
       )}
     >
-      <EllipsisVerticalIcon className="h-5 w-5 text-primary-foreground" />
+      <EllipsisVerticalIcon className="h-5 w-5 text-white/80" />
       <span className="sr-only">Open menu</span>
     </DropdownMenuTrigger>
   );
