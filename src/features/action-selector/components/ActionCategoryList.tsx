@@ -176,7 +176,7 @@ export const ActionCategoryList = () => {
                 )}
               </CommandItem>
               {/* Separator */}
-              {index < actionSelectorData.length - 1 && (
+              {index < actionCategories.length - 1 && (
                 <div className="flex justify-center">
                   <Separator
                     orientation="horizontal"
