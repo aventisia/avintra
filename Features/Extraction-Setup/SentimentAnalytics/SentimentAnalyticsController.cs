@@ -46,4 +46,11 @@ public class SentimentAnalyticsController : BaseApiController
     {
         return ResultHelper(await _sentimentAnalyticsService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
     }
+
+    // Updates one or more extracted review data records linked to a specific machine learning model.
+    [HttpPut("review-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<SentimentAnalyticsExtractedDataDto>>> UpdateExtractedReviewData(SentimentAnalyticsExtractedDataDto sentimentAnalyticsExtractedDataDto)
+    {
+        return ResultHelper(await _sentimentAnalyticsService.UpdateExtractedReviewDataAsync(sentimentAnalyticsExtractedDataDto));
+    }
 }

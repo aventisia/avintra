@@ -402,6 +402,63 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
         return serviceResponse;
     }
 
+    // Updates an extracted review data record associated with a specific machine learning model.
+    public async Task<ServiceResponse<SentimentAnalyticsExtractedDataDto>> UpdateExtractedReviewDataAsync(SentimentAnalyticsExtractedDataDto sentimentAnalyticsExtractedDataDto)
+    {
+        // Initialize the response with default failure state
+        var serviceResponse = new ServiceResponse<SentimentAnalyticsExtractedDataDto>
+        {
+            Data = null,
+            Message = "Failed to update review data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update for review data with ID: {ReviewDataId}", sentimentAnalyticsExtractedDataDto.Id);
+
+            // Retrieve the existing data record from the repository
+            var existingReviewData = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(x => x.Id == sentimentAnalyticsExtractedDataDto.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingReviewData == null)
+            {
+                _logger.LogWarning("Review data not found. ID: {ReviewDataId}", sentimentAnalyticsExtractedDataDto.Id);
+                serviceResponse.Message = $"Review data not found.";
+                return serviceResponse;
+            }
+
+            // Trim whitespace from all string properties in the DTO
+            sentimentAnalyticsExtractedDataDto = TrimDtoStringPropsUtil.TrimDtoStringProps(sentimentAnalyticsExtractedDataDto);
+
+            // Map the trimmed DTO values to the existing entity
+            sentimentAnalyticsExtractedDataDto.Adapt(existingReviewData);
+
+            // Apply the update to the repository
+            _unitOfWork.ExtractedDataRepo.Update(existingReviewData);
+
+            // Attempt to save changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes during update of review data. ID: {ReviewDataId}, User ID: {UserId}", sentimentAnalyticsExtractedDataDto.Id, _userId);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Successfully updated review data. ID: {ReviewDataId}", sentimentAnalyticsExtractedDataDto.Id);
+
+            // Prepare successful response
+            serviceResponse.Data = existingReviewData.Adapt<SentimentAnalyticsExtractedDataDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Review data updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating review data. ID: {ReviewDataId}", sentimentAnalyticsExtractedDataDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string used by the ML model to perform sentiment analysis based on the configuration
     private string? GenerateSentimentAnalyticsModelPrompt(SentimentAnalyticDto sentimentAnalyticDto)
     {

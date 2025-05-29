@@ -440,6 +440,63 @@ public class SummarizationService : ISummarizationService
         return serviceResponse;
     }
 
+    // Updates an extracted review data record associated with a specific machine learning model.
+    public async Task<ServiceResponse<SummarizationExtractedDataDto>> UpdateExtractedReviewDataAsync(SummarizationExtractedDataDto summarizationExtractedDataDto)
+    {
+        // Initialize the response with default failure state
+        var serviceResponse = new ServiceResponse<SummarizationExtractedDataDto>
+        {
+            Data = null,
+            Message = "Failed to update review data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update for review data with ID: {ReviewDataId}", summarizationExtractedDataDto.Id);
+
+            // Retrieve the existing data record from the repository
+            var existingReviewData = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(x => x.Id == summarizationExtractedDataDto.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingReviewData == null)
+            {
+                _logger.LogWarning("Review data not found. ID: {ReviewDataId}", summarizationExtractedDataDto.Id);
+                serviceResponse.Message = $"Review data not found.";
+                return serviceResponse;
+            }
+
+            // Trim whitespace from all string properties in the DTO
+            summarizationExtractedDataDto = TrimDtoStringPropsUtil.TrimDtoStringProps(summarizationExtractedDataDto);
+
+            // Map the trimmed DTO values to the existing entity
+            summarizationExtractedDataDto.Adapt(existingReviewData);
+
+            // Apply the update to the repository
+            _unitOfWork.ExtractedDataRepo.Update(existingReviewData);
+
+            // Attempt to save changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes during update of review data. ID: {ReviewDataId}, User ID: {UserId}", summarizationExtractedDataDto.Id, _userId);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Successfully updated review data. ID: {ReviewDataId}", summarizationExtractedDataDto.Id);
+
+            // Prepare successful response
+            serviceResponse.Data = existingReviewData.Adapt<SummarizationExtractedDataDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Review data updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating review data. ID: {ReviewDataId}", summarizationExtractedDataDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string for the summarization model using the setup settings
     private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
     {

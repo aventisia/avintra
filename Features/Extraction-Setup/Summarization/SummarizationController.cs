@@ -46,4 +46,11 @@ public class SummarizationController : BaseApiController
     {
         return ResultHelper(await _summarizationService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
     }
+
+    // Updates one or more extracted review data records linked to a specific machine learning model.
+    [HttpPut("review-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<SummarizationExtractedDataDto>>> UpdateExtractedReviewData(SummarizationExtractedDataDto summarizationExtractedDataDto)
+    {
+        return ResultHelper(await _summarizationService.UpdateExtractedReviewDataAsync(summarizationExtractedDataDto));
+    }
 }

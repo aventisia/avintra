@@ -402,6 +402,64 @@ public class ClassificationService : IClassificationService
         return serviceResponse;
     }
 
+    // Updates an extracted review data record associated with a specific machine learning model.
+    public async Task<ServiceResponse<ClassificationExtractedDataDto>> UpdateExtractedReviewDataAsync(ClassificationExtractedDataDto classificationExtractedDataDto)
+    {
+        // Initialize the response with default failure state
+        var serviceResponse = new ServiceResponse<ClassificationExtractedDataDto>
+        {
+            Data = null,
+            Message = "Failed to update review data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update for review data with ID: {ReviewDataId}", classificationExtractedDataDto.Id);
+
+            // Retrieve the existing data record from the repository
+            var existingReviewData = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(x => x.Id == classificationExtractedDataDto.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingReviewData == null)
+            {
+                _logger.LogWarning("Review data not found. ID: {ReviewDataId}", classificationExtractedDataDto.Id);
+                serviceResponse.Message = $"Review data not found.";
+                return serviceResponse;
+            }
+
+            // Trim whitespace from all string properties in the DTO
+            classificationExtractedDataDto = TrimDtoStringPropsUtil.TrimDtoStringProps(classificationExtractedDataDto);
+
+            // Map the trimmed DTO values to the existing entity
+            classificationExtractedDataDto.Adapt(existingReviewData);
+
+            // Apply the update to the repository
+            _unitOfWork.ExtractedDataRepo.Update(existingReviewData);
+
+            // Attempt to save changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes during update of review data. ID: {ReviewDataId}, User ID: {UserId}", classificationExtractedDataDto.Id, _userId);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Successfully updated review data. ID: {ReviewDataId}", classificationExtractedDataDto.Id);
+
+            // Prepare successful response
+            serviceResponse.Data = existingReviewData.Adapt<ClassificationExtractedDataDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Review data updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating review data. ID: {ReviewDataId}", classificationExtractedDataDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
+
     // Constructs the prompt string for the classification model based on configuration details
     private string? GenerateClassificationModelPrompt(ClassificationDto classificationDto)
     {

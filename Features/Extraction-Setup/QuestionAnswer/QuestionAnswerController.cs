@@ -46,4 +46,11 @@ public class QuestionAnswerController : BaseApiController
     {
         return ResultHelper(await _questionAnswerService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
     }
+
+    // Updates one or more extracted review data records linked to a specific machine learning model.
+    [HttpPut("review-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<QuestionAnswerExtractedDataDto>>> UpdateExtractedReviewData(QuestionAnswerExtractedDataDto questionAnswerExtractedDataDto)
+    {
+        return ResultHelper(await _questionAnswerService.UpdateExtractedReviewDataAsync(questionAnswerExtractedDataDto));
+    }
 }

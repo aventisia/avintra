@@ -52,6 +52,16 @@ public class ClassificationMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
 
+        config.NewConfig<ClassificationExtractedDataDto, ExtractedData>()
+            .Map(dest => dest.DataObject, src => JsonSerializer.Serialize(src.ExtractedData, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }))
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.MLModelId)
+            .Ignore(dest => dest.DocId)
+            .IgnoreNullValues(true);
+
         // Mapping of DTO to get list of extracted review data.
         config.NewConfig<ExtractedData, ClassificationReviewDataDto>()
             .Map(dest => dest.Columns, src => DeserializeClassificationSetupDto(src.DataObject))

@@ -43,4 +43,11 @@ public interface IExtractionSetupService
     /// A task representing the asynchronous operation, containing a service response with a collection of <see cref="ExtractionReviewDataDto"/> objects.
     /// </returns>
     Task<ServiceResponse<IEnumerable<ExtractionReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Updates an extracted review data record associated with a specific machine learning model.
+    /// </summary>
+    /// <param name="extractedDataResponseDto">The DTO containing the updated review data information.</param>
+    /// <returns>A service response containing the updated review data record.</returns>
+    Task<ServiceResponse<ExtractedDataResponseDto>> UpdateExtractedReviewDataAsync(ExtractedDataResponseDto extractedDataResponseDto);
 }

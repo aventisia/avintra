@@ -53,4 +53,11 @@ public interface ISentimentAnalyticsService
     /// A task representing the asynchronous operation, containing a service response with a collection of <see cref="SentimentAnalyticsReviewDataDto"/> objects.
     /// </returns>
     Task<ServiceResponse<IEnumerable<SentimentAnalyticsReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Updates an extracted review data record associated with a specific machine learning model.
+    /// </summary>
+    /// <param name="sentimentAnalyticsExtractedData">The DTO containing the updated review data information.</param>
+    /// <returns>A service response containing the updated review data record.</returns>
+    Task<ServiceResponse<SentimentAnalyticsExtractedDataDto>> UpdateExtractedReviewDataAsync(SentimentAnalyticsExtractedDataDto sentimentAnalyticsExtractedData);
 }

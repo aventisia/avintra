@@ -401,6 +401,63 @@ public class QuestionAnswerService : IQuestionAnswerService
         return serviceResponse;
     }
 
+    // Updates an extracted review data record associated with a specific machine learning model.
+    public async Task<ServiceResponse<QuestionAnswerExtractedDataDto>> UpdateExtractedReviewDataAsync(QuestionAnswerExtractedDataDto questionAnswerExtractedDataDto)
+    {
+        // Initialize the response with default failure state
+        var serviceResponse = new ServiceResponse<QuestionAnswerExtractedDataDto>
+        {
+            Data = null,
+            Message = "Failed to update review data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update for review data with ID: {ReviewDataId}", questionAnswerExtractedDataDto.Id);
+
+            // Retrieve the existing data record from the repository
+            var existingReviewData = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(x => x.Id == questionAnswerExtractedDataDto.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingReviewData == null)
+            {
+                _logger.LogWarning("Review data not found. ID: {ReviewDataId}", questionAnswerExtractedDataDto.Id);
+                serviceResponse.Message = $"Review data not found.";
+                return serviceResponse;
+            }
+
+            // Trim whitespace from all string properties in the DTO
+            questionAnswerExtractedDataDto = TrimDtoStringPropsUtil.TrimDtoStringProps(questionAnswerExtractedDataDto);
+
+            // Map the trimmed DTO values to the existing entity
+            questionAnswerExtractedDataDto.Adapt(existingReviewData);
+
+            // Apply the update to the repository
+            _unitOfWork.ExtractedDataRepo.Update(existingReviewData);
+
+            // Attempt to save changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes during update of review data. ID: {ReviewDataId}, User ID: {UserId}", questionAnswerExtractedDataDto.Id, _userId);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Successfully updated review data. ID: {ReviewDataId}", questionAnswerExtractedDataDto.Id);
+
+            // Prepare successful response
+            serviceResponse.Data = existingReviewData.Adapt<QuestionAnswerExtractedDataDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Review data updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating review data. ID: {ReviewDataId}", questionAnswerExtractedDataDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string for the QuestionAnswer model based on provided setup details
     private string? GenerateQuestionAnswerModelPrompt(QuestionAnswerDto QuestionAnswerDto)
     {

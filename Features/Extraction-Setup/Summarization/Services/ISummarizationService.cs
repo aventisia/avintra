@@ -54,4 +54,11 @@ public interface ISummarizationService
     /// A task representing the asynchronous operation, containing a service response with a collection of <see cref="SummarizationReviewDataDto"/> objects.
     /// </returns>
     Task<ServiceResponse<IEnumerable<SummarizationReviewDataDto>>> GetExtractedReviewDataByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Updates an extracted review data record associated with a specific machine learning model.
+    /// </summary>
+    /// <param name="summarizationExtractedDataDto">The DTO containing the updated review data information.</param>
+    /// <returns>A service response containing the updated review data record.</returns>
+    Task<ServiceResponse<SummarizationExtractedDataDto>> UpdateExtractedReviewDataAsync(SummarizationExtractedDataDto summarizationExtractedDataDto);
 }

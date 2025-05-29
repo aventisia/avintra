@@ -417,6 +417,63 @@ public class ExtractionSetupService : IExtractionSetupService
         return serviceResponse;
     }
 
+    // Updates an extracted review data record associated with a specific machine learning model.
+    public async Task<ServiceResponse<ExtractedDataResponseDto>> UpdateExtractedReviewDataAsync(ExtractedDataResponseDto extractedDataResponseDto)
+    {
+        // Initialize the response with default failure state
+        var serviceResponse = new ServiceResponse<ExtractedDataResponseDto>
+        {
+            Data = null,
+            Message = "Failed to update review data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update for review data with ID: {ReviewDataId}", extractedDataResponseDto.Id);
+
+            // Retrieve the existing data record from the repository
+            var existingReviewData = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(x => x.Id == extractedDataResponseDto.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingReviewData == null)
+            {
+                _logger.LogWarning("Review data not found. ID: {ReviewDataId}", extractedDataResponseDto.Id);
+                serviceResponse.Message = $"Review data not found.";
+                return serviceResponse;
+            }
+
+            // Trim whitespace from all string properties in the DTO
+            extractedDataResponseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(extractedDataResponseDto);
+
+            // Map the trimmed DTO values to the existing entity
+            extractedDataResponseDto.Adapt(existingReviewData);
+
+            // Apply the update to the repository
+            _unitOfWork.ExtractedDataRepo.Update(existingReviewData);
+
+            // Attempt to save changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes during update of review data. ID: {ReviewDataId}, User ID: {UserId}", extractedDataResponseDto.Id, _userId);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Successfully updated review data. ID: {ReviewDataId}", extractedDataResponseDto.Id);
+
+            // Prepare successful response
+            serviceResponse.Data = existingReviewData.Adapt<ExtractedDataResponseDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Review data updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating review data. ID: {ReviewDataId}", extractedDataResponseDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
     // Generates a prompt string used to guide the ML model for extracting data from documents, based on the provided model setup.
     private string? GenerateExtractionModelPrompt(MLModelSetupDto mlModelSetupDto)
     {

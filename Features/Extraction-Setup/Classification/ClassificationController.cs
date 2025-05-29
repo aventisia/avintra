@@ -46,4 +46,11 @@ public class ClassificationController : BaseApiController
     {
         return ResultHelper(await _classificationService.GetExtractedReviewDataByMLModelIdAsync(mlModelId));
     }
+
+    // Updates one or more extracted review data records linked to a specific machine learning model.
+    [HttpPut("review-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<ClassificationExtractedDataDto>>> UpdateExtractedReviewData(ClassificationExtractedDataDto classificationExtractedDataDto)
+    {
+        return ResultHelper(await _classificationService.UpdateExtractedReviewDataAsync(classificationExtractedDataDto));
+    }
 }
