@@ -9,9 +9,18 @@ public class FlowVersionRepo : RepositoryBase<FlowVersion, WorkspaceDbContext>, 
     //Get count of flow version entries based on flow identifier
     public async Task<int> GetFlowVersionCountAsync(Guid flowId)
     {
-        return await _tDbContext.FlowVersions
-           .Where(f => f.FlowId == flowId)
-           .MaxAsync(f => f.VersionNumber); 
-    }
 
+        var hasVersions = await _tDbContext.FlowVersions
+        .AnyAsync(f => f.FlowId == flowId);
+
+        int maxVersion = 0;
+
+        if (hasVersions)
+        {
+            maxVersion = await _tDbContext.FlowVersions
+                .Where(f => f.FlowId == flowId)
+                .MaxAsync(f => f.VersionNumber);
+        }
+        return maxVersion;
+    }
 }
