@@ -25,4 +25,6 @@ export interface LoadFlowDto extends IProjectInfoDTO {
 
   /** Output Variables object, i..e the Flow Variables */
   flowVariablesObject: string;
+
+  isPublished?: boolean;
 }
