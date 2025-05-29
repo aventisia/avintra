@@ -21,7 +21,15 @@ namespace CodeActivitiesLibrary.Extensions
         public RenderIfConditionAttribute(string field, object equals)
         {
             Field = field;
-            Equals = equals;
+            // If equals is an Enum, store its string name; otherwise, store as is
+            if (equals != null && equals.GetType().IsEnum)
+            {
+                Equals = equals.ToString();
+            }
+            else
+            {
+                Equals = equals;
+            }
         }
     }
 }
