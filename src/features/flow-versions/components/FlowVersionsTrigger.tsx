@@ -3,18 +3,29 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PopoverTrigger } from "@aventisia/ui/popover";
 import { ChevronDownIcon } from "lucide-react";
+import { useFlowsVersionsStore } from "../stores/flow-versions-store";
+import { useShallow } from "zustand/react/shallow";
 
 export const FlowVersionsTrigger = () => {
+  // Get store state and actions
+  const { versionNumber } = useFlowsVersionsStore(
+    useShallow((state) => ({
+      versionNumber: state.versionNumber,
+    })),
+  );
+
   return (
     <Tooltip content={"Versions"}>
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "xs" }),
-          "ml-3 h-6 w-auto gap-1 rounded-xl border-none bg-white/10 px-3 py-1.5 font-medium text-white hover:bg-white/10",
+          "group flex h-7 max-w-[15rem] gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80",
         )}
       >
-        <span className="text-primary-foreground">Version 1 </span>
-        <ChevronDownIcon className="h-4 w-4 text-primary-foreground" />
+        <span>v{versionNumber} </span>
+        <ChevronDownIcon
+          className={cn("h-3 w-3 min-w-3 transition-all group-hover:mt-0.5")}
+        />
       </PopoverTrigger>
     </Tooltip>
   );

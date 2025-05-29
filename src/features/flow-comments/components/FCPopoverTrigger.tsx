@@ -2,18 +2,17 @@ import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PopoverTrigger } from "@aventisia/ui/popover";
-// import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { FC_POPOVER_HEADING } from "../constants/constatns";
 import { useFlowCommentsStore } from "../stores/flow-comments-store";
-import { MessageCircleMoreIcon } from "lucide-react";
 
 /**
  * Renders a popover trigger component for flow comments.
  */
 export const FCPopoverTrigger = () => {
   // Get store state and actions
-  const { togglePopoverOpen } = useFlowCommentsStore(
+  const { isPopoverOpen, togglePopoverOpen } = useFlowCommentsStore(
     useShallow((state) => ({
       isPopoverOpen: state.isPopoverOpen,
       togglePopoverOpen: state.togglePopoverOpen,
