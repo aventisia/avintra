@@ -2,8 +2,18 @@ use std::process::Command;
 
 #[tauri::command]
 pub fn launch_desktop_executor(agent_name: String) -> Result<(), String> {
-    // Node executor path
-    let node_executor_path = r"C:\My Space\Gitea\Aventisia\NodeExecutor\bin\Debug\NodeExecutor.exe";
+    // Get the directory where tauri_app.exe is running
+    let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let exe_dir = current_exe
+        .parent()
+        .ok_or("Failed to get parent directory")?;
+
+    // Assume the WPF tool is in the same folder
+    let node_executor_path = exe_dir.join(r"Debug\NodeExecutor.exe");
+
+    if !node_executor_path.exists() {
+        return Err(format!("NodeExecutor is not found at: {}", node_executor_path.display()));
+    }
 
     Command::new(node_executor_path)
         .arg(agent_name)
