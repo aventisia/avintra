@@ -1,5 +1,4 @@
 import { CommandItem, CommandList } from "@aventisia/ui/command";
-import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
 import {
@@ -23,11 +22,12 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
-  const { origin, originId, query } = useNodeSelectorStore(
+  const { origin, originId, query, actionSelectorData } = useNodeSelectorStore(
     useShallow((state) => ({
       origin: state.origin,
       originId: state.originId,
       query: state.query,
+      actionSelectorData: state.actionSelectorData,
     })),
   );
 

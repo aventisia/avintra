@@ -1,7 +1,10 @@
 import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
 import { create } from "zustand";
+import { PrimaryCategoryType } from "../types/primary-category-type";
 
 type State = {
+  actionSelectorData: PrimaryCategoryType[];
+
   /** Origin from where node selector popover is triggered */
   origin: ActionSelectorOriginType;
 
@@ -17,10 +20,11 @@ type State = {
   /** Current step/Level of category */
 
   /** Serch query */
-  query: string,
+  query: string;
 };
 
 type Actions = {
+  setActionSelectorData: (data: PrimaryCategoryType[]) => void;
   setOrigin: (origin: ActionSelectorOriginType, originId: string) => void;
   setPrimaryCategoryLabel: (primaryCategoryLabel: string | null) => void;
   setActionCategory: (actionCategory: string) => void;
@@ -28,11 +32,17 @@ type Actions = {
 };
 
 export const useNodeSelectorStore = create<State & Actions>((set) => ({
+  actionSelectorData: [],
   origin: "plusFirstNode",
   originId: "",
   primaryCategoryLabel: null,
   actionCategory: "",
   query: "",
+
+  setActionSelectorData: (data) =>
+    set(() => ({
+      actionSelectorData: data,
+    })),
 
   setOrigin: (origin, originId) =>
     set(() => ({
@@ -50,5 +60,5 @@ export const useNodeSelectorStore = create<State & Actions>((set) => ({
       actionCategory,
     })),
 
-    setQuery:(query) => set(() => ({query}))
+  setQuery: (query) => set(() => ({ query })),
 }));

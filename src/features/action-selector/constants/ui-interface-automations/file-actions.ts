@@ -49,8 +49,7 @@ export const fileActions: NodeDataType[] = [
     name: "ReadTextFromFileActivity",
     label: "Read text from file",
     description: "Read the contents of a text file.",
-    docsLink:
-      "/agent-builder/ui-interface-automations/file/read-text-from-file",
+    docsLink: "/",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
   {

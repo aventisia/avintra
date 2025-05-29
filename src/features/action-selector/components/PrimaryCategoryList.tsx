@@ -1,19 +1,15 @@
-import {
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@aventisia/ui/command";
+import { CommandGroup, CommandItem, CommandList } from "@aventisia/ui/command";
 import { Separator } from "@aventisia/ui";
 import { PrimaryCategory } from "./PrimaryCategory";
-import { actionSelectorData } from "../constants/action-selector-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const PrimaryCategoryList = () => {
   // Get the setPrimaryCategory function from the store
-  const { setPrimaryCategoryLabel } = useNodeSelectorStore(
+  const { actionSelectorData, setPrimaryCategoryLabel } = useNodeSelectorStore(
     useShallow((state) => ({
+      actionSelectorData: state.actionSelectorData,
       setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
     })),
   );

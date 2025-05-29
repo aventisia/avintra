@@ -1,0 +1,2905 @@
+[
+  {
+    "label": "Workflow Logics",
+    "description": "Core actions to build the foundation of any automation flow",
+    "icon": "AutomationEssentialsIcon",
+    "actionCategories": [
+      {
+        "label": "Flow control",
+        "description": "Set rules and manage the course of the flow",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "EndRegionActivity",
+            "label": "End Region",
+            "description": "Marks the end of a group of actions.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Conditionals and Loops",
+        "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": []
+      }
+    ]
+  },
+  {
+    "label": "Data Transformations",
+    "description": "Clean, transform, and structure your data with ease",
+    "icon": "DataTransformationsIcon",
+    "actionCategories": [
+      {
+        "label": "Variables",
+        "description": "Create and manage variables of different datatypes",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "AddItemToListActivity",
+            "label": "Add Item to List",
+            "description": "Adds one or more items to a list. Converts types if necessary.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClearListActivity",
+            "label": "Clear List",
+            "description": "Removes all elements from the specified list.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertCustomObjectToJsonActivity",
+            "label": "Convert Custom Object to JSON",
+            "description": "Converts a custom object into its JSON representation.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertJsonToCustomObjectActivity",
+            "label": "Convert JSON to Custom Object",
+            "description": "Converts a JSON string into a custom object.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateNewList",
+            "label": "Create New List",
+            "description": "Creates a new empty list to be used in other activities.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DecreaseVariableActivity",
+            "label": "Decrease Variable",
+            "description": "Decreases a numeric variable by a specified value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FindCommonListItemsActivity",
+            "label": "Find Common List Items",
+            "description": "Finds common items between two lists and returns them as a new list.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GenerateRandomNumberActivity",
+            "label": "Generate Random Number",
+            "description": "Generates a random number or list of numbers within a specified range.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IncreaseVariableActivity",
+            "label": "Increase Variable",
+            "description": "Increases a numeric variable by a specified value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MergeListsActivity",
+            "label": "Merge Lists",
+            "description": "Merges two lists into a new list. The original lists remain unchanged.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveDuplicateItemsFromListActivity",
+            "label": "Remove Duplicate Items From List",
+            "description": "Removes duplicate items from a list. Optionally performs case-insensitive comparison.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveItemFromListActivity",
+            "label": "Remove Item From List",
+            "description": "Removes an item from a list by index or value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RetrieveDataTableColumnIntoListActivity",
+            "label": "Retrieve Data Table Column Into List",
+            "description": "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReverseListActivity",
+            "label": "Reverse List",
+            "description": "Reverses the order of items in a list.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunPowerFxExpressionActivity",
+            "label": "Run Power Fx Expression",
+            "description": "Runs a Power Fx expression and returns the result.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetVariableActivity",
+            "label": "Set Variable",
+            "description": "Sets the value of a named variable within the workflow context.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ShuffleListActivity",
+            "label": "Shuffle List",
+            "description": "Randomly reorders the items in a list.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SubtractListsActivity",
+            "label": "Subtract Lists",
+            "description": "Removes items from the first list that exist in the second list.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TruncateNumberActivity",
+            "label": "Truncate Number",
+            "description": "Performs various operations on a number, such as getting the integer part, decimal part, or rounding.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Text",
+        "description": "Text manipulation and transformation.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "AppendLineToTextActivity",
+            "label": "Append Line to Text",
+            "description": "Appends a new line of text to the original text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ChangeTextCaseActivity",
+            "label": "Change Text Case",
+            "description": "Converts the input text to the specified case format.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertDatetimeToTextActivity",
+            "label": "Convert Datetime to Text",
+            "description": "Converts a datetime value into text using either a standard or custom format.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertNumberToTextActivity",
+            "label": "Convert Number to Text",
+            "description": "Converts a numeric value into text with specified formatting options.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertTextToDateTimeActivity",
+            "label": "Convert Text to DateTime",
+            "description": "Converts a text representation of a date and/or time value to a DateTime value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertTextToNumberActivity",
+            "label": "Convert Text to Number",
+            "description": "Converts a text representation of a number to a numeric value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateHtmlContentActivity",
+            "label": "Create HTML Content",
+            "description": "Generates rich HTML content and stores it in a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateRandomTextActivity",
+            "label": "Create Random Text",
+            "description": "Generates a text of specified length consisting of random characters.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CropTextActivity",
+            "label": "Crop Text",
+            "description": "Retrieves a text value that occurs before, after, or between specified text flags in a given text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "EscapeTextForRegularExpressionActivity",
+            "label": "Escape Text for Regular Expression",
+            "description": "Escapes a minimal set of characters for use in regular expressions.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSubtextActivity",
+            "label": "Get Subtext",
+            "description": "Retrieves a substring from a text value based on start and end indices.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "JoinTextActivity",
+            "label": "Join Text",
+            "description": "Converts a list into a text value by separating its items with a specified delimiter.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PadTextActivity",
+            "label": "Pad Text",
+            "description": "Creates a fixed-length text by adding characters to the left or right of an existing text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ParseTextActivity",
+            "label": "Parse Text",
+            "description": "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RecognizeEntitiesInTextActivity",
+            "label": "Recognize Entities in Text",
+            "description": "Recognizes entities in text, such as numbers, units, dates/time, and others expressed in natural language across multiple languages.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReplaceTextActivity",
+            "label": "Replace Text",
+            "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReverseTextActivity",
+            "label": "Reverse Text",
+            "description": "Reverses the order of letters in a text string.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SplitTextActivity",
+            "label": "Split Text",
+            "description": "Creates a list containing the substrings of a text that are separated by a specified delimiter or regular expression.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TrimTextActivity",
+            "label": "Trim Text",
+            "description": "Removes all occurrences of whitespace characters from the beginning and/or end of an existing text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "OCR",
+        "description": "Optical character recognition from images and documents.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ExtractTextWithOcrActivity",
+            "label": "Extract Text with OCR",
+            "description": "Extract text from a given source using the given OCR engine",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "DateTime",
+        "description": "Date and time manipulation.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "AddToDateTimeActivity",
+            "label": "Add to DateTime",
+            "description": "Adds or subtracts a specific TimeSpan (seconds, minutes, hours, days) to a DateTime value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCurrentDateTimeActivity",
+            "label": "Get Current Date and Time",
+            "description": "Retrieves the current date or the current date and time.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SubtractDatesActivity",
+            "label": "Subtract Dates",
+            "description": "Finds the time difference between two dates in days, hours, minutes, or seconds.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Database",
+        "description": "Database operations and data access.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CloseSqlConnectionActivity",
+            "label": "Close SQL Connection",
+            "description": "Close an open connection to a database",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExecuteSqlStatementActivity",
+            "label": "Execute SQL Statement",
+            "description": "Connect to a database and execute an SQL statement",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "OpenSqlConnectionActivity",
+            "label": "Open SQL Connection",
+            "description": "Open a new connection to a database",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Data Table",
+        "description": "Manipulate and transform data tables.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ClearDataTableActivity",
+            "label": "Clear Data Table",
+            "description": "Removes all rows from a data table.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertDataTableToTextActivity",
+            "label": "Convert Data Table to CSV Text",
+            "description": "Converts a data table into a CSV (comma-separated values) text representation.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateDataTableActivity",
+            "label": "Create Data Table",
+            "description": "Creates a new data table. If an existing data table is provided, it will be cloned.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteColumnFromDataTableActivity",
+            "label": "Delete Column From Data Table",
+            "description": "Deletes a data table column at the specified column index or column name.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteDuplicateRowsFromDataTable",
+            "label": "Delete Duplicate Rows From Data Table",
+            "description": "Deletes all the rows that are duplicate from the data table, if the values have the same data type in each column.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteEmptyRowsFromDataTableActivity",
+            "label": "Delete Empty Rows From Data Table",
+            "description": "Deletes the rows of the data table that have all of their cells empty.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteRowFromDataTableActivity",
+            "label": "Delete Row From Data Table",
+            "description": "Deletes a data table row at the corresponding row index.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FilterDataTableActivity",
+            "label": "Filter Data Table",
+            "description": "Filters the data table rows based on the applied rules.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FindAndReplaceInDataTableActivity",
+            "label": "Find and Replace in Data Table",
+            "description": "Finds and/or replaces data table values.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertColumnIntoDataTable",
+            "label": "Insert Column Into Data Table",
+            "description": "Inserts a column at the end or before a specific index value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertRowIntoDataTableActivity",
+            "label": "Insert Row Into Data Table",
+            "description": "Inserts a row at the end or before a specific index value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "JoinDataTablesActivity",
+            "label": "Join Data Tables",
+            "description": "Joins two data tables based on the specified join rule.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MergeDataTablesActivity",
+            "label": "Merge Data Tables",
+            "description": "Merges two data tables together, specifying the merging behavior in case their number of columns is different.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SortDataTableActivity",
+            "label": "Sort Data Table",
+            "description": "Sorts the data table rows in ascending or descending order by the specified column, if all its values have the same data type.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateDataTableItemActivity",
+            "label": "Update Data Table Item",
+            "description": "Updates a data table row item on a defined column.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Cryptography",
+        "description": "Encrypt, decrypt, and hash data.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DecryptTextWithAesActivity",
+            "label": "Decrypt Text with AES",
+            "description": "Decrypt a string with AES based on a specified key and an encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DecryptToFileWithAesActivity",
+            "label": "Decrypt to File with AES",
+            "description": "Decrypt the contents of a file with AES based on a specified key and an encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "EncryptFromFileWithAesActivity",
+            "label": "Encrypt from File with AES",
+            "description": "Encrypt the contents of a file with AES, using a key and a specified encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "EncryptTextWithAesActivity",
+            "label": "Encrypt Text with AES",
+            "description": "Encrypt a string with AES, using a key and a specified encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HashFromFileActivity",
+            "label": "Hash from File",
+            "description": "Hash the contents of a file, using a specified algorithm and an encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HashFromFileWithKeyActivity",
+            "label": "Hash from File with Key",
+            "description": "Hash the contents of a file with a key, using a specified algorithm and an encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HashTextActivity",
+            "label": "Hash Text",
+            "description": "Hash a string, using a specified algorithm and an encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HashTextWithKeyActivity",
+            "label": "Hash Text with Key",
+            "description": "Hash a string with a key, using a specified algorithm and an encoding format",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "UI Interface Automations",
+    "description": "Automate your desktop with actions that mimic user interactions, from mouse clicks to keyboard entries",
+    "icon": "UIAutomationAndUserActionsIcon",
+    "actionCategories": [
+      {
+        "label": "XML",
+        "description": "Read, write, and manipulate XML data.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ExecuteXPathExpressionActivity",
+            "label": "Execute XPath Expression",
+            "description": "Executes an XPath expression on the provided XML content and returns the result.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetXmlElementAttributeActivity",
+            "label": "Get XML Element Attribute",
+            "description": "Gets the value of an attribute of an XML element.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetXmlElementValueActivity",
+            "label": "Get XML Element Value",
+            "description": "Gets the value of an XML element.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertXmlElementActivity",
+            "label": "Insert XML Element",
+            "description": "Inserts a new XML element into an XML document.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadXmlFromFileActivity",
+            "label": "Read XML from File",
+            "description": "Reads the contents of an XML file into a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveXmlElementActivity",
+            "label": "Remove XML Element",
+            "description": "Removes one or more XML elements from an XML document.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveXmlElementAttributeActivity",
+            "label": "Remove XML Element Attribute",
+            "description": "Removes an attribute from an XML element.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetXmlElementAttributeActivity",
+            "label": "Set XML Element Attribute",
+            "description": "Sets the value of an attribute of an XML element.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetXmlElementValueActivity",
+            "label": "Set XML Element Value",
+            "description": "Sets the value of an XML element.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteXmlToFileActivity",
+            "label": "Write XML to File",
+            "description": "Writes the contents of an XML node variable into a file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Workstation",
+        "description": "Automate workstation and desktop environment tasks.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ControlScreensaverActivity",
+            "label": "Control Screensaver",
+            "description": "Enables, disables, starts, or stops the screensaver.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetDefaultPrinterActivity",
+            "label": "Get Default Printer",
+            "description": "Gets the name of the default printer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LockWorkstationActivity",
+            "label": "Lock Workstation",
+            "description": "Locks the workstation's display to protect it from unauthorized use.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LogOffUserActivity",
+            "label": "Log Off User",
+            "description": "Logs off the current user.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PlaySoundActivity",
+            "label": "Play Sound",
+            "description": "Plays a sound from a WAV file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PrintDocumentActivity",
+            "label": "Print Document",
+            "description": "Prints a document on the default printer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetDefaultPrinterActivity",
+            "label": "Set Default Printer",
+            "description": "Sets a printer as the default printer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetScreenResolutionActivity",
+            "label": "Set Screen Resolution",
+            "description": "Sets the width, height, bit count, and frequency of a selected monitor.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ShutdownComputerActivity",
+            "label": "Shutdown Computer",
+            "description": "Shuts down the computer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TakeScreenshotActivity",
+            "label": "Take Screenshot",
+            "description": "Takes a screenshot of all screens and saves it to the clipboard.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "UI Automation",
+        "description": "Automate user interface interactions in windows and applications.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ClickUiElementInWindowActivity",
+            "label": "Click UI Element in Window",
+            "description": "Clicks on any UI element of a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseWindowActivity",
+            "label": "Close Window",
+            "description": "Closes a specific window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DragAndDropUiElementInWindowActivity",
+            "label": "Drag and Drop UI Element in Window",
+            "description": "Drags and drops a UI element of a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExpandCollapseTreeNodeInWindowActivity",
+            "label": "Expand/Collapse Tree Node in Window",
+            "description": "Expands or collapses a node of a tree view residing in a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractDataFromTableActivity",
+            "label": "Extract Data from Table",
+            "description": "Extracts data from a table in the form of a datatable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractDataFromWindowActivity",
+            "label": "Extract Data from Window",
+            "description": "Extracts data from specific parts of a window in the form of single values, lists, or tables.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FocusTextFieldInWindowActivity",
+            "label": "Focus Text Field in Window",
+            "description": "Sets focus on an input element in a window and scrolls it into view.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FocusWindowActivity",
+            "label": "Focus Window",
+            "description": "Activates and brings to the foreground a specific window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSelectedCheckboxesInWindowActivity",
+            "label": "Get Selected Checkboxes in Window",
+            "description": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSelectedRadioButtonInWindowActivity",
+            "label": "Get Selected Radio Button in Window",
+            "description": "Retrieves the names of the selected radio button in a radio button group or the state of a specific radio button.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetUiElementDetailsInWindowActivity",
+            "label": "Get Details of UI Element in Window",
+            "description": "Gets the value of a UI element's attribute in a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetWindowActivity",
+            "label": "Get Window",
+            "description": "Gets a running window, for automating desktop applications.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetWindowDetailsActivity",
+            "label": "Get Details of Window",
+            "description": "Gets properties of a window such as its title or source text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HoverMouseOverUiElementActivity",
+            "label": "Hover Mouse Over UI Element",
+            "description": "Moves the mouse over any UI element on a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfImageActivity",
+            "label": "If Image",
+            "description": "Checks if a specific image exists on the screen.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfWindowActivity",
+            "label": "If Window",
+            "description": "This action marks the beginning of a conditional block of actions depending on whether a window is open or not or whether a window is the focused (foreground) window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfWindowContainsActivity",
+            "label": "If Window Contains",
+            "description": "Marks the beginning of a conditional block of actions depending on whether a specific piece of text or UI element exists in a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveWindowActivity",
+            "label": "Move Window",
+            "description": "Sets the position of a specific window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PopulateTextFieldInWindowActivity",
+            "label": "Populate Text Field in Window",
+            "description": "Fills a text box in a window with the specified text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PressButtonInWindowActivity",
+            "label": "Press Button in Window",
+            "description": "Presses a window button.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ResizeWindowActivity",
+            "label": "Resize Window",
+            "description": "Sets the size of a specific window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectMenuOptionInWindowActivity",
+            "label": "Select Menu Option in Window",
+            "description": "Selects an option in a menu of a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectRadioButtonInWindowActivity",
+            "label": "Select Radio Button in Window",
+            "description": "Selects a radio button on a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectTabInWindowActivity",
+            "label": "Select Tab in Window",
+            "description": "Selects a tab from a group of tabs.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetCheckboxStateInWindowActivity",
+            "label": "Set Checkbox State in Window",
+            "description": "Checks or unchecks a checkbox in a window form.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetDropDownListValueInWindowActivity",
+            "label": "Set Drop-Down List Value in Window",
+            "description": "Sets or clears the selected options for a drop-down list in a window form.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetWindowStateActivity",
+            "label": "Set Window State",
+            "description": "Restores, maximizes, or minimizes a specific window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetWindowVisibilityActivity",
+            "label": "Set Window Visibility",
+            "description": "Shows a hidden window or hides a visible window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TakeUiElementScreenshotActivity",
+            "label": "Take Screenshot of UI Element",
+            "description": "Takes a screenshot of a UI element in a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UseDesktopActivity",
+            "label": "Use Desktop",
+            "description": "Performs desktop and taskbar-related operations.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForImageActivity",
+            "label": "Wait for Image",
+            "description": "Suspends execution until a specific image appears on the screen.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForWindowActivity",
+            "label": "Wait for Window",
+            "description": "Suspends the execution or the process until a specific window opens, closes, gets or loses the focus.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForWindowContentActivity",
+            "label": "Wait for Window Content",
+            "description": "Suspends the execution of the automation until a specific piece of text or UI element appears or disappears from a window.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "System",
+        "description": "Perform system-level operations and checks.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DeleteWindowsEnvironmentVariableActivity",
+            "label": "Delete windows environment variable",
+            "description": "Deletes an environment variable from a given scope.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetWindowsEnvironmentVariableActivity",
+            "label": "Get windows environment variable",
+            "description": "Retrieves the value of an environment variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfProcessActivity",
+            "label": "If process",
+            "description": "Marks the beginning of a conditional block of actions depending on whether a process is running or not.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PingActivity",
+            "label": "Ping",
+            "description": "Sends a message to determine whether a remote computer is accessible over the network.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunApplicationActivity",
+            "label": "Run application",
+            "description": "Executes an application or opens a document by executing the associated application.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetWindowsEnvironmentVariableActivity",
+            "label": "Set windows environment variable",
+            "description": "Sets an environment variable to a given value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TerminateProcessActivity",
+            "label": "Terminate process",
+            "description": "Immediately stops a running process.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Scripting",
+        "description": "Run scripts and automate tasks using scripting languages.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "RunDosCommandActivity",
+            "label": "Run DOS Command",
+            "description": "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunDotNetScriptActivity",
+            "label": "Run .NET Script",
+            "description": "Executes some custom .NET script and retrieves its output into a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunJavaScriptActivity",
+            "label": "Run JavaScript",
+            "description": "Executes some custom JavaScript code and retrieves its output into a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunPowerShellScriptActivity",
+            "label": "Run PowerShell Script",
+            "description": "Executes some custom PowerShell script and retrieves its output into a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunPythonScriptActivity",
+            "label": "Run Python Script",
+            "description": "Executes some custom Python script and retrieves its output into a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunVbScriptActivity",
+            "label": "Run VBScript",
+            "description": "Executes some custom VBScript code and retrieves its output into a variable.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Mouse and Keyboard",
+        "description": "Automate mouse and keyboard actions.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "BlockInputActivity",
+            "label": "Block Input",
+            "description": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetKeyboardIdentifierActivity",
+            "label": "Get Keyboard Identifier",
+            "description": "Retrieves the active keyboard identifier from the machine's registry.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetMousePositionActivity",
+            "label": "Get Mouse Position",
+            "description": "Retrieves the current position of the mouse cursor on the screen in pixel coordinates.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveMouseActivity",
+            "label": "Move Mouse",
+            "description": "Moves the mouse to a specific position.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PressReleaseKeyActivity",
+            "label": "Press/Release Key",
+            "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, or Shift).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetKeyStateActivity",
+            "label": "Set Key State",
+            "description": "Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForMouseActivity",
+            "label": "Wait for Mouse",
+            "description": "Suspends the execution of the flow until the mouse pointer changes, usually to or from the 'wait cursor' or hourglass.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Message Box",
+        "description": "Display message boxes and dialogs.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DisplayMessageActivity",
+            "label": "Display Message",
+            "description": "Displays a message box.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DisplaySelectDateDialogActivity",
+            "label": "Display Select Date Dialog",
+            "description": "Displays a dialog box that prompts the user to enter a date or date range.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DisplaySelectFolderDialogActivity",
+            "label": "Display Select Folder Dialog",
+            "description": "Displays the select folder dialog and prompts the user to select a folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Folder",
+        "description": "Folder operations such as create, delete, move, and list.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CopyFolderActivity",
+            "label": "Copy folder",
+            "description": "Copy a folder to a new location.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateFolderActivity",
+            "label": "Create folder",
+            "description": "Create a new folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteFolderActivity",
+            "label": "Delete folder",
+            "description": "Delete a folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "EmptyFolderActivity",
+            "label": "Empty folder",
+            "description": "Delete all files and subfolders in the folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetFilesInFolderActivity",
+            "label": "Get files in folder",
+            "description": "Retrieve the list of files in the folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSpecialFolderActivity",
+            "label": "Get special folder",
+            "description": "Retrieve the path of a special folder such as My Documents, Desktop, etc.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSubfoldersInFolderActivity",
+            "label": "Get subfolders in folder",
+            "description": "Retrieve the list of subfolders in the folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfFolderExistsActivity",
+            "label": "If folder exists",
+            "description": "Mark the path if the folder exists.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveFolderActivity",
+            "label": "Move folder",
+            "description": "Move a folder to a new location.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RenameFolderActivity",
+            "label": "Rename folder",
+            "description": "Rename a folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "File",
+        "description": "File operations such as copy, move, and conversion.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ConvertBase64ToTextActivity",
+            "label": "Convert Base64 to Text",
+            "description": "Converts a Base64-encoded string to plain text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertBinaryDataToFileActivity",
+            "label": "Convert Binary Data to File",
+            "description": "Converts binary data back to a file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertFileToBinaryDataActivity",
+            "label": "Convert File to Binary Data",
+            "description": "Converts a file to binary data.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CopyFilesActivity",
+            "label": "Copy File(s)",
+            "description": "Copies one or more files into a destination folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteFilesActivity",
+            "label": "Delete File(s)",
+            "description": "Deletes one or more files.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetFilePathPartActivity",
+            "label": "Get File Path Part",
+            "description": "Retrieves one or more parts of a file path.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetTemporaryFileActivity",
+            "label": "Get Temporary File",
+            "description": "Creates a uniquely named, empty temporary file on disk.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfFileExistsActivity",
+            "label": "If File Exists",
+            "description": "Checks if a file exists.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveFilesActivity",
+            "label": "Move File(s)",
+            "description": "Moves one or more files into a destination folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadTextFromFileActivity",
+            "label": "Read Text from File",
+            "description": "Reads all text content from the specified file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RenameFilesActivity",
+            "label": "Rename File(s)",
+            "description": "Changes the names of one or more files.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteTextToFileActivity",
+            "label": "Write Text to File",
+            "description": "Writes the given text to the specified file using either Replace or Append mode.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Compression",
+        "description": "Compress and decompress files and folders.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "UnzipFilesActivity",
+            "label": "Unzip Files",
+            "description": "Extracts files from a ZIP archive to a specified destination folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ZipFilesActivity",
+            "label": "Zip Files",
+            "description": "Compress one or more files or folders into a zip archive.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "CMD Session",
+        "description": "Automate command prompt session operations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CloseCmdSessionActivity",
+            "label": "Close CMD Session",
+            "description": "Closes a previously opened CMD session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "OpenCmdSessionActivity",
+            "label": "Open CMD Session",
+            "description": "Opens a new CMD session and returns the process ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFromCmdSessionActivity",
+            "label": "Read from CMD Session",
+            "description": "Reads the output from an open CMD session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForTextOnCmdSessionActivity",
+            "label": "Wait for Text on CMD Session",
+            "description": "Waits for a specific text on an open CMD session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteToCmdSessionActivity",
+            "label": "Write to CMD Session",
+            "description": "Writes a command to an open CMD session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Clipboard",
+        "description": "Clipboard operations and automation.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ClearClipboardContentsActivity",
+            "label": "Clear Clipboard Contents",
+            "description": "Clears all contents from the system clipboard.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetClipboardTextActivity",
+            "label": "Get Clipboard Text",
+            "description": "Retrieves the text currently stored in the system clipboard.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetClipboardTextActivity",
+            "label": "Set Clipboard Text",
+            "description": "Sets the specified text to the system clipboard.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Browser Automation",
+        "description": "Automate web browser interactions.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ClickDownloadLinkOnWebPageActivity",
+            "label": "Click Download Link on Web Page",
+            "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClickLinkOnWebPageActivity",
+            "label": "Click Link on Web Page",
+            "description": "Simulates clicking a UI element (e.g., a link or button) on a web page. Supports various click types, physical mouse interaction, and dialog handling.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseWebBrowserActivity",
+            "label": "Close Web Browser",
+            "description": "Closes a web browser instance that was previously opened.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateNewTabActivity",
+            "label": "Create New Tab",
+            "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractDataFromWebPageActivity",
+            "label": "Extract Data From Web Page",
+            "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FocusTextFieldOnWebPageActivity",
+            "label": "Focus Text Field on Web Page",
+            "description": "Focuses a specific text field in a web browser. Optionally waits for the page to load and handles pop-up dialogs.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetDetailsOfElementOnWebPageActivity",
+            "label": "Get Details of Element on Web Page",
+            "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetDetailsOfWebPageActivity",
+            "label": "Get Details of Web Page",
+            "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetElementAttributeValueActivity",
+            "label": "Get Element Attribute Value",
+            "description": "Retrieve the value of an element's attribute on a web page.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GoToWebPageActivity",
+            "label": "Go To Web Page",
+            "description": "Navigates a web browser instance to a specified URL, or performs navigation actions such as Back, Forward, or Reload.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HoverMouseOverElementActivity",
+            "label": "Hover Mouse Over Element on Web Page",
+            "description": "Move the mouse cursor over an element on a web page.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "HoverMouseOverElementOnWebPageActivity",
+            "label": "Hover Mouse Over Element on Web Page",
+            "description": "Simulates hovering the mouse over a specified UI element on a web page. Optionally uses physical mouse movement.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IfWebPageContainsActivity",
+            "label": "If Web Page Contains",
+            "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchNewChromeActivity",
+            "label": "Launch New Chrome",
+            "description": "Launches a new web browser instance or attaches to an existing one.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchNewEdgeActivity",
+            "label": "Launch New Microsoft Edge",
+            "description": "Launch a new instance of Microsoft Edge or attach to a running instance of Microsoft Edge for automating websites and web applications.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchNewMicrosoftEdgeActivity",
+            "label": "Launch New Microsoft Edge",
+            "description": "Launches a new Microsoft Edge instance or attaches to an existing browser session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PopulateTextFieldActivity",
+            "label": "Populate Text Field on Web Page",
+            "description": "Fill in a text field on a web page with the specified text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PopulateTextFieldOnWebPageActivity",
+            "label": "Populate Text Field on Web Page",
+            "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input and advanced UI interaction settings.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PressButtonOnWebPageActivity",
+            "label": "Press Button on Web Page",
+            "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunJavaScriptFunctionOnWebPageActivity",
+            "label": "Run JavaScript Function on Web Page",
+            "description": "Runs a custom JavaScript function in the context of the current web page.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectRadioButtonOnWebPageActivity",
+            "label": "Select Radio Button on Web Page",
+            "description": "Simulates selecting a radio button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetCheckboxStateOnWebPageActivity",
+            "label": "Set Checkbox State on Web Page",
+            "description": "Sets the state (checked/unchecked) of a checkbox element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetDropDownListValueOnWebPageActivity",
+            "label": "Set Drop-Down List Value on Web Page",
+            "description": "Sets or clears the value of a drop-down list element on a web page. Supports selection by name, index, or clearing all options.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetFocusOnInputElementActivity",
+            "label": "Set Focus on Input Element",
+            "description": "Set the focus on an input element on a web page and scroll it into view.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TakeScreenshotOfWebPageActivity",
+            "label": "Take Screenshot of Web Page",
+            "description": "Captures a screenshot of the entire web page or a specific UI element, and saves it to clipboard or file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForWebPageContentActivity",
+            "label": "Wait For Web Page Content",
+            "description": "Waits for a specific condition to be met on the current web page, such as containing an element or text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "App Integrations",
+    "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
+    "icon": "AppIntegrationsIcon",
+    "actionCategories": [
+      {
+        "label": "Word",
+        "description": "Automate Microsoft Word document operations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "AttachToRunningWordActivity",
+            "label": "Attach to Running Word",
+            "description": "Attach to a Word document that's already open.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseWordActivity",
+            "label": "Close Word",
+            "description": "Close a Word instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FindAndReplaceWordsInWordDocumentActivity",
+            "label": "Find and Replace Words in Word Document",
+            "description": "Finds text and replaces it with another in the active document of a Word instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertImageInWordDocumentActivity",
+            "label": "Insert Image in Word Document",
+            "description": "Insert an image to a Word file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFromWordDocumentActivity",
+            "label": "Read from Word Document",
+            "description": "Reads the text content from a document of a Word instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SaveWordActivity",
+            "label": "Save Word",
+            "description": "Saves a previously launched Word instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteToWordDocumentActivity",
+            "label": "Write to Word Document",
+            "description": "Write or append text to a Word file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Windows Service",
+        "description": "Manage and interact with Windows Services.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "IfServiceActivity",
+            "label": "If Service",
+            "description": "Marks the beginning of a conditional block of actions depending on whether a service is running, paused, stopped, or installed on the computer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PauseServiceActivity",
+            "label": "Pause Service",
+            "description": "Pauses a running Windows service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ResumeServiceActivity",
+            "label": "Resume Service",
+            "description": "Resumes a paused Windows service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "StartServiceActivity",
+            "label": "Start Service",
+            "description": "Starts a stopped Windows service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "StopServiceActivity",
+            "label": "Stop Service",
+            "description": "Stops a running Windows service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForServiceActivity",
+            "label": "Wait for Service",
+            "description": "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Terminal Emulation",
+        "description": "Automate terminal and mainframe interactions.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CloseTerminalSessionActivity",
+            "label": "Close Terminal Session",
+            "description": "Close an open terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetTextFromTerminalSessionActivity",
+            "label": "Get Text from Terminal Session",
+            "description": "Get text from a terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveCursorOnTerminalSessionActivity",
+            "label": "Move Cursor on Terminal Session",
+            "description": "Move the terminal's cursor to the specified position.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "OpenTerminalSessionActivity",
+            "label": "Open Terminal Session",
+            "description": "Open a new terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SearchForTextOnTerminalSessionActivity",
+            "label": "Search for Text on Terminal Session",
+            "description": "Search for all occurrences of a specific text on a terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendKeyToTerminalSessionActivity",
+            "label": "Send Key to Terminal Session",
+            "description": "Send a control key to a terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetTextOnTerminalSessionActivity",
+            "label": "Set Text on Terminal Session",
+            "description": "Set text on a terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForTextOnTerminalSessionActivity",
+            "label": "Wait for Text on Terminal Session",
+            "description": "Wait for a specific text to appear on a terminal session.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "PDF",
+        "description": "Work with PDF documents.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ExtractImagesFromPdfActivity",
+            "label": "Extract Images from PDF",
+            "description": "Extracts images from a PDF file by specifying the source PDF file and the pages to extract from.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractTablesFromPdfActivity",
+            "label": "Extract Tables from PDF",
+            "description": "Extracts tables from a PDF file by specifying the source PDF file and the range of pages to extract from.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Outlook",
+        "description": "Automate Microsoft Outlook operations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": []
+      },
+      {
+        "label": "HTTP",
+        "description": "Perform HTTP requests and integrations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DownloadFromWebActivity",
+            "label": "Download from Web",
+            "description": "Downloads text or a file from the web and stores it.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InvokeSoapWebServiceActivity",
+            "label": "Invoke SOAP Web Service",
+            "description": "Invokes a method from a SOAP web service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InvokeWebServiceActivity",
+            "label": "Invoke Web Service",
+            "description": "Invokes a web service and stores the response text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "FTP",
+        "description": "Transfer files and folders via FTP.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ChangeFtpWorkingDirectoryActivity",
+            "label": "Change Working Directory",
+            "description": "Sets the current working directory for an FTP connection.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseFtpConnectionActivity",
+            "label": "Close Connection",
+            "description": "Closes an open FTP connection.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateFtpDirectoryActivity",
+            "label": "Create FTP Directory",
+            "description": "Creates a directory on an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteFtpDirectoryActivity",
+            "label": "Delete FTP Directory",
+            "description": "Deletes a directory from an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteFtpFileActivity",
+            "label": "Delete FTP File",
+            "description": "Deletes one or more files from an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DownloadFilesFromFtpActivity",
+            "label": "Download File(s) from FTP",
+            "description": "Downloads one or more files from an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DownloadFoldersFromFtpActivity",
+            "label": "Download Folder(s) from FTP",
+            "description": "Downloads one or more folders from an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InvokeFtpCommandActivity",
+            "label": "Invoke FTP Command",
+            "description": "Invokes the given literal FTP command on the server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ListFtpDirectoryActivity",
+            "label": "List FTP Directory",
+            "description": "Retrieves the subdirectories and files contained in the current directory of an FTP connection.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "OpenFtpConnectionActivity",
+            "label": "Open FTP Connection",
+            "description": "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "OpenSecureFtpConnectionActivity",
+            "label": "Open Secure FTP Connection",
+            "description": "Establishes a secure connection to an FTP server using SSL/TLS.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RenameFtpFileActivity",
+            "label": "Rename FTP File",
+            "description": "Renames a file that resides on an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SynchronizeDirectoriesActivity",
+            "label": "Synchronize Directories",
+            "description": "Synchronizes the files and subdirectories of a given Folder with a given remote FTP directory.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UploadFilesToFtpActivity",
+            "label": "Upload File(s) to FTP",
+            "description": "Uploads one or more files to an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UploadFoldersToFtpActivity",
+            "label": "Upload Folder(s) to FTP",
+            "description": "Uploads one or more folders to an FTP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Exchange Server",
+        "description": "Integrate with Microsoft Exchange Server.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ConnectToExchangeServerActivity",
+            "label": "Connect to Exchange Server",
+            "description": "Open a new connection to an Exchange server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ProcessExchangeEmailMessagesActivity",
+            "label": "Process Exchange Email Messages",
+            "description": "Move, delete, or mark as unread an email message (or a list of email messages).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendExchangeEmailMessageActivity",
+            "label": "Send Exchange Email Message",
+            "description": "Create and send a new email message.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Excel",
+        "description": "Automate Excel file operations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ActivateCellInExcelWorksheetActivity",
+            "label": "Activate Cell in Excel Worksheet",
+            "description": "Activates a cell in the active worksheet of an Excel instance, by providing column, row, and offset.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AppendCellsInExcelWorksheetActivity",
+            "label": "Append Cells in Excel Worksheet",
+            "description": "Appends a range of cells to the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AttachToRunningExcelActivity",
+            "label": "Attach to Running Excel",
+            "description": "Attaches to an Excel document that's already open.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AutoFillCellsInExcelWorksheetActivity",
+            "label": "Auto Fill Cells in Excel Worksheet",
+            "description": "Auto fills a range with data, based on the data of another range, in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClearCellsInExcelWorksheetActivity",
+            "label": "Clear Cells in Excel Worksheet",
+            "description": "Clears a range of cells or a named cell in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseExcelActivity",
+            "label": "Close Excel",
+            "description": "Closes an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CopyCellsFromExcelWorksheetActivity",
+            "label": "Copy Cells from Excel Worksheet",
+            "description": "Copies a range of cells from the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CopyExcelWorksheetActivity",
+            "label": "Copy Excel Worksheet",
+            "description": "Copies a worksheet from an Excel document and paste it to the Excel document of the same or different Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteColumnFromExcelWorksheetActivity",
+            "label": "Delete Column from Excel Worksheet",
+            "description": "Deletes a selected column from an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteExcelWorksheetActivity",
+            "label": "Delete Excel Worksheet",
+            "description": "Deletes a specific worksheet from an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteFromExcelWorksheetActivity",
+            "label": "Delete from Excel Worksheet",
+            "description": "Deletes a cell or a range of cells from the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteRowFromExcelWorksheetActivity",
+            "label": "Delete Row from Excel Worksheet",
+            "description": "Deletes a selected row from an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FilterCellsInExcelWorksheetActivity",
+            "label": "Filter Cells in Excel Worksheet",
+            "description": "Filter cells in an Excel worksheet allows makers to create and apply a filter in the active sheet, table, or range on the values of a specified column. To filter multiple columns in an active sheet/table/range, multiple Filter Cells in Excel Worksheet actions must be used, each one applying the respective filter.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FindAndReplaceCellsInExcelWorksheetActivity",
+            "label": "Find and Replace Cells in Excel Worksheet",
+            "description": "Finds text and replaces it with another in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetActiveCellOnExcelWorksheetActivity",
+            "label": "Get Active Cell on Excel Worksheet",
+            "description": "Get the active cell in the active worksheet of the Excel document.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetActiveExcelWorksheetActivity",
+            "label": "Get Active Excel Worksheet",
+            "description": "Retrieves an Excel document's active worksheet.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAllExcelWorksheetsActivity",
+            "label": "Get All Excel Worksheets",
+            "description": "Retrieves all worksheet names of an Excel document.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetColumnNameOnExcelWorksheetActivity",
+            "label": "Get Column Name on Excel Worksheet",
+            "description": "Gets the name of the column.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetFirstFreeColumnRowFromExcelWorksheetActivity",
+            "label": "Get First Free Column/Row from Excel Worksheet",
+            "description": "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetFirstFreeRowOnColumnFromExcelWorksheetActivity",
+            "label": "Get First Free Row on Column from Excel Worksheet",
+            "description": "Retrieves the first free row, given the column of the active worksheet.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSelectedCellRangeFromExcelWorksheetActivity",
+            "label": "Get Selected Cell Range from Excel Worksheet",
+            "description": "Retrieves the selected range of cells in a structure consisting of first column, first row, last column, and last row.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetTableRangeFromExcelWorksheetActivity",
+            "label": "Get Table Range from Excel Worksheet",
+            "description": "Retrieves the range of a table in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertColumnToExcelWorksheetActivity",
+            "label": "Insert Column to Excel Worksheet",
+            "description": "Inserts a column to the left of a selected column of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertRowToExcelWorksheetActivity",
+            "label": "Insert Row to Excel Worksheet",
+            "description": "Inserts a row above a selected row of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchExcelActivity",
+            "label": "Launch Excel",
+            "description": "Launches a new Excel instance or opens an Excel document.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LookupRangeInExcelWorksheetActivity",
+            "label": "Lookup Range in Excel Worksheet",
+            "description": "Finds and returns the result of Excel's LOOKUP function.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PasteCellsToExcelWorksheetActivity",
+            "label": "Paste Cells to Excel Worksheet",
+            "description": "Pastes a range of cells to the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFormulaFromExcelActivity",
+            "label": "Read Formula from Excel",
+            "description": "Reads the formula inside a cell in Excel.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFromExcelWorksheetActivity",
+            "label": "Read from Excel Worksheet",
+            "description": "Reads the value of a cell or a range of cells from the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RenameExcelWorksheetActivity",
+            "label": "Rename Excel Worksheet",
+            "description": "Renames a specific worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ResizeColumnsRowsInExcelWorksheetActivity",
+            "label": "Resize Columns/Rows in Excel Worksheet",
+            "description": "Resizes a selection of columns or rows in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunExcelMacroActivity",
+            "label": "Run Excel Macro",
+            "description": "Runs a specified macro on the document of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SaveExcelActivity",
+            "label": "Save Excel",
+            "description": "Saves a previously launched Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectCellsInExcelWorksheetActivity",
+            "label": "Select Cells in Excel Worksheet",
+            "description": "Selects a range of cells in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetActiveExcelWorksheetActivity",
+            "label": "Set Active Excel Worksheet",
+            "description": "Activates a specific worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetColorInExcelWorksheetActivity",
+            "label": "Set Color in Excel Worksheet",
+            "description": "Fills the background of the selected cells with the specified color, in the active worksheet of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteToExcelWorksheetActivity",
+            "label": "Write to Excel Worksheet",
+            "description": "Writes a value into a cell or a range of cells of an Excel instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Email",
+        "description": "Send, receive, and manage emails.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ProcessEmailMessagesActivity",
+            "label": "Process Email Messages",
+            "description": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve emails action.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RetrieveEmailMessagesActivity",
+            "label": "Retrieve Email Messages",
+            "description": "Retrieves email messages from an IMAP server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendEmailActivity",
+            "label": "Send Email",
+            "description": "Creates and sends a new email message.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "AI Integrations",
+    "description": "AI-powered advanced actions for smarter, dynamic automation",
+    "icon": "IntelligentAutomationIcon",
+    "actionCategories": []
+  }
+]
