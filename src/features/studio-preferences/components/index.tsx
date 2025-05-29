@@ -8,8 +8,12 @@ import { POPOVER_HEADING } from "../constants";
 import { StudioPreferencesForm } from "./StudioPreferencesForm";
 import { StudioPreferencesTrigger } from "./StudioPreferencesTrigger";
 import { useSetStudioPreferences } from "../hooks/useSetStudioPreferences";
+import { cn } from "@aventisia/ui/lib";
+interface StudioPreferencesProps {
+  className?: string;
+}
 
-export const StudioPreferences = () => {
+export const StudioPreferences = ({ className }: StudioPreferencesProps) => {
   // Set Studio preferences from local storage on load
   useSetStudioPreferences();
 
@@ -19,7 +23,7 @@ export const StudioPreferences = () => {
       <PopoverContent
         align="end"
         variant={"responsive"}
-        className="mt-0 mlg:mt-1.5"
+        className={cn(className)}
       >
         <PopoverDefaultHeader heading={POPOVER_HEADING} />
         <ScrollArea className="grow px-1.5 py-3">

@@ -10,12 +10,13 @@ export const StudioPreferencesTrigger = () => {
     <Tooltip content={POPOVER_HEADING}>
       <PopoverTrigger
         className={cn(
-          buttonVariants({ variant: "ghost", size: "icon7" }),
+          buttonVariants({ variant: "ghost", size: "icon8" }),
+          "hover:bg-white/10",
           "hidden mlg:flex",
-          "aria-[expanded=true]:bg-slate-100",
+          "aria-[expanded=true]:bg-white/10",
         )}
       >
-        <AdjustmentsHorizontalIcon className="h-[1.1rem] w-[1.1rem] text-[--icon-color]" />
+        <AdjustmentsHorizontalIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
       </PopoverTrigger>
     </Tooltip>
   );

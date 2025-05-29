@@ -24,11 +24,12 @@ export const FCPopoverTrigger = () => {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
-          isPopoverOpen && "hidden bg-slate-100 mlg:flex",
+          "hover:bg-white/10",
+          isPopoverOpen && "hidden bg-white/10 mlg:flex",
         )}
         onClick={() => togglePopoverOpen}
       >
-        <ChatBubbleBottomCenterTextIcon className="h-[1.1rem] w-[1.1rem] text-[--icon-color]" />
+        <ChatBubbleBottomCenterTextIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
       </PopoverTrigger>
     </Tooltip>
   );

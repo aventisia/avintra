@@ -58,55 +58,60 @@ const ExecuteFlow = () => {
   };
 
   return (
-    <div className="flex h-7 items-center justify-center gap-2 rounded-lg bg-muted">
+    <div className="flex items-center gap-2">
       {flowState === "executing" || flowState === "paused" ? (
-        <>
+        <div className="group flex h-8 gap-1 rounded-lg bg-white/10">
           {flowState === "executing" ? (
             <Tooltip content="Pause">
               <Button
                 variant="ghost"
-                size="icon7"
+                size="icon8"
+                className="hover:bg-white/10"
                 onClick={() => sendCommand("pause")}
               >
-                <PauseIcon className="h-4 w-4 text-slate-500" />
+                <PauseIcon className="h-[1.1rem] w-[1.1rem] text-slate-500" />
               </Button>
             </Tooltip>
           ) : (
             <Tooltip content="Resume">
               <Button
                 variant="ghost"
-                size="icon7"
+                size="icon8"
+                className="hover:bg-white/10"
                 onClick={() => sendCommand("resume")}
               >
-                <PlayIcon className="h-4 w-4 text-green-500" />
+                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
               </Button>
             </Tooltip>
           )}
           <Tooltip content="Abort">
             <Button
               variant="ghost"
-              size="icon7"
+              size="icon8"
+              className="hover:bg-white/10"
               onClick={() => sendCommand("abort")}
             >
-              <StopIcon className="h-4 w-4 text-red-500" />
+              <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
             </Button>
           </Tooltip>
-        </>
+        </div>
       ) : (
-        <Button
-          variant={"ghost"}
-          className="group h-7 min-w-[6rem] gap-1.5 whitespace-nowrap rounded-md px-2"
-          onClick={startExecution}
-        >
-          {flowState === "launching-executor" ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              <PlayIcon className="h-4 w-4 text-green-500" />
-              Execute
-            </>
-          )}
-        </Button>
+        <Tooltip content="Execute">
+          <Button
+            size="icon8"
+            variant="ghost"
+            className="hover:bg-white/10"
+            onClick={startExecution}
+          >
+            {flowState === "launching-executor" ? (
+              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
+            ) : (
+              <>
+                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
+              </>
+            )}
+          </Button>
+        </Tooltip>
       )}
     </div>
   );
