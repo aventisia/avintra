@@ -37,7 +37,7 @@ namespace CodeActivityToJSON.Utils
             // Loop through each primary category and find all sub categories and their activities
             foreach (var category in primaryCategories)
             {
-                if (category.Label == null) continue;
+                if (category.Label == null || category.Label == "AI Integrations") continue;
 
                 // Initialize ActionCategories list if it is null
                 category.ActionCategories = new List<ActionCategory>();

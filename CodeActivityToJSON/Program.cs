@@ -43,6 +43,12 @@ namespace CodeActivityToJSON
             foreach (var activity in activities)
             {
                 var json = ConvertActivityToJsonUtil.ConvertActivityToJson(activity);
+                if (string.IsNullOrEmpty(json) || json == "[]")
+                {
+                    Console.WriteLine($"Failed to convert {activity.Name} to JSON.");
+                    continue;
+                }
+
                 var fileName = Path.Combine(outputDir, activity.Name + ".json");
                 File.WriteAllText(fileName, json);
                 Console.WriteLine($"{activity.Name + ".json"} saved");

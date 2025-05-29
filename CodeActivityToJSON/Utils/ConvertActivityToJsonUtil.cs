@@ -26,8 +26,8 @@ namespace CodeActivityToJSON.Utils
                 if (direction == null) continue;
 
                 // Get label. If display name is not set, then don't add the argument to json
-                var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
-                if (displayName == null) continue;
+                var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name; // TODO: we need to add meaningfull display names
+                if (displayName == null || prop.Name.ToLower() == "statusmessage") continue;
 
                 // Get description
                 var description = prop.GetCustomAttribute<DescriptionAttribute>()?.Description ?? "";
@@ -69,6 +69,9 @@ namespace CodeActivityToJSON.Utils
                     var genericType = prop.PropertyType.GenericTypeArguments.FirstOrDefault();
                     if (genericType != null && genericType.IsEnum)
                     {
+                        // Get the default value of the property
+                        item["defaultValue"] = GetInArgumentDefaultValue(prop, Activator.CreateInstance(activityType), true);
+
                         // Set type to select
                         item["type"] = "select";
 
@@ -134,14 +137,14 @@ namespace CodeActivityToJSON.Utils
         }
 
         // Get the default value of an InArgument property
-        static object GetInArgumentDefaultValue(PropertyInfo property, object activityInstance)
+        static object GetInArgumentDefaultValue(PropertyInfo property, object activityInstance, bool isEnum = false)
         {
             var defaultAttributeValue = property.GetCustomAttribute<DefaultValueAttribute>()?.Value;
 
             if (defaultAttributeValue != null)
             {
                 // If DefaultValue is set, return it directly
-                return defaultAttributeValue;
+                return isEnum ? defaultAttributeValue.ToString() : defaultAttributeValue;
             }
 
             var value = property.GetValue(activityInstance);
