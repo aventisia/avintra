@@ -35,11 +35,11 @@ public class ExtractionSetupMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, ExtractedDataResponseDto>()
-            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<ExtractionSetupData>(
+            .Map(dest => dest.ExtractedData, src => !string.IsNullOrEmpty(src.DataObject) ? JsonSerializer.Deserialize<ExtractionSetupData>(
                 src.DataObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }))
+                }) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name
@@ -64,7 +64,7 @@ public class ExtractionSetupMappingProfile : IRegister
             
         // Mapping of DTO to get list of extracted review data.
         config.NewConfig<ExtractedData, ExtractionReviewDataDto>()
-            .Map(dest => dest.Columns, src => DeserializeExtractionSetupDto(src.DataObject))
+            .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeExtractionSetupDto(src.DataObject) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

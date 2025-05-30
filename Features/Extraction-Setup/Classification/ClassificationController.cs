@@ -53,4 +53,11 @@ public class ClassificationController : BaseApiController
     {
         return ResultHelper(await _classificationService.UpdateExtractedReviewDataAsync(classificationExtractedDataDto));
     }
+
+     // Adds review data associated with a specific machine learning model.
+    [HttpPost("review-data")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ClassificationReviewDataDto>>>> AddReviewDataByMLModelId(CreateModelReviewRequestDto createModelReviewRequestDto)
+    {
+        return ResultHelper(await _classificationService.AddReviewDataAsync(createModelReviewRequestDto));
+    }
 }

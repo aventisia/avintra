@@ -35,11 +35,11 @@ public class QuestionAnswerMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, QuestionAnswerExtractedDataDto>()
-            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
+            .Map(dest => dest.ExtractedData, src => !string.IsNullOrEmpty(src.DataObject) ? JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(
                 src.DataObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }))
+                }) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name
@@ -64,7 +64,7 @@ public class QuestionAnswerMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted review data.
         config.NewConfig<ExtractedData, QuestionAnswerReviewDataDto>()
-            .Map(dest => dest.Columns, src => DeserializeQuestionAnswerSetupDto(src.DataObject))
+            .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeQuestionAnswerSetupDto(src.DataObject) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

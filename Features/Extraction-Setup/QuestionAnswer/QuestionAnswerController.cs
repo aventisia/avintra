@@ -53,4 +53,11 @@ public class QuestionAnswerController : BaseApiController
     {
         return ResultHelper(await _questionAnswerService.UpdateExtractedReviewDataAsync(questionAnswerExtractedDataDto));
     }
+
+    // Adds review data associated with a specific machine learning model.
+    [HttpPost("review-data")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QuestionAnswerReviewDataDto>>>> AddReviewDataByMLModelId(CreateModelReviewRequestDto createModelReviewRequestDto)
+    {
+        return ResultHelper(await _questionAnswerService.AddReviewDataAsync(createModelReviewRequestDto));
+    }
 }

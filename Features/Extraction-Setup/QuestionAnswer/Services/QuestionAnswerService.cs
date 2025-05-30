@@ -458,6 +458,96 @@ public class QuestionAnswerService : IQuestionAnswerService
         return serviceResponse;
     }
 
+    // Adds review data associated with a specific machine learning model.
+    public async Task<ServiceResponse<IEnumerable<QuestionAnswerReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<QuestionAnswerReviewDataDto>>
+        {
+            Data = null,
+            Message = "Failed to add review data. Please try again later."
+        };
+
+        try
+        {
+            // Log the start of the review data creation process
+            _logger.LogInformation("Initiating review data creation for ML model ID: {MLModelId}", createModelReviewRequestDto.MLModelId);
+
+            // Retrieve uploaded documents using the provided file IDs
+            var uploadedFiles = await _unitOfWork.UploadedDocRepo
+                .GetByConditionAsync(doc => createModelReviewRequestDto.FileIds.Contains(doc.Id))
+                .ToListAsync();
+
+            if (!uploadedFiles.Any())
+            {
+                _logger.LogWarning("No uploaded documents found for file IDs: {FileIds} for ML model ID: {MLModelId}",
+                    string.Join(", ", createModelReviewRequestDto.FileIds), createModelReviewRequestDto.MLModelId);
+
+                serviceResponse.Message = "No uploaded documents matched the provided file IDs.";
+                return serviceResponse;
+            }
+
+            // Prepare extracted data entities for insertion
+            var extractedDataToInsert = uploadedFiles.Select(file => new ExtractedData
+            {
+                MLModelId = createModelReviewRequestDto.MLModelId,
+                DocId = file.Id,
+                DataObject = string.Empty,
+                Accuracy = 0,
+                Type = createModelReviewRequestDto.Type,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+                SubmitForFineTuning = false,
+            }).ToList();
+
+            // Insert extracted data
+            await _unitOfWork.ExtractedDataRepo.InsertAsync(extractedDataToInsert);
+
+            // Persist the changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist extracted review data for ML model ID: {MLModelId}", createModelReviewRequestDto.MLModelId);
+                return serviceResponse;
+            }
+
+            // If scheduling information is provided, add a scheduled model entry
+            if (createModelReviewRequestDto.ScheduleInfo != null)
+            {
+                await _unitOfWork.ScheduledModelRepo.InsertAsync(new ScheduledModel
+                {
+                    MLModelId = createModelReviewRequestDto.MLModelId,
+                    TimeZone = createModelReviewRequestDto.ScheduleInfo.TimeZone,
+                    ScheduledAt = createModelReviewRequestDto.ScheduleInfo.ScheduledAt,
+                    ScheduleType = ModelOperationTypesEnum.RunAndReview,
+                    FileIds = uploadedFiles.Select(file => file.Id).ToList(),
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                });
+
+                // Persist scheduled model entry
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save scheduled model entry for ML model ID: {MLModelId}", createModelReviewRequestDto.MLModelId);
+                    return serviceResponse;
+                }
+            }
+
+            // Log the successful addition of review data
+            _logger.LogInformation("Review data successfully added for ML model ID: {MLModelId}", createModelReviewRequestDto.MLModelId);
+
+            // Return the successful response
+            serviceResponse.Data = extractedDataToInsert.Adapt<IEnumerable<QuestionAnswerReviewDataDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Review data added successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while adding review data for ML model ID: {MLModelId}", createModelReviewRequestDto.MLModelId);
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string for the QuestionAnswer model based on provided setup details
     private string? GenerateQuestionAnswerModelPrompt(QuestionAnswerDto QuestionAnswerDto)
     {

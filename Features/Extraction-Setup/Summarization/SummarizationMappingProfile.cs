@@ -35,11 +35,11 @@ public class SummarizationMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, SummarizationExtractedDataDto>()
-            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<SummarizationSetupData>(
+            .Map(dest => dest.ExtractedData, src => !string.IsNullOrEmpty(src.DataObject) ? JsonSerializer.Deserialize<SummarizationSetupData>(
                 src.DataObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }))
+                }) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

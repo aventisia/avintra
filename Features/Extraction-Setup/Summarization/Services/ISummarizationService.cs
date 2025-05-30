@@ -62,12 +62,12 @@ public interface ISummarizationService
     /// <returns>A service response containing the updated review data record.</returns>
     Task<ServiceResponse<SummarizationExtractedDataDto>> UpdateExtractedReviewDataAsync(SummarizationExtractedDataDto summarizationExtractedDataDto);
 
-        /// <summary>
-        /// Adds new model review data based on the provided request DTO.
-        /// </summary>
-        /// <param name="createModelReviewRequestDto">The data transfer object containing the review information to be added.</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation. The task result contains a ServiceResponse with a collection of SummarizationReviewDataDto representing the added or affected review data.
-        /// </returns>
-        Task<ServiceResponse<IEnumerable<SummarizationReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto);
-    }
+    /// <summary>
+    /// Adds new model review data based on the provided request DTO.
+    /// </summary>
+    /// <param name="createModelReviewRequestDto">The data transfer object containing the review information to be added.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a ServiceResponse with a collection of SummarizationReviewDataDto representing the added or affected review data.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<SummarizationReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto);
+}

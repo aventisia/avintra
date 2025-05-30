@@ -53,4 +53,11 @@ public class ExtractionSetupController : BaseApiController
     {
         return ResultHelper(await _extractionSetupService.UpdateExtractedReviewDataAsync(extractedDataResponseDto));
     }
+
+    // Adds review data associated with a specific machine learning model.
+    [HttpPost("review-data")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractionReviewDataDto>>>> AddReviewDataByMLModelId(CreateModelReviewRequestDto createModelReviewRequestDto)
+    {
+        return ResultHelper(await _extractionSetupService.AddReviewDataAsync(createModelReviewRequestDto));
+    }
 }

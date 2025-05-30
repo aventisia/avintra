@@ -35,11 +35,11 @@ public class ClassificationMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted data.
         config.NewConfig<ExtractedData, ClassificationExtractedDataDto>()
-            .Map(dest => dest.ExtractedData, src => JsonSerializer.Deserialize<List<ClassificationSetupData>>(
+            .Map(dest => dest.ExtractedData, src => !string.IsNullOrEmpty(src.DataObject) ? JsonSerializer.Deserialize<List<ClassificationSetupData>>(
                 src.DataObject, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }))
+                }) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name
@@ -64,7 +64,7 @@ public class ClassificationMappingProfile : IRegister
 
         // Mapping of DTO to get list of extracted review data.
         config.NewConfig<ExtractedData, ClassificationReviewDataDto>()
-            .Map(dest => dest.Columns, src => DeserializeClassificationSetupDto(src.DataObject))
+            .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeClassificationSetupDto(src.DataObject) : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

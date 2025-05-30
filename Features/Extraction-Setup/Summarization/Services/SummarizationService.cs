@@ -497,7 +497,7 @@ public class SummarizationService : ISummarizationService
         return serviceResponse;
     }
 
-    // Adds extracted review data associated with a specific machine learning model.
+    // Adds review data associated with a specific machine learning model.
     public async Task<ServiceResponse<IEnumerable<SummarizationReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto)
     {
         // Initialize the service response with a default failure message

@@ -53,4 +53,11 @@ public class SentimentAnalyticsController : BaseApiController
     {
         return ResultHelper(await _sentimentAnalyticsService.UpdateExtractedReviewDataAsync(sentimentAnalyticsExtractedDataDto));
     }
+
+    // Adds review data associated with a specific machine learning model.
+    [HttpPost("review-data")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SentimentAnalyticsReviewDataDto>>>> AddReviewDataByMLModelId(CreateModelReviewRequestDto createModelReviewRequestDto)
+    {
+        return ResultHelper(await _sentimentAnalyticsService.AddReviewDataAsync(createModelReviewRequestDto));
+    }
 }

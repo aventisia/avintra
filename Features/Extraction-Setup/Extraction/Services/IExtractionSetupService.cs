@@ -50,4 +50,13 @@ public interface IExtractionSetupService
     /// <param name="extractedDataResponseDto">The DTO containing the updated review data information.</param>
     /// <returns>A service response containing the updated review data record.</returns>
     Task<ServiceResponse<ExtractedDataResponseDto>> UpdateExtractedReviewDataAsync(ExtractedDataResponseDto extractedDataResponseDto);
+
+    /// <summary>
+    /// Adds new model review data based on the provided request DTO.
+    /// </summary>
+    /// <param name="createModelReviewRequestDto">The data transfer object containing the review information to be added.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a ServiceResponse with a collection of ExtractionReviewDataDto representing the added or affected review data.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<ExtractionReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto);
 }

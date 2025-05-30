@@ -63,4 +63,13 @@ public interface IQuestionAnswerService
     /// <param name="questionAnswerExtractedDataDto">The DTO containing the updated review data information.</param>
     /// <returns>A service response containing the updated review data record.</returns>
     Task<ServiceResponse<QuestionAnswerExtractedDataDto>> UpdateExtractedReviewDataAsync(QuestionAnswerExtractedDataDto questionAnswerExtractedDataDto);
+
+    /// <summary>
+    /// Adds new model review data based on the provided request DTO.
+    /// </summary>
+    /// <param name="createModelReviewRequestDto">The data transfer object containing the review information to be added.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a ServiceResponse with a collection of QuestionAnswerReviewDataDto representing the added or affected review data.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<QuestionAnswerReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto);
 }
