@@ -1,19 +1,5 @@
-import { SelectFieldProps } from "@/shared/select-field/SelectField";
 import { AutosizeTextareaFieldProps, InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
-import { ISelectOption } from "@aventisia/ui/types";
 
-const whenNoClearMatchSelectOptions: ISelectOption[] = [
-    {
-        label: "Discard Item",
-        value: "DiscardItem",
-        description: "Ignore the item and drop it from the output"
-    },
-    {
-        label: "Output on Extra, ‘Other’ Branch",
-        value: "OutputToOtherBranch",
-        description: "Create a separate output branch called ‘other’"
-    }
-]
 
 const contextProps: AutosizeTextareaFieldProps = {
     name: "context",
@@ -46,15 +32,6 @@ const allowMultipleClassesProps: SwitchFieldProps = {
     description: "Allow multiple classes to be true",
 }
 
-const whenNoClearMatchProps: SelectFieldProps = {
-    name: "uncertaintyAction",
-    className: "text-sm",
-    placeholder: "Select",
-    label: "When no clear match",
-    selectOptions: whenNoClearMatchSelectOptions,
-    isRequired: true,
-}
-
 const systemPromptProps: AutosizeTextareaFieldProps = {
     name: "prompt",
     label: "Prompt",
@@ -69,6 +46,5 @@ export {
     categoryNameProps,
     instructionsProps,
     allowMultipleClassesProps,
-    whenNoClearMatchProps,
     systemPromptProps,
 }

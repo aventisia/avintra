@@ -11,6 +11,5 @@ export const classificationModelSetupFormZodSchema = z
     context: z.string().min(1, {message: reqError("Context")}),
     categories: z.array(categoriesSchema),
     allowMultipleClasses: z.boolean(),
-    uncertaintyAction: z.string().min(1, {message: reqError("When No Clear Match")}),
     prompt: z.string().min(1, {message: reqError("Prompt")}),
 })

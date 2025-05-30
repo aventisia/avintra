@@ -36,8 +36,6 @@ export const useAddInformationExtractorTestForm = () => {
     })),
   );
 
-  console.log("fdv", fieldDataValues);
-
   const { control } = form;
 
   const { fields: dataFields } = useFieldArray({

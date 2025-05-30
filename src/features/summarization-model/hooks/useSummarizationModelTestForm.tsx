@@ -23,8 +23,6 @@ export const useSummarizationModelTestForm = () => {
     },
   });
 
-  console.log("FDV", fieldDataValues);
-
   const { selectedFile } = useFileListStore(
     useShallow((state) => ({
       selectedFile: state.selectedFile,

@@ -7,12 +7,10 @@ interface ICategoriesDescriptor {
 interface ISetupObject {
     context: string;
     prompt: string;
-    uncertaintyAction: string;
     allowMultipleClasses: boolean,
     categories: ICategoriesDescriptor[]
-
-
 }
+
 interface IModelInfo {
     createdOn?: string;
     createdByUserId?: string;

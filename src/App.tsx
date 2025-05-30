@@ -11,7 +11,7 @@ import {
 
 import { MLModelBuilderLayout } from "./components/layout/MLModelBuilderLayout";
 import { LabelDataPage } from "./pages/LabelDataPage";
-import { ModelTestPage } from "./pages/ModelTestPage";
+import { RunReivewPage } from "./pages/RunReivewPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60 * 1000 } },
@@ -27,7 +27,7 @@ const router = createBrowserRouter(
         { path: "/", element: <Navigate to="/setup-test" /> },
         { path: "/setup-test", element: <LabelDataPage /> },
         { path: "/model", element: <h1>Model </h1> },
-        { path: "/run-review", element: <ModelTestPage /> },
+        { path: "/run-review", element: <RunReivewPage /> },
         { path: "/*", element: <NotFoundPage /> },
       ],
     },

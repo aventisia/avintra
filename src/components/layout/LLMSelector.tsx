@@ -68,8 +68,10 @@ export function LLMSelector() {
           <SelectValue placeholder="Select LLM" />
         </SelectTrigger>
         <SelectContent>
-          {llmList.map((item) => (
-            <SelectItem value={item.label}>{item.label}</SelectItem>
+          {llmList.map((item, idx) => (
+            <SelectItem value={item.label} key={`${item}-${idx}`}>
+              {item.label}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
