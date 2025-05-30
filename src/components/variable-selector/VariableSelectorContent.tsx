@@ -7,7 +7,7 @@ import {
   CommandList,
 } from "@aventisia/ui/command";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { Workflow } from "lucide-react";
+import { VariableIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { VariableItem } from "./VariableItem";
 
@@ -43,9 +43,9 @@ export const VariableSelectorContent = () => {
       <CommandEmpty className="h-full">
         <NoContentMessage
           className="-mt-5"
-          Icon={Workflow}
+          Icon={VariableIcon}
           primaryMessage="No Variables found"
-          secondaryMessage="Try adding a new variable."
+          secondaryMessage="Try a different search term or set a new variable."
         />
       </CommandEmpty>
 
