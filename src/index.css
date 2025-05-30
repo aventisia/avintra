@@ -25,6 +25,11 @@
     --border: hsl(214.3 31.8% 91.4%);
     --input: hsl(214.3 31.8% 91.4%);
     --ring: rgba(78, 70, 229, 0.2);
+    --flow-start: hsl(142, 76%, 85%);
+    --flow-end: hsl(0, 100%, 90%);
+    --flow-border-start: hsl(142, 76%, 70%);
+    --flow-border-end: hsl(0, 100%, 75%);
+
     --radius: 0.5rem;
 
     --header-padding: 0.375rem;

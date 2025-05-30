@@ -10,7 +10,6 @@ import { useFlowsVersionsStore } from "../stores/flow-versions-store";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useFlowVersionPopoverStore } from "../stores/flow-version-popover-store";
 
 export const FlowVersions = () => {
@@ -39,13 +38,6 @@ export const FlowVersions = () => {
     })),
   );
 
-  // Get global store state & actions
-  const { currentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-    })),
-  );
-
   //Set initial version to view as draft
   useEffect(() => {
     if (data?.data) {
@@ -62,7 +54,7 @@ export const FlowVersions = () => {
         selectedVersion.versionNumber || null,
       );
     }
-  }, [data?.data, versionId, setVersion, currentFlow]);
+  }, [data?.data, versionId, setVersion]);
 
   return (
     <PopoverWrapper
