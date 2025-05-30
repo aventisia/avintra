@@ -36,12 +36,15 @@ const ConfigPanelOuputField = ({
   ...props
 }: ConfigPanelOuputFieldProps) => {
   // Get variable selector store state and actions
-  const { setOpenState, setInputName } = useVariableSelectorStore(
-    useShallow((state) => ({
-      setOpenState: state.setOpenState,
-      setInputName: state.setInputName,
-    })),
-  );
+  const { selectedValue, setSelectedValue, setOpenState, setInputName } =
+    useVariableSelectorStore(
+      useShallow((state) => ({
+        selectedValue: state.selectedValue,
+        setSelectedValue: state.setSelectedValue,
+        setOpenState: state.setOpenState,
+        setInputName: state.setInputName,
+      })),
+    );
 
   // Set names for the fields
   const valueFieldName = `${name}.value` as FieldPath<FieldValues>;
@@ -61,6 +64,14 @@ const ConfigPanelOuputField = ({
     control,
   });
 
+  // Set AutosizeInput value when selectedValue changes
+  React.useEffect(() => {
+    if (selectedValue) {
+      valueField.onChange(selectedValue);
+      setSelectedValue(""); // Reset selectedValue in the store
+    }
+  }, [selectedValue, valueField, setSelectedValue]);
+
   // Render the ConfigPanelOuputField component
   return (
     <div className="flex flex-row items-center justify-between gap-8 rounded-lg">
@@ -79,15 +90,16 @@ const ConfigPanelOuputField = ({
                     )}
                     disabled={disabled || !enabledField.value}
                     {...field}
-                    {...props}
                     ref={field.ref}
+                    {...props}
                   />
                 </FormControl>
 
                 <PopoverTrigger
                   className={cn(
                     buttonVariants({ size: "sm" }),
-                    "-ml-7 hidden h-[1.66rem] rounded-full pl-7 pr-2 text-xs opacity-50 hover:opacity-100 group-focus-within:flex",
+                    "-ml-[3.75rem] h-[1.66rem] rounded-full pl-7 pr-2 text-xs opacity-0 group-focus-within:-ml-7 group-focus-within:opacity-100",
+                    "data-[state=open]:-ml-7 data-[state=open]:opacity-100",
                   )}
                   onClick={() => {
                     setInputName(name);
@@ -132,3 +144,4 @@ const ConfigPanelOuputField = ({
 ConfigPanelOuputField.displayName = "ConfigPanelOuputField";
 
 export { ConfigPanelOuputField, type ConfigPanelOuputFieldProps };
+

@@ -17,7 +17,6 @@ export const VariableItem: React.FC<VariableItemProps> = ({ value }) => {
 
   // Hanlde onValueSelect from Variable List
   const handleOnSelectValue = (val: string) => {
-    setSelectedValue("");
     setSelectedValue(val);
     setOpenState(false);
   };
