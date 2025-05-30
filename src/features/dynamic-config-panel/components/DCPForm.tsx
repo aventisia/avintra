@@ -89,8 +89,15 @@ export const DCPForm = () => {
           <div className="mt-1 space-y-3.5">
             {nodeConfig.map((field) => {
               // Check if the field should be rendered based on direction and renderIf conditions
-              if (!shouldRenderField("Input", field, watchedValues))
+              if (!shouldRenderField("Input", field, watchedValues)) {
+                //Remove the key from inputKeys if the field is not rendered
+                if (inputKeys.includes(field.name))
+                  inputKeys.splice(inputKeys.indexOf(field.name), 1);
                 return null;
+              }
+
+              // Add the field name to inputKeys if not already present
+              if (!inputKeys.includes(field.name)) inputKeys.push(field.name);
 
               // Render the field
               return <RenderField key={field.name} {...field} />;
@@ -110,8 +117,16 @@ export const DCPForm = () => {
               <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
                 {nodeConfig.map((field) => {
                   // Check if the field should be rendered based on direction and renderIf conditions
-                  if (!shouldRenderField("Output", field, watchedValues))
+                  if (!shouldRenderField("Output", field, watchedValues)) {
+                    //Remove the key from outputKeys if the field is not rendered
+                    if (outputKeys.includes(field.name))
+                      outputKeys.splice(outputKeys.indexOf(field.name), 1);
                     return null;
+                  }
+
+                  // Add the field name to outputKeys if not already present
+                  if (!outputKeys.includes(field.name))
+                    outputKeys.push(field.name);
 
                   return <RenderField key={field.name} {...field} />;
                 })}
