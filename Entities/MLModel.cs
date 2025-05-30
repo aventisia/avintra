@@ -68,4 +68,9 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the ML model to which this uploaded docs are associated.
     /// </summary>
     public virtual ICollection<UploadedDoc>? UploadedDocs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ML model to which this schedule model are associated.
+    /// </summary>
+    public virtual ICollection<ScheduledModel>? ScheduledModels { get; set; }
 }
