@@ -18,10 +18,10 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
-import { AutosizeInput } from "./AutosizeInput";
+import { ConfigPanelAutosizeInput } from "./ConfigPanelAutosizeInput";
 
 interface ConfigPanelOuputFieldProps
-  extends React.ComponentPropsWithoutRef<typeof AutosizeInput> {
+  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeInput> {
   /** The name of the form field. */
   name: string;
 
@@ -82,7 +82,7 @@ const ConfigPanelOuputField = ({
             <VariableSelectorWrapper inputUniqueName={name}>
               <div className="group flex flex-row items-center gap-1.5">
                 <FormControl>
-                  <AutosizeInput
+                  <ConfigPanelAutosizeInput
                     fieldSize="sm"
                     className={cn(
                       "z-10 h-auto w-auto rounded-xl bg-accent",

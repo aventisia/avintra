@@ -2,7 +2,7 @@
 export * from "./apis/get-node-config";
 
 // components
-export * from "./components/AutosizeInput";
+export * from "./components/ConfigPanelAutosizeInput";
 export * from "./components/ConfigPanelOuputField";
 export * from "./components/DCPDialog";
 export * from "./components/DCPForm";
@@ -24,3 +24,4 @@ export * from "./types/render-if-type";
 export * from "./utils/generate-zod-schema";
 export * from "./utils/get-default-values-for-form";
 export * from "./utils/should-render-field";
+

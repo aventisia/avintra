@@ -3,12 +3,15 @@ import { FormFieldSizeType } from "@aventisia/ui/types";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 
-interface AutosizeInputProps
+interface ConfigPanelAutosizeInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   fieldSize?: FormFieldSizeType;
 }
 
-const AutosizeInput = React.forwardRef<HTMLInputElement, AutosizeInputProps>(
+const ConfigPanelAutosizeInput = React.forwardRef<
+  HTMLInputElement,
+  ConfigPanelAutosizeInputProps
+>(
   (
     { className, type, value, placeholder, fieldSize = "base", ...props },
     ref,
@@ -60,6 +63,7 @@ const AutosizeInput = React.forwardRef<HTMLInputElement, AutosizeInputProps>(
     );
   },
 );
-AutosizeInput.displayName = "AutosizeInput";
+ConfigPanelAutosizeInput.displayName = "ConfigPanelAutosizeInput";
 
-export { AutosizeInput, type AutosizeInputProps };
+export { ConfigPanelAutosizeInput, type ConfigPanelAutosizeInputProps };
+
