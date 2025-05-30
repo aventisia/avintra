@@ -1,0 +1,23 @@
+meta {
+  name: Update review data by model
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/summarization/review-data
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  req.setBody({
+    id: ru.getGlobalEnvVar("EDATA_ID"),
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    type: "TestData",
+    docId: bru.getGlobalEnvVar("DOC_ID"),
+    extractedData: null,
+    accuracy: 0,
+    submitForFineTuning: false
+  });
+}
