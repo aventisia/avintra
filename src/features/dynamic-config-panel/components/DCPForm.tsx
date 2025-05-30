@@ -10,6 +10,8 @@ import {
   useDefineDCPForm,
   useUpdateNodeDataIO,
 } from "..";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useShallow } from "zustand/react/shallow";
 
 export const DCPForm = () => {
   // Define form
@@ -30,6 +32,13 @@ export const DCPForm = () => {
 
   // Get handlers to update node inputs and outputs
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
+
+  // Get ReactFlowExt store state & actions
+  const { isPublished } = useReactFlowExtStore(
+    useShallow((state) => ({
+      isPublished: state.isPublished,
+    })),
+  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
@@ -74,6 +83,7 @@ export const DCPForm = () => {
             onSubmit(form.getValues());
           }}
           className="px-2.5 pb-5"
+          disabled={isPublished}
         >
           {/* Input fields */}
           <div className="mt-1 space-y-3.5">

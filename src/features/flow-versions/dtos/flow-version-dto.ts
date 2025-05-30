@@ -19,6 +19,8 @@ export interface FlowVersionDto {
    */
   isDraft?: boolean;
 
+  isPublished?: boolean;
+
   /**
    * Gets or sets a value indicating whether the version is in locked state.
    */

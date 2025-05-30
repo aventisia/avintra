@@ -30,17 +30,25 @@ import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store"
  */
 export const ReactFlowExt = () => {
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, isLocked, onNodesChange, onEdgesChange, onConnect } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        edges: state.edges,
-        isLocked: state.isLocked,
-        onNodesChange: state.onNodesChange,
-        onEdgesChange: state.onEdgesChange,
-        onConnect: state.onConnect,
-      })),
-    );
+  const {
+    nodes,
+    edges,
+    isLocked,
+    isPublished,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+  } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      isLocked: state.isLocked,
+      onNodesChange: state.onNodesChange,
+      onEdgesChange: state.onEdgesChange,
+      onConnect: state.onConnect,
+      isPublished: state.isPublished,
+    })),
+  );
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -97,8 +105,8 @@ export const ReactFlowExt = () => {
         onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
         onConnect={onConnect}
         // deleteKeyCode={["Delete", "Backspace"]}
-        onNodeContextMenu={onNodeContextMenu}
-        onEdgeContextMenu={onEdgeContextMenu}
+        onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
+        onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
         // Toggles Reactflows interactivity
         nodesDraggable={!isLocked}
         nodesConnectable={!isLocked}
