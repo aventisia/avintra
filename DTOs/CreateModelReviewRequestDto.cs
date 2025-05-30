@@ -23,7 +23,7 @@ public class CreateModelReviewRequestDto
     /// <summary>
     /// Gets or sets the scheduling details for the review.
     /// </summary>
-    public required ScheduleInfoDto ScheduleInfo { get; set; }
+    public ScheduleInfoDto? ScheduleInfo { get; set; }
 }
 
 /// <summary>
@@ -39,5 +39,5 @@ public class ScheduleInfoDto
     /// <summary>
     /// The date and time when the review is scheduled.
     /// </summary>
-    public required DateTime ScheduledDateTime { get; set; }
+    public required DateTime ScheduledAt { get; set; }
 }
