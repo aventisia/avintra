@@ -28,12 +28,9 @@ export const VariableSelectorContent = () => {
   return (
     <Command>
       {/* Search Box */}
-      <div
-        className="mx-3 flex w-auto items-center rounded-lg bg-slate-100"
-        cmdk-input-wrapper=""
-      >
+      <div className="mx-3 rounded-lg bg-slate-100">
         <CommandInput
-          className="flex h-9 min-w-[112%] grow rounded-md border-none bg-transparent py-3 text-xs outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-80"
+          className="h-9 text-xs"
           placeholder="Search variables..."
           autoFocus
         />
