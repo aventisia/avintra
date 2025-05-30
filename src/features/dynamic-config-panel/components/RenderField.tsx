@@ -1,9 +1,7 @@
 import { ConfigPanelOuputField } from "@/features/dynamic-config-panel/components/ConfigPanelOuputField";
-import { InputField } from "@aventisia/ui/form";
-import { SelectField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
-import { TextareaField } from "@aventisia/ui/form";
+import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { DCPFieldSchemaType } from "..";
+import ConfigPanelAutosizeTextareaField from "./ConfigPanelAutosizeTextareaField";
 
 // Helper to render the correct field type
 export const RenderField = ({
@@ -22,22 +20,19 @@ export const RenderField = ({
 
   // Render the field based on its type
   switch (type) {
-    case "text":
     case "number":
     case "email":
     case "file":
     case "color":
     case "time":
     case "password":
-      return (
-        <InputField key={name} {...baseProps} type={type} fieldSize="sm" />
-      );
+      return <InputField {...baseProps} type={type} fieldSize="sm" />;
+    case "text":
     case "textarea":
-      return <TextareaField key={name} {...baseProps} size="sm" />;
+      return <ConfigPanelAutosizeTextareaField {...baseProps} />;
     case "select":
       return (
         <SelectField
-          key={name}
           {...baseProps}
           selectOptions={selectOptions || []}
           size="sm"
@@ -45,21 +40,10 @@ export const RenderField = ({
       );
     case "switch":
       return (
-        <SwitchField
-          key={name}
-          {...baseProps}
-          description={description || ""}
-          size="sm"
-        />
+        <SwitchField {...baseProps} description={description || ""} size="sm" />
       );
     case "config-panel-output":
-      return (
-        <ConfigPanelOuputField
-          key={name}
-          {...baseProps}
-          description={description}
-        />
-      );
+      return <ConfigPanelOuputField {...baseProps} description={description} />;
     default:
       return null;
   }
