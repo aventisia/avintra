@@ -1,23 +1,43 @@
 import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
 import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 import { buttonVariants } from "@aventisia/ui/buttons";
-import { AutosizeTextareaField } from "@aventisia/ui/form";
+import {
+  BaseFieldProps,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabelExt,
+  FormMessage,
+} from "@aventisia/ui/form";
 import { cn } from "@aventisia/ui/lib";
 import { PopoverTrigger } from "@aventisia/ui/popover";
 import { VariableIcon } from "@heroicons/react/24/outline";
+import * as React from "react";
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+import { ConfigPanelAutosizeTextarea } from "./ConfigPanelAutosizeTextarea";
 
-interface ConfigPanelAutosizeTextareaFieldProps {
-  name: string;
-  label?: string;
-  description?: string;
+interface ConfigPanelAutosizeTextareaFieldProps
+  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>,
+    BaseFieldProps {
+  /** The name of the form field. */
+  name: FieldPath<FieldValues>;
 }
 
-export default function ConfigPanelAutosizeTextareaField({
+/**
+ * A custom autosize textarea form field component with label (if provided)
+ */
+const ConfigPanelAutosizeTextareaField = ({
   name,
+  minHeight,
+  maxHeight = 200,
   label,
+  isRequired,
   description,
-}: ConfigPanelAutosizeTextareaFieldProps) {
+  className,
+  disabled,
+  ...props
+}: ConfigPanelAutosizeTextareaFieldProps) => {
   // Get variable selector store state and actions
   const { setOpenState, setInputName } = useVariableSelectorStore(
     useShallow((state) => ({
@@ -26,12 +46,10 @@ export default function ConfigPanelAutosizeTextareaField({
     })),
   );
 
-  const baseProps = {
-    name,
-    label,
-    description,
-  };
+  // Get the form context
+  const { control } = useFormContext<FieldValues>();
 
+  // Render the AutosizeTextareaField component
   return (
     <VariableSelectorWrapper inputUniqueName={name}>
       <div className="group relative">
@@ -49,13 +67,43 @@ export default function ConfigPanelAutosizeTextareaField({
           <VariableIcon className="h-3 w-3 stroke-[2.4]" />
           Variables
         </PopoverTrigger>
-        <AutosizeTextareaField
-          {...baseProps}
-          minHeight={0}
-          size="sm"
-          className="h-8" // Set a default height for the textarea. Required explicitly for conditional rendering to work properly
+        <FormField
+          {...{ name, control }}
+          render={({ field }) => (
+            <FormItem>
+              {label && (
+                <FormLabelExt
+                  {...{ label, disabled, isRequired, description }}
+                />
+              )}
+
+              <FormControl>
+                <ConfigPanelAutosizeTextarea
+                  size="sm"
+                  minHeight={minHeight}
+                  maxHeight={maxHeight}
+                  className={cn("h-8", className)}
+                  disabled={disabled}
+                  {...field}
+                  ref={field.ref}
+                  {...props}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
         />
       </div>
     </VariableSelectorWrapper>
   );
-}
+};
+
+ConfigPanelAutosizeTextareaField.displayName =
+  "ConfigPanelAutosizeTextareaField";
+
+export {
+  ConfigPanelAutosizeTextareaField,
+  type ConfigPanelAutosizeTextareaFieldProps
+};
+

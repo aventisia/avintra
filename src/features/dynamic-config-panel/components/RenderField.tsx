@@ -1,7 +1,7 @@
 import { ConfigPanelOuputField } from "@/features/dynamic-config-panel/components/ConfigPanelOuputField";
 import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { DCPFieldSchemaType } from "..";
-import ConfigPanelAutosizeTextareaField from "./ConfigPanelAutosizeTextareaField";
+import { ConfigPanelAutosizeTextareaField } from "./ConfigPanelAutosizeTextareaField";
 
 // Helper to render the correct field type
 export const RenderField = ({
@@ -29,7 +29,7 @@ export const RenderField = ({
       return <InputField {...baseProps} type={type} fieldSize="sm" />;
     case "text":
     case "textarea":
-      return <ConfigPanelAutosizeTextareaField {...baseProps} />;
+      return <ConfigPanelAutosizeTextareaField {...baseProps} minHeight={0} />;
     case "select":
       return (
         <SelectField
