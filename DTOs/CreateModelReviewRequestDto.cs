@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 /// <summary>
 /// Request DTO for creating a review associated with an ML model.
 /// </summary>
-public class CreateModelReviewRequest
+public class CreateModelReviewRequestDto
 {
     /// <summary>
     /// List of file IDs to be uploaded.
@@ -14,6 +14,11 @@ public class CreateModelReviewRequest
     /// Gets or sets the ML model record's primary key to which this record is associated.
     /// </summary>
     public required Guid MLModelId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of extra
+    /// </summary>
+    public ExtractedDataType? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the scheduling details for the review.
