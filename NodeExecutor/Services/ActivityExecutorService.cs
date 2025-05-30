@@ -96,6 +96,12 @@ namespace NodeExecutor.Services
                     var prop = activityType.GetProperty(nodeOutput.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                     if (prop == null) continue;
 
+                    // Replace {{ and }} if exits
+                    nodeOutput.Value.Value = nodeOutput.Value.Value.Replace("{{", "").Replace("}}", "");
+
+                    // Trim the output value
+                    nodeOutput.Value.Value = nodeOutput.Value.Value.Trim();
+                    
                     // Set the output value in the execution context
                     if (outputs != null && outputs.ContainsKey(nodeOutput.Key))
                     {
