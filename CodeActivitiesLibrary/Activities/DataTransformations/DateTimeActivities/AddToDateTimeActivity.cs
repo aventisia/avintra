@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
@@ -13,6 +14,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         [RequiredArgument, Category("Input"), DisplayName("Base DateTime"),
          Description("The original DateTime to which time will be added.")]
         public InArgument<DateTime> BaseDateTime { get; set; }
+
+        [RequiredArgument, Category("Input"), DisplayName("Time Unit"),
+         Description("Time Unit")]
+        public InArgument<TimeUnitEnum> TimeUnit { get; set; }
 
         [RequiredArgument, Category("Input"), DisplayName("Time To Add"),
          Description("The TimeSpan (can be negative) to add or subtract from the base DateTime.")]
@@ -43,5 +48,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                 StatusMessage.Set(context, $"Error: {ex.Message}");
             }
         }
+    }
+
+    public enum TimeUnitEnum
+    {
+        Days,
+        Hours
     }
 }

@@ -8,6 +8,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Creates a new empty list to be used in other activities.")]
     public class CreateNewList : CodeActivity
     {
+        // Output: The new list created
+        [Category("Output")]
+        [RequiredArgument]
+        [DisplayName("List")]
+        [Description("The newly created empty list.")]
+        public OutArgument<List<object>> List { get; set; }
+
         // Output argument to return the newly created list
         [Category("Output")]
         [Description("Returns the result status message.")]
