@@ -8,6 +8,7 @@ import { Separator } from "@aventisia/ui";
 import { NodeDataType } from "@/types/node-data-type";
 import React from "react";
 import { OpenNodeConfig2 } from "../node-container/node-header/OpenNodeConfig2";
+import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 
 interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
@@ -23,20 +24,24 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   ...props
 }) => {
   return (
-    <NodeContainer selected={selected} {...props}>
-      <NodeHeader>
-        {nodeData.icon ? (
-          iconMapper[nodeData.icon]
-        ) : (
-          <NodeImage src={nodeData.img} />
-        )}
-        <NodeHeading>{nodeData.label}</NodeHeading>
-        <OpenNodeConfig2 {...{ nodeData, nodeId }} />
-      </NodeHeader>
-      <Separator className="h-[0.5px] w-full bg-border" />
-      <NodeDescription>{nodeData.description}</NodeDescription>
-      {children}
-    </NodeContainer>
+    <div className="relative">
+      <ReactFlowContextMenu>
+        <NodeContainer selected={selected} {...props}>
+          <NodeHeader>
+            {nodeData.icon ? (
+              iconMapper[nodeData.icon]
+            ) : (
+              <NodeImage src={nodeData.img} />
+            )}
+            <NodeHeading>{nodeData.label}</NodeHeading>
+          </NodeHeader>
+          <Separator className="h-[0.5px] w-full bg-border" />
+          <NodeDescription>{nodeData.description}</NodeDescription>
+          {children}
+        </NodeContainer>
+      </ReactFlowContextMenu>
+      <OpenNodeConfig2 {...{ nodeData, nodeId }} />
+    </div>
   );
 };
 

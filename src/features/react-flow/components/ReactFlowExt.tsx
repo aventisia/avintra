@@ -20,7 +20,6 @@ import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
-import { ReactFlowContextMenu } from "./context-menu";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
@@ -90,32 +89,30 @@ export const ReactFlowExt = () => {
 
   // Render ReactFlow component
   return (
-    <ReactFlowContextMenu>
-      <ReactFlow
-        fitView
-        minZoom={0.4}
-        defaultEdgeOptions={defaultEdgeOptions}
-        nodeTypes={customNodeTypeObjMemo}
-        edgeTypes={customEdgesTypeObjMemo}
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onNodesDelete={onNodesDelete}
-        onEdgesChange={onEdgesChange}
-        onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
-        onConnect={onConnect}
-        deleteKeyCode={null}
-        onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
-        onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
-        // Toggles Reactflows interactivity
-        nodesDraggable={!isLocked}
-        nodesConnectable={!isLocked}
-        elementsSelectable={!isLocked}
-      >
-        <ViewControls />
-        <BackgroundExt />
-        <MiniMapExt />
-      </ReactFlow>
-    </ReactFlowContextMenu>
+    <ReactFlow
+      fitView
+      minZoom={0.4}
+      defaultEdgeOptions={defaultEdgeOptions}
+      nodeTypes={customNodeTypeObjMemo}
+      edgeTypes={customEdgesTypeObjMemo}
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onNodesDelete={onNodesDelete}
+      onEdgesChange={onEdgesChange}
+      onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
+      onConnect={onConnect}
+      deleteKeyCode={null}
+      onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
+      onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
+      // Toggles Reactflows interactivity
+      nodesDraggable={!isLocked}
+      nodesConnectable={!isLocked}
+      elementsSelectable={!isLocked}
+    >
+      <ViewControls />
+      <BackgroundExt />
+      <MiniMapExt />
+    </ReactFlow>
   );
 };
