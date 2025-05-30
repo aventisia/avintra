@@ -41,15 +41,20 @@ export default function ConfigPanelAutosizeTextareaField({
             "absolute right-1.5 h-5 gap-1 rounded-none rounded-t-lg border-none bg-accent px-2 text-xs opacity-0 hover:text-primary group-focus-within:opacity-100",
             "data-[state=open]:opacity-100",
           )}
-          onClick={() =>{
-            setInputName(name)
-            setOpenState(true)
-          } }
+          onClick={() => {
+            setInputName(name);
+            setOpenState(true);
+          }}
         >
           <VariableIcon className="h-3 w-3 stroke-[2.4]" />
           Variables
         </PopoverTrigger>
-        <AutosizeTextareaField {...baseProps} minHeight={30} size="sm" />
+        <AutosizeTextareaField
+          {...baseProps}
+          minHeight={0}
+          size="sm"
+          className="h-8" // Set a default height for the textarea. Required explicitly for conditional rendering to work properly
+        />
       </div>
     </VariableSelectorWrapper>
   );
