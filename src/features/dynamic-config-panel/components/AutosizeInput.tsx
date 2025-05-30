@@ -20,7 +20,8 @@ const AutosizeInput = React.forwardRef<HTMLInputElement, AutosizeInputProps>(
     useEffect(() => {
       if (spanRef.current) {
         const width = spanRef.current.offsetWidth;
-        setInputWidth(width);
+        // have check of maxwidth to prevent the input from being too wide
+        setInputWidth(width > 250 ? 250 : width);
       }
     }, [value]);
 
