@@ -24,16 +24,23 @@ export const useUpdateFlowSilently = () => {
   );
 
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, isSavePending, setIsSavePending, flowVariablesObject } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        edges: state.edges,
-        flowVariablesObject: state.flowVariablesObject,
-        isSavePending: state.isSavePending,
-        setIsSavePending: state.setIsSavePending,
-      })),
-    );
+  const {
+    nodes,
+    edges,
+    isSavePending,
+    setIsSavePending,
+    flowVariablesObject,
+    isPublished,
+  } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      flowVariablesObject: state.flowVariablesObject,
+      isSavePending: state.isSavePending,
+      setIsSavePending: state.setIsSavePending,
+      isPublished: state.isPublished,
+    })),
+  );
 
   // Create a mutation to update flow silently
   const { mutate: updateFlow } = useMutation({
@@ -72,7 +79,7 @@ export const useUpdateFlowSilently = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       // Check if save is pending
-      if (!isSavePending) return;
+      if (!isSavePending || isPublished) return;
 
       // Create react flow object
       const reactFlowObject = {
@@ -101,5 +108,6 @@ export const useUpdateFlowSilently = () => {
     flowVariablesObject,
     viewportState,
     projectInfo.versionId,
+    isPublished,
   ]);
 };
