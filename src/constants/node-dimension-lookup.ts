@@ -1,4 +1,9 @@
-import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
+import {
+  NODE_HEIGHT,
+  NODE_WIDTH,
+  START_END_NODE_HEIGHT,
+  START_END_NODE_WIDTH,
+} from "@/constants";
 import { CustomNodeType } from "@/types/custom-node-type";
 import { NodeDimensionType } from "@/types/node-dimension-type";
 
@@ -12,11 +17,11 @@ export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
   branchStartNode: { width: 12, height: 12 },
   branchEndNode: { width: 12, height: 12 },
   mergeBranchesNode: { width: 16, height: 16 },
-  flowEndNode: { width: 144, height: 44 },
+  flowEndNode: { width: START_END_NODE_WIDTH, height: START_END_NODE_HEIGHT },
   plusFirstNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   plusNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   ifElseNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
-  triggerNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
+  triggerNode: { width: START_END_NODE_WIDTH, height: START_END_NODE_HEIGHT },
   activityNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   switchCaseNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   whileLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },

@@ -34,7 +34,7 @@ export const OpenNodeConfig2 = ({ nodeId, nodeData }: OpenNodeConfigProps) => {
           "group z-10",
           "aria-[expanded=true]:bg-accent",
           "nodrag nopan",
-          "absolute right-3.5 top-3",
+          "absolute right-3.5 top-2.5",
         )}
         onClick={() => {
           setShowDialog(!showDialog);

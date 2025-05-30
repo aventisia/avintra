@@ -4,14 +4,12 @@ import { useNodeSelectorStore } from "@/features/action-selector/stores/action-s
 import { NodeDataType } from "@/types/node-data-type";
 import { Node, NodeProps } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
-import BaseNode from "../BaseNode";
 import { ReplaceFlowTrigger } from "./ReplaceFlowTrigger";
+import { cn } from "@aventisia/ui/lib";
 
 type TriggerNode = Node<NodeDataType, "triggerNode">;
 
 export const TriggerNode = ({
-  id,
-  data,
   selected,
   sourcePosition,
 }: NodeProps<TriggerNode>) => {
@@ -27,14 +25,15 @@ export const TriggerNode = ({
       <NodeSelector>
         <ReplaceFlowTrigger onClick={() => setOrigin("ReplaceTrigger", "NA")} />
       </NodeSelector>
-      <BaseNode
-        selected={selected}
-        nodeData={data}
-        nodeId={id}
-        className="border-green-600 ring-1 ring-green-600"
+      <div
+        className={cn(
+          "flex h-6 w-14 items-center justify-center gap-2 rounded-full border-2 border-[--flow-border-start] bg-[--flow-start] text-3xs",
+          selected && "border-primary ring-1 ring-ring",
+        )}
       >
+        <span> Starts</span>
         <OutputHandle position={sourcePosition} />
-      </BaseNode>
+      </div>
     </>
   );
 };

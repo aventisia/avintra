@@ -15,10 +15,10 @@ const getEdgeMinlen = (
   sourceNodeType?: CustomNodeType,
   targetNodeType?: CustomNodeType,
 ) => {
-  if (sourceNodeType === "branchStartNode") return 4;
-  if (targetNodeType === "branchEndNode") return 4;
-  if (sourceNodeType === "mergeBranchesNode") return 6;
-  return 8;
+  if (sourceNodeType === "branchStartNode") return 2;
+  if (targetNodeType === "branchEndNode") return 2;
+  if (sourceNodeType === "mergeBranchesNode") return 4;
+  return 4;
 };
 
 // Function to layout the elements using dagre
@@ -97,8 +97,7 @@ const getLayoutedElements = (
         const parentNodePosition = dagreGraph.node(parentId);
 
         // Add space (height of two nodes) to the parent's y-position to prevent overlap
-        const siblingYPosition =
-          parentNodePosition.y +  150;
+        const siblingYPosition = parentNodePosition.y + 150;
 
         // Assign the adjusted y-position to the current node
         nodeWithPosition.y = siblingYPosition;
