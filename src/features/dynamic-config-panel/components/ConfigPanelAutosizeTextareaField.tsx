@@ -84,7 +84,15 @@ const ConfigPanelAutosizeTextareaField = ({
         `{{${selectedValue}}}` +
         textareaField.value.slice(pos);
 
+      // Set the new value in the textarea field
       textareaField.onChange(newValue);
+
+      // TODO: Restore focus and move caret after inserted text
+      // requestAnimationFrame(() => {
+      //   el.focus();
+      //   const caretEnd = pos + `{{${selectedValue}}}`.length;
+      //   el.setSelectionRange(caretEnd, caretEnd);
+      // });
 
       setSelectedValue(""); // Reset selectedValue in the store
     }
