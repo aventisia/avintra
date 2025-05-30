@@ -13,7 +13,12 @@ import { cn } from "@aventisia/ui/lib";
 import { PopoverTrigger } from "@aventisia/ui/popover";
 import { VariableIcon } from "@heroicons/react/24/outline";
 import * as React from "react";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+import {
+  FieldPath,
+  FieldValues,
+  useController,
+  useFormContext,
+} from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
 import { ConfigPanelAutosizeTextarea } from "./ConfigPanelAutosizeTextarea";
 
@@ -38,9 +43,20 @@ const ConfigPanelAutosizeTextareaField = ({
   disabled,
   ...props
 }: ConfigPanelAutosizeTextareaFieldProps) => {
+  const caretRef = React.useRef<number>(0);
+
   // Get variable selector store state and actions
-  const { setOpenState, setInputName } = useVariableSelectorStore(
+  const {
+    inputName,
+    selectedValue,
+    setSelectedValue,
+    setOpenState,
+    setInputName,
+  } = useVariableSelectorStore(
     useShallow((state) => ({
+      inputName: state.inputName,
+      selectedValue: state.selectedValue,
+      setSelectedValue: state.setSelectedValue,
       setOpenState: state.setOpenState,
       setInputName: state.setInputName,
     })),
@@ -48,6 +64,31 @@ const ConfigPanelAutosizeTextareaField = ({
 
   // Get the form context
   const { control } = useFormContext<FieldValues>();
+
+  const { field: textareaField } = useController({
+    name,
+    control,
+  });
+
+  // Set caret position on blur
+  const handleCaretChange = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    caretRef.current = e.currentTarget.selectionStart ?? 0;
+  };
+
+  // Insert the selected variable into the textarea at the caret position
+  React.useEffect(() => {
+    if (selectedValue && inputName === name) {
+      const pos = caretRef.current;
+      const newValue =
+        textareaField.value.slice(0, pos) +
+        `{{${selectedValue}}}` +
+        textareaField.value.slice(pos);
+
+      textareaField.onChange(newValue);
+
+      setSelectedValue(""); // Reset selectedValue in the store
+    }
+  }, [selectedValue, setSelectedValue, inputName, name, textareaField]);
 
   // Render the AutosizeTextareaField component
   return (
@@ -68,7 +109,7 @@ const ConfigPanelAutosizeTextareaField = ({
           Variables
         </PopoverTrigger>
         <FormField
-          {...{ name, control }}
+          {...{ name, textareaField }}
           render={({ field }) => (
             <FormItem>
               {label && (
@@ -85,6 +126,10 @@ const ConfigPanelAutosizeTextareaField = ({
                   className={cn("h-8", className)}
                   disabled={disabled}
                   {...field}
+                  onBlur={(e) => {
+                    field.onBlur();
+                    handleCaretChange(e);
+                  }}
                   ref={field.ref}
                   {...props}
                 />
@@ -104,6 +149,5 @@ ConfigPanelAutosizeTextareaField.displayName =
 
 export {
   ConfigPanelAutosizeTextareaField,
-  type ConfigPanelAutosizeTextareaFieldProps
+  type ConfigPanelAutosizeTextareaFieldProps,
 };
-

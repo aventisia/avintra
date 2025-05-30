@@ -119,4 +119,3 @@ const ConfigPanelAutosizeTextarea = React.forwardRef<
 ConfigPanelAutosizeTextarea.displayName = "ConfigPanelAutosizeTextarea";
 
 export { ConfigPanelAutosizeTextarea, type ConfigPanelAutosizeTextareaProps };
-
