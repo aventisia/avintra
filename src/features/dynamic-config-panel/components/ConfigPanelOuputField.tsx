@@ -36,15 +36,21 @@ const ConfigPanelOuputField = ({
   ...props
 }: ConfigPanelOuputFieldProps) => {
   // Get variable selector store state and actions
-  const { selectedValue, setSelectedValue, setOpenState, setInputName } =
-    useVariableSelectorStore(
-      useShallow((state) => ({
-        selectedValue: state.selectedValue,
-        setSelectedValue: state.setSelectedValue,
-        setOpenState: state.setOpenState,
-        setInputName: state.setInputName,
-      })),
-    );
+  const {
+    inputName,
+    selectedValue,
+    setSelectedValue,
+    setOpenState,
+    setInputName,
+  } = useVariableSelectorStore(
+    useShallow((state) => ({
+      inputName: state.inputName,
+      selectedValue: state.selectedValue,
+      setSelectedValue: state.setSelectedValue,
+      setOpenState: state.setOpenState,
+      setInputName: state.setInputName,
+    })),
+  );
 
   // Set names for the fields
   const valueFieldName = `${name}.value` as FieldPath<FieldValues>;
@@ -66,11 +72,11 @@ const ConfigPanelOuputField = ({
 
   // Set AutosizeInput value when selectedValue changes
   React.useEffect(() => {
-    if (selectedValue) {
+    if (selectedValue && inputName === name) {
       valueField.onChange(selectedValue);
       setSelectedValue(""); // Reset selectedValue in the store
     }
-  }, [selectedValue, valueField, setSelectedValue]);
+  }, [selectedValue, valueField, setSelectedValue, inputName, name]);
 
   // Render the ConfigPanelOuputField component
   return (
@@ -144,4 +150,3 @@ const ConfigPanelOuputField = ({
 ConfigPanelOuputField.displayName = "ConfigPanelOuputField";
 
 export { ConfigPanelOuputField, type ConfigPanelOuputFieldProps };
-
