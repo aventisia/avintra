@@ -83,7 +83,7 @@ export const DCPForm = () => {
                 return null;
 
               // Render the field
-              return <RenderField {...field} />;
+              return <RenderField key={field.name} {...field} />;
             })}
           </div>
 
@@ -103,7 +103,7 @@ export const DCPForm = () => {
                   if (!shouldRenderField("Output", field, watchedValues))
                     return null;
 
-                  return <RenderField {...field} />;
+                  return <RenderField key={field.name} {...field} />;
                 })}
               </div>
             </>
