@@ -448,6 +448,7 @@
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\WaitActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\_FlowControlCategoryMetaData.cs" />
     <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
+    <Compile Include="Extensions\ActivityTypeAttribute.cs" />
     <Compile Include="Extensions\RenderIfAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

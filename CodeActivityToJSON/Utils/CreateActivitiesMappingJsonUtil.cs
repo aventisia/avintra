@@ -70,6 +70,7 @@ namespace CodeActivityToJSON.Utils
                             if (categoryMetadataType.Namespace != activity.Namespace) continue;
 
                             // Get the DisplayName and Description attributes from the activity
+                            var nodeType = activity.GetCustomAttributes(typeof(NodeTypeAttribute), false).FirstOrDefault() as NodeTypeAttribute;
                             var displayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                             var description = activity.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                             if (displayName == null || description == null) continue;
@@ -77,7 +78,7 @@ namespace CodeActivityToJSON.Utils
                             // Add the activity to the action category
                             actionCategory.Actions.Add(new NodeAction
                             {
-                                Type = "activityNode",
+                                Type = nodeType == null ? "activityNode" : nodeType.NodeType,
                                 Name = activity.Name,
                                 Label = displayName.DisplayName,
                                 Description = description.Description,
