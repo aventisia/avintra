@@ -22,17 +22,17 @@ export const createIfElseNode = (
   const ifElseNode = createNodeObj(nodeData);
 
   // True branch nodes
-  const trueBranchStartNode = createSupportNodeObj("branchStartNode",true,ifElseNode.id);
-  const truePlusNode = createSupportNodeObj("plusNode",true,ifElseNode.id);
-  const trueBranchEndNode = createSupportNodeObj("branchEndNode",true,ifElseNode.id);
+  const trueBranchStartNode = createSupportNodeObj("branchStartNode",ifElseNode.id);
+  const truePlusNode = createSupportNodeObj("plusNode",ifElseNode.id);
+  const trueBranchEndNode = createSupportNodeObj("branchEndNode",ifElseNode.id);
 
   // False branch nodes
-  const falseBranchStartNode = createSupportNodeObj("branchStartNode",true,ifElseNode.id);
-  const falsePlusNode = createSupportNodeObj("plusNode",true,ifElseNode.id);
-  const falseBranchEndNode = createSupportNodeObj("branchEndNode",true,ifElseNode.id);
+  const falseBranchStartNode = createSupportNodeObj("branchStartNode",ifElseNode.id);
+  const falsePlusNode = createSupportNodeObj("plusNode",ifElseNode.id);
+  const falseBranchEndNode = createSupportNodeObj("branchEndNode",ifElseNode.id);
 
   // Merge branches node
-  const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode",true,ifElseNode.id);
+  const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode",ifElseNode.id);
 
   // Source node -> If-else node
   const source2IfElseEdge = createPlusEdgeObj(sourceNodeId, ifElseNode.id);

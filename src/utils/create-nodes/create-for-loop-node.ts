@@ -17,7 +17,7 @@ export const createForLoopNode = (
 
   // Loop-body branch nodes
   const loopBodyStartNode = createSupportNodeObj("branchStartNode");
-  const loopBodyPlusNode = createSupportNodeObj("plusNode", true);
+  const loopBodyPlusNode = createSupportNodeObj("plusNode");
   const loopBodyEndNode = createSupportNodeObj("branchEndNode");
 
   // Merge branches node
