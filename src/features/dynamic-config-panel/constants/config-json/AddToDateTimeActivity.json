@@ -10,6 +10,27 @@
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "TimeUnit",
+    "label": "Time Unit",
+    "description": "Time Unit",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Days",
+        "value": "Days",
+        "description": ""
+      },
+      {
+        "label": "Hours",
+        "value": "Hours",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "TimeToAdd",
     "label": "Time To Add",
