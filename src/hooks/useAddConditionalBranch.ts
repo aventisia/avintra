@@ -32,7 +32,7 @@ export const useAddConditionalBranch = () => {
 
       // Get default branch start node index
       const sourceNodeIndex = nodes.findIndex(
-        (node) => node.id === nodeData.defaultBranchStartNodeId,
+        (node) => node.id === nodeData.defaultBranchNodeId,
       );
 
       // Add new swithc case branch nodes before default case branch start node
@@ -44,7 +44,7 @@ export const useAddConditionalBranch = () => {
 
       // Get step edge index
       const stepEdgeIndex = edges.findIndex(
-        (edge) => edge.id === nodeData.conditional2DefaultBranchStartEdgeId,
+        (edge) => edge.id === nodeData.conditional2DefaultBranchEdgeId,
       );
 
       // Add new edges before step edge

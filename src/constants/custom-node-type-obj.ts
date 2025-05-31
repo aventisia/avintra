@@ -1,11 +1,12 @@
 import { ActivityNode } from "@/components/nodes/ActivityNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
+import { BranchNode1 } from "@/components/nodes/BranchNode1";
+import { ConditionalNode } from "@/components/nodes/ConditionalNode";
 import { FlowEndNode } from "@/components/nodes/FlowEndNode";
 import { ForLoopNode } from "@/components/nodes/ForLoopNode";
 import { IfElseNode } from "@/components/nodes/IfElseNode";
 import { MergeBranchesNode } from "@/components/nodes/MergeBranchesNode";
 import { PlusNode } from "@/components/nodes/plus-node";
-import { ConditionalNode } from "@/components/nodes/ConditionalNode";
 import { TriggerNode } from "@/components/nodes/trigger-node";
 
 // IMPORTANT NOTE: Add same node type in src/types/custom-node-type.ts
@@ -17,10 +18,13 @@ export const CustomNodeTypeObj = {
   branchStartNode: BranchNode,
   branchEndNode: BranchNode,
   mergeBranchesNode: MergeBranchesNode,
-  
-  // ------------------------------------Logical node types
+
+  // ---Logical node types
+  conditionalNode: ConditionalNode,
+  branchNode1: BranchNode1,
+
+  // ---Logical node types
   ifElseNode: IfElseNode,
-  conditionalNode: ConditionalNode, // TODO
   whileLoopNode: IfElseNode, // TODO
   forLoopNode: ForLoopNode, // TODO
   forEachLoopNode: IfElseNode, // TODO

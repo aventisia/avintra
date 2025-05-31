@@ -5,6 +5,7 @@ export type CustomNodeType =
   | "plusFirstNode"
   | "mergeBranchesNode"
   | "branchStartNode"
+  | "branchNode1"
   | "branchEndNode"
   | "activityNode"
   | "ifElseNode"

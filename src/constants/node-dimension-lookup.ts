@@ -15,6 +15,7 @@ import { NodeDimensionType } from "@/types/node-dimension-type";
  */
 export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
   branchStartNode: { width: 12, height: 12 },
+  branchNode1: { width: 12, height: 12 },
   branchEndNode: { width: 12, height: 12 },
   mergeBranchesNode: { width: 16, height: 16 },
   flowEndNode: { width: START_END_NODE_WIDTH, height: START_END_NODE_HEIGHT },
