@@ -13,6 +13,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     name: field.name,
     label: field.label,
     description: field.description,
+    disabled: field.disabled,
   };
 
   // Render the field based on its type
