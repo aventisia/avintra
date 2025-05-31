@@ -102,7 +102,7 @@ export const ReactFlowExt = () => {
       onEdgesChange={onEdgesChange}
       onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
       onConnect={onConnect}
-      deleteKeyCode={null}
+      deleteKeyCode={"Delete"}
       onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
       onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
       // Toggles Reactflows interactivity

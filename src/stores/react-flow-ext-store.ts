@@ -13,6 +13,7 @@ import {
   applyEdgeChanges,
 } from "@xyflow/react";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import { MARKER_ARROW_PREFIX } from "@/constants";
 
 type State = {
   /** Nodes of currently opened flow */
@@ -94,10 +95,22 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
     });
   },
 
+  //onConnect triggers only when two nodes are connected manually
   onConnect: (connection: Connection) => {
+    // Create a unique id for the edge
+    const id = window.crypto.randomUUID();
+
     set({
       isSavePending: true,
-      edges: addEdge(connection, get().edges),
+      edges: addEdge(
+        {
+          ...connection,
+          label: "plus",
+          id,
+          markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
+        },
+        get().edges,
+      ),
     });
   },
 
