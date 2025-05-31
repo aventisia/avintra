@@ -15,10 +15,10 @@ const getEdgeMinlen = (
   sourceNodeType?: CustomNodeType,
   targetNodeType?: CustomNodeType,
 ) => {
-  if (sourceNodeType === "branchStartNode") return 2;
-  if (targetNodeType === "branchEndNode") return 2;
-  if (sourceNodeType === "mergeBranchesNode") return 4;
-  return 4;
+  if (sourceNodeType === "branchStartNode") return 4;
+  if (targetNodeType === "branchEndNode") return 4;
+  if (sourceNodeType === "mergeBranchesNode") return 6;
+  return 8;
 };
 
 // Function to layout the elements using dagre
