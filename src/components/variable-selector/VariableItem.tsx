@@ -24,8 +24,8 @@ export const VariableItem: React.FC<VariableItemProps> = ({ value }) => {
   return (
     <CommandItem
       value={value}
-      onSelect={(val) => {
-        handleOnSelectValue(val);
+      onSelect={() => {
+        handleOnSelectValue(value);
       }}
       className="cursor-pointer rounded-lg px-2.5 py-1.5"
     >
