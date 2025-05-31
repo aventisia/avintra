@@ -2,10 +2,10 @@ import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
-import { createLabelEdgeObj } from "../create-edges/create-label-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
 import { createSupportNodeObj } from "./create-support-node-obj";
+import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
 
 export const createConditionalNode = (
   nodeData: NodeDataType,
@@ -16,25 +16,28 @@ export const createConditionalNode = (
 
   // Case branch nodes
   const caseBranchStartNode = createSupportNodeObj("branchStartNode");
-  const casePlusNode = createSupportNodeObj("plusNode", true);
+  const casePlusNode = createSupportNodeObj("plusNode");
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
 
   // Default branch nodes
   const defaultBranchStartNode = createSupportNodeObj("branchStartNode");
-  const defaultPlusNode = createSupportNodeObj("plusNode", true);
+  const defaultPlusNode = createSupportNodeObj("plusNode");
   const defaultBranchEndNode = createSupportNodeObj("branchEndNode");
 
   // Merge branches node
   const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode");
 
   // Source node -> conditional node
-  const source2ConditionalEdge = createPlusEdgeObj(sourceNodeId, conditionalNode.id);
+  const source2ConditionalEdge = createPlusEdgeObj(
+    sourceNodeId,
+    conditionalNode.id,
+  );
 
   // conditional node -> Case branch-start node
-  const conditional2CaseBranchStartEdge = createLabelEdgeObj(
+  const conditional2CaseBranchStartEdge = createSimpleEdgeObj(
     conditionalNode.id,
     caseBranchStartNode.id,
-    "Case 1",
+    conditionalNode.id,
   );
 
   // Case branch-start node -> Case plus node
@@ -56,10 +59,10 @@ export const createConditionalNode = (
   );
 
   // conditional node -> Default-case branch-start node
-  const conditional2DefaultBranchStartEdge = createLabelEdgeObj(
+  const conditional2DefaultBranchEdge = createSimpleEdgeObj(
     conditionalNode.id,
     defaultBranchStartNode.id,
-    "Default",
+    conditionalNode.id,
   );
 
   // Default-case branch-start node -> Default-case plus node
@@ -83,9 +86,9 @@ export const createConditionalNode = (
   // Update conditional node data
   conditionalNode.data = {
     ...conditionalNode.data,
-    defaultBranchStartNodeId: defaultBranchStartNode.id,
+    defaultBranchNodeId: defaultBranchStartNode.id,
     mergeBranchesNodeId: mergeBranchesNode.id,
-    conditional2DefaultBranchStartEdgeId: conditional2DefaultBranchStartEdge.id,
+    conditional2DefaultBranchEdgeId: conditional2DefaultBranchEdge.id,
   };
 
   // Return the nodes and edges
@@ -106,7 +109,7 @@ export const createConditionalNode = (
       caseBranchStart2PlusEdge,
       casePlus2CaseBranchEndEdge,
       caseBranchEndToMergeBranchesEdge,
-      conditional2DefaultBranchStartEdge,
+      conditional2DefaultBranchEdge,
       defaultBranchStart2PlusEdge,
       defaultPlus2DefaultBranchEndEdge,
       defaultBranchEndToMergeBranchesEdge,

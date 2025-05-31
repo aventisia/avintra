@@ -13,7 +13,7 @@ export const createNewConditionalBranch = (
 ): CreateNodesAndEdgesType => {
   // Case branch nodes
   const caseBranchStartNode = createSupportNodeObj("branchStartNode");
-  const casePlusNode = createSupportNodeObj("plusNode", true);
+  const casePlusNode = createSupportNodeObj("plusNode");
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
 
   // Conditional node -> Case branch-start node
