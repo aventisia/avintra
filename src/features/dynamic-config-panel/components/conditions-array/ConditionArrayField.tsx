@@ -1,14 +1,38 @@
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { DCPFieldSchemaType, RenderField, ConditionLabel } from "../..";
+import {
+  ConditionLabel,
+  DCPFieldSchemaType,
+  FieldsLabelHeader,
+  RenderField,
+} from "../..";
 
 export const ConditionArrayField = (field: DCPFieldSchemaType) => {
-  const { control } = useFormContext();
+  const [fieldsCount, setFieldsCount] = useState(0);
+
+  // Get the form context and field array methods
+  const { control, getValues } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: field.name,
   });
+
+  // Ensure at least one entry exists
+  useEffect(() => {
+    const current = getValues(field.name);
+    if (!current || current.length === 0) {
+      append({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update the fields count whenever fields change
+  useEffect(() => {
+    setFieldsCount(fields.length);
+  }, [fields]);
 
   return (
     <div>
@@ -37,11 +61,7 @@ export const ConditionArrayField = (field: DCPFieldSchemaType) => {
       {/* Render the field array condition group */}
       <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
         <div className="mb-2 flex w-full items-center justify-between">
-          <ConditionLabel
-            label="Group 1"
-            description="Group 1 description"
-            className="text-[0.9rem]"
-          />
+          <ConditionLabel label="Group 1" className="text-[0.9rem]" />
 
           <Button
             type="button"
@@ -54,26 +74,20 @@ export const ConditionArrayField = (field: DCPFieldSchemaType) => {
             AND
           </Button>
         </div>
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
-          <ConditionLabel
-            label="First Value"
-            description="The first value to compare in the condition. This can be a number, string, or variable."
-          />
-          <ConditionLabel
-            label="Operator"
-            description="The operator to use for comparison."
-          />
-          <ConditionLabel
-            label="Second Value"
-            description="The second value to compare in the condition. This can be a number, string, or variable."
-          />
-          <span className="w-8" />
-        </div>
 
+        {/* Render the header for the fields in the condition group */}
+        <FieldsLabelHeader fieldsCount={fieldsCount} />
+
+        {/* Render the fields in the condition group */}
         {fields.map((item, index) => (
           <div
             key={item.id}
-            className="grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5"
+            className={cn(
+              "grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5",
+              fieldsCount > 1
+                ? "grid-cols-[1fr_1fr_1fr_auto]"
+                : "grid-cols-[1fr_1fr_1fr]",
+            )}
           >
             {field.conditionArraySchema?.map((subField) => (
               <RenderField
@@ -82,14 +96,16 @@ export const ConditionArrayField = (field: DCPFieldSchemaType) => {
                 name={`${field.name}.${index}.${subField.name}`}
               />
             ))}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon8"
-              onClick={() => remove(index)}
-            >
-              <TrashIcon className="h-4 w-4" />
-            </Button>
+            {fieldsCount > 1 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon8"
+                onClick={() => remove(index)}
+              >
+                <TrashIcon className="h-4 w-4" />
+              </Button>
+            ) : null}
           </div>
         ))}
       </div>

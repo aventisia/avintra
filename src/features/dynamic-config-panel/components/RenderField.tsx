@@ -11,8 +11,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
   // Create base props for the field
   const baseProps = {
     name: field.name,
-    label: field.label || "Field",
-    description: field.description || "",
+    label: field.label,
+    description: field.description,
   };
 
   // Render the field based on its type
@@ -36,7 +36,14 @@ export const RenderField = (field: DCPFieldSchemaType) => {
         />
       );
     case "switch":
-      return <SwitchField {...baseProps} size="sm" />;
+      return (
+        <SwitchField
+          {...baseProps}
+          label={field.label || ""}
+          description={field.description || ""}
+          size="sm"
+        />
+      );
     case "condition-array":
       return <ConditionArrayField {...field} />;
     case "config-panel-output":
