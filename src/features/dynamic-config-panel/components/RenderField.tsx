@@ -1,6 +1,6 @@
 import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import {
-  ConditionArrayField,
+  ConditionGroupsField,
   ConfigPanelAutosizeTextareaField,
   ConfigPanelOuputField,
   DCPFieldSchemaType,
@@ -45,7 +45,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
         />
       );
     case "condition-array":
-      return <ConditionArrayField {...field} />;
+      return <ConditionGroupsField {...field} />;
     case "config-panel-output":
       return <ConfigPanelOuputField {...baseProps} />;
     default:

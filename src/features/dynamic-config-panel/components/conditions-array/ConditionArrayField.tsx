@@ -1,7 +1,7 @@
+import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   ConditionLabel,
@@ -10,105 +10,94 @@ import {
   RenderField,
 } from "../..";
 
-export const ConditionArrayField = (field: DCPFieldSchemaType) => {
-  const [fieldsCount, setFieldsCount] = useState(0);
+interface ConditionArrayFieldProps extends DCPFieldSchemaType {
+  groupName: string; // group name for nested conditions
+  groupIndex: number; // group index for nested conditions
+  groupsCount: number; // Count of groups, if needed
+  removeGroup: (index: number) => void; // Optional function to remove the group
+}
 
+export const ConditionArrayField = ({
+  groupName,
+  groupIndex,
+  groupsCount,
+  removeGroup,
+  conditionArraySchema,
+}: ConditionArrayFieldProps) => {
   // Get the form context and field array methods
-  const { control, getValues } = useFormContext();
+  const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: field.name,
+    name: groupName,
   });
 
-  // Ensure at least one entry exists
-  useEffect(() => {
-    const current = getValues(field.name);
-    if (!current || current.length === 0) {
-      append({});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Update the fields count whenever fields change
-  useEffect(() => {
-    setFieldsCount(fields.length);
-  }, [fields]);
-
   return (
-    <div>
-      {/* Render the condtions heading at the top */}
-      <div className="flex items-center justify-between">
-        {/* Heading */}
-        <ConditionLabel
-          label={field.label}
-          description={field.description}
-          className="text-base"
-        />
+    <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+      <div className="mb-2 flex w-full items-center justify-between">
+        <div className="flex items-center">
+          <ConditionLabel
+            label={`Group ${groupIndex + 1}`}
+            className="text-[0.9rem]"
+          />
+          {groupsCount > 1 ? (
+            <>
+              <Separator orientation="vertical" className="ml-4 h-5" />
+              <Button
+                type="button"
+                variant="caution"
+                size="xs"
+                disabled={groupsCount <= 1}
+                onClick={() => removeGroup(groupIndex)}
+                className="gap-1"
+              >
+                <TrashIcon className="h-3.5 w-3.5" />
+                Remove
+              </Button>
+            </>
+          ) : null}
+        </div>
 
-        {/* Button to add a new condition group */}
         <Button
           type="button"
           variant="ghost"
           size="xs"
-          className="gap-1 text-xs text-primary hover:text-primary"
+          className="-mr-3 gap-1 text-xs text-primary hover:text-primary"
           onClick={() => append({})}
         >
           <PlusIcon className="h-4 w-4 stroke-2" />
-          OR
+          AND
         </Button>
       </div>
 
-      {/* Render the field array condition group */}
-      <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
-        <div className="mb-2 flex w-full items-center justify-between">
-          <ConditionLabel label="Group 1" className="text-[0.9rem]" />
+      {/* Render the header for the fields in the condition group */}
+      <FieldsLabelHeader />
 
+      {/* Render the fields in the condition group */}
+      {fields.map((item, index) => (
+        <div
+          key={item.id}
+          className={cn(
+            "grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5",
+          )}
+        >
+          {conditionArraySchema?.map((subField) => (
+            <RenderField
+              key={subField.name}
+              {...subField}
+              name={`${groupName}.${index}.${subField.name}`}
+            />
+          ))}
           <Button
             type="button"
-            variant="ghost"
-            size="xs"
-            className="-mr-3 gap-1 text-xs text-primary hover:text-primary"
-            onClick={() => append({})}
+            variant="caution"
+            size="icon8"
+            disabled={fields.length <= 1}
+            onClick={() => remove(index)}
           >
-            <PlusIcon className="h-4 w-4 stroke-2" />
-            AND
+            <TrashIcon className="h-4 w-4" />
           </Button>
         </div>
-
-        {/* Render the header for the fields in the condition group */}
-        <FieldsLabelHeader fieldsCount={fieldsCount} />
-
-        {/* Render the fields in the condition group */}
-        {fields.map((item, index) => (
-          <div
-            key={item.id}
-            className={cn(
-              "grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5",
-              fieldsCount > 1
-                ? "grid-cols-[1fr_1fr_1fr_auto]"
-                : "grid-cols-[1fr_1fr_1fr]",
-            )}
-          >
-            {field.conditionArraySchema?.map((subField) => (
-              <RenderField
-                key={subField.name}
-                {...subField}
-                name={`${field.name}.${index}.${subField.name}`}
-              />
-            ))}
-            {fieldsCount > 1 ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon8"
-                onClick={() => remove(index)}
-              >
-                <TrashIcon className="h-4 w-4" />
-              </Button>
-            ) : null}
-          </div>
-        ))}
-      </div>
+      ))}
     </div>
   );
 };
