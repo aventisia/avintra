@@ -20,7 +20,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
-import { ConfigPanelAutosizeTextarea } from "./ConfigPanelAutosizeTextarea";
+import { ConfigPanelAutosizeTextarea } from "../..";
 
 interface ConfigPanelAutosizeTextareaFieldProps
   extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>,
@@ -107,6 +107,7 @@ const ConfigPanelAutosizeTextareaField = ({
             buttonVariants({ variant: "ghost", size: "sm" }),
             "absolute right-1.5 h-5 gap-1 rounded-none rounded-t-lg border-none bg-accent px-2 text-xs opacity-0 hover:text-primary group-focus-within:opacity-100",
             "data-[state=open]:opacity-100",
+            label ? "top-0" : "-top-5",
           )}
           onClick={() => {
             setInputName(name);
@@ -157,5 +158,6 @@ ConfigPanelAutosizeTextareaField.displayName =
 
 export {
   ConfigPanelAutosizeTextareaField,
-  type ConfigPanelAutosizeTextareaFieldProps,
+  type ConfigPanelAutosizeTextareaFieldProps
 };
+

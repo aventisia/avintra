@@ -18,7 +18,8 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
-import { ConfigPanelAutosizeInput } from "./ConfigPanelAutosizeInput";
+import { ConfigPanelAutosizeInput } from "../..";
+
 
 interface ConfigPanelOuputFieldProps
   extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeInput> {
@@ -150,3 +151,4 @@ const ConfigPanelOuputField = ({
 ConfigPanelOuputField.displayName = "ConfigPanelOuputField";
 
 export { ConfigPanelOuputField, type ConfigPanelOuputFieldProps };
+
