@@ -5,6 +5,7 @@ import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 
 export const useAddNodeFromEdge = () => {
   // Get ReactFlowExt store state & actions
@@ -14,6 +15,17 @@ export const useAddNodeFromEdge = () => {
       edges: state.edges,
     })),
   );
+
+  // Get state and actions from the DynamicConfigPanel store
+  const { showDialog, setShowDialog, setNodeData, setNodeId } =
+    useDynamicConfigPanelStore(
+      useShallow((state) => ({
+        showDialog: state.showDialog,
+        setNodeId: state.setNodeId,
+        setShowDialog: state.setShowDialog,
+        setNodeData: state.setNodeData,
+      })),
+    );
 
   // Auto layout the flow
   const autoLayout = useDagreAutoLayout();
@@ -57,7 +69,9 @@ export const useAddNodeFromEdge = () => {
       );
 
       // Get step edge index
-      const stepEdgeIndex = updatedEdges1.findIndex((edge) => edge.id === stepEdgeId);
+      const stepEdgeIndex = updatedEdges1.findIndex(
+        (edge) => edge.id === stepEdgeId,
+      );
 
       // Add new edges before step edge
       const updatedEdges2 = [
@@ -66,10 +80,23 @@ export const useAddNodeFromEdge = () => {
         ...updatedEdges1.slice(stepEdgeIndex),
       ];
 
+      // Open Config dialog when new node added
+      setNodeData(nodeData);
+      setShowDialog(!showDialog);
+      setNodeId(lastNode.id);
+
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges2 });
     },
-    [edges, nodes, autoLayout],
+    [
+      edges,
+      nodes,
+      setNodeData,
+      setShowDialog,
+      showDialog,
+      setNodeId,
+      autoLayout,
+    ],
   );
 
   // Return the handler
