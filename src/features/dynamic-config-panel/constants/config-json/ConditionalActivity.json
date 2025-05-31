@@ -22,13 +22,13 @@
   },
   {
     "direction": "Input",
-    "type": "condition-array",
+    "type": "condition-groups",
     "name": "Conditions",
     "label": "Conditions",
     "description": "Add one or more conditions",
     "defaultValue": [[{}]],
     "required": false,
-    "conditionArraySchema": [
+    "conditionSchema": [
       {
         "direction": "Input",
         "type": "text",

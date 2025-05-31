@@ -44,7 +44,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
           size="sm"
         />
       );
-    case "condition-array":
+    case "condition-groups":
       return <ConditionGroupsField {...field} />;
     case "config-panel-output":
       return <ConfigPanelOuputField {...baseProps} />;

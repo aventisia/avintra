@@ -10,20 +10,20 @@ import {
   RenderField,
 } from "../..";
 
-interface ConditionArrayFieldProps extends DCPFieldSchemaType {
+interface ConditionListFieldProps extends DCPFieldSchemaType {
   groupName: string; // group name for nested conditions
   groupIndex: number; // group index for nested conditions
   groupsCount: number; // Count of groups, if needed
   removeGroup: (index: number) => void; // Optional function to remove the group
 }
 
-export const ConditionArrayField = ({
+export const ConditionListField = ({
   groupName,
   groupIndex,
   groupsCount,
   removeGroup,
-  conditionArraySchema,
-}: ConditionArrayFieldProps) => {
+  conditionSchema,
+}: ConditionListFieldProps) => {
   // Get the form context and field array methods
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
@@ -80,7 +80,7 @@ export const ConditionArrayField = ({
             "grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5",
           )}
         >
-          {conditionArraySchema?.map((subField) => (
+          {conditionSchema?.map((subField) => (
             <RenderField
               key={subField.name}
               {...subField}

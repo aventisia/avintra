@@ -1,7 +1,7 @@
 import { Button } from "@aventisia/ui/buttons";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { ConditionArrayField, ConditionLabel, DCPFieldSchemaType } from "../..";
+import { ConditionListField, ConditionLabel, DCPFieldSchemaType } from "../..";
 
 export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
   const { control } = useFormContext();
@@ -40,7 +40,7 @@ export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
       {conditionGroups.map((group, groupIndex) => {
         const groupName = `${field.name}.${groupIndex}`;
         return (
-          <ConditionArrayField
+          <ConditionListField
             groupName={groupName}
             groupIndex={groupIndex}
             groupsCount={conditionGroups.length}

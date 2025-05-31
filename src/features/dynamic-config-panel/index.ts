@@ -2,10 +2,10 @@
 export * from "./apis/get-node-config";
 
 // components
-export * from "./components/conditions-array/ConditionArrayField";
-export * from "./components/conditions-array/ConditionGroupsField";
-export * from "./components/conditions-array/ConditionLabel";
-export * from "./components/conditions-array/FieldsLabelHeader";
+export * from "./components/condition-groups/ConditionListField";
+export * from "./components/condition-groups/ConditionGroupsField";
+export * from "./components/condition-groups/ConditionLabel";
+export * from "./components/condition-groups/FieldsLabelHeader";
 export * from "./components/DCPDialog";
 export * from "./components/DCPForm";
 export * from "./components/fields-for-form/ConfigPanelAutosizeInput";

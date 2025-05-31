@@ -106,11 +106,11 @@ function getNodeOutputSchema(field: DCPFieldSchemaType): ZodTypeAny {
   });
 }
 
-function getConditionArraySchema(field: DCPFieldSchemaType): ZodTypeAny {
+function getConditionSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Recursively generate schema for array items
-  if (Array.isArray(field.conditionArraySchema)) {
+  if (Array.isArray(field.conditionSchema)) {
     const itemShapes: Record<string, ZodTypeAny> = {};
-    field.conditionArraySchema.forEach((subField) => {
+    field.conditionSchema.forEach((subField) => {
       itemShapes[subField.name] = getZodType(subField);
     });
     let arrSchema = z.array(z.object(itemShapes));
@@ -132,8 +132,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
     case "checkbox":
     case "switch":
       return applyFieldOptions(z.boolean(), field);
-    case "condition-array":
-      return getConditionArraySchema(field);
+    case "condition-groups":
+      return getConditionSchema(field);
     case "config-panel-output":
       return getNodeOutputSchema(field);
     default:

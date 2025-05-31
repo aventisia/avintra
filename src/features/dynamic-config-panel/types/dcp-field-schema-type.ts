@@ -28,7 +28,7 @@ export type DCPFieldSchemaType = {
   defaultValue: unknown; // Not a html attribute
   description?: string; // Not a html attribute
   selectOptions?: ISelectOption[]; // Not a html attribute
-  conditionArraySchema?: DCPFieldSchemaType[]; // Not a html attribute (For condition array types)
+  conditionSchema?: DCPFieldSchemaType[]; // Not a html attribute (For condition array types)
   className?: string;
   placeholder?: string;
   disabled?: boolean;
