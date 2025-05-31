@@ -17,7 +17,7 @@ export function getActivityNodeData(
     nodeInputs:
       nodeObj?.data?.inputs?.map((input: NodeInputType) => ({
         key: input.key,
-        value: String(input.value),
+        value: input.value,
       })) ?? [],
     nodeOutputs:
       nodeObj?.data?.outputs?.map((output: NodeOutputType) => ({

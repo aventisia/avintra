@@ -1,6 +1,6 @@
 export interface NodeInput {
   key: string;
-  value: string;
+  value: unknown;
 }
 
 export interface NodeOutputValue {
