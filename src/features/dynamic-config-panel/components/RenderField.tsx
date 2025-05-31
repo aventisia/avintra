@@ -1,32 +1,29 @@
-import { ConfigPanelOuputField } from "@/features/dynamic-config-panel/components/ConfigPanelOuputField";
 import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
-import { DCPFieldSchemaType } from "..";
-import { ConfigPanelAutosizeTextareaField } from "./ConfigPanelAutosizeTextareaField";
+import {
+  ConditionArrayField,
+  ConfigPanelAutosizeTextareaField,
+  ConfigPanelOuputField,
+  DCPFieldSchemaType,
+} from "..";
 
 // Helper to render the correct field type
-export const RenderField = ({
-  type,
-  name,
-  label,
-  selectOptions,
-  description,
-}: DCPFieldSchemaType) => {
+export const RenderField = (field: DCPFieldSchemaType) => {
   // Create base props for the field
   const baseProps = {
-    name,
-    label,
-    description,
+    name: field.name,
+    label: field.label || "Field",
+    description: field.description || "",
   };
 
   // Render the field based on its type
-  switch (type) {
+  switch (field.type) {
     case "number":
     case "email":
     case "file":
     case "color":
     case "time":
     case "password":
-      return <InputField {...baseProps} type={type} fieldSize="sm" />;
+      return <InputField {...baseProps} type={field.type} fieldSize="sm" />;
     case "text":
     case "textarea":
       return <ConfigPanelAutosizeTextareaField {...baseProps} minHeight={0} />;
@@ -34,16 +31,16 @@ export const RenderField = ({
       return (
         <SelectField
           {...baseProps}
-          selectOptions={selectOptions || []}
+          selectOptions={field.selectOptions || []}
           size="sm"
         />
       );
     case "switch":
-      return (
-        <SwitchField {...baseProps} description={description || ""} size="sm" />
-      );
+      return <SwitchField {...baseProps} size="sm" />;
+    case "condition-array":
+      return <ConditionArrayField {...field} />;
     case "config-panel-output":
-      return <ConfigPanelOuputField {...baseProps} description={description} />;
+      return <ConfigPanelOuputField {...baseProps} />;
     default:
       return null;
   }

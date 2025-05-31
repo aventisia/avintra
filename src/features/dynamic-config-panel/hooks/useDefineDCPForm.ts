@@ -1,15 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z, ZodTypeAny } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import {
   DCPFieldSchemaType,
   generateZodSchema,
+  getDefaultValuesForForm,
   getNodeConfig,
   useDynamicConfigPanelStore,
-  getDefaultValuesForForm,
 } from "..";
-import { useEffect, useState } from "react";
 
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)

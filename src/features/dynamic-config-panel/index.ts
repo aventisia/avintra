@@ -2,8 +2,12 @@
 export * from "./apis/get-node-config";
 
 // components
-export * from "./components/ConfigPanelAutosizeInput";
-export * from "./components/ConfigPanelOuputField";
+export * from "./components/conditions-array/ConditionArrayField";
+export * from "./components/conditions-array/ConditionLabel";
+export * from "./components/fields-for-form/ConfigPanelAutosizeInput";
+export * from "./components/fields-for-form/ConfigPanelOuputField";
+export * from "./components/fields-for-form/ConfigPanelAutosizeTextareaField";
+export * from "./components/fields-for-form/ConfigPanelAutosizeTextarea";
 export * from "./components/DCPDialog";
 export * from "./components/DCPForm";
 export * from "./components/RenderField";
@@ -24,4 +28,3 @@ export * from "./types/render-if-type";
 export * from "./utils/generate-zod-schema";
 export * from "./utils/get-default-values-for-form";
 export * from "./utils/should-render-field";
-

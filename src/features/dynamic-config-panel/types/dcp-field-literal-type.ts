@@ -41,4 +41,6 @@ export type DCPControlType =
   | "date"
   | "slider"
   | "textarea"
+  | "condition-array"
   | "config-panel-output";
+  

@@ -1,18 +1,18 @@
-import { z, ZodBoolean, ZodNumber, ZodString, ZodTypeAny } from "zod";
-import { DCPFieldSchemaType } from "..";
 import {
-  minLenError,
+  maxError,
   maxLenError,
   minError,
-  maxError,
+  minLenError,
   reqError,
 } from "@aventisia/ui/utils";
+import { z, ZodBoolean, ZodNumber, ZodString, ZodTypeAny } from "zod";
+import { DCPFieldSchemaType } from "..";
 
 function applyFieldOptions<T extends ZodString | ZodNumber | ZodBoolean>(
   schema: T,
   {
     name,
-    label,
+    label = "Field",
     defaultValue,
     required,
     min,
@@ -106,14 +106,34 @@ function getNodeOutputSchema(field: DCPFieldSchemaType): ZodTypeAny {
   });
 }
 
+function getConditionArraySchema(field: DCPFieldSchemaType): ZodTypeAny {
+  // Recursively generate schema for array items
+  if (Array.isArray(field.conditionArraySchema)) {
+    const itemShapes: Record<string, ZodTypeAny> = {};
+    field.conditionArraySchema.forEach((subField) => {
+      itemShapes[subField.name] = getZodType(subField);
+    });
+    let arrSchema = z.array(z.object(itemShapes));
+    if (field.required) {
+      arrSchema = arrSchema.min(1, {
+        message: reqError(field.label || "Field"),
+      });
+    }
+    return arrSchema;
+  }
+  // fallback if schema is missing
+  return z.array(z.any());
+}
+
 function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
   switch (field.type) {
     case "number":
       return applyFieldOptions(z.number(), field);
-
     case "checkbox":
     case "switch":
       return applyFieldOptions(z.boolean(), field);
+    case "condition-array":
+      return getConditionArraySchema(field);
     case "config-panel-output":
       return getNodeOutputSchema(field);
     default:

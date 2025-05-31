@@ -24,10 +24,11 @@ export type DCPFieldSchemaType = {
   type: DCPControlType;
   name: string;
   direction: "Input" | "Output"; // Not a html attribute
-  label: string; // Not a html attribute
+  label?: string; // Not a html attribute
   defaultValue: unknown; // Not a html attribute
   description?: string; // Not a html attribute
   selectOptions?: ISelectOption[]; // Not a html attribute
+  conditionArraySchema?: DCPFieldSchemaType[]; // Not a html attribute (For condition array types)
   className?: string;
   placeholder?: string;
   disabled?: boolean;
