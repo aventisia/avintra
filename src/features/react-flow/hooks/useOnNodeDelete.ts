@@ -1,5 +1,5 @@
 /* Inspired from: https://reactflow.dev/examples/nodes/delete-middle-node */
-import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+// import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import {
   getConnectedEdges,
@@ -12,15 +12,19 @@ import { useShallow } from "zustand/react/shallow";
 
 export const useOnNodeDelete = () => {
   // Get ReactFlowExt store state & actions
-  const { nodes, edges } = useReactFlowExtStore(
+  const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+      flowVariablesObject: state.flowVariablesObject,
+      setFlowVariablesObject: state.setFlowVariablesObject,
     })),
   );
 
   // Auto layout the flow
-  const autoLayout = useDagreAutoLayout();
+  // const autoLayout = useDagreAutoLayout();
 
   // Handler to reconnect edges on node delete
   const onNodesDelete: OnNodesDelete = useCallback(
@@ -47,11 +51,14 @@ export const useOnNodeDelete = () => {
 
         return [...remainingEdges, ...createdEdges];
       }, edges);
+      // Then remove the node
+      setNodes(nodes.filter((node) => node.id !== deleted[0].id));
+      setEdges(reconnectedEdges);
 
       // Auto organize node & edge
-      autoLayout({ newNodes: nodes, newEdges: reconnectedEdges });
+      // autoLayout({ newNodes: nodes, newEdges: reconnectedEdges });
     },
-    [edges, autoLayout, nodes],
+    [edges, nodes, setEdges, setNodes],
   );
 
   return { onNodesDelete };
