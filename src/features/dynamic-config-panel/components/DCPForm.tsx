@@ -4,6 +4,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
 import { SearchCodeIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import {
@@ -14,6 +15,8 @@ import {
 } from "..";
 
 export const DCPForm = () => {
+  const [showOuputFields, setShowOutputFields] = useState(false);
+
   // Define form
   const {
     form,
@@ -39,6 +42,17 @@ export const DCPForm = () => {
       isPublished: state.isPublished,
     })),
   );
+
+  // Check if output fields should be shown based on node configuration and watched values
+  useEffect(() => {
+    const renderedOutputFields = nodeConfig.filter((field) =>
+      shouldRenderField("Output", field, watchedValues),
+    );
+
+    setShowOutputFields(
+      renderedOutputFields.map((field) => field.name).length > 0,
+    );
+  }, [isFormReady, nodeConfig, watchedValues]);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
@@ -105,7 +119,7 @@ export const DCPForm = () => {
           </div>
 
           {/* Output fields */}
-          {outputKeys.length > 0 ? (
+          {showOuputFields ? (
             <>
               <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
                 <span className="rounded-full bg-accent px-1.5 text-indigo-600">
