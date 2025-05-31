@@ -54,17 +54,12 @@ export default function useWebSocket() {
   const sendFirstNode = useCallback(() => {
     // Get trigger node id
     const triggerNodeId = nodes.find((node) => node.type === "triggerNode")?.id;
-    console.log("Trigger node id", triggerNodeId);
 
     // Get edge id of trigger node
     const triggerNodeEdge = edges.find((edge) => edge.source === triggerNodeId);
 
-    console.log("Trigger node edge", triggerNodeEdge);
-
     // Get the target node id
     const targetNodeId = triggerNodeEdge?.target;
-
-    console.log("Target node id", targetNodeId);
 
     // Get the target node
     const targetNode = nodes.find(
@@ -73,8 +68,6 @@ export default function useWebSocket() {
 
     // Get activity node data
     const nodeData = getActivityNodeData(targetNode);
-
-    console.log("Node data", nodeData);
 
     sendCommand("nextnode", JSON.stringify(nodeData));
   }, [nodes, edges, sendCommand]);
@@ -122,8 +115,6 @@ export default function useWebSocket() {
         const data = JSON.parse(event.data) as WebSocketMessage;
 
         if (data.source === "wpf" && data.command) {
-          console.log(`Command received from WPF: ${data.command}`);
-
           if (
             data.command === "start" ||
             data.command === "abort" ||
@@ -135,10 +126,8 @@ export default function useWebSocket() {
           }
 
           if (data.command === "start") {
-            console.log("Sending first node to WPF");
             sendFirstNode();
           } else if (data.command === "nextnode") {
-            console.log("Sending next node to WPF", data.data);
             sendNextNode(data.data || "id");
           }
         }
