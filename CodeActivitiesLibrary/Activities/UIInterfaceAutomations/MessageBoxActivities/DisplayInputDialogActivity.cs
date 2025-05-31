@@ -1,8 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     // Activity to display an input dialog
     //[DisplayName("Display Input Dialog"), Description("Displays a dialog box that prompts the user to enter text.")]

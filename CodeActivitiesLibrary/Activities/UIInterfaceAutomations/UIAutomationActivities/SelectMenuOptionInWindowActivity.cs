@@ -26,7 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowHandle = WindowHandle.Get(context);
             var menuOptionSelector = MenuOptionSelector.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

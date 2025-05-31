@@ -1,36 +1,98 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    // Activity to rename an Excel worksheet
-    [DisplayName("Rename Excel Worksheet"), Description("Renames a specific worksheet of an Excel instance.")]
+    [DisplayName("Rename Excel Worksheet")]
+    [Description("Renames a specific worksheet in the active Excel workbook.")]
     public class RenameExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The current name of the worksheet.")]
-        public InArgument<string> CurrentWorksheetName { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The new name for the worksheet.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Selection Type")]
+        [Description("Specifies whether to select the worksheet by Name or Index.")]
+        [DefaultValue(WorksheetSelectionTypeEnum.Name)]
+        public InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Search Value")]
+        [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').")]
+        public InArgument<string> SearchValue { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("New Worksheet Name")]
+        [Description("The new name to assign to the selected worksheet.")]
         public InArgument<string> NewWorksheetName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var currentWorksheetName = CurrentWorksheetName.Get(context);
-            var newWorksheetName = NewWorksheetName.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate renaming the worksheet (actual implementation would use Excel Interop or similar)
-                status = $"Simulated renaming of worksheet '{currentWorksheetName}' to '{newWorksheetName}' in Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var selectionType = SelectionType.Get(context);
+                var searchValue = SearchValue.Get(context);
+                var newWorksheetName = NewWorksheetName.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Excel application or workbook is not available.");
+
+                var wb = excelApp.ActiveWorkbook;
+
+                Excel.Worksheet ws = null;
+
+                switch (selectionType)
+                {
+                    case WorksheetSelectionTypeEnum.Name:
+                        ws = wb.Worksheets[searchValue] as Excel.Worksheet;
+                        break;
+
+                    case WorksheetSelectionTypeEnum.Index:
+                        if (!int.TryParse(searchValue, out var sheetIndex))
+                            throw new ArgumentException("Invalid worksheet index provided.");
+
+                        ws = wb.Worksheets[sheetIndex] as Excel.Worksheet;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(selectionType));
+                }
+
+                if (ws == null)
+                    throw new ArgumentException($"Worksheet '{searchValue}' not found.");
+
+                // Validate new worksheet name
+                if (string.IsNullOrWhiteSpace(newWorksheetName))
+                    throw new ArgumentException("New worksheet name cannot be empty.");
+
+                // Rename the worksheet
+                ws.Name = newWorksheetName;
+
+                status = $"Successfully renamed worksheet from '{searchValue}' to '{newWorksheetName}'.";
             }
             catch (Exception ex)
             {

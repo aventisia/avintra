@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.IO;
-
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+﻿namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 {
 
     //Activity to extract PDF file pages to a new PDF file

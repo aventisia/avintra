@@ -1,28 +1,92 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
+using CodeActivitiesLibrary.Extensions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    // Activity to close an Excel instance
-    [DisplayName("Close Excel"), Description("Closes an Excel instance.")]
+    [DisplayName("Close Excel Application")]
+    [Description("Closes the active Excel application instance and optionally saves changes.")]
     public class CloseExcelActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object to close.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Before Closing Excel")]
+        [Description("Specifies what to do before closing Excel.")]
+        [DefaultValue(ExcelCloseOptionEnum.SaveDocument)]
+        public InArgument<ExcelCloseOptionEnum> BeforeClosingExcel { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Save Path")]
+        [Description("The file path to save the document when 'Save Document As' is selected.")]
+        [RenderIfCondition(nameof(BeforeClosingExcel), "SaveDocumentAs")]
+        public InArgument<string> SavePath { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate closing Excel (actual implementation would use Excel Interop or similar)
-                status = $"Simulated closure of Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var closeOption = BeforeClosingExcel.Get(context);
+
+                if (excelApp == null)
+                    throw new InvalidOperationException("Excel Application is null.");
+
+                excelApp.DisplayAlerts = false;
+
+                switch (closeOption)
+                {
+                    case ExcelCloseOptionEnum.DoNotSaveDocument:
+                        // Close without saving
+                        break;
+
+                    case ExcelCloseOptionEnum.SaveDocument:
+                        // Save changes before closing
+                        excelApp.ActiveWorkbook.Save();
+                        break;
+
+                    case ExcelCloseOptionEnum.SaveDocumentAs:
+                    {
+                        var savePath = SavePath.Get(context);
+
+                        if (string.IsNullOrWhiteSpace(savePath))
+                            throw new ArgumentException("Save Path cannot be empty when saving as.");
+
+                        excelApp.ActiveWorkbook.SaveAs(savePath);
+                        break;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(closeOption));
+                }
+
+                excelApp.Quit();
+
+                // Release COM objects
+                Marshal.ReleaseComObject(excelApp.ActiveWorkbook);
+                Marshal.ReleaseComObject(excelApp);
             }
             catch (Exception ex)
             {

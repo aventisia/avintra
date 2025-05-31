@@ -18,12 +18,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 
             try
             {
-                using (Graphics screenGraphics = Graphics.FromHwnd(IntPtr.Zero))
+                using (var screenGraphics = Graphics.FromHwnd(IntPtr.Zero))
                 {
-                    Size screenSize = Screen.PrimaryScreen.Bounds.Size;
-                    using (Bitmap bitmap = new Bitmap(screenSize.Width, screenSize.Height, screenGraphics))
+                    var screenSize = Screen.PrimaryScreen.Bounds.Size;
+                    using (var bitmap = new Bitmap(screenSize.Width, screenSize.Height, screenGraphics))
                     {
-                        using (Graphics memoryGraphics = Graphics.FromImage(bitmap))
+                        using (var memoryGraphics = Graphics.FromImage(bitmap))
                         {
                             memoryGraphics.CopyFromScreen(Point.Empty, Point.Empty, screenSize);
                         }

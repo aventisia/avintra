@@ -2,55 +2,196 @@
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("Rename File(s)"), Description("Changes the names of one or more files.")]
-    public class RenameFilesActivity : CodeActivity
+    [DisplayName("Rename File(s)")]
+    [Description("Renames one or more files.")]
+    public class RenameFileActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The source file paths to rename.")]
-        public InArgument<IEnumerable<string>> SourceFilePaths { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("File(s) to rename")]
+        [Description("The path(s) of the file(s) to rename. Supports wildcards like *.txt.")]
+        public InArgument<string> FilesToRename { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The new names for the files.")]
-        public InArgument<IEnumerable<string>> NewNames { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Rename scheme")]
+        [Description("Specifies the rename scheme to apply.")]
+        [DefaultValue(RenameSchemeEnum.SetNewName)]
+        public InArgument<RenameSchemeEnum> RenameScheme { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("New file name")]
+        [Description("The new name for the file(s). Required for some rename schemes.")]
+        public InArgument<string> NewFileName { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Keep extension")]
+        [Description("Indicates whether to keep the original file extension.")]
+        public InArgument<bool> KeepExtension { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("If file exists")]
+        [Description("Specifies the behavior when a file already exists in the destination folder.")]
+        [DefaultValue(IfExistsActionEnum.DoNothing)]
+        public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Renamed Files")]
+        [Description("Returns the list of successfully renamed files.")]
+        public OutArgument<List<string>> RenamedFiles { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var sourceFilePaths = SourceFilePaths.Get(context);
-            var newNames = NewNames.Get(context);
-            var status = "";
+            // Get input arguments
+            var filesToRename = FilesToRename.Get(context);
+            var renameScheme = RenameScheme.Get(context);
+            var newFileName = NewFileName.Get(context);
+            var ifExistsAction = IfExistsAction.Get(context);
+            var keepExtension = KeepExtension.Get(context); // Retrieve the value of KeepExtension
+
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(filesToRename))
+            {
+                throw new ArgumentException("Files to rename cannot be empty.");
+            }
 
             try
             {
-                var enumerator1 = sourceFilePaths.GetEnumerator();
-                var enumerator2 = newNames.GetEnumerator();
+                // Split source files by semicolon (supports multiple files)
+                var filePatterns = filesToRename.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
+                // List to store successfully renamed files
+                var renamedFiles = new List<string>();
+
+                foreach (var pattern in filePatterns)
                 {
-                    var sourceFilePath = enumerator1.Current;
-                    var newName = enumerator2.Current;
+                    // Expand wildcards if present
+                    var expandedPaths = GetExpandedPaths(pattern);
 
-                    if (!File.Exists(sourceFilePath))
-                        throw new ArgumentException($"Source file not found: {sourceFilePath}");
+                    foreach (var filePath in expandedPaths)
+                    {
+                        if (!File.Exists(filePath))
+                        {
+                            continue; // Skip non-existent files
+                        }
 
-                    var directory = Path.GetDirectoryName(sourceFilePath);
-                    var newFilePath = Path.Combine(directory, newName);
+                        var newFilePath = ApplyRenameScheme(filePath, renameScheme, newFileName, keepExtension);
 
-                    File.Move(sourceFilePath, newFilePath);
+                        // Handle existing file scenario
+                        if (File.Exists(newFilePath))
+                        {
+                            switch (ifExistsAction)
+                            {
+                                case IfExistsActionEnum.DoNothing:
+                                    continue; // Skip existing file
+                                case IfExistsActionEnum.Overwrite:
+                                    File.Delete(newFilePath); // Delete existing file
+                                    break;
+                                default:
+                                    throw new ArgumentException("Invalid 'If file exists' action specified.");
+                            }
+                        }
+
+                        // Rename the file
+                        File.Move(filePath, newFilePath);
+                        renamedFiles.Add(newFilePath);
+                    }
                 }
 
-                status = "Files renamed successfully.";
-                StatusMessage.Set(context, status);
+                // Set the output argument
+                RenamedFiles.Set(context, renamedFiles);
             }
             catch (Exception ex)
             {
-                status = $"Error renaming files: {ex.Message}";
-                StatusMessage.Set(context, status);
+                throw new Exception($"Error renaming files: {ex.Message}");
             }
         }
+
+        private string ApplyRenameScheme(string filePath, RenameSchemeEnum renameScheme, string newFileName,
+            bool keepExtension)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(filePath);
+            var extension = Path.GetExtension(filePath);
+
+            switch (renameScheme)
+            {
+                case RenameSchemeEnum.SetNewName:
+                    return Path.Combine(Path.GetDirectoryName(filePath),
+                        $"{newFileName}{(keepExtension ? extension : "")}");
+
+                case RenameSchemeEnum.AddText:
+                    return Path.Combine(Path.GetDirectoryName(filePath),
+                        $"{fileName}_{newFileName}{(keepExtension ? extension : "")}");
+
+                case RenameSchemeEnum.RemoveText:
+                    return Path.Combine(Path.GetDirectoryName(filePath),
+                        $"{fileName.Replace(newFileName, "")}{(keepExtension ? extension : "")}");
+
+                case RenameSchemeEnum.ReplaceText:
+                    return Path.Combine(Path.GetDirectoryName(filePath),
+                        $"{fileName.Replace(newFileName, "")}{(keepExtension ? extension : "")}");
+
+                case RenameSchemeEnum.ChangeExtension:
+                    return Path.Combine(Path.GetDirectoryName(filePath), $"{fileName}{newFileName}");
+
+                case RenameSchemeEnum.AddDateTime:
+                    return Path.Combine(Path.GetDirectoryName(filePath),
+                        $"{fileName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}{(keepExtension ? extension : "")}");
+
+                case RenameSchemeEnum.MakeSequential:
+                    var counter = 1;
+                    var baseName = Path.GetFileNameWithoutExtension(filePath);
+                    var newName = $"{baseName}_{counter}";
+                    while (File.Exists(Path.Combine(Path.GetDirectoryName(filePath),
+                               $"{newName}{(keepExtension ? extension : "")}")))
+                    {
+                        counter++;
+                        newName = $"{baseName}_{counter}";
+                    }
+
+                    return Path.Combine(Path.GetDirectoryName(filePath),
+                        $"{newName}{(keepExtension ? extension : "")}");
+
+                default:
+                    throw new ArgumentException("Invalid rename scheme specified.");
+            }
+        }
+
+        private IEnumerable<string> GetExpandedPaths(string pattern)
+        {
+            // Expand wildcards using Directory.GetFiles
+            return Directory.GetFiles(Path.GetDirectoryName(pattern), Path.GetFileName(pattern));
+        }
+    }
+
+    public enum RenameSchemeEnum
+    {
+        [Display(Name = "Set new name", Description = "Sets a completely new name for the file.")]
+        SetNewName,
+
+        [Display(Name = "Add text", Description = "Adds text to the existing file name.")]
+        AddText,
+
+        [Display(Name = "Remove text", Description = "Removes specified text from the file name.")]
+        RemoveText,
+
+        [Display(Name = "Replace text", Description = "Replaces specified text in the file name.")]
+        ReplaceText,
+
+        [Display(Name = "Change extension", Description = "Changes the file extension.")]
+        ChangeExtension,
+
+        [Display(Name = "Add datetime", Description = "Appends a timestamp to the file name.")]
+        AddDateTime,
+
+        [Display(Name = "Make sequential", Description = "Renames the file with a sequential number.")]
+        MakeSequential,
     }
 }

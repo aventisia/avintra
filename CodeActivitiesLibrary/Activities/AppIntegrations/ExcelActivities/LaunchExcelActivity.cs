@@ -1,28 +1,146 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    // Activity to launch a new Excel instance
-    [DisplayName("Launch Excel"), Description("Launches a new Excel instance or opens an Excel document.")]
+    [DisplayName("Launch Excel Application")]
+    [Description("Launches a new Excel application instance or opens an existing Excel document.")]
     public class LaunchExcelActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The path to the Excel file to open (optional).")]
-        public InArgument<string> FilePath { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Launch Mode")]
+        [Description("Specifies whether to open an existing document or create a new one.")]
+        [DefaultValue(ExcelLaunchModeEnum.OpenExisting)]
+        public InArgument<ExcelLaunchModeEnum> LaunchMode { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Document Path")]
+        [Description("The path to the Excel document to open. Required if 'Launch Mode' is 'Open Existing'.")]
+        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        public InArgument<string> DocumentPath { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Make Instance Visible")]
+        [Description("Determines whether the Excel application should be visible.")]
+        [DefaultValue(true)]
+        public InArgument<bool> MakeInstanceVisible { get; set; } = new InArgument<bool>(true);
+
+        [Category("Input")]
+        [DisplayName("Open as ReadOnly")]
+        [Description("If true, opens the document in read-only mode.")]
+        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        public InArgument<bool> OpenAsReadOnly { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Nest Under New Process")]
+        [Description("If true, launches Excel in a new process.")]
+        public InArgument<bool> NestUnderNewProcess { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Use Machine Locale")]
+        [Description("If true, uses the machine's locale settings.")]
+        public InArgument<bool> UseMachineLocale { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Read Protection Password")]
+        [Description("Optional password to protect the document from being modified.")]
+        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        public InArgument<string> ReadProtectionPassword { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Write Protection Password")]
+        [Description("Optional password to protect the document from being saved.")]
+        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        public InArgument<string> WriteProtectionPassword { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [DisplayName("Excel Instance")]
+        [Description("Returns the launched Excel Application object.")]
+        public OutArgument<Excel.Application> ExcelInstance { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var filePath = FilePath.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate launching Excel (actual implementation would use Process.Start or similar)
-                status = $"Simulated launch of Excel with file path: '{filePath}'.";
+                var launchMode = LaunchMode.Get(context);
+                var makeVisible = MakeInstanceVisible.Get(context);
+                var nestUnderNewProcess = NestUnderNewProcess.Get(context);
+                var useMachineLocale = UseMachineLocale.Get(context);
+
+                Excel.Application excelApp = null;
+
+                try
+                {
+                    excelApp = new Excel.Application();
+                    excelApp.Visible = makeVisible;
+
+                    switch (launchMode)
+                    {
+                        case ExcelLaunchModeEnum.OpenExisting:
+                        {
+                            var documentPath = DocumentPath.Get(context);
+                            var readOnly = OpenAsReadOnly.Get(context);
+                            var readPassword = ReadProtectionPassword.Get(context);
+                            var writePassword = WriteProtectionPassword.Get(context);
+
+                            if (string.IsNullOrWhiteSpace(documentPath))
+                                throw new ArgumentException(
+                                    "Document Path cannot be empty when opening an existing file.");
+
+                            excelApp.Workbooks.Open(
+                                documentPath,
+                                Type.Missing,
+                                readOnly,
+                                Type.Missing,
+                                readPassword,
+                                writePassword,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing,
+                                Type.Missing
+                            );
+                            break;
+                        }
+
+                        case ExcelLaunchModeEnum.NewWorkbook:
+                            excelApp.Workbooks.Add(Type.Missing);
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid launch mode selected.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    status = $"Error launching Excel: {ex.Message}";
+                    excelApp?.Quit();
+                    excelApp = null;
+                }
+
+                ExcelInstance.Set(context, excelApp);
             }
             catch (Exception ex)
             {

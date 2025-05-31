@@ -1,48 +1,82 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
-    [DisplayName("Subtract Dates"),
-     Description("Finds the time difference between two dates in days, hours, minutes, or seconds.")]
-    public class SubtractDatesActivity : CodeActivity
-    {
-        #region Arguments
-
-        [RequiredArgument, Category("Input"), DisplayName("Start Date"),
-         Description("The start date of the subtraction.")]
-        public InArgument<DateTime> StartDate { get; set; }
-
-        [RequiredArgument, Category("Input"), DisplayName("End Date"), Description("The end date of the subtraction.")]
-        public InArgument<DateTime> EndDate { get; set; }
-
-        [Category("Output"), DisplayName("Time Difference"),
-         Description("The difference between the two dates as a TimeSpan.")]
-        public OutArgument<TimeSpan> Result { get; set; }
-
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
-
-        protected override void Execute(CodeActivityContext context)
+   
+        [DisplayName("Calculate Date Difference")]
+        [Description("Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).")]
+        public class SubtractDatesActivity : CodeActivity
         {
-            try
-            {
-                var start = StartDate.Get(context);
-                var end = EndDate.Get(context);
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Start DateTime")]
+            [Description("The earlier DateTime value to subtract from.")]
+            public InArgument<DateTime> StartDateTime { get; set; }
 
-                var difference = end - start;
-                Result.Set(context, difference);
-                StatusMessage.Set(context, "Date subtraction successful.");
-            }
-            catch (Exception ex)
-            {
-                Result.Set(context, TimeSpan.Zero);
-                StatusMessage.Set(context, $"Error: {ex.Message}");
-            }
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("End DateTime")]
+            [Description("The later DateTime value to subtract.")]
+            public InArgument<DateTime> EndDateTime { get; set; }
 
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Difference Unit")]
+            [Description("Specifies the unit in which to return the time difference.")]
+            [DefaultValue(DateDifferenceUnit.Days)]
+            public InArgument<DateDifferenceUnit> GetDifferenceIn { get; set; }
+
+            [Category("Output")]
+            [DisplayName("Time Difference")]
+            [Description("The calculated time difference in the specified unit.")]
+            public OutArgument<double> DifferenceValue { get; set; }
+
+            protected override void Execute(CodeActivityContext context)
+            {
+                DateTime start = StartDateTime.Get(context);
+                DateTime end = EndDateTime.Get(context);
+                DateDifferenceUnit unit = GetDifferenceIn.Get(context);
+
+                TimeSpan diff = end - start;
+                double result = 0;
+
+                switch (unit)
+                {
+                    case DateDifferenceUnit.Seconds:
+                        result = diff.TotalSeconds;
+                        break;
+                    case DateDifferenceUnit.Minutes:
+                        result = diff.TotalMinutes;
+                        break;
+                    case DateDifferenceUnit.Hours:
+                        result = diff.TotalHours;
+                        break;
+                    case DateDifferenceUnit.Days:
+                        result = diff.TotalDays;
+                        break;
+                    default:
+                        throw new InvalidOperationException("Invalid time unit specified.");
+                }
+
+                DifferenceValue.Set(context, result);
+            }
         }
+    public enum DateDifferenceUnit
+    {
+        [Display(Name = "Seconds", Description = "Difference between dates in seconds.")]
+        Seconds,
+
+        [Display(Name = "Minutes", Description = "Difference between dates in minutes.")]
+        Minutes,
+
+        [Display(Name = "Hours", Description = "Difference between dates in hours.")]
+        Hours,
+
+        [Display(Name = "Days", Description = "Difference between dates in days.")]
+        Days
     }
+
 }

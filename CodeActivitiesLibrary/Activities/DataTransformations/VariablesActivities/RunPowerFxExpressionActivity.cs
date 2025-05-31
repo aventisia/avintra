@@ -5,44 +5,53 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Run Power Fx Expression")]
-    [Description("Runs a Power Fx expression and returns the result.")]
+    [Description("Runs a simulated Power Fx expression and returns the result as text.")]
     public class RunPowerFxExpressionActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
-        [DisplayName("Run Power Fx Expression")]
-        [Description("The Power Fx expression to evaluate.")]
-        public InArgument<string> RunPowerFxExpression { get; set; }
+        [DisplayName("Power Fx Expression")]
+        [Description("The Power Fx-like expression to evaluate (e.g., '1 + 2', 'Text(Now(), \"yyyy-mm-dd\")'.")]
+        public InArgument<string> PowerFxExpression { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [DisplayName("Result")]
-        [Description("The result of the evaluated Power Fx expression.")]
-        public OutArgument<string> Result { get; set; }
+        [DisplayName("Expression Result")]
+        [Description("Returns the evaluated result of the Power Fx expression (simulated).")]
+        public OutArgument<string> ExpressionResult { get; set; }
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
+ 
         public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
-                var powerFxExpression = RunPowerFxExpression.Get(context);
+                var expr = PowerFxExpression.Get(context);
 
-                if (string.IsNullOrWhiteSpace(powerFxExpression))
-                    throw new ArgumentException("Power Fx expression cannot be empty.");
+                if (string.IsNullOrWhiteSpace(expr))
+                    throw new ArgumentException("Power Fx Expression cannot be empty.");
 
-                // Simulate evaluation of the Power Fx expression
-                var result = EvaluatePowerFxExpression(powerFxExpression);
-
-                Result.Set(context, result);
-                status += $" Expression '{powerFxExpression}' evaluated successfully.";
+                var result = EvaluatePowerFxExpression(expr);
+                ExpressionResult.Set(context, result);
             }
             catch (Exception ex)
             {
                 status = $"Error evaluating Power Fx expression: {ex.Message}";
+                ExpressionResult.Set(context, null);
             }
 
             StatusMessage.Set(context, status);
@@ -50,7 +59,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
         private string EvaluatePowerFxExpression(string expr)
         {
-            // Placeholder: Replace with real Power Fx parser or integration
+            // Simulate parsing basic expressions
             return $"Simulated result of: {expr}";
         }
     }

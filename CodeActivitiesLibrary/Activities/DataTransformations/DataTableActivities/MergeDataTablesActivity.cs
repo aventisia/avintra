@@ -5,49 +5,152 @@ using System.Data;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Merge Data Tables"),
-         Description(
-             "Merges two data tables together, specifying the merging behavior in case their number of columns is different.")]
-    public sealed class MergeDataTablesActivity : CodeActivity
+    [DisplayName("Merge Data Tables")]
+    [Description(
+        "Merges two data tables together, specifying the merging behavior in case their columns are different.")]
+    public class MergeDataTablesActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("First Data Table"), Description("The first data table to merge.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("First Data Table")]
+        [Description("The first DataTable to be merged.")]
         public InArgument<DataTable> FirstDataTable { get; set; }
 
-        [Category("Input"), DisplayName("Second Data Table"), Description("The second data table to merge.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Second Data Table")]
+        [Description("The second DataTable to be merged.")]
         public InArgument<DataTable> SecondDataTable { get; set; }
 
-        [Category("Output"), DisplayName("Merged Data Table"), Description("The merged data table.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Merge Mode")]
+        [Description(
+            "Specifies how to handle columns that are present in the second table but not in the first table.")]
+        public InArgument<DataTableMergeModeEnum> MergeMode { get; set; } =
+            new InArgument<DataTableMergeModeEnum>(DataTableMergeModeEnum.AddExtraColumns);
+
+        [Category("Output")]
+        [DisplayName("Merged Data Table")]
+        [Description("The resulting DataTable after merging the two input Data Tables.")]
         public OutArgument<DataTable> MergedDataTable { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
+            // Retrieve input values
             var firstDataTable = context.GetValue(FirstDataTable);
             var secondDataTable = context.GetValue(SecondDataTable);
+            var mergeMode = context.GetValue(MergeMode);
 
-            if (firstDataTable == null || secondDataTable == null)
+            // Validate inputs
+            if (firstDataTable == null)
             {
-                context.SetValue(StatusMessage, "Error: One or both data tables are null.");
-                return;
+                throw new ArgumentException("First Data Table cannot be null.");
+            }
+
+            if (secondDataTable == null)
+            {
+                throw new ArgumentException("Second Data Table cannot be null.");
             }
 
             try
             {
-                var mergedTable = firstDataTable.Copy();
-                foreach (DataRow row in secondDataTable.Rows)
+                // Clone the first DataTable to avoid modifying the original
+                var mergedDataTable = firstDataTable.Clone();
+
+                // Handle columns based on the merge mode
+                switch (mergeMode)
                 {
-                    mergedTable.Rows.Add(row.ItemArray);
+                    case DataTableMergeModeEnum.AddExtraColumns:
+                        AddExtraColumns(firstDataTable, secondDataTable, mergedDataTable);
+                        break;
+
+                    case DataTableMergeModeEnum.IgnoreExtraColumns:
+                        IgnoreExtraColumns(firstDataTable, secondDataTable, mergedDataTable);
+                        break;
+
+                    case DataTableMergeModeEnum.ErrorOnExtraColumns:
+                        ErrorOnExtraColumns(firstDataTable, secondDataTable);
+                        break;
+
+                    default:
+                        throw new ArgumentException($"Unsupported merge mode: {mergeMode}");
                 }
 
-                context.SetValue(MergedDataTable, mergedTable);
-                context.SetValue(StatusMessage, "Data tables merged successfully.");
+                // Copy rows from the second DataTable
+                foreach (DataRow row in secondDataTable.Rows)
+                {
+                    mergedDataTable.ImportRow(row);
+                }
+
+                // Set outputs
+                context.SetValue(MergedDataTable, mergedDataTable);
+                context.SetValue(StatusMessage, "Successfully merged the data tables.");
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                throw new InvalidOperationException($"Failed to merge data tables: {ex.Message}", ex);
             }
+        }
+
+        private static void AddExtraColumns(DataTable firstDataTable, DataTable secondDataTable,
+            DataTable mergedDataTable)
+        {
+            // Add columns from the second table that are not in the first table
+            foreach (DataColumn column in secondDataTable.Columns)
+            {
+                if (!firstDataTable.Columns.Contains(column.ColumnName))
+                {
+                    mergedDataTable.Columns.Add(column.ColumnName, column.DataType);
+                }
+            }
+        }
+
+        private static void IgnoreExtraColumns(DataTable firstDataTable, DataTable secondDataTable,
+            DataTable mergedDataTable)
+        {
+            // Only copy rows where columns match
+            foreach (DataRow row in secondDataTable.Rows)
+            {
+                var newRow = mergedDataTable.NewRow();
+                foreach (DataColumn column in firstDataTable.Columns)
+                {
+                    if (secondDataTable.Columns.Contains(column.ColumnName))
+                    {
+                        newRow[column.ColumnName] = row[column.ColumnName];
+                    }
+                }
+
+                mergedDataTable.Rows.Add(newRow);
+            }
+        }
+
+        private static void ErrorOnExtraColumns(DataTable firstDataTable, DataTable secondDataTable)
+        {
+            // Check for extra columns in the second table
+            foreach (DataColumn column in secondDataTable.Columns)
+            {
+                if (!firstDataTable.Columns.Contains(column.ColumnName))
+                {
+                    throw new InvalidOperationException(
+                        $"Column '{column.ColumnName}' in the second table does not exist in the first table.");
+                }
+            }
+        }
+
+        public enum DataTableMergeModeEnum
+        {
+            [Description("Adds columns from the second table that are not present in the first table.")]
+            AddExtraColumns = 0,
+
+            [Description("Ignores columns from the second table that are not present in the first table.")]
+            IgnoreExtraColumns = 1,
+
+            [Description("Throws an error if the second table has columns not present in the first table.")]
+            ErrorOnExtraColumns = 2
         }
     }
 }

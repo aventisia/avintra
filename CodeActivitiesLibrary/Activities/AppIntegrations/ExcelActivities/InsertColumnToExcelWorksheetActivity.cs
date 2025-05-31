@@ -1,35 +1,71 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Linq;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-
-    // Activity to insert a column to the left of a selected column of an Excel instance
-    [DisplayName("Insert Column to Excel Worksheet"),
-     Description("Inserts a column to the left of a selected column of an Excel instance.")]
+    [DisplayName("Insert Column to Excel Worksheet")]
+    [Description("Inserts a new column to the left of the specified column in the active Excel worksheet.")]
     public class InsertColumnToExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The column index where the new column should be inserted.")]
-        public InArgument<int> ColumnIndex { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Column Reference")]
+        [Description(
+            "The 1-based index or letter (e.g., 'A', 'B') of the column where the new column should be inserted.")]
+        public InArgument<string> ColumnReference { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var columnIndex = ColumnIndex.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate inserting a column (actual implementation would use Excel Interop or similar)
-                status = $"Simulated insertion of column at index {columnIndex} in Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var colRef = ColumnReference.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
+                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+
+                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
+                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+
+                int columnIndex;
+
+                // Convert column reference to index
+                if (!int.TryParse(colRef, out columnIndex))
+                    // Convert column letter to index (e.g., "A" → 1, "B" → 2)
+                    columnIndex = GetColumnIndex(colRef);
+
+                if (columnIndex < 1 || columnIndex > ws.Columns.Count)
+                    throw new ArgumentOutOfRangeException(nameof(ColumnReference),
+                        $"Invalid column reference: {colRef}");
+
+                // Insert new column at specified index
+                (ws.Columns[columnIndex] as Excel.Range)?.Insert();
+
+                status = $"Successfully inserted new column to the left of column {colRef}.";
             }
             catch (Exception ex)
             {
@@ -37,6 +73,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
 
             StatusMessage.Set(context, status);
+        }
+
+        // Helper method to convert column letter to index
+        private static int GetColumnIndex(string columnName)
+        {
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentException("Column name cannot be empty.", nameof(columnName));
+
+            columnName = columnName.ToUpperInvariant();
+
+            return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "";
+            var status = "";
 
             try
             {

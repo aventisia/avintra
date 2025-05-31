@@ -5,38 +5,48 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-    [DisplayName("Empty folder"), Description("Delete all files and subfolders in the folder.")]
+   
+    [DisplayName("Empty Folder")]
+    [Description("Removes all files and subdirectories within the specified folder, preserving the folder itself.")]
     public class EmptyFolderActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The path of the folder to empty.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Folder to Empty")]
+        [Description("Specify the path of the folder whose contents should be deleted.")]
         public InArgument<string> FolderPath { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Include Subfolders")]
+        [Description("Determines whether subfolders and their contents should also be deleted.")]
+        [DefaultValue(true)]
+        public InArgument<bool> DeleteSubfolders { get; set; } = true;
 
         protected override void Execute(CodeActivityContext context)
         {
-            var folderPath = FolderPath.Get(context);
-            var status = "";
+            string folderPath = FolderPath.Get(context);
+            bool deleteSubfolders = DeleteSubfolders.Get(context);
 
-            try
+            if (string.IsNullOrWhiteSpace(folderPath))
+                throw new ArgumentException("Folder path cannot be null or empty.", nameof(folderPath));
+
+            if (!Directory.Exists(folderPath))
+                throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
+
+            // Delete all files
+            foreach (var file in Directory.GetFiles(folderPath))
             {
-                foreach (var file in Directory.GetFiles(folderPath))
-                {
-                    File.Delete(file);
-                }
-                foreach (var subfolder in Directory.GetDirectories(folderPath))
-                {
-                    Directory.Delete(subfolder, recursive: true);
-                }
-                StatusMessage.Set(context, "Folder emptied successfully.");
-            }
-            catch (Exception ex)
-            {
-                status = $"Error emptying folder: {ex.Message}";
+                File.Delete(file);
             }
 
-            StatusMessage.Set(context, status);
+            // Delete subfolders if specified
+            if (deleteSubfolders)
+            {
+                foreach (var dir in Directory.GetDirectories(folderPath))
+                {
+                    Directory.Delete(dir, recursive: true);
+                }
+            }
         }
     }
 }

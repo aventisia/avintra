@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             var windowHandle = WindowHandle.Get(context);
             var width = Width.Get(context);
             var height = Height.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

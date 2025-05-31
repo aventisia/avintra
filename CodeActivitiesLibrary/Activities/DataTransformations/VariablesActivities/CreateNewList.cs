@@ -8,12 +8,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Creates a new empty list to be used in other activities.")]
     public class CreateNewList : CodeActivity
     {
-        // Output: The new list created
         [Category("Output")]
-        [RequiredArgument]
-        [DisplayName("List")]
+        [DisplayName("New List")]
         [Description("The newly created empty list.")]
-        public OutArgument<List<object>> List { get; set; }
+        public OutArgument<List<object>> NewList { get; set; }
 
         // Output argument to return the newly created list
         [Category("Output")]
@@ -25,10 +23,9 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
             // Create a new empty list
             var newList = new List<object>();
 
+            context.SetValue(NewList, newList);
             // Optionally, set the status message
             context.SetValue(StatusMessage, "List created successfully.");
-
         }
     }
-
 }

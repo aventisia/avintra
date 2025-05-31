@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.Text;
-
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+﻿namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 {
 
     // Activity to extract text from a PDF file

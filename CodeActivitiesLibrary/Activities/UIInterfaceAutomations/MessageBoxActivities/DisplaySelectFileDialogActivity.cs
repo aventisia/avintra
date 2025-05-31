@@ -1,10 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Forms;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     // Activity to display a select file dialog
     //[DisplayName("Display Select File Dialog"),

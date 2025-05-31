@@ -6,61 +6,88 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    //[DisplayName("Read From CSV File"), Description("Reads a CSV file into a data table.")]
-    //public class ReadFromCsvFileActivity : CodeActivity
-    //{
-    //    [RequiredArgument, Category("Input"), Description("The full path of the CSV file to read.")]
-    //    public InArgument<string> FilePath { get; set; }
 
-    //    [Category("Output"), Description("Returns the data table containing the CSV data.")]
-    //    public OutArgument<DataTable> DataTable { get; set; }
+    [DisplayName("CSV File Reader")]
+    [Description("Reads a CSV file from the specified path and returns the content as a DataTable.")]
+    public class ReadFromCsvFileActivity : CodeActivity
+    {
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("CSV File Path")]
+        [Description("The full path to the CSV file to be read.")]
+        public InArgument<string> FilePath { get; set; }
 
-    //    [Category("Output"), Description("Returns the status message.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Has Header Row")]
+        [Description("Specify whether the CSV file includes a header row.")]
+        [DefaultValue(true)]
+        public InArgument<bool> HasHeader { get; set; } = new InArgument<bool>(true);
 
-    //    protected override void Execute(CodeActivityContext context)
-    //    {
-    //        var filePath = FilePath.Get(context);
-    //        DataTable dataTable = null;
-    //        var status = "";
+        [Category("Output")]
+        [DisplayName("CSV Data Table")]
+        [Description("The output DataTable containing the contents of the CSV file.")]
+        public OutArgument<DataTable> OutputDataTable { get; set; }
 
-    //        try
-    //        {
-    //            if (!File.Exists(filePath))
-    //                throw new ArgumentException($"CSV file not found: {filePath}");
+        protected override void Execute(CodeActivityContext context)
+        {
+            string filePath = FilePath.Get(context);
+            bool hasHeader = HasHeader.Get(context);
 
-    //            using (TextFieldParser parser = new TextFieldParser(filePath))
-    //            {
-    //                parser.TextFieldType = FieldType.Delimited;
-    //                parser.SetDelimiters(",");
-    //                parser.HasFieldsEnclosedInQuotes = true;
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("CSV file path cannot be null or empty.");
+            }
 
-    //                dataTable = new DataTable();
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("CSV file not found at the specified path.", filePath);
+            }
 
-    //                // Read headers
-    //                string[] headers = parser.ReadFields();
-    //                foreach (var header in headers)
-    //                {
-    //                    dataTable.Columns.Add(header);
-    //                }
+            var dataTable = new DataTable();
 
-    //                // Read rows
-    //                while (!parser.EndOfData)
-    //                {
-    //                    string[] fields = parser.ReadFields();
-    //                    dataTable.Rows.Add(fields);
-    //                }
-    //            }
+            using (var reader = new StreamReader(filePath))
+            {
+                bool columnsInitialized = false;
 
-    //            DataTable.Set(context, dataTable);
-    //            status = "CSV file read successfully.";
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            status = $"Error reading CSV file: {ex.Message}";
-    //        }
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
 
-    //        StatusMessage.Set(context, status);
-    //    }
-    //}
+                    var values = line.Split(',');
+
+                    if (!columnsInitialized)
+                    {
+                        if (hasHeader)
+                        {
+                            foreach (var header in values)
+                            {
+                                dataTable.Columns.Add(header.Trim());
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < values.Length; i++)
+                            {
+                                dataTable.Columns.Add($"Column{i + 1}");
+                            }
+
+                            dataTable.Rows.Add(values);
+                        }
+
+                        columnsInitialized = true;
+                        if (hasHeader)
+                            continue; // Skip to next line since this one is the header
+                    }
+                    else
+                    {
+                        dataTable.Rows.Add(values);
+                    }
+                }
+            }
+
+            OutputDataTable.Set(context, dataTable);
+        }
+    }
 }

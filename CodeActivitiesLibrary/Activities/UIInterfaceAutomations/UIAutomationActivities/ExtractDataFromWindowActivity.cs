@@ -25,7 +25,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowHandle = WindowHandle.Get(context);
             string extractedData = null;
-            string status = "";
+            var status = "";
 
             try
             {

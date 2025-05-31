@@ -6,38 +6,66 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("Delete File(s)"), Description("Deletes one or more files.")]
-    public class DeleteFilesActivity : CodeActivity
+    [DisplayName("Delete File(s)")]
+    [Description("Deletes one or more files.")]
+    public class DeleteFileActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The file paths to delete.")]
-        public InArgument<IEnumerable<string>> FilePaths { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("File(s) to delete")]
+        [Description("The path(s) of the file(s) to delete. Supports wildcards like *.txt.")]
+        public InArgument<string> FilesToDelete { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var filePaths = FilePaths.Get(context);
-            var status = "";
+            var filesToDelete = FilesToDelete.Get(context);
+
+            if (string.IsNullOrWhiteSpace(filesToDelete))
+            {
+                throw new ArgumentException("Files to delete cannot be empty.");
+            }
 
             try
             {
-                foreach (var filePath in filePaths)
+                var filePatterns = filesToDelete.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                var deletedFiles = new List<string>();
+
+                foreach (var pattern in filePatterns)
                 {
-                    if (File.Exists(filePath))
+                    var expandedPaths = GetExpandedPaths(pattern);
+
+                    foreach (var filePath in expandedPaths)
                     {
+                        if (!File.Exists(filePath))
+                        {
+                            continue;
+                        }
+
                         File.Delete(filePath);
+                        deletedFiles.Add(filePath);
                     }
                 }
 
-                status = "Files deleted successfully.";
-                StatusMessage.Set(context, status);
+                if (deletedFiles.Count > 0)
+                {
+                    StatusMessage.Set(context, $"{deletedFiles.Count} file(s) deleted successfully.");
+                }
+                else
+                {
+                    StatusMessage.Set(context, "No files were deleted.");
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error deleting files: {ex.Message}";
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error deleting files: {ex.Message}");
             }
+        }
+
+        private IEnumerable<string> GetExpandedPaths(string pattern)
+        {
+            return Directory.GetFiles(Path.GetDirectoryName(pattern), Path.GetFileName(pattern));
         }
     }
 }

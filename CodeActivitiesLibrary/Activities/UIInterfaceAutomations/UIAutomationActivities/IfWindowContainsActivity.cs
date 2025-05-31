@@ -30,8 +30,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowHandle = WindowHandle.Get(context);
             var searchTerm = SearchTerm.Get(context);
-            bool result = false;
-            string status = "";
+            var result = false;
+            var status = "";
 
             try
             {

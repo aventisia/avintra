@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
+﻿namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
 
     // Activity to launch a new Word instance or open a Word document

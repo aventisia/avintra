@@ -9,46 +9,63 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Converts a custom object into its JSON representation.")]
     public class ConvertCustomObjectToJsonActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Custom Object")]
         [Description("The custom object to convert to JSON.")]
         public InArgument<object> CustomObject { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Pretty Print")]
+        [Description("If true, formats the JSON output with indentation for better readability.")]
+        [DefaultValue(true)]
+        public InArgument<bool> PrettyPrint { get; set; } = new InArgument<bool>(true);
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
         [DisplayName("JSON Output")]
         [Description("The converted JSON string from the provided custom object.")]
-        public OutArgument<string> CustomObjectAsJsonOutput { get; set; }
+        public OutArgument<string> JsonOutput { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
                 var inputObject = CustomObject.Get(context);
+                var prettyPrint = PrettyPrint.Get(context);
 
                 if (inputObject == null)
                     throw new ArgumentNullException(nameof(CustomObject), "Custom object cannot be null.");
 
-                // Serialize the object to JSON
-                var options = new JsonSerializerOptions { WriteIndented = true };
+                var options = new JsonSerializerOptions();
+
+                if (prettyPrint)
+                {
+                    options.WriteIndented = true;
+                }
+
                 var jsonResult = JsonSerializer.Serialize(inputObject, options);
 
-                CustomObjectAsJsonOutput.Set(context, jsonResult);
-
-                status += " Custom object successfully converted to JSON.";
+                JsonOutput.Set(context, jsonResult);
             }
             catch (Exception ex)
             {
                 status = $"Error converting object to JSON: {ex.Message}";
+                JsonOutput.Set(context, null);
             }
 
             StatusMessage.Set(context, status);

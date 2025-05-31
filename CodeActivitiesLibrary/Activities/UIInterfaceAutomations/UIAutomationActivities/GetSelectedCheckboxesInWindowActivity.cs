@@ -26,7 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowHandle = WindowHandle.Get(context);
             List<string> selectedCheckboxes = null;
-            string status = "";
+            var status = "";
 
             try
             {

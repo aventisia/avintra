@@ -28,7 +28,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
 
             try
             {
-                using (ZipArchive zipArchive = ZipFile.Open(outputZipPath, ZipArchiveMode.Create))
+                using (var zipArchive = ZipFile.Open(outputZipPath, ZipArchiveMode.Create))
                 {
                     foreach (var sourcePath in sourcePaths)
                     {

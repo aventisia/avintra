@@ -1,35 +1,63 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-
-    // Activity to insert a row above a selected row of an Excel instance
-    [DisplayName("Insert Row to Excel Worksheet"),
-     Description("Inserts a row above a selected row of an Excel instance.")]
+    [DisplayName("Insert Row to Excel Worksheet")]
+    [Description("Inserts a new row above the selected row in the active Excel worksheet.")]
     public class InsertRowToExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The row index where the new row should be inserted.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Row Index")]
+        [Description("The 1-based index of the row where the new row should be inserted (inserted above this row).")]
         public InArgument<int> RowIndex { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var rowIndex = RowIndex.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate inserting a row (actual implementation would use Excel Interop or similar)
-                status = $"Simulated insertion of row at index {rowIndex} in Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var rowIndex = RowIndex.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
+                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+
+                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
+                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+
+                // Validate row index
+                if (rowIndex < 1 || rowIndex > ws.Rows.Count)
+                    throw new ArgumentOutOfRangeException(nameof(RowIndex),
+                        $"Row index must be between 1 and {ws.Rows.Count}.");
+
+                // Insert new row at specified index (inserts above the given row)
+                (ws.Rows[rowIndex] as Excel.Range)?.Insert();
+
+                status = $"Successfully inserted new row above row {rowIndex}.";
             }
             catch (Exception ex)
             {
@@ -40,4 +68,3 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         }
     }
 }
-

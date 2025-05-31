@@ -22,7 +22,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 
             try
             {
-                using (ServiceController service = new ServiceController(serviceName))
+                using (var service = new ServiceController(serviceName))
                 {
                     service.Continue();
                     service.WaitForStatus(ServiceControllerStatus.Running);

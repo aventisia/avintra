@@ -10,30 +10,41 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Randomly reorders the items in a list.")]
     public class ShuffleListActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("List to Shuffle")]
         [Description("The list to be randomly reordered.")]
-        public InArgument<List<string>> ListToShuffle { get; set; }
+        public InArgument<IEnumerable<object>> ListToShuffle { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
+
         public OutArgument<string> StatusMessage { get; set; }
 
         [Category("Output")]
         [DisplayName("Shuffled List")]
         [Description("The shuffled version of the input list.")]
-        public OutArgument<List<string>> ShuffledList { get; set; }
+        public OutArgument<IEnumerable<object>> ShuffledList { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            string status = "Operation completed successfully.";
 
             try
             {
                 var inputList = ListToShuffle.Get(context);
 
-                if (inputList == null || inputList.Count == 0)
+                if (inputList == null || !inputList.Any())
                     throw new ArgumentException("The list must contain at least one item.");
 
                 // Shuffle the list using Fisher-Yates algorithm
@@ -42,7 +53,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 // Set output
                 ShuffledList.Set(context, shuffled);
-                status += $" List with {shuffled.Count} items has been shuffled.";
+                status += $" List with {shuffled.Count()} items has been shuffled.";
             }
             catch (Exception ex)
             {

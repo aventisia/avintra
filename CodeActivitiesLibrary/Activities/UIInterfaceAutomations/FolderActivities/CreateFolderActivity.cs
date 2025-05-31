@@ -5,31 +5,47 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-    [DisplayName("Create folder"), Description("Create a new folder.")]
-    public class CreateFolderActivity : CodeActivity
-    {
-        [RequiredArgument, Category("Input"), Description("The path of the folder to create.")]
-        public InArgument<string> FolderPath { get; set; }
-
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+   
+        [DisplayName("Create Folder")]
+        [Description("Generates a new folder within the specified parent directory using a given folder name.")]
+        public class CreateFolderActivity : CodeActivity
         {
-            var folderPath = FolderPath.Get(context);
-            var status = "";
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Create New Folder Into")]
+            [Description("The full path of the parent directory where the new folder should be created.")]
+            public InArgument<string> ParentDirectory { get; set; }
 
-            try
-            {
-                Directory.CreateDirectory(folderPath);
-                StatusMessage.Set(context, "Folder created successfully.");
-            }
-            catch (Exception ex)
-            {
-                status = $"Error creating folder: {ex.Message}";
-            }
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("New Folder Name")]
+            [Description("The name of the folder to be created inside the specified parent directory.")]
+            public InArgument<string> FolderName { get; set; }
 
-            StatusMessage.Set(context, status);
+            [Category("Output")]
+            [DisplayName("New Folder")]
+            [Description("The full path of the newly created folder, which can be used for further actions.")]
+            public OutArgument<string> NewFolder { get; set; }
+
+            protected override void Execute(CodeActivityContext context)
+            {
+                string parentPath = ParentDirectory.Get(context);
+                string newFolderName = FolderName.Get(context);
+
+                if (string.IsNullOrWhiteSpace(parentPath))
+                    throw new ArgumentException("Parent directory path cannot be null or empty.");
+
+                if (string.IsNullOrWhiteSpace(newFolderName))
+                    throw new ArgumentException("New folder name cannot be null or empty.");
+
+                string fullPath = Path.Combine(parentPath, newFolderName);
+
+                if (!Directory.Exists(fullPath))
+                {
+                    Directory.CreateDirectory(fullPath);
+                }
+
+                NewFolder.Set(context, fullPath);
+            }
         }
-    }
 }

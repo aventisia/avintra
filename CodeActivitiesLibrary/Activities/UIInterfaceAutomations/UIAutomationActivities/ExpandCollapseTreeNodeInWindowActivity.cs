@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             var windowHandle = WindowHandle.Get(context);
             var treeNodeSelector = TreeNodeSelector.Get(context);
             var expand = Expand.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

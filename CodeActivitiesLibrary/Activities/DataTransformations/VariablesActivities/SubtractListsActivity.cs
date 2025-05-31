@@ -10,30 +10,36 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Removes items from the first list that exist in the second list.")]
     public class SubtractListsActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("First List")]
         [Description("The variable that holds the first list to compare.")]
-        public InArgument<List<string>> FirstList { get; set; }
+        public InArgument<List<object>> FirstList { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Second List")]
         [Description("The variable that contains the second list used to subtract items from the first list.")]
-        public InArgument<List<string>> SecondList { get; set; }
+        public InArgument<List<object>> SecondList { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
         [DisplayName("List Difference Output")]
         [Description("The resulting list after subtracting items from the second list.")]
-        public OutArgument<List<string>> ListDifferenceOutput { get; set; }
+        public OutArgument<List<object>> ListDifferenceOutput { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
@@ -52,7 +58,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 // Set outputs conditionally
                 ListDifferenceOutput.Set(context, result);
 
-                status += $" Subtracted {secondList.Count - result.Count} item(s) from the list.";
+                status += $" Subtracted {secondList.Count() - result.Count()} item(s) from the list.";
             }
             catch (Exception ex)
             {

@@ -1,47 +1,90 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-    // Activity to get the name of a column in an Excel worksheet
-    [DisplayName("Get Column Name on Excel Worksheet"), Description("Gets the name of the column.")]
+    [DisplayName("Get Column Name on Excel Worksheet")]
+    [Description("Gets the name of a column (e.g., 'A', 'B') based on its index in the active worksheet.")]
     public class GetColumnNameOnExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The column index (1-based).")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Column Index")]
+        [Description("The 1-based index of the column to convert to a letter (e.g., 1 → A).")]
         public InArgument<int> ColumnIndex { get; set; }
 
-        [Category("Output"), Description("Returns the name of the column (e.g., 'A', 'B').")]
-        public OutArgument<string> Result { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")]
+        [DisplayName("Column Name")]
+        [Description("Returns the column letter corresponding to the given index (e.g., 'A', 'B').")]
+        public OutArgument<string> ColumnName { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var columnIndex = ColumnIndex.Get(context);
-            var result = "";
-            var status = "";
+            var columnName = "";
+            var status = "Success";
 
             try
             {
-                // Simulate getting column name (actual implementation would use Excel Interop or similar)
-                result = "A"; // Simulated column name
-                status = "Column name retrieved successfully.";
+                var excelApp = ExcelApplication.Get(context);
+                var columnIndex = ColumnIndex.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
+                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+
+                if (columnIndex < 1)
+                    throw new ArgumentException("Column index must be a positive value.", nameof(ColumnIndex));
+
+                // Convert column index to Excel column name
+                columnName = GetExcelColumnName(columnIndex);
             }
             catch (Exception ex)
             {
-                result = "";
                 status = $"Error getting column name: {ex.Message}";
             }
 
-            Result.Set(context, result);
+            ColumnName.Set(context, columnName);
             StatusMessage.Set(context, status);
+        }
+
+        // Helper method to convert column index to Excel column name
+        private static string GetExcelColumnName(int columnIndex)
+        {
+            if (columnIndex <= 0)
+                throw new ArgumentException("Column index must be a positive value.", nameof(columnIndex));
+
+            var colLetters = new char[26];
+            for (var i = 0; i < 26; i++) colLetters[i] = (char)('A' + i);
+
+            var columnName = string.Empty;
+            while (columnIndex > 0)
+            {
+                columnIndex--;
+                columnName = colLetters[columnIndex % 26] + columnName;
+                columnIndex /= 26;
+            }
+
+            return columnName;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
             var text = TextToWrite.Get(context);
             var writeMode = WriteMode.Get(context);
 
-            string status = "";
+            var status = "";
 
             try
             {
@@ -52,7 +52,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 if (string.IsNullOrWhiteSpace(text))
                     throw new ArgumentException("Text cannot be empty.");
 
-                string dir = Path.GetDirectoryName(filePath);
+                var dir = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(dir))
                 {
                     Directory.CreateDirectory(dir); // auto-create directories

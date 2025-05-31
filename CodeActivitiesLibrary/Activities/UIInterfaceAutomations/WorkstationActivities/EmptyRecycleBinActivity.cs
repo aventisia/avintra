@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     //[DisplayName("Empty Recycle Bin")]
     //[Description("Deletes all files from the Windows recycle bin.")]

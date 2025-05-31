@@ -2,79 +2,100 @@
 using System.Activities;
 using System.ComponentModel;
 
-
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Pad Text"),
-     Description("Creates a fixed-length text by adding characters to the left or right of an existing text.")]
+    [DisplayName("Pad Text")]
+    [Description("Creates a fixed-length text by adding characters to the left or right of an existing text.")]
     public class PadTextActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), DisplayName("Original Text"), Description("The original text to pad.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Original Text")]
+        [Description("The original text to pad.")]
         public InArgument<string> OriginalText { get; set; }
 
-        [RequiredArgument, Category("Input"), DisplayName("Total Length"),
-         Description("The total length of the padded text.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Padding Direction")]
+        [Description("Specifies whether to pad the text on the left or right side.")]
+        public InArgument<PadDirection> PaddingDirection { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Padding Character")]
+        [Description("The character(s) to use for padding.")]
+        public InArgument<string> PaddingCharacter { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Total Length")]
+        [Description("The desired total length of the padded text.")]
         public InArgument<int> TotalLength { get; set; }
 
-        [RequiredArgument, Category("Input"), DisplayName("Padding Character"),
-         Description("The padding character to use (e.g., '0', ' ').")]
-        public InArgument<char> PaddingCharacter { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        [Category("Input"), DisplayName("Pad Direction"), Description("The padding direction: Left, Right.")]
-        public InArgument<PadDirectionEnum> PadDirection { get; set; } = new InArgument<PadDirectionEnum>(PadDirectionEnum.Left);
+        [Category("Output")]
+        [DisplayName("Padded Text")]
+        [Description("The resulting text after padding.")]
+        public OutArgument<string> PaddedText { get; set; }
 
-        [Category("Output"), DisplayName("Result Text"), Description("The padded text result.")]
-        public OutArgument<string> ResultText { get; set; }
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
                 var originalText = OriginalText.Get(context);
+                var paddingDirection = PaddingDirection.Get(context);
+                var paddingChar = PaddingCharacter.Get(context);
                 var totalLength = TotalLength.Get(context);
-                var paddingCharacter = PaddingCharacter.Get(context);
-                var padDirection = PadDirection.Get(context);
 
                 if (string.IsNullOrWhiteSpace(originalText))
                     throw new ArgumentException("OriginalText cannot be empty.");
 
-                if (totalLength < originalText.Length)
-                    throw new ArgumentException("TotalLength cannot be less than the length of OriginalText.");
+                if (string.IsNullOrEmpty(paddingChar))
+                    throw new ArgumentException("PaddingCharacter cannot be empty.");
 
-                string result;
-                switch (padDirection)
+                if (totalLength < originalText.Length)
+                    throw new ArgumentException(
+                        "TotalLength must be greater than or equal to the length of OriginalText.");
+
+                var paddedText = "";
+
+                switch (paddingDirection)
                 {
-                    case PadDirectionEnum.Left:
-                        result = originalText.PadLeft(totalLength, paddingCharacter);
+                    case PadDirection.Left:
+                        paddedText = originalText.PadLeft(totalLength, paddingChar[0]);
                         break;
-                    case PadDirectionEnum.Right:
-                        result = originalText.PadRight(totalLength, paddingCharacter);
+
+                    case PadDirection.Right:
+                        paddedText = originalText.PadRight(totalLength, paddingChar[0]);
                         break;
+
                     default:
-                        throw new ArgumentException("Invalid PadDirection.");
+                        throw new ArgumentException("Invalid PaddingDirection.");
                 }
 
-                ResultText.Set(context, result);
-                StatusMessage.Set(context, "Padding completed successfully.");
+                PaddedText.Set(context, paddedText);
             }
             catch (Exception ex)
             {
-                ResultText.Set(context, $"Error: {ex.Message}");
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                status = $"Error padding text: {ex.Message}";
+                PaddedText.Set(context, null);
             }
-        }
-    }
 
-    public enum PadDirectionEnum
-    {
-        Left = 0,
-        Right = 1
+            StatusMessage.Set(context, status);
+        }
     }
 }

@@ -2,48 +2,101 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Delete Column From Data Table"),
-     Description("Deletes a data table column at the specified column index or column name.")]
+    [DisplayName("Delete Column From Data Table")]
+    [Description("Deletes a data table column at the specified column index or column name.")]
     public sealed class DeleteColumnFromDataTableActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"), Description("The data table to modify.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table to modify.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input"), DisplayName("ColumnName"), Description("The name of the column to delete.")]
+        [Category("Input")]
+        [DisplayName("Specify Column With")]
+        [Description("Specifies whether to delete the column by name or index.")]
+        [DefaultValue(DataTableDeleteColumnByEnum.Name)]
+        public InArgument<DataTableDeleteColumnByEnum> SpecifyColumnWith { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Column Name")]
+        [Description("The name of the column to delete (required if 'Specify Column With' is 'Name').")]
+        [RenderIfCondition(nameof(SpecifyColumnWith), "Name")]
         public InArgument<string> ColumnName { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        [Category("Input")]
+        [DisplayName("Column Index")]
+        [Description("The zero-based index of the column to delete (required if 'Specify Column With' is 'Index').")]
+        [RenderIfCondition(nameof(SpecifyColumnWith), "Index")]
+        public InArgument<int> ColumnIndex { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [Description("Returns the result status message.")]
         public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-            var columnName = context.GetValue(ColumnName);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(columnName) || !dataTable.Columns.Contains(columnName))
-            {
-                context.SetValue(StatusMessage, "Error: Invalid column name.");
-                return;
-            }
+            string status = "Operation completed successfully.";
 
             try
             {
-                dataTable.Columns.Remove(columnName);
-                context.SetValue(StatusMessage, "Column deleted successfully.");
+                var dataTable = DataTable.Get(context);
+                var specifyColumnWith = SpecifyColumnWith.Get(context);
+
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                switch (specifyColumnWith)
+                {
+                    case DataTableDeleteColumnByEnum.Name:
+                    {
+                        var columnName = ColumnName.Get(context);
+
+                        if (string.IsNullOrWhiteSpace(columnName))
+                            throw new ArgumentException("Column name cannot be empty when using 'Name' mode.");
+
+                        if (!dataTable.Columns.Contains(columnName))
+                            throw new ArgumentException($"Column '{columnName}' not found in the data table.");
+
+                        dataTable.Columns.Remove(columnName);
+                        break;
+                    }
+
+                    case DataTableDeleteColumnByEnum.Index:
+                    {
+                        var columnIndex = ColumnIndex.Get(context);
+
+                        if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
+                            throw new ArgumentException($"Invalid column index: {columnIndex}");
+
+                        dataTable.Columns.RemoveAt(columnIndex);
+                        break;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(specifyColumnWith));
+                }
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error deleting column: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

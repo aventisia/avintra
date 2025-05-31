@@ -1,11 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows.Forms;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
 
     // Activity to display a select from list dialog

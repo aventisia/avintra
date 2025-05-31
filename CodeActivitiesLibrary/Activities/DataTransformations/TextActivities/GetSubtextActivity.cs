@@ -1,60 +1,121 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Get Subtext"), Description("Retrieves a substring from a text value based on start and end indices.")]
+    [DisplayName("Extract Substring from Text")]
+    [Description("Retrieves a substring from the original text based on start index and length.")]
     public class GetSubtextActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), DisplayName("Original Text"),
-         Description("The original text from which the substring will be extracted.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Original Text")]
+        [Description("The full text value from which to extract a substring.")]
         public InArgument<string> OriginalText { get; set; }
 
-        [RequiredArgument, Category("Input"), DisplayName("Start Index"),
-         Description("The starting index of the substring.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DefaultValue(StartIndexTypeEnum.StartOfText)]
+        [DisplayName("Start Index Type")]
+        [Description("Specifies whether to start from the beginning of the text or at a specific character position.")]
+        public InArgument<StartIndexTypeEnum> StartIndexType { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Start Index")]
+        [Description(
+            "The zero-based starting position of the substring. Only used if 'Start Index Type' is 'Character Position'.")]
         public InArgument<int> StartIndex { get; set; }
 
-        [Category("Input"), DisplayName("Length"),
-         Description("The length of the substring to extract. If not provided, extracts until the end.")]
-        public InArgument<int?> Length { get; set; }
+        [Category("Input")]
+        [DefaultValue(LengthTypeEnum.SpecificLength)]
+        [DisplayName("Length Type")]
+        [Description("Specifies whether to extract a specific number of characters or until the end of the string.")]
+        public InArgument<LengthTypeEnum> LengthType { get; set; }
 
-        [Category("Output"), DisplayName("Result Text"), Description("The resulting substring.")]
-        public OutArgument<string> ResultText { get; set; }
+        [Category("Input")]
+        [DisplayName("Number of Characters")]
+        [Description("The number of characters to extract. Only used if 'Length Type' is 'Specific Length'.")]
+        [RenderIfCondition(nameof(LengthType), nameof(LengthTypeEnum.SpecificLength))]
+        public InArgument<int> NumberOfCharacters { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        #endregion
+        [Category("Output")]
+        [DisplayName("Substring Result")]
+        [Description("Returns the extracted substring.")]
+        public OutArgument<string> SubstringResult { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
                 var originalText = OriginalText.Get(context);
-                var startIndex = StartIndex.Get(context);
-                var length = Length.Get(context) ?? (originalText.Length - startIndex);
+                var startIndexTypeEnum = StartIndexType.Get(context);
+                int? startIndex = null;
 
-                if (string.IsNullOrWhiteSpace(originalText))
+                if (originalText == null)
                     throw new ArgumentException("OriginalText cannot be empty.");
 
-                if (startIndex < 0 || startIndex >= originalText.Length)
-                    throw new ArgumentException("StartIndex is out of bounds.");
+                switch (startIndexTypeEnum)
+                {
+                    case StartIndexTypeEnum.StartOfText:
+                        startIndex = 0;
+                        break;
 
-                if (length < 0)
-                    throw new ArgumentException("Length cannot be negative.");
+                    case StartIndexTypeEnum.CharacterPosition:
+                        startIndex = StartIndex.Get(context);
 
-                var result = originalText.Substring(startIndex, length);
-                ResultText.Set(context, result);
-                StatusMessage.Set(context, "Substring extraction successful.");
+                        if (startIndex < 0 || startIndex >= originalText.Length)
+                            throw new ArgumentOutOfRangeException(nameof(startIndex),
+                                $"StartIndex must be between 0 and {originalText.Length - 1}");
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid StartIndexType.");
+                }
+
+                var lengthTypeEnum = LengthType.Get(context);
+                int? length = null;
+
+                if (lengthTypeEnum == LengthTypeEnum.SpecificLength)
+                {
+                    length = NumberOfCharacters.Get(context);
+
+                    if (length < 0)
+                        throw new ArgumentException("Length must be non-negative.");
+
+                    if (startIndex + length > originalText.Length)
+                        throw new ArgumentException("StartIndex + Length exceeds the length of the original text.");
+                }
+
+                var result = lengthTypeEnum == LengthTypeEnum.UntilEnd
+                    ? originalText.Substring(startIndex.Value)
+                    : originalText.Substring(startIndex.Value, length.Value);
+
+                SubstringResult.Set(context, result);
             }
             catch (Exception ex)
             {
-                ResultText.Set(context, $"Error: {ex.Message}");
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                status = $"Error extracting substring: {ex.Message}";
+                SubstringResult.Set(context, null);
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

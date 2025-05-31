@@ -28,9 +28,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 
             try
             {
-                using (ServiceController service = new ServiceController(serviceName))
+                using (var service = new ServiceController(serviceName))
                 {
-                    ServiceControllerStatus statusInfo = service.Status;
+                    var statusInfo = service.Status;
                     result = true; // Simulated success
                     status = $"Service '{serviceName}' status checked successfully.";
                 }

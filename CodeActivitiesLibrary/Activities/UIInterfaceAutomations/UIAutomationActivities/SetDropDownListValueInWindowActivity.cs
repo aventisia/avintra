@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             var windowHandle = WindowHandle.Get(context);
             var dropDownListSelector = DropDownListSelector.Get(context);
             var optionValue = OptionValue.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

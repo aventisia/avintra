@@ -1,97 +1,136 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
+namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Truncate Number")]
-    [Description("Performs various operations on a number, such as getting the integer part, decimal part, or rounding.")]
+    [Description(
+        "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.")]
     public class TruncateNumberActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
-        [DisplayName("Number")]
-        [Description("The number to operate on. This can be a number, or a variable containing a number")]
-        public InArgument<double> Number { get; set; }
+        [DisplayName("Number to Truncate")]
+        [Description("The numeric value to truncate or round.")]
+        public InArgument<double> NumberToTruncate { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Operation")]
-        [DefaultValue(NumberOperationEnum.GetIntegerPart)]
-        [Description("Specifies the operation to perform on the number.")]
-        public InArgument<NumberOperationEnum> Operation { get; set; }
+        [Description("Specifies how to truncate or round the number.")]
+        public InArgument<TruncateOperationEnum> Operation { get; set; }
 
         [Category("Input")]
         [DisplayName("Decimal Places")]
-        [DefaultValue(2)]
-        [Description("The number of decimal places to round to. Required only if the operation is 'RoundNumber'.")]
-        [RenderIfCondition(nameof(Operation), NumberOperationEnum.GetRoundNumber)]
+        [Description("The number of decimal places to round to. Only applicable for rounding operations.")]
+        [RenderIfCondition(nameof(Operation), nameof(TruncateOperationEnum.Round))]
         public InArgument<int> DecimalPlaces { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Round Operation")]
+        [Description("Specifies round up or round down the number.")]
+        public InArgument<TruncateNumberRoundOperationEnum> RoundOperation { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
         [Category("Output")]
-        [DisplayName("Truncated Number")]
-        [Description("Returns the result of the operation.")]
-        public OutArgument<double> TruncatedNumber { get; set; }
+        [DisplayName("Truncated Value")]
+        [Description("Returns the truncated or rounded numeric value.")]
+        public OutArgument<double> TruncatedValue { get; set; }
 
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
-        #endregion
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var number = Number.Get(context);
-            var operation = Operation.Get(context);
-            var decimalPlaces = DecimalPlaces.Get(context);
-            double result = 0;
-            var status = "";
+            var status = "Success";
 
             try
             {
-                switch (operation)
+                var number = NumberToTruncate.Get(context);
+                var operation = Operation.Get(context);
+                var roundOperation = RoundOperation.Get(context);
+
+                if (operation == TruncateOperationEnum.Round)
                 {
-                    case NumberOperationEnum.GetIntegerPart:
-                        result = Math.Truncate(number);
-                        status = "Integer part extracted successfully.";
-                        break;
+                    var decimalPlaces = DecimalPlaces.Get(context);
 
-                    case NumberOperationEnum.GetDecimalPart:
-                        result = number - Math.Truncate(number);
-                        status = "Decimal part extracted successfully.";
-                        break;
+                    if (decimalPlaces < 0)
+                        throw new ArgumentException("Decimal Places must be non-negative.");
 
-                    case NumberOperationEnum.GetRoundNumber:
-                        result = Math.Round(number, decimalPlaces);
-                        status = $"Number rounded to {decimalPlaces} decimal places successfully.";
-                        break;
+                    switch (roundOperation)
+                    {
+                        case TruncateNumberRoundOperationEnum.RoundUp:
+                            number = Math.Round(number, decimalPlaces, MidpointRounding.AwayFromZero);
+                            break;
 
-                    default:
-                        throw new ArgumentException("Invalid operation specified.");
+                        case TruncateNumberRoundOperationEnum.RoundDown:
+                            number = Math.Round(number, decimalPlaces, MidpointRounding.ToEven);
+                            break;
+
+                        default:
+                            throw new ArgumentException("Unsupported operation.");
+                    }
+                }
+                else
+                {
+                    switch (operation)
+                    {
+                        case TruncateOperationEnum.GetIntegerPart:
+                            number = Math.Truncate(number);
+                            break;
+
+                        case TruncateOperationEnum.GetFractionalPart:
+                            number = number - Math.Truncate(number);
+                            break;
+
+                        default:
+                            throw new ArgumentException("Unsupported operation.");
+                    }
                 }
 
-                TruncatedNumber.Set(context, result);
-                StatusMessage.Set(context, status);
+                TruncatedValue.Set(context, number);
             }
             catch (Exception ex)
             {
-                status = $"Error performing operation: {ex.Message}";
-                StatusMessage.Set(context, status);
+                status = $"Error truncating/rounding number: {ex.Message}";
+                TruncatedValue.Set(context, 0);
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 
-    public enum NumberOperationEnum
+    public enum TruncateOperationEnum
     {
-        [Display(Name = "Get Integer Part", Description = "Extracts the integer part of the number.")]
-        GetIntegerPart = 0,
+        [Display(Name = "Get Integer Part", Description = "Retrieves only the integer portion of the number.")]
+        GetIntegerPart,
 
-        [Display(Name = "Get Decimal Part", Description = "Extracts the decimal part of the number.")]
-        GetDecimalPart = 1,
+        [Display(Name = "Get Fractional Part", Description = "Retrieves only the fractional portion of the number.")]
+        GetFractionalPart,
 
-        [Display(Name = "Round Number", Description = "Rounds the number to a specified number of decimal places.")]
-        GetRoundNumber = 2
+        [Display(Name = "Round", Description = "Rounds the number specified number of decimal places.")]
+        Round
+    }
+
+    public enum TruncateNumberRoundOperationEnum
+    {
+        [Display(Name = "Round Up", Description = "Rounds the number up to the specified number of decimal places.")]
+        RoundUp,
+
+        [Display(Name = "Round Down",
+            Description = "Rounds the number down to the specified number of decimal places.")]
+        RoundDown
     }
 }

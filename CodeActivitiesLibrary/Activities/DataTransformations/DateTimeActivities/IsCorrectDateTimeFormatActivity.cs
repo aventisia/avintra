@@ -5,59 +5,58 @@ using System.Globalization;
 
 namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
-    public class IsCorrectDateTimeFormatActivity : CodeActivity
-    {
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Input DateTime String")]
-        [Description("The date and time string to validate.")]
-        public InArgument<string> InputDateTime { get; set; }
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("DateTime Format")]
-        [Description("The expected DateTime format to validate against (e.g., yyyy-MM-dd HH:mm:ss).")]
-        public InArgument<string> DateTimeFormat { get; set; }
-
-        [Category("Output")]
-        [DisplayName("Is Valid Format")]
-        [Description("Returns true if the input date/time string matches the specified format.")]
-        public OutArgument<bool> Result { get; set; }
-
-        [Category("Output")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+        [DisplayName("Validate DateTime Format")]
+        [Description("Checks if the input string matches the specified date and time format.")]
+        public class IsCorrectDateTimeFormatActivity : CodeActivity
         {
-            string inputDateTime = InputDateTime.Get(context);
-            string dateTimeFormat = DateTimeFormat.Get(context);
-            bool isValid = false;
-            string message;
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("DateTime String")]
+            [Description("The date and time string to validate.")]
+            public InArgument<string> InputDateTime { get; set; }
 
-            try
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Expected Format")]
+            [Description("The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss).")]
+            public InArgument<string> DateTimeFormat { get; set; }
+
+            [Category("Output")]
+            [DisplayName("Is Format Valid")]
+            [Description("Returns true if the input matches the expected format; otherwise, false.")]
+            public OutArgument<bool> IsValid { get; set; }
+
+            protected override void Execute(CodeActivityContext context)
             {
-                DateTime outputDate;
-                isValid = DateTime.TryParseExact(
-                    inputDateTime,
-                    new[] { dateTimeFormat },
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out outputDate
-                );
+                var input = InputDateTime.Get(context);
+                var format = DateTimeFormat.Get(context);
+                bool isValid = false;
 
-                message = isValid
-                    ? "DateTime string is in the correct format."
-                    : "DateTime string does not match the expected format.";
-            }
-            catch (Exception ex)
-            {
-                isValid = false;
-                message = "Exception in IsCorrectDateTimeFormat activity: " + ex.Message;
-            }
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(input))
+                        throw new ArgumentException("InputDateTime cannot be null or empty.");
+                    if (string.IsNullOrWhiteSpace(format))
+                        throw new ArgumentException("DateTimeFormat cannot be null or empty.");
 
-            Result.Set(context, isValid);
-            StatusMessage.Set(context, message);
+                    var formats = new[] { format };
+                    DateTime outputDate;
+
+                    isValid = DateTime.TryParseExact(
+                        input,
+                        formats,
+                        DateTimeFormatInfo.InvariantInfo,
+                        DateTimeStyles.None,
+                        out outputDate
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error during format validation: " + ex.Message);
+                }
+
+                IsValid.Set(context, isValid);
+            }
         }
-    }
 }
+

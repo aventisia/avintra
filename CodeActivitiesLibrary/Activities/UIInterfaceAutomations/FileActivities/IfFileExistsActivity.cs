@@ -4,13 +4,17 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("If File Exists"), Description("Checks if a file exists.")]
+    [DisplayName("If File Exists")]
+    [Description("Checks if a file exists.")]
     public class IfFileExistsActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The full path of the file to check.")]
+        [RequiredArgument,
+        Category("Input"),
+        Description("The full path of the file to check.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
+        [Category("Output"),
+        Description("Returns the status message.")]
         public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)

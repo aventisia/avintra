@@ -1,29 +1,42 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-    // Activity to attach to a running Excel instance
-    [DisplayName("Attach to Running Excel"), Description("Attaches to an Excel document that's already open.")]
+    [DisplayName("Attach to Running Excel Workbook")]
+    [Description("Attaches to a running Excel instance and opens the specified workbook if not already open.")]
     public class AttachToRunningExcelActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The process ID of the running Excel instance.")]
-        public InArgument<int> ProcessId { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The running Excel Application object to attach to.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("File Path")]
+        [Description("The full path of the Excel file to open or attach to in the running Excel instance.")]
+        public InArgument<string> FilePath { get; set; }
+
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var processId = ProcessId.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate attaching to running Excel (actual implementation would use Excel Interop or similar)
-                status = $"Simulated attachment to running Excel process ID: {processId}.";
+                var excelApp = ExcelApplication.Get(context);
+                var filePath = FilePath.Get(context);
+
+                if (excelApp == null)
+                    throw new InvalidOperationException("Excel Application is null.");
+
+                var wb = excelApp.Workbooks.Open(filePath);
             }
             catch (Exception ex)
             {

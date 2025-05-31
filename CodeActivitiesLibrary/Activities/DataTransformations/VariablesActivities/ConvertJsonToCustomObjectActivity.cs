@@ -6,49 +6,64 @@ using System.Text.Json;
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Convert JSON to Custom Object")]
-    [Description("Converts a JSON string into a custom object.")]
+    [Description("Converts a JSON string into a strongly-typed custom object.")]
     public class ConvertJsonToCustomObjectActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("JSON Data")]
-        [Description("A JSON text or variable containing JSON to convert to a custom object.")]
+        [Description("The JSON string that will be converted to a custom object.")]
         public InArgument<string> JsonData { get; set; }
 
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Target Type")]
+        [Description("Specifies the type of the custom object to deserialize the JSON into.")]
+        public InArgument<Type> TargetType { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [DisplayName("Custom Object Output")]
-        [Description("The resulting custom object after converting from JSON.")]
-        public OutArgument<object> JsonAsCustomObjectOutput { get; set; }
+        [DisplayName("Custom Object")]
+        [Description("Returns the resulting custom object after JSON deserialization.")]
+        public OutArgument<object> CustomObject { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
                 var jsonData = JsonData.Get(context);
+                var targetType = TargetType.Get(context);
 
                 if (string.IsNullOrWhiteSpace(jsonData))
                     throw new ArgumentException("JSON data cannot be empty.");
 
-                // Deserialize JSON to object (this will return a dynamic or object type)
+                if (targetType == null)
+                    throw new ArgumentException("Target type must be specified for deserialization.");
+
+                // Deserialize JSON into the specified target type
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                var jsonObject = JsonSerializer.Deserialize<object>(jsonData, options);
+                var result = JsonSerializer.Deserialize(jsonData, targetType, options);
 
-                JsonAsCustomObjectOutput.Set(context, jsonObject);
-
-                status += " JSON successfully converted to custom object.";
+                CustomObject.Set(context, result);
             }
             catch (Exception ex)
             {
                 status = $"Error converting JSON to custom object: {ex.Message}";
+                CustomObject.Set(context, null);
             }
 
             StatusMessage.Set(context, status);

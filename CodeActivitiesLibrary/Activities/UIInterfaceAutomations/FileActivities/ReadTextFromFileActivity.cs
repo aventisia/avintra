@@ -38,7 +38,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
             var filePath = FilePath.Get(context);
             var trimContent = TrimContent.Get(context);
             string status;
-            string content = string.Empty;
+            var content = string.Empty;
 
             try
             {

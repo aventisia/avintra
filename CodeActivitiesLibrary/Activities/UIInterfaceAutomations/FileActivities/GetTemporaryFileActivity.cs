@@ -1,36 +1,29 @@
-﻿using System;
-using System.Activities;
+﻿using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("Get Temporary File"), Description("Creates a uniquely named, empty temporary file on disk.")]
-    public class GetTemporaryFileActivity : CodeActivity
-    {
-        [Category("Output"), Description("Returns the path of the temporary file.")]
-        public OutArgument<string> TempFilePath { get; set; }
-
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+    
+        [DisplayName("Get Temporary File")]
+        [Description("Creates a uniquely named empty temporary file on disk and returns its FileInfo object.")]
+        public class GetTemporaryFileActivity : CodeActivity
         {
-            var tempFilePath = "";
-            var status = "";
+            [Category("Output")]
+            [DisplayName("Temporary File")]
+            [Description("The FileInfo object representing the temporary file created on disk.")]
+            public OutArgument<FileInfo> TempFile { get; set; }
 
-            try
+            protected override void Execute(CodeActivityContext context)
             {
-                tempFilePath = Path.GetTempFileName();
-                TempFilePath.Set(context, tempFilePath);
-                status = "Temporary file created successfully.";
-            }
-            catch (Exception ex)
-            {
-                status = $"Error creating temporary file: {ex.Message}";
-            }
+                // Generate a unique temporary file path
+                string tempFilePath = Path.GetTempFileName();
 
-            StatusMessage.Set(context, status);
+                // Create the FileInfo object to represent the file
+                FileInfo fileInfo = new FileInfo(tempFilePath);
+
+                // Set the output
+                TempFile.Set(context, fileInfo);
+            }
         }
-    }
 }

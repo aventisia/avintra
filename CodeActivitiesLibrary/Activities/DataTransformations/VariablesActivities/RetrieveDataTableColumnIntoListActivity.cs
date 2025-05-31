@@ -3,6 +3,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
@@ -11,72 +12,79 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.")]
     public class RetrieveDataTableColumnIntoListActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Data Table")]
-        [Description("The data table with the column to convert into a list.")]
+        [Description("The data table containing the column to convert into a list.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Column Name or Index")]
-        [Description("The column name (if defined) or index number to retrieve.")]
+        [Description("Specifies which column to extract by name (if defined) or index (zero-based).")]
         public InArgument<string> ColumnNameOrIndex { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [DisplayName("Column as List Output")]
-        [Description("The new list containing the contents of the specified data table column.")]
-        public OutArgument<List<string>> ColumnAsListOutput { get; set; }
+        [DisplayName("Column as List")]
+        [Description("Returns the contents of the selected column as a list of strings.")]
+        public OutArgument<List<string>> ColumnAsList { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
                 var dataTable = DataTable.Get(context);
                 var columnNameOrIndex = ColumnNameOrIndex.Get(context);
 
-                if (dataTable == null)
-                    throw new ArgumentException("Data table cannot be null.");
+                if (dataTable == null || dataTable.Columns.Count == 0)
+                    throw new ArgumentException("DataTable must contain at least one column.");
 
-                if (string.IsNullOrWhiteSpace(columnNameOrIndex))
-                    throw new ArgumentException("Column name or index must be specified.");
-
-                // Parse column name/index
                 DataColumn column = null;
 
-                if (int.TryParse(columnNameOrIndex, out var columnIndex) && columnIndex >= 0 &&
-                    columnIndex < dataTable.Columns.Count)
-                    column = dataTable.Columns[columnIndex];
-                else
-                    column = dataTable.Columns[columnNameOrIndex];
-
-                if (column == null)
-                    throw new ArgumentException($"Column '{columnNameOrIndex}' not found in the data table.");
-
-                // Extract values from column
-                var result = new List<string>();
-                foreach (DataRow row in dataTable.Rows)
+                // Try parse as index
+                if (int.TryParse(columnNameOrIndex, out var columnIndex))
                 {
-                    var value = row[column].ToString();
-                    result.Add(value);
+                    if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
+                        throw new ArgumentOutOfRangeException(nameof(columnIndex),
+                            $"Column index must be between 0 and {dataTable.Columns.Count - 1}");
+
+                    column = dataTable.Columns[columnIndex];
+                }
+                else
+                {
+                    if (!dataTable.Columns.Contains(columnNameOrIndex))
+                        throw new ArgumentException($"Column '{columnNameOrIndex}' not found in DataTable.");
+
+                    column = dataTable.Columns[columnNameOrIndex];
                 }
 
-                ColumnAsListOutput.Set(context, result);
+                var result = (from DataRow row in dataTable.Rows
+                    select row[column] as object
+                    into value
+                    select value?.ToString() ?? string.Empty).ToList();
 
-                status += $" Retrieved column '{column.ColumnName}' into a list with {result.Count} items.";
+                ColumnAsList.Set(context, result);
+                status = $"Successfully extracted {result.Count} items from column '{column.ColumnName}'.";
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving column into list: {ex.Message}";
+                ColumnAsList.Set(context, new List<string>());
             }
 
             StatusMessage.Set(context, status);

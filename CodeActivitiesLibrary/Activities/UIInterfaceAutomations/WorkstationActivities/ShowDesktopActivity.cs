@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     //[DisplayName("Show Desktop"), Description("Shows the desktop by minimizing all windows.")]
     //public class ShowDesktopActivity : CodeActivity

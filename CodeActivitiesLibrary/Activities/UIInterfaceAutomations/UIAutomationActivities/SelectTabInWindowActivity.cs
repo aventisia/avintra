@@ -26,7 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowHandle = WindowHandle.Get(context);
             var tabIdentifier = TabIdentifier.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

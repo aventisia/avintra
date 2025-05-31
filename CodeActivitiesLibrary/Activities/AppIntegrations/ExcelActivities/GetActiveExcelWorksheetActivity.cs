@@ -1,42 +1,73 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-    // Activity to get the active Excel worksheet
-    [DisplayName("Get Active Excel Worksheet"), Description("Retrieves an Excel document's active worksheet.")]
+    [DisplayName("Get Active Excel Worksheet")]
+    [Description("Retrieves the name and index of the currently active worksheet in an Excel instance.")]
     public class GetActiveExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [Category("Output"), Description("Returns the name of the active worksheet.")]
-        public OutArgument<string> Result { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target workbook.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")]
+        [DisplayName("Sheet Name")]
+        [Description("Returns the name of the currently active worksheet.")]
+        public OutArgument<string> SheetName { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Sheet Index")]
+        [Description("Returns the index of the currently active worksheet.")]
+        public OutArgument<int> SheetIndex { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var result = "";
-            var status = "";
+            var sheetName = "";
+            var sheetIndex = 0;
+            var status = "Success";
 
             try
             {
-                // Simulate retrieving the active worksheet (actual implementation would use Excel Interop or similar)
-                result = "Sheet1"; // Simulated active worksheet name
-                status = "Active worksheet retrieved successfully.";
+                var excelApp = ExcelApplication.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Excel application or workbook is not available.");
+
+                var wb = excelApp.ActiveWorkbook;
+
+                if (!(wb.ActiveSheet is Excel.Worksheet ws))
+                    throw new InvalidOperationException("No active worksheet found.");
+
+                sheetName = ws.Name;
+                sheetIndex = ws.Index;
             }
             catch (Exception ex)
             {
-                result = "";
                 status = $"Error retrieving active worksheet: {ex.Message}";
+                sheetName = "";
+                sheetIndex = 0;
             }
 
-            Result.Set(context, result);
+            SheetName.Set(context, sheetName);
+            SheetIndex.Set(context, sheetIndex);
             StatusMessage.Set(context, status);
         }
     }

@@ -8,6 +8,30 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [Description("Generates rich HTML content and stores it in a variable.")]
     public class CreateHtmlContentActivity : CodeActivity
     {
+        #region Arguments
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Title")]
+        [Description("The title of the HTML document.")]
+        public InArgument<string> Title { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Body Content")]
+        [Description("The body content of the HTML document.")]
+        public InArgument<string> BodyContent { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Result HTML")]
+        [Description("The generated HTML content.")]
+        public OutArgument<string> ResultHtml { get; set; }
+
+        [Category("Output")]
+        [Description("Returns the result status message.")]
+        public OutArgument<string> StatusMessage { get; set; }
+
+        #endregion
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -42,29 +66,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             }
         }
 
-        #region Arguments
 
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Title")]
-        [Description("The title of the HTML document.")]
-        public InArgument<string> Title { get; set; }
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Body Content")]
-        [Description("The body content of the HTML document.")]
-        public InArgument<string> BodyContent { get; set; }
-
-        [Category("Output")]
-        [DisplayName("Result HTML")]
-        [Description("The generated HTML content.")]
-        public OutArgument<string> ResultHtml { get; set; }
-
-        [Category("Output")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
     }
 }

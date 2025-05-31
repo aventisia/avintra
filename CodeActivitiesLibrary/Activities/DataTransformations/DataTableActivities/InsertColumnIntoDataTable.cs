@@ -2,67 +2,111 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Insert Column Into Data Table"),
-     Description("Inserts a column at the end or before a specific index value.")]
+    [DisplayName("Insert Column Into Data Table")]
+    [Description("Inserts a column at the end or before a specific index value.")]
     public sealed class InsertColumnIntoDataTable : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"), Description("The data table to modify.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table to modify.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input"), DisplayName("ColumnName"), Description("The name of the new column.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Column Name")]
+        [Description("The name of the new column.")]
         public InArgument<string> ColumnName { get; set; }
 
-        [Category("Input"), DisplayName("DataType"), Description("The data type of the new column.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Type")]
+        [Description("The data type of the new column.")]
         public InArgument<Type> DataType { get; set; }
 
-        [Category("Input"), DisplayName("ColumnIndex"),
-         Description("The index at which to insert the column. Use -1 to append at the end.")]
+        [Category("Input")]
+        [DisplayName("Insert Location")]
+        [Description("Specifies where to insert the new column.")]
+        [DefaultValue(DataTableInsertLocationEnum.BeforeColumnIndex)]
+        public InArgument<DataTableInsertLocationEnum> InsertLocation { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Column Index")]
+        [Description(
+            "The zero-based index at which to insert the column (required if 'Insert Location' is 'Before Column Index').")]
+        [RenderIfCondition(nameof(InsertLocation), "BeforeColumnIndex")]
         public InArgument<int> ColumnIndex { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-            var columnName = context.GetValue(ColumnName);
-            var dataType = context.GetValue(DataType);
-            var columnIndex = context.GetValue(ColumnIndex);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(columnName))
-            {
-                context.SetValue(StatusMessage, "Error: Column name is required.");
-                return;
-            }
+            var status = "Operation completed successfully.";
 
             try
             {
-                var newColumn = new DataColumn(columnName, dataType);
+                var dataTable = DataTable.Get(context);
+                var columnName = ColumnName.Get(context);
+                var dataType = DataType.Get(context);
+                var insertLocation = InsertLocation.Get(context);
 
-                if (columnIndex == -1)
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                if (string.IsNullOrWhiteSpace(columnName))
+                    throw new ArgumentException("Column name cannot be empty.");
+
+                if (!typeof(DataTable).IsAssignableFrom(dataType))
+                    throw new ArgumentException("Invalid data type specified.");
+
+                switch (insertLocation)
                 {
-                    dataTable.Columns.Add(newColumn);
-                }
-                else
-                {
-                    dataTable.Columns.Add(newColumn);
+                    case DataTableInsertLocationEnum.BeforeColumnIndex:
+                    {
+                        var columnIndex = ColumnIndex.Get(context);
+
+                        if (columnIndex < 0 || columnIndex > dataTable.Columns.Count)
+                            throw new ArgumentOutOfRangeException(nameof(ColumnIndex),
+                                $"Column index must be between 0 and {dataTable.Columns.Count}.");
+
+                        dataTable.Columns.Add(new DataColumn(columnName, dataType));
+                        dataTable.Columns[columnName].SetOrdinal(columnIndex);
+                        break;
+                    }
+
+                    case DataTableInsertLocationEnum.EndOfDataTable:
+                    {
+                        dataTable.Columns.Add(new DataColumn(columnName, dataType));
+                        break;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(insertLocation));
                 }
 
-                context.SetValue(StatusMessage, "Column inserted successfully.");
+                status = $"Successfully inserted column '{columnName}' into the data table.";
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error inserting column: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

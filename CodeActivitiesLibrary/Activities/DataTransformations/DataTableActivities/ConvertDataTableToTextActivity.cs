@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -14,62 +13,9 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [Description("Converts a data table into a CSV (comma-separated values) text representation.")]
     public class ConvertDataTableToTextActivity : CodeActivity
     {
-        protected override void Execute(CodeActivityContext context)
-        {
-            var status = "Operation completed successfully.";
-
-            try
-            {
-                var dataTable = DataTable.Get(context);
-                var includeColumnNames = IncludeColumnNames.Get(context);
-                var useCustomSeparator = UseCustomColumnsSeparator.Get(context);
-                var separatorChar = GetSeparatorCharacter(context, useCustomSeparator);
-
-                if (dataTable == null)
-                    throw new ArgumentException("Data table cannot be null.");
-
-                // Build CSV text from DataTable
-                var csv = new StringBuilder();
-
-                // Add column headers
-                if (includeColumnNames)
-                    csv.AppendLine(string.Join(separatorChar, dataTable.Columns
-                        .OfType<DataColumn>()
-                        .Select(c => c.ColumnName)));
-
-                // Add rows
-                foreach (DataRow row in dataTable.Rows)
-                    csv.AppendLine(string.Join(separatorChar, row.ItemArray.Select(field => field.ToString())));
-
-
-                status += $" Converted data table '{dataTable.TableName}' to CSV format.";
-            }
-            catch (Exception ex)
-            {
-                status = $"Error converting data table to CSV: {ex.Message}";
-            }
-
-            StatusMessage.Set(context, status);
-        }
-
-        private string GetSeparatorCharacter(CodeActivityContext context, bool useCustom)
-        {
-            if (!useCustom) return GetSystemDefaultSeparator();
-
-            var customSep = CustomColumnsSeparator.Get(context);
-            if (string.IsNullOrWhiteSpace(customSep))
-                return GetSystemDefaultSeparator();
-
-            return customSep;
-        }
-
-        private string GetSystemDefaultSeparator()
-        {
-            // Use system-specific separator based on current culture
-            return CultureInfo.CurrentCulture.TextInfo.ListSeparator;
-        }
-
-        #region Inputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
@@ -80,11 +26,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Category("Advanced")]
         [DisplayName("Include Column Names")]
         [Description("Specifies whether to include column names as the first row in the CSV output.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public InArgument<bool> IncludeColumnNames { get; set; }
 
         [Category("Advanced")]
-        [DisplayName("Use Custom Column Separator")]
+        [DisplayName("Use Custom Columns Separator")]
         [Description("Specifies whether to use a custom column separator instead of a predefined one.")]
         [DefaultValue(false)]
         public InArgument<bool> UseCustomColumnsSeparator { get; set; }
@@ -92,42 +38,100 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Category("Advanced")]
         [DisplayName("Separator")]
         [Description("The column separator to use in the CSV text.")]
-        [DefaultValue(ColumnSeparatorEnum.SystemDefault)]
-        public InArgument<ColumnSeparatorEnum> Separator { get; set; }
+        [DefaultValue(CsvSeparatorEnum.SystemDefault)]
+        public InArgument<CsvSeparatorEnum> Separator { get; set; }
 
         [Category("Advanced")]
         [DisplayName("Custom Columns Separator")]
         [Description("A custom string used to separate columns in the CSV output.")]
+        [RenderIfCondition(nameof(UseCustomColumnsSeparator), "true")]
         public InArgument<string> CustomColumnsSeparator { get; set; }
 
-        #endregion
-
-        #region Outputs
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
         [DisplayName("CSV Text Output")]
         [Description("The CSV text representation of the data table.")]
-        public OutArgument<string> OCsvTextOutput { get; set; }
+        public OutArgument<string> CsvTextOutput { get; set; }
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
         public OutArgument<string> StatusMessage { get; set; }
 
-        #endregion
-    }
+        // ----------------------
+        // Execution Logic
+        // ----------------------
+        protected override void Execute(CodeActivityContext context)
+        {
+            var status = "Operation completed successfully.";
+            var csvText = string.Empty;
 
-    public enum ColumnSeparatorEnum
-    {
-        [Display(Name = "System Default", Description = "Uses the system's default separator.")]
-        SystemDefault,
+            try
+            {
+                var dataTable = DataTable.Get(context);
+                var includeColumnNames = IncludeColumnNames.Get(context);
+                var useCustomSeparator = UseCustomColumnsSeparator.Get(context);
 
-        [Display(Name = "Comma", Description = "Uses ',' as column separator.")]
-        Comma,
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
 
-        [Display(Name = "Semicolon", Description = "Uses ';' as column separator.")]
-        Semicolon,
+                // Determine separator
+                var separator = GetSeparator(context, useCustomSeparator);
 
-        [Display(Name = "Tab", Description = "Uses tab character as column separator.")]
-        Tab
+                // Build CSV text from DataTable
+                var csvBuilder = new StringBuilder();
+
+                // Add column headers
+                if (includeColumnNames)
+                {
+                    csvBuilder.AppendLine(string.Join(separator,
+                        dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName)));
+                }
+
+                // Add rows
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    csvBuilder.AppendLine(string.Join(separator, row.ItemArray.Select(field => field.ToString())));
+                }
+
+                csvText = csvBuilder.ToString();
+            }
+            catch (Exception ex)
+            {
+                status = $"Error converting data table to CSV: {ex.Message}";
+            }
+
+            CsvTextOutput.Set(context, csvText);
+            StatusMessage.Set(context, status);
+        }
+
+        private string GetSeparator(CodeActivityContext context, bool useCustom)
+        {
+            if (!useCustom)
+            {
+                var separatorEnum = Separator.Get(context);
+                switch (separatorEnum)
+                {
+                    case CsvSeparatorEnum.Comma:
+                        return ",";
+                    case CsvSeparatorEnum.Semicolon:
+                        return ";";
+                    case CsvSeparatorEnum.Tab:
+                        return "\t";
+                    default:
+                        return CultureInfo.CurrentCulture.TextInfo.ListSeparator;
+                }
+            }
+            else
+            {
+                var customSep = CustomColumnsSeparator.Get(context);
+                if (string.IsNullOrWhiteSpace(customSep))
+                    throw new ArgumentException(
+                        "Custom separator cannot be empty when 'Use Custom Columns Separator' is enabled.");
+
+                return customSep;
+            }
+        }
     }
 }

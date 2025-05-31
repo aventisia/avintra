@@ -1,39 +1,73 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-    // Activity to run an Excel macro
-    [DisplayName("Run Excel Macro"), Description("Runs a specified macro on the document of an Excel instance.")]
+    [DisplayName("Run Excel Macro")]
+    [Description("Runs a specified VBA macro in the active Excel workbook.")]
     public class RunExcelMacroActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The name of the macro to run.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target workbook.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Macro Name")]
+        [Description("The name of the VBA macro to execute.")]
         public InArgument<string> MacroName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")]
+        [DisplayName("Macro Return Value")]
+        [Description("Returns the value returned by the macro, if any.")]
+        public OutArgument<string> MacroReturnValue { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var macroName = MacroName.Get(context);
-            var status = "";
+            var returnValue = "";
+            var status = "Success";
 
             try
             {
-                // Simulate running the macro (actual implementation would use Excel Interop or similar)
-                status = $"Simulated execution of macro '{macroName}' in Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var macroName = MacroName.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Excel application or workbook is not available.");
+
+                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
+                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+
+                // Call the macro
+                var result = excelApp.Run(macroName);
+
+                // Capture return value (if any)
+                returnValue = result?.ToString() ?? "None";
             }
             catch (Exception ex)
             {
                 status = $"Error running macro: {ex.Message}";
+                returnValue = "None";
             }
 
+            MacroReturnValue.Set(context, returnValue);
             StatusMessage.Set(context, status);
         }
     }

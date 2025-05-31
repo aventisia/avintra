@@ -1,32 +1,109 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    // Activity to delete an Excel worksheet
-    [DisplayName("Delete Excel Worksheet"), Description("Deletes a specific worksheet from an Excel instance.")]
+    [DisplayName("Delete Excel Worksheet")]
+    [Description("Deletes a specific worksheet from the active Excel workbook.")]
     public class DeleteExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The name of the worksheet to delete.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Deletion Mode")]
+        [Description("Specifies how to identify the worksheet to delete: by Name or Index.")]
+        [DefaultValue(WorksheetDeleteByModeEnum.Name)]
+        public InArgument<WorksheetDeleteByModeEnum> DeletionMode { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Worksheet Name")]
+        [Description("The name of the worksheet to delete (required if 'Deletion Mode' is 'Name').")]
+        [RenderIfCondition(nameof(DeletionMode), "Name")]
         public InArgument<string> WorksheetName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Worksheet Index")]
+        [Description("The index of the worksheet to delete (required if 'Deletion Mode' is 'Index').")]
+        [RenderIfCondition(nameof(DeletionMode), "Index")]
+        public InArgument<int> WorksheetIndex { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var worksheetName = WorksheetName.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate deleting the worksheet (actual implementation would use Excel Interop or similar)
-                status = $"Simulated deletion of worksheet '{worksheetName}' in Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var deletionMode = DeletionMode.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Excel application or workbook is not available.");
+
+                Excel.Worksheet ws = null;
+
+                switch (deletionMode)
+                {
+                    case WorksheetDeleteByModeEnum.Name:
+                    {
+                        var worksheetName = WorksheetName.Get(context);
+
+                        if (string.IsNullOrWhiteSpace(worksheetName))
+                            throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
+
+                        ws = excelApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
+                        break;
+                    }
+
+                    case WorksheetDeleteByModeEnum.Index:
+                    {
+                        var worksheetIndex = WorksheetIndex.Get(context);
+
+                        if (worksheetIndex < 1 || worksheetIndex > excelApp.ActiveWorkbook.Worksheets.Count)
+                            throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
+                                $"Invalid worksheet index. Must be between 1 and {excelApp.ActiveWorkbook.Worksheets.Count}.");
+
+                        ws = excelApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
+                        break;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(deletionMode));
+                }
+
+                if (ws == null)
+                    throw new InvalidOperationException($"Worksheet not found.");
+
+                // Disable alerts to prevent confirmation dialogs
+                excelApp.DisplayAlerts = false;
+
+                // Delete the worksheet
+                ws.Delete();
+
+                // Re-enable alerts
+                excelApp.DisplayAlerts = true;
+
+                status = $"Successfully deleted worksheet.";
             }
             catch (Exception ex)
             {
@@ -36,5 +113,4 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             StatusMessage.Set(context, status);
         }
     }
-
 }

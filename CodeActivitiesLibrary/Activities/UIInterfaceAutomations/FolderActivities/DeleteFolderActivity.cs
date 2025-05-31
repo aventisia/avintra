@@ -5,35 +5,31 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-    [DisplayName("Delete folder")]
-    [Description("Delete a folder.")]
-    public class DeleteFolderActivity : CodeActivity
-    {
-        [RequiredArgument]
-        [Category("Input")]
-        [Description("The path of the folder to delete.")]
-        public InArgument<string> FolderPath { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+        [DisplayName("Delete Folder")]
+        [Description("Removes the specified folder and its contents from the file system.")]
+        public class DeleteFolderActivity : CodeActivity
         {
-            var folderPath = FolderPath.Get(context);
-            var status = "";
-
-            try
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Folder to Delete")]
+            [Description("Full path of the folder that you want to delete.")]
+            public InArgument<string> FolderPath { get; set; }
+            protected override void Execute(CodeActivityContext context)
             {
-                Directory.Delete(folderPath, true);
-                StatusMessage.Set(context, "Folder deleted successfully.");
-            }
-            catch (Exception ex)
-            {
-                status = $"Error deleting folder: {ex.Message}";
-            }
+                string folderPath = FolderPath.Get(context);
+              
+                if (string.IsNullOrWhiteSpace(folderPath))
+                {
+                    throw new ArgumentException("The folder path cannot be null or empty.");
+                }
 
-            StatusMessage.Set(context, status);
+                if (!Directory.Exists(folderPath))
+                {
+                    throw new DirectoryNotFoundException($"The folder '{folderPath}' does not exist.");
+                }
+
+                Directory.Delete(folderPath);
+            }
         }
     }
-}

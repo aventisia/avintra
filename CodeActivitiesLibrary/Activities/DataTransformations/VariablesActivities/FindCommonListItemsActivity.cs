@@ -10,33 +10,39 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Finds common items between two lists and returns them as a new list.")]
     public class FindCommonListItemsActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("First List")]
-        [Description("The variable that contains the first list to compare.")]
-        public InArgument<List<string>> FirstList { get; set; }
+        [Description("The first list to compare.")]
+        public InArgument<IEnumerable<object>> FirstList { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Second List")]
-        [Description("The variable that contains the second list to compare.")]
-        public InArgument<List<string>> SecondList { get; set; }
+        [Description("The second list to compare.")]
+        public InArgument<IEnumerable<object>> SecondList { get; set; }
 
-
-        [Category("Output")]
-        [DisplayName("Intersection List Output")]
-        [Description("The output list containing common items from both input lists.")]
-        public OutArgument<List<string>> IntersectionListOutput { get; set; }
-
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [DisplayName("Intersection List")]
+        [Description("Returns a list containing the common items from both input lists.")]
+        public OutArgument<List<object>> IntersectionList { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
@@ -49,13 +55,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 // Find common items using LINQ
                 var commonItems = firstList.Intersect(secondList).ToList();
 
-                IntersectionListOutput.Set(context, commonItems);
-
-                status += $" Found {commonItems.Count} common item(s) between the two lists.";
+                IntersectionList.Set(context, commonItems);
+                status = $"Found {commonItems.Count} common item(s) between the two lists.";
             }
             catch (Exception ex)
             {
                 status = $"Error finding common items: {ex.Message}";
+                IntersectionList.Set(context, new List<object>());
             }
 
             StatusMessage.Set(context, status);

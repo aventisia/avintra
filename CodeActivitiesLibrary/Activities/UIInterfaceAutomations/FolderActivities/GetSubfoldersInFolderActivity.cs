@@ -7,41 +7,42 @@ using System.Linq;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-    [DisplayName("Get subfolders in folder")]
-    [Description("Retrieve the list of subfolders in the folder.")]
+    [DisplayName("Retrieve Subfolders from Directory")]
+    [Description("Returns a list of subfolder paths within the specified directory.")]
     public class GetSubfoldersInFolderActivity : CodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The path of the folder to retrieve subfolders from.")]
+        [DisplayName("Source Folder Path")]
+        [Description("The full path of the directory from which subfolders will be retrieved.")]
         public InArgument<string> FolderPath { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the list of subfolder paths in the folder.")]
-        public OutArgument<List<string>> Subfolders { get; set; }
+        [Category("Input")]
+        [DisplayName("Include Nested Subfolders")]
+        [Description("Determines whether to include all nested subdirectories recursively.")]
+        [DefaultValue(false)]
+        public InArgument<bool> IncludeSubfolders { get; set; } = false;
 
         [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [DisplayName("Subfolder List")]
+        [Description("The collection of subfolder paths found in the specified directory.")]
+        public OutArgument<IEnumerable<string>> Subfolders { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var folderPath = FolderPath.Get(context);
-            List<string> subfolders = null;
-            var status = "";
+            string folderPath = FolderPath.Get(context);
+            bool includeSubfolders = IncludeSubfolders.Get(context);
 
-            try
-            {
-                subfolders = Directory.GetDirectories(folderPath).ToList();
-                StatusMessage.Set(context, "Subfolders retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                status = $"Error retrieving subfolders: {ex.Message}";
-            }
+            if (string.IsNullOrWhiteSpace(folderPath))
+                throw new ArgumentException("Folder path must not be null or empty.", nameof(FolderPath));
+
+            if (!Directory.Exists(folderPath))
+                throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
+
+            var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var subfolders = Directory.GetDirectories(folderPath, "*", searchOption).ToList();
 
             Subfolders.Set(context, subfolders);
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -1,82 +1,174 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-
+using System.Runtime.InteropServices;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Crop Text"),
-     Description("Retrieves a text value that occurs before, after, or between specified text flags in a given text.")]
+    [DisplayName("Crop Text")]
+    [Description("Extracts text before, after, or between specified flags.")]
     public class CropTextActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), DisplayName("Original Text"), Description("The original text to crop.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Original Text")]
+        [Description("The full text value from which to extract a portion.")]
         public InArgument<string> OriginalText { get; set; }
 
-        [RequiredArgument, Category("Input"), DisplayName("Crop Mode"),
-         Description("The cropping mode: Before, After, Between.")]
-        public InArgument<CropModeEnum> CropMode { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Mode")]
+        [Description("Specifies how to crop the text relative to the flag(s).")]
+        [DefaultValue(CropModeEnum.BeforeFlag)]
+        public InArgument<CropModeEnum> Mode { get; set; }
 
-        [Category("Input"), DisplayName("Start Flag"),
-         Description("The start flag for cropping (used in 'Between' mode).")]
-        public InArgument<string> StartFlag { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Flag")]
+        [Description("The flag used to locate the text to extract. Required in 'Before Flag' and 'After Flag' modes.")]
+        public InArgument<string> Flag { get; set; }
 
-        [Category("Input"), DisplayName("End Flag"), Description("The end flag for cropping (used in 'Between' mode).")]
-        public InArgument<string> EndFlag { get; set; }
+        [Category("Input")]
+        [DisplayName("Second Flag")]
+        [Description("The second flag used in 'Between Flags' mode to mark the end of the extracted text.")]
+        [RenderIfCondition(nameof(Mode), nameof(CropModeEnum.BetweenFlags))]
+        public InArgument<string> SecondFlag { get; set; }
 
-        [Category("Output"), DisplayName("Result Text"), Description("The cropped text result.")]
-        public OutArgument<string> ResultText { get; set; }
+        [Category("Input")]
+        [DisplayName("Ignore Case")]
+        [Description("When true, ignores case when matching flags.")]
+        [DefaultValue(true)]
+        public InArgument<bool> IgnoreCase { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        #endregion
+        [Category("Output")]
+        [DisplayName("Cropped Text")]
+        [Description("The extracted portion of the original text based on the specified mode.")]
+        public OutArgument<string> CroppedText { get; set; }
 
+        [Category("Output")]
+        [DisplayName("Is Flag Found")]
+        [Description("Indicates whether the specified flag(s) were found in the original text.")]
+        public OutArgument<bool> IsFlagFound { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
                 var originalText = OriginalText.Get(context);
-                var cropMode = CropMode.Get(context);
-                var startFlag = StartFlag.Get(context);
-                var endFlag = EndFlag.Get(context);
+                var mode = Mode.Get(context);
+                var flag = Flag.Get(context);
+                var secondFlag = SecondFlag.Get(context);
+                var ignoreCase = IgnoreCase.Get(context);
 
                 if (string.IsNullOrWhiteSpace(originalText))
-                    throw new ArgumentException("OriginalText cannot be empty.");
+                    throw new ArgumentException("Original text cannot be empty.");
 
-                var result = string.Empty;
-
-                switch (cropMode)
+                switch (mode)
                 {
-                    case CropModeEnum.Before:
-                        result = originalText.Split(new[] { startFlag }, StringSplitOptions.None)[0];
+                    case CropModeEnum.BeforeFlag:
+                    case CropModeEnum.AfterFlag:
+                    {
+                        if (string.IsNullOrWhiteSpace(flag))
+                            throw new ArgumentException($"Flag is required in '{mode}' mode.");
                         break;
-                    case CropModeEnum.After:
-                        result = originalText.Split(new[] { endFlag }, StringSplitOptions.None)[1];
-                        break;
-                    case CropModeEnum.Between:
-                        result = originalText.Split(new[] { startFlag, endFlag }, StringSplitOptions.None)[1];
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid CropMode.");
+                    }
+                    case CropModeEnum.BetweenFlags when string.IsNullOrWhiteSpace(flag):
+                        throw new ArgumentException("First flag is required in 'Between Flags' mode.");
+                    case CropModeEnum.BetweenFlags when string.IsNullOrWhiteSpace(secondFlag):
+                        throw new ArgumentException("Second flag is required in 'Between Flags' mode.");
                 }
 
-                ResultText.Set(context, result);
-                StatusMessage.Set(context, "Text cropped successfully.");
+                string result = null;
+                var flagFound = false;
+
+                switch (mode)
+                {
+                    case CropModeEnum.BeforeFlag:
+                        result = GetTextBeforeFlag(originalText, flag, ignoreCase, out flagFound);
+                        break;
+
+                    case CropModeEnum.AfterFlag:
+                        result = GetTextAfterFlag(originalText, flag, ignoreCase, out flagFound);
+                        break;
+
+                    case CropModeEnum.BetweenFlags:
+                        result = GetTextBetweenFlags(originalText, flag, secondFlag, ignoreCase, out flagFound);
+                        break;
+                }
+
+                CroppedText.Set(context, result);
+                IsFlagFound.Set(context, flagFound);
             }
             catch (Exception ex)
             {
-                ResultText.Set(context, $"Error: {ex.Message}");
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                status = $"Error cropping text: {ex.Message}";
+                CroppedText.Set(context, null);
+                IsFlagFound.Set(context, false);
             }
-        }
-    }
 
-    public enum CropModeEnum
-    {
-        Before = 0,
-        After = 1,
-        Between = 2
+            StatusMessage.Set(context, status);
+        }
+
+        private static string GetTextBeforeFlag(string text, string flag, bool ignoreCase, out bool flagFound)
+        {
+            var index = ignoreCase
+                ? text.IndexOf(flag, StringComparison.OrdinalIgnoreCase)
+                : text.IndexOf(flag, StringComparison.Ordinal);
+
+            flagFound = index != -1;
+
+            return index == -1 ? null : text.Substring(0, index);
+        }
+
+        private static string GetTextAfterFlag(string text, string flag, bool ignoreCase, out bool flagFound)
+        {
+            var index = ignoreCase
+                ? text.IndexOf(flag, StringComparison.OrdinalIgnoreCase)
+                : text.IndexOf(flag, StringComparison.Ordinal);
+
+            flagFound = index != -1;
+
+            return index == -1 ? null : text.Substring(index + flag.Length);
+        }
+
+        private static string GetTextBetweenFlags(string text, string flag1, string flag2, bool ignoreCase,
+            out bool flagFound)
+        {
+            var startIndex = ignoreCase
+                ? text.IndexOf(flag1, StringComparison.OrdinalIgnoreCase)
+                : text.IndexOf(flag1, StringComparison.Ordinal);
+
+            if (startIndex == -1)
+            {
+                flagFound = false;
+                return null;
+            }
+
+            var endIndex = ignoreCase
+                ? text.IndexOf(flag2, startIndex + flag1.Length, StringComparison.OrdinalIgnoreCase)
+                : text.IndexOf(flag2, startIndex + flag1.Length, StringComparison.Ordinal);
+
+            flagFound = endIndex != -1;
+
+            return !flagFound
+                ? null
+                : text.Substring(startIndex + flag1.Length, endIndex - (startIndex + flag1.Length));
+        }
     }
 }

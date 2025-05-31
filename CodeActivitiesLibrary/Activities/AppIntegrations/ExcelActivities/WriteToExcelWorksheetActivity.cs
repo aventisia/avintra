@@ -1,44 +1,159 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Linq;
+using CodeActivitiesLibrary.Extensions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    // Activity to write a value into a cell or range of cells in an Excel worksheet
-    [DisplayName("Write to Excel Worksheet"),
-     Description("Writes a value into a cell or a range of cells of an Excel instance.")]
+    [DisplayName("Write to Excel Worksheet")]
+    [Description("Writes a value to a specific cell or range of cells in an Excel worksheet.")]
     public class WriteToExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The range of cells to write to (e.g., 'A1:B10').")]
-        public InArgument<string> CellRange { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The value to write.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Value To Write")]
+        [Description("The value to write into the specified cell or range.")]
         public InArgument<string> ValueToWrite { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Write Mode")]
+        [Description("Specifies how to determine the target cell(s) for writing.")]
+        [DefaultValue(ExcelCellWriteModeEnum.OnSpecifiedCell)]
+        public InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Column")]
+        [Description(
+            "The column letter (e.g., 'A', 'B') where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
+        [RenderIfCondition(nameof(WriteMode), "OnSpecifiedCell")]
+        public InArgument<string> Column { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Row")]
+        [Description(
+            "The row number where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
+        [RenderIfCondition(nameof(WriteMode), "OnSpecifiedCell")]
+        public InArgument<int> Row { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Name")]
+        [Description("The name of the named range to write to (required if 'Write Mode' is 'On Named Cells').")]
+        [RenderIfCondition(nameof(WriteMode), "OnNamedCells")]
+        public InArgument<string> Name { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Populate Entire Range")]
+        [Description("If true, populates the entire named range with the same value.")]
+        [RenderIfCondition(nameof(WriteMode), "OnNamedCells")]
+        public InArgument<bool> PopulateEntireRange { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            var cellRange = CellRange.Get(context);
-            var valueToWrite = ValueToWrite.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate writing to Excel worksheet (actual implementation would use Excel Interop or similar)
-                status = $"Simulated writing value '{valueToWrite}' to range '{cellRange}' in Excel instance '{excelInstanceId}'.";
+                var excelApp = ExcelApplication.Get(context);
+                var valueToWrite = ValueToWrite.Get(context);
+                var writeMode = WriteMode.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
+                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+
+                Excel.Worksheet ws = excelApp.ActiveSheet;
+
+                switch (writeMode)
+                {
+                    case ExcelCellWriteModeEnum.OnSpecifiedCell:
+                    {
+                        var colLetter = Column.Get(context);
+                        var rowNumber = Row.Get(context);
+
+                        if (string.IsNullOrWhiteSpace(colLetter))
+                            throw new ArgumentException("Column cannot be empty when using 'On Specified Cell' mode.");
+
+                        var colIndex = GetColumnIndex(colLetter);
+
+                        Excel.Range targetCell = ws.Cells[rowNumber, colIndex];
+                        if (targetCell == null)
+                            throw new ArgumentException($"Invalid cell reference: {colLetter}{rowNumber}");
+
+                        targetCell.Value = valueToWrite;
+                        break;
+                    }
+
+                    case ExcelCellWriteModeEnum.OnCurrentlyActiveCell:
+                    {
+                        var activeCell = ws.Application.Selection as Excel.Range;
+                        if (activeCell == null)
+                            throw new InvalidOperationException("No active cell found.");
+
+                        activeCell.Value = valueToWrite;
+                        break;
+                    }
+
+                    case ExcelCellWriteModeEnum.OnNamedCells:
+                    {
+                        var name = Name.Get(context);
+                        var populateEntireRange = PopulateEntireRange.Get(context);
+
+                        if (string.IsNullOrWhiteSpace(name))
+                            throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
+
+                        var namedRange = ws.Names.Item(name)?.RefersToRange;
+                        if (namedRange == null)
+                            throw new ArgumentException($"Named range '{name}' not found.");
+
+                        if (populateEntireRange)
+                            namedRange.Value = valueToWrite;
+                        else
+                            namedRange.Cells[1, 1].Value = valueToWrite;
+
+                        break;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(writeMode));
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error writing to Excel worksheet: {ex.Message}";
+                status = $"Error writing to Excel: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);
+        }
+
+        private static int GetColumnIndex(string columnName)
+        {
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentException("Column name cannot be empty.", nameof(columnName));
+
+            columnName = columnName.ToUpperInvariant();
+
+            return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
         }
     }
 }

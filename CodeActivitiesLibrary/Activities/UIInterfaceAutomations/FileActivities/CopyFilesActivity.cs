@@ -6,45 +6,124 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("Copy File(s)"), Description("Copies one or more files into a destination folder.")]
-    public class CopyFilesActivity : CodeActivity
+    [DisplayName("Copy File(s)")]
+    [Description("Copies one or more files into a destination folder.")]
+    public class CopyFileActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The source file paths to copy.")]
-        public InArgument<IEnumerable<string>> SourceFilePaths { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("File(s) to copy")]
+        [Description("The path(s) of the file(s) to copy. Supports wildcards like *.txt.")]
+        public InArgument<string> SourceFiles { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The destination folder where files should be copied.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Destination folder")]
+        [Description("The destination folder where the files will be copied.")]
         public InArgument<string> DestinationFolder { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("If file exists")]
+        [Description("Specifies the behavior when a file already exists in the destination folder.")]
+        [DefaultValue(IfExistsActionEnum.DoNothing)]
+        public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Copied Files")]
+        [Description("Returns the list of successfully copied files.")]
+        public OutArgument<IEnumerable<string>> CopiedFiles { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var sourceFilePaths = SourceFilePaths.Get(context);
+            // Get input arguments
+            var sourceFiles = SourceFiles.Get(context);
             var destinationFolder = DestinationFolder.Get(context);
-            var status = "";
+            var ifExistsAction = IfExistsAction.Get(context);
+
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(sourceFiles))
+            {
+                throw new ArgumentException("Source files cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(destinationFolder))
+            {
+                throw new ArgumentException("Destination folder cannot be empty.");
+            }
+
+            var status = "Operation completed successfully.";
 
             try
             {
+                // Ensure destination folder exists
+                Directory.CreateDirectory(destinationFolder);
+
+                // Split source files by semicolon (supports multiple files)
+                var sourceFilePaths = sourceFiles.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // List to store successfully copied files
+                var copiedFiles = new List<string>();
+
                 foreach (var sourceFilePath in sourceFilePaths)
                 {
-                    if (!File.Exists(sourceFilePath))
-                        throw new ArgumentException($"Source file not found: {sourceFilePath}");
+                    // Expand wildcards if present
+                    var expandedPaths = GetExpandedPaths(sourceFilePath);
 
-                    var fileName = Path.GetFileName(sourceFilePath);
-                    var destinationPath = Path.Combine(destinationFolder, fileName);
+                    foreach (var expandedPath in expandedPaths)
+                    {
+                        if (!File.Exists(expandedPath))
+                        {
+                            continue; // Skip non-existent files
+                        }
 
-                    File.Copy(sourceFilePath, destinationPath, true);
+                        var fileName = Path.GetFileName(expandedPath);
+                        var destinationPath = Path.Combine(destinationFolder, fileName);
+
+                        // Handle existing file scenario
+                        if (File.Exists(destinationPath))
+                        {
+                            switch (ifExistsAction)
+                            {
+                                case IfExistsActionEnum.DoNothing:
+                                    continue; // Skip existing file
+                                case IfExistsActionEnum.Overwrite:
+                                    File.Copy(expandedPath, destinationPath, true); // Overwrite existing file
+                                    copiedFiles.Add(destinationPath);
+                                    break;
+                                default:
+                                    throw new ArgumentException("Invalid 'If file exists' action specified.");
+                            }
+                        }
+                        else
+                        {
+                            // Copy the file
+                            File.Copy(expandedPath, destinationPath);
+                            copiedFiles.Add(destinationPath);
+                        }
+                    }
                 }
 
-                status = "Files copied successfully.";
-                StatusMessage.Set(context, status);
+                // Set output arguments
+                CopiedFiles.Set(context, copiedFiles);
+                status = $"{copiedFiles.Count} file(s) copied successfully.";
             }
             catch (Exception ex)
             {
                 status = $"Error copying files: {ex.Message}";
+            }
+            finally
+            {
                 StatusMessage.Set(context, status);
             }
+        }
+
+        private IEnumerable<string> GetExpandedPaths(string pattern)
+        {
+            // Expand wildcards using Directory.GetFiles
+            return Directory.GetFiles(Path.GetDirectoryName(pattern) ?? string.Empty, Path.GetFileName(pattern));
         }
     }
 }

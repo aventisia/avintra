@@ -9,34 +9,49 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [Description("Creates a new data table. If an existing data table is provided, it will be cloned.")]
     public class CreateDataTableActivity : CodeActivity
     {
-        #region Inputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [Category("Input")]
         [DisplayName("Data Table (Optional)")]
         [Description("An optional input data table to clone or use as a template.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        #endregion
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")]
+        [DisplayName("New Data Table")]
+        [Description("The newly created or cloned data table.")]
+        public OutArgument<DataTable> NewDataTable { get; set; }
+
+        [Category("Output")]
+        public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            string status = "Operation completed successfully.";
+            DataTable resultTable = null;
 
             try
             {
                 var inputTable = DataTable.Get(context);
 
-                // Create or clone the data table
-                DataTable resultTable;
-
                 if (inputTable != null)
                 {
-                    resultTable = inputTable.Copy(); // Clone structure and rows
+                    // Clone both schema and data
+                    resultTable = inputTable.Copy();
                     status +=
                         $" Cloned input data table with {resultTable.Rows.Count} rows and {resultTable.Columns.Count} columns.";
                 }
                 else
                 {
+                    // Create a new empty data table
                     resultTable = new DataTable();
                     status += " Created a new empty data table.";
                 }
@@ -46,20 +61,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 status = $"Error creating data table: {ex.Message}";
             }
 
+            NewDataTable.Set(context, resultTable);
             StatusMessage.Set(context, status);
         }
-
-        #region Outputs
-
-        [Category("Output")]
-        [DisplayName("New Data Table Output")]
-        [Description("The newly created or cloned data table.")]
-        public OutArgument<DataTable> ODataTableOutput { get; set; }
-
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
     }
 }

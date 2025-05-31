@@ -5,48 +5,84 @@ using System.Data;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Filter Data Table"), Description("Filters the data table rows based on the applied rules.")]
+    [DisplayName("Filter Data Table")]
+    [Description("Filters the data table rows based on the applied rules.")]
     public sealed class FilterDataTableActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"), Description("The data table to filter.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table to filter.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input"), DisplayName("FilterExpression"), Description("The filter expression (e.g., \"Age > 30\").")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Filter Expression")]
+        [Description("The filter expression (e.g., \"Age > 30\").")]
         public InArgument<string> FilterExpression { get; set; }
 
-        [Category("Output"), DisplayName("Filtered Data Table"), Description("The filtered data table.")]
+        [Category("Input")]
+        [DisplayName("Match Case")]
+        [Description("If true, performs a case-sensitive filter.")]
+        public InArgument<bool> MatchCase { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [DisplayName("Filtered Data Table")]
+        [Description("The filtered data table.")]
         public OutArgument<DataTable> FilteredDataTable { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        [Category("Output")]
         public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-            var filterExpression = context.GetValue(FilterExpression);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(filterExpression))
-            {
-                context.SetValue(StatusMessage, "Error: Filter expression is required.");
-                return;
-            }
+            string status = "Operation completed successfully.";
 
             try
             {
-                var filteredTable = dataTable.Select(filterExpression).CopyToDataTable();
-                context.SetValue(FilteredDataTable, filteredTable);
-                context.SetValue(StatusMessage, "Data table filtered successfully.");
+                var dataTable = DataTable.Get(context);
+                var filterExpression = FilterExpression.Get(context);
+                var matchCase = MatchCase.Get(context);
+
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                if (string.IsNullOrWhiteSpace(filterExpression))
+                    throw new ArgumentException("Filter expression cannot be empty.");
+
+                // Apply filter
+                var filteredRows = dataTable.Select(filterExpression, matchCase ? "Binary" : "");
+
+                // Create a new DataTable with the same schema
+                var filteredTable = dataTable.Clone();
+
+                // Copy filtered rows to the new DataTable
+                foreach (DataRow row in filteredRows)
+                {
+                    filteredTable.ImportRow(row);
+                }
+
+                // Set outputs
+                FilteredDataTable.Set(context, filteredTable);
+                status = $"Filtered data table successfully. Rows matched: {filteredTable.Rows.Count}.";
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error filtering data table: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

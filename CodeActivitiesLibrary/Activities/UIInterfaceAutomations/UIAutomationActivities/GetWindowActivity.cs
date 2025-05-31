@@ -25,7 +25,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowIdentifier = WindowIdentifier.Get(context);
             string windowHandle = null;
-            string status = "";
+            var status = "";
 
             try
             {

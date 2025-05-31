@@ -2,41 +2,62 @@
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    // Activity to get all Excel worksheets
-    [DisplayName("Get All Excel Worksheets"), Description("Retrieves all worksheet names of an Excel document.")]
+    [DisplayName("Get All Excel Worksheets")]
+    [Description("Retrieves all worksheet names from the active Excel workbook.")]
     public class GetAllExcelWorksheetsActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [Category("Output"), Description("Returns the list of worksheet names.")]
-        public OutArgument<IEnumerable<string>> Result { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target workbook.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")]
+        [DisplayName("Worksheet Names")]
+        [Description("Returns a list of all worksheet names in the active Excel workbook.")]
+        public OutArgument<IEnumerable<string>> WorksheetNames { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            IEnumerable<string> result = null;
-            var status = "";
+            var status = "Success";
+            var result = new List<string>();
 
             try
             {
-                // Simulate retrieving all worksheets (actual implementation would use Excel Interop or similar)
-                result = new List<string> { "Sheet1", "Sheet2", "Sheet3" }; // Simulated worksheet names
-                status = "All worksheets retrieved successfully.";
+                var excelApp = ExcelApplication.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Excel application or workbook is not available.");
+
+                var wb = excelApp.ActiveWorkbook;
+
+                result.AddRange(from Excel.Worksheet sheet in wb.Worksheets select sheet.Name);
             }
             catch (Exception ex)
             {
-                result = null;
-                status = $"Error retrieving all worksheets: {ex.Message}";
+                status = $"Error retrieving worksheets: {ex.Message}";
+                result.Clear();
             }
 
-            Result.Set(context, result);
+            WorksheetNames.Set(context, result);
             StatusMessage.Set(context, status);
         }
     }

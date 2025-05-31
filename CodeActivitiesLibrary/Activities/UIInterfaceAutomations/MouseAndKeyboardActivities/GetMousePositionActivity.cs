@@ -19,7 +19,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
 
         protected override void Execute(CodeActivityContext context)
         {
-            Point result = new Point();
+            var result = new Point();
             var status = "";
 
             try

@@ -1,8 +1,8 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [RenderIfCondition(nameof(GenerateMultipleNumbers), true)]
         public OutArgument<List<int>> RandomNumbers { get; set; }
 
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
 
         protected override void Execute(CodeActivityContext context)

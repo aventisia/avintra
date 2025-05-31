@@ -32,17 +32,39 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.5.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="MailKit, Version=4.12.0.0, Culture=neutral, PublicKeyToken=4e064fe7c44a8f1b, processorArchitecture=MSIL">
+      <HintPath>..\packages\MailKit.4.12.1\lib\net48\MailKit.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.5\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Outlook.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Outlook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit, Version=4.12.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeKit.4.12.0\lib\net48\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.6.0\lib\net462\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Formats.Asn1, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.8.0.1\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -53,16 +75,17 @@
     <Reference Include="System.IO.Pipelines, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.9.0.5\lib\net462\System.IO.Pipelines.dll</HintPath>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.0\lib\net462\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.0\lib\net462\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Text.Encodings.Web, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.9.0.5\lib\net462\System.Text.Encodings.Web.dll</HintPath>
@@ -70,8 +93,8 @@
     <Reference Include="System.Text.Json, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Json.9.0.5\lib\net462\System.Text.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.0\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
@@ -97,12 +120,46 @@
     <Compile Include="Activities\AppIntegrations\ExcelActivities\AutoFillCellsInExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\ClearCellsInExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\CloseExcelActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellCopyModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellPasteModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellReferenceTypeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellShiftDirectionEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellDeletionModeEnum.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\CopyCellsFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\CopyExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\CopyExcelWorksheetActivityToDataTable.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelCellSelectionModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelCellWriteModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelCloseOptionEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelColorFormatEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelColumnResizeTargetEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelColumnResizeTypeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelColumnSelectionRangeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelFileSaveFormatEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelFileSaveModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelRetrieveModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelSelectionModeForColorEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\WorksheetCopyModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcellFilterModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelLookupRangesFormatEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\WorksheetPastePositionEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelSearchByEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelSearchModeEnum.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteColumnFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\DeleteRowFromExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ActivationModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellAppendModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellClearModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\CellMoveDirectionEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelLaunchModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelRangesFormatEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelResizeTypeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\WorksheetDeleteByModeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\WorksheetSelectionTypeEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelXAxisDirectionEnum.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\Enums\ExcelYAxisDirectionEnum.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\FilterCellsInExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\FindAndReplaceCellsInExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\GetActiveCellOnExcelWorksheetActivity.cs" />
@@ -118,6 +175,7 @@
     <Compile Include="Activities\AppIntegrations\ExcelActivities\LaunchExcelActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\LookupRangeInExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\PasteCellsToExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\PasteDataTableToExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\ReadFormulaFromExcelActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\ReadFromExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\RenameExcelWorksheetActivity.cs" />
@@ -154,6 +212,12 @@
     <Compile Include="Activities\AppIntegrations\HTTPActivities\InvokeSoapWebServiceActivity.cs" />
     <Compile Include="Activities\AppIntegrations\HTTPActivities\InvokeWebServiceActivity.cs" />
     <Compile Include="Activities\AppIntegrations\HTTPActivities\_HTTPCategoryMetaData.cs" />
+    <Compile Include="Activities\AppIntegrations\OutlookActivities\CloseOutlookActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\OutlookActivities\LaunchOutlookActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\OutlookActivities\ProcessEmailMessagesInOutlookActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\OutlookActivities\RetrieveEmailsFromOutlookActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\OutlookActivities\SaveOutlookEmailMessagesActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\OutlookActivities\SendEmailMessageThroughOutlookActivity.cs" />
     <Compile Include="Activities\AppIntegrations\OutlookActivities\_OutlookCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractImagesFromPdfActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\ExtractPdfPagesToNewPdfFileActivity.cs" />
@@ -204,6 +268,17 @@
     <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteDuplicateRowsFromDataTable.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteEmptyRowsFromDataTableActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\DeleteRowFromDataTableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\CsvSeparatorEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableColumnCompareModeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableDeleteColumnByEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableEmptyRowModeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableFindOrReplaceModeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableInsertLocationEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableInsertRowLocationEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableJoinOperationEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableSearchByEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\DataTableSortColumnByEnum.cs" />
+    <Compile Include="Activities\DataTransformations\DataTableActivities\Enums\ReadCsvSeparatorEnum.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\FilterDataTableActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\FindAndReplaceInDataTableActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\InsertColumnIntoDataTable.cs" />
@@ -227,13 +302,27 @@
     <Compile Include="Activities\DataTransformations\OCRActivities\_OCRCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\AppendLineToTextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ChangeTextCaseActivity.cs" />
-    <Compile Include="Activities\DataTransformations\TextActivities\ConvertDateTimeToTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ConvertDatetimeToTextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertNumberToTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextRepresentationToNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\CreateHTMLContentActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\CreateRandomTextActivity.cs" />
-    <Compile Include="Activities\DataTransformations\TextActivities\CropTextActivity.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\CropModeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\DelimiterTypeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\EntityTypeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\FormatOptionEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\LengthTypeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\OutputTypeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\PadDirectionEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\StandardDelimiterEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\StandardFormatOptionEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\StandardStringJoinDelimiterEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\StartIndexTypeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\StringJoinDelimiterTypeEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\TextCaseEnum.cs" />
+    <Compile Include="Activities\DataTransformations\TextActivities\Enums\TrimModeEnum.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\EscapeTextForRegularExpressionActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\GetSubtextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\JoinTextActivity.cs" />
@@ -251,6 +340,7 @@
     <Compile Include="Activities\DataTransformations\VariablesActivities\ConvertJsonToCustomObjectActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\CreateNewList.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\DecreaseVariableActivity.cs" />
+    <Compile Include="Activities\DataTransformations\VariablesActivities\Enums\RemoveModeEnum.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\FindCommonListItemsActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\GenerateRandomNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\IncreaseVariableActivity.cs" />
@@ -318,6 +408,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertFileToBinaryDataActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\CopyFilesActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\DeleteFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\Enum\IfExistsActionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetFilePathPartActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetTemporaryFileActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\IfFileExistsActivity.cs" />
@@ -448,14 +539,41 @@
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\WaitActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\_FlowControlCategoryMetaData.cs" />
     <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
-    <Compile Include="Extensions\ActivityTypeAttribute.cs" />
     <Compile Include="Extensions\RenderIfAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>5</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Excel1">
+      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>7</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

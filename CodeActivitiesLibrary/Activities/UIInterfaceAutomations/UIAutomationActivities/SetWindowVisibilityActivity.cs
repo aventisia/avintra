@@ -26,7 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var windowHandle = WindowHandle.Get(context);
             var isVisible = Visible.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

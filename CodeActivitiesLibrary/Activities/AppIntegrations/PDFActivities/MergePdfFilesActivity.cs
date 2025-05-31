@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
-using System.ComponentModel;
-
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+﻿namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 {
     // Activity to merge multiple PDF files into a new one
     //[DisplayName("Merge PDF Files"), Description("Merges multiple PDF files into a new one.")]

@@ -1,44 +1,99 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Linq;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Trim Text"),
-     Description("Removes all occurrences of whitespace characters from the beginning and/or end of an existing text.")]
+    [DisplayName("Trim Text")]
+    [Description("Removes specified characters from the start, end, or both ends of a text string.")]
     public class TrimTextActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), DisplayName("Original Text"), Description("The original text to trim.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Original Text")]
+        [Description("The original text from which characters will be trimmed.")]
         public InArgument<string> OriginalText { get; set; }
 
-        [Category("Output"), DisplayName("Trimmed Text"), Description("The trimmed text result.")]
-        public OutArgument<string> ResultText { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Trim Mode")]
+        [Description("Specifies whether to trim characters from the beginning, end, or both sides of the text.")]
+        [DefaultValue(TrimModeEnum.TrimBoth)]
+        public InArgument<TrimModeEnum> TrimMode { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("What to Trim")]
+        [Description(
+            "A string containing the characters to remove. Leave empty to trim only whitespace (space, tab, newline).")]
+        public InArgument<string> CharactersToTrim { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [DisplayName("Trimmed Text")]
+        [Description("The resulting text after trimming.")]
+        public OutArgument<string> TrimmedText { get; set; }
+
+        [Category("Output")]
         public OutArgument<string> StatusMessage { get; set; }
 
-        #endregion
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
                 var originalText = OriginalText.Get(context);
+                var trimModeEnum = TrimMode.Get(context);
+                var charsToTrim = CharactersToTrim.Get(context);
 
-                if (string.IsNullOrWhiteSpace(originalText))
-                    throw new ArgumentException("Original Text cannot be empty.");
+                if (string.IsNullOrEmpty(originalText))
+                    throw new ArgumentException("OriginalText cannot be null or empty.");
 
-                var result = originalText.Trim();
-                ResultText.Set(context, result);
-                StatusMessage.Set(context, "Text trimmed successfully.");
+                var trimChars = string.IsNullOrEmpty(charsToTrim)
+                    ? new[] { ' ', '\t', '\n', '\r' } // Default: whitespace
+                    : charsToTrim.ToCharArray().Distinct().ToArray();
+
+                string result;
+
+                switch (trimModeEnum)
+                {
+                    case TrimModeEnum.TrimStart:
+                        result = originalText.TrimStart(trimChars);
+                        break;
+
+                    case TrimModeEnum.TrimEnd:
+                        result = originalText.TrimEnd(trimChars);
+                        break;
+
+                    case TrimModeEnum.TrimBoth:
+                        result = originalText.Trim(trimChars);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Unsupported TrimMode.");
+                }
+
+                TrimmedText.Set(context, result);
             }
             catch (Exception ex)
             {
-                ResultText.Set(context, string.Empty);
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                status = $"Error trimming text: {ex.Message}";
+                TrimmedText.Set(context, null);
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

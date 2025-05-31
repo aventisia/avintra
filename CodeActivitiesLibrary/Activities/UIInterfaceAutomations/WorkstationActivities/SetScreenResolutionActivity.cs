@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                 };
 
                 // C# 7.3: ChangeDisplaySettingsEx returns int, not bool
-                int result = ChangeDisplaySettingsEx(null, ref devMode, IntPtr.Zero, CdsUpdateregistry, IntPtr.Zero);
+                var result = ChangeDisplaySettingsEx(null, ref devMode, IntPtr.Zero, CdsUpdateregistry, IntPtr.Zero);
                 if (result != 0) // DISP_CHANGE_SUCCESSFUL == 0
                 {
                     var errorCode = Marshal.GetLastWin32Error();

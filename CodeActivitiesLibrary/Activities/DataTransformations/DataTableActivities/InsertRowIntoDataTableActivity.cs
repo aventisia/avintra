@@ -2,67 +2,116 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Insert Row Into Data Table"),
-     Description("Inserts a row at the end or before a specific index value.")]
+    [DisplayName("Insert Row Into Data Table")]
+    [Description("Inserts a row at the end or before a specific index value.")]
     public sealed class InsertRowIntoDataTableActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"), Description("The data table to which the row will be inserted.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table to which the row will be inserted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input"), DisplayName("Row Values"), Description("An array of values to insert into the row.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Row Values")]
+        [Description("An array of values to insert into the row.")]
         public InArgument<object[]> RowValues { get; set; }
 
-        [Category("Input"), DisplayName("RowIndex"),
-         Description("The index before which the row should be inserted. Use -1 to append at the end.")]
+        [Category("Input")]
+        [DisplayName("Insert Location")]
+        [Description("Specifies where to insert the new row.")]
+        [DefaultValue(DataTableInsertRowLocationEnum.BeforeRowIndex)]
+        public InArgument<DataTableInsertRowLocationEnum> InsertLocation { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Row Index")]
+        [Description(
+            "The zero-based index before which to insert the row (required if 'Insert Location' is 'Before Row Index').")]
+        [RenderIfCondition(nameof(InsertLocation), "BeforeRowIndex")]
         public InArgument<int> RowIndex { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-            var rowValues = context.GetValue(RowValues);
-            var rowIndex = context.GetValue(RowIndex);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
-
-            if (rowValues == null)
-            {
-                context.SetValue(StatusMessage, "Error: Row values are null.");
-                return;
-            }
+            var status = "Operation completed successfully.";
 
             try
             {
-                var newRow = dataTable.NewRow();
-                for (var i = 0; i < rowValues.Length; i++)
+                var dataTable = DataTable.Get(context);
+                var rowValues = RowValues.Get(context);
+                var insertLocation = InsertLocation.Get(context);
+
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                if (rowValues == null)
+                    throw new ArgumentException("Row values cannot be null.");
+
+                if (rowValues.Length != dataTable.Columns.Count)
+                    throw new ArgumentException(
+                        $"Number of row values ({rowValues.Length}) does not match the number of columns in the data table ({dataTable.Columns.Count}).");
+
+                switch (insertLocation)
                 {
-                    newRow[i] = rowValues[i];
+                    case DataTableInsertRowLocationEnum.BeforeRowIndex:
+                    {
+                        var rowIndex = RowIndex.Get(context);
+
+                        if (rowIndex < 0 || rowIndex > dataTable.Rows.Count)
+                            throw new ArgumentOutOfRangeException(nameof(RowIndex),
+                                $"Row index must be between 0 and {dataTable.Rows.Count}.");
+
+                        var newRow = dataTable.NewRow();
+                        for (var i = 0; i < rowValues.Length; i++)
+                        {
+                            newRow[i] = rowValues[i];
+                        }
+
+                        dataTable.Rows.InsertAt(newRow, rowIndex);
+                        break;
+                    }
+
+                    case DataTableInsertRowLocationEnum.EndOfDataTable:
+                    {
+                        var newRow = dataTable.NewRow();
+                        for (var i = 0; i < rowValues.Length; i++)
+                        {
+                            newRow[i] = rowValues[i];
+                        }
+
+                        dataTable.Rows.Add(newRow);
+                        break;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(insertLocation));
                 }
 
-                if (rowIndex == -1)
-                {
-                    dataTable.Rows.Add(newRow);
-                }
-                else
-                {
-                    dataTable.Rows.InsertAt(newRow, rowIndex);
-                }
-
-                context.SetValue(StatusMessage, "Row inserted successfully.");
+                status = $"Successfully inserted row into the data table.";
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error inserting row: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

@@ -1,45 +1,87 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-
-    // Activity to get the selected cell range from an Excel worksheet
-    [DisplayName("Get Selected Cell Range from Excel Worksheet"),
-     Description(
-         "Retrieves the selected range of cells in a structure consisting of first column, first row, last column, and last row.")]
+    [DisplayName("Get Selected Cell Range from Excel Worksheet")]
+    [Description(
+        "Retrieves the currently selected cell range in the active Excel worksheet as first column, first row, last column, and last row indices.")]
     public class GetSelectedCellRangeFromExcelWorksheetActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Excel instance ID or token.")]
-        public InArgument<string> ExcelInstanceId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [Category("Output"),
-         Description("Returns the selected cell range as a tuple of (first column, first row, last column, last row).")]
-        public OutArgument<Tuple<int, int, int, int>> Result { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application object containing the target worksheet.")]
+        public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
+        [Category("Output")]
+        [DisplayName("First Column Index")]
+        [Description("Returns the column index (1-based) of the first cell in the selected range.")]
+        public OutArgument<int> FirstColumnIndex { get; set; }
+
+        [Category("Output")]
+        [DisplayName("First Row Index")]
+        [Description("Returns the row index (1-based) of the first cell in the selected range.")]
+        public OutArgument<int> FirstRowIndex { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Last Column Index")]
+        [Description("Returns the column index (1-based) of the last cell in the selected range.")]
+        public OutArgument<int> LastColumnIndex { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Last Row Index")]
+        [Description("Returns the row index (1-based) of the last cell in the selected range.")]
+        public OutArgument<int> LastRowIndex { get; set; }
+
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var excelInstanceId = ExcelInstanceId.Get(context);
-            Tuple<int, int, int, int> result = null;
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Simulate retrieving the selected cell range (actual implementation would use Excel Interop or similar)
-                result = Tuple.Create(1, 1, 10, 10); // Simulated range A1:B10
-                status = "Selected cell range retrieved successfully.";
+                var excelApp = ExcelApplication.Get(context);
+
+                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
+                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+
+                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
+                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+
+                if (!(excelApp.Selection is Excel.Range selectedRange))
+                    throw new InvalidOperationException("No range selected in Excel.");
+
+                // Extract range bounds
+                var firstCol = selectedRange.Column;
+                var firstRow = selectedRange.Row;
+                var lastCol = selectedRange.Columns.Count + firstCol - 1;
+                var lastRow = selectedRange.Rows.Count + firstRow - 1;
+
+                FirstColumnIndex.Set(context, firstCol);
+                FirstRowIndex.Set(context, firstRow);
+                LastColumnIndex.Set(context, lastCol);
+                LastRowIndex.Set(context, lastRow);
             }
             catch (Exception ex)
             {
-                result = null;
                 status = $"Error retrieving selected cell range: {ex.Message}";
             }
 
-            Result.Set(context, result);
             StatusMessage.Set(context, status);
         }
     }

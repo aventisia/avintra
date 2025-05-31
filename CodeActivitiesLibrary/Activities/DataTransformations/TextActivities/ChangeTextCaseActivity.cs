@@ -71,12 +71,4 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             return char.ToUpper(input[0]) + input.Substring(1).ToLower();
         }
     }
-
-    public enum TextCaseEnum
-    {
-        Uppercase = 0,
-        Lowercase = 1,
-        TitleCase = 2,
-        SentenceCase = 3
-    }
 }

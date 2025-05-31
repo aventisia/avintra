@@ -2,62 +2,81 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Globalization;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Convert Text to DateTime"),
-     Description("Converts a text representation of a date and/or time value to a DateTime value.")]
+    [DisplayName("Convert Text to DateTime")]
+    [Description("Converts a text representation of a date and/or time value to a DateTime value.")]
     public class ConvertTextToDateTimeActivity : CodeActivity
     {
-        #region Arguments
-
-        [RequiredArgument, Category("Input"), DisplayName("Text to Convert"),
-         Description("The text to convert to a DateTime.")]
+       
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Text to Convert")]
+        [Description("The text value that will be converted to a DateTime.")]
         public InArgument<string> TextToConvert { get; set; }
 
-        [Category("Input"), DisplayName("Format String"),
-         Description("The format string to use for parsing the date/time (e.g., 'yyyy-MM-dd').")]
-        public InArgument<string> Format { get; set; } = new InArgument<string>(String.Empty);
+        [Category("Input")]
+        [DisplayName("Use Custom Format")]
+        [Description("If true, uses the specified format string for parsing the date/time.")]
+        [DefaultValue(false)]
+        public InArgument<bool> UseCustomFormat { get; set; }
 
-        [Category("Output"), DisplayName("Result DateTime"), Description("The resulting DateTime value.")]
+        [Category("Input")]
+        [DisplayName("Format String")]
+        [Description("The format string to use for parsing the date/time (e.g., 'yyyy-MM-dd').")]
+        [RenderIfCondition(nameof(UseCustomFormat), "True")]
+        public InArgument<string> Format { get; set; }
+
+        
+
+        [Category("Output")]
+        [DisplayName("Result DateTime")]
+        [Description("Returns the resulting DateTime value after conversion.")]
         public OutArgument<DateTime> ResultDateTime { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
                 var textToConvert = TextToConvert.Get(context);
+                var useCustomFormat = UseCustomFormat.Get(context);
                 var format = Format.Get(context);
 
                 if (string.IsNullOrWhiteSpace(textToConvert))
-                    throw new ArgumentException("TextToConvert cannot be empty.");
+                    throw new ArgumentException("Text to Convert cannot be empty.");
 
                 DateTime result;
-                if (string.IsNullOrEmpty(format))
+
+                if (useCustomFormat)
+                {
+                    if (string.IsNullOrEmpty(format))
+                        throw new ArgumentException("Format String cannot be empty when using custom format.");
+
+                    if (!DateTime.TryParseExact(textToConvert, format, CultureInfo.InvariantCulture,
+                            DateTimeStyles.None, out result))
+                        throw new FormatException($"Cannot parse '{textToConvert}' with format '{format}'.");
+                }
+                else
                 {
                     if (!DateTime.TryParse(textToConvert, out result))
                         throw new FormatException($"Cannot parse '{textToConvert}' as a DateTime.");
                 }
-                else
-                {
-                    if (!DateTime.TryParseExact(textToConvert, format, null, DateTimeStyles.None,
-                            out result))
-                        throw new FormatException($"Cannot parse '{textToConvert}' with format '{format}'.");
-                }
 
                 ResultDateTime.Set(context, result);
-                StatusMessage.Set(context, "Conversion successful.");
             }
             catch (Exception ex)
             {
+                status = $"Error converting text to DateTime: {ex.Message}";
                 ResultDateTime.Set(context, default(DateTime));
-                StatusMessage.Set(context, $"Error: {ex.Message}");
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

@@ -8,44 +8,59 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [Description("Converts a numeric value into text with specified formatting options.")]
     public class ConvertNumberToTextActivity : CodeActivity
     {
+        
+        [RequiredArgument]
         [Category("Input")]
-        [Description("A numeric value to convert to text.")]
-        public InArgument<string> NumberToConvert { get; set; }
+        [DisplayName("Number to Convert")]
+        [Description("The numeric value to convert to text.")]
+        public InArgument<double> NumberToConvert { get; set; }
 
         [Category("Input")]
-        [Description(
-            "The number of decimal places that will be included before truncation. Zeros can also be added to the end to pad the text in this way.")]
-        public InArgument<int> DecimalPlaces { get; set; } = new InArgument<int>(2);
+        [DisplayName("Decimal Places")]
+        [Description("The number of decimal places to include in the formatted text.")]
+        [DefaultValue(2)]
+        public InArgument<int> DecimalPlaces { get; set; }
 
         [Category("Input")]
-        [Description("Specify whether or not to use punctuation as a thousand separator.")]
-        public InArgument<bool> UseThousandsSeparator { get; set; } = new InArgument<bool>(true);
-
+        [DisplayName("Use Thousands Separator")]
+        [Description("If true, includes a thousands separator in the formatted text.")]
+        [DefaultValue(true)]
+        public InArgument<bool> UseThousandsSeparator { get; set; }
 
         [Category("Output")]
-        [Description("The formatted number as text.")]
-        public OutArgument<string> OFormattedNumberOutput { get; set; }
+        [DisplayName("Formatted Number")]
+        [Description("The resulting formatted number as text.")]
+        public OutArgument<string> FormattedNumber { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+    
         protected override void Execute(CodeActivityContext context)
         {
-            var input = NumberToConvert.Get(context);
-            if (string.IsNullOrWhiteSpace(input))
+            var status = "Success";
+
+            try
             {
-                OFormattedNumberOutput.Set(context, null);
-                return;
+                var number = NumberToConvert.Get(context);
+                var decimalPlaces = DecimalPlaces.Get(context);
+                var useThousandsSeparator = UseThousandsSeparator.Get(context);
+
+                if (decimalPlaces < 0)
+                    throw new ArgumentException("Decimal Places must be non-negative.");
+
+                var format = useThousandsSeparator ? "N" : "F";
+                format += decimalPlaces.ToString();
+
+                var result = number.ToString(format);
+                FormattedNumber.Set(context, result);
+            }
+            catch (Exception ex)
+            {
+                status = $"Error converting number to text: {ex.Message}";
+                FormattedNumber.Set(context, null);
             }
 
-            if (!double.TryParse(input, out var number)) throw new ArgumentException($"Invalid numeric value: {input}");
-
-            var decimalPlaces = DecimalPlaces.Get(context);
-            var useThousandsSeparator = UseThousandsSeparator.Get(context);
-
-            var format = useThousandsSeparator ? "N" : "F";
-
-            if (decimalPlaces >= 0) format += decimalPlaces.ToString();
-
-            var result = number.ToString(format);
-            OFormattedNumberOutput.Set(context, result);
+            StatusMessage.Set(context, status);
         }
     }
 }

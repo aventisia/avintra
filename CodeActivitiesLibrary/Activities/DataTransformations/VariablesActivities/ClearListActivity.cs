@@ -9,28 +9,37 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Removes all elements from the specified list.")]
     public class ClearListActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("List to Clear")]
-        [Description("A list variable to remove its elements.")]
-        public InArgument<List<string>> ListToClear { get; set; }
+        [Description("The list variable whose elements will be removed.")]
+        public InArgument<IList<object>> ListToClear { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
+ 
         public OutArgument<string> StatusMessage { get; set; }
 
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            string status = "Success";
 
             try
             {
                 var list = ListToClear.Get(context);
 
                 if (list == null)
-                    throw new ArgumentException("The list cannot be null.");
+                    throw new ArgumentException("List cannot be null.");
 
                 // Clear the list
                 list.Clear();

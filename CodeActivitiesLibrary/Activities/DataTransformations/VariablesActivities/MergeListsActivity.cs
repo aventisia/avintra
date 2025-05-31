@@ -2,6 +2,7 @@
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
@@ -9,33 +10,39 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Merges two lists into a new list. The original lists remain unchanged.")]
     public class MergeListsActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("First List")]
         [Description("The first list of items to merge.")]
-        public InArgument<List<string>> FirstList { get; set; }
+        public InArgument<List<object>> FirstList { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Second List")]
         [Description("The second list of items to merge.")]
-        public InArgument<List<string>> SecondList { get; set; }
+        public InArgument<List<object>> SecondList { get; set; }
 
-
-        [Category("Output")]
-        [DisplayName("Output List")]
-        [Description("The merged result from both input lists.")]
-        public OutArgument<List<string>> OutputListOutput { get; set; }
-
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [DisplayName("Merged List")]
+        [Description("Returns a new list containing all items from both input lists.")]
+        public OutArgument<List<object>> MergedList { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
@@ -45,17 +52,17 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 if (firstList == null || secondList == null)
                     throw new ArgumentException("Both lists must be initialized.");
 
-                // Merge the lists without modifying the originals
-                var mergedList = new List<string>(firstList);
-                mergedList.AddRange(secondList);
+                // Merge the lists
+                var result = new List<object>(firstList);
+                result.AddRange(secondList);
 
-                OutputListOutput.Set(context, mergedList);
-
-                status += $" Merged {firstList.Count} + {secondList.Count} items into a new list.";
+                MergedList.Set(context, result);
+                status = $"Successfully merged {firstList.Count()} + {secondList.Count()} items.";
             }
             catch (Exception ex)
             {
                 status = $"Error merging lists: {ex.Message}";
+                MergedList.Set(context, new List<object>());
             }
 
             StatusMessage.Set(context, status);

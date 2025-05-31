@@ -8,51 +8,52 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Increases a numeric variable by a specified value.")]
     public class IncreaseVariableActivity : CodeActivity
     {
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Variable Name")]
-        [Description("The name of the variable containing the numeric value to increase.")]
-        public InArgument<string> VariableName { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
-        [DisplayName("Increase By")]
+        [DisplayName("Variable To Increase")]
+        [Description("The numeric variable to increase.")]
+        public InArgument<double> VariableToIncrease { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Value To Add")]
         [Description("The amount to add to the variable. Can be a number or another variable containing a number.")]
-        public InArgument<string> IncreaseBy { get; set; }
+        public InArgument<double> ValueToAdd { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [DisplayName("Result")]
+        [Description("Returns the resulting value after increasing the variable.")]
+        public OutArgument<double> Result { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
-                var variableName = VariableName.Get(context);
-                var increaseByValue = IncreaseBy.Get(context);
+                var variable = VariableToIncrease.Get(context);
+                var addValue = ValueToAdd.Get(context);
 
-                if (string.IsNullOrWhiteSpace(variableName))
-                    throw new ArgumentException("Variable name cannot be null or empty.");
-
-                if (!double.TryParse(variableName, out var variableValue))
-                    throw new ArgumentException($"'{variableName}' is not a valid numeric value.");
-
-                if (!double.TryParse(increaseByValue, out var increaseValue))
-                    throw new ArgumentException($"'{increaseByValue}' is not a valid numeric value.");
-
-                // Perform the addition
-                var result = variableValue + increaseValue;
-
-                // Simulate setting the increased value back to the variable container
-                status += $" Increased '{variableName}' by '{increaseValue}'. Result: {result}.";
+                var result = variable + addValue;
+                Result.Set(context, result);
             }
             catch (Exception ex)
             {
                 status = $"Error increasing variable: {ex.Message}";
+                Result.Set(context, 0);
             }
 
             StatusMessage.Set(context, status);

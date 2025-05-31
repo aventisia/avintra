@@ -20,7 +20,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         protected override void Execute(CodeActivityContext context)
         {
             var windowHandle = WindowHandle.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

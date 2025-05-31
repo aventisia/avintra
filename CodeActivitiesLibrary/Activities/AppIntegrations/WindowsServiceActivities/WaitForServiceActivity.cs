@@ -23,12 +23,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         protected override void Execute(CodeActivityContext context)
         {
             var serviceName = ServiceName.Get(context);
-            ServiceControllerStatus desiredState = DesiredState.Get(context);
+            var desiredState = DesiredState.Get(context);
             var status = "";
 
             try
             {
-                using (ServiceController service = new ServiceController(serviceName))
+                using (var service = new ServiceController(serviceName))
                 {
                     // Simulate waiting for the service to reach the desired state
                     status = $"Simulated waiting for service '{serviceName}' to reach state '{desiredState}'.";

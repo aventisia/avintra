@@ -3,49 +3,109 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Delete Duplicate Rows From Data Table"),
-     Description(
-         "Deletes all the rows that are duplicate from the data table, if the values have the same data type in each column.")]
+    [DisplayName("Delete Duplicate Rows From Data Table")]
+    [Description("Deletes all rows that are exact duplicates from the data table.")]
     public sealed class DeleteDuplicateRowsFromDataTable : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"), Description("The data table to process.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        [Category("Input")]
+        [DisplayName("Compare Mode")]
+        [Description("Specifies whether to compare all columns or only selected ones.")]
+        [DefaultValue(DataTableColumnCompareModeEnum.AllColumns)]
+        public InArgument<DataTableColumnCompareModeEnum> CompareMode { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Column Names To Compare")]
+        [Description("List of column names to compare when 'Compare Mode' is 'Selected Columns'.")]
+        [RenderIfCondition(nameof(CompareMode), "SelectedColumns")]
+        public InArgument<List<string>> ColumnNamesToCompare { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
         public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
+            string status = "Operation completed successfully.";
 
             try
             {
-                // Use a HashSet to track unique rows
-                var uniqueRows = new HashSet<string>();
-                for (var i = dataTable.Rows.Count - 1; i >= 0; i--)
+                var dataTable = DataTable.Get(context);
+                var compareMode = CompareMode.Get(context);
+
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                List<string> columnsToCompare;
+
+                switch (compareMode)
                 {
-                    var rowKey = string.Join(",", dataTable.Rows[i].ItemArray);
-                    if (!uniqueRows.Add(rowKey))
-                    {
-                        dataTable.Rows.RemoveAt(i);
-                    }
+                    case DataTableColumnCompareModeEnum.AllColumns:
+                        columnsToCompare = dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList();
+                        break;
+
+                    case DataTableColumnCompareModeEnum.SelectedColumns:
+                        columnsToCompare = ColumnNamesToCompare.Get(context);
+                        if (columnsToCompare == null || !columnsToCompare.Any())
+                            throw new ArgumentException("Column names to compare cannot be empty.");
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(compareMode));
                 }
 
-                context.SetValue(StatusMessage, "Duplicate rows deleted successfully.");
+                // Validate all column names exist in the data table
+                foreach (var colName in columnsToCompare)
+                {
+                    if (!dataTable.Columns.Contains(colName))
+                        throw new ArgumentException($"Column '{colName}' not found in data table.");
+                }
+
+                // Remove duplicate rows
+                var seen = new HashSet<string>();
+                var uniqueRows = new List<DataRow>();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    var key = string.Join("|", columnsToCompare.Select(c => row[c]));
+                    if (seen.Add(key))
+                        uniqueRows.Add(row);
+                }
+
+                // Clear original table and add back unique rows
+                dataTable.Rows.Clear();
+
+                foreach (var row in uniqueRows)
+                {
+                    dataTable.ImportRow(row);
+                }
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error deleting duplicate rows: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

@@ -2,57 +2,86 @@
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
-{
-    [DisplayName("Copy folder")]
-    [Description("Copy a folder to a new location.")]
-    public class CopyFolderActivity : CodeActivity
-    {
-        [RequiredArgument]
-        [Category("Input")]
-        [Description("The source path of the folder to copy.")]
-        public InArgument<string> SourceFolderPath { get; set; }
-
-        [RequiredArgument]
-        [Category("Input")]
-        [Description("The destination path where the folder will be copied.")]
-        public InArgument<string> DestinationFolderPath { get; set; }
-
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+{ 
+        public class CopyFolderActivity : CodeActivity
         {
-            var sourceFolderPath = SourceFolderPath.Get(context);
-            var destinationFolderPath = DestinationFolderPath.Get(context);
-            var status = "";
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Folder to Copy")]
+            [Description("The path of the source folder that you want to duplicate.")]
+            public InArgument<string> SourceFolder { get; set; }
 
-            try
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Destination Folder")]
+            [Description("The path where the folder should be copied.")]
+            public InArgument<string> DestinationFolder { get; set; }
+
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("If Folder Exists")]
+            [Description("Specifies what action to take if the destination folder already exists.")]
+            [DefaultValue(IfExistsActionEnum.DoNothing)]
+            public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
+
+            [Category("Output")]
+            [DisplayName("Copied Folder")]
+            [Description("The copied folder path as a confirmation output.")]
+            public OutArgument<string> CopiedFolder { get; set; }
+
+            protected override void Execute(CodeActivityContext context)
             {
-                Directory.CreateDirectory(destinationFolderPath);
-                foreach (var file in Directory.GetFiles(sourceFolderPath))
-                    File.Copy(file, Path.Combine(destinationFolderPath, Path.GetFileName(file)));
-                foreach (var subfolder in Directory.GetDirectories(sourceFolderPath))
-                    CopyFolderRecursive(subfolder, destinationFolderPath);
-                StatusMessage.Set(context, "Folder copied successfully.");
+                string source = SourceFolder.Get(context);
+                string destination = DestinationFolder.Get(context);
+                var action = IfExistsAction.Get(context);
+
+                if (string.IsNullOrWhiteSpace(source))
+                    throw new ArgumentException("Source folder path cannot be null or empty.");
+
+                if (string.IsNullOrWhiteSpace(destination))
+                    throw new ArgumentException("Destination folder path cannot be null or empty.");
+
+                if (!Directory.Exists(source))
+                    throw new DirectoryNotFoundException($"Source folder does not exist: {source}");
+
+                string folderName = new DirectoryInfo(source).Name;
+                string destinationPath = Path.Combine(destination, folderName);
+
+                if (Directory.Exists(destinationPath))
+                {
+                    switch (action)
+                    {
+                        case IfExistsActionEnum.DoNothing:
+                            CopiedFolder.Set(context, destinationPath);
+                            return;
+
+                        case IfExistsActionEnum.Overwrite:
+                            Directory.Delete(destinationPath, true);
+                            break;
+                    }
+                }
+
+                CopyAll(new DirectoryInfo(source), new DirectoryInfo(destinationPath));
+                CopiedFolder.Set(context, destinationPath);
             }
-            catch (Exception ex)
+
+            private void CopyAll(DirectoryInfo source, DirectoryInfo target)
             {
-                status = $"Error copying folder: {ex.Message}";
+                Directory.CreateDirectory(target.FullName);
+
+                foreach (FileInfo fi in source.GetFiles())
+                {
+                    fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                }
+
+                foreach (DirectoryInfo subDir in source.GetDirectories())
+                {
+                    DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(subDir.Name);
+                    CopyAll(subDir, nextTargetSubDir);
+                }
             }
-
-            StatusMessage.Set(context, status);
         }
-
-        private void CopyFolderRecursive(string source, string destination)
-        {
-            Directory.CreateDirectory(destination);
-            foreach (var file in Directory.GetFiles(source))
-                File.Copy(file, Path.Combine(destination, Path.GetFileName(file)));
-            foreach (var subfolder in Directory.GetDirectories(source))
-                CopyFolderRecursive(subfolder, Path.Combine(destination, Path.GetFileName(subfolder)));
-        }
-    }
 }

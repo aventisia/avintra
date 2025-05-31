@@ -6,10 +6,12 @@ using System.Data;
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Clear Data Table")]
-    [Description("Removes all rows from a data table.")]
+    [Description("Removes all rows from a data table while preserving its structure.")]
     public class ClearDataTableActivity : CodeActivity
     {
-        #region Inputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
@@ -17,19 +19,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The data table variable to clear. Must have been previously created or assigned.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        #endregion
-
-        #region Outputs
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("Returns the status message of the operation.")]
         public OutArgument<string> StatusMessage { get; set; }
 
-        #endregion
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            string status = "Operation completed successfully.";
 
             try
             {
@@ -38,7 +40,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 if (dataTable == null)
                     throw new ArgumentException("Data table cannot be null.");
 
-                // Clear all rows
+                // Clear all rows in the data table
                 dataTable.Clear();
 
                 status = "Successfully cleared all rows from the data table.";

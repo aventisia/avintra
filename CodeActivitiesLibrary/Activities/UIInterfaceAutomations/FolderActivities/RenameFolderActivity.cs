@@ -5,35 +5,71 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-    [DisplayName("Rename folder"), Description("Rename a folder.")]
-    public class RenameFolderActivity : CodeActivity
-    {
-        [RequiredArgument, Category("Input"), Description("The current path of the folder to rename.")]
-        public InArgument<string> CurrentFolderPath { get; set; }
-
-        [RequiredArgument, Category("Input"), Description("The new name for the folder.")]
-        public InArgument<string> NewFolderName { get; set; }
-
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+        [DisplayName("Rename Folder")]
+        [Description("This activity renames an existing folder by specifying the original folder path and the new folder name.")]
+        public class RenameFolderActivity : CodeActivity
         {
-            var currentFolderPath = CurrentFolderPath.Get(context);
-            var newFolderName = NewFolderName.Get(context);
-            var status = "";
+           
+            [DisplayName("Original Folder Path")]
+            [Description("Specifies the path of the folder that needs to be renamed.")]
+            [Category("Input")]
+            public InArgument<string> OriginalFolderPath { get; set; }
 
-            try
-            {
-                Directory.Move(currentFolderPath, Path.Combine(Path.GetDirectoryName(currentFolderPath), newFolderName));
-                StatusMessage.Set(context, "Folder renamed successfully.");
-            }
-            catch (Exception ex)
-            {
-                status = $"Error renaming folder: {ex.Message}";
-            }
+           
+            [DisplayName("New Folder Name")]
+            [Description("Specifies the new name for the folder.")]
+            [Category("Input")]
+            public InArgument<string> NewFolderName { get; set; }
 
-            StatusMessage.Set(context, status);
+            [DisplayName("Renamed Folder Path")]
+            [Description("The path of the folder after it has been successfully renamed.")]
+            [Category("Output")]
+            public OutArgument<string> RenamedFolderPath { get; set; }
+         
+            protected override void Execute(CodeActivityContext context)
+            {
+                // Retrieve input values
+                string originalFolderPath = context.GetValue(OriginalFolderPath);
+                string newFolderName = context.GetValue(NewFolderName);
+
+                // Validate inputs
+                if (string.IsNullOrWhiteSpace(originalFolderPath))
+                {
+                    throw new ArgumentException("The 'Original Folder Path' cannot be null or empty.");
+                }
+
+                if (string.IsNullOrWhiteSpace(newFolderName))
+                {
+                    throw new ArgumentException("The 'New Folder Name' cannot be null or empty.");
+                }
+
+                // Ensure the original folder exists
+                if (!Directory.Exists(originalFolderPath))
+                {
+                    throw new DirectoryNotFoundException($"The specified folder does not exist: {originalFolderPath}");
+                }
+
+                // Construct the new folder path
+                string parentDirectory = Path.GetDirectoryName(originalFolderPath);
+                string newFolderPath = Path.Combine(parentDirectory, newFolderName);
+
+                try
+                {
+                    // Rename the folder
+                    Directory.Move(originalFolderPath, newFolderPath);
+
+                    // Set the output
+                    context.SetValue(RenamedFolderPath, newFolderPath);
+                }
+                catch (IOException ex)
+                {
+                    throw new IOException($"Failed to rename the folder: {ex.Message}", ex);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    throw new UnauthorizedAccessException($"Access denied to rename the folder: {ex.Message}", ex);
+                }
+            }
         }
-    }
+    
 }

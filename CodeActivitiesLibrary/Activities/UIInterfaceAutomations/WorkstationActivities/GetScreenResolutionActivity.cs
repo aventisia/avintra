@@ -1,9 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.Windows.Forms;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     //[DisplayName("Get Screen Resolution")]
     //[Description("Gets the width, height, bit count, and frequency of a selected monitor.")]

@@ -9,24 +9,33 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Reverses the order of items in a list.")]
     public class ReverseListActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("List to Reverse")]
-        [Description("The list whose items' order will be reversed.")]
-        public InArgument<List<string>> ListToReverse { get; set; }
+        [Description("The list whose item order will be reversed.")]
+        public InArgument<List<object>> ListToReverse { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
         [DisplayName("Reversed List")]
-        [Description("The list after reversing the order of its items.")]
-        public OutArgument<List<string>> ReversedList { get; set; }
+        [Description("Returns the list after reversing the order of its items.")]
+        public OutArgument<List<object>> ReversedList { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
@@ -36,17 +45,16 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                     throw new ArgumentException("Input list cannot be null.");
 
                 // Reverse the list
-                var reversedList = new List<string>(inputList);
-                reversedList.Reverse();
+                var result = new List<object>(inputList);
+                result.Reverse();
 
-                // Set output
-                ReversedList.Set(context, reversedList);
-
-                status += $" Reversed list with {inputList.Count} items.";
+                ReversedList.Set(context, result);
+                status = $"Successfully reversed list containing {result.Count} items.";
             }
             catch (Exception ex)
             {
                 status = $"Error reversing list: {ex.Message}";
+                ReversedList.Set(context, new List<object>());
             }
 
             StatusMessage.Set(context, status);

@@ -34,8 +34,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         {
             var imagePath = ImagePath.Get(context);
             var timeoutSeconds = TimeoutSeconds.Get(context);
-            bool result = false;
-            string status = "";
+            var result = false;
+            var status = "";
 
             try
             {
@@ -105,14 +105,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             // For simplicity, this example assumes a basic pixel comparison
             // You can replace this with a more robust image recognition library like OpenCV or AForge.NET
 
-            for (int x = 0; x <= screenBitmap.Width - targetBitmap.Width; x++)
+            for (var x = 0; x <= screenBitmap.Width - targetBitmap.Width; x++)
             {
-                for (int y = 0; y <= screenBitmap.Height - targetBitmap.Height; y++)
+                for (var y = 0; y <= screenBitmap.Height - targetBitmap.Height; y++)
                 {
-                    bool match = true;
-                    for (int dx = 0; dx < targetBitmap.Width; dx++)
+                    var match = true;
+                    for (var dx = 0; dx < targetBitmap.Width; dx++)
                     {
-                        for (int dy = 0; dy < targetBitmap.Height; dy++)
+                        for (var dy = 0; dy < targetBitmap.Height; dy++)
                         {
                             if (screenBitmap.GetPixel(x + dx, y + dy) != targetBitmap.GetPixel(dx, dy))
                             {

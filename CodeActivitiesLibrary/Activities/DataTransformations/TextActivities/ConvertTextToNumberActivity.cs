@@ -4,44 +4,89 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Convert Text to Number"),
-     Description("Converts a text representation of a number to a numeric value.")]
+    [DisplayName("Convert Text to Number")]
+    [Description("Converts a text representation of a number to a numeric value.")]
     public class ConvertTextToNumberActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), DisplayName("Text to Convert"),
-         Description("The text to convert to a number.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Text to Convert")]
+        [Description("The text value that will be converted to a numeric type.")]
         public InArgument<string> TextToConvert { get; set; }
 
-        [Category("Output"), DisplayName("Result Number"), Description("The resulting numeric value.")]
-        public OutArgument<double> ResultNumber { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Output Type")]
+        [Description("Specifies the numeric type to which the text should be converted.")]
+        public InArgument<OutputTypeEnum> OutputType { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        #endregion
+        [Category("Output")]
+        [DisplayName("Converted Value")]
+        [Description("Returns the resulting numeric value after conversion.")]
+        public OutArgument<object> ConvertedValue { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
                 var textToConvert = TextToConvert.Get(context);
+                var outputType = OutputType.Get(context);
 
                 if (string.IsNullOrWhiteSpace(textToConvert))
-                    throw new ArgumentException("TextToConvert cannot be empty.");
+                    throw new ArgumentException("Text to Convert cannot be empty.");
 
-                if (!double.TryParse(textToConvert, out var result))
-                    throw new FormatException($"Cannot convert '{textToConvert}' to a number.");
+                object result = null;
 
-                ResultNumber.Set(context, result);
-                StatusMessage.Set(context, "Conversion successful.");
+                switch (outputType)
+                {
+                    case OutputTypeEnum.Integer:
+                        if (!int.TryParse(textToConvert, out var intValue))
+                            throw new FormatException($"Cannot convert '{textToConvert}' to an integer.");
+                        result = intValue;
+                        break;
+
+                    case OutputTypeEnum.Double:
+                        if (!double.TryParse(textToConvert, out var doubleValue))
+                            throw new FormatException($"Cannot convert '{textToConvert}' to a double.");
+                        result = doubleValue;
+                        break;
+
+                    case OutputTypeEnum.Decimal:
+                        if (!decimal.TryParse(textToConvert, out var decimalValue))
+                            throw new FormatException($"Cannot convert '{textToConvert}' to a decimal.");
+                        result = decimalValue;
+                        break;
+
+                    default:
+                        throw new ArgumentException("Unsupported output type.");
+                }
+
+                ConvertedValue.Set(context, result);
             }
             catch (Exception ex)
             {
-                ResultNumber.Set(context, default(double));
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                status = $"Error converting text to number: {ex.Message}";
+                ConvertedValue.Set(context, null);
             }
+
+            StatusMessage.Set(context, status);
         }
     }
+
+
 }

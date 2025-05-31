@@ -7,57 +7,72 @@ using System.Linq;
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Duplicate Items From List")]
-    [Description("Removes duplicate items from a list. Optionally performs case-insensitive comparison.")]
+    [Description("Removes duplicate items from a list using case-sensitive or case-insensitive comparison.")]
     public class RemoveDuplicateItemsFromListActivity : CodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
-        [DisplayName("List to Remove Duplicates From")]
-        [Description("The list variable to remove duplicate items from.")]
-        public InArgument<List<string>> ListToRemoveDuplicate { get; set; }
+        [DisplayName("List to Deduplicate")]
+        [Description("The list variable to remove duplicate values from.")]
+        public InArgument<List<object>> ListToDeduplicate { get; set; }
 
         [Category("Input")]
-        [DisplayName("Ignore Text Case")]
-        [Description("Specifies whether to perform case-insensitive comparison while searching for duplicates.")]
+        [DisplayName("Ignore Case")]
+        [Description("If true, performs case-insensitive comparison when checking for duplicates.")]
         [DefaultValue(false)]
-        public InArgument<bool> IgnoreTextCase { get; set; }
+        public InArgument<bool> IgnoreCase { get; set; }
 
-
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
         [DisplayName("Deduplicated List")]
-        [Description("The list after removing duplicate items.")]
-        public OutArgument<List<string>> DuplicatedList { get; set; }
+        [Description("Returns the list after removing duplicate items.")]
+        public OutArgument<List<object>> DeduplicatedList { get; set; }
 
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Success";
 
             try
             {
-                var inputList = ListToRemoveDuplicate.Get(context);
-                var ignoreCase = IgnoreTextCase.Get(context);
+                var inputList = ListToDeduplicate.Get(context);
+                var ignoreCase = IgnoreCase.Get(context);
 
-                if (inputList == null || inputList.Count == 0)
-                    throw new ArgumentException("The input list must contain at least one item.");
+                if (inputList == null)
+                    throw new ArgumentException("Input list cannot be null.");
 
-                // Remove duplicates using LINQ
-                IEnumerable<string> dedupedList;
+                IEnumerable<object> result;
 
-                dedupedList = ignoreCase ? inputList.Distinct(StringComparer.OrdinalIgnoreCase) : inputList.Distinct();
+                if (ignoreCase)
+                {
+                    result = inputList
+                        .OfType<string>()
+                        .Select(s => s?.ToLower())
+                        .Distinct()
+                        .Cast<object>();
+                }
+                else
+                {
+                    result = inputList.Distinct();
+                }
 
-                var result = dedupedList.ToList();
-
-                DuplicatedList.Set(context, result);
-                status += $" Removed {inputList.Count - result.Count} duplicate item(s).";
+                DeduplicatedList.Set(context, result.ToList());
             }
             catch (Exception ex)
             {
                 status = $"Error removing duplicates: {ex.Message}";
+                DeduplicatedList.Set(context, new List<object>());
             }
 
             StatusMessage.Set(context, status);

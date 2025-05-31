@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var xml = XmlContent.Get(context);
             var xpath = XPathExpression.Get(context);
             string result = null;
-            string status = "";
+            var status = "";
 
             try
             {

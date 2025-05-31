@@ -1,81 +1,197 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Join Data Tables"), Description("Joins two data tables based on the specified join rule.")]
-    public sealed class JoinDataTablesActivity : CodeActivity
+    [DisplayName("Join Data Tables")]
+    [Description("Joins two data tables based on the specified join rule.")]
+    public class JoinDataTablesActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("First Data Table"), Description("The first data table to join.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("First Data Table")]
+        [Description("The first DataTable to be joined.")]
         public InArgument<DataTable> FirstDataTable { get; set; }
 
-        [Category("Input"), DisplayName("Second Data Table"), Description("The second data table to join.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Second Data Table")]
+        [Description("The second DataTable to be joined.")]
         public InArgument<DataTable> SecondDataTable { get; set; }
 
-        [Category("Input"), DisplayName("JoinColumn"), Description("The column name to join on.")]
-        public InArgument<string> JoinColumn { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Join Operation")]
+        [Description("Specifies the type of join operation (Inner, Left, Full).")]
+        public InArgument<DataTableJoinOperationEnum> JoinOperation { get; set; } =
+            new InArgument<DataTableJoinOperationEnum>(DataTableJoinOperationEnum.Inner);
 
-        [Category("Output"), DisplayName("Joined Data Table"), Description("The joined data table.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Join Rules")]
+        [Description("Specifies the join condition (e.g., 'FirstTable.ID = SecondTable.ID').")]
+        public InArgument<string> JoinRules { get; set; }
+
+
+        [Category("Output")]
+        [DisplayName("Joined Data Table")]
+        [Description("The resulting DataTable after performing the join operation.")]
         public OutArgument<DataTable> JoinedDataTable { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+
 
         protected override void Execute(CodeActivityContext context)
         {
+            // Retrieve input values
             var firstDataTable = context.GetValue(FirstDataTable);
             var secondDataTable = context.GetValue(SecondDataTable);
-            var joinColumn = context.GetValue(JoinColumn);
+            var joinOperation = context.GetValue(JoinOperation);
+            var joinRules = context.GetValue(JoinRules);
 
-            if (firstDataTable == null || secondDataTable == null)
+            // Validate inputs
+            if (firstDataTable == null)
             {
-                context.SetValue(StatusMessage, "Error: One or both data tables are null.");
-                return;
+                throw new ArgumentException("First Data Table cannot be null.");
             }
 
-            if (string.IsNullOrEmpty(joinColumn) ||
-                !firstDataTable.Columns.Contains(joinColumn) ||
-                !secondDataTable.Columns.Contains(joinColumn))
+            if (secondDataTable == null)
             {
-                context.SetValue(StatusMessage, "Error: Invalid join column.");
-                return;
+                throw new ArgumentException("Second Data Table cannot be null.");
+            }
+
+            if (string.IsNullOrWhiteSpace(joinRules))
+            {
+                throw new ArgumentException("Join Rules cannot be null or empty.");
             }
 
             try
             {
-                // Perform a full outer join using LINQ
-                var query = from row1 in firstDataTable.AsEnumerable()
-                            join row2 in secondDataTable.AsEnumerable()
-                            on row1[joinColumn] equals row2[joinColumn]
-                            into joinedRows
-                            from row2 in joinedRows.DefaultIfEmpty()
-                            select row1.ItemArray.Concat(row2?.ItemArray ?? new object[0]).ToArray();
+                // Perform the join based on the specified operation and rules
+                var joinedDataTable = PerformJoin(firstDataTable, secondDataTable, joinOperation, joinRules);
 
-                var joinedTable = new DataTable();
-                foreach (DataColumn col in firstDataTable.Columns)
-                {
-                    joinedTable.Columns.Add(col.ColumnName, col.DataType);
-                }
-                foreach (DataColumn col in secondDataTable.Columns)
-                {
-                    joinedTable.Columns.Add(col.ColumnName, col.DataType);
-                }
-
-                foreach (var row in query)
-                {
-                    joinedTable.Rows.Add(row);
-                }
-
-                context.SetValue(JoinedDataTable, joinedTable);
-                context.SetValue(StatusMessage, "Data tables joined successfully.");
+                // Set outputs
+                context.SetValue(JoinedDataTable, joinedDataTable);
+                context.SetValue(StatusMessage, "Successfully joined the data tables.");
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                throw new InvalidOperationException($"Failed to join data tables: {ex.Message}", ex);
             }
+        }
+
+        private DataTable PerformJoin(DataTable firstDataTable, DataTable secondDataTable,
+            DataTableJoinOperationEnum dataTableJoinOperation, string joinRules)
+        {
+            // Convert DataTables to LINQ queryable objects
+            var firstTableQuery = firstDataTable.AsEnumerable().AsQueryable();
+            var secondTableQuery = secondDataTable.AsEnumerable().AsQueryable();
+
+            // Parse the join rules to extract column names
+            var joinCondition = ParseJoinRules(joinRules);
+
+            // Perform the join based on the specified operation
+            IQueryable<DataRow> joinedRows;
+            switch (dataTableJoinOperation)
+            {
+                case DataTableJoinOperationEnum.Inner:
+                    joinedRows = PerformInnerJoin(firstTableQuery, secondTableQuery, joinCondition);
+                    break;
+                case DataTableJoinOperationEnum.Left:
+                    joinedRows = PerformLeftJoin(firstTableQuery, secondTableQuery, joinCondition);
+                    break;
+                case DataTableJoinOperationEnum.Full:
+                    joinedRows = PerformFullJoin(firstTableQuery, secondTableQuery, joinCondition);
+                    break;
+                default:
+                    throw new ArgumentException($"Unsupported join operation: {dataTableJoinOperation}");
+            }
+
+            // Create a new DataTable with combined columns
+            var joinedDataTable = CreateJoinedDataTable(firstDataTable, secondDataTable);
+
+            // Add rows to the joined DataTable
+            foreach (var row in joinedRows)
+            {
+                joinedDataTable.Rows.Add(row.ItemArray);
+            }
+
+            return joinedDataTable;
+        }
+
+        private static Dictionary<string, string> ParseJoinRules(string joinRules)
+        {
+            // Example join rule: "FirstTable.ID = SecondTable.ID"
+            var parts = joinRules.Split('=');
+            if (parts.Length != 2)
+            {
+                throw new FormatException(
+                    "Invalid join rule format. Expected format: 'FirstTable.ColumnName = SecondTable.ColumnName'");
+            }
+
+            var firstColumn = parts[0].Trim();
+            var secondColumn = parts[1].Trim();
+
+            return new Dictionary<string, string>
+            {
+                { "FirstColumn", firstColumn },
+                { "SecondColumn", secondColumn }
+            };
+        }
+
+        private static IQueryable<DataRow> PerformInnerJoin(IQueryable<DataRow> firstTable,
+            IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
+        {
+            return from firstRow in firstTable
+                join secondRow in secondTable
+                    on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
+                select firstRow;
+        }
+
+        private static IQueryable<DataRow> PerformLeftJoin(IQueryable<DataRow> firstTable,
+            IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
+        {
+            return from firstRow in firstTable
+                join secondRow in secondTable
+                    on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
+                    into joinedRows
+                from secondRow in joinedRows.DefaultIfEmpty()
+                select firstRow;
+        }
+
+        private static IQueryable<DataRow> PerformFullJoin(IQueryable<DataRow> firstTable,
+            IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
+        {
+            return from firstRow in firstTable
+                join secondRow in secondTable
+                    on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
+                    into joinedRows
+                from secondRow in joinedRows.DefaultIfEmpty()
+                select firstRow;
+        }
+
+        private static DataTable CreateJoinedDataTable(DataTable firstDataTable, DataTable secondDataTable)
+        {
+            // Create a new DataTable with combined columns
+            var joinedDataTable = new DataTable("JoinedDataTable");
+
+            // Add columns from the first table
+            foreach (DataColumn col in firstDataTable.Columns)
+            {
+                joinedDataTable.Columns.Add(col.ColumnName, col.DataType);
+            }
+
+            // Add columns from the second table with a prefix to avoid conflicts
+            foreach (DataColumn col in secondDataTable.Columns)
+            {
+                joinedDataTable.Columns.Add($"Second_{col.ColumnName}", col.DataType);
+            }
+
+            return joinedDataTable;
         }
     }
 }

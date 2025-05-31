@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             var windowHandle = WindowHandle.Get(context);
             var sourceUiElementSelector = SourceUiElementSelector.Get(context);
             var targetUiElementSelector = TargetUiElementSelector.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

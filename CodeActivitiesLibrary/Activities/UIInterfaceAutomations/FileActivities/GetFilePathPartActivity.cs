@@ -1,79 +1,60 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
-
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("Get File Path Part"), Description("Retrieves one or more parts of a file path.")]
-    public class GetFilePathPartActivity : CodeActivity
-    {
-        [RequiredArgument, Category("Input"), Description("The full path of the file.")]
-        public InArgument<string> FilePath { get; set; }
-
-        [Category("Input"), Description("Specifies which part of the file path to retrieve.")]
-        public InArgument<FilePathPartEnum> Part { get; set; } =
-            new InArgument<FilePathPartEnum>(FilePathPartEnum.Directory);
-
-        [Category("Output"), Description("Returns the requested part of the file path.")]
-        public OutArgument<string> Result { get; set; }
-
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(CodeActivityContext context)
+    
+        [DisplayName("Get File Path Components")]
+        [Description("Extracts various parts (directory, name, extension) from the given file path.")]
+        public class GetFilePathPartsActivity : CodeActivity
         {
-            var filePath = FilePath.Get(context);
-            var part = Part.Get(context);
-            var result = "";
-            var status = "";
+            [RequiredArgument]
+            [Category("Input")]
+            [DisplayName("Source File Path")]
+            [Description("The full path of the file from which to extract components.")]
+            public InArgument<string> FilePath { get; set; }
 
-            try
+            [Category("Output")]
+            [DisplayName("Root Path")]
+            [Description("The root path of the source file.")]
+            public OutArgument<string> RootPath { get; set; }
+
+            [Category("Output")]
+            [DisplayName("Directory Path")]
+            [Description("The directory of the source file.")]
+            public OutArgument<string> Directory { get; set; }
+
+            [Category("Output")]
+            [DisplayName("File Name")]
+            [Description("The name of the source file.")]
+            public OutArgument<string> FileName { get; set; }
+
+            [Category("Output")]
+            [DisplayName("File Name Without Extension")]
+            [Description("The file name (without the extension) of the source file.")]
+            public OutArgument<string> FileNameNoExtension { get; set; }
+
+            [Category("Output")]
+            [DisplayName("File Extension")]
+            [Description("The extension (for example, .doc) of the source file.")]
+            public OutArgument<string> FileExtension { get; set; }
+
+            protected override void Execute(CodeActivityContext context)
             {
-                switch (part)
+                var filePath = FilePath.Get(context);
+
+                if (string.IsNullOrWhiteSpace(filePath))
                 {
-                    case FilePathPartEnum.Directory:
-                        result = Path.GetDirectoryName(filePath);
-                        break;
-                    case FilePathPartEnum.FileName:
-                        result = Path.GetFileNameWithoutExtension(filePath);
-                        break;
-                    case FilePathPartEnum.Extension:
-                        result = Path.GetExtension(filePath);
-                        break;
-                    case FilePathPartEnum.FullFileName:
-                        result = Path.GetFileName(filePath);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid file path part specified.");
+                    throw new ArgumentException("FilePath cannot be null or empty.");
                 }
 
-                Result.Set(context, result);
-                status = "File path part retrieved successfully.";
+                RootPath.Set(context, Path.GetPathRoot(filePath));
+                Directory.Set(context, Path.GetDirectoryName(filePath));
+                FileName.Set(context, Path.GetFileName(filePath));
+                FileNameNoExtension.Set(context, Path.GetFileNameWithoutExtension(filePath));
+                FileExtension.Set(context, Path.GetExtension(filePath));
             }
-            catch (Exception ex)
-            {
-                status = $"Error getting file path part: {ex.Message}";
-            }
-
-            StatusMessage.Set(context, status);
         }
-    }
-
-    public enum FilePathPartEnum
-    {
-        [Display(Name = "Directory", Description = "Directory of file.")]
-        Directory = 0,
-
-        [Display(Name = "FileName", Description = "FileName of file.")]
-        FileName = 1,
-
-        [Display(Name = "Directory", Description = "Extension of file.")]
-        Extension = 2,
-
-        [Display(Name = "Directory", Description = "FullFileName of file.")]
-        FullFileName = 3
-    }
 }

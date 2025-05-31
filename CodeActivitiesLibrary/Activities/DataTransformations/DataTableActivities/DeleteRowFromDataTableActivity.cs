@@ -5,45 +5,70 @@ using System.Data;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Delete Row From Data Table"), Description("Deletes a data table row at the corresponding row index.")]
+    [DisplayName("Delete Row From Data Table")]
+    [Description("Deletes a row from a data table based on its zero-based index.")]
     public sealed class DeleteRowFromDataTableActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"),
-         Description("The data table from which the row will be deleted.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table from which the row will be deleted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input"), DisplayName("RowIndex"), Description("The index of the row to delete.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Row Index")]
+        [Description("The zero-based index of the row to delete.")]
         public InArgument<int> RowIndex { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
         public OutArgument<string> StatusMessage { get; set; }
 
+        [Category("Output")]
+        [DisplayName("Modified Data Table")]
+        [Description("Returns the updated data table after the row is deleted.")]
+        public OutArgument<DataTable> ModifiedDataTable { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-            var rowIndex = context.GetValue(RowIndex);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
-
-            if (rowIndex < 0 || rowIndex >= dataTable.Rows.Count)
-            {
-                context.SetValue(StatusMessage, "Error: Invalid row index.");
-                return;
-            }
+            string status = "Operation completed successfully.";
 
             try
             {
+                var dataTable = DataTable.Get(context);
+                var rowIndex = RowIndex.Get(context);
+
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                if (rowIndex < 0 || rowIndex >= dataTable.Rows.Count)
+                    throw new ArgumentOutOfRangeException(nameof(rowIndex),
+                        $"Row index must be between 0 and {dataTable.Rows.Count - 1}.");
+
+                // Delete the specified row
                 dataTable.Rows.RemoveAt(rowIndex);
-                context.SetValue(StatusMessage, "Row deleted successfully.");
+
+                // Set outputs
+                ModifiedDataTable.Set(context, dataTable);
+                status = $"Successfully deleted row at index {rowIndex}.";
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error deleting row: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }

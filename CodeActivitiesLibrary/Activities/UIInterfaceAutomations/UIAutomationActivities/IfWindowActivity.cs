@@ -24,8 +24,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         protected override void Execute(CodeActivityContext context)
         {
             var windowHandle = WindowHandle.Get(context);
-            bool result = false;
-            string status = "";
+            var result = false;
+            var status = "";
 
             try
             {

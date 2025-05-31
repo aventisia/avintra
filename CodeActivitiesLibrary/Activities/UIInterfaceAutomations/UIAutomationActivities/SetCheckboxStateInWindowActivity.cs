@@ -32,7 +32,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             var windowHandle = WindowHandle.Get(context);
             var checkboxSelector = CheckboxSelector.Get(context);
             var isChecked = Checked.Get(context);
-            string status = "";
+            var status = "";
 
             try
             {

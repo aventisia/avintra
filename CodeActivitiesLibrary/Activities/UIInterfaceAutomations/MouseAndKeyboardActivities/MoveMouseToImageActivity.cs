@@ -1,11 +1,4 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
 {
     //[DisplayName("Move Mouse to Image")]
     //[Description("Moves the mouse cursor to the center of a specified image on the screen.")]

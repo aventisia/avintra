@@ -1,43 +1,109 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
-    [DisplayName("Delete Empty Rows From Data Table"),
-     Description("Deletes the rows of the data table that have all of their cells empty.")]
+    [DisplayName("Delete Empty Rows From Data Table")]
+    [Description("Deletes rows from a data table where one or more cells are empty.")]
     public sealed class DeleteEmptyRowsFromDataTableActivity : CodeActivity
     {
-        [Category("Input"), DisplayName("Data Table"), Description("The data table to process.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Data Table")]
+        [Description("The data table containing the rows to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Empty Row Mode")]
+        [Description("Specifies how to detect empty rows.")]
+        [DefaultValue(DataTableEmptyRowModeEnum.AllEmpty)]
+        public InArgument<DataTableEmptyRowModeEnum> EmptyRowMode { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Column Names To Check")]
+        [Description("List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
+        [RenderIfCondition(nameof(EmptyRowMode), "SpecificColumns")]
+        public InArgument<List<string>> ColumnNamesToCheck { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
         public OutArgument<string> StatusMessage { get; set; }
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var dataTable = context.GetValue(DataTable);
-
-            if (dataTable == null)
-            {
-                context.SetValue(StatusMessage, "Error: Data table is null.");
-                return;
-            }
+            string status = "Operation completed successfully.";
 
             try
             {
-                for (var i = dataTable.Rows.Count - 1; i >= 0; i--)
+                var dataTable = DataTable.Get(context);
+                var emptyRowMode = EmptyRowMode.Get(context);
+
+                if (dataTable == null)
+                    throw new ArgumentException("Data table cannot be null.");
+
+                List<string> columnsToCheck = null;
+                switch (emptyRowMode)
                 {
-                    var isEmpty = true;
-                    foreach (DataColumn column in dataTable.Columns)
+                    case DataTableEmptyRowModeEnum.SpecificColumns:
+                        columnsToCheck = ColumnNamesToCheck.Get(context);
+                        if (columnsToCheck == null || !columnsToCheck.Any())
+                            throw new ArgumentException("Column names to check cannot be empty.");
+                        break;
+
+                    case DataTableEmptyRowModeEnum.AllEmpty:
+                    case DataTableEmptyRowModeEnum.AnyEmpty:
+                        columnsToCheck = dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList();
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(emptyRowMode));
+                }
+
+                // Validate that all specified columns exist in the data table
+                foreach (var colName in columnsToCheck)
+                {
+                    if (!dataTable.Columns.Contains(colName))
+                        throw new ArgumentException($"Column '{colName}' not found in the data table.");
+                }
+
+                // Loop through rows in reverse to allow safe removal
+                for (int i = dataTable.Rows.Count - 1; i >= 0; i--)
+                {
+                    var row = dataTable.Rows[i];
+
+                    bool isEmpty;
+                    switch (emptyRowMode)
                     {
-                        if (dataTable.Rows[i][column] != DBNull.Value &&
-                            !string.IsNullOrEmpty(dataTable.Rows[i][column]?.ToString()))
-                        {
-                            isEmpty = false;
+                        case DataTableEmptyRowModeEnum.AllEmpty:
+                            isEmpty = columnsToCheck.All(col => IsCellEmpty(row[col]));
                             break;
-                        }
+
+                        case DataTableEmptyRowModeEnum.AnyEmpty:
+                            isEmpty = columnsToCheck.Any(col => IsCellEmpty(row[col]));
+                            break;
+
+                        case DataTableEmptyRowModeEnum.SpecificColumns:
+                            isEmpty = columnsToCheck.All(col => IsCellEmpty(row[col]));
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(emptyRowMode));
                     }
 
                     if (isEmpty)
@@ -46,12 +112,21 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     }
                 }
 
-                context.SetValue(StatusMessage, "Empty rows deleted successfully.");
+                status = $"Successfully deleted {dataTable.Rows.Count} empty rows.";
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error: {ex.Message}");
+                status = $"Error deleting empty rows: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
+        }
+
+        private static bool IsCellEmpty(object cellValue)
+        {
+            return cellValue == null ||
+                   cellValue is DBNull ||
+                   string.IsNullOrEmpty(cellValue.ToString());
         }
     }
 }

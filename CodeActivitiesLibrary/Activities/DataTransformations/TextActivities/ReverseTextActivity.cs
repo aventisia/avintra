@@ -1,45 +1,62 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Linq;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
-    [DisplayName("Reverse Text"), Description("Reverses the order of letters in a text string.")]
+    [DisplayName("Reverse Text")]
+    [Description("Reverses the order of characters in a given text string.")]
     public class ReverseTextActivity : CodeActivity
     {
-        #region Arguments
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), DisplayName("Original Text"),
-         Description("The original text to reverse.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Original Text")]
+        [Description("The original text to reverse. Example: 'Hello' → 'olleH'.")]
         public InArgument<string> OriginalText { get; set; }
 
-        [Category("Output"), DisplayName("Reversed Text"), Description("The reversed text result.")]
-        public OutArgument<string> ResultText { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        [Category("Output"), DisplayName("Status Message"), Description("Returns the result status message.")]
+        [Category("Output")]
+        [DisplayName("Reversed Text")]
+        [Description("Returns the reversed version of the input text.")]
+        public OutArgument<string> ReversedText { get; set; }
+
+        [Category("Output")]
         public OutArgument<string> StatusMessage { get; set; }
 
-        #endregion
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Success";
+
             try
             {
-                var originalText = OriginalText.Get(context);
+                var original = OriginalText.Get(context);
 
-                if (string.IsNullOrWhiteSpace(originalText))
-                    throw new ArgumentException("Original Text cannot be empty.");
+                if (string.IsNullOrEmpty(original))
+                    throw new ArgumentException("Original text cannot be null or empty.");
 
-                var result = new string(originalText.Reverse().ToArray());
-                ResultText.Set(context, result);
-                StatusMessage.Set(context, "Text reversed successfully.");
+                var charArray = original.ToCharArray();
+                Array.Reverse(charArray);
+                var reversed = new string(charArray);
+
+                ReversedText.Set(context, reversed);
             }
             catch (Exception ex)
             {
-                ResultText.Set(context, string.Empty);
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                status = $"Error reversing text: {ex.Message}";
+                ReversedText.Set(context, string.Empty);
             }
+
+            StatusMessage.Set(context, status);
         }
     }
 }
