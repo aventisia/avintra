@@ -7,12 +7,12 @@ import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
 import { createSupportNodeObj } from "./create-support-node-obj";
 
-export const createSwitchCaseNode = (
+export const createConditionalNode = (
   nodeData: NodeDataType,
   sourceNodeId: string,
 ): CreateNodesAndEdgesType => {
-  // Switch-case node
-  const switchCaseNode = createNodeObj(nodeData);
+  // conditional node
+  const conditionalNode = createNodeObj(nodeData);
 
   // Case branch nodes
   const caseBranchStartNode = createSupportNodeObj("branchStartNode");
@@ -27,12 +27,12 @@ export const createSwitchCaseNode = (
   // Merge branches node
   const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode");
 
-  // Source node -> Switch-case node
-  const source2SwitchCaseEdge = createPlusEdgeObj(sourceNodeId, switchCaseNode.id);
+  // Source node -> conditional node
+  const source2ConditionalEdge = createPlusEdgeObj(sourceNodeId, conditionalNode.id);
 
-  // Switch-case node -> Case branch-start node
-  const switchCase2CaseBranchStartEdge = createLabelEdgeObj(
-    switchCaseNode.id,
+  // conditional node -> Case branch-start node
+  const conditional2CaseBranchStartEdge = createLabelEdgeObj(
+    conditionalNode.id,
     caseBranchStartNode.id,
     "Case 1",
   );
@@ -55,9 +55,9 @@ export const createSwitchCaseNode = (
     mergeBranchesNode.id,
   );
 
-  // Switch-case node -> Default-case branch-start node
-  const switchCase2DefaultBranchStartEdge = createLabelEdgeObj(
-    switchCaseNode.id,
+  // conditional node -> Default-case branch-start node
+  const conditional2DefaultBranchStartEdge = createLabelEdgeObj(
+    conditionalNode.id,
     defaultBranchStartNode.id,
     "Default",
   );
@@ -80,18 +80,18 @@ export const createSwitchCaseNode = (
     mergeBranchesNode.id,
   );
 
-  // Update switch-case node data
-  switchCaseNode.data = {
-    ...switchCaseNode.data,
+  // Update conditional node data
+  conditionalNode.data = {
+    ...conditionalNode.data,
     defaultBranchStartNodeId: defaultBranchStartNode.id,
     mergeBranchesNodeId: mergeBranchesNode.id,
-    switchCase2DefaultBranchStartEdgeId: switchCase2DefaultBranchStartEdge.id,
+    conditional2DefaultBranchStartEdgeId: conditional2DefaultBranchStartEdge.id,
   };
 
   // Return the nodes and edges
   return {
     newNodes: [
-      switchCaseNode,
+      conditionalNode,
       caseBranchStartNode,
       defaultBranchStartNode,
       casePlusNode,
@@ -101,12 +101,12 @@ export const createSwitchCaseNode = (
       mergeBranchesNode,
     ],
     newEdges: [
-      source2SwitchCaseEdge,
-      switchCase2CaseBranchStartEdge,
+      source2ConditionalEdge,
+      conditional2CaseBranchStartEdge,
       caseBranchStart2PlusEdge,
       casePlus2CaseBranchEndEdge,
       caseBranchEndToMergeBranchesEdge,
-      switchCase2DefaultBranchStartEdge,
+      conditional2DefaultBranchStartEdge,
       defaultBranchStart2PlusEdge,
       defaultPlus2DefaultBranchEndEdge,
       defaultBranchEndToMergeBranchesEdge,

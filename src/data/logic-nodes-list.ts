@@ -10,9 +10,9 @@ export const logicNodesList: NodeDataType[] = [
     icon: "ConditionalNodeIcon",
   },
   {
-    type: "switchCaseNode",
+    type: "conditionalNode",
     category: "Conditions",
-    name: "switchCaseNode",
+    name: "conditionalNode",
     label: "Switch case",
     description: "This node represents a switch case statement.",
     icon: "ConditionalNodeIcon",

@@ -7,7 +7,7 @@ import { getNewNodeXY } from "../create-node-and-edges-util";
 import { createSupportNodeObj } from "./create-support-node-obj";
 import { CustomNodeType } from "@/types/custom-node-type";
 
-export const createNewSwitchCaseBranch = (
+export const createNewConditionalBranch = (
   sourceNode: Node,
   mergeBranchesNodeId: string
 ): CreateNodesAndEdgesType => {
@@ -16,8 +16,8 @@ export const createNewSwitchCaseBranch = (
   const casePlusNode = createSupportNodeObj("plusNode", true);
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
 
-  // Switch-case node -> Case branch-start node
-  const switchCase2CaseBranchStartEdge = createLabelEdgeObj(
+  // Conditional node -> Case branch-start node
+  const conditional2CaseBranchStartEdge = createLabelEdgeObj(
     sourceNode.id,
     caseBranchStartNode.id,
     "New case",
@@ -49,7 +49,7 @@ export const createNewSwitchCaseBranch = (
       caseBranchEndNode,
     ],
     newEdges: [
-      switchCase2CaseBranchStartEdge,
+      conditional2CaseBranchStartEdge,
       caseBranchStart2PlusEdge,
       casePlus2CaseBranchEndEdge,
       caseBranchEndToMergeBranchesEdge,

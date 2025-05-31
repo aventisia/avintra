@@ -2,10 +2,10 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
-import { createNewSwitchCaseBranch } from "@/utils/create-nodes/create-new-switch-case-branch";
-import { SwitchCaseNodeDataType } from "@/types/switch-case-node-data-type";
+import { createNewConditionalBranch } from "@/utils/create-nodes/create-new-conditional-branch";
+import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 
-export const useAddSwitchCaseBranch = () => {
+export const useAddConditionalBranch = () => {
   // Get ReactFlowExt store state & actions
   const { nodes, edges } = useReactFlowExtStore(
     useShallow((state) => ({
@@ -18,14 +18,14 @@ export const useAddSwitchCaseBranch = () => {
   const autoLayout = useDagreAutoLayout();
 
   // Handler to add first node to flow
-  const addSwitchCaseBranch = useCallback(
-    (nodeData: SwitchCaseNodeDataType, switchNodeId: string) => {
+  const addConditionalBranch = useCallback(
+    (nodeData: ConditionalNodeDataType, switchNodeId: string) => {
       // Get source node
       const sourceNode = nodes.find((node) => node.id === switchNodeId);
       if (!sourceNode) return;
 
       // Create new node & edge
-      const { newNodes, newEdges } = createNewSwitchCaseBranch(
+      const { newNodes, newEdges } = createNewConditionalBranch(
         sourceNode,
         nodeData.mergeBranchesNodeId,
       );
@@ -43,7 +43,9 @@ export const useAddSwitchCaseBranch = () => {
       ];
 
       // Get step edge index
-      const stepEdgeIndex = edges.findIndex((edge) => edge.id === nodeData.switchCase2DefaultBranchStartEdgeId);
+      const stepEdgeIndex = edges.findIndex(
+        (edge) => edge.id === nodeData.conditional2DefaultBranchStartEdgeId,
+      );
 
       // Add new edges before step edge
       const updatedEdges = [
@@ -59,5 +61,5 @@ export const useAddSwitchCaseBranch = () => {
   );
 
   // Return the handler
-  return addSwitchCaseBranch;
+  return addConditionalBranch;
 };

@@ -7,7 +7,7 @@ import { createActivityNode } from "./create-nodes/create-activity-node";
 import { createFlowEndNode } from "./create-nodes/create-flow-end-node";
 import { createForLoopNode } from "./create-nodes/create-for-loop-node";
 import { createIfElseNode } from "./create-nodes/create-if-else-node";
-import { createSwitchCaseNode } from "./create-nodes/create-switch-case-node";
+import { createConditionalNode } from "./create-nodes/create-conditional-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -34,8 +34,8 @@ const createNodesAndEdgesUtil = (
     case "ifElseNode":
       nodesAndEdgesObj = createIfElseNode(newNodeData, sourceNode.id);
       break;
-    case "switchCaseNode":
-      nodesAndEdgesObj = createSwitchCaseNode(newNodeData, sourceNode.id);
+    case "conditionalNode":
+      nodesAndEdgesObj = createConditionalNode(newNodeData, sourceNode.id);
       break;
     case "forLoopNode":
       nodesAndEdgesObj = createForLoopNode(newNodeData, sourceNode.id);

@@ -5,7 +5,7 @@ import { ForLoopNode } from "@/components/nodes/ForLoopNode";
 import { IfElseNode } from "@/components/nodes/IfElseNode";
 import { MergeBranchesNode } from "@/components/nodes/MergeBranchesNode";
 import { PlusNode } from "@/components/nodes/plus-node";
-import { SwitchCaseNode } from "@/components/nodes/SwitchCaseNode";
+import { ConditionalNode } from "@/components/nodes/ConditionalNode";
 import { TriggerNode } from "@/components/nodes/trigger-node";
 
 // IMPORTANT NOTE: Add same node type in src/types/custom-node-type.ts
@@ -20,7 +20,7 @@ export const CustomNodeTypeObj = {
   
   // ------------------------------------Logical node types
   ifElseNode: IfElseNode,
-  switchCaseNode: SwitchCaseNode, // TODO
+  conditionalNode: ConditionalNode, // TODO
   whileLoopNode: IfElseNode, // TODO
   forLoopNode: ForLoopNode, // TODO
   forEachLoopNode: IfElseNode, // TODO

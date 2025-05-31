@@ -31,7 +31,7 @@
         "listType": null,
         "actions": [
           {
-            "type": "ifElseNode",
+            "type": "conditionalNode",
             "name": "ConditionalActivity",
             "label": "Conditional",
             "description": "Use conditions to decide which direction the flow should take",

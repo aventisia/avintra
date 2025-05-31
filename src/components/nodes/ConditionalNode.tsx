@@ -1,25 +1,25 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { SwitchCaseNodeDataType } from "@/types/switch-case-node-data-type";
+import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
 import BaseNode from "./BaseNode";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { cn } from "@aventisia/ui/lib";
 import { Button } from "@aventisia/ui/buttons";
 import { buttonVariants } from "@aventisia/ui/buttons";
-import { useAddSwitchCaseBranch } from "@/hooks/useAddSwitchCaseBranch";
+import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
 
-type SwitchCaseNode = Node<SwitchCaseNodeDataType, "switchCaseNode">;
+type ConditionalNode = Node<ConditionalNodeDataType, "conditionalNode">;
 
-export const SwitchCaseNode = ({
+export const ConditionalNode = ({
   id,
   data,
   selected,
   sourcePosition,
   targetPosition,
-}: NodeProps<SwitchCaseNode>) => {
+}: NodeProps<ConditionalNode>) => {
   // Get add switch case branch hook
-  const addSwitchCaseBranch = useAddSwitchCaseBranch();
+  const addConditionalBranch = useAddConditionalBranch();
 
   return (
     <>
@@ -36,7 +36,7 @@ export const SwitchCaseNode = ({
             "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
             "nodrag nopan",
           )}
-          onClick={() => addSwitchCaseBranch(data, id)}
+          onClick={() => addConditionalBranch(data, id)}
         >
           <PlusIcon
             className={cn(

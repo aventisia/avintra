@@ -8,7 +8,7 @@ export type CustomNodeType =
   | "branchEndNode"
   | "activityNode"
   | "ifElseNode"
-  | "switchCaseNode"
+  | "conditionalNode"
   | "whileLoopNode"
   | "forLoopNode"
   | "forEachLoopNode"
