@@ -3,6 +3,7 @@ import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
+import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
@@ -37,13 +38,9 @@ export const useFlowOperations = () => {
 
     // If both incoming and outgoing edges exist, create a new connection
     if (incomingEdge && outgoingEdge) {
-      newEdges.push({
-        id: window.crypto.randomUUID(),
-        source: incomingEdge.source,
-        target: outgoingEdge.target,
-        type: "customStepEdge",
-        label: "plus",
-      });
+      newEdges.push(
+        createPlusEdgeObj(incomingEdge.source, outgoingEdge.target),
+      );
     }
 
     return newEdges;

@@ -1,6 +1,7 @@
 /* Inspired from: https://reactflow.dev/examples/nodes/delete-middle-node */
 // import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import {
   getConnectedEdges,
   getIncomers,
@@ -40,13 +41,9 @@ export const useOnNodeDelete = () => {
         );
 
         const createdEdges = incomers.flatMap(({ id: source }) =>
-          outgoers.map(({ id: target }) => ({
-            id: window.crypto.randomUUID(),
-            type: "customStepEdge",
-            label: "plus",
-            source,
-            target,
-          })),
+          outgoers.map(({ id: target }) => {
+            return createPlusEdgeObj(source, target);
+          }),
         );
 
         return [...remainingEdges, ...createdEdges];
