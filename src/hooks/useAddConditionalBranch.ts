@@ -26,6 +26,7 @@ export const useAddConditionalBranch = () => {
 
       // Create new node & edge
       const { newNodes, newEdges } = createNewConditionalBranch(
+        nodeData.branchesCount,
         sourceNode,
         nodeData.mergeBranchesNodeId,
       );
@@ -54,6 +55,13 @@ export const useAddConditionalBranch = () => {
         ...edges.slice(stepEdgeIndex),
       ];
 
+      // Mapp through updatedNodes and update the branches count of the source node
+      updatedNodes.forEach((node) => {
+        if (node.id === sourceNode.id) {
+          node.data.branchesCount = nodeData.branchesCount + 1; // Increment branches count
+        }
+      });
+      
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     },

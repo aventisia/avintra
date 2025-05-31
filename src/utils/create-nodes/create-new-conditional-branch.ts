@@ -2,25 +2,29 @@ import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { Node } from "@xyflow/react";
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
-import { createLabelEdgeObj } from "../create-edges/create-label-edge-obj";
 import { getNewNodeXY } from "../create-node-and-edges-util";
 import { createSupportNodeObj } from "./create-support-node-obj";
 import { CustomNodeType } from "@/types/custom-node-type";
+import { createConditionalBranchNodeObj } from "./conditional/create-conditional-branch-node-obj";
+import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
 
 export const createNewConditionalBranch = (
+  branchesCount: number,
   sourceNode: Node,
-  mergeBranchesNodeId: string
+  mergeBranchesNodeId: string,
 ): CreateNodesAndEdgesType => {
   // Case branch nodes
-  const caseBranchStartNode = createSupportNodeObj("branchStartNode");
+  const caseBranchStartNode = createConditionalBranchNodeObj(
+    `Branch ${branchesCount}`,
+  );
   const casePlusNode = createSupportNodeObj("plusNode");
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
 
   // Conditional node -> Case branch-start node
-  const conditional2CaseBranchStartEdge = createLabelEdgeObj(
+  const conditional2CaseBranchStartEdge = createSimpleEdgeObj(
     sourceNode.id,
     caseBranchStartNode.id,
-    "New case",
+    sourceNode.id,
   );
 
   // Case branch-start node -> Case plus node
@@ -43,11 +47,7 @@ export const createNewConditionalBranch = (
 
   // Swtich-case branch nodes and edges
   const nodesAndEdgesObj = {
-    newNodes: [
-      caseBranchStartNode,
-      casePlusNode,
-      caseBranchEndNode,
-    ],
+    newNodes: [caseBranchStartNode, casePlusNode, caseBranchEndNode],
     newEdges: [
       conditional2CaseBranchStartEdge,
       caseBranchStart2PlusEdge,
@@ -56,7 +56,6 @@ export const createNewConditionalBranch = (
     ],
     lastNode: caseBranchEndNode,
   };
-  
 
   // Update the position of the all nodes
   if (nodesAndEdgesObj.newNodes.length > 0) {

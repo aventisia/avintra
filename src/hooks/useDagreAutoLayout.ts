@@ -15,7 +15,7 @@ const getEdgeMinlen = (
   sourceNodeType?: CustomNodeType,
   targetNodeType?: CustomNodeType,
 ) => {
-  if (sourceNodeType === "branchStartNode") return 4;
+  if (sourceNodeType === "branchNode1") return 4;
   if (targetNodeType === "branchEndNode") return 4;
   if (sourceNodeType === "mergeBranchesNode") return 6;
   return 8;
@@ -64,12 +64,12 @@ const getLayoutedElements = (
   // Perform the layout
   dagre.layout(dagreGraph);
 
-  // To ensure branchStartNodes' siblings have identical y-position
+  // To ensure branchNode1s' siblings have identical y-position
   const siblingGroups: { [parentId: string]: Node[] } = {};
 
-  // Group branchStartNodes by their parent node to adjust their positions later
+  // Group branchNode1s by their parent node to adjust their positions later
   nodes.forEach((node) => {
-    if (node.type === "branchStartNode") {
+    if (node.type === "branchNode1") {
       // Find the parent node by its target edge
       const parentNode = edges.find((edge) => edge.target === node.id);
       if (parentNode) {
@@ -82,15 +82,15 @@ const getLayoutedElements = (
     }
   });
 
-  // Adjust the y-axis positions for sibling branchStartNodes
+  // Adjust the y-axis positions for sibling branchNode1s
   const adjustedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
 
     // Get the width and height of the node
     const nodeDimension = nodeDimensionLookup[node.type as CustomNodeType];
 
-    // If the node is a branchStartNode and it has siblings, adjust the y-position
-    if (node.type === "branchStartNode") {
+    // If the node is a branchNode1 and it has siblings, adjust the y-position
+    if (node.type === "branchNode1") {
       const parentId = edges.find((edge) => edge.target === node.id)?.source;
       if (parentId && siblingGroups[parentId]) {
         // Get the parent node's position (we'll use this for the siblings' position)

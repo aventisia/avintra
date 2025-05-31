@@ -6,6 +6,7 @@ import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
 import { createSupportNodeObj } from "./create-support-node-obj";
 import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
+import { createConditionalBranchNodeObj } from "./conditional/create-conditional-branch-node-obj";
 
 export const createConditionalNode = (
   nodeData: NodeDataType,
@@ -15,12 +16,15 @@ export const createConditionalNode = (
   const conditionalNode = createNodeObj(nodeData);
 
   // Case branch nodes
-  const caseBranchStartNode = createSupportNodeObj("branchStartNode");
+  const caseBranchStartNode = createConditionalBranchNodeObj("Branch");
   const casePlusNode = createSupportNodeObj("plusNode");
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
 
   // Default branch nodes
-  const defaultBranchStartNode = createSupportNodeObj("branchStartNode");
+  const defaultBranchStartNode = createConditionalBranchNodeObj(
+    "Default",
+    true,
+  );
   const defaultPlusNode = createSupportNodeObj("plusNode");
   const defaultBranchEndNode = createSupportNodeObj("branchEndNode");
 
@@ -86,6 +90,7 @@ export const createConditionalNode = (
   // Update conditional node data
   conditionalNode.data = {
     ...conditionalNode.data,
+    branchesCount: 2, // One main branch and one default branch
     defaultBranchNodeId: defaultBranchStartNode.id,
     mergeBranchesNodeId: mergeBranchesNode.id,
     conditional2DefaultBranchEdgeId: conditional2DefaultBranchEdge.id,

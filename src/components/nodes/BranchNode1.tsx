@@ -1,30 +1,21 @@
 import { InputHandle } from "@/components/handles/InputHandle";
-import { NodeProps } from "@xyflow/react";
+import { Node, NodeProps } from "@xyflow/react";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { cn } from "@aventisia/ui/lib";
+
+type BranchNode1 = Node<{
+  label?: string;
+}, "branchNode1">;
 
 export const BranchNode1 = ({
+  data,
   targetPosition,
   sourcePosition,
-}: NodeProps) => {
+}: NodeProps<BranchNode1>) => {
   return (
-    <div className="grid h-3 w-3 place-items-center rounded-full border-2 border-blue-300 bg-blue-200">
-      <InputHandle
-        position={targetPosition}
-        className={cn(
-          "opacity-0",
-          sourcePosition === "bottom" ? "left-1.5 top-3.5" : "left-3.5 top-1.5",
-        )}
-      />
-      <OutputHandle
-        position={sourcePosition}
-        className={cn(
-          "opacity-0",
-          sourcePosition === "bottom"
-            ? "bottom-2.5 right-0"
-            : "bottom-0 right-2",
-        )}
-      />
+    <div className="grid h-7 min-w-20 place-items-center rounded-full border-2 border-blue-300 bg-blue-200 text-sm">
+      <InputHandle position={targetPosition} className="top-1 opacity-0" />
+      <span>{data?.label}</span>
+      <OutputHandle position={sourcePosition} />
     </div>
   );
 };
