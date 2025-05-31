@@ -18,7 +18,7 @@ export function shouldRenderField(
     return true; // No conditions, always render
   }
 
-  const { conditions, _operator = "AND" } = renderIf;
+  const { conditions, _operator } = renderIf;
 
   const results = conditions.map(
     (cond) => formValues[cond.field] === cond.equals,
