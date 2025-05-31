@@ -29,7 +29,17 @@
         "icon": null,
         "img": null,
         "listType": null,
-        "actions": []
+        "actions": [
+          {
+            "type": "ifElseNode",
+            "name": "ConditionalActivity",
+            "label": "Conditional",
+            "description": "Use conditions to decide which direction the flow should take",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
       }
     ]
   },
