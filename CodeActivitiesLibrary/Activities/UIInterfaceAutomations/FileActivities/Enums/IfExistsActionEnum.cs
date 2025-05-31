@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
@@ -12,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Display(Name = "Do nothing", Description = "Skips the file if it already exists.")]
         DoNothing,
 
-        [Display(Name = "Overwrite", Description = "Overwrites the existing file.")]
+        [Display(Name = "Overwrite", Description = "Deletes the existing file and moves the new file.")]
         Overwrite,
     }
 }
