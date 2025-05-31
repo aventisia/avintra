@@ -26,7 +26,7 @@
     "name": "Conditions",
     "label": "Conditions",
     "description": "Add one or more conditions",
-    "defaultValue": "",
+    "defaultValue": [[{}]],
     "required": false,
     "conditionArraySchema": [
       {
