@@ -42,7 +42,6 @@ export const DCPForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
-    console.log("Form submitted with data:", formData);
     // Extract node inputs and outputs from formData
     const inputs: NodeInputType[] = inputKeys.map((key) => ({
       key,

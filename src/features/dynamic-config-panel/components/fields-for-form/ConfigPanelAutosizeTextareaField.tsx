@@ -79,13 +79,16 @@ const ConfigPanelAutosizeTextareaField = ({
   React.useEffect(() => {
     if (selectedValue && inputName === name) {
       const pos = caretRef.current;
-      const newValue =
-        textareaField.value.slice(0, pos) +
-        `{{${selectedValue}}}` +
-        textareaField.value.slice(pos);
 
-      // Set the new value in the textarea field
-      textareaField.onChange(newValue);
+      if (textareaField.value === undefined) {
+        textareaField.onChange(`{{${selectedValue}}}`);
+      } else {
+        const newValue =
+          textareaField.value.slice(0, pos) +
+          `{{${selectedValue}}}` +
+          textareaField.value.slice(pos);
+        textareaField.onChange(newValue);
+      }
 
       // TODO: Restore focus and move caret after inserted text
       // requestAnimationFrame(() => {
@@ -158,6 +161,5 @@ ConfigPanelAutosizeTextareaField.displayName =
 
 export {
   ConfigPanelAutosizeTextareaField,
-  type ConfigPanelAutosizeTextareaFieldProps
+  type ConfigPanelAutosizeTextareaFieldProps,
 };
-
