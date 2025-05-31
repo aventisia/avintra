@@ -2,20 +2,56 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the selected cell range as a tuple of (first column, first row, last column, last row).",
+    "name": "FirstColumnIndex",
+    "label": "First Column Index",
+    "description": "Returns the column index (1-based) of the first cell in the selected range.",
     "defaultValue": {
-      "value": "result",
+      "value": "firstColumnIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FirstRowIndex",
+    "label": "First Row Index",
+    "description": "Returns the row index (1-based) of the first cell in the selected range.",
+    "defaultValue": {
+      "value": "firstRowIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "LastColumnIndex",
+    "label": "Last Column Index",
+    "description": "Returns the column index (1-based) of the last cell in the selected range.",
+    "defaultValue": {
+      "value": "lastColumnIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "LastRowIndex",
+    "label": "Last Row Index",
+    "description": "Returns the row index (1-based) of the last cell in the selected range.",
+    "defaultValue": {
+      "value": "lastRowIndex",
       "enabled": true
     },
     "required": false

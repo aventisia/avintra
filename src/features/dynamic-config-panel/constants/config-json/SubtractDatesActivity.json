@@ -2,29 +2,60 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "StartDate",
-    "label": "Start Date",
-    "description": "The start date of the subtraction.",
+    "name": "StartDateTime",
+    "label": "Start DateTime",
+    "description": "The earlier DateTime value to subtract from.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "EndDate",
-    "label": "End Date",
-    "description": "The end date of the subtraction.",
+    "name": "EndDateTime",
+    "label": "End DateTime",
+    "description": "The later DateTime value to subtract.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "GetDifferenceIn",
+    "label": "Difference Unit",
+    "description": "Specifies the unit in which to return the time difference.",
+    "defaultValue": "Days",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Seconds",
+        "value": "Seconds",
+        "description": "Difference between dates in seconds."
+      },
+      {
+        "label": "Minutes",
+        "value": "Minutes",
+        "description": "Difference between dates in minutes."
+      },
+      {
+        "label": "Hours",
+        "value": "Hours",
+        "description": "Difference between dates in hours."
+      },
+      {
+        "label": "Days",
+        "value": "Days",
+        "description": "Difference between dates in days."
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
+    "name": "DifferenceValue",
     "label": "Time Difference",
-    "description": "The difference between the two dates as a TimeSpan.",
+    "description": "The calculated time difference in the specified unit.",
     "defaultValue": {
-      "value": "result",
+      "value": "differenceValue",
       "enabled": true
     },
     "required": false

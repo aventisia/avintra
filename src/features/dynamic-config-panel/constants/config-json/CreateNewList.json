@@ -2,13 +2,13 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "List",
-    "label": "List",
+    "name": "NewList",
+    "label": "New List",
     "description": "The newly created empty list.",
     "defaultValue": {
-      "value": "list",
+      "value": "newList",
       "enabled": true
     },
-    "required": true
+    "required": false
   }
 ]

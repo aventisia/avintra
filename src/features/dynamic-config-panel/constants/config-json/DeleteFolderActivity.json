@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "FolderPath",
-    "label": "FolderPath",
-    "description": "The path of the folder to delete.",
+    "label": "Folder to Delete",
+    "description": "Full path of the folder that you want to delete.",
     "defaultValue": "",
     "required": true
   }

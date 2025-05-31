@@ -2,29 +2,75 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "ReferenceType",
+    "label": "Reference Type",
+    "description": "Specifies whether to reference by cell address or named range.",
+    "defaultValue": "CellAddress",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "CellAddress",
+        "value": "CellAddress",
+        "description": ""
+      },
+      {
+        "label": "NamedRange",
+        "value": "NamedRange",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "CellAddress",
-    "label": "CellAddress",
-    "description": "The cell address (e.g., \u0027A1\u0027) to read the formula from.",
+    "label": "Cell Address",
+    "description": "The address of the cell to read (e.g., \u0027A1\u0027, \u0027B2\u0027).",
     "defaultValue": "",
-    "required": true
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ReferenceType",
+          "equals": "CellAddress"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NamedRange",
+    "label": "Named Range",
+    "description": "The name of the range to read the formula from.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ReferenceType",
+          "equals": "NamedRange"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the formula of the specified cell.",
+    "name": "CellFormula",
+    "label": "Cell Formula",
+    "description": "The formula contained in the specified cell or range.",
     "defaultValue": {
-      "value": "result",
+      "value": "cellFormula",
       "enabled": true
     },
     "required": false

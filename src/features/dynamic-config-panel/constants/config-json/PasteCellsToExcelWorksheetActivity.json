@@ -2,19 +2,114 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "TargetExcelApplication",
+    "label": "Target Excel Application",
+    "description": "The Excel Application object where the data will be pasted.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "RangeToPaste",
-    "label": "RangeToPaste",
-    "description": "The range of cells to paste (e.g., \u0027A1:B10\u0027).",
+    "name": "SourceExcelApplication",
+    "label": "Source Excel Application",
+    "description": "The Excel Application object where the data is coming from.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceWorksheetName",
+    "label": "Source Worksheet Name",
+    "description": "Name of the worksheet in the source Excel instance containing the data to copy.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceRangeAddress",
+    "label": "Source Range Address",
+    "description": "The range address (e.g., \u0027A1:B10\u0027) in the source worksheet to copy.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PasteMode",
+    "label": "Paste Mode",
+    "description": "Specifies how to determine the paste location.",
+    "defaultValue": "OnSpecifiedCell",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "On Named Cells",
+        "value": "OnNamedCells",
+        "description": "Pastes data into a named range."
+      },
+      {
+        "label": "On Currently Active Cell",
+        "value": "OnCurrentlyActiveCell",
+        "description": "Pastes data starting from the currently active cell."
+      },
+      {
+        "label": "On Specified Cell",
+        "value": "OnSpecifiedCell",
+        "description": "Pastes data starting from a specific column and row."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Name",
+    "label": "Name",
+    "description": "The name of the named range to paste into (required if \u0027Paste Mode\u0027 is \u0027On Named Cells\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "PasteMode",
+          "equals": "OnNamedCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Column",
+    "label": "Column",
+    "description": "The column letter (e.g., \u0027A\u0027, \u0027B\u0027) where the paste should begin (required if \u0027Paste Mode\u0027 is \u0027On Specified Cell\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "PasteMode",
+          "equals": "OnSpecifiedCell"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Row",
+    "label": "Row",
+    "description": "The row number where the paste should begin (required if \u0027Paste Mode\u0027 is \u0027On Specified Cell\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "PasteMode",
+          "equals": "OnSpecifiedCell"
+        }
+      ]
+    }
   }
 ]

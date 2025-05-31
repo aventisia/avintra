@@ -6,33 +6,62 @@
     "label": "Data Table",
     "description": "The data table to modify.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "ColumnName",
-    "label": "ColumnName",
+    "label": "Column Name",
     "description": "The name of the new column.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "DataType",
-    "label": "DataType",
+    "label": "Data Type",
     "description": "The data type of the new column.",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "InsertLocation",
+    "label": "Insert Location",
+    "description": "Specifies where to insert the new column.",
+    "defaultValue": "BeforeColumnIndex",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Before Column Index",
+        "value": "BeforeColumnIndex",
+        "description": "Inserts the column before the specified index."
+      },
+      {
+        "label": "End of Data Table",
+        "value": "EndOfDataTable",
+        "description": "Appends the column at the end of the data table."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "ColumnIndex",
-    "label": "ColumnIndex",
-    "description": "The index at which to insert the column. Use -1 to append at the end.",
+    "label": "Column Index",
+    "description": "The zero-based index at which to insert the column (required if \u0027Insert Location\u0027 is \u0027Before Column Index\u0027).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "InsertLocation",
+          "equals": "BeforeColumnIndex"
+        }
+      ]
+    }
   }
 ]

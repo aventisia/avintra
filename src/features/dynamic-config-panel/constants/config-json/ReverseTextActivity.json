@@ -4,18 +4,18 @@
     "type": "text",
     "name": "OriginalText",
     "label": "Original Text",
-    "description": "The original text to reverse.",
+    "description": "The original text to reverse. Example: \u0027Hello\u0027 \u2192 \u0027olleH\u0027.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultText",
+    "name": "ReversedText",
     "label": "Reversed Text",
-    "description": "The reversed text result.",
+    "description": "Returns the reversed version of the input text.",
     "defaultValue": {
-      "value": "resultText",
+      "value": "reversedText",
       "enabled": true
     },
     "required": false

@@ -11,11 +11,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ODataTableOutput",
-    "label": "New Data Table Output",
+    "name": "NewDataTable",
+    "label": "New Data Table",
     "description": "The newly created or cloned data table.",
     "defaultValue": {
-      "value": "oDataTableOutput",
+      "value": "newDataTable",
       "enabled": true
     },
     "required": false

@@ -4,7 +4,7 @@
     "type": "text",
     "name": "ListToReverse",
     "label": "List to Reverse",
-    "description": "The list whose items\u0027 order will be reversed.",
+    "description": "The list whose item order will be reversed.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "config-panel-output",
     "name": "ReversedList",
     "label": "Reversed List",
-    "description": "The list after reversing the order of its items.",
+    "description": "Returns the list after reversing the order of its items.",
     "defaultValue": {
       "value": "reversedList",
       "enabled": true

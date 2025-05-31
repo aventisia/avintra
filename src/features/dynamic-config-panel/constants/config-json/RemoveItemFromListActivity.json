@@ -2,57 +2,48 @@
   {
     "direction": "Input",
     "type": "select",
-    "name": "RemoveItemsBy",
-    "label": "Remove Items By",
-    "description": "Specifies whether to remove the item at a specified index or the item(s) with specific value.",
-    "defaultValue": "Index",
+    "name": "RemoveMode",
+    "label": "Remove Mode",
+    "description": "Specifies whether to remove by Index or Value.",
+    "defaultValue": "",
     "required": true,
     "selectOptions": [
       {
         "label": "Index",
         "value": "Index",
-        "description": "Remove item based on its position in the list."
+        "description": ""
       },
       {
         "label": "Value",
         "value": "Value",
-        "description": "Remove item(s) based on their value."
+        "description": ""
       }
     ]
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "AtIndex",
-    "label": "At Index",
-    "description": "The index number of the item to remove.",
+    "name": "IndexToRemove",
+    "label": "Index To Remove",
+    "description": "The zero-based index of the item to remove.",
     "defaultValue": "",
     "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "WithValue",
-    "label": "With Value",
-    "description": "The item value to remove from the list.",
+    "name": "ValueToRemove",
+    "label": "Value To Remove",
+    "description": "The value of the item to remove from the list.",
     "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "RemoveAllItemOccurrences",
-    "label": "Remove All Occurrences",
-    "description": "Remove all items that match the specified value.",
-    "defaultValue": false,
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "FormList",
-    "label": "Form List",
-    "description": "The list with items to remove.",
+    "name": "SourceList",
+    "label": "Source List",
+    "description": "The list from which the item will be removed.",
     "defaultValue": "",
     "required": true
   },
@@ -61,7 +52,7 @@
     "type": "config-panel-output",
     "name": "ModifiedList",
     "label": "Modified List",
-    "description": "The resulting list after removing the item(s).",
+    "description": "Returns the updated list after removing the item(s).",
     "defaultValue": {
       "value": "modifiedList",
       "enabled": true

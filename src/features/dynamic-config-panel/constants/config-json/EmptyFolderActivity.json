@@ -3,9 +3,18 @@
     "direction": "Input",
     "type": "text",
     "name": "FolderPath",
-    "label": "FolderPath",
-    "description": "The path of the folder to empty.",
+    "label": "Folder to Empty",
+    "description": "Specify the path of the folder whose contents should be deleted.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "DeleteSubfolders",
+    "label": "Include Subfolders",
+    "description": "Determines whether subfolders and their contents should also be deleted.",
+    "defaultValue": true,
+    "required": false
   }
 ]

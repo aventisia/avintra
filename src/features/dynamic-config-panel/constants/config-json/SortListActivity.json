@@ -11,7 +11,7 @@
   {
     "direction": "Input",
     "type": "switch",
-    "name": "SortBy",
+    "name": "SortByProperties",
     "label": "Sort By Properties",
     "description": "Enable if sorting based on object properties (e.g., files, folders).",
     "defaultValue": false,
@@ -24,7 +24,15 @@
     "label": "First Property to Sort By",
     "description": "The first property name to sort the list by.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SortByProperties",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -45,7 +53,15 @@
         "value": "Descending",
         "description": "Sort in descending order"
       }
-    ]
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SortByProperties",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -54,7 +70,15 @@
     "label": "Second Property to Sort By",
     "description": "The second property name to sort the list by.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SortByProperties",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -75,7 +99,15 @@
         "value": "Descending",
         "description": "Sort in descending order"
       }
-    ]
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SortByProperties",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -84,7 +116,15 @@
     "label": "Third Property to Sort By",
     "description": "The third property name to sort the list by.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SortByProperties",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -105,7 +145,15 @@
         "value": "Descending",
         "description": "Sort in descending order"
       }
-    ]
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SortByProperties",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

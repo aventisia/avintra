@@ -1,0 +1,53 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceFiles",
+    "label": "File(s) to move",
+    "description": "The path(s) of the file(s) to move. Supports wildcards like *.txt.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DestinationFolder",
+    "label": "Destination folder",
+    "description": "The destination folder where the files will be moved.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfExistsAction",
+    "label": "If file exists",
+    "description": "Specifies the behavior when a file already exists in the destination folder.",
+    "defaultValue": "DoNothing",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Do nothing",
+        "value": "DoNothing",
+        "description": "Skips the file if it already exists."
+      },
+      {
+        "label": "Overwrite",
+        "value": "Overwrite",
+        "description": "Deletes the existing file and moves the new file."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "MovedFile",
+    "label": "Moved File",
+    "description": "Returns the path of the successfully moved file.",
+    "defaultValue": {
+      "value": "movedFile",
+      "enabled": true
+    },
+    "required": false
+  }
+]

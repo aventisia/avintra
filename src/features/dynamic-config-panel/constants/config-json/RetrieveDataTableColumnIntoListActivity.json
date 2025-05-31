@@ -4,7 +4,7 @@
     "type": "text",
     "name": "DataTable",
     "label": "Data Table",
-    "description": "The data table with the column to convert into a list.",
+    "description": "The data table containing the column to convert into a list.",
     "defaultValue": "",
     "required": true
   },
@@ -13,18 +13,18 @@
     "type": "text",
     "name": "ColumnNameOrIndex",
     "label": "Column Name or Index",
-    "description": "The column name (if defined) or index number to retrieve.",
+    "description": "Specifies which column to extract by name (if defined) or index (zero-based).",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ColumnAsListOutput",
-    "label": "Column as List Output",
-    "description": "The new list containing the contents of the specified data table column.",
+    "name": "ColumnAsList",
+    "label": "Column as List",
+    "description": "Returns the contents of the selected column as a list of strings.",
     "defaultValue": {
-      "value": "columnAsListOutput",
+      "value": "columnAsList",
       "enabled": true
     },
     "required": false

@@ -2,10 +2,53 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object to close.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "BeforeClosingExcel",
+    "label": "Before Closing Excel",
+    "description": "Specifies what to do before closing Excel.",
+    "defaultValue": "SaveDocument",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Do not save document",
+        "value": "DoNotSaveDocument",
+        "description": "Closes Excel without saving changes."
+      },
+      {
+        "label": "Save document",
+        "value": "SaveDocument",
+        "description": "Saves changes before closing Excel."
+      },
+      {
+        "label": "Save document as",
+        "value": "SaveDocumentAs",
+        "description": "Saves the document to a specified path before closing Excel."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SavePath",
+    "label": "Save Path",
+    "description": "The file path to save the document when \u0027Save Document As\u0027 is selected.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "BeforeClosingExcel",
+          "equals": "SaveDocumentAs"
+        }
+      ]
+    }
   }
 ]

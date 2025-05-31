@@ -1,10 +1,62 @@
 [
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "RetrieveType",
+    "label": "Retrieve Type",
+    "description": "Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).",
+    "defaultValue": "CurrentDateTime",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "CurrentDateTime",
+        "value": "CurrentDateTime",
+        "description": ""
+      },
+      {
+        "label": "CurrentDateOnly",
+        "value": "CurrentDateOnly",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "TimezoneType",
+    "label": "Time Zone",
+    "description": "Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).",
+    "defaultValue": "SystemTimeZone",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "SystemTimeZone",
+        "value": "SystemTimeZone",
+        "description": ""
+      },
+      {
+        "label": "SpecificTimeZone",
+        "value": "SpecificTimeZone",
+        "description": ""
+      },
+      {
+        "label": "WindowsTimeZone",
+        "value": "WindowsTimeZone",
+        "description": ""
+      },
+      {
+        "label": "CustomInput",
+        "value": "CustomInput",
+        "description": ""
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "Result",
-    "label": "Current DateTime",
-    "description": "Outputs the current system date and time.",
+    "label": "Result",
+    "description": "The retrieved date and time based on the specified options.",
     "defaultValue": {
       "value": "result",
       "enabled": true

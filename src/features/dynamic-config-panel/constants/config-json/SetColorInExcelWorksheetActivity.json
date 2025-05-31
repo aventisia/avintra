@@ -2,28 +2,176 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "text",
-    "name": "CellRange",
-    "label": "CellRange",
-    "description": "The range of cells to apply the color to (e.g., \u0027A1:B10\u0027).",
-    "defaultValue": "",
-    "required": true
+    "type": "select",
+    "name": "SelectionMode",
+    "label": "Selection Mode",
+    "description": "Specifies how to select the cells to color.",
+    "defaultValue": "SingleCell",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Single Cell",
+        "value": "SingleCell",
+        "description": "Colors a single cell by column and row."
+      },
+      {
+        "label": "Range of Cells",
+        "value": "RangeOfCells",
+        "description": "Colors a specified range (e.g., \u0027A1:B10\u0027)."
+      },
+      {
+        "label": "Named Cells",
+        "value": "NamedCells",
+        "description": "Colors cells based on named ranges."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "Color",
-    "label": "Color",
-    "description": "The color to apply (e.g., \u0027Red\u0027, \u0027Blue\u0027).",
+    "name": "StartColumn",
+    "label": "Start Column",
+    "description": "The starting column of the range to color (required if \u0027Selection Mode\u0027 is \u0027Range of Cells\u0027).",
     "defaultValue": "",
-    "required": true
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SelectionMode",
+          "equals": "RangeOfCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndColumn",
+    "label": "End Column",
+    "description": "The ending column of the range to color (required if \u0027Selection Mode\u0027 is \u0027Range of Cells\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SelectionMode",
+          "equals": "RangeOfCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartRow",
+    "label": "Start Row",
+    "description": "The starting row of the range to color (required if \u0027Selection Mode\u0027 is \u0027Range of Cells\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SelectionMode",
+          "equals": "RangeOfCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndRow",
+    "label": "End Row",
+    "description": "The ending row of the range to color (required if \u0027Selection Mode\u0027 is \u0027Range of Cells\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SelectionMode",
+          "equals": "RangeOfCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NamedRange",
+    "label": "Named Range",
+    "description": "The name of the named range to color (required if \u0027Selection Mode\u0027 is \u0027Named Cells\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SelectionMode",
+          "equals": "NamedCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ColorFormat",
+    "label": "Color Format",
+    "description": "Specifies the format of the color input.",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": "Uses predefined color names."
+      },
+      {
+        "label": "Hexadecimal Value",
+        "value": "HexadecimalValue",
+        "description": "Uses hexadecimal RGB values."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColorName",
+    "label": "Color Name",
+    "description": "The name of the color to apply (required if \u0027Color Format\u0027 is \u0027Name\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ColorFormat",
+          "equals": "Name"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColorHexValue",
+    "label": "Color Hexadecimal Value",
+    "description": "The hexadecimal value of the color to apply (required if \u0027Color Format\u0027 is \u0027Hexadecimal Value\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ColorFormat",
+          "equals": "HexadecimalValue"
+        }
+      ]
+    }
   }
 ]

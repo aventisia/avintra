@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
@@ -12,19 +12,64 @@
     "direction": "Input",
     "type": "text",
     "name": "TableName",
-    "label": "TableName",
-    "description": "The name of the table to retrieve the range for.",
+    "label": "Table Name",
+    "description": "The name of the table (ListObject) or pivot table to retrieve the range for.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IsPivotTable",
+    "label": "Is Pivot Table",
+    "description": "If true, retrieves the range of a pivot table instead of a regular table.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the range of the specified table.",
+    "name": "FirstColumnIndex",
+    "label": "First Column Index",
+    "description": "Returns the column index of the first cell in the table range.",
     "defaultValue": {
-      "value": "result",
+      "value": "firstColumnIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FirstRowIndex",
+    "label": "First Row Index",
+    "description": "Returns the row index of the first cell in the table range.",
+    "defaultValue": {
+      "value": "firstRowIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "LastColumnIndex",
+    "label": "Last Column Index",
+    "description": "Returns the column index of the last cell in the table range.",
+    "defaultValue": {
+      "value": "lastColumnIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "LastRowIndex",
+    "label": "Last Row Index",
+    "description": "Returns the row index of the last cell in the table range.",
+    "defaultValue": {
+      "value": "lastRowIndex",
       "enabled": true
     },
     "required": false

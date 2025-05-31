@@ -4,18 +4,27 @@
     "type": "text",
     "name": "JsonData",
     "label": "JSON Data",
-    "description": "A JSON text or variable containing JSON to convert to a custom object.",
+    "description": "The JSON string that will be converted to a custom object.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TargetType",
+    "label": "Target Type",
+    "description": "Specifies the type of the custom object to deserialize the JSON into.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "JsonAsCustomObjectOutput",
-    "label": "Custom Object Output",
-    "description": "The resulting custom object after converting from JSON.",
+    "name": "CustomObject",
+    "label": "Custom Object",
+    "description": "Returns the resulting custom object after JSON deserialization.",
     "defaultValue": {
-      "value": "jsonAsCustomObjectOutput",
+      "value": "customObject",
       "enabled": true
     },
     "required": false

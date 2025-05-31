@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OutlookApplication",
+    "label": "Outlook Application",
+    "description": "The Outlook Application object to close.",
+    "defaultValue": "",
+    "required": true
+  }
+]

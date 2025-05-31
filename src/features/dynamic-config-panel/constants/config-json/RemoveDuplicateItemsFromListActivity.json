@@ -2,29 +2,29 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ListToRemoveDuplicate",
-    "label": "List to Remove Duplicates From",
-    "description": "The list variable to remove duplicate items from.",
+    "name": "ListToDeduplicate",
+    "label": "List to Deduplicate",
+    "description": "The list variable to remove duplicate values from.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "switch",
-    "name": "IgnoreTextCase",
-    "label": "Ignore Text Case",
-    "description": "Specifies whether to perform case-insensitive comparison while searching for duplicates.",
+    "name": "IgnoreCase",
+    "label": "Ignore Case",
+    "description": "If true, performs case-insensitive comparison when checking for duplicates.",
     "defaultValue": false,
     "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "DuplicatedList",
+    "name": "DeduplicatedList",
     "label": "Deduplicated List",
-    "description": "The list after removing duplicate items.",
+    "description": "Returns the list after removing duplicate items.",
     "defaultValue": {
-      "value": "duplicatedList",
+      "value": "deduplicatedList",
       "enabled": true
     },
     "required": false

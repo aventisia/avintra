@@ -3,17 +3,26 @@
     "direction": "Input",
     "type": "text",
     "name": "FolderPath",
-    "label": "FolderPath",
-    "description": "The path of the folder to retrieve subfolders from.",
+    "label": "Source Folder Path",
+    "description": "The full path of the directory from which subfolders will be retrieved.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IncludeSubfolders",
+    "label": "Include Nested Subfolders",
+    "description": "Determines whether to include all nested subdirectories recursively.",
+    "defaultValue": false,
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "Subfolders",
-    "label": "Subfolders",
-    "description": "Returns the list of subfolder paths in the folder.",
+    "label": "Subfolder List",
+    "description": "The collection of subfolder paths found in the specified directory.",
     "defaultValue": {
       "value": "subfolders",
       "enabled": true

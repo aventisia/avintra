@@ -6,6 +6,44 @@
     "label": "Data Table",
     "description": "The data table to process.",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "CompareMode",
+    "label": "Compare Mode",
+    "description": "Specifies whether to compare all columns or only selected ones.",
+    "defaultValue": "AllColumns",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "All Columns",
+        "value": "AllColumns",
+        "description": "Compares all columns to identify duplicates."
+      },
+      {
+        "label": "Selected Columns",
+        "value": "SelectedColumns",
+        "description": "Only compares the specified columns for duplicates."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnNamesToCompare",
+    "label": "Column Names To Compare",
+    "description": "List of column names to compare when \u0027Compare Mode\u0027 is \u0027Selected Columns\u0027.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "CompareMode",
+          "equals": "SelectedColumns"
+        }
+      ]
+    }
   }
 ]

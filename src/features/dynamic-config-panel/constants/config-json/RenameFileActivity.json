@@ -1,0 +1,108 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilesToRename",
+    "label": "File(s) to rename",
+    "description": "The path(s) of the file(s) to rename. Supports wildcards like *.txt.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "RenameScheme",
+    "label": "Rename scheme",
+    "description": "Specifies the rename scheme to apply.",
+    "defaultValue": "SetNewName",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Set new name",
+        "value": "SetNewName",
+        "description": "Sets a completely new name for the file."
+      },
+      {
+        "label": "Add text",
+        "value": "AddText",
+        "description": "Adds text to the existing file name."
+      },
+      {
+        "label": "Remove text",
+        "value": "RemoveText",
+        "description": "Removes specified text from the file name."
+      },
+      {
+        "label": "Replace text",
+        "value": "ReplaceText",
+        "description": "Replaces specified text in the file name."
+      },
+      {
+        "label": "Change extension",
+        "value": "ChangeExtension",
+        "description": "Changes the file extension."
+      },
+      {
+        "label": "Add datetime",
+        "value": "AddDateTime",
+        "description": "Appends a timestamp to the file name."
+      },
+      {
+        "label": "Make sequential",
+        "value": "MakeSequential",
+        "description": "Renames the file with a sequential number."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewFileName",
+    "label": "New file name",
+    "description": "The new name for the file(s). Required for some rename schemes.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "KeepExtension",
+    "label": "Keep extension",
+    "description": "Indicates whether to keep the original file extension.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfExistsAction",
+    "label": "If file exists",
+    "description": "Specifies the behavior when a file already exists in the destination folder.",
+    "defaultValue": "DoNothing",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Do nothing",
+        "value": "DoNothing",
+        "description": "Skips the file if it already exists."
+      },
+      {
+        "label": "Overwrite",
+        "value": "Overwrite",
+        "description": "Deletes the existing file and moves the new file."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "RenamedFiles",
+    "label": "Renamed Files",
+    "description": "Returns the list of successfully renamed files.",
+    "defaultValue": {
+      "value": "renamedFiles",
+      "enabled": true
+    },
+    "required": false
+  }
+]

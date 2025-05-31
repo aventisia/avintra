@@ -1,21 +1,42 @@
 [
   {
     "direction": "Input",
+    "type": "select",
+    "name": "Condition",
+    "label": "If Folder",
+    "description": "Select the condition to check for the folder (Exists or Doesn\u0027t exist).",
+    "defaultValue": "Exists",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Exists",
+        "value": "Exists",
+        "description": ""
+      },
+      {
+        "label": "DoesNotExist",
+        "value": "DoesNotExist",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "FolderPath",
-    "label": "FolderPath",
-    "description": "The path of the folder to check.",
+    "label": "Folder Path",
+    "description": "The path of the folder to check for existence.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Exists",
-    "label": "Exists",
-    "description": "Returns true if the folder exists, otherwise false.",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns true if the folder meets the specified condition, otherwise false.",
     "defaultValue": {
-      "value": "exists",
+      "value": "result",
       "enabled": true
     },
     "required": false

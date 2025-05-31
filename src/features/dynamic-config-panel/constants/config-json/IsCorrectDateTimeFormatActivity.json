@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "InputDateTime",
-    "label": "Input DateTime String",
+    "label": "DateTime String",
     "description": "The date and time string to validate.",
     "defaultValue": "",
     "required": true
@@ -12,19 +12,19 @@
     "direction": "Input",
     "type": "text",
     "name": "DateTimeFormat",
-    "label": "DateTime Format",
-    "description": "The expected DateTime format to validate against (e.g., yyyy-MM-dd HH:mm:ss).",
+    "label": "Expected Format",
+    "description": "The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss).",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Is Valid Format",
-    "description": "Returns true if the input date/time string matches the specified format.",
+    "name": "IsValid",
+    "label": "Is Format Valid",
+    "description": "Returns true if the input matches the expected format; otherwise, false.",
     "defaultValue": {
-      "value": "result",
+      "value": "isValid",
       "enabled": true
     },
     "required": false

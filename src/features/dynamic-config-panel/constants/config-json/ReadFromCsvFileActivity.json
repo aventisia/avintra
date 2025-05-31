@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "CSV File Path",
+    "description": "The full path to the CSV file to be read.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "HasHeader",
+    "label": "Has Header Row",
+    "description": "Specify whether the CSV file includes a header row.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "OutputDataTable",
+    "label": "CSV Data Table",
+    "description": "The output DataTable containing the contents of the CSV file.",
+    "defaultValue": {
+      "value": "outputDataTable",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -2,19 +2,49 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "AddItem",
-    "label": "Add Item",
-    "description": "A value or variable to add to the list. Can be a single item or comma-separated list of items.",
+    "name": "TargetList",
+    "label": "List To Modify",
+    "description": "The list variable to which new elements will be added.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "IntoList",
-    "label": "Into List",
-    "description": "The list variable to append new elements to.",
+    "name": "ItemToAdd",
+    "label": "Item To Add",
+    "description": "A single item or comma-separated values to add to the list.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomSeparator",
+    "label": "Custom Separator",
+    "description": "Optional. If provided, splits the input using this separator instead of default ones (\u0027,\u0027, \u0027;\u0027, \u0027|\u0027).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "TrimValues",
+    "label": "Trim Values",
+    "description": "If true, trims whitespace from each value before adding it to the list.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ModifiedList",
+    "label": "Modified List",
+    "description": "Returns the updated list after items have been added.",
+    "defaultValue": {
+      "value": "modifiedList",
+      "enabled": true
+    },
+    "required": false
   }
 ]

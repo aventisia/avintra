@@ -2,20 +2,20 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "RunPowerFxExpression",
-    "label": "Run Power Fx Expression",
-    "description": "The Power Fx expression to evaluate.",
+    "name": "PowerFxExpression",
+    "label": "Power Fx Expression",
+    "description": "The Power Fx-like expression to evaluate (e.g., \u00271 \u002B 2\u0027, \u0027Text(Now(), \u0022yyyy-mm-dd\u0022)\u0027.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "The result of the evaluated Power Fx expression.",
+    "name": "ExpressionResult",
+    "label": "Expression Result",
+    "description": "Returns the evaluated result of the Power Fx expression (simulated).",
     "defaultValue": {
-      "value": "result",
+      "value": "expressionResult",
       "enabled": true
     },
     "required": false

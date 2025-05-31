@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
@@ -12,19 +12,19 @@
     "direction": "Input",
     "type": "text",
     "name": "ColumnIndex",
-    "label": "ColumnIndex",
-    "description": "The column index (1-based).",
+    "label": "Column Index",
+    "description": "The 1-based index of the column to convert to a letter (e.g., 1 \u2192 A).",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the name of the column (e.g., \u0027A\u0027, \u0027B\u0027).",
+    "name": "ColumnName",
+    "label": "Column Name",
+    "description": "Returns the column letter corresponding to the given index (e.g., \u0027A\u0027, \u0027B\u0027).",
     "defaultValue": {
-      "value": "result",
+      "value": "columnName",
       "enabled": true
     },
     "required": false

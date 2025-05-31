@@ -4,35 +4,47 @@
     "type": "text",
     "name": "DataTable",
     "label": "Data Table",
-    "description": "The data table to update.",
+    "description": "The DataTable containing the data to be updated.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "RowIndex",
-    "label": "RowIndex",
-    "description": "The index of the row to update.",
+    "name": "Column",
+    "label": "Column",
+    "description": "The name of the column where the update should occur.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "ColumnName",
-    "label": "ColumnName",
-    "description": "The name of the column to update.",
+    "name": "Row",
+    "label": "Row",
+    "description": "The row index or primary key value of the row to update.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "NewValue",
-    "label": "NewValue",
-    "description": "The new value to set for the cell.",
+    "label": "New Value",
+    "description": "The new value to set for the specified cell.",
     "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ModifiedDataTable",
+    "label": "Modified Data Table",
+    "description": "The DataTable after the specified cell has been updated.",
+    "defaultValue": {
+      "value": "modifiedDataTable",
+      "enabled": true
+    },
     "required": false
   }
 ]

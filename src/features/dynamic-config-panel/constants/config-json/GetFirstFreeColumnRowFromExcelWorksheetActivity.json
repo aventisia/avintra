@@ -2,20 +2,32 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the first free column and row as a tuple (column, row).",
+    "name": "FirstFreeColumn",
+    "label": "First Free Column",
+    "description": "Returns the first free column as a letter (e.g., \u0027A\u0027, \u0027B\u0027).",
     "defaultValue": {
-      "value": "result",
+      "value": "firstFreeColumn",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FirstFreeRow",
+    "label": "First Free Row",
+    "description": "Returns the first free row as a number.",
+    "defaultValue": {
+      "value": "firstFreeRow",
       "enabled": true
     },
     "required": false

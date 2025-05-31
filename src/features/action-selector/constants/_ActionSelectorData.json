@@ -87,7 +87,7 @@
             "type": "activityNode",
             "name": "ConvertJsonToCustomObjectActivity",
             "label": "Convert JSON to Custom Object",
-            "description": "Converts a JSON string into a custom object.",
+            "description": "Converts a JSON string into a strongly-typed custom object.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -150,7 +150,7 @@
             "type": "activityNode",
             "name": "RemoveDuplicateItemsFromListActivity",
             "label": "Remove Duplicate Items From List",
-            "description": "Removes duplicate items from a list. Optionally performs case-insensitive comparison.",
+            "description": "Removes duplicate items from a list using case-sensitive or case-insensitive comparison.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -186,7 +186,7 @@
             "type": "activityNode",
             "name": "RunPowerFxExpressionActivity",
             "label": "Run Power Fx Expression",
-            "description": "Runs a Power Fx expression and returns the result.",
+            "description": "Runs a simulated Power Fx expression and returns the result as text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -214,15 +214,6 @@
             "name": "SubtractListsActivity",
             "label": "Subtract Lists",
             "description": "Removes items from the first list that exist in the second list.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "TruncateNumberActivity",
-            "label": "Truncate Number",
-            "description": "Performs various operations on a number, such as getting the integer part, decimal part, or rounding.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -274,6 +265,15 @@
           },
           {
             "type": "activityNode",
+            "name": "ConvertWordToNumberActivity",
+            "label": "Convert Word to Number",
+            "description": "Converts specific words like 'hundred' into their numeric values.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "ConvertTextToDateTimeActivity",
             "label": "Convert Text to DateTime",
             "description": "Converts a text representation of a date and/or time value to a DateTime value.",
@@ -310,18 +310,9 @@
           },
           {
             "type": "activityNode",
-            "name": "CropTextActivity",
-            "label": "Crop Text",
-            "description": "Retrieves a text value that occurs before, after, or between specified text flags in a given text.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "EscapeTextForRegularExpressionActivity",
             "label": "Escape Text for Regular Expression",
-            "description": "Escapes a minimal set of characters for use in regular expressions.",
+            "description": "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -329,8 +320,8 @@
           {
             "type": "activityNode",
             "name": "GetSubtextActivity",
-            "label": "Get Subtext",
-            "description": "Retrieves a substring from a text value based on start and end indices.",
+            "label": "Extract Substring from Text",
+            "description": "Retrieves a substring from the original text based on start index and length.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -366,7 +357,7 @@
             "type": "activityNode",
             "name": "RecognizeEntitiesInTextActivity",
             "label": "Recognize Entities in Text",
-            "description": "Recognizes entities in text, such as numbers, units, dates/time, and others expressed in natural language across multiple languages.",
+            "description": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -384,7 +375,7 @@
             "type": "activityNode",
             "name": "ReverseTextActivity",
             "label": "Reverse Text",
-            "description": "Reverses the order of letters in a text string.",
+            "description": "Reverses the order of characters in a given text string.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -393,7 +384,7 @@
             "type": "activityNode",
             "name": "SplitTextActivity",
             "label": "Split Text",
-            "description": "Creates a list containing the substrings of a text that are separated by a specified delimiter or regular expression.",
+            "description": "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -402,7 +393,16 @@
             "type": "activityNode",
             "name": "TrimTextActivity",
             "label": "Trim Text",
-            "description": "Removes all occurrences of whitespace characters from the beginning and/or end of an existing text.",
+            "description": "Removes specified characters from the start, end, or both ends of a text string.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TruncateNumberActivity",
+            "label": "Truncate Number",
+            "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -437,8 +437,8 @@
           {
             "type": "activityNode",
             "name": "AddToDateTimeActivity",
-            "label": "Add to DateTime",
-            "description": "Adds or subtracts a specific TimeSpan (seconds, minutes, hours, days) to a DateTime value.",
+            "label": "Add Time to DateTime",
+            "description": "Adds a specified time value to the given DateTime based on the selected time unit.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -447,7 +447,16 @@
             "type": "activityNode",
             "name": "GetCurrentDateTimeActivity",
             "label": "Get Current Date and Time",
-            "description": "Retrieves the current date or the current date and time.",
+            "description": "This activity retrieves the current date and time based on the specified retrieval type and time zone.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "IsCorrectDateTimeFormatActivity",
+            "label": "Validate DateTime Format",
+            "description": "Checks if the input string matches the specified date and time format.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -455,8 +464,8 @@
           {
             "type": "activityNode",
             "name": "SubtractDatesActivity",
-            "label": "Subtract Dates",
-            "description": "Finds the time difference between two dates in days, hours, minutes, or seconds.",
+            "label": "Calculate Date Difference",
+            "description": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -510,7 +519,7 @@
             "type": "activityNode",
             "name": "ClearDataTableActivity",
             "label": "Clear Data Table",
-            "description": "Removes all rows from a data table.",
+            "description": "Removes all rows from a data table while preserving its structure.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -546,7 +555,7 @@
             "type": "activityNode",
             "name": "DeleteDuplicateRowsFromDataTable",
             "label": "Delete Duplicate Rows From Data Table",
-            "description": "Deletes all the rows that are duplicate from the data table, if the values have the same data type in each column.",
+            "description": "Deletes all rows that are exact duplicates from the data table.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -555,7 +564,7 @@
             "type": "activityNode",
             "name": "DeleteEmptyRowsFromDataTableActivity",
             "label": "Delete Empty Rows From Data Table",
-            "description": "Deletes the rows of the data table that have all of their cells empty.",
+            "description": "Deletes rows from a data table where one or more cells are empty.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -564,7 +573,7 @@
             "type": "activityNode",
             "name": "DeleteRowFromDataTableActivity",
             "label": "Delete Row From Data Table",
-            "description": "Deletes a data table row at the corresponding row index.",
+            "description": "Deletes a row from a data table based on its zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -581,7 +590,7 @@
           {
             "type": "activityNode",
             "name": "FindAndReplaceInDataTableActivity",
-            "label": "Find and Replace in Data Table",
+            "label": "Find or Replace in Data Table",
             "description": "Finds and/or replaces data table values.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -618,7 +627,16 @@
             "type": "activityNode",
             "name": "MergeDataTablesActivity",
             "label": "Merge Data Tables",
-            "description": "Merges two data tables together, specifying the merging behavior in case their number of columns is different.",
+            "description": "Merges two data tables together, specifying the merging behavior in case their columns are different.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFromCsvTextActivity",
+            "label": "Read From CSV Text",
+            "description": "Generates a data table from a CSV text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -627,7 +645,7 @@
             "type": "activityNode",
             "name": "SortDataTableActivity",
             "label": "Sort Data Table",
-            "description": "Sorts the data table rows in ascending or descending order by the specified column, if all its values have the same data type.",
+            "description": "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -636,7 +654,7 @@
             "type": "activityNode",
             "name": "UpdateDataTableItemActivity",
             "label": "Update Data Table Item",
-            "description": "Updates a data table row item on a defined column.",
+            "description": "Updates a specific cell in a DataTable by specifying the column, row, and new value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1488,18 +1506,9 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "CopyFolderActivity",
-            "label": "Copy folder",
-            "description": "Copy a folder to a new location.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "CreateFolderActivity",
-            "label": "Create folder",
-            "description": "Create a new folder.",
+            "label": "Create Folder",
+            "description": "Generates a new folder within the specified parent directory using a given folder name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1507,8 +1516,8 @@
           {
             "type": "activityNode",
             "name": "DeleteFolderActivity",
-            "label": "Delete folder",
-            "description": "Delete a folder.",
+            "label": "Delete Folder",
+            "description": "Removes the specified folder and its contents from the file system.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1516,8 +1525,8 @@
           {
             "type": "activityNode",
             "name": "EmptyFolderActivity",
-            "label": "Empty folder",
-            "description": "Delete all files and subfolders in the folder.",
+            "label": "Empty Folder",
+            "description": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1525,17 +1534,17 @@
           {
             "type": "activityNode",
             "name": "GetFilesInFolderActivity",
-            "label": "Get files in folder",
-            "description": "Retrieve the list of files in the folder.",
+            "label": "Retrieve Files in Folder",
+            "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "GetSpecialFolderActivity",
-            "label": "Get special folder",
-            "description": "Retrieve the path of a special folder such as My Documents, Desktop, etc.",
+            "name": "GetSpecialFolderPathActivity",
+            "label": "Get Special Folder Path",
+            "description": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1543,8 +1552,8 @@
           {
             "type": "activityNode",
             "name": "GetSubfoldersInFolderActivity",
-            "label": "Get subfolders in folder",
-            "description": "Retrieve the list of subfolders in the folder.",
+            "label": "Retrieve Subfolders from Directory",
+            "description": "Returns a list of subfolder paths within the specified directory.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1552,8 +1561,8 @@
           {
             "type": "activityNode",
             "name": "IfFolderExistsActivity",
-            "label": "If folder exists",
-            "description": "Mark the path if the folder exists.",
+            "label": "If Folder Exists",
+            "description": "Checks whether the specified folder exists or doesn't exist based on the selected condition.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1561,8 +1570,8 @@
           {
             "type": "activityNode",
             "name": "MoveFolderActivity",
-            "label": "Move folder",
-            "description": "Move a folder to a new location.",
+            "label": "Move Folder",
+            "description": "This activity moves an existing folder to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1570,8 +1579,8 @@
           {
             "type": "activityNode",
             "name": "RenameFolderActivity",
-            "label": "Rename folder",
-            "description": "Rename a folder.",
+            "label": "Rename Folder",
+            "description": "This activity renames an existing folder by specifying the original folder path and the new folder name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1598,7 +1607,7 @@
             "type": "activityNode",
             "name": "ConvertBinaryDataToFileActivity",
             "label": "Convert Binary Data to File",
-            "description": "Converts binary data back to a file.",
+            "description": "Converts binary data to a file at the specified path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1614,7 +1623,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CopyFilesActivity",
+            "name": "CopyFileActivity",
             "label": "Copy File(s)",
             "description": "Copies one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
@@ -1623,7 +1632,7 @@
           },
           {
             "type": "activityNode",
-            "name": "DeleteFilesActivity",
+            "name": "DeleteFileActivity",
             "label": "Delete File(s)",
             "description": "Deletes one or more files.",
             "docsLink": "https://docs.aventisia.com",
@@ -1632,9 +1641,9 @@
           },
           {
             "type": "activityNode",
-            "name": "GetFilePathPartActivity",
-            "label": "Get File Path Part",
-            "description": "Retrieves one or more parts of a file path.",
+            "name": "GetFilePathPartsActivity",
+            "label": "Get File Path Components",
+            "description": "Extracts various parts (directory, name, extension) from the given file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1643,7 +1652,7 @@
             "type": "activityNode",
             "name": "GetTemporaryFileActivity",
             "label": "Get Temporary File",
-            "description": "Creates a uniquely named, empty temporary file on disk.",
+            "description": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1659,9 +1668,18 @@
           },
           {
             "type": "activityNode",
-            "name": "MoveFilesActivity",
+            "name": "MoveFileActivity",
             "label": "Move File(s)",
             "description": "Moves one or more files into a destination folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFromCsvFileActivity",
+            "label": "CSV File Reader",
+            "description": "Reads a CSV file from the specified path and returns the content as a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1677,9 +1695,9 @@
           },
           {
             "type": "activityNode",
-            "name": "RenameFilesActivity",
+            "name": "RenameFileActivity",
             "label": "Rename File(s)",
-            "description": "Changes the names of one or more files.",
+            "description": "Renames one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1689,6 +1707,15 @@
             "name": "WriteTextToFileActivity",
             "label": "Write Text to File",
             "description": "Writes the given text to the specified file using either Replace or Append mode.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteToCsvFileActivity",
+            "label": "CSV Writer Activity",
+            "description": "Writes the contents of a DataTable to a CSV file with options to append or overwrite.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2298,8 +2325,8 @@
           {
             "type": "activityNode",
             "name": "ExtractTablesFromPdfActivity",
-            "label": "Extract Tables from PDF",
-            "description": "Extracts tables from a PDF file by specifying the source PDF file and the range of pages to extract from.",
+            "label": "Extract Tables From PDF",
+            "description": "Extracts tables from a PDF file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2312,7 +2339,53 @@
         "icon": null,
         "img": null,
         "listType": null,
-        "actions": []
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CloseOutlookActivity",
+            "label": "Close Outlook Application",
+            "description": "Closes an Outlook application instance and releases COM resources.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchOutlookActivity",
+            "label": "Launch Outlook Application",
+            "description": "Launches an Outlook application instance. Optionally connects to a specific profile.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ProcessEmailMessagesInOutlookActivity",
+            "label": "Process Email Messages in Outlook",
+            "description": "Moves or deletes a collection of email messages in Outlook.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RetrieveEmailsFromOutlookActivity",
+            "label": "Retrieve Emails from Outlook",
+            "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SaveOutlookEmailMessagesActivity",
+            "label": "Save Outlook Email Messages",
+            "description": "Saves selected Outlook email messages (.msg files) to a specified location.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
       },
       {
         "label": "HTTP",
@@ -2541,7 +2614,7 @@
             "type": "activityNode",
             "name": "ActivateCellInExcelWorksheetActivity",
             "label": "Activate Cell in Excel Worksheet",
-            "description": "Activates a cell in the active worksheet of an Excel instance, by providing column, row, and offset.",
+            "description": "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2549,8 +2622,8 @@
           {
             "type": "activityNode",
             "name": "AppendCellsInExcelWorksheetActivity",
-            "label": "Append Cells in Excel Worksheet",
-            "description": "Appends a range of cells to the active worksheet of an Excel instance.",
+            "label": "Append Range to Excel Worksheet",
+            "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2558,8 +2631,8 @@
           {
             "type": "activityNode",
             "name": "AttachToRunningExcelActivity",
-            "label": "Attach to Running Excel",
-            "description": "Attaches to an Excel document that's already open.",
+            "label": "Attach to Running Excel Workbook",
+            "description": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2567,8 +2640,8 @@
           {
             "type": "activityNode",
             "name": "AutoFillCellsInExcelWorksheetActivity",
-            "label": "Auto Fill Cells in Excel Worksheet",
-            "description": "Auto fills a range with data, based on the data of another range, in the active worksheet of an Excel instance.",
+            "label": "Auto Fill Range in Excel Worksheet",
+            "description": "Copies data from a source range to a target range in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2577,7 +2650,7 @@
             "type": "activityNode",
             "name": "ClearCellsInExcelWorksheetActivity",
             "label": "Clear Cells in Excel Worksheet",
-            "description": "Clears a range of cells or a named cell in the active worksheet of an Excel instance.",
+            "description": "Clears a specified range or named cell in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2585,8 +2658,8 @@
           {
             "type": "activityNode",
             "name": "CloseExcelActivity",
-            "label": "Close Excel",
-            "description": "Closes an Excel instance.",
+            "label": "Close Excel Application",
+            "description": "Closes the active Excel application instance and optionally saves changes.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2595,7 +2668,7 @@
             "type": "activityNode",
             "name": "CopyCellsFromExcelWorksheetActivity",
             "label": "Copy Cells from Excel Worksheet",
-            "description": "Copies a range of cells from the active worksheet of an Excel instance.",
+            "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2604,7 +2677,16 @@
             "type": "activityNode",
             "name": "CopyExcelWorksheetActivity",
             "label": "Copy Excel Worksheet",
-            "description": "Copies a worksheet from an Excel document and paste it to the Excel document of the same or different Excel instance.",
+            "description": "Copies a worksheet from one Excel instance to another or within the same instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CopyExcelWorksheetActivityToDataTable",
+            "label": "Copy Range from Excel Worksheet to DataTable",
+            "description": "Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2613,7 +2695,7 @@
             "type": "activityNode",
             "name": "DeleteColumnFromExcelWorksheetActivity",
             "label": "Delete Column from Excel Worksheet",
-            "description": "Deletes a selected column from an Excel instance.",
+            "description": "Deletes a specific column from the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2622,7 +2704,7 @@
             "type": "activityNode",
             "name": "DeleteExcelWorksheetActivity",
             "label": "Delete Excel Worksheet",
-            "description": "Deletes a specific worksheet from an Excel instance.",
+            "description": "Deletes a specific worksheet from the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2630,8 +2712,8 @@
           {
             "type": "activityNode",
             "name": "DeleteFromExcelWorksheetActivity",
-            "label": "Delete from Excel Worksheet",
-            "description": "Deletes a cell or a range of cells from the active worksheet of an Excel instance.",
+            "label": "Delete Range from Excel Worksheet",
+            "description": "Deletes a range of cells from the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2640,7 +2722,7 @@
             "type": "activityNode",
             "name": "DeleteRowFromExcelWorksheetActivity",
             "label": "Delete Row from Excel Worksheet",
-            "description": "Deletes a selected row from an Excel instance.",
+            "description": "Deletes a specific row from the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2649,7 +2731,7 @@
             "type": "activityNode",
             "name": "FilterCellsInExcelWorksheetActivity",
             "label": "Filter Cells in Excel Worksheet",
-            "description": "Filter cells in an Excel worksheet allows makers to create and apply a filter in the active sheet, table, or range on the values of a specified column. To filter multiple columns in an active sheet/table/range, multiple Filter Cells in Excel Worksheet actions must be used, each one applying the respective filter.",
+            "description": "Filters cells in the active Excel worksheet based on criteria applied to a specific column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2657,7 +2739,7 @@
           {
             "type": "activityNode",
             "name": "FindAndReplaceCellsInExcelWorksheetActivity",
-            "label": "Find and Replace Cells in Excel Worksheet",
+            "label": "Find and Replace in Excel Worksheet",
             "description": "Finds text and replaces it with another in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2667,7 +2749,7 @@
             "type": "activityNode",
             "name": "GetActiveCellOnExcelWorksheetActivity",
             "label": "Get Active Cell on Excel Worksheet",
-            "description": "Get the active cell in the active worksheet of the Excel document.",
+            "description": "Gets the address of the currently active cell in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2676,7 +2758,7 @@
             "type": "activityNode",
             "name": "GetActiveExcelWorksheetActivity",
             "label": "Get Active Excel Worksheet",
-            "description": "Retrieves an Excel document's active worksheet.",
+            "description": "Retrieves the name and index of the currently active worksheet in an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2685,7 +2767,7 @@
             "type": "activityNode",
             "name": "GetAllExcelWorksheetsActivity",
             "label": "Get All Excel Worksheets",
-            "description": "Retrieves all worksheet names of an Excel document.",
+            "description": "Retrieves all worksheet names from the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2694,7 +2776,7 @@
             "type": "activityNode",
             "name": "GetColumnNameOnExcelWorksheetActivity",
             "label": "Get Column Name on Excel Worksheet",
-            "description": "Gets the name of the column.",
+            "description": "Gets the name of a column (e.g., 'A', 'B') based on its index in the active worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2712,7 +2794,7 @@
             "type": "activityNode",
             "name": "GetFirstFreeRowOnColumnFromExcelWorksheetActivity",
             "label": "Get First Free Row on Column from Excel Worksheet",
-            "description": "Retrieves the first free row, given the column of the active worksheet.",
+            "description": "Retrieves the first free row number for a specific column from the active worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2721,7 +2803,7 @@
             "type": "activityNode",
             "name": "GetSelectedCellRangeFromExcelWorksheetActivity",
             "label": "Get Selected Cell Range from Excel Worksheet",
-            "description": "Retrieves the selected range of cells in a structure consisting of first column, first row, last column, and last row.",
+            "description": "Retrieves the currently selected cell range in the active Excel worksheet as first column, first row, last column, and last row indices.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2730,7 +2812,7 @@
             "type": "activityNode",
             "name": "GetTableRangeFromExcelWorksheetActivity",
             "label": "Get Table Range from Excel Worksheet",
-            "description": "Retrieves the range of a table in the active worksheet of an Excel instance.",
+            "description": "Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2739,7 +2821,7 @@
             "type": "activityNode",
             "name": "InsertColumnToExcelWorksheetActivity",
             "label": "Insert Column to Excel Worksheet",
-            "description": "Inserts a column to the left of a selected column of an Excel instance.",
+            "description": "Inserts a new column to the left of the specified column in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2748,7 +2830,7 @@
             "type": "activityNode",
             "name": "InsertRowToExcelWorksheetActivity",
             "label": "Insert Row to Excel Worksheet",
-            "description": "Inserts a row above a selected row of an Excel instance.",
+            "description": "Inserts a new row above the selected row in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2756,8 +2838,8 @@
           {
             "type": "activityNode",
             "name": "LaunchExcelActivity",
-            "label": "Launch Excel",
-            "description": "Launches a new Excel instance or opens an Excel document.",
+            "label": "Launch Excel Application",
+            "description": "Launches a new Excel application instance or opens an existing Excel document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2766,7 +2848,7 @@
             "type": "activityNode",
             "name": "LookupRangeInExcelWorksheetActivity",
             "label": "Lookup Range in Excel Worksheet",
-            "description": "Finds and returns the result of Excel's LOOKUP function.",
+            "description": "Performs a LOOKUP operation in an Excel worksheet. Searches for a lookup value in a single row or column and returns a value from the same position in another row or column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2775,7 +2857,16 @@
             "type": "activityNode",
             "name": "PasteCellsToExcelWorksheetActivity",
             "label": "Paste Cells to Excel Worksheet",
-            "description": "Pastes a range of cells to the active worksheet of an Excel instance.",
+            "description": "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PasteDataTableToExcelWorksheetActivity",
+            "label": "Paste Cells to Excel Worksheet",
+            "description": "Pastes a DataTable of data to the active Excel worksheet starting at the specified range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2783,8 +2874,8 @@
           {
             "type": "activityNode",
             "name": "ReadFormulaFromExcelActivity",
-            "label": "Read Formula from Excel",
-            "description": "Reads the formula inside a cell in Excel.",
+            "label": "Read Formula from Excel Cell",
+            "description": "Reads the formula from a specific cell or named range in Excel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2793,7 +2884,7 @@
             "type": "activityNode",
             "name": "ReadFromExcelWorksheetActivity",
             "label": "Read from Excel Worksheet",
-            "description": "Reads the value of a cell or a range of cells from the active worksheet of an Excel instance.",
+            "description": "Reads values from a specified cell range in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2802,7 +2893,7 @@
             "type": "activityNode",
             "name": "RenameExcelWorksheetActivity",
             "label": "Rename Excel Worksheet",
-            "description": "Renames a specific worksheet of an Excel instance.",
+            "description": "Renames a specific worksheet in the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2811,7 +2902,7 @@
             "type": "activityNode",
             "name": "ResizeColumnsRowsInExcelWorksheetActivity",
             "label": "Resize Columns/Rows in Excel Worksheet",
-            "description": "Resizes a selection of columns or rows in the active worksheet of an Excel instance.",
+            "description": "Resizes the width of columns or the height of rows in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2820,7 +2911,7 @@
             "type": "activityNode",
             "name": "RunExcelMacroActivity",
             "label": "Run Excel Macro",
-            "description": "Runs a specified macro on the document of an Excel instance.",
+            "description": "Runs a specified VBA macro in the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2828,8 +2919,8 @@
           {
             "type": "activityNode",
             "name": "SaveExcelActivity",
-            "label": "Save Excel",
-            "description": "Saves a previously launched Excel instance.",
+            "label": "Save Excel Workbook",
+            "description": "Saves the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2838,7 +2929,7 @@
             "type": "activityNode",
             "name": "SelectCellsInExcelWorksheetActivity",
             "label": "Select Cells in Excel Worksheet",
-            "description": "Selects a range of cells in the active worksheet of an Excel instance.",
+            "description": "Selects a specific range of cells in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2847,7 +2938,7 @@
             "type": "activityNode",
             "name": "SetActiveExcelWorksheetActivity",
             "label": "Set Active Excel Worksheet",
-            "description": "Activates a specific worksheet of an Excel instance.",
+            "description": "Activates a specific worksheet in the active Excel workbook by name or index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2856,7 +2947,7 @@
             "type": "activityNode",
             "name": "SetColorInExcelWorksheetActivity",
             "label": "Set Color in Excel Worksheet",
-            "description": "Fills the background of the selected cells with the specified color, in the active worksheet of an Excel instance.",
+            "description": "Fills the background of a selected range of cells with the specified color.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2865,7 +2956,7 @@
             "type": "activityNode",
             "name": "WriteToExcelWorksheetActivity",
             "label": "Write to Excel Worksheet",
-            "description": "Writes a value into a cell or a range of cells of an Excel instance.",
+            "description": "Writes a value to a specific cell or range of cells in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2883,7 +2974,7 @@
             "type": "activityNode",
             "name": "ProcessEmailMessagesActivity",
             "label": "Process Email Messages",
-            "description": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve emails action.",
+            "description": "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
