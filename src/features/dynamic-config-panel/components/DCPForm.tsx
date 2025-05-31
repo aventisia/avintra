@@ -1,17 +1,17 @@
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
 import { SearchCodeIcon } from "lucide-react";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 import {
   RenderField,
   shouldRenderField,
   useDefineDCPForm,
   useUpdateNodeDataIO,
 } from "..";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useShallow } from "zustand/react/shallow";
 
 export const DCPForm = () => {
   // Define form

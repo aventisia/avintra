@@ -1,11 +1,14 @@
-import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
-import { DialogWrapper } from "@aventisia/ui/dialog";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import {
+  DialogContent,
+  DialogDefaultHeader,
+  DialogWrapper,
+} from "@aventisia/ui/dialog";
+import { cn } from "@aventisia/ui/lib";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { SquareArrowOutUpRightIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { DCPForm, useDynamicConfigPanelStore } from "..";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
-import { SquareArrowOutUpRightIcon } from "lucide-react";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Get state and actions from the DynamicConfigPanel store
@@ -24,7 +27,13 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
       onOpenChangeFn={() => setShowDialog(!showDialog)}
     >
       {children}
-      <DialogContent side={"right"} className="!max-w-[32rem]">
+      <DialogContent
+        side={"right"}
+        className={cn(
+          "!max-w-[32rem]",
+          nodeData?.type === "conditionalNode" && "!max-w-[40rem]",
+        )}
+      >
         <DialogDefaultHeader
           className="border-none px-3.5 py-3 text-lg tracking-wide"
           heading={nodeData?.label || "Dynamic Config Panel"}
