@@ -1,7 +1,12 @@
 import { Button } from "@aventisia/ui/buttons";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { ConditionListField, ConditionLabel, DCPFieldSchemaType } from "../..";
+import {
+  ConditionLabel,
+  ConditionListField,
+  DCPFieldSchemaType,
+  defaultConditionObj,
+} from "../..";
 
 export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
   const { control } = useFormContext();
@@ -29,7 +34,7 @@ export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
           type="button"
           variant="ghost"
           size="xs"
-          onClick={() => appendGroup([[{}]])}
+          onClick={() => appendGroup([[defaultConditionObj]])}
           className="gap-1 text-xs text-primary hover:text-primary"
         >
           <PlusIcon className="h-4 w-4 stroke-2" />
