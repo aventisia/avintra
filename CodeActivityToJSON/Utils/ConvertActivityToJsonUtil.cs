@@ -53,7 +53,7 @@ namespace CodeActivityToJSON.Utils
                     item["type"] = "config-panel-output";
                     item["defaultValue"] = new
                     {
-                        value = PascalToCamel(prop.Name) ?? "",
+                        value = prop.Name ?? "",
                         enabled = true
                     }; // Set default value to the property name
                 }
@@ -124,16 +124,6 @@ namespace CodeActivityToJSON.Utils
 
             var optionsJson = new JsonSerializerOptions { WriteIndented = true };
             return JsonSerializer.Serialize(items, optionsJson);
-        }
-
-        // Converts a PascalCase string to camelCase
-        static string PascalToCamel(string input)
-        {
-            if (string.IsNullOrEmpty(input) || char.IsLower(input[0]))
-                return input;
-
-            // Just lower the first character
-            return char.ToLowerInvariant(input[0]) + input.Substring(1);
         }
 
         // Get the default value of an InArgument property
