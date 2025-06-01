@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -47,6 +48,14 @@ namespace CodeActivityToJSON
                 if (activity.Name == "ConditionalActivity")
                 {
                     Console.WriteLine("Skipping ConditionalActivity");
+                    continue;
+                }
+
+                // If any CodeActivity has no display name which means we don't want to generate JSON for it
+                var activityDisplayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
+                if (activityDisplayName == null || string.IsNullOrEmpty(activityDisplayName.DisplayName))
+                {
+                    Console.WriteLine($"Skipping {activity.Name} as it has no display name.");
                     continue;
                 }
 
