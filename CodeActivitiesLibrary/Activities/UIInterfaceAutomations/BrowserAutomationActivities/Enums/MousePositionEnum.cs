@@ -1,4 +1,4 @@
-﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums
+﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums
 {
     public enum MousePositionEnum
     {
