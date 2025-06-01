@@ -43,6 +43,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
+                sh 'rm -rf node_modules package-lock.json'
                 sh 'npm ci --force'
             }
         }
