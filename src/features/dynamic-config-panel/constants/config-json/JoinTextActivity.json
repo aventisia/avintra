@@ -92,7 +92,7 @@
     "label": "Joined Text",
     "description": "Returns the resulting joined text after applying the delimiter.",
     "defaultValue": {
-      "value": "joinedText",
+      "value": "JoinedText",
       "enabled": true
     },
     "required": false

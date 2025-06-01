@@ -54,7 +54,7 @@
     "label": "Padded Text",
     "description": "The resulting text after padding.",
     "defaultValue": {
-      "value": "paddedText",
+      "value": "PaddedText",
       "enabled": true
     },
     "required": false

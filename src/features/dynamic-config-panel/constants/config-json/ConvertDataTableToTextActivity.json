@@ -81,7 +81,7 @@
     "label": "CSV Text Output",
     "description": "The CSV text representation of the data table.",
     "defaultValue": {
-      "value": "csvTextOutput",
+      "value": "CsvTextOutput",
       "enabled": true
     },
     "required": false

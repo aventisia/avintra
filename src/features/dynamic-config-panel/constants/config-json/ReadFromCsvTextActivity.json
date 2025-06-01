@@ -102,7 +102,7 @@
     "label": "Result Data Table",
     "description": "The generated data table.",
     "defaultValue": {
-      "value": "resultDataTable",
+      "value": "ResultDataTable",
       "enabled": true
     },
     "required": false

@@ -94,7 +94,7 @@
     "label": "Result",
     "description": "True if the condition is met; otherwise, false.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

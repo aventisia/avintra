@@ -33,7 +33,7 @@
     "label": "Formatted Number",
     "description": "The resulting formatted number as text.",
     "defaultValue": {
-      "value": "formattedNumber",
+      "value": "FormattedNumber",
       "enabled": true
     },
     "required": false

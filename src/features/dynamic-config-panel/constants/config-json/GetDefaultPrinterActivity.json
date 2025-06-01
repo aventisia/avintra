@@ -6,7 +6,7 @@
     "label": "DefaultPrinterName",
     "description": "Returns the name of the default printer.",
     "defaultValue": {
-      "value": "defaultPrinterName",
+      "value": "DefaultPrinterName",
       "enabled": true
     },
     "required": false

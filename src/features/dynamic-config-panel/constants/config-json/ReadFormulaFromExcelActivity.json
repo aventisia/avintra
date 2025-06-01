@@ -70,7 +70,7 @@
     "label": "Cell Formula",
     "description": "The formula contained in the specified cell or range.",
     "defaultValue": {
-      "value": "cellFormula",
+      "value": "CellFormula",
       "enabled": true
     },
     "required": false

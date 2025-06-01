@@ -15,7 +15,7 @@
     "label": "ExtractedTableData",
     "description": "Returns the extracted table data as a string.",
     "defaultValue": {
-      "value": "extractedTableData",
+      "value": "ExtractedTableData",
       "enabled": true
     },
     "required": false

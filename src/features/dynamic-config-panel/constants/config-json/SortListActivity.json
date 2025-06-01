@@ -162,7 +162,7 @@
     "label": "Sorted List",
     "description": "The sorted version of the input list.",
     "defaultValue": {
-      "value": "sortedList",
+      "value": "SortedList",
       "enabled": true
     },
     "required": false

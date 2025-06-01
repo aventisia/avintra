@@ -24,7 +24,7 @@
     "label": "First Free Row",
     "description": "Returns the first free row number in the specified column.",
     "defaultValue": {
-      "value": "firstFreeRow",
+      "value": "FirstFreeRow",
       "enabled": true
     },
     "required": false

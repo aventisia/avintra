@@ -67,7 +67,7 @@
     "label": "Random Number Output",
     "description": "The newly generated random number (for single mode).",
     "defaultValue": {
-      "value": "randomNumber",
+      "value": "RandomNumber",
       "enabled": true
     },
     "required": false,
@@ -87,7 +87,7 @@
     "label": "Random Numbers List Output",
     "description": "The newly generated list of random numbers (for multi-mode).",
     "defaultValue": {
-      "value": "randomNumbers",
+      "value": "RandomNumbers",
       "enabled": true
     },
     "required": false,

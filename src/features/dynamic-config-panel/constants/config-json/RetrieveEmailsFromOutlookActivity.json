@@ -42,7 +42,7 @@
     "label": "Email Messages",
     "description": "Returns the list of retrieved email messages as MailItem objects.",
     "defaultValue": {
-      "value": "emailMessages",
+      "value": "EmailMessages",
       "enabled": true
     },
     "required": true

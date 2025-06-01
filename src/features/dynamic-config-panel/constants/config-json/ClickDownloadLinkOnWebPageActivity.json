@@ -33,7 +33,7 @@
     "label": "Downloaded File Output",
     "description": "The file path where the downloaded file was saved.",
     "defaultValue": {
-      "value": "downloadedFile",
+      "value": "DownloadedFile",
       "enabled": true
     },
     "required": false

@@ -33,7 +33,7 @@
     "label": "Filtered Data Table",
     "description": "The filtered data table.",
     "defaultValue": {
-      "value": "filteredDataTable",
+      "value": "FilteredDataTable",
       "enabled": true
     },
     "required": false

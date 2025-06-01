@@ -15,7 +15,7 @@
     "label": "BinaryData",
     "description": "Returns the binary data of the file.",
     "defaultValue": {
-      "value": "binaryData",
+      "value": "BinaryData",
       "enabled": true
     },
     "required": false

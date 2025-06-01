@@ -15,7 +15,7 @@
     "label": "WindowDetails",
     "description": "Returns the details of the window (e.g., title or source).",
     "defaultValue": {
-      "value": "windowDetails",
+      "value": "WindowDetails",
       "enabled": true
     },
     "required": false

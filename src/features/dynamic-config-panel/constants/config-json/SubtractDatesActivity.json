@@ -55,7 +55,7 @@
     "label": "Time Difference",
     "description": "The calculated time difference in the specified unit.",
     "defaultValue": {
-      "value": "differenceValue",
+      "value": "DifferenceValue",
       "enabled": true
     },
     "required": false

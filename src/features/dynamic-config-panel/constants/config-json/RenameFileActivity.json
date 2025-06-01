@@ -100,7 +100,7 @@
     "label": "Renamed Files",
     "description": "Returns the list of successfully renamed files.",
     "defaultValue": {
-      "value": "renamedFiles",
+      "value": "RenamedFiles",
       "enabled": true
     },
     "required": false

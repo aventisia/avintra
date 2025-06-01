@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns the text content of the Word document.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

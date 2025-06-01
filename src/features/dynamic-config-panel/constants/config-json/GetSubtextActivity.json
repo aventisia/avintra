@@ -83,7 +83,7 @@
     "label": "Substring Result",
     "description": "Returns the extracted substring.",
     "defaultValue": {
-      "value": "substringResult",
+      "value": "SubstringResult",
       "enabled": true
     },
     "required": false

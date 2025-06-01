@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns true if the condition is met, false otherwise.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

@@ -24,7 +24,7 @@
     "label": "Outlook Application",
     "description": "The Outlook Application object created or reused by this activity.",
     "defaultValue": {
-      "value": "outlookApplication",
+      "value": "OutlookApplication",
       "enabled": true
     },
     "required": true

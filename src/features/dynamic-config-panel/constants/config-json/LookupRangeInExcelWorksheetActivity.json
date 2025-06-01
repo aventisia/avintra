@@ -207,7 +207,7 @@
     "label": "Lookup Result",
     "description": "Returns the matched result from the result range based on the lookup value.",
     "defaultValue": {
-      "value": "lookupResult",
+      "value": "LookupResult",
       "enabled": true
     },
     "required": false

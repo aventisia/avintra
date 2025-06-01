@@ -14,7 +14,7 @@
     "name": "Operation",
     "label": "Operation",
     "description": "Specifies how to truncate or round the number.",
-    "defaultValue": "",
+    "defaultValue": "GetIntegerPart",
     "required": true,
     "selectOptions": [
       {
@@ -40,7 +40,7 @@
     "name": "DecimalPlaces",
     "label": "Decimal Places",
     "description": "The number of decimal places to round to. Only applicable for rounding operations.",
-    "defaultValue": "",
+    "defaultValue": 2,
     "required": false,
     "renderIf": {
       "conditions": [
@@ -57,7 +57,7 @@
     "name": "RoundOperation",
     "label": "Round Operation",
     "description": "Specifies round up or round down the number.",
-    "defaultValue": "",
+    "defaultValue": "RoundUp",
     "required": false,
     "selectOptions": [
       {
@@ -70,7 +70,15 @@
         "value": "RoundDown",
         "description": "Rounds the number down to the specified number of decimal places."
       }
-    ]
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "Operation",
+          "equals": "Round"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",
@@ -79,7 +87,7 @@
     "label": "Truncated Value",
     "description": "Returns the truncated or rounded numeric value.",
     "defaultValue": {
-      "value": "truncatedValue",
+      "value": "TruncatedValue",
       "enabled": true
     },
     "required": false

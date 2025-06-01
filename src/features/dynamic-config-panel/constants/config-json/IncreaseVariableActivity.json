@@ -24,7 +24,7 @@
     "label": "Result",
     "description": "Returns the resulting value after increasing the variable.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

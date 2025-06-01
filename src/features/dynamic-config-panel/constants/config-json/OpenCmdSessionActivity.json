@@ -6,7 +6,7 @@
     "label": "ProcessId",
     "description": "Returns the process ID of the opened CMD session.",
     "defaultValue": {
-      "value": "processId",
+      "value": "ProcessId",
       "enabled": true
     },
     "required": false

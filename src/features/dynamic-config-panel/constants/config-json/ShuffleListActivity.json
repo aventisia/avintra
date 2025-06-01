@@ -15,7 +15,7 @@
     "label": "Shuffled List",
     "description": "The shuffled version of the input list.",
     "defaultValue": {
-      "value": "shuffledList",
+      "value": "ShuffledList",
       "enabled": true
     },
     "required": false

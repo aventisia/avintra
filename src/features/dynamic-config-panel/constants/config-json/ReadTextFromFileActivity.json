@@ -24,7 +24,7 @@
     "label": "File Content",
     "description": "The text content read from the file.",
     "defaultValue": {
-      "value": "fileContent",
+      "value": "FileContent",
       "enabled": true
     },
     "required": false

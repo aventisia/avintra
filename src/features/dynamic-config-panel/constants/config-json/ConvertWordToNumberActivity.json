@@ -15,7 +15,7 @@
     "label": "Numeric Value",
     "description": "Returns the numeric representation of the word.",
     "defaultValue": {
-      "value": "numericValue",
+      "value": "NumericValue",
       "enabled": true
     },
     "required": false

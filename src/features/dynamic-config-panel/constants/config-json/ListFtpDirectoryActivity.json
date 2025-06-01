@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns the list of subdirectories and files in the current directory.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

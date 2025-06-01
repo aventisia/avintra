@@ -45,7 +45,7 @@
     "label": "Moved File",
     "description": "Returns the path of the successfully moved file.",
     "defaultValue": {
-      "value": "movedFile",
+      "value": "MovedFile",
       "enabled": true
     },
     "required": false

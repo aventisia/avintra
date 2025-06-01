@@ -60,7 +60,7 @@
     "label": "Random Text",
     "description": "The generated random text.",
     "defaultValue": {
-      "value": "randomText",
+      "value": "RandomText",
       "enabled": true
     },
     "required": false

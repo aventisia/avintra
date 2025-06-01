@@ -54,7 +54,7 @@
     "label": "Modified List",
     "description": "Returns the updated list after removing the item(s).",
     "defaultValue": {
-      "value": "modifiedList",
+      "value": "ModifiedList",
       "enabled": true
     },
     "required": false

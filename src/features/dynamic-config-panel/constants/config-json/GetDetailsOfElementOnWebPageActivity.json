@@ -6,7 +6,7 @@
     "label": "Attribute Value",
     "description": "The value of the web element\u0027s attribute.",
     "defaultValue": {
-      "value": "oAttributeValueOutput",
+      "value": "OAttributeValueOutput",
       "enabled": true
     },
     "required": false

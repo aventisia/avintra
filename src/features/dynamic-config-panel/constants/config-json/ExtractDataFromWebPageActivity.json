@@ -158,7 +158,7 @@
     "label": "OExcelInstanceOutput",
     "description": "The Excel instance with the extracted data. Use this instance to manipulate the spreadsheet.",
     "defaultValue": {
-      "value": "oExcelInstanceOutput",
+      "value": "OExcelInstanceOutput",
       "enabled": true
     },
     "required": false
@@ -170,7 +170,7 @@
     "label": "ODataFromWebPageOutput",
     "description": "The extracted data in the form of a single value, list, data row, or data table.",
     "defaultValue": {
-      "value": "oDataFromWebPageOutput",
+      "value": "ODataFromWebPageOutput",
       "enabled": true
     },
     "required": false

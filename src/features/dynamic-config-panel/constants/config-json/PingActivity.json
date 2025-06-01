@@ -15,7 +15,7 @@
     "label": "IsReachable",
     "description": "Returns true if the host is reachable, otherwise false.",
     "defaultValue": {
-      "value": "isReachable",
+      "value": "IsReachable",
       "enabled": true
     },
     "required": false

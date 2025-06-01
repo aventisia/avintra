@@ -110,7 +110,7 @@
     "label": "Found Cells",
     "description": "Returns a list of all matched cells when \u0027All Matches\u0027 is true.",
     "defaultValue": {
-      "value": "foundCells",
+      "value": "FoundCells",
       "enabled": true
     },
     "required": false,
@@ -130,7 +130,7 @@
     "label": "Found Column Index",
     "description": "Returns the column index of the found cell (if any).",
     "defaultValue": {
-      "value": "foundColumnIndex",
+      "value": "FoundColumnIndex",
       "enabled": true
     },
     "required": false,
@@ -150,7 +150,7 @@
     "label": "Found Row Index",
     "description": "Returns the row index of the found cell (if any).",
     "defaultValue": {
-      "value": "foundRowIndex",
+      "value": "FoundRowIndex",
       "enabled": true
     },
     "required": false,

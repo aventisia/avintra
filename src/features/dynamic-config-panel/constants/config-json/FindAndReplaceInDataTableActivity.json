@@ -136,7 +136,7 @@
     "label": "Matched Rows",
     "description": "Returns the rows that match the search criteria.",
     "defaultValue": {
-      "value": "matchedRows",
+      "value": "MatchedRows",
       "enabled": true
     },
     "required": false

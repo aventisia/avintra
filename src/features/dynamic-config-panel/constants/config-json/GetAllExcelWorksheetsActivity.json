@@ -15,7 +15,7 @@
     "label": "Worksheet Names",
     "description": "Returns a list of all worksheet names in the active Excel workbook.",
     "defaultValue": {
-      "value": "worksheetNames",
+      "value": "WorksheetNames",
       "enabled": true
     },
     "required": false

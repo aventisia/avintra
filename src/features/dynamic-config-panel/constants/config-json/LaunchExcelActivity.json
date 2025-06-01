@@ -122,7 +122,7 @@
     "label": "Excel Instance",
     "description": "Returns the launched Excel Application object.",
     "defaultValue": {
-      "value": "excelInstance",
+      "value": "ExcelInstance",
       "enabled": true
     },
     "required": false

@@ -6,6 +6,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import {
   ConditionLabel,
   DCPFieldSchemaType,
+  defaultConditionObj,
   FieldsLabelHeader,
   RenderField,
   shouldRenderField,
@@ -69,7 +70,7 @@ export const ConditionListField = ({
           variant="ghost"
           size="xs"
           className="-mr-3 gap-1 text-xs text-primary hover:text-primary"
-          onClick={() => append({})}
+          onClick={() => append(defaultConditionObj)}
         >
           <PlusIcon className="h-4 w-4 stroke-2" />
           AND

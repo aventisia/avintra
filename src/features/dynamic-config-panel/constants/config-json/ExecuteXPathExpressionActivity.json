@@ -24,7 +24,7 @@
     "label": "ResultValue",
     "description": "Returns the value of the first matching node or null if not found.",
     "defaultValue": {
-      "value": "resultValue",
+      "value": "ResultValue",
       "enabled": true
     },
     "required": false

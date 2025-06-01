@@ -15,7 +15,7 @@
     "label": "Escaped Text",
     "description": "Returns the text after escaping special characters for regular expressions.",
     "defaultValue": {
-      "value": "escapedText",
+      "value": "EscapedText",
       "enabled": true
     },
     "required": false

@@ -41,7 +41,7 @@
     "label": "Converted Value",
     "description": "Returns the resulting numeric value after conversion.",
     "defaultValue": {
-      "value": "convertedValue",
+      "value": "ConvertedValue",
       "enabled": true
     },
     "required": false

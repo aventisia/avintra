@@ -33,7 +33,7 @@
     "label": "HashedText",
     "description": "Returns the hashed text.",
     "defaultValue": {
-      "value": "hashedText",
+      "value": "HashedText",
       "enabled": true
     },
     "required": false

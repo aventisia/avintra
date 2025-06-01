@@ -15,7 +15,7 @@
     "label": "Output",
     "description": "Returns the output read from the CMD session.",
     "defaultValue": {
-      "value": "output",
+      "value": "Output",
       "enabled": true
     },
     "required": false

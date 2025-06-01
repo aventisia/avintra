@@ -24,7 +24,7 @@
     "label": "Moved Folder Path",
     "description": "The path of the folder after it has been successfully moved.",
     "defaultValue": {
-      "value": "movedFolderPath",
+      "value": "MovedFolderPath",
       "enabled": true
     },
     "required": false

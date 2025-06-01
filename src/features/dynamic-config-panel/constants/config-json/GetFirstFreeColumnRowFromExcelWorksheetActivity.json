@@ -15,7 +15,7 @@
     "label": "First Free Column",
     "description": "Returns the first free column as a letter (e.g., \u0027A\u0027, \u0027B\u0027).",
     "defaultValue": {
-      "value": "firstFreeColumn",
+      "value": "FirstFreeColumn",
       "enabled": true
     },
     "required": false
@@ -27,7 +27,7 @@
     "label": "First Free Row",
     "description": "Returns the first free row as a number.",
     "defaultValue": {
-      "value": "firstFreeRow",
+      "value": "FirstFreeRow",
       "enabled": true
     },
     "required": false

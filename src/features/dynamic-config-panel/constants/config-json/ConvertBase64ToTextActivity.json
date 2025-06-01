@@ -15,7 +15,7 @@
     "label": "PlainText",
     "description": "Returns the converted plain text.",
     "defaultValue": {
-      "value": "plainText",
+      "value": "PlainText",
       "enabled": true
     },
     "required": false

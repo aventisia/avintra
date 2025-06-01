@@ -33,7 +33,7 @@
     "label": "AttributeValue",
     "description": "Returns the attribute value.",
     "defaultValue": {
-      "value": "attributeValue",
+      "value": "AttributeValue",
       "enabled": true
     },
     "required": false

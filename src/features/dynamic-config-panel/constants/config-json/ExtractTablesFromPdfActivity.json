@@ -95,7 +95,7 @@
     "label": "Extracted Tables",
     "description": "",
     "defaultValue": {
-      "value": "extractedTables",
+      "value": "ExtractedTables",
       "enabled": true
     },
     "required": false

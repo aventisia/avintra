@@ -15,7 +15,7 @@
     "label": "CommandOutput",
     "description": "Returns the output of the command.",
     "defaultValue": {
-      "value": "commandOutput",
+      "value": "CommandOutput",
       "enabled": true
     },
     "required": false

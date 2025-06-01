@@ -24,7 +24,7 @@
     "label": "Column as List",
     "description": "Returns the contents of the selected column as a list of strings.",
     "defaultValue": {
-      "value": "columnAsList",
+      "value": "ColumnAsList",
       "enabled": true
     },
     "required": false

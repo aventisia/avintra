@@ -15,7 +15,7 @@
     "label": "Active Cell Address",
     "description": "Returns the address of the active cell (e.g., \u0027A1\u0027).",
     "defaultValue": {
-      "value": "activeCellAddress",
+      "value": "ActiveCellAddress",
       "enabled": true
     },
     "required": false
@@ -27,7 +27,7 @@
     "label": "Active Cell Column Index",
     "description": "Returns the column index of the active cell.",
     "defaultValue": {
-      "value": "activeCellColumnIndex",
+      "value": "ActiveCellColumnIndex",
       "enabled": true
     },
     "required": false
@@ -39,7 +39,7 @@
     "label": "Active Cell Row Index",
     "description": "Returns the row index of the active cell.",
     "defaultValue": {
-      "value": "activeCellRowIndex",
+      "value": "ActiveCellRowIndex",
       "enabled": true
     },
     "required": false

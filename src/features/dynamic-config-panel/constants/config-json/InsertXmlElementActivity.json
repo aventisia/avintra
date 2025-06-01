@@ -33,7 +33,7 @@
     "label": "UpdatedXmlContent",
     "description": "Returns the updated XML content.",
     "defaultValue": {
-      "value": "updatedXmlContent",
+      "value": "UpdatedXmlContent",
       "enabled": true
     },
     "required": false

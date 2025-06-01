@@ -24,7 +24,7 @@
     "label": "Copied Data",
     "description": "Returns the copied data as a DataTable for further processing.",
     "defaultValue": {
-      "value": "copiedData",
+      "value": "CopiedData",
       "enabled": true
     },
     "required": false

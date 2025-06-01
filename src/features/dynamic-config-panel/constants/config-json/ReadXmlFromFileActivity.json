@@ -15,7 +15,7 @@
     "label": "XmlContent",
     "description": "Returns the XML content as a string.",
     "defaultValue": {
-      "value": "xmlContent",
+      "value": "XmlContent",
       "enabled": true
     },
     "required": false
