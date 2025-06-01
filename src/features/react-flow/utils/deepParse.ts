@@ -1,27 +1,48 @@
 /**
- * Safely parses a potentially double-encoded JSON string.
- *
- * Some APIs may return stringified JSON inside another JSON string.
- * This function handles that case by parsing up to two times.
- *
- * @param input - A JSON string, possibly double-encoded.
- * @returns The parsed object, or null if parsing fails.
+ * Recursively parses JSON strings until the result is not a string.
+ * Works for deeply nested or double-encoded JSON.
+ * Ensures output is a valid JsonValue type.
  */
 export function deepParse(input: string) {
-  try {
-    // First parse attempt
-    let parsed = JSON.parse(input);
+  let result = input;
 
-    // If the result is still a string, try parsing again
-    if (typeof parsed === "string") {
-      parsed = JSON.parse(parsed);
+  // Recursively parse if it's a string
+  while (typeof result === "string") {
+    try {
+      result = JSON.parse(result);
+    } catch {
+      break; // Stop if not valid JSON
     }
-
-    // Return the fully parsed object with expected type
-    return parsed;
-  } catch (error) {
-    // Log error and return null on any parsing failure
-    console.error("Failed to parse JSON string:", error);
-    return null;
   }
+
+  // Validate result is a valid JsonValue
+  if (isJsonValue(result)) {
+    return result;
+  }
+
+  return null;
+}
+
+/**
+ * Runtime check for valid JsonValue type.
+ */
+function isJsonValue(value: unknown) {
+  if (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+
+  if (typeof value === "object") {
+    return Object.values(value as object).every(isJsonValue);
+  }
+
+  return false;
 }

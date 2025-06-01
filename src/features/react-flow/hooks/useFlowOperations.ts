@@ -5,6 +5,7 @@ import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
@@ -17,6 +18,9 @@ export const useFlowOperations = () => {
     setNodes,
     setEdges,
   } = useReactFlowExtStore();
+
+  // Auto layout the flow
+  const autoLayout = useDagreAutoLayout();
 
   // Get clipboard actions
   const { getClipboard, setClipboard, clearClipboard } = useClipboard();
@@ -233,8 +237,10 @@ export const useFlowOperations = () => {
           setNodes(updatedNodes);
           setEdges(updatedEdges);
           setFlowVariablesObject(updatedFlowVariables);
+          autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
         },
       });
+      // Optional: trigger layout
     },
     [
       nodes,
