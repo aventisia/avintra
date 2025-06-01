@@ -1,5 +1,5 @@
 /* Inspired from: https://reactflow.dev/examples/nodes/delete-middle-node */
-// import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import {
@@ -33,7 +33,7 @@ export const useOnNodeDelete = () => {
   );
 
   // Auto layout the flow
-  // const autoLayout = useDagreAutoLayout();
+  const autoLayout = useDagreAutoLayout();
 
   const onNodesDelete: OnNodesDelete = useCallback(
     (deleted) => {
@@ -110,7 +110,8 @@ export const useOnNodeDelete = () => {
       setFlowVariablesObject(updatedFlowVariables);
 
       // Optional: trigger layout
-      // autoLayout({ newNodes, newEdges });
+      autoLayout({ newNodes, newEdges });
+    
     },
     [
       nodes,
