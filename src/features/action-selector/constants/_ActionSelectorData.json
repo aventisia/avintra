@@ -1002,6 +1002,15 @@
           },
           {
             "type": "activityNode",
+            "name": "FindUiElementInParentActivity",
+            "label": "Find UI element in parent element",
+            "description": "Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "FocusTextFieldInWindowActivity",
             "label": "Focus Text Field in Window",
             "description": "Sets focus on an input element in a window and scrolls it into view.",
