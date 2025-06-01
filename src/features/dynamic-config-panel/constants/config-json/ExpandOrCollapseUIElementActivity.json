@@ -1,0 +1,93 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ParentElement",
+    "label": "Parent Element",
+    "description": "The parent UI element under which to search for the target element.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PropertyType",
+    "label": "Property Type",
+    "description": "The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Class Name",
+        "value": "ClassName",
+        "description": "Find element by its class name."
+      },
+      {
+        "label": "ID",
+        "value": "AutomationId",
+        "description": "Find element by its automation ID."
+      },
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": "Find element by its visible name."
+      },
+      {
+        "label": "Control Type",
+        "value": "ControlType",
+        "description": "Find element by its control type (e.g., button, textbox)."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PropertyValue",
+    "label": "Property Value",
+    "description": "The value of the property to match for the target element.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ActionType",
+    "label": "Action Type",
+    "description": "Choose whether to expand or collapse the element.",
+    "defaultValue": "Expand",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Expand",
+        "value": "Expand",
+        "description": "Expand the UI element."
+      },
+      {
+        "label": "Collapse",
+        "value": "Collapse",
+        "description": "Collapse the UI element."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "Maximum time to wait for the element and action (in seconds).",
+    "defaultValue": 5,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WasSuccessful",
+    "label": "Was Successful",
+    "description": "True if the element was expanded or collapsed successfully, otherwise false.",
+    "defaultValue": {
+      "value": "WasSuccessful",
+      "enabled": true
+    },
+    "required": false
+  }
+]

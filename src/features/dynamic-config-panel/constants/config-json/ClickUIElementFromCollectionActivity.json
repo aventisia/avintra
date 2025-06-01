@@ -1,0 +1,123 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ParentElement",
+    "label": "Parent Element",
+    "description": "The parent UI element under which to search for the collection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PropertyType",
+    "label": "Property Type",
+    "description": "The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Class Name",
+        "value": "ClassName",
+        "description": "Find element by its class name."
+      },
+      {
+        "label": "ID",
+        "value": "AutomationId",
+        "description": "Find element by its automation ID."
+      },
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": "Find element by its visible name."
+      },
+      {
+        "label": "Control Type",
+        "value": "ControlType",
+        "description": "Find element by its control type (e.g., button, textbox)."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PropertyValue",
+    "label": "Property Value",
+    "description": "The value of the property to match for the collection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ElementName",
+    "label": "Element Name",
+    "description": "The name of the element to match within the collection.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "NameMatchType",
+    "label": "Name Match Type",
+    "description": "How to match the element name: Equals or Contains.",
+    "defaultValue": "Equals",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Equals",
+        "value": "Equals",
+        "description": "Match element name exactly."
+      },
+      {
+        "label": "Contains",
+        "value": "Contains",
+        "description": "Match element name if it contains the specified value."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ClickType",
+    "label": "Click Type",
+    "description": "How to click the element: UI Automation Click or Mouse Click.",
+    "defaultValue": "UIAutomationClick",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "UI Automation Click",
+        "value": "UIAutomationClick",
+        "description": "Click using UI Automation InvokePattern."
+      },
+      {
+        "label": "Mouse Click",
+        "value": "MouseClick",
+        "description": "Click using mouse at the element\u0027s clickable point."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "Maximum time to wait for the element and click action (in seconds).",
+    "defaultValue": 5,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WasClicked",
+    "label": "Was Clicked",
+    "description": "True if the element was clicked successfully, otherwise false.",
+    "defaultValue": {
+      "value": "WasClicked",
+      "enabled": true
+    },
+    "required": false
+  }
+]

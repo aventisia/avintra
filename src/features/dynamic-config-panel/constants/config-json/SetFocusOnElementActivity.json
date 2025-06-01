@@ -1,0 +1,23 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Element",
+    "label": "UI Element",
+    "description": "The UI element to bring into focus.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Shows whether the focus was set successfully or not",
+    "defaultValue": {
+      "value": "Result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

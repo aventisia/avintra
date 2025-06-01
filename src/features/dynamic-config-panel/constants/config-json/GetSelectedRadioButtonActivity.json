@@ -1,0 +1,63 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ParentElement",
+    "label": "Parent Element",
+    "description": "The window or parent element where the radio button group is located.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PropertyType",
+    "label": "Property Type",
+    "description": "How to search for the radio button group (by Name, AutomationId, ClassName, or ControlType).",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Class Name",
+        "value": "ClassName",
+        "description": "Find element by its class name."
+      },
+      {
+        "label": "ID",
+        "value": "AutomationId",
+        "description": "Find element by its automation ID."
+      },
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": "Find element by its visible name."
+      },
+      {
+        "label": "Control Type",
+        "value": "ControlType",
+        "description": "Find element by its control type (e.g., button, textbox)."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PropertyValue",
+    "label": "Property Value",
+    "description": "The value to search for (for example, the group or container\u0027s name or ID).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SelectedRadioButton",
+    "label": "Selected Radio Button Name",
+    "description": "Returns the name of the selected radio button, or empty if none is selected.",
+    "defaultValue": {
+      "value": "SelectedRadioButton",
+      "enabled": true
+    },
+    "required": false
+  }
+]

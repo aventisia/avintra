@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ElementInstance",
+    "label": "Element Instance",
+    "description": "The UI element instance to select.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "Maximum time to wait for the selection action (in seconds).",
+    "defaultValue": 5,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WasSelected",
+    "label": "Was Selected",
+    "description": "True if the element was selected successfully, otherwise false.",
+    "defaultValue": {
+      "value": "WasSelected",
+      "enabled": true
+    },
+    "required": false
+  }
+]

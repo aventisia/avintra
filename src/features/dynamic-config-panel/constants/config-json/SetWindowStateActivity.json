@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "WindowHandle",
-    "label": "WindowHandle",
-    "description": "The handle or identifier of the window.",
+    "name": "WindowElement",
+    "label": "Window",
+    "description": "Select the window you want to change.",
     "defaultValue": "",
     "required": true
   },
@@ -12,25 +12,25 @@
     "direction": "Input",
     "type": "select",
     "name": "DesiredState",
-    "label": "DesiredState",
-    "description": "The desired state of the window (e.g., restore, maximize, minimize).",
-    "defaultValue": "",
+    "label": "Window State",
+    "description": "Choose how you want the window to appear (Normal, Maximized, or Minimized).",
+    "defaultValue": "Normal",
     "required": true,
     "selectOptions": [
       {
         "label": "Normal",
         "value": "Normal",
-        "description": "Launch browser in normal state."
+        "description": "Show the window in its normal state."
       },
       {
         "label": "Maximized",
         "value": "Maximized",
-        "description": "Launch browser maximized."
+        "description": "Show the window maximized."
       },
       {
         "label": "Minimized",
         "value": "Minimized",
-        "description": "Launch browser minimized."
+        "description": "Show the window minimized."
       }
     ]
   }

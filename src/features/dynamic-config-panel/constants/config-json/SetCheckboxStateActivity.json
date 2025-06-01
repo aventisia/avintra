@@ -1,0 +1,81 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ParentElement",
+    "label": "Parent Element",
+    "description": "The parent UI element under which to search for the checkbox.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PropertyType",
+    "label": "Property Type",
+    "description": "The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Class Name",
+        "value": "ClassName",
+        "description": "Find element by its class name."
+      },
+      {
+        "label": "ID",
+        "value": "AutomationId",
+        "description": "Find element by its automation ID."
+      },
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": "Find element by its visible name."
+      },
+      {
+        "label": "Control Type",
+        "value": "ControlType",
+        "description": "Find element by its control type (e.g., button, textbox)."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PropertyValue",
+    "label": "Property Value",
+    "description": "The value of the property to match for the checkbox.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CheckboxName",
+    "label": "Checkbox Name",
+    "description": "The name of the checkbox to set.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "Checked",
+    "label": "Desired State",
+    "description": "Whether to check or uncheck the checkbox.",
+    "defaultValue": false,
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WasStateChanged",
+    "label": "Was State Changed",
+    "description": "True if the checkbox state was changed successfully, otherwise false.",
+    "defaultValue": {
+      "value": "WasStateChanged",
+      "enabled": true
+    },
+    "required": false
+  }
+]

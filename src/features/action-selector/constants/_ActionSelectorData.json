@@ -38,6 +38,15 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
+          },
+          {
+            "type": "forLoopNode",
+            "name": "LoopActivity",
+            "label": "Loop",
+            "description": "This allows you to loop through a set of conditions and execute actions based on the evaluation of those conditions.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
           }
         ]
       }
@@ -957,9 +966,27 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "ClickUiElementInWindowActivity",
-            "label": "Click UI Element In Window",
-            "description": "Invokes or clicks a UI element in a window using UI Automation or mouse click.",
+            "name": "ClickUIElementActivity",
+            "label": "Click UI Element",
+            "description": "Invokes or clicks a UI element using UI Automation or mouse click.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClickUIElementFromCollectionActivity",
+            "label": "Click Element from Collection",
+            "description": "Finds an element in a collection by property and name, then clicks or invokes it using UI Automation or mouse click.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClickUIElementInParentActivity",
+            "label": "Click UI Element in Parent",
+            "description": "Finds a UI element by property and clicks or invokes it using UI Automation or mouse click.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -975,34 +1002,25 @@
           },
           {
             "type": "activityNode",
-            "name": "ExpandCollapseTreeNodeInWindowActivity",
-            "label": "Expand/Collapse Tree Node in Window",
-            "description": "Expands or collapses a node of a tree view residing in a window.",
+            "name": "ExpandDropDownListActivity",
+            "label": "Expand Drop-Down List",
+            "description": "Expands a drop-down list so you can see all available options.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "ExtractDataFromTableActivity",
-            "label": "Extract Data from Table",
-            "description": "Extracts data from a table in the form of a datatable.",
+            "name": "ExpandOrCollapseUIElementActivity",
+            "label": "Expand or Collapse UI Element",
+            "description": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "ExtractDataFromWindowActivity",
-            "label": "Extract Data from Window",
-            "description": "Extracts data from specific parts of a window in the form of single values, lists, or tables.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "FindUiElementInParentActivity",
+            "name": "FindUIElementInParentActivity",
             "label": "Find UI element in parent element",
             "description": "Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.",
             "docsLink": "https://docs.aventisia.com",
@@ -1011,26 +1029,44 @@
           },
           {
             "type": "activityNode",
-            "name": "FocusTextFieldInWindowActivity",
-            "label": "Focus Text Field in Window",
-            "description": "Sets focus on an input element in a window and scrolls it into view.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "FocusWindowActivity",
             "label": "Focus Window",
-            "description": "Activates and brings to the foreground a specific window.",
+            "description": "Brings the selected window to the front and makes it active.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "GetSelectedCheckboxesInWindowActivity",
-            "label": "Get Selected Checkboxes in Window",
+            "name": "GetChildWindowElementActivity",
+            "label": "Find Child Window",
+            "description": "Finds a child window inside a parent window by its name.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetDropDownSelectedItemActivity",
+            "label": "Get Selected Item from Drop-Down List",
+            "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetElementCollectionActivity",
+            "label": "Get Element Collection",
+            "description": "Finds and returns a collection of UI elements under a parent element using the specified property type and value.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetSelectedCheckboxesActivity",
+            "label": "Get Selected Checkboxes",
             "description": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -1038,18 +1074,27 @@
           },
           {
             "type": "activityNode",
-            "name": "GetSelectedRadioButtonInWindowActivity",
-            "label": "Get Selected Radio Button in Window",
-            "description": "Retrieves the names of the selected radio button in a radio button group or the state of a specific radio button.",
+            "name": "GetSelectedRadioButtonActivity",
+            "label": "Get Selected Radio Button",
+            "description": "Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "GetUiElementDetailsInWindowActivity",
-            "label": "Get Details of UI Element in Window",
-            "description": "Gets the value of a UI element's attribute in a window.",
+            "name": "GetTextBoxTextActivity",
+            "label": "Get Text from Text Box",
+            "description": "Reads and returns the text from a text box in a window using the property you choose.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetUiElementDetailsActivity",
+            "label": "Get UI Element Details",
+            "description": "Get information like position or text from a UI element in a window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1065,72 +1110,18 @@
           },
           {
             "type": "activityNode",
-            "name": "GetWindowDetailsActivity",
-            "label": "Get Details of Window",
-            "description": "Gets properties of a window such as its title or source text.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "HoverMouseOverUiElementActivity",
-            "label": "Hover Mouse Over UI Element",
-            "description": "Moves the mouse over any UI element on a window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "IfImageActivity",
-            "label": "If Image",
-            "description": "Checks if a specific image exists on the screen.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "IfWindowActivity",
-            "label": "If Window",
-            "description": "This action marks the beginning of a conditional block of actions depending on whether a window is open or not or whether a window is the focused (foreground) window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "IfWindowContainsActivity",
-            "label": "If Window Contains",
-            "description": "Marks the beginning of a conditional block of actions depending on whether a specific piece of text or UI element exists in a window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "MoveWindowActivity",
             "label": "Move Window",
-            "description": "Sets the position of a specific window.",
+            "description": "Moves a window to the position you choose on the screen.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "PopulateTextFieldInWindowActivity",
+            "name": "PopulateTextFieldActivity",
             "label": "Populate Text Field in Window",
-            "description": "Fills a text box in a window with the specified text.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "PressButtonInWindowActivity",
-            "label": "Press Button in Window",
-            "description": "Presses a window button.",
+            "description": "Fills a text box in a window with the specified text using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1139,52 +1130,52 @@
             "type": "activityNode",
             "name": "ResizeWindowActivity",
             "label": "Resize Window",
-            "description": "Sets the size of a specific window.",
+            "description": "Change the size of a window to the width and height you want.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "SelectMenuOptionInWindowActivity",
-            "label": "Select Menu Option in Window",
-            "description": "Selects an option in a menu of a window.",
+            "name": "SelectRadioButtonActivity",
+            "label": "Select Radio Button",
+            "description": "Selects a radio button in a window or parent element by property and value, using the radio button's name or index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "SelectRadioButtonInWindowActivity",
-            "label": "Select Radio Button in Window",
-            "description": "Selects a radio button on a window.",
+            "name": "SelectTabActivity",
+            "label": "Select Tab",
+            "description": "Selects a tab from a group of tabs in a window by index or name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "SelectTabInWindowActivity",
-            "label": "Select Tab in Window",
-            "description": "Selects a tab from a group of tabs.",
+            "name": "SelectUIElementActivity",
+            "label": "Select UI Element",
+            "description": "Selects the provided UI element, such as a list item or combo box option, using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "SetCheckboxStateInWindowActivity",
-            "label": "Set Checkbox State in Window",
-            "description": "Checks or unchecks a checkbox in a window form.",
+            "name": "SetCheckboxStateActivity",
+            "label": "Set Checkbox State",
+            "description": "Checks or unchecks a checkbox UI element by searching for it using property and name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "SetDropDownListValueInWindowActivity",
+            "name": "SetDropDownListValueActivity",
             "label": "Set Drop-Down List Value in Window",
-            "description": "Sets or clears the selected options for a drop-down list in a window form.",
+            "description": "Selects an option in a drop-down list in a window form using the property you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1193,61 +1184,7 @@
             "type": "activityNode",
             "name": "SetWindowStateActivity",
             "label": "Set Window State",
-            "description": "Restores, maximizes, or minimizes a specific window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "SetWindowVisibilityActivity",
-            "label": "Set Window Visibility",
-            "description": "Shows a hidden window or hides a visible window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "TakeUiElementScreenshotActivity",
-            "label": "Take Screenshot of UI Element",
-            "description": "Takes a screenshot of a UI element in a window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "UseDesktopActivity",
-            "label": "Use Desktop",
-            "description": "Performs desktop and taskbar-related operations.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "WaitForImageActivity",
-            "label": "Wait for Image",
-            "description": "Suspends execution until a specific image appears on the screen.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "WaitForWindowActivity",
-            "label": "Wait for Window",
-            "description": "Suspends the execution or the process until a specific window opens, closes, gets or loses the focus.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "WaitForWindowContentActivity",
-            "label": "Wait for Window Content",
-            "description": "Suspends the execution of the automation until a specific piece of text or UI element appears or disappears from a window.",
+            "description": "Change the window to normal, maximized, or minimized state.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

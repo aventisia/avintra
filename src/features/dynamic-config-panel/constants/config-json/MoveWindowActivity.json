@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "WindowHandle",
-    "label": "WindowHandle",
-    "description": "The handle or identifier of the window.",
+    "name": "WindowElement",
+    "label": "Window",
+    "description": "Select the window you want to move.",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "XPosition",
-    "label": "XPosition",
-    "description": "The X-coordinate of the new position.",
+    "label": "X Position",
+    "description": "Enter the new X position (in pixels) for the window.",
     "defaultValue": "",
     "required": true
   },
@@ -21,8 +21,8 @@
     "direction": "Input",
     "type": "text",
     "name": "YPosition",
-    "label": "YPosition",
-    "description": "The Y-coordinate of the new position.",
+    "label": "Y Position",
+    "description": "Enter the new Y position (in pixels) for the window.",
     "defaultValue": "",
     "required": true
   }

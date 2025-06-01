@@ -1,0 +1,41 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ParentWindow",
+    "label": "Parent Window",
+    "description": "Select the parent window where you want to search for the child window.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ChildWindowName",
+    "label": "Child Window Name",
+    "description": "Enter the name (title) of the child window you want to find.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "How many seconds to wait while searching for the child window.",
+    "defaultValue": 5,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ChildWindowElement",
+    "label": "Child Window Element",
+    "description": "The found child window AutomationElement.",
+    "defaultValue": {
+      "value": "ChildWindowElement",
+      "enabled": true
+    },
+    "required": false
+  }
+]

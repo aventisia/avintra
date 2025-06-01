@@ -1,0 +1,54 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Element",
+    "label": "UI Element",
+    "description": "Select the UI element you want to get details from.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DetailType",
+    "label": "Detail Type",
+    "description": "Choose what information you want to get from the UI element.",
+    "defaultValue": "BoundingRectangle",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Bounding Rectangle",
+        "value": "BoundingRectangle",
+        "description": "Get the bounding rectangle of the element."
+      },
+      {
+        "label": "Clickable Point",
+        "value": "ClickablePoint",
+        "description": "Get the clickable point of the element."
+      },
+      {
+        "label": "Label Text",
+        "value": "LabelText",
+        "description": "Get the text from a label element."
+      },
+      {
+        "label": "TextBox Text",
+        "value": "TextBoxText",
+        "description": "Get the text from a textbox element."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ElementDetails",
+    "label": "Element Details",
+    "description": "Returns the requested details of the UI element (for example, position or text).",
+    "defaultValue": {
+      "value": "ElementDetails",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "WindowHandle",
-    "label": "WindowHandle",
-    "description": "The handle or identifier of the window.",
+    "name": "WindowElement",
+    "label": "Window",
+    "description": "Select the window you want to resize.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "Width",
     "label": "Width",
-    "description": "The width of the window.",
+    "description": "Enter the new width for the window (in pixels).",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "text",
     "name": "Height",
     "label": "Height",
-    "description": "The height of the window.",
+    "description": "Enter the new height for the window (in pixels).",
     "defaultValue": "",
     "required": true
   }
