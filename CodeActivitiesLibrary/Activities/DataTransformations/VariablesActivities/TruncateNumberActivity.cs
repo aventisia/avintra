@@ -25,17 +25,21 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Category("Input")]
         [DisplayName("Operation")]
         [Description("Specifies how to truncate or round the number.")]
+        [DefaultValue(TruncateOperationEnum.GetIntegerPart)]
         public InArgument<TruncateOperationEnum> Operation { get; set; }
 
         [Category("Input")]
         [DisplayName("Decimal Places")]
         [Description("The number of decimal places to round to. Only applicable for rounding operations.")]
-        [RenderIfCondition(nameof(Operation), nameof(TruncateOperationEnum.Round))]
+        [DefaultValue(2)]
+        [RenderIfCondition(nameof(Operation), TruncateOperationEnum.Round)]
         public InArgument<int> DecimalPlaces { get; set; }
 
         [Category("Input")]
         [DisplayName("Round Operation")]
         [Description("Specifies round up or round down the number.")]
+        [DefaultValue(TruncateNumberRoundOperationEnum.RoundUp)]
+        [RenderIfCondition(nameof(Operation), TruncateOperationEnum.Round)]
         public InArgument<TruncateNumberRoundOperationEnum> RoundOperation { get; set; }
 
         // ----------------------
