@@ -42,6 +42,14 @@ namespace CodeActivityToJSON
             // Convert each activity to JSON and save to file
             foreach (var activity in activities)
             {
+                // Skip if activity is ConditionalActivity 
+                // TODO: Find a better way to skip ConditionalActivity or generate json from it 
+                if (activity.Name == "ConditionalActivity")
+                {
+                    Console.WriteLine("Skipping ConditionalActivity");
+                    continue;
+                }
+
                 var json = ConvertActivityToJsonUtil.ConvertActivityToJson(activity);
                 if (string.IsNullOrEmpty(json) || json == "[]")
                 {
