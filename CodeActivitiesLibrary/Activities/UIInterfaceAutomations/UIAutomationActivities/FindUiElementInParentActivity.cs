@@ -3,13 +3,15 @@ using System.Activities;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Find UI element in parent element")]
     [Description("Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.")]
-    public class FindUiElementInParentActivity : CodeActivity
+    public class FindUIElementInParentActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -41,7 +43,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The UI element that was found. You can use this in other activities.")]
         public OutArgument<AutomationElement> FoundElement { get; set; }
 
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -81,7 +83,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                             break;
                     }
 
-                    foundElement = GetElementWithWait(parentElement, condition, maxWaitTime);
+                    foundElement = UIAutomationElementHelper.GetElementWithWait(parentElement, condition, maxWaitTime);
 
                     if (foundElement != null)
                     {
@@ -100,23 +102,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
             FoundElement.Set(context, foundElement);
             StatusMessage.Set(context, status);
-        }
-
-        /// <summary>
-        /// Waits for the element to appear up to maxWaitTime seconds.
-        /// </summary>
-        private AutomationElement GetElementWithWait(AutomationElement parent, Condition condition, int maxWaitTime)
-        {
-            AutomationElement element = null;
-            int retries = maxWaitTime * 2;
-            for (int i = 0; i < retries; i++)
-            {
-                element = parent.FindFirst(TreeScope.Descendants, condition);
-                if (element != null)
-                    break;
-                Thread.Sleep(500);
-            }
-            return element;
         }
     }
 }

@@ -1,52 +1,65 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Resize Window")]
-    [Description("Sets the size of a specific window.")]
-    public class ResizeWindowActivity : CodeActivity
+    [Description("Change the size of a window to the width and height you want.")]
+    public class ResizeWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The handle or identifier of the window.")]
-        public InArgument<string> WindowHandle { get; set; }
+        [DisplayName("Window")]
+        [Description("Select the window you want to resize.")]
+        public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
-        [Description("The width of the window.")]
-        public InArgument<int> Width { get; set; }
+        [DisplayName("Width")]
+        [Description("Enter the new width for the window (in pixels).")]
+        public InArgument<double> Width { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
-        [Description("The height of the window.")]
-        public InArgument<int> Height { get; set; }
+        [DisplayName("Height")]
+        [Description("Enter the new height for the window (in pixels).")]
+        public InArgument<double> Height { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {
-            var windowHandle = WindowHandle.Get(context);
+            var windowElement = WindowElement.Get(context);
             var width = Width.Get(context);
             var height = Height.Get(context);
-            var status = "";
+            string status = "";
 
             try
             {
-                if (string.IsNullOrEmpty(windowHandle))
+                if (windowElement == null)
                 {
-                    throw new ArgumentException("Window handle cannot be null or empty.");
+                    status = "No window was provided to resize.";
                 }
-
-                // Simulate resizing window using a hypothetical API
-                StatusMessage.Set(context, "Window resized successfully.");
+                else
+                {
+                    var transformPattern = windowElement.GetCurrentPattern(TransformPattern.Pattern) as TransformPattern;
+                    if (transformPattern != null && transformPattern.Current.CanResize)
+                    {
+                        transformPattern.Resize(width, height);
+                        status = "Window resized successfully.";
+                    }
+                    else
+                    {
+                        status = "Sorry, this window cannot be resized automatically.";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error resizing window: {ex.Message}";
+                status = $"There was a problem resizing the window: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);

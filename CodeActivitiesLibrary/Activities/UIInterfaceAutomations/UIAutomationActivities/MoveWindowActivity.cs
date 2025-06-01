@@ -1,52 +1,65 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Move Window")]
-    [Description("Sets the position of a specific window.")]
-    public class MoveWindowActivity : CodeActivity
+    [Description("Moves a window to the position you choose on the screen.")]
+    public class MoveWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The handle or identifier of the window.")]
-        public InArgument<string> WindowHandle { get; set; }
+        [DisplayName("Window")]
+        [Description("Select the window you want to move.")]
+        public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
-        [Description("The X-coordinate of the new position.")]
-        public InArgument<int> XPosition { get; set; }
+        [DisplayName("X Position")]
+        [Description("Enter the new X position (in pixels) for the window.")]
+        public InArgument<double> XPosition { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
-        [Description("The Y-coordinate of the new position.")]
-        public InArgument<int> YPosition { get; set; }
+        [DisplayName("Y Position")]
+        [Description("Enter the new Y position (in pixels) for the window.")]
+        public InArgument<double> YPosition { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {
-            var windowHandle = WindowHandle.Get(context);
+            var windowElement = WindowElement.Get(context);
             var xPosition = XPosition.Get(context);
             var yPosition = YPosition.Get(context);
-            var status = "";
+            string status = "";
 
             try
             {
-                if (string.IsNullOrEmpty(windowHandle))
+                if (windowElement == null)
                 {
-                    throw new ArgumentException("Window handle cannot be null or empty.");
+                    status = "No window was provided to move.";
                 }
-
-                // Simulate moving window using a hypothetical API
-                StatusMessage.Set(context, "Window moved successfully.");
+                else
+                {
+                    var transformPattern = windowElement.GetCurrentPattern(TransformPattern.Pattern) as TransformPattern;
+                    if (transformPattern != null && transformPattern.Current.CanMove)
+                    {
+                        transformPattern.Move(xPosition, yPosition);
+                        status = "Window moved successfully.";
+                    }
+                    else
+                    {
+                        status = "Sorry, this window cannot be moved automatically.";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error moving window: {ex.Message}";
+                status = $"There was a problem moving the window: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);

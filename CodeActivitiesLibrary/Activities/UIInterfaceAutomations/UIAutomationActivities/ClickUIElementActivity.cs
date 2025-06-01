@@ -4,14 +4,15 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
-    [DisplayName("Click UI Element In Window")]
-    [Description("Invokes or clicks a UI element in a window using UI Automation or mouse click.")]
-    public class ClickUiElementInWindowActivity : CodeActivity
+    [DisplayName("Click UI Element")]
+    [Description("Invokes or clicks a UI element using UI Automation or mouse click.")]
+    public class ClickUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -30,8 +31,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Maximum time to wait for the click action (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
-
-        public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -61,7 +60,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                             {
                                 Thread.Sleep(200);
                                 Point clickablePoint = elementInstance.GetClickablePoint();
-                                MouseHelper.SendMouseClick("Left Click", clickablePoint.X, clickablePoint.Y);
+                                MouseHelper.SendMouseClick(MouseHelper.MouseClickTypeEnum.LeftClick, clickablePoint.X, clickablePoint.Y);
                                 elementClicked = true;
                                 Thread.Sleep(500);
                                 status = "UI element clicked using mouse successfully.";

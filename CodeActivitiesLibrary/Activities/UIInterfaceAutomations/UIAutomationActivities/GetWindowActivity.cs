@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Window")]
     [Description("Finds a desktop window by name using UI Automation.")]
-    public class GetWindowActivity : CodeActivity
+    public class GetWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -27,7 +28,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The found AutomationElement for the window.")]
         public OutArgument<AutomationElement> WindowElement { get; set; }
 
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {

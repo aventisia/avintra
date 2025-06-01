@@ -1,62 +1,77 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using System.Windows.Automation;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Window State")]
-    [Description("Restores, maximizes, or minimizes a specific window.")]
-    public class SetWindowStateActivity : CodeActivity
+    [Description("Change the window to normal, maximized, or minimized state.")]
+    public class SetWindowStateActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The handle or identifier of the window.")]
-        public InArgument<string> WindowHandle { get; set; }
+        [DisplayName("Window")]
+        [Description("Select the window you want to change.")]
+        public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
         [Category("Input")]
-        [Description("The desired state of the window (e.g., restore, maximize, minimize).")]
+        [DisplayName("Window State")]
+        [Description("Choose how you want the window to appear (Normal, Maximized, or Minimized).")]
+        [DefaultValue(WindowStateEnum.Normal)]
         public InArgument<WindowStateEnum> DesiredState { get; set; }
-
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var windowHandle = WindowHandle.Get(context);
+            var windowElement = WindowElement.Get(context);
             var desiredState = DesiredState.Get(context);
-            var status = "";
+            string status = "";
 
             try
             {
-                if (string.IsNullOrEmpty(windowHandle))
+                if (windowElement == null)
                 {
-                    throw new ArgumentException("Window handle cannot be null or empty.");
+                    status = "No window was provided to change its state.";
                 }
-
-                // Simulate setting window state using a hypothetical API
-                StatusMessage.Set(context, "Window state updated successfully.");
+                else
+                {
+                    var windowPattern = windowElement.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
+                    if (windowPattern == null)
+                    {
+                        status = "Sorry, this window cannot be changed automatically.";
+                    }
+                    else
+                    {
+                        switch (desiredState)
+                        {
+                            case WindowStateEnum.Maximized:
+                                windowPattern.SetWindowVisualState(WindowVisualState.Maximized);
+                                status = "Window maximized successfully.";
+                                break;
+                            case WindowStateEnum.Minimized:
+                                windowPattern.SetWindowVisualState(WindowVisualState.Minimized);
+                                status = "Window minimized successfully.";
+                                break;
+                            case WindowStateEnum.Normal:
+                                windowPattern.SetWindowVisualState(WindowVisualState.Normal);
+                                status = "Window restored to normal state.";
+                                break;
+                            default:
+                                status = "Unknown window state selected.";
+                                break;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error setting window state: {ex.Message}";
+                status = $"There was a problem changing the window state: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);
-        }
-
-        public enum WindowStateEnum
-        {
-            [Display(Name = "Normal", Description = "Launch browser in normal state.")]
-            Normal = 0,
-
-            [Display(Name = "Maximized", Description = "Launch browser maximized.")]
-            Maximized = 1,
-
-            [Display(Name = "Minimized", Description = "Launch browser minimized.")]
-            Minimized = 2
         }
     }
 }
