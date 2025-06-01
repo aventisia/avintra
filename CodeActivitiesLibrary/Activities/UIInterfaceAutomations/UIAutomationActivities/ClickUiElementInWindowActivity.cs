@@ -1,51 +1,88 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows;
+using System.Windows.Automation;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
-    [DisplayName("Click UI Element in Window")]
-    [Description("Clicks on any UI element of a window.")]
+    [DisplayName("Click UI Element In Window")]
+    [Description("Invokes or clicks a UI element in a window using UI Automation or mouse click.")]
     public class ClickUiElementInWindowActivity : CodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The handle or identifier of the window.")]
-        public InArgument<string> WindowHandle { get; set; }
+        [DisplayName("Element Instance")]
+        [Description("The AutomationElement instance to click.")]
+        public InArgument<AutomationElement> ElementInstance { get; set; }
 
-        [RequiredArgument]
         [Category("Input")]
-        [Description("The selector or identifier of the UI element.")]
-        public InArgument<string> UiElementSelector { get; set; }
+        [DisplayName("Click Type")]
+        [Description("Type of click: UIAutomationClick or MouseClick.")]
+        [DefaultValue(ClickTypeEnum.UIAutomationClick)]
+        public InArgument<ClickTypeEnum> ClickType { get; set; } = ClickTypeEnum.UIAutomationClick;
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        [Category("Input")]
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait for the click action (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
+
         public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var windowHandle = WindowHandle.Get(context);
-            var uiElementSelector = UiElementSelector.Get(context);
-            var status = "";
+            var elementInstance = ElementInstance.Get(context);
+            var clickType = ClickType.Get(context);
+            var maxWaitTime = MaxWaitTime.Get(context);
+            bool elementClicked = false;
+            string status = "";
 
             try
             {
-                if (string.IsNullOrEmpty(windowHandle))
+                for (int i = 0; i <= (maxWaitTime * 5); i++)
                 {
-                    throw new ArgumentException("Window handle cannot be null or empty.");
+                    try
+                    {
+                        if (elementInstance != null)
+                        {
+                            if (clickType == ClickTypeEnum.UIAutomationClick)
+                            {
+                                var invokePattern = elementInstance.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+                                invokePattern.Invoke();
+                                elementClicked = true;
+                                status = "UI element invoked successfully.";
+                                break;
+                            }
+                            else if (clickType == ClickTypeEnum.MouseClick)
+                            {
+                                Thread.Sleep(200);
+                                Point clickablePoint = elementInstance.GetClickablePoint();
+                                MouseHelper.SendMouseClick("Left Click", clickablePoint.X, clickablePoint.Y);
+                                elementClicked = true;
+                                Thread.Sleep(500);
+                                status = "UI element clicked using mouse successfully.";
+                                break;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        Thread.Sleep(500);
+                    }
                 }
 
-                if (string.IsNullOrEmpty(uiElementSelector))
+                if (!elementClicked)
                 {
-                    throw new ArgumentException("UI element selector cannot be null or empty.");
+                    status = "Failed to click the UI element within the specified time.";
                 }
-
-                // Simulate clicking UI element using a hypothetical API
-                StatusMessage.Set(context, "UI element clicked successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error clicking UI element: {ex.Message}";
+                status = $"Error: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);

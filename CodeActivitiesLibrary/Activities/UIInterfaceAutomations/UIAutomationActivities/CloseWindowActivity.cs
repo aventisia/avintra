@@ -1,40 +1,50 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Close Window")]
-    [Description("Closes a specific window.")]
+    [Description("Closes the selected application window.")]
     public class CloseWindowActivity : CodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The handle or identifier of the window.")]
-        public InArgument<string> WindowHandle { get; set; }
+        [DisplayName("Window")]
+        [Description("Select the window you want to close.")]
+        public InArgument<AutomationElement> WindowElement { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
         public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var windowHandle = WindowHandle.Get(context);
-            var status = "";
+            var windowElement = WindowElement.Get(context);
+            string status = "";
 
             try
             {
-                if (string.IsNullOrEmpty(windowHandle))
+                if (windowElement == null)
                 {
-                    throw new ArgumentException("Window handle cannot be null or empty.");
+                    status = "No window was provided to close.";
                 }
-
-                // Simulate closing window using a hypothetical API
-                StatusMessage.Set(context, "Window closed successfully.");
+                else
+                {
+                    var windowPattern = windowElement.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
+                    if (windowPattern != null)
+                    {
+                        windowPattern.Close();
+                        status = "The window was closed successfully.";
+                    }
+                    else
+                    {
+                        status = "Sorry, this window cannot be closed automatically.";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error closing window: {ex.Message}";
+                status = $"There was a problem closing the window: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);

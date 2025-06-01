@@ -1,49 +1,74 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Window")]
-    [Description("Gets a running window, for automating desktop applications.")]
+    [Description("Finds a desktop window by name using UI Automation.")]
     public class GetWindowActivity : CodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
-        [Description("The title or handle of the window to retrieve.")]
-        public InArgument<string> WindowIdentifier { get; set; }
+        [DisplayName("Window Name")]
+        [Description("The name (title) of the window to find.")]
+        public InArgument<string> WindowName { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait for the window (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
         [Category("Output")]
-        [Description("Returns the handle or identifier of the window.")]
-        public OutArgument<string> WindowHandle { get; set; }
+        [DisplayName("Automation Element")]
+        [Description("The found AutomationElement for the window.")]
+        public OutArgument<AutomationElement> WindowElement { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
         public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var windowIdentifier = WindowIdentifier.Get(context);
-            string windowHandle = null;
-            var status = "";
+            string windowName = WindowName.Get(context);
+            int maxWaitTime = MaxWaitTime.Get(context);
+            AutomationElement windowElement = null;
+            string status = "";
 
             try
             {
-                if (string.IsNullOrEmpty(windowIdentifier))
+                for (int i = 0; i <= (maxWaitTime * 2); i++)
                 {
-                    throw new ArgumentException("Window identifier cannot be null or empty.");
+                    AutomationElement rootElement = AutomationElement.RootElement;
+                    AutomationElement element = TreeWalker.ContentViewWalker.GetFirstChild(rootElement);
+                    do
+                    {
+                        if (element != null && element.Current.Name != null && element.Current.Name.Contains(windowName))
+                        {
+                            windowElement = element;
+                            break;
+                        }
+                        element = TreeWalker.ContentViewWalker.GetNextSibling(element);
+                    }
+                    while (element != null);
+
+                    if (windowElement != null)
+                        break;
+                    else
+                        Thread.Sleep(500);
                 }
 
-                // Simulate getting window handle using a hypothetical API
-                windowHandle = $"Handle-{windowIdentifier}";
-                StatusMessage.Set(context, "Window retrieved successfully.");
+                status = windowElement != null
+                    ? "Window found successfully."
+                    : "Window not found within the specified time.";
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving window: {ex.Message}";
+                status = $"Error: {ex.Message}";
             }
 
-            WindowHandle.Set(context, windowHandle);
+            WindowElement.Set(context, windowElement);
             StatusMessage.Set(context, status);
         }
     }
