@@ -1,10 +1,13 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
-    public class DragAndDropUiElementInWindowActivity : CodeActivity
+    //[DisplayName("Drag and Drop UI Element in Window")]
+    //[Description("Drags a UI element from one location to another within a specified window.")]
+    public class DragAndDropUiElementInWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -23,7 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
         [Category("Output")]
         [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {
