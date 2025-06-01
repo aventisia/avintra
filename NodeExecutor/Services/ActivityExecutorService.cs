@@ -2,8 +2,10 @@
 using System;
 using System.Activities;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
 
 namespace NodeExecutor.Services
 {
@@ -73,7 +75,7 @@ namespace NodeExecutor.Services
 
                     // Resolve template if input is string and contains {{ }}
                     object inputValue = input.Value;
-                    if (input.Value is string strVal && strVal.Contains("{{"))
+                    if (input.Value is string strVal && strVal.Contains("{{") && strVal.Contains("}}"))
                     {
                         inputValue = ResolveTemplate(strVal, executionContext);
                     }
@@ -81,9 +83,56 @@ namespace NodeExecutor.Services
                     // Convert the input value to the appropriate type
                     object convertedValue = ConvertArgument(inputValue, genericType);
 
-                    // Set the value to the property
-                    object inArgument = Activator.CreateInstance(propType, convertedValue);
-                    prop.SetValue(activityInstance, inArgument);
+                    // Check if the property is an InArgument<T>
+                    if (convertedValue != null && genericType != null)
+                    {
+                        var inArgGenericType = typeof(InArgument<>).MakeGenericType(genericType);
+
+                        object inArgument;
+
+                        bool isLiteralSafe =
+                            genericType.IsValueType ||
+                            genericType == typeof(string);
+
+                        if (isLiteralSafe)
+                        {
+                            // OK to use Literal<T>
+                            inArgument = Activator.CreateInstance(inArgGenericType, convertedValue);
+                        }
+                        else
+                        {
+                            // Use expression-based InArgument<T>
+                            //var funcType = typeof(Func<,>).MakeGenericType(typeof(ActivityContext), genericType);
+                            //var lambdaExpr = Delegate.CreateDelegate(funcType, convertedValue, nameof(ToString)); // workaround for delegate instantiation
+
+                            //inArgument = Activator.CreateInstance(inArgGenericType, new object[] { (Func<ActivityContext, object>)(ctx => convertedValue) });
+
+
+                            var valueConst = Expression.Constant(convertedValue, genericType);
+                            var lambdaExpr = Expression.Lambda(
+                                typeof(Func<,>).MakeGenericType(typeof(ActivityContext), genericType),
+                                valueConst,
+                                Expression.Parameter(typeof(ActivityContext), "ctx")
+                            );
+
+                            inArgument = Activator.CreateInstance(inArgGenericType, lambdaExpr);
+                        }
+
+                        prop.SetValue(activityInstance, inArgument);
+                    }
+
+
+                    //// Set the value to the property
+                    //if (convertedValue != null && genericType != null)
+                    //{
+                    //    var inArgGenericType = typeof(InArgument<>).MakeGenericType(genericType);
+                    //    var lambdaExpr = Activator.CreateInstance(inArgGenericType, new object[] { (Func<ActivityContext, object>)(ctx => convertedValue) });
+                    //    prop.SetValue(activityInstance, lambdaExpr);
+                    //    continue;
+                    //}
+
+                    //object inArgument = Activator.CreateInstance(propType, convertedValue);
+                    //prop.SetValue(activityInstance, inArgument);
                 }
 
                 // Execute the activity
@@ -138,7 +187,7 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static string ResolveTemplate(string template, ExecutionContext context)
+        public static object ResolveTemplate(string template, ExecutionContext context)
         {
             try
             {
@@ -146,18 +195,23 @@ namespace NodeExecutor.Services
                 Regex PlaceholderRegex = new Regex(@"(?<!\\)\{\{(?<key>[^\}]+)\}\}");
 
                 // Replace {{key}} with context value
-                var result = PlaceholderRegex.Replace(template, match =>
+                var key = PlaceholderRegex.Replace(template, match =>
                 {
-                    var key = match.Groups["key"].Value;
-                    return context.TryGet(key, out var value)
-                        ? value?.ToString() ?? string.Empty
-                        : $"{{{{{key}}}}}"; // leave as-is if not found
+                    return match.Groups["key"].Value;
                 });
 
-                // Unescape \{{key}} to {{key}}
-                result = result.Replace(@"\{{", "{{");
+                // If the key is empty, return the template as-is
+                if (string.IsNullOrEmpty(key))
+                    return template;
 
-                return result;
+                // Try to get the value from the context
+                var contextValue = context.TryGet(key, out var val) ? val : null;
+                
+                // If value is null, return the placeholder as-is
+                if (contextValue == null)
+                    return $"{{{{{key}}}}}"; // leave as-is if not found
+
+                return contextValue;
             }
             catch (Exception ex)
             {
