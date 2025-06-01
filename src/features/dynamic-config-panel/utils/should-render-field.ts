@@ -14,10 +14,17 @@ export function shouldRenderField(
   // Check field direction
   if (direction !== section) return false; // Field direction does not match
 
+  // If renderIf is not defined, always render the field
   if (!renderIf || !renderIf.conditions || renderIf.conditions.length === 0) {
     return true; // No conditions, always render
   }
 
+  // If formValues are not provided, assume field should be rendered
+  if (!formValues || Object.keys(formValues).length === 0) {
+    return true; // No form values, always render
+  }
+
+  // Get conditions and operator from renderIf
   const { conditions, _operator } = renderIf;
 
   const results = conditions.map(
