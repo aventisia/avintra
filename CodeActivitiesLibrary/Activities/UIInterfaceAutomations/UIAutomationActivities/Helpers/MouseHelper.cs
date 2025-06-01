@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers
 {
@@ -22,13 +24,37 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.He
         public const int MOUSEEVENTF_RIGHTDOWN = 0x08;
         public const int MOUSEEVENTF_RIGHTUP = 0x10;
 
+        public enum MouseClickTypeEnum
+        {
+            [Display(Name = "Left Click", Description = "Standard left mouse click.")]
+            LeftClick = 0,
+
+            [Display(Name = "Right Click", Description = "Right mouse click.")]
+            RightClick = 1,
+
+            [Display(Name = "Double Click", Description = "Double-click with the left mouse button.")]
+            DoubleClick = 2,
+
+            [Display(Name = "Left Button Down", Description = "Mouse left button down only.")]
+            LeftButtonDown = 3,
+
+            [Display(Name = "Left Button Up", Description = "Mouse left button up only.")]
+            LeftButtonUp = 4,
+
+            [Display(Name = "Right Button Down", Description = "Mouse right button down only.")]
+            RightButtonDown = 5,
+
+            [Display(Name = "Right Button Up", Description = "Mouse right button up only.")]
+            RightButtonUp = 6,
+        }
+
         /// <summary>
         /// Simulates a mouse click at the specified screen coordinates.
         /// </summary>
         /// <param name="clickType">Type of click: "Left Click", "Right Click", "Double Click", "Left Click Down", "Left Click Up", "Right Click Down", "Right Click Up".</param>
         /// <param name="xPosition">The X coordinate on the screen.</param>
         /// <param name="yPosition">The Y coordinate on the screen.</param>
-        public static void SendMouseClick(string clickType, double xPosition, double yPosition)
+        public static void SendMouseClick(MouseClickTypeEnum clickType, double xPosition, double yPosition)
         {
             try
             {
@@ -38,30 +64,30 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.He
                 // Perform the specified mouse action.
                 switch (clickType)
                 {
-                    case "Left Click":
+                    case MouseClickTypeEnum.LeftClick:
                         mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
-                    case "Right Click":
+                    case MouseClickTypeEnum.RightClick:
                         mouse_event(MOUSEEVENTF_RIGHTDOWN, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         mouse_event(MOUSEEVENTF_RIGHTUP, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
-                    case "Double Click":
+                    case MouseClickTypeEnum.DoubleClick:
                         mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
-                    case "Left Click Down":
+                    case MouseClickTypeEnum.LeftButtonDown:
                         mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
-                    case "Left Click Up":
+                    case MouseClickTypeEnum.LeftButtonUp:
                         mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
-                    case "Right Click Down":
+                    case MouseClickTypeEnum.RightButtonDown:
                         mouse_event(MOUSEEVENTF_RIGHTDOWN, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
-                    case "Right Click Up":
+                    case MouseClickTypeEnum.RightButtonUp:
                         mouse_event(MOUSEEVENTF_RIGHTUP, Convert.ToInt32(xPosition), Convert.ToInt32(yPosition), 0, 0);
                         break;
                 }
@@ -72,5 +98,49 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.He
                 Console.WriteLine(ex.ToString());
             }
         }
+
+        /// <summary>
+        /// Struct representing a point (x, y) in Win32 API.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Win32Point
+        {
+            public int X;
+            public int Y;
+        }
+
+        /// <summary>
+        /// Retrieves the current mouse cursor position on the screen.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Windows.Point"/> representing the current mouse position.
+        /// </returns>
+        public static Point GetMousePosition()
+        {
+            Point point = new Point();
+            try
+            {
+                var win32Point = new Win32Point();
+                if (GetCursorPos(ref win32Point))
+                {
+                    point = new Point(win32Point.X, win32Point.Y);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exception as needed
+                Console.WriteLine(ex.ToString());
+            }
+            return point;
+        }
+
+        /// <summary>
+        /// Calls the Win32 API to get the cursor position.
+        /// </summary>
+        /// <param name="pt">Reference to a <see cref="Win32Point"/> struct to receive the position.</param>
+        /// <returns>True if successful, otherwise false.</returns>
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(ref Win32Point pt);
     }
 }
