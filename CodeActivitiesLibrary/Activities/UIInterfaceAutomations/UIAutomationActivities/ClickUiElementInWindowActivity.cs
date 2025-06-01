@@ -23,7 +23,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [DisplayName("Click Type")]
         [Description("Type of click: UIAutomationClick or MouseClick.")]
         [DefaultValue(ClickTypeEnum.UIAutomationClick)]
-        public InArgument<ClickTypeEnum> ClickType { get; set; } = ClickTypeEnum.UIAutomationClick;
+        public InArgument<ClickTypeEnum> ClickType { get; set; }
 
         [Category("Input")]
         [DisplayName("Max Wait Time (seconds)")]

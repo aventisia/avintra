@@ -467,9 +467,11 @@
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\CloseWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\ClickTypeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\MousePositionEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\PropertyTypeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExpandCollapseTreeNodeInWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExtractDataFromTableActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExtractDataFromWindowActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\FindUiElementInParentActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\FocusTextFieldInWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\FocusWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\GetSelectedCheckboxesInWindowActivity.cs" />
