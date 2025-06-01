@@ -4,8 +4,6 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
-    [DisplayName("Drag and Drop UI Element in Window")]
-    [Description("Drags and drops a UI element of a window.")]
     public class DragAndDropUiElementInWindowActivity : CodeActivity
     {
         [RequiredArgument]
