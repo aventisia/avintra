@@ -3,17 +3,17 @@
     "direction": "Input",
     "type": "text",
     "name": "NumberToConvert",
-    "label": "NumberToConvert",
-    "description": "A numeric value to convert to text.",
+    "label": "Number to Convert",
+    "description": "The numeric value to convert to text.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "DecimalPlaces",
-    "label": "DecimalPlaces",
-    "description": "The number of decimal places that will be included before truncation. Zeros can also be added to the end to pad the text in this way.",
+    "label": "Decimal Places",
+    "description": "The number of decimal places to include in the formatted text.",
     "defaultValue": 2,
     "required": false
   },
@@ -21,19 +21,19 @@
     "direction": "Input",
     "type": "switch",
     "name": "UseThousandsSeparator",
-    "label": "UseThousandsSeparator",
-    "description": "Specify whether or not to use punctuation as a thousand separator.",
+    "label": "Use Thousands Separator",
+    "description": "If true, includes a thousands separator in the formatted text.",
     "defaultValue": true,
     "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "OFormattedNumberOutput",
-    "label": "OFormattedNumberOutput",
-    "description": "The formatted number as text.",
+    "name": "FormattedNumber",
+    "label": "Formatted Number",
+    "description": "The resulting formatted number as text.",
     "defaultValue": {
-      "value": "oFormattedNumberOutput",
+      "value": "formattedNumber",
       "enabled": true
     },
     "required": false

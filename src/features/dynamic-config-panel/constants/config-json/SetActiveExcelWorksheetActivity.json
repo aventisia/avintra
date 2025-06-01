@@ -2,18 +2,39 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target workbook.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "SelectionType",
+    "label": "Selection Type",
+    "description": "Choose whether to select the worksheet by Name or Index.",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": ""
+      },
+      {
+        "label": "Index",
+        "value": "Index",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
-    "name": "WorksheetName",
-    "label": "WorksheetName",
-    "description": "The name of the worksheet to activate.",
+    "name": "SearchValue",
+    "label": "Search Value",
+    "description": "The worksheet name (if selection type is \u0027Name\u0027) or index (if selection type is \u0027Index\u0027).",
     "defaultValue": "",
     "required": true
   }

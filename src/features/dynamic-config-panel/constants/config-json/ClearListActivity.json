@@ -4,7 +4,7 @@
     "type": "text",
     "name": "ListToClear",
     "label": "List to Clear",
-    "description": "A list variable to remove its elements.",
+    "description": "The list variable whose elements will be removed.",
     "defaultValue": "",
     "required": true
   }

@@ -4,34 +4,60 @@
     "type": "text",
     "name": "FirstDataTable",
     "label": "First Data Table",
-    "description": "The first data table to join.",
+    "description": "The first DataTable to be joined.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "SecondDataTable",
     "label": "Second Data Table",
-    "description": "The second data table to join.",
+    "description": "The second DataTable to be joined.",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "JoinOperation",
+    "label": "Join Operation",
+    "description": "Specifies the type of join operation (Inner, Left, Full).",
+    "defaultValue": "Inner",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Inner Join",
+        "value": "Inner",
+        "description": "Performs an inner join."
+      },
+      {
+        "label": "Left Outer Join",
+        "value": "Left",
+        "description": "Performs a left outer join."
+      },
+      {
+        "label": "Full Outer Join",
+        "value": "Full",
+        "description": "Performs a full outer join."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "JoinColumn",
-    "label": "JoinColumn",
-    "description": "The column name to join on.",
+    "name": "JoinRules",
+    "label": "Join Rules",
+    "description": "Specifies the join condition (e.g., \u0027FirstTable.ID = SecondTable.ID\u0027).",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "JoinedDataTable",
     "label": "Joined Data Table",
-    "description": "The joined data table.",
+    "description": "The resulting DataTable after performing the join operation.",
     "defaultValue": {
       "value": "joinedDataTable",
       "enabled": true

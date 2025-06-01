@@ -1,0 +1,71 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "Source File Path",
+    "description": "The full path of the file from which to extract components.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "RootPath",
+    "label": "Root Path",
+    "description": "The root path of the source file.",
+    "defaultValue": {
+      "value": "rootPath",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Directory",
+    "label": "Directory Path",
+    "description": "The directory of the source file.",
+    "defaultValue": {
+      "value": "directory",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FileName",
+    "label": "File Name",
+    "description": "The name of the source file.",
+    "defaultValue": {
+      "value": "fileName",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FileNameNoExtension",
+    "label": "File Name Without Extension",
+    "description": "The file name (without the extension) of the source file.",
+    "defaultValue": {
+      "value": "fileNameNoExtension",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FileExtension",
+    "label": "File Extension",
+    "description": "The extension (for example, .doc) of the source file.",
+    "defaultValue": {
+      "value": "fileExtension",
+      "enabled": true
+    },
+    "required": false
+  }
+]

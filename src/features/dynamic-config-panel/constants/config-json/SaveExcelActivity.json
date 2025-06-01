@@ -2,10 +2,342 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the workbook to save.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SaveMode",
+    "label": "Save Mode",
+    "description": "Specifies how to save the workbook.",
+    "defaultValue": "SaveDocument",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Save Document",
+        "value": "SaveDocument",
+        "description": "Saves the active workbook in its current format."
+      },
+      {
+        "label": "Save Document As",
+        "value": "SaveDocumentAs",
+        "description": "Saves the active workbook to a specified path with a chosen format."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DocumentPath",
+    "label": "Document Path",
+    "description": "The file path to save the workbook (required if \u0027Save Mode\u0027 is \u0027Save Document As\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SaveMode",
+          "equals": "SaveDocumentAs"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DocumentFormat",
+    "label": "Document Format",
+    "description": "The file format to save the workbook as (required if \u0027Save Mode\u0027 is \u0027Save Document As\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "SYLK",
+        "value": "xlSYLK",
+        "description": "Saves as SYLK (Symbolic Link) format, used for data exchange between spreadsheets."
+      },
+      {
+        "label": "Lotus Worksheet",
+        "value": "xlWKS",
+        "description": "Saves as WKS (Worksheet) format compatible with Lotus 1-2-3."
+      },
+      {
+        "label": "Lotus WK1",
+        "value": "xlWK1",
+        "description": "Saves as WK1 (Lotus 1-2-3 version 1) format."
+      },
+      {
+        "label": "CSV",
+        "value": "xlCSV",
+        "description": "Saves as CSV (Comma Delimited) format."
+      },
+      {
+        "label": "dBASE II",
+        "value": "xlDBF2",
+        "description": "Saves as dBASE II database file (.dbf)."
+      },
+      {
+        "label": "dBASE III",
+        "value": "xlDBF3",
+        "description": "Saves as dBASE III database file (.dbf)."
+      },
+      {
+        "label": "Data Interchange Format",
+        "value": "xlDIF",
+        "description": "Saves as DIF (Data Interchange Format), used for exchanging spreadsheet data."
+      },
+      {
+        "label": "dBASE IV",
+        "value": "xlDBF4",
+        "description": "Saves as dBASE IV database file (.dbf)."
+      },
+      {
+        "label": "WJ2 WD1",
+        "value": "xlWJ2WD1",
+        "description": "Saves in WJ2 WD1 format, used by Works Spreadsheet versions prior to 2002."
+      },
+      {
+        "label": "Lotus WK3",
+        "value": "xlWK3",
+        "description": "Saves as WK3 (Lotus 1-2-3 version 3) format."
+      },
+      {
+        "label": "Excel 2.0",
+        "value": "xlExcel2",
+        "description": "Saves as Excel 2.0 binary format (.xls)."
+      },
+      {
+        "label": "Excel Template",
+        "value": "xlTemplate",
+        "description": "Saves as an Excel template (.xlt) for creating new workbooks."
+      },
+      {
+        "label": "Excel Template",
+        "value": "xlTemplate",
+        "description": "Saves as an Excel template (.xlt) for creating new workbooks."
+      },
+      {
+        "label": "Excel Add-In",
+        "value": "xlAddIn",
+        "description": "Saves as Excel add-in (.xla) containing macros or functions."
+      },
+      {
+        "label": "Excel Add-In",
+        "value": "xlAddIn",
+        "description": "Saves as Excel add-in (.xla) containing macros or functions."
+      },
+      {
+        "label": "Macintosh Text",
+        "value": "xlTextMac",
+        "description": "Saves as plain text using Macintosh line breaks."
+      },
+      {
+        "label": "Windows Text",
+        "value": "xlTextWindows",
+        "description": "Saves as plain text using Windows line breaks."
+      },
+      {
+        "label": "MS-DOS Text",
+        "value": "xlTextMSDOS",
+        "description": "Saves as plain text using MS-DOS line breaks."
+      },
+      {
+        "label": "CSV Macintosh",
+        "value": "xlCSVMac",
+        "description": "Saves as comma-separated values with Macintosh encoding (.csv)."
+      },
+      {
+        "label": "CSV Windows",
+        "value": "xlCSVWindows",
+        "description": "Saves as comma-separated values with Windows encoding (.csv)."
+      },
+      {
+        "label": "CSV MS-DOS",
+        "value": "xlCSVMSDOS",
+        "description": "Saves as comma-separated values with MS-DOS encoding (.csv)."
+      },
+      {
+        "label": "International Macro",
+        "value": "xlIntlMacro",
+        "description": "Saves as international macro format for cross-language compatibility."
+      },
+      {
+        "label": "International Add-In",
+        "value": "xlIntlAddIn",
+        "description": "Saves as international add-in for cross-language macro use."
+      },
+      {
+        "label": "Excel 2 Far East",
+        "value": "xlExcel2FarEast",
+        "description": "Saves as Excel 2.0 format supporting Far East languages."
+      },
+      {
+        "label": "Works 2 Far East",
+        "value": "xlWorks2FarEast",
+        "description": "Saves as Works Spreadsheet 2.0 format supporting Far East languages."
+      },
+      {
+        "label": "Excel 3",
+        "value": "xlExcel3",
+        "description": "Saves as Excel 3.0 binary format (.xls)."
+      },
+      {
+        "label": "WK1 FMT",
+        "value": "xlWK1FMT",
+        "description": "Saves as Lotus 1-2-3 format with formula support (.wks)."
+      },
+      {
+        "label": "WK1 ALL",
+        "value": "xlWK1ALL",
+        "description": "Saves as Lotus 1-2-3 format including all objects and formulas (.wks)."
+      },
+      {
+        "label": "WK3 FM3",
+        "value": "xlWK3FM3",
+        "description": "Saves as Lotus 1-2-3 WK3 FM3 format (.wk3)."
+      },
+      {
+        "label": "Excel 4",
+        "value": "xlExcel4",
+        "description": "Saves as Excel 4.0 binary format (.xls)."
+      },
+      {
+        "label": "WQ1",
+        "value": "xlWQ1",
+        "description": "Saves as Quattro Pro format (.wb1)."
+      },
+      {
+        "label": "Excel 4 Workbook",
+        "value": "xlExcel4Workbook",
+        "description": "Saves as Excel 4.0 workbook (.xls)."
+      },
+      {
+        "label": "Text Printer",
+        "value": "xlTextPrinter",
+        "description": "Saves as text suitable for printing with fixed-width fonts."
+      },
+      {
+        "label": "WK4",
+        "value": "xlWK4",
+        "description": "Saves as Lotus 1-2-3 WK4 format (.wk4)."
+      },
+      {
+        "label": "Excel 5",
+        "value": "xlExcel5",
+        "description": "Saves as Excel 5.0/7.0 binary format (.xls)."
+      },
+      {
+        "label": "Excel 5",
+        "value": "xlExcel5",
+        "description": "Saves as Excel 5.0/7.0 binary format (.xls)."
+      },
+      {
+        "label": "WJ3",
+        "value": "xlWJ3",
+        "description": "Saves as Works Spreadsheet WJ3 format (.wj3)."
+      },
+      {
+        "label": "WJ3 FJ3",
+        "value": "xlWJ3FJ3",
+        "description": "Saves as Works Spreadsheet WJ3 FJ3 format (.wj3/.fj3)."
+      },
+      {
+        "label": "Unicode Text",
+        "value": "xlUnicodeText",
+        "description": "Saves as Unicode text file (.txt) with full character set support."
+      },
+      {
+        "label": "Excel 97-95",
+        "value": "xlExcel9795",
+        "description": "Saves as Excel 97-2003 format (.xls) for backward compatibility."
+      },
+      {
+        "label": "HTML",
+        "value": "xlHtml",
+        "description": "Saves as HTML webpage (.html) with table-based layout."
+      },
+      {
+        "label": "Web Archive",
+        "value": "xlWebArchive",
+        "description": "Saves as single-file web archive (.mht) containing Excel content."
+      },
+      {
+        "label": "XML Spreadsheet",
+        "value": "xlXMLSpreadsheet",
+        "description": "Saves as XML-based spreadsheet (.xml) for structured data transfer."
+      },
+      {
+        "label": "Excel 12",
+        "value": "xlExcel12",
+        "description": "Saves as Excel 12 binary format (.xlsb) optimized for performance."
+      },
+      {
+        "label": "Open XML Workbook",
+        "value": "xlOpenXMLWorkbook",
+        "description": "Saves as Open XML Workbook (.xlsx), the default modern Excel format."
+      },
+      {
+        "label": "Open XML Workbook",
+        "value": "xlOpenXMLWorkbook",
+        "description": "Saves as Open XML Workbook (.xlsx), the default modern Excel format."
+      },
+      {
+        "label": "Open XML Workbook Macro Enabled",
+        "value": "xlOpenXMLWorkbookMacroEnabled",
+        "description": "Saves as Open XML Workbook with macro support (.xlsm)."
+      },
+      {
+        "label": "Open XML Template Macro Enabled",
+        "value": "xlOpenXMLTemplateMacroEnabled",
+        "description": "Saves as Excel template with macro support (.xltm)."
+      },
+      {
+        "label": "Open XML Template",
+        "value": "xlOpenXMLTemplate",
+        "description": "Saves as Excel template (.xltx) without macro support."
+      },
+      {
+        "label": "Open XML Add-In",
+        "value": "xlOpenXMLAddIn",
+        "description": "Saves as Excel Add-In (.xlam) with macro support."
+      },
+      {
+        "label": "Excel 8.0",
+        "value": "xlExcel8",
+        "description": "Saves as Excel 2003 binary format (.xls)."
+      },
+      {
+        "label": "OpenDocument Spreadsheet",
+        "value": "xlOpenDocumentSpreadsheet",
+        "description": "Saves as OpenDocument Spreadsheet (.ods) for LibreOffice/OpenOffice compatibility."
+      },
+      {
+        "label": "Strict Open XML Workbook",
+        "value": "xlOpenXMLStrictWorkbook",
+        "description": "Saves as Strict Open XML Workbook (.xlsx) compliant with IEC 61131-3 standard."
+      },
+      {
+        "label": "Current Platform Text",
+        "value": "xlCurrentPlatformText",
+        "description": "Saves as text format based on the current operating system."
+      },
+      {
+        "label": "Workbook Normal",
+        "value": "xlWorkbookNormal",
+        "description": "Saves as a standard Excel workbook without formatting or macros."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SaveMode",
+          "equals": "SaveDocumentAs"
+        }
+      ]
+    }
   }
 ]

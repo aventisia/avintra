@@ -4,7 +4,16 @@
     "type": "text",
     "name": "BaseDateTime",
     "label": "Base DateTime",
-    "description": "The original DateTime to which time will be added.",
+    "description": "The original DateTime value to which the time should be added.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ValueToAdd",
+    "label": "Value to Add",
+    "description": "The numeric value of time to add to the DateTime.",
     "defaultValue": "",
     "required": true
   },
@@ -13,39 +22,50 @@
     "type": "select",
     "name": "TimeUnit",
     "label": "Time Unit",
-    "description": "Time Unit",
-    "defaultValue": "",
+    "description": "Specifies the unit of time (e.g., Seconds, Minutes, Hours, Days, Months, Years).",
+    "defaultValue": "Days",
     "required": true,
     "selectOptions": [
       {
-        "label": "Days",
-        "value": "Days",
-        "description": ""
+        "label": "Seconds",
+        "value": "Seconds",
+        "description": "Represents time in seconds."
+      },
+      {
+        "label": "Minutes",
+        "value": "Minutes",
+        "description": "Represents time in minutes."
       },
       {
         "label": "Hours",
         "value": "Hours",
-        "description": ""
+        "description": "Represents time in hours."
+      },
+      {
+        "label": "Days",
+        "value": "Days",
+        "description": "Represents time in days."
+      },
+      {
+        "label": "Months",
+        "value": "Months",
+        "description": "Represents time in months."
+      },
+      {
+        "label": "Years",
+        "value": "Years",
+        "description": "Represents time in years."
       }
     ]
   },
   {
-    "direction": "Input",
-    "type": "text",
-    "name": "TimeToAdd",
-    "label": "Time To Add",
-    "description": "The TimeSpan (can be negative) to add or subtract from the base DateTime.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Resulting DateTime",
-    "description": "The DateTime value after the addition.",
+    "name": "ResultDateTime",
+    "label": "Updated DateTime",
+    "description": "The resulting DateTime after the specified value has been added.",
     "defaultValue": {
-      "value": "result",
+      "value": "resultDateTime",
       "enabled": true
     },
     "required": false

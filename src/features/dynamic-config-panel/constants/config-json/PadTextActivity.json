@@ -10,51 +10,51 @@
   },
   {
     "direction": "Input",
-    "type": "text",
-    "name": "TotalLength",
-    "label": "Total Length",
-    "description": "The total length of the padded text.",
+    "type": "select",
+    "name": "PaddingDirection",
+    "label": "Padding Direction",
+    "description": "Specifies whether to pad the text on the left or right side.",
     "defaultValue": "",
-    "required": true
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Left",
+        "value": "Left",
+        "description": "Pad the text on the left side."
+      },
+      {
+        "label": "Right",
+        "value": "Right",
+        "description": "Pad the text on the right side."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "PaddingCharacter",
     "label": "Padding Character",
-    "description": "The padding character to use (e.g., \u00270\u0027, \u0027 \u0027).",
+    "description": "The character(s) to use for padding.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "select",
-    "name": "PadDirection",
-    "label": "Pad Direction",
-    "description": "The padding direction: Left, Right.",
-    "defaultValue": "Left",
-    "required": false,
-    "selectOptions": [
-      {
-        "label": "Left",
-        "value": "Left",
-        "description": ""
-      },
-      {
-        "label": "Right",
-        "value": "Right",
-        "description": ""
-      }
-    ]
+    "type": "text",
+    "name": "TotalLength",
+    "label": "Total Length",
+    "description": "The desired total length of the padded text.",
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultText",
-    "label": "Result Text",
-    "description": "The padded text result.",
+    "name": "PaddedText",
+    "label": "Padded Text",
+    "description": "The resulting text after padding.",
     "defaultValue": {
-      "value": "resultText",
+      "value": "paddedText",
       "enabled": true
     },
     "required": false

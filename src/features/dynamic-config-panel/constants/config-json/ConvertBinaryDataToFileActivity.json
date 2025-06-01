@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "BinaryData",
-    "label": "BinaryData",
+    "label": "Binary Data",
     "description": "The binary data to convert.",
     "defaultValue": "",
     "required": true
@@ -12,9 +12,30 @@
     "direction": "Input",
     "type": "text",
     "name": "FilePath",
-    "label": "FilePath",
+    "label": "File Path",
     "description": "The full path where the file should be saved.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfExistsAction",
+    "label": "If File Exists",
+    "description": "Specifies the behavior when a file already exists in the destination folder.",
+    "defaultValue": "DoNothing",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Do nothing",
+        "value": "DoNothing",
+        "description": "Skips the file if it already exists."
+      },
+      {
+        "label": "Overwrite",
+        "value": "Overwrite",
+        "description": "Deletes the existing file and moves the new file."
+      }
+    ]
   }
 ]

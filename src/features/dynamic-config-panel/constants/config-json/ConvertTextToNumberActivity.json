@@ -4,18 +4,44 @@
     "type": "text",
     "name": "TextToConvert",
     "label": "Text to Convert",
-    "description": "The text to convert to a number.",
+    "description": "The text value that will be converted to a numeric type.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "OutputType",
+    "label": "Output Type",
+    "description": "Specifies the numeric type to which the text should be converted.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Integer",
+        "value": "Integer",
+        "description": "Converts the text to an integer value."
+      },
+      {
+        "label": "Double",
+        "value": "Double",
+        "description": "Converts the text to a double-precision floating-point value."
+      },
+      {
+        "label": "Decimal",
+        "value": "Decimal",
+        "description": "Converts the text to a decimal value."
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultNumber",
-    "label": "Result Number",
-    "description": "The resulting numeric value.",
+    "name": "ConvertedValue",
+    "label": "Converted Value",
+    "description": "Returns the resulting numeric value after conversion.",
     "defaultValue": {
-      "value": "resultNumber",
+      "value": "convertedValue",
       "enabled": true
     },
     "required": false

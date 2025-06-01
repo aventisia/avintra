@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the source worksheet.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "RangeToCopy",
+    "label": "Range to Copy",
+    "description": "The range of cells to copy (e.g., \u0027A1:B10\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "CopiedData",
+    "label": "Copied Data",
+    "description": "Returns the copied data as a DataTable for further processing.",
+    "defaultValue": {
+      "value": "copiedData",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -20,11 +20,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "OutputListOutput",
-    "label": "Output List",
-    "description": "The merged result from both input lists.",
+    "name": "MergedList",
+    "label": "Merged List",
+    "description": "Returns a new list containing all items from both input lists.",
     "defaultValue": {
-      "value": "outputListOutput",
+      "value": "mergedList",
       "enabled": true
     },
     "required": false

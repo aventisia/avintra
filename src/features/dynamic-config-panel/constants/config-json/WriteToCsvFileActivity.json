@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "CSV Output File Path",
+    "description": "The full path where the CSV file will be written.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "InputDataTable",
+    "label": "Data Table to Write",
+    "description": "The DataTable whose contents should be written to the CSV file.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IncludeHeader",
+    "label": "Include Header Row",
+    "description": "Indicates whether column names should be included as the header row in the CSV.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "AppendToFile",
+    "label": "Append To File",
+    "description": "Specify whether the data should be appended to the file if it exists.",
+    "defaultValue": false,
+    "required": false
+  }
+]

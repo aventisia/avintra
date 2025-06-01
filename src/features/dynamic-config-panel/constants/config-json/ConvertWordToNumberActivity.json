@@ -1,0 +1,23 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToConvert",
+    "label": "Text to Convert",
+    "description": "The word to convert into a numeric value.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "NumericValue",
+    "label": "Numeric Value",
+    "description": "Returns the numeric representation of the word.",
+    "defaultValue": {
+      "value": "numericValue",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -2,18 +2,18 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "ColumnIndex",
-    "label": "ColumnIndex",
-    "description": "The column index where the new column should be inserted.",
+    "name": "ColumnReference",
+    "label": "Column Reference",
+    "description": "The 1-based index or letter (e.g., \u0027A\u0027, \u0027B\u0027) of the column where the new column should be inserted.",
     "defaultValue": "",
     "required": true
   }

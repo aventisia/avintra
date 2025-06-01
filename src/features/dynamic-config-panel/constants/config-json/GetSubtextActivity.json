@@ -4,36 +4,86 @@
     "type": "text",
     "name": "OriginalText",
     "label": "Original Text",
-    "description": "The original text from which the substring will be extracted.",
+    "description": "The full text value from which to extract a substring.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "StartIndexType",
+    "label": "Start Index Type",
+    "description": "Specifies whether to start from the beginning of the text or at a specific character position.",
+    "defaultValue": "StartOfText",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Start of Text",
+        "value": "StartOfText",
+        "description": "Starts extraction from the beginning of the text."
+      },
+      {
+        "label": "Character Position",
+        "value": "CharacterPosition",
+        "description": "Specifies a zero-based character position to start extraction."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "StartIndex",
     "label": "Start Index",
-    "description": "The starting index of the substring.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Length",
-    "label": "Length",
-    "description": "The length of the substring to extract. If not provided, extracts until the end.",
+    "description": "The zero-based starting position of the substring. Only used if \u0027Start Index Type\u0027 is \u0027Character Position\u0027.",
     "defaultValue": "",
     "required": false
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "LengthType",
+    "label": "Length Type",
+    "description": "Specifies whether to extract a specific number of characters or until the end of the string.",
+    "defaultValue": "SpecificLength",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Until End",
+        "value": "UntilEnd",
+        "description": "Extracts until the end of the string."
+      },
+      {
+        "label": "Specific Length",
+        "value": "SpecificLength",
+        "description": "Extracts a specific number of characters."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NumberOfCharacters",
+    "label": "Number of Characters",
+    "description": "The number of characters to extract. Only used if \u0027Length Type\u0027 is \u0027Specific Length\u0027.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "LengthType",
+          "equals": "SpecificLength"
+        }
+      ]
+    }
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultText",
-    "label": "Result Text",
-    "description": "The resulting substring.",
+    "name": "SubstringResult",
+    "label": "Substring Result",
+    "description": "Returns the extracted substring.",
     "defaultValue": {
-      "value": "resultText",
+      "value": "substringResult",
       "enabled": true
     },
     "required": false

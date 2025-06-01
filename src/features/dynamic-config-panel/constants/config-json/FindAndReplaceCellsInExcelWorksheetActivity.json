@@ -2,28 +2,165 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SearchMode",
+    "label": "Search Mode",
+    "description": "Specifies whether to perform a find operation or a find-and-replace operation.",
+    "defaultValue": "Find",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Find",
+        "value": "Find",
+        "description": "Locates text in the worksheet."
+      },
+      {
+        "label": "Find and Replace",
+        "value": "FindAndReplace",
+        "description": "Locates and replaces text in the worksheet."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "TextToFind",
-    "label": "TextToFind",
-    "description": "The text to find.",
+    "label": "Text To Find",
+    "description": "The text or value to find in the worksheet.",
     "defaultValue": "",
-    "required": true
+    "required": false
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "TextToReplaceWith",
-    "label": "TextToReplaceWith",
-    "description": "The text to replace with.",
+    "label": "Text To Replace With",
+    "description": "The text or value to replace the found text with (required if \u0027Search Mode\u0027 is \u0027Find and Replace\u0027).",
     "defaultValue": "",
-    "required": true
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SearchMode",
+          "equals": "FindAndReplace"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "AllMatches",
+    "label": "All Matches",
+    "description": "If true, replaces all occurrences of the text. If false, replaces only the first occurrence.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "MatchCase",
+    "label": "Match Case",
+    "description": "If true, performs a case-sensitive search.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "MatchEntireCellContents",
+    "label": "Match Entire Cell Contents",
+    "description": "If true, matches only cells that contain exactly the specified text.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SearchBy",
+    "label": "Search By",
+    "description": "Specifies whether to search by rows or columns.",
+    "defaultValue": "Rows",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Rows",
+        "value": "Rows",
+        "description": "Searches by rows."
+      },
+      {
+        "label": "Columns",
+        "value": "Columns",
+        "description": "Searches by columns."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FoundCells",
+    "label": "Found Cells",
+    "description": "Returns a list of all matched cells when \u0027All Matches\u0027 is true.",
+    "defaultValue": {
+      "value": "foundCells",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AllMatches",
+          "equals": "True"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FoundColumnIndex",
+    "label": "Found Column Index",
+    "description": "Returns the column index of the found cell (if any).",
+    "defaultValue": {
+      "value": "foundColumnIndex",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AllMatches",
+          "equals": "False"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "FoundRowIndex",
+    "label": "Found Row Index",
+    "description": "Returns the row index of the found cell (if any).",
+    "defaultValue": {
+      "value": "foundRowIndex",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AllMatches",
+          "equals": "False"
+        }
+      ]
+    }
   }
 ]

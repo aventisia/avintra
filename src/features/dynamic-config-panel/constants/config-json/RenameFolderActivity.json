@@ -2,19 +2,31 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "CurrentFolderPath",
-    "label": "CurrentFolderPath",
-    "description": "The current path of the folder to rename.",
+    "name": "OriginalFolderPath",
+    "label": "Original Folder Path",
+    "description": "Specifies the path of the folder that needs to be renamed.",
     "defaultValue": "",
-    "required": true
+    "required": false
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "NewFolderName",
-    "label": "NewFolderName",
-    "description": "The new name for the folder.",
+    "label": "New Folder Name",
+    "description": "Specifies the new name for the folder.",
     "defaultValue": "",
-    "required": true
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "RenamedFolderPath",
+    "label": "Renamed Folder Path",
+    "description": "The path of the folder after it has been successfully renamed.",
+    "defaultValue": {
+      "value": "renamedFolderPath",
+      "enabled": true
+    },
+    "required": false
   }
 ]

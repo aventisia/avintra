@@ -2,18 +2,39 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "SelectionType",
+    "label": "Selection Type",
+    "description": "Specifies whether to select the worksheet by Name or Index.",
+    "defaultValue": "Name",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": ""
+      },
+      {
+        "label": "Index",
+        "value": "Index",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
-    "name": "CurrentWorksheetName",
-    "label": "CurrentWorksheetName",
-    "description": "The current name of the worksheet.",
+    "name": "SearchValue",
+    "label": "Search Value",
+    "description": "The worksheet name (if selection type is \u0027Name\u0027) or index (if selection type is \u0027Index\u0027).",
     "defaultValue": "",
     "required": true
   },
@@ -21,8 +42,8 @@
     "direction": "Input",
     "type": "text",
     "name": "NewWorksheetName",
-    "label": "NewWorksheetName",
-    "description": "The new name for the worksheet.",
+    "label": "New Worksheet Name",
+    "description": "The new name to assign to the selected worksheet.",
     "defaultValue": "",
     "required": true
   }

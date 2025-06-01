@@ -2,20 +2,44 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
+    "name": "ActiveCellAddress",
+    "label": "Active Cell Address",
     "description": "Returns the address of the active cell (e.g., \u0027A1\u0027).",
     "defaultValue": {
-      "value": "result",
+      "value": "activeCellAddress",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ActiveCellColumnIndex",
+    "label": "Active Cell Column Index",
+    "description": "Returns the column index of the active cell.",
+    "defaultValue": {
+      "value": "activeCellColumnIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ActiveCellRowIndex",
+    "label": "Active Cell Row Index",
+    "description": "Returns the row index of the active cell.",
+    "defaultValue": {
+      "value": "activeCellRowIndex",
       "enabled": true
     },
     "required": false

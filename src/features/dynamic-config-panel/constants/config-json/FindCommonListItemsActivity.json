@@ -4,7 +4,7 @@
     "type": "text",
     "name": "FirstList",
     "label": "First List",
-    "description": "The variable that contains the first list to compare.",
+    "description": "The first list to compare.",
     "defaultValue": "",
     "required": true
   },
@@ -13,18 +13,18 @@
     "type": "text",
     "name": "SecondList",
     "label": "Second List",
-    "description": "The variable that contains the second list to compare.",
+    "description": "The second list to compare.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "IntersectionListOutput",
-    "label": "Intersection List Output",
-    "description": "The output list containing common items from both input lists.",
+    "name": "IntersectionList",
+    "label": "Intersection List",
+    "description": "Returns a list containing the common items from both input lists.",
     "defaultValue": {
-      "value": "intersectionListOutput",
+      "value": "intersectionList",
       "enabled": true
     },
     "required": false

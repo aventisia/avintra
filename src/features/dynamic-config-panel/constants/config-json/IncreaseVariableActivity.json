@@ -2,19 +2,31 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "VariableName",
-    "label": "Variable Name",
-    "description": "The name of the variable containing the numeric value to increase.",
+    "name": "VariableToIncrease",
+    "label": "Variable To Increase",
+    "description": "The numeric variable to increase.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "IncreaseBy",
-    "label": "Increase By",
+    "name": "ValueToAdd",
+    "label": "Value To Add",
     "description": "The amount to add to the variable. Can be a number or another variable containing a number.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the resulting value after increasing the variable.",
+    "defaultValue": {
+      "value": "result",
+      "enabled": true
+    },
+    "required": false
   }
 ]

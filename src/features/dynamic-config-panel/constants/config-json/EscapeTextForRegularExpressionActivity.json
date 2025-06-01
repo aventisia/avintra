@@ -4,18 +4,18 @@
     "type": "text",
     "name": "TextToEscape",
     "label": "Text to Escape",
-    "description": "The text to escape.",
+    "description": "The text value that will be escaped for use in regular expressions.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultText",
-    "label": "Result Text",
-    "description": "The escaped text.",
+    "name": "EscapedText",
+    "label": "Escaped Text",
+    "description": "Returns the text after escaping special characters for regular expressions.",
     "defaultValue": {
-      "value": "resultText",
+      "value": "escapedText",
       "enabled": true
     },
     "required": false

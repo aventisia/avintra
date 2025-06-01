@@ -4,7 +4,7 @@
     "type": "text",
     "name": "TextToParse",
     "label": "Text To Parse",
-    "description": "The text to parse.",
+    "description": "The text value that will be parsed based on the specified search pattern.",
     "defaultValue": "",
     "required": true
   },
@@ -20,20 +20,47 @@
   {
     "direction": "Input",
     "type": "switch",
-    "name": "FindAllOccurrences",
-    "label": "Find All Occurrences",
-    "description": "Specifies whether to find all occurrences or just the first one.",
+    "name": "IsRegularExpression",
+    "label": "Is Regular Expression",
+    "description": "If true, treats \u0027Search Pattern\u0027 as a regular expression pattern.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartPosition",
+    "label": "Start Parsing At Position",
+    "description": "The index at which to start parsing the text.",
+    "defaultValue": 0,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "FirstOccurrenceOnly",
+    "label": "First Occurrence Only",
+    "description": "If true, returns only the first occurrence of the search pattern.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IgnoreCase",
+    "label": "Ignore Case",
+    "description": "If true, performs a case-insensitive search.",
     "defaultValue": false,
     "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultMatches",
-    "label": "Result Matches",
-    "description": "The resulting list of matches or the first match found.",
+    "name": "ParsedMatches",
+    "label": "Parsed Matches",
+    "description": "Returns the list of matches found in the text.",
     "defaultValue": {
-      "value": "resultMatches",
+      "value": "parsedMatches",
       "enabled": true
     },
     "required": false

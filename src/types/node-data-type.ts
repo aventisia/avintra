@@ -8,7 +8,7 @@ type NodeTypeAndCategory = {
 
 type NodeInputType = {
   key: string;
-  value: string | number | boolean;
+  value: unknown;
 };
 
 type NodeOutputValueType = {

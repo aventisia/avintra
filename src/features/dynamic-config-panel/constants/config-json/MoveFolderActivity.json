@@ -3,18 +3,30 @@
     "direction": "Input",
     "type": "text",
     "name": "SourceFolderPath",
-    "label": "SourceFolderPath",
-    "description": "The source path of the folder to move.",
+    "label": "Folder to Move",
+    "description": "Specifies the path of the folder that needs to be moved.",
     "defaultValue": "",
-    "required": true
+    "required": false
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "DestinationFolderPath",
-    "label": "DestinationFolderPath",
-    "description": "The destination path where the folder will be moved.",
+    "label": "Destination Folder",
+    "description": "Specifies the path of the destination folder where the source folder will be moved.",
     "defaultValue": "",
-    "required": true
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "MovedFolderPath",
+    "label": "Moved Folder Path",
+    "description": "The path of the folder after it has been successfully moved.",
+    "defaultValue": {
+      "value": "movedFolderPath",
+      "enabled": true
+    },
+    "required": false
   }
 ]

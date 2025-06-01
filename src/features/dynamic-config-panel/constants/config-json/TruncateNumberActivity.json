@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Number",
-    "label": "Number",
-    "description": "The number to operate on. This can be a number, or a variable containing a number",
+    "name": "NumberToTruncate",
+    "label": "Number to Truncate",
+    "description": "The numeric value to truncate or round.",
     "defaultValue": "",
     "required": true
   },
@@ -13,24 +13,24 @@
     "type": "select",
     "name": "Operation",
     "label": "Operation",
-    "description": "Specifies the operation to perform on the number.",
-    "defaultValue": "GetIntegerPart",
+    "description": "Specifies how to truncate or round the number.",
+    "defaultValue": "",
     "required": true,
     "selectOptions": [
       {
         "label": "Get Integer Part",
         "value": "GetIntegerPart",
-        "description": "Extracts the integer part of the number."
+        "description": "Retrieves only the integer portion of the number."
       },
       {
-        "label": "Get Decimal Part",
-        "value": "GetDecimalPart",
-        "description": "Extracts the decimal part of the number."
+        "label": "Get Fractional Part",
+        "value": "GetFractionalPart",
+        "description": "Retrieves only the fractional portion of the number."
       },
       {
-        "label": "Round Number",
-        "value": "GetRoundNumber",
-        "description": "Rounds the number to a specified number of decimal places."
+        "label": "Round",
+        "value": "Round",
+        "description": "Rounds the number specified number of decimal places."
       }
     ]
   },
@@ -39,26 +39,47 @@
     "type": "text",
     "name": "DecimalPlaces",
     "label": "Decimal Places",
-    "description": "The number of decimal places to round to. Required only if the operation is \u0027RoundNumber\u0027.",
-    "defaultValue": 2,
+    "description": "The number of decimal places to round to. Only applicable for rounding operations.",
+    "defaultValue": "",
     "required": false,
     "renderIf": {
       "conditions": [
         {
           "field": "Operation",
-          "equals": "GetRoundNumber"
+          "equals": "Round"
         }
       ]
     }
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "RoundOperation",
+    "label": "Round Operation",
+    "description": "Specifies round up or round down the number.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Round Up",
+        "value": "RoundUp",
+        "description": "Rounds the number up to the specified number of decimal places."
+      },
+      {
+        "label": "Round Down",
+        "value": "RoundDown",
+        "description": "Rounds the number down to the specified number of decimal places."
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "TruncatedNumber",
-    "label": "Truncated Number",
-    "description": "Returns the result of the operation.",
+    "name": "TruncatedValue",
+    "label": "Truncated Value",
+    "description": "Returns the truncated or rounded numeric value.",
     "defaultValue": {
-      "value": "truncatedNumber",
+      "value": "truncatedValue",
       "enabled": true
     },
     "required": false

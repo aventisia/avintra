@@ -2,10 +2,31 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "FolderPath",
-    "label": "FolderPath",
-    "description": "The path of the folder to create.",
+    "name": "ParentDirectory",
+    "label": "Create New Folder Into",
+    "description": "The full path of the parent directory where the new folder should be created.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FolderName",
+    "label": "New Folder Name",
+    "description": "The name of the folder to be created inside the specified parent directory.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "NewFolder",
+    "label": "New Folder",
+    "description": "The full path of the newly created folder, which can be used for further actions.",
+    "defaultValue": {
+      "value": "newFolder",
+      "enabled": true
+    },
+    "required": false
   }
 ]

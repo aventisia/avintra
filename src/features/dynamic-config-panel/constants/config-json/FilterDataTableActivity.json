@@ -6,14 +6,23 @@
     "label": "Data Table",
     "description": "The data table to filter.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "FilterExpression",
-    "label": "FilterExpression",
+    "label": "Filter Expression",
     "description": "The filter expression (e.g., \u0022Age \u003E 30\u0022).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "MatchCase",
+    "label": "Match Case",
+    "description": "If true, performs a case-sensitive filter.",
     "defaultValue": "",
     "required": false
   },

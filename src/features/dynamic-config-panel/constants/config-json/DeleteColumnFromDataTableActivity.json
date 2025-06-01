@@ -10,11 +10,57 @@
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "SpecifyColumnWith",
+    "label": "Specify Column With",
+    "description": "Specifies whether to delete the column by name or index.",
+    "defaultValue": "Name",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Name",
+        "value": "Name",
+        "description": "Delete column by name."
+      },
+      {
+        "label": "Index",
+        "value": "Index",
+        "description": "Delete column by index."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "ColumnName",
-    "label": "ColumnName",
-    "description": "The name of the column to delete.",
+    "label": "Column Name",
+    "description": "The name of the column to delete (required if \u0027Specify Column With\u0027 is \u0027Name\u0027).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SpecifyColumnWith",
+          "equals": "Name"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnIndex",
+    "label": "Column Index",
+    "description": "The zero-based index of the column to delete (required if \u0027Specify Column With\u0027 is \u0027Index\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SpecifyColumnWith",
+          "equals": "Index"
+        }
+      ]
+    }
   }
 ]

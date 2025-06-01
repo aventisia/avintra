@@ -6,7 +6,7 @@
     "label": "Data Table",
     "description": "The data table to which the row will be inserted.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
@@ -15,15 +15,44 @@
     "label": "Row Values",
     "description": "An array of values to insert into the row.",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "InsertLocation",
+    "label": "Insert Location",
+    "description": "Specifies where to insert the new row.",
+    "defaultValue": "BeforeRowIndex",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Before Row Index",
+        "value": "BeforeRowIndex",
+        "description": "Inserts the row before the specified index."
+      },
+      {
+        "label": "End of Data Table",
+        "value": "EndOfDataTable",
+        "description": "Appends the row at the end of the data table."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "RowIndex",
-    "label": "RowIndex",
-    "description": "The index before which the row should be inserted. Use -1 to append at the end.",
+    "label": "Row Index",
+    "description": "The zero-based index before which to insert the row (required if \u0027Insert Location\u0027 is \u0027Before Row Index\u0027).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "InsertLocation",
+          "equals": "BeforeRowIndex"
+        }
+      ]
+    }
   }
 ]

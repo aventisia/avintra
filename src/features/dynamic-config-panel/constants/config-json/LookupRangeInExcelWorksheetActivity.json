@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
@@ -12,28 +12,202 @@
     "direction": "Input",
     "type": "text",
     "name": "LookupValue",
-    "label": "LookupValue",
-    "description": "The lookup value.",
+    "label": "Lookup Value",
+    "description": "The value to search for in the lookup range.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "RangesFormat",
+    "label": "Ranges Format",
+    "description": "Specifies how the ranges are defined: Named Cells or Specific Ranges.",
+    "defaultValue": "NamedCells",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Named Cells",
+        "value": "NamedCells",
+        "description": "Uses named ranges for lookup."
+      },
+      {
+        "label": "Specific Ranges",
+        "value": "SpecificRanges",
+        "description": "Uses explicit start/end columns/rows for lookup."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
-    "name": "SearchRange",
-    "label": "SearchRange",
-    "description": "The range to search for the lookup value (e.g., \u0027A1:B10\u0027).",
+    "name": "CellsName",
+    "label": "Cells Name",
+    "description": "The name of the named range to use for lookup (required if \u0027Ranges Format\u0027 is \u0027Named Cells\u0027).",
     "defaultValue": "",
-    "required": true
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "NamedCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartColumn",
+    "label": "Start Column",
+    "description": "The starting column of the lookup range (required if \u0027Ranges Format\u0027 is \u0027Specific Ranges\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartRow",
+    "label": "Start Row",
+    "description": "The starting row of the lookup range (required if \u0027Ranges Format\u0027 is \u0027Specific Ranges\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndColumn",
+    "label": "End Column",
+    "description": "The ending column of the lookup range (required if \u0027Ranges Format\u0027 is \u0027Specific Ranges\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndRow",
+    "label": "End Row",
+    "description": "The ending row of the lookup range (required if \u0027Ranges Format\u0027 is \u0027Specific Ranges\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "ArrayForm",
+    "label": "Array Form",
+    "description": "If true, performs array-based lookup; otherwise, performs scalar lookup.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartColumnOfResultsSource",
+    "label": "Start Column of Results Source",
+    "description": "The starting column of the result range (required if \u0027Array Form\u0027 is false).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ArrayForm",
+          "equals": "false"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartRowOfResultsSource",
+    "label": "Start Row of Results Source",
+    "description": "The starting row of the result range (required if \u0027Array Form\u0027 is false).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ArrayForm",
+          "equals": "false"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndColumnOfResultsSource",
+    "label": "End Column of Results Source",
+    "description": "The ending column of the result range (required if \u0027Array Form\u0027 is false).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ArrayForm",
+          "equals": "false"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndRowOfResultsSource",
+    "label": "End Row of Results Source",
+    "description": "The ending row of the result range (required if \u0027Array Form\u0027 is false).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ArrayForm",
+          "equals": "false"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the result of the lookup operation.",
+    "name": "LookupResult",
+    "label": "Lookup Result",
+    "description": "Returns the matched result from the result range based on the lookup value.",
     "defaultValue": {
-      "value": "result",
+      "value": "lookupResult",
       "enabled": true
     },
     "required": false

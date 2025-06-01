@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DataTable",
+    "label": "Data Table",
+    "description": "The DataTable containing the data to paste into the Excel worksheet.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartRow",
+    "label": "Start Row",
+    "description": "The row number where pasting should start.",
+    "defaultValue": 1,
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartColumn",
+    "label": "Start Column",
+    "description": "The column number where pasting should start.",
+    "defaultValue": 1,
+    "required": true
+  }
+]

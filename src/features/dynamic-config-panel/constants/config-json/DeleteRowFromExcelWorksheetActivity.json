@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "RowIndex",
-    "label": "RowIndex",
-    "description": "The row index to delete.",
+    "label": "Row Index",
+    "description": "The index (1-based) of the row to delete.",
     "defaultValue": "",
     "required": true
   }

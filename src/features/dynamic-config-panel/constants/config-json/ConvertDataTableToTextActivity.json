@@ -14,14 +14,14 @@
     "name": "IncludeColumnNames",
     "label": "Include Column Names",
     "description": "Specifies whether to include column names as the first row in the CSV output.",
-    "defaultValue": false,
+    "defaultValue": true,
     "required": false
   },
   {
     "direction": "Input",
     "type": "switch",
     "name": "UseCustomColumnsSeparator",
-    "label": "Use Custom Column Separator",
+    "label": "Use Custom Columns Separator",
     "description": "Specifies whether to use a custom column separator instead of a predefined one.",
     "defaultValue": false,
     "required": false
@@ -64,16 +64,24 @@
     "label": "Custom Columns Separator",
     "description": "A custom string used to separate columns in the CSV output.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "UseCustomColumnsSeparator",
+          "equals": "true"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "OCsvTextOutput",
+    "name": "CsvTextOutput",
     "label": "CSV Text Output",
     "description": "The CSV text representation of the data table.",
     "defaultValue": {
-      "value": "oCsvTextOutput",
+      "value": "csvTextOutput",
       "enabled": true
     },
     "required": false

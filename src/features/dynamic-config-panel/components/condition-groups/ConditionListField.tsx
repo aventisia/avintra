@@ -2,12 +2,13 @@ import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import {
   ConditionLabel,
   DCPFieldSchemaType,
   FieldsLabelHeader,
   RenderField,
+  shouldRenderField,
 } from "../..";
 
 interface ConditionListFieldProps extends DCPFieldSchemaType {
@@ -29,6 +30,12 @@ export const ConditionListField = ({
   const { fields, append, remove } = useFieldArray({
     control,
     name: groupName,
+  });
+
+  // Watch the values of the fields in the group
+  const rowValues = useWatch({
+    name: groupName,
+    control,
   });
 
   return (
@@ -80,13 +87,23 @@ export const ConditionListField = ({
             "grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5",
           )}
         >
-          {conditionSchema?.map((subField) => (
-            <RenderField
-              key={subField.name}
-              {...subField}
-              name={`${groupName}.${index}.${subField.name}`}
-            />
-          ))}
+          {conditionSchema?.map((subField) => {
+            // Check if the second value is reuqired based on the renderIf conditions
+            subField.disabled = !shouldRenderField(
+              "Input",
+              subField,
+              rowValues[index],
+            );
+
+            // Render the sub-field
+            return (
+              <RenderField
+                key={subField.name}
+                {...subField}
+                name={`${groupName}.${index}.${subField.name}`}
+              />
+            );
+          })}
           <Button
             type="button"
             variant="caution"

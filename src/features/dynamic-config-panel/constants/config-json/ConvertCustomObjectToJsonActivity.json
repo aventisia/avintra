@@ -9,13 +9,22 @@
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "PrettyPrint",
+    "label": "Pretty Print",
+    "description": "If true, formats the JSON output with indentation for better readability.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "CustomObjectAsJsonOutput",
+    "name": "JsonOutput",
     "label": "JSON Output",
     "description": "The converted JSON string from the provided custom object.",
     "defaultValue": {
-      "value": "customObjectAsJsonOutput",
+      "value": "jsonOutput",
       "enabled": true
     },
     "required": false

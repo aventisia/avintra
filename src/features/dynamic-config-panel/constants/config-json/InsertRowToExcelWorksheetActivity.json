@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelInstanceId",
-    "label": "ExcelInstanceId",
-    "description": "The Excel instance ID or token.",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "RowIndex",
-    "label": "RowIndex",
-    "description": "The row index where the new row should be inserted.",
+    "label": "Row Index",
+    "description": "The 1-based index of the row where the new row should be inserted (inserted above this row).",
     "defaultValue": "",
     "required": true
   }

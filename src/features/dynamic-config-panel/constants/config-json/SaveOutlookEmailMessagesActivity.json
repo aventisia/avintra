@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OutlookApplication",
+    "label": "Outlook Application",
+    "description": "The Outlook Application object used to access mail items.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EmailMessages",
+    "label": "Email Messages",
+    "description": "A list of MailItem objects representing the emails to save.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SaveLocation",
+    "label": "Save Location",
+    "description": "The folder path where the .msg files should be saved.",
+    "defaultValue": "",
+    "required": true
+  }
+]

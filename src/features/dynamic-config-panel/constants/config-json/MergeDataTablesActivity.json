@@ -4,25 +4,51 @@
     "type": "text",
     "name": "FirstDataTable",
     "label": "First Data Table",
-    "description": "The first data table to merge.",
+    "description": "The first DataTable to be merged.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "SecondDataTable",
     "label": "Second Data Table",
-    "description": "The second data table to merge.",
+    "description": "The second DataTable to be merged.",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "MergeMode",
+    "label": "Merge Mode",
+    "description": "Specifies how to handle columns that are present in the second table but not in the first table.",
+    "defaultValue": "AddExtraColumns",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "AddExtraColumns",
+        "value": "AddExtraColumns",
+        "description": ""
+      },
+      {
+        "label": "IgnoreExtraColumns",
+        "value": "IgnoreExtraColumns",
+        "description": ""
+      },
+      {
+        "label": "ErrorOnExtraColumns",
+        "value": "ErrorOnExtraColumns",
+        "description": ""
+      }
+    ]
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "MergedDataTable",
     "label": "Merged Data Table",
-    "description": "The merged data table.",
+    "description": "The resulting DataTable after merging the two input Data Tables.",
     "defaultValue": {
       "value": "mergedDataTable",
       "enabled": true

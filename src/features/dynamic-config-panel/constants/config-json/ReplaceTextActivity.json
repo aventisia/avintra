@@ -27,13 +27,40 @@
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseRegex",
+    "label": "Use Regular Expressions",
+    "description": "If true, treats \u0027Search Pattern\u0027 as a regular expression.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IgnoreCase",
+    "label": "Ignore Case",
+    "description": "If true, performs a case-insensitive search.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "ActivateEscapeSequences",
+    "label": "Activate Escape Sequences",
+    "description": "If true, interprets escape sequences in the replacement text.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultText",
-    "label": "Resulting Text",
+    "name": "ReplacedText",
+    "label": "Replaced Text",
     "description": "The resulting text after replacement.",
     "defaultValue": {
-      "value": "resultText",
+      "value": "replacedText",
       "enabled": true
     },
     "required": false

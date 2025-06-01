@@ -20,11 +20,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
+    "name": "ConvertedDateTime",
+    "label": "ConvertedDateTime",
     "description": "The formatted datetime as a text value.",
     "defaultValue": {
-      "value": "result",
+      "value": "convertedDateTime",
       "enabled": true
     },
     "required": false

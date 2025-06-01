@@ -6,15 +6,27 @@
     "label": "Data Table",
     "description": "The data table from which the row will be deleted.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "RowIndex",
-    "label": "RowIndex",
-    "description": "The index of the row to delete.",
+    "label": "Row Index",
+    "description": "The zero-based index of the row to delete.",
     "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ModifiedDataTable",
+    "label": "Modified Data Table",
+    "description": "Returns the updated data table after the row is deleted.",
+    "defaultValue": {
+      "value": "modifiedDataTable",
+      "enabled": true
+    },
     "required": false
   }
 ]

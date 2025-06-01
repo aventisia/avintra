@@ -2,7 +2,7 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Variable",
+    "name": "VariableName",
     "label": "Variable Name",
     "description": "The name of the variable to set.",
     "defaultValue": "",
@@ -11,9 +11,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Value",
-    "label": "Value",
-    "description": "The value to assign to the variable.",
+    "name": "ValueToSet",
+    "label": "Value To Set",
+    "description": "The value (text, number, list, or object) to assign to the variable.",
     "defaultValue": "",
     "required": true
   }

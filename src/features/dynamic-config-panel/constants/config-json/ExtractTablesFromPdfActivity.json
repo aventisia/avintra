@@ -2,20 +2,100 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "SourcePdfPath",
-    "label": "SourcePdfPath",
-    "description": "The path to the source PDF file.",
+    "name": "PdfFile",
+    "label": "PDF File Path",
+    "description": "",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "PageSelection",
+    "label": "Page Selection Mode",
+    "description": "",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "All",
+        "value": "All",
+        "description": ""
+      },
+      {
+        "label": "Single",
+        "value": "Single",
+        "description": ""
+      },
+      {
+        "label": "Range",
+        "value": "Range",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "MergeTablesAcrossPages",
+    "label": "Merge Tables Across Pages",
+    "description": "",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "FirstLineAsHeaders",
+    "label": "First Line Contains Column Names",
+    "description": "",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PageNumber",
+    "label": "Page Number (for Single)",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FromPageNumber",
+    "label": "From Page Number (for Range)",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ToPageNumber",
+    "label": "To Page Number (for Range)",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the extracted tables as a list of strings.",
+    "name": "ExtractedTables",
+    "label": "Extracted Tables",
+    "description": "",
     "defaultValue": {
-      "value": "result",
+      "value": "extractedTables",
       "enabled": true
     },
     "required": false

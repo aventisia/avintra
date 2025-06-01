@@ -2,11 +2,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "TempFilePath",
-    "label": "TempFilePath",
-    "description": "Returns the path of the temporary file.",
+    "name": "TempFile",
+    "label": "Temporary File",
+    "description": "The FileInfo object representing the temporary file created on disk.",
     "defaultValue": {
-      "value": "tempFilePath",
+      "value": "tempFile",
       "enabled": true
     },
     "required": false
