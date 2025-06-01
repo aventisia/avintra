@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns true if the service is in the specified state, otherwise false.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

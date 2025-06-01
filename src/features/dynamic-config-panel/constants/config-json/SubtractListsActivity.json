@@ -24,7 +24,7 @@
     "label": "List Difference Output",
     "description": "The resulting list after subtracting items from the second list.",
     "defaultValue": {
-      "value": "listDifferenceOutput",
+      "value": "ListDifferenceOutput",
       "enabled": true
     },
     "required": false

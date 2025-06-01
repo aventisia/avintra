@@ -24,7 +24,7 @@
     "label": "Result",
     "description": "Returns true if the search term is found, false otherwise.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

@@ -33,7 +33,7 @@
     "label": "Result",
     "description": "Returns the connection ID or token for the opened FTPS connection.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

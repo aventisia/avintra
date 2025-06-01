@@ -50,7 +50,7 @@
     "label": "Merged Data Table",
     "description": "The resulting DataTable after merging the two input Data Tables.",
     "defaultValue": {
-      "value": "mergedDataTable",
+      "value": "MergedDataTable",
       "enabled": true
     },
     "required": false

@@ -24,7 +24,7 @@
     "label": "Is Format Valid",
     "description": "Returns true if the input matches the expected format; otherwise, false.",
     "defaultValue": {
-      "value": "isValid",
+      "value": "IsValid",
       "enabled": true
     },
     "required": false

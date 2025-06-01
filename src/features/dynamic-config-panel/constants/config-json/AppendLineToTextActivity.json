@@ -24,7 +24,7 @@
     "label": "OResultOutput",
     "description": "The resulting text after appending the new line.",
     "defaultValue": {
-      "value": "oResultOutput",
+      "value": "OResultOutput",
       "enabled": true
     },
     "required": false

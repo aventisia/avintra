@@ -6,7 +6,7 @@
     "label": "New List",
     "description": "The newly created empty list.",
     "defaultValue": {
-      "value": "newList",
+      "value": "NewList",
       "enabled": true
     },
     "required": false

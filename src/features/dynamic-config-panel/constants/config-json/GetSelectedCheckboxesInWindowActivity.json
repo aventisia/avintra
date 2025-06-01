@@ -15,7 +15,7 @@
     "label": "SelectedCheckboxes",
     "description": "Returns the list of selected checkbox names or states.",
     "defaultValue": {
-      "value": "selectedCheckboxes",
+      "value": "SelectedCheckboxes",
       "enabled": true
     },
     "required": false

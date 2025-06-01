@@ -6,7 +6,7 @@
     "label": "Result",
     "description": "Returns the current mouse position as a Point object.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

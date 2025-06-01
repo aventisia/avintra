@@ -24,7 +24,7 @@
     "label": "Result",
     "description": "Returns the list of occurrences of the searched text.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

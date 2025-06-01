@@ -24,7 +24,7 @@
     "label": "Result",
     "description": "Returns the response text from the web service.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

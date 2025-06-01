@@ -58,7 +58,7 @@
     "label": "Result",
     "description": "The retrieved date and time based on the specified options.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

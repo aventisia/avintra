@@ -24,7 +24,7 @@
     "label": "Custom Object",
     "description": "Returns the resulting custom object after JSON deserialization.",
     "defaultValue": {
-      "value": "customObject",
+      "value": "CustomObject",
       "enabled": true
     },
     "required": false

@@ -24,7 +24,7 @@
     "label": "Merged List",
     "description": "Returns a new list containing all items from both input lists.",
     "defaultValue": {
-      "value": "mergedList",
+      "value": "MergedList",
       "enabled": true
     },
     "required": false

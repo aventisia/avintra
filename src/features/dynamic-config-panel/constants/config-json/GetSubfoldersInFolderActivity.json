@@ -24,7 +24,7 @@
     "label": "Subfolder List",
     "description": "The collection of subfolder paths found in the specified directory.",
     "defaultValue": {
-      "value": "subfolders",
+      "value": "Subfolders",
       "enabled": true
     },
     "required": false

@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns the selected date or null if canceled.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

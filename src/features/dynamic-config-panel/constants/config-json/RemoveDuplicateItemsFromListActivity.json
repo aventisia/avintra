@@ -24,7 +24,7 @@
     "label": "Deduplicated List",
     "description": "Returns the list after removing duplicate items.",
     "defaultValue": {
-      "value": "deduplicatedList",
+      "value": "DeduplicatedList",
       "enabled": true
     },
     "required": false

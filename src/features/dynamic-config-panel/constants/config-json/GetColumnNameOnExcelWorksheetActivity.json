@@ -24,7 +24,7 @@
     "label": "Column Name",
     "description": "Returns the column letter corresponding to the given index (e.g., \u0027A\u0027, \u0027B\u0027).",
     "defaultValue": {
-      "value": "columnName",
+      "value": "ColumnName",
       "enabled": true
     },
     "required": false

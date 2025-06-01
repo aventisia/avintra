@@ -50,7 +50,7 @@
     "label": "DecryptedText",
     "description": "Returns the decrypted text.",
     "defaultValue": {
-      "value": "decryptedText",
+      "value": "DecryptedText",
       "enabled": true
     },
     "required": false

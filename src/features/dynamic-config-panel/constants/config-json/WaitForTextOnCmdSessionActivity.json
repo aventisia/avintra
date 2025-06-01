@@ -24,7 +24,7 @@
     "label": "TextFound",
     "description": "Returns true if the expected text was found, otherwise false.",
     "defaultValue": {
-      "value": "textFound",
+      "value": "TextFound",
       "enabled": true
     },
     "required": false

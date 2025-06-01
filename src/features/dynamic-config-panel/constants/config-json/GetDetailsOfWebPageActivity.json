@@ -6,7 +6,7 @@
     "label": "Web Page Property",
     "description": "The value retrieved from the web page based on the selected detail type.",
     "defaultValue": {
-      "value": "oWebPagePropertyOutput",
+      "value": "OWebPagePropertyOutput",
       "enabled": true
     },
     "required": false

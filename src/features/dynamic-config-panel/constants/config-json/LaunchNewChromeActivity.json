@@ -207,7 +207,7 @@
     "label": "Browser Output",
     "description": "The new browser instance ID to use for automation actions.",
     "defaultValue": {
-      "value": "browserInstance",
+      "value": "BrowserInstance",
       "enabled": true
     },
     "required": false

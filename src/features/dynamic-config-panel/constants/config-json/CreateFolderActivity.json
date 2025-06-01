@@ -24,7 +24,7 @@
     "label": "New Folder",
     "description": "The full path of the newly created folder, which can be used for further actions.",
     "defaultValue": {
-      "value": "newFolder",
+      "value": "NewFolder",
       "enabled": true
     },
     "required": false

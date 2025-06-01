@@ -15,7 +15,7 @@
     "label": "SelectedRadioButton",
     "description": "Returns the name or state of the selected radio button.",
     "defaultValue": {
-      "value": "selectedRadioButton",
+      "value": "SelectedRadioButton",
       "enabled": true
     },
     "required": false

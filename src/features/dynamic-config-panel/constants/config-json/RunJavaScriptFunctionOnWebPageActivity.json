@@ -24,7 +24,7 @@
     "label": "Result Output",
     "description": "The result returned after executing the JavaScript function.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

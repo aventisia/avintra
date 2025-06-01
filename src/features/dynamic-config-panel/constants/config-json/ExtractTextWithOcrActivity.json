@@ -15,7 +15,7 @@
     "label": "ExtractedText",
     "description": "Returns the extracted text.",
     "defaultValue": {
-      "value": "extractedText",
+      "value": "ExtractedText",
       "enabled": true
     },
     "required": false

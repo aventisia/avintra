@@ -15,7 +15,7 @@
     "label": "Reversed List",
     "description": "Returns the list after reversing the order of its items.",
     "defaultValue": {
-      "value": "reversedList",
+      "value": "ReversedList",
       "enabled": true
     },
     "required": false

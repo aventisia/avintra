@@ -24,7 +24,7 @@
     "label": "Macro Return Value",
     "description": "Returns the value returned by the macro, if any.",
     "defaultValue": {
-      "value": "macroReturnValue",
+      "value": "MacroReturnValue",
       "enabled": true
     },
     "required": false

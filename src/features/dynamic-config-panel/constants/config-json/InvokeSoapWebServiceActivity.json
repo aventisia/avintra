@@ -33,7 +33,7 @@
     "label": "Result",
     "description": "Returns the response from the SOAP web service.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

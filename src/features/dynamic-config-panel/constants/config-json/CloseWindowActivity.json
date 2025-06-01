@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "WindowHandle",
-    "label": "WindowHandle",
-    "description": "The handle or identifier of the window.",
+    "name": "WindowElement",
+    "label": "Window",
+    "description": "Select the window you want to close.",
     "defaultValue": "",
     "required": true
   }

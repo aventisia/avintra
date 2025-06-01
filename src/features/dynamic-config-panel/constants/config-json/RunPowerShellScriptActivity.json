@@ -15,7 +15,7 @@
     "label": "ScriptOutput",
     "description": "Returns the output of the script.",
     "defaultValue": {
-      "value": "scriptOutput",
+      "value": "ScriptOutput",
       "enabled": true
     },
     "required": false

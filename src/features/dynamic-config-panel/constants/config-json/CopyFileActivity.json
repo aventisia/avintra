@@ -45,7 +45,7 @@
     "label": "Copied Files",
     "description": "Returns the list of successfully copied files.",
     "defaultValue": {
-      "value": "copiedFiles",
+      "value": "CopiedFiles",
       "enabled": true
     },
     "required": false

@@ -15,7 +15,7 @@
     "label": "New Data Table",
     "description": "The newly created or cloned data table.",
     "defaultValue": {
-      "value": "newDataTable",
+      "value": "NewDataTable",
       "enabled": true
     },
     "required": false

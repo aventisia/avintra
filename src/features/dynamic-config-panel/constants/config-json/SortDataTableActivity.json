@@ -75,7 +75,7 @@
     "label": "Sorted Data Table",
     "description": "The DataTable after it has been sorted based on the specified criteria.",
     "defaultValue": {
-      "value": "sortedDataTable",
+      "value": "SortedDataTable",
       "enabled": true
     },
     "required": false

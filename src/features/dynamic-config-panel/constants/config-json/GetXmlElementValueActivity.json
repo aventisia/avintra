@@ -24,7 +24,7 @@
     "label": "ElementValue",
     "description": "Returns the element value.",
     "defaultValue": {
-      "value": "elementValue",
+      "value": "ElementValue",
       "enabled": true
     },
     "required": false

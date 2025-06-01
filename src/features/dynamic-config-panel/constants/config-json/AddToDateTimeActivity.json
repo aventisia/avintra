@@ -65,7 +65,7 @@
     "label": "Updated DateTime",
     "description": "The resulting DateTime after the specified value has been added.",
     "defaultValue": {
-      "value": "resultDateTime",
+      "value": "ResultDateTime",
       "enabled": true
     },
     "required": false

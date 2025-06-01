@@ -60,7 +60,7 @@
     "label": "Parsed Matches",
     "description": "Returns the list of matches found in the text.",
     "defaultValue": {
-      "value": "parsedMatches",
+      "value": "ParsedMatches",
       "enabled": true
     },
     "required": false

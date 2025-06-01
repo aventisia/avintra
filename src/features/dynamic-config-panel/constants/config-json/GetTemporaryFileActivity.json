@@ -6,7 +6,7 @@
     "label": "Temporary File",
     "description": "The FileInfo object representing the temporary file created on disk.",
     "defaultValue": {
-      "value": "tempFile",
+      "value": "TempFile",
       "enabled": true
     },
     "required": false

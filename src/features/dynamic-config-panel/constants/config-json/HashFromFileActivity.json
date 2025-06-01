@@ -24,7 +24,7 @@
     "label": "HashedContent",
     "description": "Returns the hashed content of the file.",
     "defaultValue": {
-      "value": "hashedContent",
+      "value": "HashedContent",
       "enabled": true
     },
     "required": false

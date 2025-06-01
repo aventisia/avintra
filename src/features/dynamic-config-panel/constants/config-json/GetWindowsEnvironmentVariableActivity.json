@@ -15,7 +15,7 @@
     "label": "Value",
     "description": "Returns the value of the environment variable.",
     "defaultValue": {
-      "value": "value",
+      "value": "Value",
       "enabled": true
     },
     "required": false

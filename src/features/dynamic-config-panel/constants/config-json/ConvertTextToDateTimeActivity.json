@@ -41,7 +41,7 @@
     "label": "Result DateTime",
     "description": "Returns the resulting DateTime value after conversion.",
     "defaultValue": {
-      "value": "resultDateTime",
+      "value": "ResultDateTime",
       "enabled": true
     },
     "required": false

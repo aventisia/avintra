@@ -24,7 +24,7 @@
     "label": "Decreased Variable",
     "description": "Returns the resulting value after decreasing the variable.",
     "defaultValue": {
-      "value": "decreasedVariable",
+      "value": "DecreasedVariable",
       "enabled": true
     },
     "required": false

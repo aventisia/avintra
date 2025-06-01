@@ -6,7 +6,7 @@
     "label": "ClipboardTextOutput",
     "description": "The text retrieved from the clipboard.",
     "defaultValue": {
-      "value": "clipboardTextOutput",
+      "value": "ClipboardTextOutput",
       "enabled": true
     },
     "required": false

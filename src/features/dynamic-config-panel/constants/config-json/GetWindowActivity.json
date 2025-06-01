@@ -2,20 +2,29 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "WindowIdentifier",
-    "label": "WindowIdentifier",
-    "description": "The title or handle of the window to retrieve.",
+    "name": "WindowName",
+    "label": "Window Name",
+    "description": "The name (title) of the window to find.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "Maximum time to wait for the window (in seconds).",
+    "defaultValue": 5,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "WindowHandle",
-    "label": "WindowHandle",
-    "description": "Returns the handle or identifier of the window.",
+    "name": "WindowElement",
+    "label": "Automation Element",
+    "description": "The found AutomationElement for the window.",
     "defaultValue": {
-      "value": "windowHandle",
+      "value": "WindowElement",
       "enabled": true
     },
     "required": false

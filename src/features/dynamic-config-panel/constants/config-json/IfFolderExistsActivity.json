@@ -36,7 +36,7 @@
     "label": "Result",
     "description": "Returns true if the folder meets the specified condition, otherwise false.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

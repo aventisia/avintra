@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns the retrieved text from the terminal session.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

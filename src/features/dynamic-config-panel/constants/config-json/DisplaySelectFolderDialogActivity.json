@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns the path of the selected folder.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

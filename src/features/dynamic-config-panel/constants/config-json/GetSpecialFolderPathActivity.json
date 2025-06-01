@@ -57,7 +57,7 @@
     "label": "Special Folder Path",
     "description": "The retrieved path of the special folder.",
     "defaultValue": {
-      "value": "specialFolderPath",
+      "value": "SpecialFolderPath",
       "enabled": true
     },
     "required": false

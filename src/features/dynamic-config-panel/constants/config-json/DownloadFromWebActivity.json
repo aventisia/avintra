@@ -15,7 +15,7 @@
     "label": "Result",
     "description": "Returns the downloaded content as a string.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

@@ -60,7 +60,7 @@
     "label": "Replaced Text",
     "description": "The resulting text after replacement.",
     "defaultValue": {
-      "value": "replacedText",
+      "value": "ReplacedText",
       "enabled": true
     },
     "required": false

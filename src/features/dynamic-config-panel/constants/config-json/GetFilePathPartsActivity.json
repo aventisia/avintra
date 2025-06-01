@@ -15,7 +15,7 @@
     "label": "Root Path",
     "description": "The root path of the source file.",
     "defaultValue": {
-      "value": "rootPath",
+      "value": "RootPath",
       "enabled": true
     },
     "required": false
@@ -27,7 +27,7 @@
     "label": "Directory Path",
     "description": "The directory of the source file.",
     "defaultValue": {
-      "value": "directory",
+      "value": "Directory",
       "enabled": true
     },
     "required": false
@@ -39,7 +39,7 @@
     "label": "File Name",
     "description": "The name of the source file.",
     "defaultValue": {
-      "value": "fileName",
+      "value": "FileName",
       "enabled": true
     },
     "required": false
@@ -51,7 +51,7 @@
     "label": "File Name Without Extension",
     "description": "The file name (without the extension) of the source file.",
     "defaultValue": {
-      "value": "fileNameNoExtension",
+      "value": "FileNameNoExtension",
       "enabled": true
     },
     "required": false
@@ -63,7 +63,7 @@
     "label": "File Extension",
     "description": "The extension (for example, .doc) of the source file.",
     "defaultValue": {
-      "value": "fileExtension",
+      "value": "FileExtension",
       "enabled": true
     },
     "required": false

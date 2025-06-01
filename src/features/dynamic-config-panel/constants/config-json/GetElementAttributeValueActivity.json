@@ -33,7 +33,7 @@
     "label": "Result",
     "description": "Returns the value of the attribute.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

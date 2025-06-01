@@ -153,7 +153,7 @@
     "label": "Retrieved Files",
     "description": "The list of files that were retrieved based on the specified criteria.",
     "defaultValue": {
-      "value": "retrievedFiles",
+      "value": "RetrievedFiles",
       "enabled": true
     },
     "required": false

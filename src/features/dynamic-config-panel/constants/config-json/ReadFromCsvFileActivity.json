@@ -24,7 +24,7 @@
     "label": "CSV Data Table",
     "description": "The output DataTable containing the contents of the CSV file.",
     "defaultValue": {
-      "value": "outputDataTable",
+      "value": "OutputDataTable",
       "enabled": true
     },
     "required": false

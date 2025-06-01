@@ -46,7 +46,7 @@
     "label": "Result",
     "description": "The converted text based on selected case style.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

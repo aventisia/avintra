@@ -82,7 +82,7 @@
     "label": "New Browser Output",
     "description": "The new browser instance ID (tab) created.",
     "defaultValue": {
-      "value": "newBrowserInstance",
+      "value": "NewBrowserInstance",
       "enabled": true
     },
     "required": false

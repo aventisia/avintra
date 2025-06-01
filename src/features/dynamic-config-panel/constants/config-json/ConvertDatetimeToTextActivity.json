@@ -24,7 +24,7 @@
     "label": "ConvertedDateTime",
     "description": "The formatted datetime as a text value.",
     "defaultValue": {
-      "value": "convertedDateTime",
+      "value": "ConvertedDateTime",
       "enabled": true
     },
     "required": false

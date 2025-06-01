@@ -138,7 +138,7 @@
     "label": "Text List",
     "description": "Returns the list of substrings after splitting the original text.",
     "defaultValue": {
-      "value": "textList",
+      "value": "TextList",
       "enabled": true
     },
     "required": false

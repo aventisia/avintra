@@ -50,7 +50,7 @@
     "label": "Trimmed Text",
     "description": "The resulting text after trimming.",
     "defaultValue": {
-      "value": "trimmedText",
+      "value": "TrimmedText",
       "enabled": true
     },
     "required": false

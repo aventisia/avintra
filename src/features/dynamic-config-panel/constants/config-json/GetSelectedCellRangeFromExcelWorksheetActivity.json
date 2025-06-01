@@ -15,7 +15,7 @@
     "label": "First Column Index",
     "description": "Returns the column index (1-based) of the first cell in the selected range.",
     "defaultValue": {
-      "value": "firstColumnIndex",
+      "value": "FirstColumnIndex",
       "enabled": true
     },
     "required": false
@@ -27,7 +27,7 @@
     "label": "First Row Index",
     "description": "Returns the row index (1-based) of the first cell in the selected range.",
     "defaultValue": {
-      "value": "firstRowIndex",
+      "value": "FirstRowIndex",
       "enabled": true
     },
     "required": false
@@ -39,7 +39,7 @@
     "label": "Last Column Index",
     "description": "Returns the column index (1-based) of the last cell in the selected range.",
     "defaultValue": {
-      "value": "lastColumnIndex",
+      "value": "LastColumnIndex",
       "enabled": true
     },
     "required": false
@@ -51,7 +51,7 @@
     "label": "Last Row Index",
     "description": "Returns the row index (1-based) of the last cell in the selected range.",
     "defaultValue": {
-      "value": "lastRowIndex",
+      "value": "LastRowIndex",
       "enabled": true
     },
     "required": false

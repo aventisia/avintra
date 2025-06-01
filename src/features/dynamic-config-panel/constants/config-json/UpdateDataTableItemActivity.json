@@ -42,7 +42,7 @@
     "label": "Modified Data Table",
     "description": "The DataTable after the specified cell has been updated.",
     "defaultValue": {
-      "value": "modifiedDataTable",
+      "value": "ModifiedDataTable",
       "enabled": true
     },
     "required": false

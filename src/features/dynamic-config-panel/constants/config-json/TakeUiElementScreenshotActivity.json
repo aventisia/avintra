@@ -24,7 +24,7 @@
     "label": "ScreenshotPath",
     "description": "Returns the path to the saved screenshot file.",
     "defaultValue": {
-      "value": "screenshotPath",
+      "value": "ScreenshotPath",
       "enabled": true
     },
     "required": false

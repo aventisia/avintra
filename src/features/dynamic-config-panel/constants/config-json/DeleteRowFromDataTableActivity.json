@@ -24,7 +24,7 @@
     "label": "Modified Data Table",
     "description": "Returns the updated data table after the row is deleted.",
     "defaultValue": {
-      "value": "modifiedDataTable",
+      "value": "ModifiedDataTable",
       "enabled": true
     },
     "required": false

@@ -15,7 +15,7 @@
     "label": "ExtractedData",
     "description": "Returns the extracted data as a string.",
     "defaultValue": {
-      "value": "extractedData",
+      "value": "ExtractedData",
       "enabled": true
     },
     "required": false

@@ -15,7 +15,7 @@
     "label": "Sheet Name",
     "description": "Returns the name of the currently active worksheet.",
     "defaultValue": {
-      "value": "sheetName",
+      "value": "SheetName",
       "enabled": true
     },
     "required": false
@@ -27,7 +27,7 @@
     "label": "Sheet Index",
     "description": "Returns the index of the currently active worksheet.",
     "defaultValue": {
-      "value": "sheetIndex",
+      "value": "SheetIndex",
       "enabled": true
     },
     "required": false

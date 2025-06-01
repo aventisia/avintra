@@ -15,7 +15,7 @@
     "label": "IsRunning",
     "description": "Returns true if the process is running, otherwise false.",
     "defaultValue": {
-      "value": "isRunning",
+      "value": "IsRunning",
       "enabled": true
     },
     "required": false

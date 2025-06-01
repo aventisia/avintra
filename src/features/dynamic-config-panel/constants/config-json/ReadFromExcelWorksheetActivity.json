@@ -171,7 +171,7 @@
     "label": "Excel Data",
     "description": "Returns the data read from the specified range as a DataTable.",
     "defaultValue": {
-      "value": "excelData",
+      "value": "ExcelData",
       "enabled": true
     },
     "required": false

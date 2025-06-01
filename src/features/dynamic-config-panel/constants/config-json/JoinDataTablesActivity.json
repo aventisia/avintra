@@ -59,7 +59,7 @@
     "label": "Joined Data Table",
     "description": "The resulting DataTable after performing the join operation.",
     "defaultValue": {
-      "value": "joinedDataTable",
+      "value": "JoinedDataTable",
       "enabled": true
     },
     "required": false

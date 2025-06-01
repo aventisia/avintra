@@ -6,7 +6,7 @@
     "label": "Result",
     "description": "Returns the session ID of the opened terminal session.",
     "defaultValue": {
-      "value": "result",
+      "value": "Result",
       "enabled": true
     },
     "required": false

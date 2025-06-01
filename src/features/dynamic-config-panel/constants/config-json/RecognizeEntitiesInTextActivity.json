@@ -115,7 +115,7 @@
     "label": "Recognized Entities",
     "description": "Returns the list of recognized entities based on the specified entity type.",
     "defaultValue": {
-      "value": "recognizedEntities",
+      "value": "RecognizedEntities",
       "enabled": true
     },
     "required": false

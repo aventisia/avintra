@@ -15,7 +15,7 @@
     "label": "Reversed Text",
     "description": "Returns the reversed version of the input text.",
     "defaultValue": {
-      "value": "reversedText",
+      "value": "ReversedText",
       "enabled": true
     },
     "required": false
