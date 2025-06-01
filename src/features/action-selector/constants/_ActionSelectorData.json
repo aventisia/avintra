@@ -958,8 +958,8 @@
           {
             "type": "activityNode",
             "name": "ClickUiElementInWindowActivity",
-            "label": "Click UI Element in Window",
-            "description": "Clicks on any UI element of a window.",
+            "label": "Click UI Element In Window",
+            "description": "Invokes or clicks a UI element in a window using UI Automation or mouse click.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -968,16 +968,7 @@
             "type": "activityNode",
             "name": "CloseWindowActivity",
             "label": "Close Window",
-            "description": "Closes a specific window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "DragAndDropUiElementInWindowActivity",
-            "label": "Drag and Drop UI Element in Window",
-            "description": "Drags and drops a UI element of a window.",
+            "description": "Closes the selected application window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1058,7 +1049,7 @@
             "type": "activityNode",
             "name": "GetWindowActivity",
             "label": "Get Window",
-            "description": "Gets a running window, for automating desktop applications.",
+            "description": "Finds a desktop window by name using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
