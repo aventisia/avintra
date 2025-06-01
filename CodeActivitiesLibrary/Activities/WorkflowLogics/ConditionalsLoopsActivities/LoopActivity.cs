@@ -1,30 +1,40 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
 {
-    [DisplayName("Loop"), Description("Iterates for a specified number of times.")]
-    public class LoopActivity : NativeActivity<int>
+    [NodeType("forLoopNode")]
+    [DisplayName("Loop")]
+    [Description("This allows you to loop through a set of conditions and execute actions based on the evaluation of those conditions.")]
+    public class LoopActivity : CodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The number of loop iterations.")]
-        public InArgument<int> Iterations { get; set; }
+        [Required]
+        [DisplayName("Loop Type")]
+        [Description("Select the mode of the loop.")]
+        [DefaultValue(LoopTypeEnum.ForEach)]
+        public LoopTypeEnum LoopMode { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        protected override void Execute(NativeActivityContext context)
+        protected override void Execute(CodeActivityContext context)
         {
-            try
-            {
-                var iterations = Iterations.Get(context);
-                Result.Set(context, iterations);
-                StatusMessage.Set(context, $"Loop executed {iterations} times.");
-            }
-            catch (Exception ex)
-            {
-                StatusMessage.Set(context, $"Error executing loop: {ex.Message}");
-            }
+            // Only to generate the JSON schema for the activity. It does not execute any logic.
         }
+    }
+
+    public enum LoopTypeEnum
+    {
+        [Display(Name = "For Each", Description = "Iterates over each item in a collection.")]
+        ForEach,
+
+        [Display(Name = "While", Description = "Executes actions while a condition is true.")]
+        While,
+
+        [Display(Name = "Do While", Description = "Executes actions at least once and continues while a condition is true.")]
+        DoWhile,
+
+        [Display(Name = "For", Description = "Executes actions a specified number of times.")]
+        For,
     }
 }
