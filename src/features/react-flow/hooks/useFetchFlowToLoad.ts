@@ -1,7 +1,7 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useReactFlow } from "@xyflow/react";
+import { Edge, Node, useReactFlow, Viewport } from "@xyflow/react";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -57,13 +57,18 @@ export const useFetchFlowToLoad = () => {
 
   useEffect(() => {
     if (!data) return;
-
+    // eslint-disable-next-line no-debugger
+    debugger;
     // Set currently opened flow
     setCurrentFlow({ id: data.data.id, name: data.data.name });
     setIsPublished(data?.data?.isPublished || false);
 
     // Parse react flow object
-    const flow = deepParse(data.data.reactFlowObject);
+    const flow = deepParse(data.data.reactFlowObject) as unknown as {
+      nodes: Node[];
+      edges: Edge[];
+      viewport: Viewport;
+    };
 
     // Parse Flow Variables Object
     const flowVarObjs = JSON.parse(data.data.flowVariablesObject);

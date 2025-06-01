@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
 import { getFlowToLoad } from "../react-flow/apis/react-flow-apis";
 import { Loader2 } from "lucide-react";
+import { deepParse } from "../react-flow/utils/deepParse";
 
 const PublishFlow = () => {
   const location = useLocation();
@@ -29,7 +30,9 @@ const PublishFlow = () => {
       mutatePublish({
         id: flowsData?.data.id,
         isPublished: true,
-        reactFlowObject: JSON.stringify(flowsData?.data.reactFlowObject),
+        reactFlowObject: JSON.stringify(
+          deepParse(flowsData?.data.reactFlowObject),
+        ),
         versionId: flowsData?.data.versionId || "",
       });
     }
