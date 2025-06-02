@@ -1,17 +1,17 @@
-import { NodeData } from "./node-data";
-import { Node } from "@xyflow/react";
 import {
   NodeDataType,
   NodeInputType,
   NodeOutputType,
 } from "@/types/node-data-type";
+import { Node } from "@xyflow/react";
+import { ActivityNodeData } from "..";
 
 export function getActivityNodeData(
   nodeObj: Node<NodeDataType> | undefined,
-): NodeData {
+): ActivityNodeData {
   return {
     id: nodeObj?.id ?? "",
-    type: nodeObj?.type ?? "flowEndNode",
+    type: nodeObj?.type ?? "",
     nodeName: nodeObj?.data?.label ?? "",
     codeActivityName: nodeObj?.data?.name ?? "",
     nodeInputs:

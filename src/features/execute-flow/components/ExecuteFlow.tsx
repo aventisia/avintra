@@ -1,24 +1,26 @@
-import { Button } from "@aventisia/ui/buttons";
-import { Tooltip } from "@aventisia/ui/tooltip";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTauriStore } from "@/stores/tauri-store";
+import { Button } from "@aventisia/ui/buttons";
+import { toast } from "@aventisia/ui/sonner";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { invoke } from "@tauri-apps/api/core";
-
-import { useShallow } from "zustand/react/shallow";
-import useWebSocket from "./useWebSocket";
 import { Loader2 } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+import useWebSocket from "../hooks/useWebSocket";
 
 const ExecuteFlow = () => {
-  const { currentFlow, flowState, setFlowState } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-      flowState: state.flowState,
-      setFlowState: state.setFlowState,
-    })),
-  );
+  // Get current flow and execution state from current flow store
+  const { currentFlow, executionState, setExecutionState } =
+    useCurrentFlowStore(
+      useShallow((state) => ({
+        currentFlow: state.currentFlow,
+        executionState: state.executionState,
+        setExecutionState: state.setExecutionState,
+      })),
+    );
 
-  // Connect to websocket server
+  // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
 
   // Get the state if app is open in tauri window
@@ -30,15 +32,18 @@ const ExecuteFlow = () => {
 
   // Start execution
   const startExecution = () => {
-    // Set the executing state to true
-    setFlowState("launching-executor");
+    // Set the execution state to launching executor
+    setExecutionState("launching-executor");
 
     // Open the desktop executor if the app is running in Tauri
     if (isTauri) {
       openDesktopExecutor();
     } else {
-      // TODO: If not in Tauri, start web executor
-      console.warn("Not running in Tauri, starting execution in browser");
+      toast.info(
+        "Please use our desktop app. Execution in browser is not supported.",
+      );
+      // Reset the execution state to stopped if not in Tauri
+      setExecutionState("stopped");
     }
   };
 
@@ -52,16 +57,19 @@ const ExecuteFlow = () => {
         .then((res) => console.log(res))
         .catch((e) => console.error(e));
     } catch (error) {
-      console.error("Failed to launch node executor", error);
-      setFlowState("stopped"); // Reset the executing state on failure
+      // Inform the user about the failure
+      toast.error("Failed to launch the executor. Please try again.");
+
+      // Reset the executing state on failure
+      setExecutionState("stopped");
     }
   };
 
   return (
     <div className="flex items-center gap-2">
-      {flowState === "executing" || flowState === "paused" ? (
+      {executionState === "executing" || executionState === "paused" ? (
         <div className="group flex h-8 gap-1 rounded-lg bg-white/10">
-          {flowState === "executing" ? (
+          {executionState === "executing" ? (
             <Tooltip content="Pause">
               <Button
                 variant="ghost"
@@ -98,12 +106,12 @@ const ExecuteFlow = () => {
       ) : (
         <Tooltip content="Execute">
           <Button
-            size="icon8"
             variant="ghost"
+            size="icon8"
             className="hover:bg-white/10"
             onClick={startExecution}
           >
-            {flowState === "launching-executor" ? (
+            {executionState === "launching-executor" ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
             ) : (
               <>
