@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { getActivityNodeData } from "./get-activity-node-data";
 import { WebSocketMessage } from "./websocket-messsage";
+import { useTauriStore } from "@/stores/tauri-store";
 
 // Create mapping of command to flow state - "start" | "abort" | "pause" | "resume"
 const commandToFlowState: Record<string, string> = {
@@ -28,6 +29,13 @@ export default function useWebSocket() {
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
+    })),
+  );
+
+  // Get the state if app is open in tauri window
+  const { isTauri } = useTauriStore(
+    useShallow((state) => ({
+      isTauri: state.isTauri,
     })),
   );
 
@@ -102,6 +110,9 @@ export default function useWebSocket() {
   );
 
   useEffect(() => {
+    // If the app is running in a Tauri window only then create a WebSocket connection
+    if (!isTauri) return;
+
     // Create WebSocket connection
     const socket = new WebSocket("ws://127.0.0.1:9001");
     socketRef.current = socket;
