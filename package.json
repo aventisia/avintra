@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aventisia/ui": "^0.0.31",
+    "@aventisia/ui": "^0.0.34",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-progress": "^1.1.2",
@@ -27,7 +27,7 @@
     "input-otp": "^1.4.2",
     "jwt-decode": "^4.0.0",
     "linq": "^3.2.4",
-    "lucide-react": "^0.408.0",
+    "lucide-react": "^0.428.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.3.5",
