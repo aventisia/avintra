@@ -42,9 +42,11 @@ export const useOnNodeDelete = () => {
       let updatedFlowVariables = [...flowVariablesObject];
 
       deleted.forEach((node) => {
-        // Check if it's a conditional node
-        if (node.type === "conditionalNode") {
-          const conditionalNodeId = node.id;
+        const isSpecialNode =
+          node.type === "conditionalNode" || node.type === "forLoopNode";
+
+        if (isSpecialNode) {
+          const specialNodeId = node.id;
           const mergeNodeId = node.data?.mergeBranchesNodeId;
 
           if (!mergeNodeId) return;
@@ -52,7 +54,7 @@ export const useOnNodeDelete = () => {
           const nodeIdsToDelete = getIntermediateNodeIds(
             nodes,
             edges,
-            conditionalNodeId,
+            specialNodeId,
           );
 
           // Remove all edges connected to these nodes
@@ -62,12 +64,13 @@ export const useOnNodeDelete = () => {
               !nodeIdsToDelete.includes(edge.target),
           );
 
-          // Reconnect flow
+          // Reconnect incoming and outgoing flow
           const incomingEdge = edges.find(
-            (edge) => edge.target === conditionalNodeId,
+            (edge) => edge.target === specialNodeId,
           );
           const outgoingEdge = edges.find(
-            (edge) => edge.source === mergeNodeId,
+            (edge) =>
+              edge.source === mergeNodeId && edge.target !== specialNodeId, // Exclude loop-back edge,
           );
 
           if (incomingEdge && outgoingEdge) {
@@ -76,15 +79,15 @@ export const useOnNodeDelete = () => {
             );
           }
 
-          // Remove the conditional flow nodes
+          // Remove nodes
           newNodes = newNodes.filter((n) => !nodeIdsToDelete.includes(n.id));
 
-          // Remove flow variables
+          // Remove any associated flow variables
           updatedFlowVariables = updatedFlowVariables.filter(
             (f) => !nodeIdsToDelete.includes(f.nodeId),
           );
         } else {
-          // Standard deletion + reconnection
+          // Handle standard node deletion
           const incomers = getIncomers(node, nodes, edges);
           const outgoers = getOutgoers(node, nodes, edges);
           const connectedEdges = getConnectedEdges([node], edges);
@@ -111,7 +114,6 @@ export const useOnNodeDelete = () => {
 
       // Optional: trigger layout
       autoLayout({ newNodes, newEdges });
-    
     },
     [
       nodes,
@@ -120,6 +122,7 @@ export const useOnNodeDelete = () => {
       setEdges,
       flowVariablesObject,
       setFlowVariablesObject,
+      autoLayout,
     ],
   );
 
