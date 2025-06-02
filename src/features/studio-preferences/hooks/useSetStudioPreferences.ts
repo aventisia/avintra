@@ -27,7 +27,7 @@ export const useSetStudioPreferences = () => {
       layoutDirection: studio.layoutDirection,
       miniMap: studio.miniMap,
       undoRedo: studio.undoRedo,
-      intractivityToggle: studio.intractivityToggle,
+      cursorToggle: studio.cursorToggle,
       zoomControls: studio.zoomControls,
       deleteAlert: studio.deleteAlert,
     });
