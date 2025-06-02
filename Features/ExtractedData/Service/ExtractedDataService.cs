@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace MLModelBuilderAPIs.Services;
 
 public class ExtractedDataService : IExtractedDataService
@@ -301,6 +299,56 @@ public class ExtractedDataService : IExtractedDataService
         catch (Exception exception)
         {
             _logger.LogError($"An error occurred while updating the extracted data: {exception.Message}");
+        }
+
+        return serviceResponse;
+    }
+
+    // Deletes multiple extracted data entries based on the provided list of IDs.
+    public async Task<ServiceResponse<bool>> DeleteMultipleExtractedDataAsync([FromBody] List<Guid> ids)
+    {
+        // Initialize response with a failure state
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete extracted data. Please try again later."
+        };
+
+        try
+        {
+            // Retrieve the list of extracted data items matching the provided IDs
+            var extractedDataList = await _unitOfWork.ExtractedDataRepo
+                                                    .GetByConditionAsync(w => ids.Contains(w.Id))
+                                                    .ToListAsync();
+
+            // If no matching data found, return a message indicating no data was found
+            if (extractedDataList.Count == 0)
+            {
+                _logger.LogInformation("No matching extracted data found for the given IDs.");
+                serviceResponse.Message = "No extracted data found with the specified IDs.";
+                return serviceResponse;
+            }
+
+            // TODO: Verify if there are any dependent entities or relationships tied to the extracted data
+
+            // Perform the deletion of the matching extracted data items
+            _unitOfWork.ExtractedDataRepo.Delete(extractedDataList);
+
+            // Attempt to save changes to the database; if it fails, log an error and return failure
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes while deleting extracted data items.");
+                return serviceResponse;
+            }
+
+            // If successful, update the response data and provide a success message
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{ids.Count} extracted data items deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error occurred while attempting to delete extracted data: {ex.Message}");
         }
 
         return serviceResponse;

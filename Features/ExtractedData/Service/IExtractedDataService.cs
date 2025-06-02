@@ -44,4 +44,11 @@ public interface IExtractedDataService
     /// <param name="extractedDataSilentUpdateDataDto">The DTO containing the updated information for the extracted data.</param>
     /// <returns>A task representing the asynchronous operation, with a service response indicating the success or failure of the update.</returns>
     Task<ServiceResponse<bool>> UpdateExtractedDataSilentlyAsync(ExtractedDataSilentUpdateDataDto extractedDataSilentUpdateDataDto);
+
+    /// <summary>
+    /// Deletes multiple extracted data entries based on the provided list of IDs.
+    /// </summary>
+    /// <param name="ids">List of IDs for the extracted data to be deleted.</param>
+    /// <returns>A service response indicating whether the deletion was successful.</returns>
+    Task<ServiceResponse<bool>> DeleteMultipleExtractedDataAsync([FromBody] List<Guid> ids);
 }

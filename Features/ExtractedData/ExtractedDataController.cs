@@ -61,6 +61,13 @@ public class ExtractedDataController : BaseApiController
         return ResultHelper(await _extractedDataService.UpdateExtractedDataSilentlyAsync(extractedDataSilentUpdateDataDto));
     }
 
+    // Deletes multiple extracted data entries based on the provided list of IDs.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleExtractedData([FromBody] List<Guid> ids)
+    {
+        return ResultHelper(await _extractedDataService.DeleteMultipleExtractedDataAsync(ids));
+    }
+
     #endregion
 
 }
