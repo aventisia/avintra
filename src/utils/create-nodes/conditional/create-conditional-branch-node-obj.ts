@@ -9,7 +9,7 @@ export const createConditionalBranchNodeObj = (
     type: "branchNode1",
     data: {
       type: "branchNode1",
-      name: label,
+      name: isDefaultBranch ? "DefaultBranch" : "ConditionalBranchActivity",
       label: label,
       description: label,
     },

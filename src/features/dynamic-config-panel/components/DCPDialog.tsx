@@ -31,7 +31,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         side={"right"}
         className={cn(
           "!max-w-[32rem]",
-          nodeData?.type === "conditionalNode" && "!max-w-[40rem]",
+          nodeData?.name === "ConditionalBranchActivity" && "!max-w-[40rem]",
         )}
       >
         <DialogDefaultHeader
