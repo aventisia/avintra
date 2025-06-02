@@ -17,6 +17,7 @@ import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
 import { useUpdateFlowSilently } from "../hooks/useUpdateFlowSilently";
+import "../styles/override-node-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";

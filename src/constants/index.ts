@@ -1,5 +1,5 @@
 const NODE_HEIGHT = 85; // px
-const NODE_WIDTH = 310; // px
+const NODE_WIDTH = 312; // px
 const START_END_NODE_HEIGHT = 24; // px
 const START_END_NODE_WIDTH = 56; // px
 const EDGE_BORDER_RADIUS = 20; // px
