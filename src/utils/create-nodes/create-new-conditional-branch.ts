@@ -16,6 +16,8 @@ export const createNewConditionalBranch = (
   // Case branch nodes
   const caseBranchStartNode = createConditionalBranchNodeObj(
     `Branch ${branchesCount}`,
+    false,
+    mergeBranchesNodeId,
   );
   const casePlusNode = createSupportNodeObj("plusNode");
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
