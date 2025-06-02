@@ -4,11 +4,10 @@ import { NodeHeader } from "@/components/node-container/node-header/NodeHeader";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
-import { Separator } from "@aventisia/ui";
-import { NodeDataType } from "@/types/node-data-type";
-import React from "react";
-import { OpenNodeConfig2 } from "../node-container/node-header/OpenNodeConfig2";
 import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
+import { NodeDataType } from "@/types/node-data-type";
+import { Separator } from "@aventisia/ui";
+import React from "react";
 
 interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
@@ -24,24 +23,21 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   ...props
 }) => {
   return (
-    <div className="relative">
-      <ReactFlowContextMenu>
-        <NodeContainer selected={selected} {...props}>
-          <NodeHeader>
-            {nodeData.icon ? (
-              iconMapper[nodeData.icon]
-            ) : (
-              <NodeImage src={nodeData.img} />
-            )}
-            <NodeHeading>{nodeData.label}</NodeHeading>
-          </NodeHeader>
-          <Separator className="h-[0.5px] w-full bg-border" />
-          <NodeDescription>{nodeData.description}</NodeDescription>
-          {children}
-        </NodeContainer>
-      </ReactFlowContextMenu>
-      <OpenNodeConfig2 {...{ nodeData, nodeId }} />
-    </div>
+    <ReactFlowContextMenu>
+      <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
+        <NodeHeader>
+          {nodeData.icon ? (
+            iconMapper[nodeData.icon]
+          ) : (
+            <NodeImage src={nodeData.img} />
+          )}
+          <NodeHeading>{nodeData.label}</NodeHeading>
+        </NodeHeader>
+        <Separator className="h-[0.5px] w-full bg-border" />
+        <NodeDescription>{nodeData.description}</NodeDescription>
+        {children}
+      </NodeContainer>
+    </ReactFlowContextMenu>
   );
 };
 
