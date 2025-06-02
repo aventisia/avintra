@@ -4,6 +4,8 @@ import {
   useShowAlertHandler,
 } from "@aventisia/ui/hooks";
 
+// import { useQueryClient } from "@tanstack/react-query";
+
 import { runReviewOptimisticMutationFn } from "../../apis/run-review-table-apis";
 import { RUN_REIVEW_TABLE_QUERY_KEY } from "../../constants";
 import { RunReviewTableDTO } from "../../dtos/run-review-table-dto";
@@ -24,6 +26,7 @@ export const RunReviewRowDeleteAction = ({
     RunReviewTableDTO | boolean,
     RunReviewTableDTO
   >([rowId], runReviewOptimisticMutationFn, RUN_REIVEW_TABLE_QUERY_KEY);
+  // const queryClient = useQueryClient();
 
   // Return Delete alert dialog trigger
   return (

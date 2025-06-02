@@ -1,0 +1,12 @@
+interface IScheduledInfo {
+    scheduledAt?: string;
+    timezone?: string;
+}
+
+export interface RunReviewRecordsMutatedDTO  {
+    id?: string;
+    mlModelId: string;
+    type: string;
+    fileIds: string[];
+    scheduleInfo: IScheduledInfo | null;
+}

@@ -1,6 +1,6 @@
 import { CrudActionType } from "@aventisia/ui/types";
 
-const RUN_REIVEW_TABLE_QUERY_KEY = ["runReview"];
+const RUN_REIVEW_TABLE_QUERY_KEY =["runReviewRecords"];
 
 const TABLE_HEADING = "Records";
 

@@ -7,6 +7,7 @@ import { CellContext, ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { getColumnName } from "../../constants/column-display-names";
 import { RunReviewTableDTO } from "../../dtos/run-review-table-dto";
 import { RunReviewRowActions } from "../run-review-row-actions/RunReviewRowActions";
+import { RunReviewTableCellLink } from "./RunReviewTableCellLink";
 
 /**
  * Returns the complete column configuration in this order:
@@ -64,9 +65,12 @@ export const getRunReviewTableColumns = (
           title={getColumnName("docName")}
         />
       ),
-      cell: ({ row }) => (
-        <div className="w-auto font-medium">{row.getValue("docName")}</div>
-      ),
+      cell: ({ row }) => {
+        const { id, docName } = row.original;
+        return (
+          <RunReviewTableCellLink rowId={id || "rowId"} cellValue={docName} />
+        );
+      },
     },
 
     // ✅ Dynamic columns
@@ -85,7 +89,7 @@ export const getRunReviewTableColumns = (
           />
         ),
         cell: ({ row }: CellContext<RunReviewTableDTO, unknown>) => (
-          <div className="truncate font-medium">{row.getValue(colId)}</div>
+          <div className="truncate w-36 font-medium">{row.getValue(colId)}</div>
         ),
       };
     }),

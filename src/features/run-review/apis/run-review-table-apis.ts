@@ -5,6 +5,7 @@ import {
   
   import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { RunReviewTableDTO } from "@/features/run-review/dtos/run-review-table-dto";
+import { RunReviewRecordsMutatedDTO } from "../dtos/run-review-records-mutate";
   
   
   
@@ -20,38 +21,29 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
   };
   
   /**
-   * Inserts a new model.
+   * Inserts a new record.
    */
-//   const insertModel = (newModel: ModelsTableDto) => {
-//     return axiosInstance
-//       .post<IHttpResponse<ModelsTableDto>>(`${baseAPIURL}`, newModel)
-//       .then((res) => res.data);
-//   };
-  
+  const insertRecords = (newModel: RunReviewRecordsMutatedDTO, modelName: string) => {
+    return axiosInstance
+      .post<IHttpResponse<RunReviewRecordsMutatedDTO>>(`${baseAPIURL}/${modelName}/review-data`, newModel)
+      .then((res) => res.data);
+  };
+
   /**
-   * Updates an existing model.
-   */
-//   const updateModel = (updatedModel: ModelsTableDto) => {
-//     return axiosInstance
-//       .put<IHttpResponse<ModelsTableDto>>(`${baseAPIURL}`, updatedModel)
-//       .then((res) => res.data);
-//   };
-  
-  /**
-   * Deletes a model by its ID.
+   * Deletes a record by its ID.
    */
   const deleteRecord = (id: string) => {
     return axiosInstance
-      .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+      .delete<IHttpResponse<boolean>>(`${baseAPIURL}/extracted-data/${id}`)
       .then((res) => res.data);
   };
   
   /**
-   * Deletes multiple models by their IDs.
+   * Deletes multiple records by their IDs.
    */
   const deleteRecords = (ids: string[]) => {
     return axiosInstance
-      .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+      .post<IHttpResponse<boolean>>(`${baseAPIURL}/extracted-data/delete-multiple`, ids)
       .then((res) => res.data);
   };
   
@@ -79,18 +71,12 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
         throw new Error("Invalid record type");
     }
   };
-  
+    
   export {
-    // deleteModel,
-    // deleteModels,
-    // getModel,
-    // getModels,
-    // insertModel,
-    // isModelNameAvailable,
     getRunReviewRecords,
     runReviewOptimisticMutationFn,
     deleteRecord,
-    deleteRecords
-    // updateModel,
+    deleteRecords,
+    insertRecords
   };
   
