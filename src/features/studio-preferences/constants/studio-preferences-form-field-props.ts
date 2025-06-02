@@ -1,5 +1,4 @@
-import { RadioGroupFieldProps } from "@aventisia/ui/form";
-import { SwitchFieldProps } from "@aventisia/ui/form";
+import { RadioGroupFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 
 // Layout Direction
 const layoutDirectionProps: RadioGroupFieldProps = {
@@ -37,13 +36,13 @@ const undoRedoProps: SwitchFieldProps = {
 };
 
 // Hide Intractivity Toggle
-const intractivityToggleProps: SwitchFieldProps = {
+const cursorToggleProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
-  name: "intractivityToggle",
-  label: "Intractivity Toggle",
+  name: "cursorToggle",
+  label: "Select or Move Mode",
   description:
-    "Show a toggle button to enable or disable intractivity in the flow",
+    "Show toggle option between Select (arrow cursor) and Move (grab hand) modes to interact with the flow",
 };
 
 // Hide Zoom Controls
@@ -66,10 +65,8 @@ const deleteAlertProps: SwitchFieldProps = {
 };
 
 export {
-  layoutDirectionProps,
+  cursorToggleProps, deleteAlertProps, layoutDirectionProps,
   miniMapProps,
-  undoRedoProps,
-  intractivityToggleProps,
-  zoomControlsProps,
-  deleteAlertProps,
+  undoRedoProps, zoomControlsProps
 };
+

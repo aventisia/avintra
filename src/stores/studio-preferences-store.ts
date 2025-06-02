@@ -14,7 +14,7 @@ export const useStudioPreferencesStore = create<State & Actions>((set) => ({
     layoutDirection: "TB",
     miniMap: true,
     undoRedo: true,
-    intractivityToggle: true,
+    cursorToggle: true,
     zoomControls: true,
     deleteAlert: true,
   },

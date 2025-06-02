@@ -1,19 +1,19 @@
-import { create } from "zustand";
+import { MARKER_ARROW_PREFIX } from "@/constants";
+import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import {
   Connection,
   Edge,
   EdgeChange,
   Node,
   NodeChange,
-  addEdge,
-  OnNodesChange,
-  OnEdgesChange,
   OnConnect,
-  applyNodeChanges,
+  OnEdgesChange,
+  OnNodesChange,
+  addEdge,
   applyEdgeChanges,
+  applyNodeChanges,
 } from "@xyflow/react";
-import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
-import { MARKER_ARROW_PREFIX } from "@/constants";
+import { create } from "zustand";
 
 type State = {
   /** Nodes of currently opened flow */
@@ -22,8 +22,8 @@ type State = {
   /** Edges of currently opened flow */
   edges: Edge[];
 
-  /** Flag to track if Reactflow is locked */
-  isLocked: boolean;
+  /** Flag to indicate if ReactFlow pan can be dragged or not */
+  panOnDrag: boolean;
 
   /** Flag to track if Reactflow is published */
   isPublished: boolean;
@@ -57,8 +57,8 @@ type Actions = {
   /** Set Flow Vairables */
   setFlowVariablesObject: (variabels: FlowVariablesObjectType[]) => void;
 
-  /** To toggle ReactFlow lock/unlock state */
-  toggleIsLocked: (isLocked: boolean) => void;
+  /** Toggle arrow / grab handle of ReactFlow */
+  togglePanOnDrag: (panOnDrag: boolean) => void;
 
   /** To toggle ReactFlow publish state */
   setIsPublished: (isPublished: boolean) => void;
@@ -76,7 +76,7 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   nodes: [],
   edges: [],
   flowVariablesObject: [],
-  isLocked: false,
+  panOnDrag: false,
   isSavePending: false,
   contextMenuOrigin: null,
   isPublished: false,
@@ -130,9 +130,9 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
     set({ flowVariablesObject: variables });
   },
 
-  toggleIsLocked: (value) => {
+  togglePanOnDrag: (value) => {
     set((state) => ({
-      isLocked: typeof value === "boolean" ? value : !state.isLocked,
+      panOnDrag: typeof value === "boolean" ? value : !state.panOnDrag,
     }));
   },
 

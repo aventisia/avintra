@@ -32,7 +32,7 @@ export const ReactFlowExt = () => {
   const {
     nodes,
     edges,
-    isLocked,
+    panOnDrag,
     isPublished,
     onNodesChange,
     onEdgesChange,
@@ -41,7 +41,7 @@ export const ReactFlowExt = () => {
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
-      isLocked: state.isLocked,
+      panOnDrag: state.panOnDrag,
       onNodesChange: state.onNodesChange,
       onEdgesChange: state.onEdgesChange,
       onConnect: state.onConnect,
@@ -92,6 +92,8 @@ export const ReactFlowExt = () => {
     <ReactFlow
       fitView
       minZoom={0.4}
+      panOnDrag={panOnDrag}
+      panOnScroll
       defaultEdgeOptions={defaultEdgeOptions}
       nodeTypes={customNodeTypeObjMemo}
       edgeTypes={customEdgesTypeObjMemo}
@@ -105,10 +107,10 @@ export const ReactFlowExt = () => {
       deleteKeyCode={isPublished ? undefined : "Delete"}
       onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
       onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
-      // Toggles Reactflows interactivity
-      nodesDraggable={!isLocked}
-      nodesConnectable={!isLocked}
-      elementsSelectable={!isLocked}
+      // TODO: Toggles Reactflows interactivity - we can use this to lock the flow
+      // nodesDraggable={!isLocked}
+      // nodesConnectable={!isLocked}
+      // elementsSelectable={!isLocked}
     >
       <ViewControls />
       <BackgroundExt />

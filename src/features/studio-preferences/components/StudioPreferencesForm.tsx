@@ -1,16 +1,13 @@
-import { Form } from "@aventisia/ui/form";
-import { RadioGroupField } from "@aventisia/ui/form";
-import { SwitchField } from "@aventisia/ui/form";
 import { Separator } from "@aventisia/ui";
+import { Form, RadioGroupField, SwitchField } from "@aventisia/ui/form";
 import { useCallback, useEffect } from "react";
 import { z } from "zod";
 import {
+  cursorToggleProps,
   deleteAlertProps,
-  intractivityToggleProps,
-  miniMapProps,
-  undoRedoProps,
-  zoomControlsProps,
   layoutDirectionProps,
+  miniMapProps,
+  zoomControlsProps,
 } from "../constants/studio-preferences-form-field-props";
 import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
 import { useDefineStudioPreferencesForm } from "../hooks/useDefineStudioPreferencesForm";
@@ -55,7 +52,7 @@ export const StudioPreferencesForm = () => {
     //     <Separator className="h-[0.5px]" />
     //     <SwitchField {...undoRedoProps} />
     //     <Separator className="h-[0.5px]" />
-    //     <SwitchField {...intractivityToggleProps} />
+    //     <SwitchField {...cursorToggleProps} />
     //     <Separator className="h-[0.5px]" />
     //     <SwitchField {...zoomControlsProps} />
     //     <Separator className="h-[0.5px]" />
@@ -73,9 +70,7 @@ export const StudioPreferencesForm = () => {
       </div>
       <SwitchField {...miniMapProps} />
       <Separator className="h-[0.5px]" />
-      <SwitchField {...undoRedoProps} />
-      <Separator className="h-[0.5px]" />
-      <SwitchField {...intractivityToggleProps} />
+      <SwitchField {...cursorToggleProps} />
       <Separator className="h-[0.5px]" />
       <SwitchField {...zoomControlsProps} />
       <Separator className="h-[0.5px]" />

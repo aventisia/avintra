@@ -1,22 +1,21 @@
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { Separator } from "@aventisia/ui";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
-import { VCBToggleLock } from "./VCBToggleLock";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
-import { useShallow } from "zustand/react/shallow";
+import { VCBToggleCursor } from "./VCBToggleCursor";
 
 export const ViewControls = () => {
   // Get Studio Preferences store state
-  const { intractivityToggle, zoomControls } =
-    useStudioPreferencesStore(
-      useShallow((state) => ({
-        intractivityToggle: state.studioPreferences.intractivityToggle,
-        zoomControls: state.studioPreferences.zoomControls,
-      })),
-    );
+  const { cursorToggle, zoomControls } = useStudioPreferencesStore(
+    useShallow((state) => ({
+      cursorToggle: state.studioPreferences.cursorToggle,
+      zoomControls: state.studioPreferences.zoomControls,
+    })),
+  );
 
   return (
     <Panel position="bottom-left">
@@ -37,10 +36,9 @@ export const ViewControls = () => {
           </VCBContainer>
         )}
 
-        {intractivityToggle && (
+        {cursorToggle && (
           <VCBContainer>
-            {/* Lock or unlock ReactFlow */}
-            <VCBToggleLock />
+            <VCBToggleCursor />
           </VCBContainer>
         )}
       </div>
