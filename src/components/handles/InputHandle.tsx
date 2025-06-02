@@ -24,10 +24,7 @@ export const InputHandle = ({
       type={"target"}
       position={position}
       isConnectable={connections.length < connectionCount}
-      className={cn(
-        "z-[5] h-[0.6rem] w-[0.6rem] rounded-full border-slate-300 bg-white",
-        className,
-      )}
+      className={cn("top-1/2 h-full w-full rounded-lg opacity-0", className)}
     />
   );
 };
