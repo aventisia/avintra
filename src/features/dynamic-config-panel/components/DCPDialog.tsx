@@ -37,7 +37,6 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         <DialogDefaultHeader
           className="border-none px-3.5 py-3 text-lg tracking-wide"
           heading={nodeData?.label || "Dynamic Config Panel"}
-          // TODO: Add node/acitivity description with docs link
         />
         <p className="mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs">
           ℹ️ {nodeData?.description || "No description available."}

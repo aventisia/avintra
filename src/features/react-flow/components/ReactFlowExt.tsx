@@ -1,7 +1,9 @@
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { DCPDialog } from "@/features/dynamic-config-panel";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import {
   Edge,
@@ -23,7 +25,6 @@ import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
-import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -90,32 +91,34 @@ export const ReactFlowExt = () => {
 
   // Render ReactFlow component
   return (
-    <ReactFlow
-      fitView
-      minZoom={0.4}
-      panOnDrag={panOnDrag}
-      panOnScroll
-      defaultEdgeOptions={defaultEdgeOptions}
-      nodeTypes={customNodeTypeObjMemo}
-      edgeTypes={customEdgesTypeObjMemo}
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onNodesDelete={onNodesDelete}
-      onEdgesChange={onEdgesChange}
-      onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
-      onConnect={onConnect}
-      deleteKeyCode={isPublished ? undefined : "Delete"}
-      onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
-      onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
-      // TODO: Toggles Reactflows interactivity - we can use this to lock the flow
-      // nodesDraggable={!isLocked}
-      // nodesConnectable={!isLocked}
-      // elementsSelectable={!isLocked}
-    >
-      <ViewControls />
-      <BackgroundExt />
-      <MiniMapExt />
-    </ReactFlow>
+    <DCPDialog>
+      <ReactFlow
+        fitView
+        minZoom={0.4}
+        panOnDrag={panOnDrag}
+        panOnScroll
+        defaultEdgeOptions={defaultEdgeOptions}
+        nodeTypes={customNodeTypeObjMemo}
+        edgeTypes={customEdgesTypeObjMemo}
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onNodesDelete={onNodesDelete}
+        onEdgesChange={onEdgesChange}
+        onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
+        onConnect={onConnect}
+        deleteKeyCode={isPublished ? undefined : "Delete"}
+        onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
+        onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
+        // TODO: Toggles Reactflows interactivity - we can use this to lock the flow
+        // nodesDraggable={!isLocked}
+        // nodesConnectable={!isLocked}
+        // elementsSelectable={!isLocked}
+      >
+        <ViewControls />
+        <BackgroundExt />
+        <MiniMapExt />
+      </ReactFlow>
+    </DCPDialog>
   );
 };
