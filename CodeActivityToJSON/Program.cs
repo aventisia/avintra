@@ -31,6 +31,14 @@ namespace CodeActivityToJSON
                                 .Where(w => typeof(CodeActivity).IsAssignableFrom(w) && !w.IsAbstract)
                                 .ToList();
 
+            var nativeActivities = codeActivitiesAssembly
+                                .GetTypes()
+                                .Where(w => typeof(NativeActivity).IsAssignableFrom(w) && !w.IsAbstract)
+                                .ToList();
+
+            // Add nativeActivities to activities
+            activities.AddRange(nativeActivities);
+
             // Check if any activities were found
             if (activities.Count == 0)
             {
@@ -77,6 +85,7 @@ namespace CodeActivityToJSON
         // Create directory to save JSON files
         public static string GetOutputDirectoryToSaveJsonFiles()
         {
+            return @"C:\My Space\Gitea\Aventisia\studio\src\features\dynamic-config-panel\constants\config-json";
             // Get user's Downloads folder
             var downloadsPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
