@@ -57,8 +57,6 @@ export const useFetchFlowToLoad = () => {
 
   useEffect(() => {
     if (!data) return;
-    // eslint-disable-next-line no-debugger
-    debugger;
     // Set currently opened flow
     setCurrentFlow({ id: data.data.id, name: data.data.name });
     setIsPublished(data?.data?.isPublished || false);

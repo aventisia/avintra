@@ -1,4 +1,8 @@
-import { MARKER_ARROW_PREFIX, STROKE_DASHARRAY, STROKE_WIDTH } from "@/constants";
+import {
+  MARKER_ARROW_PREFIX,
+  STROKE_DASHARRAY,
+  STROKE_WIDTH,
+} from "@/constants";
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
 import { Edge } from "@xyflow/react";
@@ -72,6 +76,12 @@ export const createForLoopNode = (
     },
     markerEnd: `${MARKER_ARROW_PREFIX}${repeatEdgeId}`,
   } as Edge;
+
+  //Update LoopNode Data
+  forLoopNode.data = {
+    ...forLoopNode.data,
+    mergeBranchesNodeId: mergeBranchesNode.id,
+  };
 
   // Return the nodes and edges
   return {

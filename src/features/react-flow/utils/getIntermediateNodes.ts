@@ -1,22 +1,21 @@
 import { Edge, Node } from "@xyflow/react";
 
+/**
+ * Returns all intermediate node IDs between a branching node (conditional or for-loop)
+ * and its merge node.
+ */
 export function getIntermediateNodeIds(
   nodes: Node[],
   edges: Edge[],
-  conditionalNodeId: string,
+  branchingNodeId: string,
 ): string[] {
-  const conditionalNode = nodes.find((node) => node.id === conditionalNodeId);
-  console.log(conditionalNode)
-  if (!conditionalNode || conditionalNode.type !== "conditionalNode") {
-    throw new Error("Provided ID does not belong to a conditionalNode");
+  const branchingNode = nodes.find((node) => node.id === branchingNodeId);
+  if (!branchingNode || !("mergeBranchesNodeId" in branchingNode.data)) {
+    throw new Error("mergeBranchesNodeId not found in node data");
   }
 
-  const mergeNodeId = conditionalNode.data?.mergeBranchesNodeId;
-  if (!mergeNodeId) {
-    throw new Error("mergeBranchesNodeId not found in conditionalNode data");
-  }
+  const mergeNodeId = branchingNode.data?.mergeBranchesNodeId;
 
-  // Map of source -> array of edges
   const edgeMap: Record<string, string[]> = {};
   for (const edge of edges) {
     if (!edgeMap[edge.source]) {
@@ -25,7 +24,6 @@ export function getIntermediateNodeIds(
     edgeMap[edge.source].push(edge.target);
   }
 
-  // DFS to find all paths to mergeNodeId
   const visited = new Set<string>();
   const result = new Set<string>();
 
@@ -43,13 +41,12 @@ export function getIntermediateNodeIds(
     }
   };
 
-  const immediateTargets = edgeMap[conditionalNodeId] || [];
+  const immediateTargets = edgeMap[branchingNodeId] || [];
   for (const target of immediateTargets) {
     dfs(target);
   }
 
-  // Add the original conditional node and merge node
-  result.add(conditionalNodeId);
+  result.add(branchingNodeId);
   result.add(mergeNodeId as string);
 
   return Array.from(result);
