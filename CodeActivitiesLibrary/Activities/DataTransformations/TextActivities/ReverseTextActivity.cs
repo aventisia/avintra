@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Reverse Text")]
     [Description("Reverses the order of characters in a given text string.")]
-    public class ReverseTextActivity : CodeActivity
+    public class ReverseTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,7 +28,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<string> ReversedText { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

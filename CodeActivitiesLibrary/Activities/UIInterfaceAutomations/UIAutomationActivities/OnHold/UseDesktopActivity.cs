@@ -7,10 +7,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Use Desktop")]
     // [Description("Performs desktop and taskbar-related operations.")]
-    public class UseDesktopActivity : BaseCodeActivity
+    public class UseDesktopActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

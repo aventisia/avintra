@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Resize Window")]
     [Description("Change the size of a window to the width and height you want.")]
-    public class ResizeWindowActivity : BaseCodeActivity
+    public class ResizeWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

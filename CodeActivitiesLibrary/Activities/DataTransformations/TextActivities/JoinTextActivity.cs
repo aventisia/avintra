@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Join Text")]
     [Description("Converts a list into a text value by separating its items with a specified delimiter.")]
-    public class JoinTextActivity : CodeActivity
+    public class JoinTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -47,7 +47,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("Returns the resulting joined text after applying the delimiter.")]
         public OutArgument<string> JoinedText { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

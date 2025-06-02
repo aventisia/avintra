@@ -5,7 +5,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
     // Activity to retrieve Exchange email messages
     //[DisplayName("Retrieve Exchange Email Messages"),
     // Description("Retrieve email messages from the specified Exchange server.")]
-    //public class RetrieveExchangeEmailMessagesActivity : CodeActivity
+    //public class RetrieveExchangeEmailMessagesActivity : Extensions.BaseCodeActivity
     //{
     //    [RequiredArgument, Category("Input"), Description("The folder path in the Exchange server (e.g., 'Inbox').")]
     //    public InArgument<string> FolderPath { get; set; }
@@ -13,8 +13,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
     //    [Category("Output"), Description("Returns the retrieved email messages.")]
     //    public OutArgument<IEnumerable<EmailMessage>> Result { get; set; }
 
-    //    [Category("Output"), Description("Returns the status message of the operation.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+    //    
+    //    
 
     //    protected override IEnumerable<EmailMessage> Execute(CodeActivityContext context)
     //    {

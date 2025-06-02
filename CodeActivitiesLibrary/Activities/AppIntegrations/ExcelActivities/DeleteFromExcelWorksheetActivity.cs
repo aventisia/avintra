@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Range from Excel Worksheet")]
     [Description("Deletes a range of cells from the active worksheet of an Excel instance.")]
-    public class DeleteFromExcelWorksheetActivity : CodeActivity
+    public class DeleteFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -62,7 +62,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -85,56 +85,56 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (deletionMode)
                 {
                     case CellDeletionModeEnum.SingleCell:
-                    {
-                        var colStr = StartColumn.Get(context);
-                        var row = StartRow.Get(context);
-
-                        if (!int.TryParse(colStr, out var colNum))
-                            // Convert column letter (like "A", "B") to number
-                            colNum = GetColumnIndex(colStr);
-
-                        if (!(ws.Cells[row, colNum] is Excel.Range targetCell))
-                            throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
-
-                        targetCell.Delete();
-                        status = $"Deleted cell at Row {row}, Column {colStr}.";
-                        break;
-                    }
-
-                    case CellDeletionModeEnum.RangeOfCells:
-                    {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endRow = EndRow.Get(context);
-
-                        int startColNum, endColNum;
-
-                        if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
-
-                        if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
-
-                        var range = ws.Range[ws.Cells[startRow, startColNum], ws.Cells[endRow, endColNum]];
-                        var shiftDirection = ShiftDirection.Get(context);
-
-                        switch (shiftDirection)
                         {
-                            case CellShiftDirectionEnum.Left:
-                                range.Delete(Excel.XlDeleteShiftDirection.xlShiftToLeft);
-                                break;
+                            var colStr = StartColumn.Get(context);
+                            var row = StartRow.Get(context);
 
-                            case CellShiftDirectionEnum.Up:
-                                range.Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
-                                break;
+                            if (!int.TryParse(colStr, out var colNum))
+                                // Convert column letter (like "A", "B") to number
+                                colNum = GetColumnIndex(colStr);
 
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(shiftDirection));
+                            if (!(ws.Cells[row, colNum] is Excel.Range targetCell))
+                                throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
+
+                            targetCell.Delete();
+                            status = $"Deleted cell at Row {row}, Column {colStr}.";
+                            break;
                         }
 
-                        status =
-                            $"Deleted range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
-                        break;
-                    }
+                    case CellDeletionModeEnum.RangeOfCells:
+                        {
+                            var startColStr = StartColumn.Get(context);
+                            var endColStr = EndColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endRow = EndRow.Get(context);
+
+                            int startColNum, endColNum;
+
+                            if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
+
+                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
+
+                            var range = ws.Range[ws.Cells[startRow, startColNum], ws.Cells[endRow, endColNum]];
+                            var shiftDirection = ShiftDirection.Get(context);
+
+                            switch (shiftDirection)
+                            {
+                                case CellShiftDirectionEnum.Left:
+                                    range.Delete(Excel.XlDeleteShiftDirection.xlShiftToLeft);
+                                    break;
+
+                                case CellShiftDirectionEnum.Up:
+                                    range.Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
+                                    break;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(shiftDirection));
+                            }
+
+                            status =
+                                $"Deleted range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(deletionMode));

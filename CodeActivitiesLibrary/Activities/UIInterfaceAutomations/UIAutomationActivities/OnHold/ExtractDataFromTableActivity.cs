@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Extract Data from Table")]
     // [Description("Extracts data from a table in the form of a datatable.")]
-    public class ExtractDataFromTableActivity : BaseCodeActivity
+    public class ExtractDataFromTableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,8 +18,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns the extracted table data as a string.")]
         public OutArgument<string> ExtractedTableData { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

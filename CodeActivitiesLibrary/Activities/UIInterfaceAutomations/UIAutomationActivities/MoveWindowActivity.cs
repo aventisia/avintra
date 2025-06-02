@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Move Window")]
     [Description("Moves a window to the position you choose on the screen.")]
-    public class MoveWindowActivity : BaseCodeActivity
+    public class MoveWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

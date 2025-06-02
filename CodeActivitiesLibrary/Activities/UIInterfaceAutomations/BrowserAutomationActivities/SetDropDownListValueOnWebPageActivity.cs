@@ -9,13 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Set Drop-Down List Value on Web Page")]
     [Description(
         "Sets or clears the value of a drop-down list element on a web page. Supports selection by name, index, or clearing all options.")]
-    public class SetDropDownListValueOnWebPageActivity : CodeActivity
+    public class SetDropDownListValueOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

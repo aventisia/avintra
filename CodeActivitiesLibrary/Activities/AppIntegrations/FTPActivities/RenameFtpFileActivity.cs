@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to rename an FTP file
     [DisplayName("Rename FTP File"), Description("Renames a file that resides on an FTP server.")]
-    public class RenameFtpFileActivity : CodeActivity
+    public class RenameFtpFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The new file name.")]
         public InArgument<string> NewFileName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

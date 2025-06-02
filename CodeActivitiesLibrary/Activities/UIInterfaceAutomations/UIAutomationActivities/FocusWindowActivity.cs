@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Focus Window")]
     [Description("Brings the selected window to the front and makes it active.")]
-    public class FocusWindowActivity : BaseCodeActivity
+    public class FocusWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

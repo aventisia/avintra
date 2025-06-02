@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Activate Cell in Excel Worksheet")]
     [Description(
         "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.")]
-    public class ActivateCellInExcelWorksheetActivity : CodeActivity
+    public class ActivateCellInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -64,8 +64,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
 
         // ----------------------
         // Execution Logic

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Select Menu Option in Window")]
     //[Description("Selects an option in a menu of a window.")]
-    public class SelectMenuOptionInWindowActivity : BaseCodeActivity
+    public class SelectMenuOptionInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -19,8 +19,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The selector or identifier of the menu option.")]
         public InArgument<string> MenuOptionSelector { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

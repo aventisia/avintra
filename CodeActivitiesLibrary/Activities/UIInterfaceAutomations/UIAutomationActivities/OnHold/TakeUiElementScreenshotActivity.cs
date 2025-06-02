@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Take Screenshot of UI Element")]
     // [Description("Takes a screenshot of a UI element in a window.")]
-    public class TakeUiElementScreenshotActivity : BaseCodeActivity
+    public class TakeUiElementScreenshotActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -23,8 +23,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns the path to the saved screenshot file.")]
         public OutArgument<string> ScreenshotPath { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

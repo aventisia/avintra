@@ -5,69 +5,69 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
-        [DisplayName("Add Time to DateTime")]
-        [Description("Adds a specified time value to the given DateTime based on the selected time unit.")]
-        public class AddToDateTimeActivity : CodeActivity
+    [DisplayName("Add Time to DateTime")]
+    [Description("Adds a specified time value to the given DateTime based on the selected time unit.")]
+    public class AddToDateTimeActivity : Extensions.BaseCodeActivity
+    {
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Base DateTime")]
+        [Description("The original DateTime value to which the time should be added.")]
+        public InArgument<DateTime> BaseDateTime { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Value to Add")]
+        [Description("The numeric value of time to add to the DateTime.")]
+        public InArgument<int> ValueToAdd { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Time Unit")]
+        [Description("Specifies the unit of time (e.g., Seconds, Minutes, Hours, Days, Months, Years).")]
+        [DefaultValue(TimeUnitEnum.Days)]
+        public InArgument<TimeUnitEnum> TimeUnit { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Updated DateTime")]
+        [Description("The resulting DateTime after the specified value has been added.")]
+        public OutArgument<DateTime> ResultDateTime { get; set; }
+
+        protected override void Execute(CodeActivityContext context)
         {
-            [RequiredArgument]
-            [Category("Input")]
-            [DisplayName("Base DateTime")]
-            [Description("The original DateTime value to which the time should be added.")]
-            public InArgument<DateTime> BaseDateTime { get; set; }
+            var baseDateTime = BaseDateTime.Get(context);
+            var valueToAdd = ValueToAdd.Get(context);
+            var timeUnit = TimeUnit.Get(context);
 
-            [RequiredArgument]
-            [Category("Input")]
-            [DisplayName("Value to Add")]
-            [Description("The numeric value of time to add to the DateTime.")]
-            public InArgument<int> ValueToAdd { get; set; }
+            DateTime result = baseDateTime;
 
-            [RequiredArgument]
-            [Category("Input")]
-            [DisplayName("Time Unit")]
-            [Description("Specifies the unit of time (e.g., Seconds, Minutes, Hours, Days, Months, Years).")]
-            [DefaultValue(TimeUnitEnum.Days)]
-            public InArgument<TimeUnitEnum> TimeUnit { get; set; }
-
-            [Category("Output")]
-            [DisplayName("Updated DateTime")]
-            [Description("The resulting DateTime after the specified value has been added.")]
-            public OutArgument<DateTime> ResultDateTime { get; set; }
-
-            protected override void Execute(CodeActivityContext context)
+            switch (timeUnit)
             {
-                var baseDateTime = BaseDateTime.Get(context);
-                var valueToAdd = ValueToAdd.Get(context);
-                var timeUnit = TimeUnit.Get(context);
-
-                DateTime result = baseDateTime;
-
-                switch (timeUnit)
-                {
-                    case TimeUnitEnum.Seconds:
-                        result = baseDateTime.AddSeconds(valueToAdd);
-                        break;
-                    case TimeUnitEnum.Minutes:
-                        result = baseDateTime.AddMinutes(valueToAdd);
-                        break;
-                    case TimeUnitEnum.Hours:
-                        result = baseDateTime.AddHours(valueToAdd);
-                        break;
-                    case TimeUnitEnum.Days:
-                        result = baseDateTime.AddDays(valueToAdd);
-                        break;
-                    case TimeUnitEnum.Months:
-                        result = baseDateTime.AddMonths(valueToAdd);
-                        break;
-                    case TimeUnitEnum.Years:
-                        result = baseDateTime.AddYears(valueToAdd);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unsupported TimeUnit specified.");
-                }
-
-                ResultDateTime.Set(context, result);
+                case TimeUnitEnum.Seconds:
+                    result = baseDateTime.AddSeconds(valueToAdd);
+                    break;
+                case TimeUnitEnum.Minutes:
+                    result = baseDateTime.AddMinutes(valueToAdd);
+                    break;
+                case TimeUnitEnum.Hours:
+                    result = baseDateTime.AddHours(valueToAdd);
+                    break;
+                case TimeUnitEnum.Days:
+                    result = baseDateTime.AddDays(valueToAdd);
+                    break;
+                case TimeUnitEnum.Months:
+                    result = baseDateTime.AddMonths(valueToAdd);
+                    break;
+                case TimeUnitEnum.Years:
+                    result = baseDateTime.AddYears(valueToAdd);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unsupported TimeUnit specified.");
             }
+
+            ResultDateTime.Set(context, result);
         }
+    }
     public enum TimeUnitEnum
     {
         [Display(Name = "Seconds", Description = "Represents time in seconds.")]

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Ping"),
      Description("Sends a message to determine whether a remote computer is accessible over the network.")]
-    public class PingActivity : CodeActivity
+    public class PingActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The IP address or hostname to ping.")]
         public InArgument<string> Host { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
         [Category("Output"), Description("Returns true if the host is reachable, otherwise false.")]
         public OutArgument<bool> IsReachable { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

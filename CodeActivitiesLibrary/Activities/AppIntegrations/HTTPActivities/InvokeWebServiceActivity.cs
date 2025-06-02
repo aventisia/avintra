@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
 
     // Activity to invoke a web service and store the response text
     [DisplayName("Invoke Web Service"), Description("Invokes a web service and stores the response text.")]
-    public class InvokeWebServiceActivity : CodeActivity
+    public class InvokeWebServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the web service endpoint.")]
         public InArgument<string> EndpointUrl { get; set; }
@@ -19,8 +19,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Category("Output"), Description("Returns the response text from the web service.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

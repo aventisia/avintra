@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get First Free Row on Column from Excel Worksheet")]
     [Description("Retrieves the first free row number for a specific column from the active worksheet.")]
-    public class GetFirstFreeRowOnColumnFromExcelWorksheetActivity : CodeActivity
+    public class GetFirstFreeRowOnColumnFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -34,7 +34,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the first free row number in the specified column.")]
         public OutArgument<int> FirstFreeRow { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

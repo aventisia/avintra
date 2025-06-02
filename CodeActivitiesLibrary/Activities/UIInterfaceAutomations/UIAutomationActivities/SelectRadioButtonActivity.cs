@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Select Radio Button")]
     [Description("Selects a radio button in a window or parent element by property and value, using the radio button's name or index.")]
-    public class SelectRadioButtonActivity : BaseCodeActivity
+    public class SelectRadioButtonActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

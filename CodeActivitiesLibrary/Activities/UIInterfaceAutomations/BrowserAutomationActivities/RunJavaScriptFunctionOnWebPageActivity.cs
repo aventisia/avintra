@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Run JavaScript Function on Web Page")]
     [Description("Runs a custom JavaScript function in the context of the current web page.")]
-    public class RunJavaScriptFunctionOnWebPageActivity : CodeActivity
+    public class RunJavaScriptFunctionOnWebPageActivity : Extensions.BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {
@@ -66,9 +66,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public OutArgument<string> Result { get; set; }
 
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
     }

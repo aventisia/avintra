@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Checkbox State")]
     [Description("Checks or unchecks a checkbox UI element by searching for it using property and name.")]
-    public class SetCheckboxStateActivity : BaseCodeActivity
+    public class SetCheckboxStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

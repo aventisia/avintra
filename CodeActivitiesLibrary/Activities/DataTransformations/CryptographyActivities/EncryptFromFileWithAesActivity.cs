@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Encrypt from File with AES")]
     [Description("Encrypt the contents of a file with AES, using a key and a specified encoding format")]
-    public class EncryptFromFileWithAesActivity : CodeActivity
+    public class EncryptFromFileWithAesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -29,9 +29,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Description("The path to the output file.")]
         public InArgument<string> OutputFilePath { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

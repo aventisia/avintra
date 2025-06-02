@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Set Screen Resolution")]
     [Description("Sets the width, height, bit count, and frequency of a selected monitor.")]
-    public class SetScreenResolutionActivity : CodeActivity
+    public class SetScreenResolutionActivity : Extensions.BaseCodeActivity
     {
         private const int CdsUpdateregistry = 0x01;
 
@@ -31,9 +31,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         [Description("The frequency (refresh rate) of the screen.")]
         public InArgument<int> Frequency { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

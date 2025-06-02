@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Subtract Lists")]
     [Description("Removes items from the first list that exist in the second list.")]
-    public class SubtractListsActivity : CodeActivity
+    public class SubtractListsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("The resulting list after subtracting items from the second list.")]
         public OutArgument<List<object>> ListDifferenceOutput { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

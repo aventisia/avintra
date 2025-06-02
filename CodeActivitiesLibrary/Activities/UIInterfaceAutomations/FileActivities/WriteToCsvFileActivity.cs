@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("CSV Writer Activity")]
     [Description("Writes the contents of a DataTable to a CSV file with options to append or overwrite.")]
-    public class WriteToCsvFileActivity : CodeActivity
+    public class WriteToCsvFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -33,12 +33,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [DisplayName("Append To File")]
         [Description("Specify whether the data should be appended to the file if it exists.")]
         [DefaultValue(false)]
-        public InArgument<bool> AppendToFile { get; set; } = new InArgument<bool>(false);
-
-        [Category("Output")]
-        [DisplayName("Operation Status Message")]
-        [Description("The message indicating the success or failure of the CSV write operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        public InArgument<bool> AppendToFile { get; set; } = new InArgument<bool>(false); 
 
         protected override void Execute(CodeActivityContext context)
         {

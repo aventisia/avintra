@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Remove XML Element
     [DisplayName("Remove XML Element")]
     [Description("Removes one or more XML elements from an XML document.")]
-    public class RemoveXmlElementActivity : CodeActivity
+    public class RemoveXmlElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -24,9 +24,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
         [Description("Returns the updated XML content.")]
         public OutArgument<string> UpdatedXmlContent { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

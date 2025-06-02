@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
 
     // Activity to download text or a file from the web
     [DisplayName("Download from Web"), Description("Downloads text or a file from the web and stores it.")]
-    public class DownloadFromWebActivity : CodeActivity
+    public class DownloadFromWebActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the resource to download.")]
         public InArgument<string> Url { get; set; }
@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Category("Output"), Description("Returns the downloaded content as a string.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

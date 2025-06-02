@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to read from a Word document
     [DisplayName("Read from Word Document"), Description("Reads the text content from a document of a Word instance.")]
-    public class ReadFromWordDocumentActivity : CodeActivity
+    public class ReadFromWordDocumentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
         public InArgument<string> DocumentPath { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [Category("Output"), Description("Returns the text content of the Word document.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

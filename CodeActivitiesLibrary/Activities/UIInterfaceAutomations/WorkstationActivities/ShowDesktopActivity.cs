@@ -1,10 +1,10 @@
 ﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     //[DisplayName("Show Desktop"), Description("Shows the desktop by minimizing all windows.")]
-    //public class ShowDesktopActivity : CodeActivity
+    //public class ShowDesktopActivity : Extensions.BaseCodeActivity
     //{
-    //    [Category("Output"), Description("Returns the status message.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+    //    
+    //    
 
     //    protected override void Execute(CodeActivityContext context)
     //    {

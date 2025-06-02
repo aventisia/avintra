@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Rename File(s)")]
     [Description("Renames one or more files.")]
-    public class RenameFileActivity : CodeActivity
+    public class RenameFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

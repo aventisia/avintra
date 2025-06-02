@@ -6,7 +6,7 @@ using System.Text;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to Text"), Description("Converts a Base64-encoded string to plain text.")]
-    public class ConvertBase64ToTextActivity : CodeActivity
+    public class ConvertBase64ToTextActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The Base64-encoded string to convert.")]
         public InArgument<string> Base64String { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Category("Output"), Description("Returns the converted plain text.")]
         public OutArgument<string> PlainText { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

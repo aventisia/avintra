@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Set windows environment variable")]
     [Description("Sets an environment variable to a given value.")]
-    public class SetWindowsEnvironmentVariableActivity : CodeActivity
+    public class SetWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,9 +18,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
         [Description("The value to set for the environment variable.")]
         public InArgument<string> Value { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

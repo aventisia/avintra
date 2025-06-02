@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Row From Data Table")]
     [Description("Deletes a row from a data table based on its zero-based index.")]
-    public sealed class DeleteRowFromDataTableActivity : CodeActivity
+    public sealed class DeleteRowFromDataTableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,9 +28,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
 
         [Category("Output")]
         [DisplayName("Modified Data Table")]

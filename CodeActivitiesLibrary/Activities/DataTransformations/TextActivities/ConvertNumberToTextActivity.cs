@@ -6,9 +6,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Number to Text")]
     [Description("Converts a numeric value into text with specified formatting options.")]
-    public class ConvertNumberToTextActivity : CodeActivity
+    public class ConvertNumberToTextActivity : Extensions.BaseCodeActivity
     {
-        
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Number to Convert")]
@@ -32,9 +32,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("The resulting formatted number as text.")]
         public OutArgument<string> FormattedNumber { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
-    
+
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";

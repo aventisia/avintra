@@ -8,10 +8,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
 
     // Activity to clear clipboard contents
     [DisplayName("Clear Clipboard Contents"), Description("Clears all contents from the system clipboard.")]
-    public class ClearClipboardContentsActivity : CodeActivity
+    public class ClearClipboardContentsActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

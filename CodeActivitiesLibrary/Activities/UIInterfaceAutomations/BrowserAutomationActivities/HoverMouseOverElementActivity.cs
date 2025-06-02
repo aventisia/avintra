@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     // Activity to hover mouse over an element on a web page
     [DisplayName("Hover Mouse Over Element on Web Page"),
      Description("Move the mouse cursor over an element on a web page.")]
-    public class HoverMouseOverElementActivity : CodeActivity
+    public class HoverMouseOverElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the web page.")]
         public InArgument<string> Url { get; set; }
@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
          Description("The selector for the element to hover over (e.g., CSS selector).")]
         public InArgument<string> ElementSelector { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

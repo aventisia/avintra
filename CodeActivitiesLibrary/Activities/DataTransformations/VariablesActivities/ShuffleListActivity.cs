@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Shuffle List")]
     [Description("Randomly reorders the items in a list.")]
-    public class ShuffleListActivity : CodeActivity
+    public class ShuffleListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -23,10 +23,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")]
-
-        public OutArgument<string> StatusMessage { get; set; }
 
         [Category("Output")]
         [DisplayName("Shuffled List")]

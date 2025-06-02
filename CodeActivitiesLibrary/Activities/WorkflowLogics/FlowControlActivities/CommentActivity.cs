@@ -5,13 +5,13 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Comment"), Description("Adds a comment to the workflow for documentation purposes.")]
-    public class CommentActivity : NativeActivity
+    public class CommentActivity : Extensions.BaseNativeActivity
     {
         [Category("Input"), Description("Text input for documentation/comments.")]
         public InArgument<string> CommentText { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

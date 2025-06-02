@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Range from Excel Worksheet to DataTable")]
     [Description("Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.")]
-    public class CopyExcelWorksheetActivityToDataTable : CodeActivity
+    public class CopyExcelWorksheetActivityToDataTable : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the copied data as a DataTable for further processing.")]
         public OutArgument<DataTable> CopiedData { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Wait for File")]
     [Description("Suspends running the flow until a file is created or deleted.")]
-    public class WaitForFileActivity : NativeActivity
+    public class WaitForFileActivity : Extensions.BaseNativeActivity
     {
        
         [RequiredArgument]
@@ -30,11 +30,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         [Description("Indicates whether to fail with a timeout error if the file is not created/deleted within the specified time.")]
         public bool FailWithTimeoutError { get; set; }
 
-       
-        [Category("Output")]
-        [DisplayName("Status Message")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(NativeActivityContext context)
         {

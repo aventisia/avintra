@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Launch Excel Application")]
     [Description("Launches a new Excel application instance or opens an existing Excel document.")]
-    public class LaunchExcelActivity : CodeActivity
+    public class LaunchExcelActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -69,7 +69,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the launched Excel Application object.")]
         public OutArgument<Excel.Application> ExcelInstance { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -95,35 +95,35 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     switch (launchMode)
                     {
                         case ExcelLaunchModeEnum.OpenExisting:
-                        {
-                            var documentPath = DocumentPath.Get(context);
-                            var readOnly = OpenAsReadOnly.Get(context);
-                            var readPassword = ReadProtectionPassword.Get(context);
-                            var writePassword = WriteProtectionPassword.Get(context);
+                            {
+                                var documentPath = DocumentPath.Get(context);
+                                var readOnly = OpenAsReadOnly.Get(context);
+                                var readPassword = ReadProtectionPassword.Get(context);
+                                var writePassword = WriteProtectionPassword.Get(context);
 
-                            if (string.IsNullOrWhiteSpace(documentPath))
-                                throw new ArgumentException(
-                                    "Document Path cannot be empty when opening an existing file.");
+                                if (string.IsNullOrWhiteSpace(documentPath))
+                                    throw new ArgumentException(
+                                        "Document Path cannot be empty when opening an existing file.");
 
-                            excelApp.Workbooks.Open(
-                                documentPath,
-                                Type.Missing,
-                                readOnly,
-                                Type.Missing,
-                                readPassword,
-                                writePassword,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing,
-                                Type.Missing
-                            );
-                            break;
-                        }
+                                excelApp.Workbooks.Open(
+                                    documentPath,
+                                    Type.Missing,
+                                    readOnly,
+                                    Type.Missing,
+                                    readPassword,
+                                    writePassword,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing,
+                                    Type.Missing
+                                );
+                                break;
+                            }
 
                         case ExcelLaunchModeEnum.NewWorkbook:
                             excelApp.Workbooks.Add(Type.Missing);

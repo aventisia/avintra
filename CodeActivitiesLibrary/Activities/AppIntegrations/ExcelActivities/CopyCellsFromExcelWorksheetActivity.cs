@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Copy Cells from Excel Worksheet")]
     [Description(
         "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.")]
-    public class CopyCellsFromExcelWorksheetActivity : CodeActivity
+    public class CopyCellsFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -74,7 +74,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -97,75 +97,75 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (copyMode)
                 {
                     case CellCopyModeEnum.SingleCell:
-                    {
-                        var colStr = StartColumn.Get(context);
-                        var row = StartRow.Get(context);
+                        {
+                            var colStr = StartColumn.Get(context);
+                            var row = StartRow.Get(context);
 
-                        if (!int.TryParse(colStr, out var colNum))
-                            // Convert column letter (like "A", "B") to number
-                            colNum = GetColumnIndex(colStr);
+                            if (!int.TryParse(colStr, out var colNum))
+                                // Convert column letter (like "A", "B") to number
+                                colNum = GetColumnIndex(colStr);
 
-                        if (!(worksheet.Cells[row, colNum] is Excel.Range targetCell))
-                            throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
+                            if (!(worksheet.Cells[row, colNum] is Excel.Range targetCell))
+                                throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
 
-                        targetCell.Copy();
-                        status = $"Copied cell at Row {row}, Column {colStr}.";
-                        break;
-                    }
+                            targetCell.Copy();
+                            status = $"Copied cell at Row {row}, Column {colStr}.";
+                            break;
+                        }
 
                     case CellCopyModeEnum.NamedCells:
-                    {
-                        var name = Name.Get(context);
-                        var namedRange = worksheet.Names.Item(name)?.RefersToRange;
-
-                        if (namedRange != null)
                         {
-                            namedRange.Copy();
-                            status = $"Copied named range '{name}'.";
-                        }
-                        else
-                        {
-                            status = $"Named range '{name}' not found.";
-                        }
+                            var name = Name.Get(context);
+                            var namedRange = worksheet.Names.Item(name)?.RefersToRange;
 
-                        break;
-                    }
+                            if (namedRange != null)
+                            {
+                                namedRange.Copy();
+                                status = $"Copied named range '{name}'.";
+                            }
+                            else
+                            {
+                                status = $"Named range '{name}' not found.";
+                            }
+
+                            break;
+                        }
 
                     case CellCopyModeEnum.Selection:
-                    {
-                        if (worksheet.Application.Selection is Excel.Range selection)
                         {
-                            selection.Copy();
-                            status = "Copied selected range.";
-                        }
-                        else
-                        {
-                            status = "No range is currently selected.";
-                        }
+                            if (worksheet.Application.Selection is Excel.Range selection)
+                            {
+                                selection.Copy();
+                                status = "Copied selected range.";
+                            }
+                            else
+                            {
+                                status = "No range is currently selected.";
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
 
                     case CellCopyModeEnum.RangeOfCells:
-                    {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endRow = EndRow.Get(context);
+                        {
+                            var startColStr = StartColumn.Get(context);
+                            var endColStr = EndColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endRow = EndRow.Get(context);
 
-                        int startColNum, endColNum;
+                            int startColNum, endColNum;
 
-                        if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
+                            if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
 
-                        if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
+                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
 
-                        var range = worksheet.Range[worksheet.Cells[startRow, startColNum],
-                            worksheet.Cells[endRow, endColNum]];
-                        range.Copy();
-                        status =
-                            $"Copied range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
-                        break;
-                    }
+                            var range = worksheet.Range[worksheet.Cells[startRow, startColNum],
+                                worksheet.Cells[endRow, endColNum]];
+                            range.Copy();
+                            status =
+                                $"Copied range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(copyMode));

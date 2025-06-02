@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Append Line to Text")]
     [Description("Appends a new line of text to the original text.")]
-    public class AppendLineToTextActivity : CodeActivity
+    public class AppendLineToTextActivity : Extensions.BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Append Range to Excel Worksheet")]
     [Description("Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel instance.")]
-    public class AppendCellsInExcelWorksheetActivity : CodeActivity
+    public class AppendCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -54,7 +54,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -81,50 +81,50 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (appendMode)
                 {
                     case CellAppendModeEnum.ToNamedCells:
-                    {
-                        var name = Name.Get(context);
-
-                        if (string.IsNullOrWhiteSpace(name))
-                            throw new ArgumentException("Name cannot be empty when appending to named cells.");
-
-                        var namedRange = worksheet.Names.Item(name).RefersToRange;
-                        var rowCount = namedRange.Rows.Count;
-                        var colCount = namedRange.Columns.Count;
-
-                        for (var i = 0; i < dataTable.Rows.Count; i++)
                         {
-                            var row = dataTable.Rows[i];
+                            var name = Name.Get(context);
 
-                            if (hasHeaders && i == 0)
-                                continue; // Skip headers if present
+                            if (string.IsNullOrWhiteSpace(name))
+                                throw new ArgumentException("Name cannot be empty when appending to named cells.");
 
-                            for (var j = 0; j < dataTable.Columns.Count; j++)
-                                namedRange.Cells[rowCount + i, j + 1] = row[j]?.ToString();
+                            var namedRange = worksheet.Names.Item(name).RefersToRange;
+                            var rowCount = namedRange.Rows.Count;
+                            var colCount = namedRange.Columns.Count;
+
+                            for (var i = 0; i < dataTable.Rows.Count; i++)
+                            {
+                                var row = dataTable.Rows[i];
+
+                                if (hasHeaders && i == 0)
+                                    continue; // Skip headers if present
+
+                                for (var j = 0; j < dataTable.Columns.Count; j++)
+                                    namedRange.Cells[rowCount + i, j + 1] = row[j]?.ToString();
+                            }
+
+                            status += $" Appended data to named range '{name}'.";
+                            break;
                         }
-
-                        status += $" Appended data to named range '{name}'.";
-                        break;
-                    }
 
                     case CellAppendModeEnum.ToActiveSheet:
-                    {
-                        long startRow = worksheet.UsedRange.Rows.Count + 1; // Start after last used row
-
-                        for (var i = 0; i < dataTable.Rows.Count; i++)
                         {
-                            var row = dataTable.Rows[i];
+                            long startRow = worksheet.UsedRange.Rows.Count + 1; // Start after last used row
 
-                            if (hasHeaders && i == 0)
-                                continue; // Skip headers if present
+                            for (var i = 0; i < dataTable.Rows.Count; i++)
+                            {
+                                var row = dataTable.Rows[i];
 
-                            for (var j = 0; j < dataTable.Columns.Count; j++)
-                                worksheet.Cells[startRow + i, startingColumn + j] = row[j]?.ToString();
+                                if (hasHeaders && i == 0)
+                                    continue; // Skip headers if present
+
+                                for (var j = 0; j < dataTable.Columns.Count; j++)
+                                    worksheet.Cells[startRow + i, startingColumn + j] = row[j]?.ToString();
+                            }
+
+                            status +=
+                                $" Appended data to active sheet starting at row {startRow}, column {startingColumn}.";
+                            break;
                         }
-
-                        status +=
-                            $" Appended data to active sheet starting at row {startRow}, column {startingColumn}.";
-                        break;
-                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(appendMode));

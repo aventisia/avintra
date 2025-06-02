@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Excel Worksheet")]
     [Description("Retrieves the name and index of the currently active worksheet in an Excel instance.")]
-    public class GetActiveExcelWorksheetActivity : CodeActivity
+    public class GetActiveExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -33,7 +33,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the index of the currently active worksheet.")]
         public OutArgument<int> SheetIndex { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

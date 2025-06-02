@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
     // Activity to search for text on a terminal session
     [DisplayName("Search for Text on Terminal Session"),
      Description("Search for all occurrences of a specific text on a terminal session.")]
-    public class SearchForTextOnTerminalSessionActivity : CodeActivity
+    public class SearchForTextOnTerminalSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }
@@ -19,8 +19,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns the list of occurrences of the searched text.")]
         public OutArgument<IEnumerable<string>> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

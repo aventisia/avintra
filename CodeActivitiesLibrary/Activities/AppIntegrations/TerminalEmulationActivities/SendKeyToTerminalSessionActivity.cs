@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to send a control key to a terminal session
     [DisplayName("Send Key to Terminal Session"), Description("Send a control key to a terminal session.")]
-    public class SendKeyToTerminalSessionActivity : CodeActivity
+    public class SendKeyToTerminalSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The key to send (e.g., 'Enter', 'Tab').")]
         public InArgument<string> Key { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

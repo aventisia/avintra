@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run Python Script"),
      Description("Executes some custom Python script and retrieves its output into a variable.")]
-    public class RunPythonScriptActivity : CodeActivity
+    public class RunPythonScriptActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The Python script code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         [Category("Output"), Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

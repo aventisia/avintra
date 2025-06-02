@@ -3,13 +3,13 @@
 
     // Activity to launch a new Word instance or open a Word document
     //[DisplayName("Launch Word"), Description("Launches a new Word instance or opens a Word document.")]
-    //public class LaunchWordActivity : CodeActivity
+    //public class LaunchWordActivity : Extensions.BaseCodeActivity
     //{
     //    [Category("Input"), Description("The path to the Word document to open (optional).")]
     //    public InArgument<string> DocumentPath { get; set; }
 
-    //    [Category("Output"), Description("Returns the status message of the operation.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+    //    
+    //    
 
     //    protected override void Execute(CodeActivityContext context)
     //    {

@@ -7,13 +7,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Hover Mouse Over Element on Web Page")]
     [Description(
         "Simulates hovering the mouse over a specified UI element on a web page. Optionally uses physical mouse movement.")]
-    public class HoverMouseOverElementOnWebPageActivity : CodeActivity
+    public class HoverMouseOverElementOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

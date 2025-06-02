@@ -7,13 +7,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 {
     // Activity to pause a running Windows service
     [DisplayName("Pause Service"), Description("Pauses a running Windows service.")]
-    public class PauseServiceActivity : CodeActivity
+    public class PauseServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to pause.")]
         public InArgument<string> ServiceName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

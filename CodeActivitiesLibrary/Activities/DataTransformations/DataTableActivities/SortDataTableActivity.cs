@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [DisplayName("Sort Data Table")]
     [Description(
         "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.")]
-    public class SortDataTableActivity : CodeActivity
+    public class SortDataTableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public OutArgument<DataTable> SortedDataTable { get; set; }
 
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
 
         protected override void Execute(CodeActivityContext context)

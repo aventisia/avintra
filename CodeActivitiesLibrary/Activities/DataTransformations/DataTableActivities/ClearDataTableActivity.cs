@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Clear Data Table")]
     [Description("Removes all rows from a data table while preserving its structure.")]
-    public class ClearDataTableActivity : CodeActivity
+    public class ClearDataTableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

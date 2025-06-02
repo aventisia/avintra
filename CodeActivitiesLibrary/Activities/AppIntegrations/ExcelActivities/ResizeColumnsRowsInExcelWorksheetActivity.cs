@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Resize Columns/Rows in Excel Worksheet")]
     [Description("Resizes the width of columns or the height of rows in the active Excel worksheet.")]
-    public class ResizeColumnsRowsInExcelWorksheetActivity : CodeActivity
+    public class ResizeColumnsRowsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -70,7 +70,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -95,90 +95,90 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (selectionRange)
                 {
                     case ExcelColumnSelectionRangeEnum.AllAvailable:
-                    {
-                        switch (resizeTarget)
                         {
-                            case ExcelColumnResizeTargetEnum.Columns:
-                                if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
-                                    ws.Columns.AutoFit();
-                                else
-                                    ws.Columns.ColumnWidth = Width.Get(context);
-                                break;
+                            switch (resizeTarget)
+                            {
+                                case ExcelColumnResizeTargetEnum.Columns:
+                                    if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
+                                        ws.Columns.AutoFit();
+                                    else
+                                        ws.Columns.ColumnWidth = Width.Get(context);
+                                    break;
 
-                            case ExcelColumnResizeTargetEnum.Rows:
-                                if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
-                                    ws.Rows.AutoFit();
-                                else
-                                    ws.Rows.RowHeight = Width.Get(context);
-                                break;
+                                case ExcelColumnResizeTargetEnum.Rows:
+                                    if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
+                                        ws.Rows.AutoFit();
+                                    else
+                                        ws.Rows.RowHeight = Width.Get(context);
+                                    break;
 
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(resizeTarget));
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(resizeTarget));
+                            }
+
+                            break;
                         }
-
-                        break;
-                    }
 
                     case ExcelColumnSelectionRangeEnum.Range:
-                    {
-                        var startCol = StartColumn.Get(context);
-                        var endCol = EndColumn.Get(context);
-
-                        var startColIndex = GetColumnIndex(startCol);
-                        var endColIndex = GetColumnIndex(endCol);
-
-                        var range = ws.Range[ws.Cells[1, startColIndex], ws.Cells[1, endColIndex]];
-
-                        switch (resizeTarget)
                         {
-                            case ExcelColumnResizeTargetEnum.Columns:
-                                if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
-                                    range.EntireColumn.AutoFit();
-                                else
-                                    range.EntireColumn.ColumnWidth = Width.Get(context);
-                                break;
+                            var startCol = StartColumn.Get(context);
+                            var endCol = EndColumn.Get(context);
 
-                            case ExcelColumnResizeTargetEnum.Rows:
-                                if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
-                                    range.EntireRow.AutoFit();
-                                else
-                                    range.EntireRow.RowHeight = Width.Get(context);
-                                break;
+                            var startColIndex = GetColumnIndex(startCol);
+                            var endColIndex = GetColumnIndex(endCol);
 
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(resizeTarget));
+                            var range = ws.Range[ws.Cells[1, startColIndex], ws.Cells[1, endColIndex]];
+
+                            switch (resizeTarget)
+                            {
+                                case ExcelColumnResizeTargetEnum.Columns:
+                                    if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
+                                        range.EntireColumn.AutoFit();
+                                    else
+                                        range.EntireColumn.ColumnWidth = Width.Get(context);
+                                    break;
+
+                                case ExcelColumnResizeTargetEnum.Rows:
+                                    if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
+                                        range.EntireRow.AutoFit();
+                                    else
+                                        range.EntireRow.RowHeight = Width.Get(context);
+                                    break;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(resizeTarget));
+                            }
+
+                            break;
                         }
-
-                        break;
-                    }
 
                     case ExcelColumnSelectionRangeEnum.Single:
-                    {
-                        var colLetter = Column.Get(context);
-                        var colIndex = GetColumnIndex(colLetter);
-
-                        switch (resizeTarget)
                         {
-                            case ExcelColumnResizeTargetEnum.Columns:
-                                if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
-                                    ws.Columns[colIndex].AutoFit();
-                                else
-                                    ws.Columns[colIndex].ColumnWidth = Width.Get(context);
-                                break;
+                            var colLetter = Column.Get(context);
+                            var colIndex = GetColumnIndex(colLetter);
 
-                            case ExcelColumnResizeTargetEnum.Rows:
-                                if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
-                                    ws.Rows[colIndex].AutoFit();
-                                else
-                                    ws.Rows[colIndex].RowHeight = Width.Get(context);
-                                break;
+                            switch (resizeTarget)
+                            {
+                                case ExcelColumnResizeTargetEnum.Columns:
+                                    if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
+                                        ws.Columns[colIndex].AutoFit();
+                                    else
+                                        ws.Columns[colIndex].ColumnWidth = Width.Get(context);
+                                    break;
 
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(resizeTarget));
+                                case ExcelColumnResizeTargetEnum.Rows:
+                                    if (resizeType == ExcelColumnResizeTypeEnum.Autofit)
+                                        ws.Rows[colIndex].AutoFit();
+                                    else
+                                        ws.Rows[colIndex].RowHeight = Width.Get(context);
+                                    break;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(resizeTarget));
+                            }
+
+                            break;
                         }
-
-                        break;
-                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(selectionRange));

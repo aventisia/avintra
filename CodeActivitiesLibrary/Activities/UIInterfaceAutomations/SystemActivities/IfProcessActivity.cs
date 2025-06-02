@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("If process")]
     [Description("Marks the beginning of a conditional block of actions depending on whether a process is running or not.")]
-    public class IfProcessActivity : CodeActivity
+    public class IfProcessActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,9 +18,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
         [Description("Returns true if the process is running, otherwise false.")]
         public OutArgument<bool> IsRunning { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

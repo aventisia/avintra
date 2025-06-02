@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Recognize Entities in Text")]
     [Description(
         "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.")]
-    public class RecognizeEntitiesInTextActivity : CodeActivity
+    public class RecognizeEntitiesInTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -42,7 +42,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("Returns the list of recognized entities based on the specified entity type.")]
         public OutArgument<IEnumerable<string>> RecognizedEntities { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

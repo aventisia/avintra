@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Insert Row Into Data Table")]
     [Description("Inserts a row at the end or before a specific index value.")]
-    public sealed class InsertRowIntoDataTableActivity : CodeActivity
+    public sealed class InsertRowIntoDataTableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -43,7 +43,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -71,34 +71,34 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 switch (insertLocation)
                 {
                     case DataTableInsertRowLocationEnum.BeforeRowIndex:
-                    {
-                        var rowIndex = RowIndex.Get(context);
-
-                        if (rowIndex < 0 || rowIndex > dataTable.Rows.Count)
-                            throw new ArgumentOutOfRangeException(nameof(RowIndex),
-                                $"Row index must be between 0 and {dataTable.Rows.Count}.");
-
-                        var newRow = dataTable.NewRow();
-                        for (var i = 0; i < rowValues.Length; i++)
                         {
-                            newRow[i] = rowValues[i];
-                        }
+                            var rowIndex = RowIndex.Get(context);
 
-                        dataTable.Rows.InsertAt(newRow, rowIndex);
-                        break;
-                    }
+                            if (rowIndex < 0 || rowIndex > dataTable.Rows.Count)
+                                throw new ArgumentOutOfRangeException(nameof(RowIndex),
+                                    $"Row index must be between 0 and {dataTable.Rows.Count}.");
+
+                            var newRow = dataTable.NewRow();
+                            for (var i = 0; i < rowValues.Length; i++)
+                            {
+                                newRow[i] = rowValues[i];
+                            }
+
+                            dataTable.Rows.InsertAt(newRow, rowIndex);
+                            break;
+                        }
 
                     case DataTableInsertRowLocationEnum.EndOfDataTable:
-                    {
-                        var newRow = dataTable.NewRow();
-                        for (var i = 0; i < rowValues.Length; i++)
                         {
-                            newRow[i] = rowValues[i];
-                        }
+                            var newRow = dataTable.NewRow();
+                            for (var i = 0; i < rowValues.Length; i++)
+                            {
+                                newRow[i] = rowValues[i];
+                            }
 
-                        dataTable.Rows.Add(newRow);
-                        break;
-                    }
+                            dataTable.Rows.Add(newRow);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(insertLocation));

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("If Web Page Contains")]
     [Description(
         "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.")]
-    public class IfWebPageContainsActivity : CodeActivity
+    public class IfWebPageContainsActivity : Extensions.BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {
@@ -128,9 +128,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("True if the condition is met; otherwise, false.")]
         public OutArgument<bool> Result { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
     }

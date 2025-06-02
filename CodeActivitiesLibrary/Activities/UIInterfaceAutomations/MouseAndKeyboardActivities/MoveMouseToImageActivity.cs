@@ -2,16 +2,12 @@
 {
     //[DisplayName("Move Mouse to Image")]
     //[Description("Moves the mouse cursor to the center of a specified image on the screen.")]
-    //public class MoveMouseToImageActivity : CodeActivity
+    //public class MoveMouseToImageActivity : Extensions.BaseCodeActivity
     //{
     //    [RequiredArgument]
     //    [Category("Input")]
     //    [Description("The path to the image file to locate.")]
-    //    public InArgument<string> ImagePath { get; set; }
-
-    //    [Category("Output")]
-    //    [Description("Returns the status message.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+    //    public InArgument<string> ImagePath { get; set; }  
 
     //    protected override void Execute(CodeActivityContext context)
     //    {

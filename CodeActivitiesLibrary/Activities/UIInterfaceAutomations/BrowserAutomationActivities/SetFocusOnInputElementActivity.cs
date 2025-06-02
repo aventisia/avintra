@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     // Activity to set focus on an input element on a web page
     [DisplayName("Set Focus on Input Element"),
      Description("Set the focus on an input element on a web page and scroll it into view.")]
-    public class SetFocusOnInputElementActivity : CodeActivity
+    public class SetFocusOnInputElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the web page.")]
         public InArgument<string> Url { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RequiredArgument, Category("Input"), Description("The selector for the input element (e.g., CSS selector).")]
         public InArgument<string> ElementSelector { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     // Activity to press/release keys
     [DisplayName("Press/Release Key"),
      Description("Presses (and holds) or releases one or more modifier keys (Alt, Control, or Shift).")]
-    public class PressReleaseKeyActivity : CodeActivity
+    public class PressReleaseKeyActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"),
          Description("The key to press or release (e.g., 'Alt', 'Control', 'Shift').")]
@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [RequiredArgument, Category("Input"), Description("Whether to press (true) or release (false) the key.")]
         public InArgument<bool> Press { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

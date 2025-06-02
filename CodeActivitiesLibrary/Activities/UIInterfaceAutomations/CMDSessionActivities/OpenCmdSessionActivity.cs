@@ -8,13 +8,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 
     // Activity to open a new CMD session
     [DisplayName("Open CMD Session"), Description("Opens a new CMD session and returns the process ID.")]
-    public class OpenCmdSessionActivity : CodeActivity
+    public class OpenCmdSessionActivity : Extensions.BaseCodeActivity
     {
         [Category("Output"), Description("Returns the process ID of the opened CMD session.")]
         public OutArgument<int> ProcessId { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get All Excel Worksheets")]
     [Description("Retrieves all worksheet names from the active Excel workbook.")]
-    public class GetAllExcelWorksheetsActivity : CodeActivity
+    public class GetAllExcelWorksheetsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -30,7 +30,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns a list of all worksheet names in the active Excel workbook.")]
         public OutArgument<IEnumerable<string>> WorksheetNames { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

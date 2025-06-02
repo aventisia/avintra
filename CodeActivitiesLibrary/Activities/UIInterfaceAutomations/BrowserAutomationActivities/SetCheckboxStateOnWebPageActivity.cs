@@ -9,13 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Set Checkbox State on Web Page")]
     [Description(
         "Sets the state (checked/unchecked) of a checkbox element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.")]
-    public class SetCheckboxStateOnWebPageActivity : CodeActivity
+    public class SetCheckboxStateOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

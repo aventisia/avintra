@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Paste Cells to Excel Worksheet")]
     [Description("Pastes a DataTable of data to the active Excel worksheet starting at the specified range.")]
-    public class PasteDataTableToExcelWorksheetActivity : CodeActivity
+    public class PasteDataTableToExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -44,7 +44,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

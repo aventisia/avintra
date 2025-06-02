@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [DisplayName("Merge Data Tables")]
     [Description(
         "Merges two data tables together, specifying the merging behavior in case their columns are different.")]
-    public class MergeDataTablesActivity : CodeActivity
+    public class MergeDataTablesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -36,7 +36,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public OutArgument<DataTable> MergedDataTable { get; set; }
 
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

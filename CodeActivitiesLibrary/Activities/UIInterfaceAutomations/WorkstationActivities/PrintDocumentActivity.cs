@@ -6,13 +6,13 @@ using System.Diagnostics;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Print Document"), Description("Prints a document on the default printer.")]
-    public class PrintDocumentActivity : CodeActivity
+    public class PrintDocumentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the document to print.")]
         public InArgument<string> DocumentPath { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

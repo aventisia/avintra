@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Clear List")]
     [Description("Removes all elements from the specified list.")]
-    public class ClearListActivity : CodeActivity
+    public class ClearListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -24,8 +24,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [Category("Output")]
- 
-        public OutArgument<string> StatusMessage { get; set; }
+
+        
 
         // ----------------------
         // Execution Logic

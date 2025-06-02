@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Trim Text")]
     [Description("Removes specified characters from the start, end, or both ends of a text string.")]
-    public class TrimTextActivity : CodeActivity
+    public class TrimTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -43,7 +43,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<string> TrimmedText { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

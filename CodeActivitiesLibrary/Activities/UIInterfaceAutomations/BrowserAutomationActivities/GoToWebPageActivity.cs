@@ -9,13 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Go To Web Page")]
     [Description(
         "Navigates a web browser instance to a specified URL, or performs navigation actions such as Back, Forward, or Reload.")]
-    public class GoToWebPageActivity : CodeActivity
+    public class GoToWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

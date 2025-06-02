@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Select Tab")]
     [Description("Selects a tab from a group of tabs in a window by index or name.")]
-    public class SelectTabActivity : BaseCodeActivity
+    public class SelectTabActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

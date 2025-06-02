@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Find and Replace in Excel Worksheet")]
     [Description("Finds text and replaces it with another in the active worksheet of an Excel instance.")]
-    public class FindAndReplaceCellsInExcelWorksheetActivity : CodeActivity
+    public class FindAndReplaceCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -66,8 +66,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
-
         [Category("Output")]
         [DisplayName("Found Cells")]
         [Description("Returns a list of all matched cells when 'All Matches' is true.")]
@@ -113,79 +111,79 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (searchMode)
                 {
                     case ExcelSearchModeEnum.Find:
-                    {
-                        var usedRange = ws.UsedRange;
-
-                        // Perform find operation
-                        var foundCells = new List<Excel.Range>();
-
-                        if (allMatches)
                         {
-                            // Find all matching cells
-                            foundCells.AddRange(usedRange.Cells.Cast<Excel.Range>().Where(cell =>
-                                cell.Value2 != null && cell.Value2.ToString().Contains(textToFind)));
-                        }
-                        else
-                        {
-                            // Find the first matching cell
-                            var found = usedRange.Find(
-                                textToFind,
-                                LookAt: matchEntireCellContents ? Excel.XlLookAt.xlWhole : Excel.XlLookAt.xlPart,
-                                MatchCase: matchCase,
-                                SearchOrder: searchBy == ExcelSearchByEnum.Rows
-                                    ? Excel.XlSearchOrder.xlByRows
-                                    : Excel.XlSearchOrder.xlByColumns
-                            );
+                            var usedRange = ws.UsedRange;
 
-                            if (found != null) foundCells.Add(found);
-                        }
-
-                        if (foundCells.Count > 0)
-                        {
-                            status = $"Found {foundCells.Count} occurrences of '{textToFind}'.";
+                            // Perform find operation
+                            var foundCells = new List<Excel.Range>();
 
                             if (allMatches)
                             {
-                                FoundCells.Set(context, foundCells);
+                                // Find all matching cells
+                                foundCells.AddRange(usedRange.Cells.Cast<Excel.Range>().Where(cell =>
+                                    cell.Value2 != null && cell.Value2.ToString().Contains(textToFind)));
                             }
                             else
                             {
-                                var firstFound = foundCells[0];
-                                FoundColumnIndex.Set(context, firstFound.Column);
-                                FoundRowIndex.Set(context, firstFound.Row);
-                            }
-                        }
-                        else
-                        {
-                            status = $"No occurrences of '{textToFind}' were found.";
-                        }
+                                // Find the first matching cell
+                                var found = usedRange.Find(
+                                    textToFind,
+                                    LookAt: matchEntireCellContents ? Excel.XlLookAt.xlWhole : Excel.XlLookAt.xlPart,
+                                    MatchCase: matchCase,
+                                    SearchOrder: searchBy == ExcelSearchByEnum.Rows
+                                        ? Excel.XlSearchOrder.xlByRows
+                                        : Excel.XlSearchOrder.xlByColumns
+                                );
 
-                        break;
-                    }
+                                if (found != null) foundCells.Add(found);
+                            }
+
+                            if (foundCells.Count > 0)
+                            {
+                                status = $"Found {foundCells.Count} occurrences of '{textToFind}'.";
+
+                                if (allMatches)
+                                {
+                                    FoundCells.Set(context, foundCells);
+                                }
+                                else
+                                {
+                                    var firstFound = foundCells[0];
+                                    FoundColumnIndex.Set(context, firstFound.Column);
+                                    FoundRowIndex.Set(context, firstFound.Row);
+                                }
+                            }
+                            else
+                            {
+                                status = $"No occurrences of '{textToFind}' were found.";
+                            }
+
+                            break;
+                        }
 
                     case ExcelSearchModeEnum.FindAndReplace:
-                    {
-                        var usedRange = ws.UsedRange;
+                        {
+                            var usedRange = ws.UsedRange;
 
-                        // Perform find-and-replace operation
-                        var replaced = usedRange.Replace(
-                            textToFind,
-                            textToReplaceWith,
-                            matchEntireCellContents ? Excel.XlLookAt.xlWhole : Excel.XlLookAt.xlPart,
-                            searchBy == ExcelSearchByEnum.Rows
-                                ? Excel.XlSearchOrder.xlByRows
-                                : Excel.XlSearchOrder.xlByColumns,
-                            matchCase,
-                            false,
-                            Type.Missing,
-                            Type.Missing
-                        );
+                            // Perform find-and-replace operation
+                            var replaced = usedRange.Replace(
+                                textToFind,
+                                textToReplaceWith,
+                                matchEntireCellContents ? Excel.XlLookAt.xlWhole : Excel.XlLookAt.xlPart,
+                                searchBy == ExcelSearchByEnum.Rows
+                                    ? Excel.XlSearchOrder.xlByRows
+                                    : Excel.XlSearchOrder.xlByColumns,
+                                matchCase,
+                                false,
+                                Type.Missing,
+                                Type.Missing
+                            );
 
-                        status = replaced
-                            ? $"Successfully replaced '{textToFind}' with '{textToReplaceWith}'."
-                            : $"No occurrences of '{textToFind}' were found.";
-                        break;
-                    }
+                            status = replaced
+                                ? $"Successfully replaced '{textToFind}' with '{textToReplaceWith}'."
+                                : $"No occurrences of '{textToFind}' were found.";
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(searchMode));

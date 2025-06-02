@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Table Range from Excel Worksheet")]
     [Description("Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.")]
-    public class GetTableRangeFromExcelWorksheetActivity : CodeActivity
+    public class GetTableRangeFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -54,7 +54,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the row index of the last cell in the table range.")]
         public OutArgument<int> LastRowIndex { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

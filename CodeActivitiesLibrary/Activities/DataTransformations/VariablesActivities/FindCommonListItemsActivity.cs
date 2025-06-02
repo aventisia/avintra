@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Find Common List Items")]
     [Description("Finds common items between two lists and returns them as a new list.")]
-    public class FindCommonListItemsActivity : CodeActivity
+    public class FindCommonListItemsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns a list containing the common items from both input lists.")]
         public OutArgument<List<object>> IntersectionList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

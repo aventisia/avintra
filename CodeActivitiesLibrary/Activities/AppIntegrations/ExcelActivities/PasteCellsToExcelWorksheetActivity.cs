@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Paste Cells to Excel Worksheet")]
     [Description(
         "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.")]
-    public class PasteCellsToExcelWorksheetActivity : CodeActivity
+    public class PasteCellsToExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -70,7 +70,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -106,51 +106,51 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (pasteMode)
                 {
                     case CellPasteModeEnum.OnNamedCells:
-                    {
-                        var name = Name.Get(context);
+                        {
+                            var name = Name.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(name))
-                            throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
+                            if (string.IsNullOrWhiteSpace(name))
+                                throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
 
-                        var namedRange = targetWs.Names.Item(name)?.RefersToRange;
+                            var namedRange = targetWs.Names.Item(name)?.RefersToRange;
 
-                        if (namedRange == null)
-                            throw new InvalidOperationException($"Named range '{name}' not found.");
+                            if (namedRange == null)
+                                throw new InvalidOperationException($"Named range '{name}' not found.");
 
-                        sourceRange.Copy();
-                        namedRange.PasteSpecial(Excel.XlPasteType.xlPasteAll,
-                            Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
-                        break;
-                    }
+                            sourceRange.Copy();
+                            namedRange.PasteSpecial(Excel.XlPasteType.xlPasteAll,
+                                Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                            break;
+                        }
 
                     case CellPasteModeEnum.OnCurrentlyActiveCell:
-                    {
-                        var activeCell = targetApp.ActiveCell;
-                        if (activeCell == null)
-                            throw new InvalidOperationException("No active cell found.");
+                        {
+                            var activeCell = targetApp.ActiveCell;
+                            if (activeCell == null)
+                                throw new InvalidOperationException("No active cell found.");
 
-                        sourceRange.Copy();
-                        activeCell.PasteSpecial(Excel.XlPasteType.xlPasteAll,
-                            Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
-                        break;
-                    }
+                            sourceRange.Copy();
+                            activeCell.PasteSpecial(Excel.XlPasteType.xlPasteAll,
+                                Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                            break;
+                        }
 
                     case CellPasteModeEnum.OnSpecifiedCell:
-                    {
-                        var colLetter = Column.Get(context);
-                        var rowIndex = Row.Get(context);
+                        {
+                            var colLetter = Column.Get(context);
+                            var rowIndex = Row.Get(context);
 
-                        var colIndex = GetColumnIndex(colLetter);
+                            var colIndex = GetColumnIndex(colLetter);
 
-                        if (!(targetWs.Cells[rowIndex, colIndex] is Excel.Range targetCell))
-                            throw new InvalidOperationException(
-                                $"Target cell at Column {colLetter}, Row {rowIndex} not found.");
+                            if (!(targetWs.Cells[rowIndex, colIndex] is Excel.Range targetCell))
+                                throw new InvalidOperationException(
+                                    $"Target cell at Column {colLetter}, Row {rowIndex} not found.");
 
-                        sourceRange.Copy();
-                        targetCell.PasteSpecial(Excel.XlPasteType.xlPasteAll,
-                            Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
-                        break;
-                    }
+                            sourceRange.Copy();
+                            targetCell.PasteSpecial(Excel.XlPasteType.xlPasteAll,
+                                Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(pasteMode));

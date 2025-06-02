@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Element Collection")]
     [Description("Finds and returns a collection of UI elements under a parent element using the specified property type and value.")]
-    public class GetElementCollectionActivity : BaseCodeActivity
+    public class GetElementCollectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

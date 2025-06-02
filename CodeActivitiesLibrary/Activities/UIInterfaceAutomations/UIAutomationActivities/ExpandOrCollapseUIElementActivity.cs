@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Expand or Collapse UI Element")]
     [Description("Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.")]
-    public class ExpandOrCollapseUIElementActivity : BaseCodeActivity
+    public class ExpandOrCollapseUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

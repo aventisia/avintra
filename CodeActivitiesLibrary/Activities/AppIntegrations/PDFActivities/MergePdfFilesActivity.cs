@@ -2,7 +2,7 @@
 {
     // Activity to merge multiple PDF files into a new one
     //[DisplayName("Merge PDF Files"), Description("Merges multiple PDF files into a new one.")]
-    //public class MergePdfFilesActivity : CodeActivity
+    //public class MergePdfFilesActivity : Extensions.BaseCodeActivity
     //{
     //    [RequiredArgument, Category("Input"), Description("The paths of the PDF files to merge.")]
     //    public InArgument<IEnumerable<string>> PdfFilePaths { get; set; }
@@ -10,8 +10,8 @@
     //    [RequiredArgument, Category("Input"), Description("The path to save the merged PDF file.")]
     //    public InArgument<string> OutputPdfPath { get; set; }
 
-    //    [Category("Output"), Description("Returns the status message of the operation.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+    //    
+    //    
 
     //    protected override void Execute(CodeActivityContext context)
     //    {

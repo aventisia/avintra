@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Select Cells in Excel Worksheet")]
     [Description("Selects a specific range of cells in the active Excel worksheet.")]
-    public class SelectCellsInExcelWorksheetActivity : CodeActivity
+    public class SelectCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -92,7 +92,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -114,87 +114,87 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (selectionMode)
                 {
                     case ExcelCellSelectionModeEnum.NamedCells:
-                    {
-                        var name = Name.Get(context);
+                        {
+                            var name = Name.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(name))
-                            throw new ArgumentException("Name cannot be empty when using 'Named Cells' mode.");
+                            if (string.IsNullOrWhiteSpace(name))
+                                throw new ArgumentException("Name cannot be empty when using 'Named Cells' mode.");
 
-                        var namedRange = ws.Names.Item(name)?.RefersToRange;
-                        if (namedRange == null)
-                            throw new ArgumentException($"Named range '{name}' not found.");
+                            var namedRange = ws.Names.Item(name)?.RefersToRange;
+                            if (namedRange == null)
+                                throw new ArgumentException($"Named range '{name}' not found.");
 
-                        namedRange.Select();
-                        break;
-                    }
+                            namedRange.Select();
+                            break;
+                        }
 
                     case ExcelCellSelectionModeEnum.RangeOfCells:
-                    {
-                        var startCol = StartColumn.Get(context);
-                        var endCol = EndColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endRow = EndRow.Get(context);
+                        {
+                            var startCol = StartColumn.Get(context);
+                            var endCol = EndColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endRow = EndRow.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(startCol) || string.IsNullOrWhiteSpace(endCol))
-                            throw new ArgumentException(
-                                "Start column and end column cannot be empty when using 'Range of Cells' mode.");
+                            if (string.IsNullOrWhiteSpace(startCol) || string.IsNullOrWhiteSpace(endCol))
+                                throw new ArgumentException(
+                                    "Start column and end column cannot be empty when using 'Range of Cells' mode.");
 
-                        var range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                            ws.Cells[endRow, GetColumnIndex(endCol)]];
-                        if (range == null)
-                            throw new ArgumentException($"Invalid range specified: {startCol}:{endCol}");
+                            var range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
+                                ws.Cells[endRow, GetColumnIndex(endCol)]];
+                            if (range == null)
+                                throw new ArgumentException($"Invalid range specified: {startCol}:{endCol}");
 
-                        range.Select();
-                        break;
-                    }
+                            range.Select();
+                            break;
+                        }
 
                     case ExcelCellSelectionModeEnum.RelativeToActiveCell:
-                    {
-                        var xDir = XAxisDirection.Get(context);
-                        var yDir = YAxisDirection.Get(context);
-                        var xOffset = XOffset.Get(context);
-                        var yOffset = YOffset.Get(context);
-
-                        if (!(ws.Application.Selection is Excel.Range activeCell))
-                            throw new InvalidOperationException("No active cell found.");
-
-                        var activeRow = activeCell.Row;
-                        var activeCol = activeCell.Column;
-
-                        var newRow = activeRow;
-                        var newCol = activeCol;
-
-                        switch (yDir)
                         {
-                            case ExcelYAxisDirectionEnum.Above:
-                                newRow -= yOffset;
-                                break;
-                            case ExcelYAxisDirectionEnum.Below:
-                                newRow += yOffset;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(yDir));
+                            var xDir = XAxisDirection.Get(context);
+                            var yDir = YAxisDirection.Get(context);
+                            var xOffset = XOffset.Get(context);
+                            var yOffset = YOffset.Get(context);
+
+                            if (!(ws.Application.Selection is Excel.Range activeCell))
+                                throw new InvalidOperationException("No active cell found.");
+
+                            var activeRow = activeCell.Row;
+                            var activeCol = activeCell.Column;
+
+                            var newRow = activeRow;
+                            var newCol = activeCol;
+
+                            switch (yDir)
+                            {
+                                case ExcelYAxisDirectionEnum.Above:
+                                    newRow -= yOffset;
+                                    break;
+                                case ExcelYAxisDirectionEnum.Below:
+                                    newRow += yOffset;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(yDir));
+                            }
+
+                            switch (xDir)
+                            {
+                                case ExcelXAxisDirectionEnum.Left:
+                                    newCol -= xOffset;
+                                    break;
+                                case ExcelXAxisDirectionEnum.Right:
+                                    newCol += xOffset;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(xDir));
+                            }
+
+                            Excel.Range newRange = ws.Cells[newRow, newCol];
+                            if (newRange == null)
+                                throw new ArgumentException($"Invalid relative position calculated.");
+
+                            newRange.Select();
+                            break;
                         }
-
-                        switch (xDir)
-                        {
-                            case ExcelXAxisDirectionEnum.Left:
-                                newCol -= xOffset;
-                                break;
-                            case ExcelXAxisDirectionEnum.Right:
-                                newCol += xOffset;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(xDir));
-                        }
-
-                        Excel.Range newRange = ws.Cells[newRow, newCol];
-                        if (newRange == null)
-                            throw new ArgumentException($"Invalid relative position calculated.");
-
-                        newRange.Select();
-                        break;
-                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(selectionMode));

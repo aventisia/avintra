@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Populate Text Field on Web Page"),
      Description("Fill in a text field on a web page with the specified text.")]
-    public class PopulateTextFieldActivity : CodeActivity
+    public class PopulateTextFieldActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the web page.")]
         public InArgument<string> Url { get; set; }
@@ -18,8 +18,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RequiredArgument, Category("Input"), Description("The text to populate the field with.")]
         public InArgument<string> TextToPopulate { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

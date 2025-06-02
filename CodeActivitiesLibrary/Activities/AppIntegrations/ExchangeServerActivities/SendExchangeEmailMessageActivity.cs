@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     // Activity to send an Exchange email message
     [DisplayName("Send Exchange Email Message"), Description("Create and send a new email message.")]
-    public class SendExchangeEmailMessageActivity : CodeActivity
+    public class SendExchangeEmailMessageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The recipient's email address.")]
         public InArgument<string> Recipient { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [RequiredArgument, Category("Input"), Description("The body of the email.")]
         public InArgument<string> Body { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

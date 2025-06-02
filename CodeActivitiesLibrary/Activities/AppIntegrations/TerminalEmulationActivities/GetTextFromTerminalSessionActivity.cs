@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to get text from a terminal session
     [DisplayName("Get Text from Terminal Session"), Description("Get text from a terminal session.")]
-    public class GetTextFromTerminalSessionActivity : CodeActivity
+    public class GetTextFromTerminalSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns the retrieved text from the terminal session.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

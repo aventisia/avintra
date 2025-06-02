@@ -7,12 +7,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Launch New Chrome")]
     [Description("Launches a new web browser instance or attaches to an existing one.")]
-    public class LaunchNewChromeActivity : CodeActivity
+    public class LaunchNewChromeActivity : Extensions.BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
-            
+
             try
             {
                 var launchMode = LaunchMode.Get(context);
@@ -187,9 +187,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
 
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
     }

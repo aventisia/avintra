@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Convert Data Table to CSV Text")]
     [Description("Converts a data table into a CSV (comma-separated values) text representation.")]
-    public class ConvertDataTableToTextActivity : CodeActivity
+    public class ConvertDataTableToTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -57,7 +57,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public OutArgument<string> CsvTextOutput { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

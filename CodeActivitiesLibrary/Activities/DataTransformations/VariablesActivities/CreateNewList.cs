@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Create New List")]
     [Description("Creates a new empty list to be used in other activities.")]
-    public class CreateNewList : CodeActivity
+    public class CreateNewList : Extensions.BaseCodeActivity
     {
         [Category("Output")]
         [DisplayName("New List")]
@@ -14,9 +14,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public OutArgument<List<object>> NewList { get; set; }
 
         // Output argument to return the newly created list
-        [Category("Output")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

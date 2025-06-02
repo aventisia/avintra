@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Extract Data from Window")]
     // [Description("Extracts data from specific parts of a window in the form of single values, lists, or tables.")]
-    public class ExtractDataFromWindowActivity : BaseCodeActivity
+    public class ExtractDataFromWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,8 +18,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns the extracted data as a string.")]
         public OutArgument<string> ExtractedData { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

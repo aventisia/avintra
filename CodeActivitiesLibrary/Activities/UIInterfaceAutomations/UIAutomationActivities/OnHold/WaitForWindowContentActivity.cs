@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Wait for Window Content")]
     // [Description("Suspends the execution of the automation until a specific piece of text or UI element appears or disappears from a window.")]
-    public class WaitForWindowContentActivity : BaseCodeActivity
+    public class WaitForWindowContentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -24,8 +24,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The maximum time to wait (in seconds).")]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

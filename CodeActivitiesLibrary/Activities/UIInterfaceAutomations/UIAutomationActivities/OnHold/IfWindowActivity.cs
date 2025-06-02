@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("If Window")]
     // [Description("This action marks the beginning of a conditional block of actions depending on whether a window is open or not or whether a window is the focused (foreground) window.")]
-    public class IfWindowActivity : BaseCodeActivity
+    public class IfWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,8 +18,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns true if the condition is met, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Text to Number")]
     [Description("Converts a text representation of a number to a numeric value.")]
-    public class ConvertTextToNumberActivity : CodeActivity
+    public class ConvertTextToNumberActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -33,7 +33,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("Returns the resulting numeric value after conversion.")]
         public OutArgument<object> ConvertedValue { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

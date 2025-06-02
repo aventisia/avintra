@@ -7,12 +7,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Row from Excel Worksheet")]
     [Description("Deletes a specific row from the active worksheet of an Excel instance.")]
-    public class DeleteRowFromExcelWorksheetActivity : CodeActivity
+    public class DeleteRowFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Excel Application")]
@@ -25,15 +21,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("The index (1-based) of the row to delete.")]
         public InArgument<int> RowIndex { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
+        [Category("Output")]
+        
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
@@ -53,8 +43,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     throw new ArgumentOutOfRangeException(nameof(RowIndex),
                         $"Row index must be between 1 and {worksheet.Rows.Count}.");
 
-                // Delete the specified row
-                worksheet.Rows.Delete(rowIndex);
+
+                ((Excel.Range)worksheet.Rows[rowIndex]).Delete();
 
                 status = $"Successfully deleted row at index {rowIndex}.";
             }

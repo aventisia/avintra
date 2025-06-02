@@ -8,10 +8,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     [DisplayName("Wait for Mouse"),
      Description(
          "Suspends the execution of the flow until the mouse pointer changes, usually to or from the 'wait cursor' or hourglass.")]
-    public class WaitForMouseActivity : CodeActivity
+    public class WaitForMouseActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

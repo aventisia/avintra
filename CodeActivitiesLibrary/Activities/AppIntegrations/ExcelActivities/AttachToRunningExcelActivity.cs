@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Attach to Running Excel Workbook")]
     [Description("Attaches to a running Excel instance and opens the specified workbook if not already open.")]
-    public class AttachToRunningExcelActivity : CodeActivity
+    public class AttachToRunningExcelActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -22,7 +22,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> FilePath { get; set; }
 
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

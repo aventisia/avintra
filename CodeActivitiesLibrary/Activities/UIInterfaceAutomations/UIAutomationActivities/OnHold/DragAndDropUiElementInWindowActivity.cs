@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Drag and Drop UI Element in Window")]
     //[Description("Drags a UI element from one location to another within a specified window.")]
-    public class DragAndDropUiElementInWindowActivity : BaseCodeActivity
+    public class DragAndDropUiElementInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -24,8 +24,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The selector or identifier of the target UI element.")]
         public InArgument<string> TargetUiElementSelector { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

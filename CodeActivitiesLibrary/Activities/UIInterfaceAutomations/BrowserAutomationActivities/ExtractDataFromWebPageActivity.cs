@@ -8,13 +8,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Extract Data From Web Page")]
     [Description("Extracts data from a specified UI element on a web page using configurable parameters.")]
-    public class ExtractDataFromWebPageActivity : CodeActivity
+    public class ExtractDataFromWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Status Output
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

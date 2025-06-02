@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
     // Activity to process Exchange email messages
     [DisplayName("Process Exchange Email Messages"),
      Description("Move, delete, or mark as unread an email message (or a list of email messages).")]
-    public class ProcessExchangeEmailMessagesActivity : CodeActivity
+    public class ProcessExchangeEmailMessagesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The action to perform (e.g., Move, Delete, MarkAsUnread).")]
         public InArgument<string> Action { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [RequiredArgument, Category("Input"), Description("The IDs of the email messages to process.")]
         public InArgument<IEnumerable<string>> MessageIds { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

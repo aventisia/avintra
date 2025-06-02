@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Item From List")]
     [Description("Removes an item from a list by index or value.")]
-    public class RemoveItemFromListActivity : CodeActivity
+    public class RemoveItemFromListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -46,7 +46,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the updated list after removing the item(s).")]
         public OutArgument<List<object>> ModifiedList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run DOS Command")]
     [Description("Runs a DOS command or console application in invisible mode and retrieves its output upon completion.")]
-    public class RunDosCommandActivity : CodeActivity
+    public class RunDosCommandActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,9 +18,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         [Description("Returns the output of the command.")]
         public OutArgument<string> CommandOutput { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

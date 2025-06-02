@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Selected Item from Drop-Down List")]
     [Description("Reads and returns the selected item from a drop-down list in a window using the property you choose.")]
-    public class GetDropDownSelectedItemActivity : BaseCodeActivity
+    public class GetDropDownSelectedItemActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

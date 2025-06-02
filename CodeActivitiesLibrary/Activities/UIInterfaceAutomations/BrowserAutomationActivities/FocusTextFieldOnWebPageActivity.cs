@@ -8,13 +8,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Focus Text Field on Web Page")]
     [Description(
         "Focuses a specific text field in a web browser. Optionally waits for the page to load and handles pop-up dialogs.")]
-    public class FocusTextFieldOnWebPageActivity : CodeActivity
+    public class FocusTextFieldOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

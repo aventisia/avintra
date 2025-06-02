@@ -5,10 +5,10 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Exit Subflow"), Description("Exits the current subflow and returns to the caller.")]
-    public class ExitSubflowActivity : NativeActivity
+    public class ExitSubflowActivity : Extensions.BaseNativeActivity
     {
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

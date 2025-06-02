@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Column From Data Table")]
     [Description("Deletes a data table column at the specified column index or column name.")]
-    public sealed class DeleteColumnFromDataTableActivity : CodeActivity
+    public sealed class DeleteColumnFromDataTableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -41,9 +41,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
 
         // ----------------------
         // Execution Logic
@@ -63,29 +60,29 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 switch (specifyColumnWith)
                 {
                     case DataTableDeleteColumnByEnum.Name:
-                    {
-                        var columnName = ColumnName.Get(context);
+                        {
+                            var columnName = ColumnName.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(columnName))
-                            throw new ArgumentException("Column name cannot be empty when using 'Name' mode.");
+                            if (string.IsNullOrWhiteSpace(columnName))
+                                throw new ArgumentException("Column name cannot be empty when using 'Name' mode.");
 
-                        if (!dataTable.Columns.Contains(columnName))
-                            throw new ArgumentException($"Column '{columnName}' not found in the data table.");
+                            if (!dataTable.Columns.Contains(columnName))
+                                throw new ArgumentException($"Column '{columnName}' not found in the data table.");
 
-                        dataTable.Columns.Remove(columnName);
-                        break;
-                    }
+                            dataTable.Columns.Remove(columnName);
+                            break;
+                        }
 
                     case DataTableDeleteColumnByEnum.Index:
-                    {
-                        var columnIndex = ColumnIndex.Get(context);
+                        {
+                            var columnIndex = ColumnIndex.Get(context);
 
-                        if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
-                            throw new ArgumentException($"Invalid column index: {columnIndex}");
+                            if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
+                                throw new ArgumentException($"Invalid column index: {columnIndex}");
 
-                        dataTable.Columns.RemoveAt(columnIndex);
-                        break;
-                    }
+                            dataTable.Columns.RemoveAt(columnIndex);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(specifyColumnWith));

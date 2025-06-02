@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Close Excel Application")]
     [Description("Closes the active Excel application instance and optionally saves changes.")]
-    public class CloseExcelActivity : CodeActivity
+    public class CloseExcelActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -37,7 +37,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -68,15 +68,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         break;
 
                     case ExcelCloseOptionEnum.SaveDocumentAs:
-                    {
-                        var savePath = SavePath.Get(context);
+                        {
+                            var savePath = SavePath.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(savePath))
-                            throw new ArgumentException("Save Path cannot be empty when saving as.");
+                            if (string.IsNullOrWhiteSpace(savePath))
+                                throw new ArgumentException("Save Path cannot be empty when saving as.");
 
-                        excelApp.ActiveWorkbook.SaveAs(savePath);
-                        break;
-                    }
+                            excelApp.ActiveWorkbook.SaveAs(savePath);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(closeOption));

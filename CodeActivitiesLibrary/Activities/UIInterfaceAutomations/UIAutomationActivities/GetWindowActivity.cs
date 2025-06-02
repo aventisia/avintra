@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Window")]
     [Description("Finds a desktop window by name using UI Automation.")]
-    public class GetWindowActivity : BaseCodeActivity
+    public class GetWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

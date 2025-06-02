@@ -1,58 +1,279 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
 using System.Net.Mail;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Office.Interop.Excel;
+using MimeKit;
+using MimeKit.Text;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
-    // Activity to send an email message
-    [DisplayName("Send Email"), Description("Creates and sends a new email message.")]
-    public class SendEmailActivity : CodeActivity
+    [DisplayName("Send Email")]
+    [Description("Creates and sends a new email message using MailKit.")]
+    public class SendEmailActivity : Extensions.BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The SMTP server URL.")]
-        public InArgument<string> SmtpServer { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The sender's email address.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("From")]
+        [Description("The sender's email address.")]
         public InArgument<string> From { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The recipient's email address.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("To")]
+        [Description("The recipient's email address(es) (comma-separated).")]
         public InArgument<string> To { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The subject of the email.")]
+        [Category("Input")]
+        [DisplayName("CC")]
+        [Description("The CC recipients' email addresses (comma-separated).")]
+        public InArgument<string> Cc { get; set; }
+
+        [Category("Input")]
+        [DisplayName("BCC")]
+        [Description("The BCC recipients' email addresses (comma-separated).")]
+        public InArgument<string> Bcc { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Subject")]
+        [Description("The subject of the email.")]
         public InArgument<string> Subject { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The body of the email.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Body")]
+        [Description("The body of the email.")]
         public InArgument<string> Body { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Body Format")]
+        [Description("The format of the email body (Text or Html).")]
+        [DefaultValue(EmailBodyFormatEnum.Text)]
+        public InArgument<EmailBodyFormatEnum> BodyFormat { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Attachments")]
+        [Description("Paths to files to attach to the email (comma-separated).")]
+        public InArgument<string> Attachments { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("SMTP Server")]
+        [Description("The SMTP server URL.")]
+        public InArgument<string> SmtpServer { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Server Port")]
+        [Description("The port number for the SMTP server (default is 587).")]
+        public InArgument<int> ServerPort { get; set; } = 587;
+
+        [Category("Input")]
+        [DisplayName("Security Protocol")]
+        [Description("The security protocol to use for the connection.")]
+        [DefaultValue(SecureSocketOptions.Auto)]
+        public InArgument<SecureSocketOptions> SecurityProtocol { get; set; }
+
+        [Category("Input")]
+        [DisplayName("SMTP Server Needs Authentication")]
+        [Description("If true, authenticates with the SMTP server using credentials.")]
+        public InArgument<bool> SmtpServerNeedsAuthentication { get; set; } = true;
+
+        [Category("Input")]
+        [DisplayName("User Name")]
+        [Description("The username for authentication.")]
+        public InArgument<string> UserName { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Password")]
+        [Description("The password for authentication.")]
+        public InArgument<string> Password { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Accept Untrusted Certificates")]
+        [Description("If true, accepts untrusted SSL certificates.")]
+        public InArgument<bool> EnableSsl { get; set; } = false;
+
+        [Category("Input")]
+        [DisplayName("Timeout (seconds)")]
+        [Description("Connection timeout in seconds (default is 30).")]
+        public InArgument<int> Timeout { get; set; } = 30;
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        
+
+        [Category("Output")]
+        [DisplayName("Is Success")]
+        [Description("Returns true if the email was sent successfully.")]
+        public OutArgument<bool> IsSuccess { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var smtpServer = SmtpServer.Get(context);
-            var from = From.Get(context);
-            var to = To.Get(context);
-            var subject = Subject.Get(context);
-            var body = Body.Get(context);
-            var status = "";
+            var status = "Operation completed successfully.";
+            var isSuccess = true;
 
             try
             {
-                // Simulate sending an email message (actual implementation would use SmtpClient or similar)
-                using (var client = new SmtpClient(smtpServer))
+                // Get input values
+                var from = From.Get(context);
+                var to = To.Get(context);
+                var cc = Cc.Get(context);
+                var bcc = Bcc.Get(context);
+                var subject = Subject.Get(context);
+                var body = Body.Get(context);
+                var bodyFormat = BodyFormat.Get(context);
+                var attachments = Attachments.Get(context);
+                var smtpServer = SmtpServer.Get(context);
+                var serverPort = ServerPort.Get(context);
+                var securityProtocol = SecurityProtocol.Get(context);
+                var smtpServerNeedsAuthentication = SmtpServerNeedsAuthentication.Get(context);
+                var userName = UserName.Get(context);
+                var password = Password.Get(context);
+                var acceptUntrustedCertificates = EnableSsl.Get(context);
+                var timeout = Timeout.Get(context);
+
+                // Validate required inputs
+                if (string.IsNullOrWhiteSpace(from))
+                    throw new ArgumentException("Sender's email address cannot be empty.");
+
+                if (string.IsNullOrWhiteSpace(to))
+                    throw new ArgumentException("Recipient's email address cannot be empty.");
+
+                if (string.IsNullOrWhiteSpace(smtpServer))
+                    throw new ArgumentException("SMTP server cannot be empty.");
+
+                if (smtpServerNeedsAuthentication &&
+                    (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password)))
+                    throw new ArgumentException("Username and password are required for authentication.");
+
+                // Create the email message
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(from));
+
+                // Add recipients
+                foreach (var address in to.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var message = new MailMessage(from, to, subject, body);
-                    client.Send(message);
+                    message.To.Add(MailboxAddress.Parse(address.Trim()));
                 }
 
-                status = $"Email sent successfully to '{to}' with subject '{subject}'.";
+                if (!string.IsNullOrWhiteSpace(cc))
+                {
+                    foreach (var address in cc.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        message.Cc.Add(MailboxAddress.Parse(address.Trim()));
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(bcc))
+                {
+                    foreach (var address in bcc.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        message.Bcc.Add(MailboxAddress.Parse(address.Trim()));
+                    }
+                }
+
+                message.Subject = subject;
+
+                // Create the message body
+                var builder = new BodyBuilder();
+
+                switch (bodyFormat)
+                {
+                    case EmailBodyFormatEnum.Text:
+                        builder.TextBody = body;
+                        break;
+                    case EmailBodyFormatEnum.Html:
+                        builder.HtmlBody = body;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid body format specified.");
+                }
+
+                // Add attachments
+                if (!string.IsNullOrWhiteSpace(attachments))
+                {
+                    foreach (var attachmentPath in attachments.Split(new[] { ',', ';' },
+                                 StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        var trimmedPath = attachmentPath.Trim();
+                        if (!File.Exists(trimmedPath))
+                            throw new FileNotFoundException($"Attachment not found: {trimmedPath}");
+
+                        builder.Attachments.Add(trimmedPath);
+                    }
+                }
+
+                message.Body = builder.ToMessageBody();
+
+                // Send the email
+                using (var client = new SmtpClient())
+                {
+                    // Configure certificate validation
+                    if (acceptUntrustedCertificates)
+                    {
+                        client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    }
+
+                    // Set timeout
+                    client.Timeout = timeout * 1000;
+
+                    // Connect to the SMTP server
+                    client.Connect(smtpServer, serverPort, securityProtocol);
+
+                    // Authenticate if needed
+                    if (smtpServerNeedsAuthentication)
+                    {
+                        client.Authenticate(userName, password);
+                    }
+
+                    // Send the message
+                    client.Send(message);
+
+                    // Disconnect
+                    client.Disconnect(true);
+                }
+
+                status = $"Email sent successfully to {to} with subject '{subject}'.";
             }
             catch (Exception ex)
             {
+                isSuccess = false;
                 status = $"Error sending email: {ex.Message}";
+
+                // Include inner exception details if available
+                if (ex.InnerException != null)
+                {
+                    status += $"\nInner Exception: {ex.InnerException.Message}";
+                }
             }
 
             StatusMessage.Set(context, status);
+            IsSuccess.Set(context, isSuccess);
         }
+    }
+
+    public enum EmailBodyFormatEnum
+    {
+        [Display(Name = "Plain", Description = "Plain text format")]
+        Text,
+
+        [Display(Name = "Html", Description = "HTML format")]
+        Html
     }
 }

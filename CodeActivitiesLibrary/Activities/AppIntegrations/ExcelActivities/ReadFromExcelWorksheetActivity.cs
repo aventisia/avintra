@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read from Excel Worksheet")]
     [Description("Reads values from a specified cell range in the active Excel worksheet.")]
-    public class ReadFromExcelWorksheetActivity : CodeActivity
+    public class ReadFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -84,8 +84,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the data read from the specified range as a DataTable.")]
         public OutArgument<DataTable> ExcelData { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
-
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -116,52 +114,52 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (retrieveMode)
                 {
                     case ExcelRetrieveModeEnum.SingleCell:
-                    {
-                        var cell = ws.Cells[startRow, GetColumnIndex(startCol)];
-                        dataTable = new DataTable();
-                        dataTable.Columns.Add("Value");
-                        dataTable.Rows.Add(cell.Value);
-                        break;
-                    }
+                        {
+                            var cell = ws.Cells[startRow, GetColumnIndex(startCol)];
+                            dataTable = new DataTable();
+                            dataTable.Columns.Add("Value");
+                            dataTable.Rows.Add(cell.Value);
+                            break;
+                        }
 
                     case ExcelRetrieveModeEnum.RangeOfCells:
-                    {
-                        var range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                            ws.Cells[endRow, GetColumnIndex(endCol)]];
-                        dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames);
-                        break;
-                    }
+                        {
+                            var range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
+                                ws.Cells[endRow, GetColumnIndex(endCol)]];
+                            dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames);
+                            break;
+                        }
 
                     case ExcelRetrieveModeEnum.Selection:
-                    {
-                        if (!(excelApp.Selection is Excel.Range selection))
-                            throw new InvalidOperationException("No range is selected.");
+                        {
+                            if (!(excelApp.Selection is Excel.Range selection))
+                                throw new InvalidOperationException("No range is selected.");
 
-                        dataTable = ReadRange(selection, getContentsAsText, firstLineContainsColumnNames);
-                        break;
-                    }
+                            dataTable = ReadRange(selection, getContentsAsText, firstLineContainsColumnNames);
+                            break;
+                        }
 
                     case ExcelRetrieveModeEnum.AllAvailableValues:
-                    {
-                        var usedRange = ws.UsedRange;
-                        dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames);
-                        break;
-                    }
+                        {
+                            var usedRange = ws.UsedRange;
+                            dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames);
+                            break;
+                        }
 
                     case ExcelRetrieveModeEnum.ValuesOfNamedCells:
-                    {
-                        var namedRange = ws.Names.Item(name)?.RefersToRange;
-                        if (namedRange == null)
-                            throw new ArgumentException($"Named range '{name}' not found.");
+                        {
+                            var namedRange = ws.Names.Item(name)?.RefersToRange;
+                            if (namedRange == null)
+                                throw new ArgumentException($"Named range '{name}' not found.");
 
-                        dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames);
+                            dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames);
 
-                        if (omitEmptyColumnsAndRows)
-                            // Trim empty columns and rows
-                            dataTable = TrimEmptyColumnsAndRows(dataTable);
+                            if (omitEmptyColumnsAndRows)
+                                // Trim empty columns and rows
+                                dataTable = TrimEmptyColumnsAndRows(dataTable);
 
-                        break;
-                    }
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(retrieveMode));

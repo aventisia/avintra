@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Selected Checkboxes")]
     [Description("Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.")]
-    public class GetSelectedCheckboxesActivity : BaseCodeActivity
+    public class GetSelectedCheckboxesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

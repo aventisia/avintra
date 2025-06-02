@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     // Activity to get the value of an element's attribute on a web page
     [DisplayName("Get Element Attribute Value"),
      Description("Retrieve the value of an element's attribute on a web page.")]
-    public class GetElementAttributeValueActivity : CodeActivity
+    public class GetElementAttributeValueActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the web page.")]
         public InArgument<string> Url { get; set; }
@@ -21,8 +21,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Category("Output"), Description("Returns the value of the attribute.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

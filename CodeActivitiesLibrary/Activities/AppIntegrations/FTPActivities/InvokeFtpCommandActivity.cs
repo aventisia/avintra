@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to invoke an FTP command
     [DisplayName("Invoke FTP Command"), Description("Invokes the given literal FTP command on the server.")]
-    public class InvokeFtpCommandActivity : CodeActivity
+    public class InvokeFtpCommandActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The FTP command to execute.")]
         public InArgument<string> Command { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

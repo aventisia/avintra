@@ -7,13 +7,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 {
     // Activity to start a stopped Windows service
     [DisplayName("Start Service"), Description("Starts a stopped Windows service.")]
-    public class StartServiceActivity : CodeActivity
+    public class StartServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to start.")]
         public InArgument<string> ServiceName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

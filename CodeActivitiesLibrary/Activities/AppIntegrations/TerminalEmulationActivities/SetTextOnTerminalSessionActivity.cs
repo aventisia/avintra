@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to set text on a terminal session
     [DisplayName("Set Text on Terminal Session"), Description("Set text on a terminal session.")]
-    public class SetTextOnTerminalSessionActivity : CodeActivity
+    public class SetTextOnTerminalSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The text to set on the terminal session.")]
         public InArgument<string> Text { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

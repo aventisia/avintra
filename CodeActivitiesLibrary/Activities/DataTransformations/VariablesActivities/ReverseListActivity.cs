@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Reverse List")]
     [Description("Reverses the order of items in a list.")]
-    public class ReverseListActivity : CodeActivity
+    public class ReverseListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,7 +28,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the list after reversing the order of its items.")]
         public OutArgument<List<object>> ReversedList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

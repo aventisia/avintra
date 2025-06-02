@@ -7,13 +7,13 @@ using System.IO;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Delete File(s)"), Description("Deletes one or more files.")]
-    public class DeleteFilesActivity : CodeActivity
+    public class DeleteFilesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The file paths to delete.")]
         public InArgument<IEnumerable<string>> FilePaths { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

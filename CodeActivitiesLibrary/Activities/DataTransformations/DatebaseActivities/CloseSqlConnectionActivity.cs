@@ -8,16 +8,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
     [DisplayName("Close SQL Connection")]
     [Description("Close an open connection to a database")]
-    public class CloseSqlConnectionActivity : CodeActivity
+    public class CloseSqlConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
         [Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Insert XML Element
     [DisplayName("Insert XML Element")]
     [Description("Inserts a new XML element into an XML document.")]
-    public class InsertXmlElementActivity : CodeActivity
+    public class InsertXmlElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -29,9 +29,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
         [Description("Returns the updated XML content.")]
         public OutArgument<string> UpdatedXmlContent { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

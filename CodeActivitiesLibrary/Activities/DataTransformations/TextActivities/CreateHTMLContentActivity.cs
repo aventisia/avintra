@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Create HTML Content")]
     [Description("Generates rich HTML content and stores it in a variable.")]
-    public class CreateHtmlContentActivity : CodeActivity
+    public class CreateHtmlContentActivity : Extensions.BaseCodeActivity
     {
         #region Arguments
 
@@ -27,9 +27,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("The generated HTML content.")]
         public OutArgument<string> ResultHtml { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
         protected override void Execute(CodeActivityContext context)

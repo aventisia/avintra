@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Wait for Window")]
     // [Description("Suspends the execution or the process until a specific window opens, closes, gets or loses the focus.")]
-    public class WaitForWindowActivity : BaseCodeActivity
+    public class WaitForWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -19,8 +19,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The maximum time to wait (in seconds).")]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Delete File(s)")]
     [Description("Deletes one or more files.")]
-    public class DeleteFileActivity : CodeActivity
+    public class DeleteFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -16,7 +16,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Description("The path(s) of the file(s) to delete. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToDelete { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     [DisplayName("Wait for Service"),
      Description(
          "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.")]
-    public class WaitForServiceActivity : CodeActivity
+    public class WaitForServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to wait for.")]
         public InArgument<string> ServiceName { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         [RequiredArgument, Category("Input"), Description("The desired state of the service (e.g., Running, Stopped).")]
         public InArgument<ServiceControllerStatus> DesiredState { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

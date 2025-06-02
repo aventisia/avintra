@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Join Data Tables")]
     [Description("Joins two data tables based on the specified join rule.")]
-    public class JoinDataTablesActivity : CodeActivity
+    public class JoinDataTablesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -42,7 +42,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The resulting DataTable after performing the join operation.")]
         public OutArgument<DataTable> JoinedDataTable { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
 
         protected override void Execute(CodeActivityContext context)
@@ -147,31 +147,31 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
         {
             return from firstRow in firstTable
-                join secondRow in secondTable
-                    on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
-                select firstRow;
+                   join secondRow in secondTable
+                       on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
+                   select firstRow;
         }
 
         private static IQueryable<DataRow> PerformLeftJoin(IQueryable<DataRow> firstTable,
             IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
         {
             return from firstRow in firstTable
-                join secondRow in secondTable
-                    on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
-                    into joinedRows
-                from secondRow in joinedRows.DefaultIfEmpty()
-                select firstRow;
+                   join secondRow in secondTable
+                       on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
+                       into joinedRows
+                   from secondRow in joinedRows.DefaultIfEmpty()
+                   select firstRow;
         }
 
         private static IQueryable<DataRow> PerformFullJoin(IQueryable<DataRow> firstTable,
             IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
         {
             return from firstRow in firstTable
-                join secondRow in secondTable
-                    on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
-                    into joinedRows
-                from secondRow in joinedRows.DefaultIfEmpty()
-                select firstRow;
+                   join secondRow in secondTable
+                       on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
+                       into joinedRows
+                   from secondRow in joinedRows.DefaultIfEmpty()
+                   select firstRow;
         }
 
         private static DataTable CreateJoinedDataTable(DataTable firstDataTable, DataTable secondDataTable)

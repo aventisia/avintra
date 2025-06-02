@@ -7,11 +7,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Log Off User")]
     [Description("Logs off the current user.")]
-    public class LogOffUserActivity : CodeActivity
+    public class LogOffUserActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to File")]
     [Description("Converts a Base64 encoded string to a file and saves it at the specified path.")]
-    public class ConvertBase64ToFileActivity : CodeActivity
+    public class ConvertBase64ToFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -29,10 +29,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        [Category("Output")]
-        [DisplayName("Status Message")]
-        [Description("Returns a message indicating the result of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {

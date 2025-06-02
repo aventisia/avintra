@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to download files from FTP
     [DisplayName("Download File(s) from FTP"), Description("Downloads one or more files from an FTP server.")]
-    public class DownloadFilesFromFtpActivity : CodeActivity
+    public class DownloadFilesFromFtpActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -19,8 +19,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The local directory to save the downloaded files.")]
         public InArgument<string> LocalDirectory { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

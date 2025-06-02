@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Encrypt Text with AES")]
     [Description("Encrypt a string with AES, using a key and a specified encoding format")]
-    public class EncryptTextWithAesActivity : CodeActivity
+    public class EncryptTextWithAesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -28,9 +28,6 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Description("Returns the encrypted text.")]
         public OutArgument<string> EncryptedText { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {

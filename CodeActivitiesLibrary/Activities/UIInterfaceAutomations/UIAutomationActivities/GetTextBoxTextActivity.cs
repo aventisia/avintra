@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Text from Text Box")]
     [Description("Reads and returns the text from a text box in a window using the property you choose.")]
-    public class GetTextBoxTextActivity : BaseCodeActivity
+    public class GetTextBoxTextActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

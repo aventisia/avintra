@@ -6,13 +6,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to close an FTP connection
     [DisplayName("Close Connection"), Description("Closes an open FTP connection.")]
-    public class CloseFtpConnectionActivity : CodeActivity
+    public class CloseFtpConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

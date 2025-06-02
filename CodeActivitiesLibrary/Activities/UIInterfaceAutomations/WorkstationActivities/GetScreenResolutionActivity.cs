@@ -2,16 +2,12 @@
 {
     //[DisplayName("Get Screen Resolution")]
     //[Description("Gets the width, height, bit count, and frequency of a selected monitor.")]
-    //public class GetScreenResolutionActivity : CodeActivity
+    //public class GetScreenResolutionActivity : Extensions.BaseCodeActivity
     //{
     //    [Category("Output")]
     //    [Description("Returns the screen resolution details.")]
     //    public OutArgument<ScreenResolution> ScreenDetails { get; set; }
-
-    //    [Category("Output")]
-    //    [Description("Returns the status message.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
-
+  
     //    protected override void Execute(CodeActivityContext context)
     //    {
     //        var screenDetails = new ScreenResolution();

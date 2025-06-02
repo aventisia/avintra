@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Get Selected Cell Range from Excel Worksheet")]
     [Description(
         "Retrieves the currently selected cell range in the active Excel worksheet as first column, first row, last column, and last row indices.")]
-    public class GetSelectedCellRangeFromExcelWorksheetActivity : CodeActivity
+    public class GetSelectedCellRangeFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -44,7 +44,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the row index (1-based) of the last cell in the selected range.")]
         public OutArgument<int> LastRowIndex { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

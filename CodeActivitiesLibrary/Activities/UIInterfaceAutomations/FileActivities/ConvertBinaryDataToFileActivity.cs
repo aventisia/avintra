@@ -2,12 +2,13 @@
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Binary Data to File")]
     [Description("Converts binary data to a file at the specified path.")]
-    public class ConvertBinaryDataToFileActivity : CodeActivity
+    public class ConvertBinaryDataToFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -28,9 +29,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

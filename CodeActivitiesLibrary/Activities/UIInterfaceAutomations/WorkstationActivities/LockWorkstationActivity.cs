@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Lock Workstation"), Description("Locks the workstation's display to protect it from unauthorized use.")]
-    public class LockWorkstationActivity : CodeActivity
+    public class LockWorkstationActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

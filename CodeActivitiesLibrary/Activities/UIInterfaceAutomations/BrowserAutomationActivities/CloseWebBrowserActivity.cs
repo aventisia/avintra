@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Close Web Browser")]
     [Description("Closes a web browser instance that was previously opened.")]
-    public class CloseWebBrowserActivity : CodeActivity
+    public class CloseWebBrowserActivity : Extensions.BaseCodeActivity
     {
         #region Inputs
 
@@ -20,9 +20,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
     [DisplayName("Process Email Messages")]
     [Description(
         "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.")]
-    public class ProcessEmailMessagesActivity : CodeActivity
+    public class ProcessEmailMessagesActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -73,8 +73,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
-
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -88,11 +86,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 var messageIds = MessageIds.Get(context);
                 var imapServer = ImapServer.Get(context);
                 var port = Port.Get(context);
-                var enableSSL = EnableSSL.Get(context);
+                var enableSsl = EnableSSL.Get(context);
                 var username = Username.Get(context);
                 var password = Password.Get(context);
                 var acceptUntrustedCertificates = AcceptUntrustedCertificates.Get(context);
-                using (var client = CreateImapClient(imapServer, port, enableSSL, username, password,
+                using (var client = CreateImapClient(imapServer, port, enableSsl, username, password,
                            acceptUntrustedCertificates))
                 {
                     switch (operation)
@@ -106,14 +104,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                             break;
 
                         case EmailOperationEnum.MoveToFolder:
-                        {
-                            var mailFolder = MailFolder.Get(context);
-                            MoveEmailsToFolder(messageIds, mailFolder, client);
-                            if (string.IsNullOrWhiteSpace(mailFolder))
-                                throw new ArgumentException(
-                                    "Mail folder cannot be empty when u imapServer, port, enableSSL, username, password");
-                            break;
-                        }
+                            {
+                                var mailFolder = MailFolder.Get(context);
+                                MoveEmailsToFolder(messageIds, mailFolder, client);
+                                if (string.IsNullOrWhiteSpace(mailFolder))
+                                    throw new ArgumentException(
+                                        "Mail folder cannot be empty when u imapServer, port, enableSSL, username, password");
+                                break;
+                            }
 
                         default:
                             throw new ArgumentOutOfRangeException(nameof(operation));

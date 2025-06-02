@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [NodeType("forLoopNode")]
     [DisplayName("Loop")]
     [Description("This allows you to loop through a set of conditions and execute actions based on the evaluation of those conditions.")]
-    public class LoopActivity : CodeActivity
+    public class LoopActivity : Extensions.BaseCodeActivity
     {
         [Required]
         [DisplayName("Loop Type")]

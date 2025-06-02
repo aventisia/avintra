@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     // Activity to set key state
     [DisplayName("Set Key State"),
      Description("Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.")]
-    public class SetKeyStateActivity : CodeActivity
+    public class SetKeyStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"),
          Description("The key to modify (e.g., 'CapsLock', 'NumLock', 'ScrollLock').")]
@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [RequiredArgument, Category("Input"), Description("Whether to enable (true) or disable (false) the key state.")]
         public InArgument<bool> Enable { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Run Excel Macro")]
     [Description("Runs a specified VBA macro in the active Excel workbook.")]
-    public class RunExcelMacroActivity : CodeActivity
+    public class RunExcelMacroActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -34,7 +34,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the value returned by the macro, if any.")]
         public OutArgument<string> MacroReturnValue { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

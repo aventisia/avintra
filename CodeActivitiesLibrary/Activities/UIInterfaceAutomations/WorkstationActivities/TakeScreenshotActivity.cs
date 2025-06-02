@@ -7,10 +7,10 @@ using System.Windows.Forms;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Take Screenshot"), Description("Takes a screenshot of all screens and saves it to the clipboard.")]
-    public class TakeScreenshotActivity : CodeActivity
+    public class TakeScreenshotActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

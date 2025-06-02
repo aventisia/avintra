@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Click UI Element")]
     [Description("Invokes or clicks a UI element using UI Automation or mouse click.")]
-    public class ClickUIElementActivity : BaseCodeActivity
+    public class ClickUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

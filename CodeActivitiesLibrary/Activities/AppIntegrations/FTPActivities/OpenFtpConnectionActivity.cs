@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     [DisplayName("Open FTP Connection"),
      Description(
          "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.")]
-    public class OpenFtpConnectionActivity : CodeActivity
+    public class OpenFtpConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }
@@ -22,8 +22,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [Category("Output"), Description("Returns the connection ID or token for the opened FTP connection.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

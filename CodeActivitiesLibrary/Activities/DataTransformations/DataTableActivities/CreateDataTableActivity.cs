@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Create Data Table")]
     [Description("Creates a new data table. If an existing data table is provided, it will be cloned.")]
-    public class CreateDataTableActivity : CodeActivity
+    public class CreateDataTableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,7 +28,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public OutArgument<DataTable> NewDataTable { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

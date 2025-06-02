@@ -5,10 +5,10 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-   
+
     [DisplayName("Empty Folder")]
     [Description("Removes all files and subdirectories within the specified folder, preserving the folder itself.")]
-    public class EmptyFolderActivity : CodeActivity
+    public class EmptyFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

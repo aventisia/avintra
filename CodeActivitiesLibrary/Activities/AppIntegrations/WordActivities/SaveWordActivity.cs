@@ -7,13 +7,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
     // Activity to save a previously launched Word instance
     [DisplayName("Save Word"), Description("Saves a previously launched Word instance.")]
-    public class SaveWordActivity : CodeActivity
+    public class SaveWordActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to save the Word document.")]
         public InArgument<string> SavePath { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

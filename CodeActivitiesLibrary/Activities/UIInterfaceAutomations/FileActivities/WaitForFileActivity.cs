@@ -9,7 +9,7 @@ using System.Threading;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Wait For File"), Description("Suspends running the flow until a file is created or deleted.")]
-    public class WaitForFileActivity : NativeActivity
+    public class WaitForFileActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -21,9 +21,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         public InArgument<WaitForFileModeEnum> Mode { get; set; } =
         new InArgument<WaitForFileModeEnum>(WaitForFileModeEnum.Create);
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

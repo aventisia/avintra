@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Filter Data Table")]
     [Description("Filters the data table rows based on the applied rules.")]
-    public sealed class FilterDataTableActivity : CodeActivity
+    public sealed class FilterDataTableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -40,7 +40,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public OutArgument<DataTable> FilteredDataTable { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

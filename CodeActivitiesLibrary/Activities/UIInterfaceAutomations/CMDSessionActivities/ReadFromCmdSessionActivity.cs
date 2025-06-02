@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
     // Activity to read from a CMD session
     [DisplayName("Read from CMD Session"), Description("Reads the output from an open CMD session.")]
-    public class ReadFromCmdSessionActivity : CodeActivity
+    public class ReadFromCmdSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
         public InArgument<int> ProcessId { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         [Category("Output"), Description("Returns the output read from the CMD session.")]
         public OutArgument<string> Output { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

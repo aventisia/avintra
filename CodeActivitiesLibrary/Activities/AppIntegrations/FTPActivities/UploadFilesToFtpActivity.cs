@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to upload files to FTP
     [DisplayName("Upload File(s) to FTP"), Description("Uploads one or more files to an FTP server.")]
-    public class UploadFilesToFtpActivity : CodeActivity
+    public class UploadFilesToFtpActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -19,8 +19,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The remote directory on the FTP server.")]
         public InArgument<string> RemoteDirectory { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

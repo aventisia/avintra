@@ -8,13 +8,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Press Button on Web Page")]
     [Description(
         "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.")]
-    public class PressButtonOnWebPageActivity : CodeActivity
+    public class PressButtonOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

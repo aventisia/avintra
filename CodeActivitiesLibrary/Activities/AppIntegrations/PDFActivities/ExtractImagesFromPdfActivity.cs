@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
     // Activity to extract images from a PDF file
     [DisplayName("Extract Images from PDF"),
      Description("Extracts images from a PDF file by specifying the source PDF file and the pages to extract from.")]
-    public class ExtractImagesFromPdfActivity : CodeActivity
+    public class ExtractImagesFromPdfActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]
         public InArgument<string> SourcePdfPath { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
         [RequiredArgument, Category("Input"), Description("The target folder to save the extracted images.")]
         public InArgument<string> TargetFolder { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

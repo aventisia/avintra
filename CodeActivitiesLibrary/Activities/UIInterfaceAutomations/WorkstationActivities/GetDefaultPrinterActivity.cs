@@ -7,15 +7,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Get Default Printer")]
     [Description("Gets the name of the default printer.")]
-    public class GetDefaultPrinterActivity : CodeActivity
+    public class GetDefaultPrinterActivity : Extensions.BaseCodeActivity
     {
         [Category("Output")]
         [Description("Returns the name of the default printer.")]
         public OutArgument<string> DefaultPrinterName { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

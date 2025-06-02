@@ -6,13 +6,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to close an open terminal session
     [DisplayName("Close Terminal Session"), Description("Close an open terminal session.")]
-    public class CloseTerminalSessionActivity : CodeActivity
+    public class CloseTerminalSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session to close.")]
         public InArgument<int> SessionId { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

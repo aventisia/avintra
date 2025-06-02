@@ -5,29 +5,46 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
 {
     // Activity to block user input
-    [DisplayName("Block Input"),
-     Description(
-         "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.")]
-    public class BlockInputActivity : CodeActivity
+    [DisplayName("Block Input")]
+    [Description(
+        "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.")]
+    public class BlockInputActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        // Input property
+        [Category("Input")]
+        [DisplayName("Block It")]
+        [Description("Toggle to enable or disable blocking of user input.")]
+        public InArgument<bool> BlockIt { get; set; }
+
+        
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "";
-
             try
             {
-                // Simulate blocking input (actual implementation would use Windows API)
-                status = "User input blocked successfully.";
+                // Retrieve the input argument
+                bool blockIt = context.GetValue(BlockIt);
+
+                if (blockIt)
+                {
+                    // Simulate blocking input (actual implementation would use Windows API)
+
+                    string status = "User input blocked successfully.";
+                    context.SetValue(StatusMessage, status);
+                }
+                else
+                {
+                    // If not blocking, return a neutral status message.
+                    string status = "User input is not blocked.";
+                    context.SetValue(StatusMessage, status);
+                }
             }
             catch (Exception ex)
             {
-                status = $"Error blocking input: {ex.Message}";
+                // Handle any errors during execution
+                string status = $"Error blocking input: {ex.Message}";
+                context.SetValue(StatusMessage, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

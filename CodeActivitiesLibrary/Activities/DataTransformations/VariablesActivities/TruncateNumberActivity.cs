@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Truncate Number")]
     [Description(
         "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.")]
-    public class TruncateNumberActivity : CodeActivity
+    public class TruncateNumberActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -25,21 +25,17 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Category("Input")]
         [DisplayName("Operation")]
         [Description("Specifies how to truncate or round the number.")]
-        [DefaultValue(TruncateOperationEnum.GetIntegerPart)]
         public InArgument<TruncateOperationEnum> Operation { get; set; }
 
         [Category("Input")]
         [DisplayName("Decimal Places")]
         [Description("The number of decimal places to round to. Only applicable for rounding operations.")]
-        [DefaultValue(2)]
-        [RenderIfCondition(nameof(Operation), TruncateOperationEnum.Round)]
+        [RenderIfCondition(nameof(Operation), nameof(TruncateOperationEnum.Round))]
         public InArgument<int> DecimalPlaces { get; set; }
 
         [Category("Input")]
         [DisplayName("Round Operation")]
         [Description("Specifies round up or round down the number.")]
-        [DefaultValue(TruncateNumberRoundOperationEnum.RoundUp)]
-        [RenderIfCondition(nameof(Operation), TruncateOperationEnum.Round)]
         public InArgument<TruncateNumberRoundOperationEnum> RoundOperation { get; set; }
 
         // ----------------------
@@ -51,7 +47,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("Returns the truncated or rounded numeric value.")]
         public OutArgument<double> TruncatedValue { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

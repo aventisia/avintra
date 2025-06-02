@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to delete an FTP file
     [DisplayName("Delete FTP File"), Description("Deletes one or more files from an FTP server.")]
-    public class DeleteFtpFileActivity : CodeActivity
+    public class DeleteFtpFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The list of file names to delete.")]
         public InArgument<IEnumerable<string>> FilesToDelete { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

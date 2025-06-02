@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Retrieve Subfolders from Directory")]
     [Description("Returns a list of subfolder paths within the specified directory.")]
-    public class GetSubfoldersInFolderActivity : CodeActivity
+    public class GetSubfoldersInFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

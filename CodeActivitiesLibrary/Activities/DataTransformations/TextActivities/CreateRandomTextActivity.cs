@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Create Random Text")]
     [Description("Generates a text of specified length consisting of random characters.")]
-    public class CreateRandomTextActivity : CodeActivity
+    public class CreateRandomTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -58,8 +58,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<string> RandomText { get; set; }
 
         [Category("Output")]
- 
-        public OutArgument<string> StatusMessage { get; set; }
+
+        
 
         // ----------------------
         // Execution Logic

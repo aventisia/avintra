@@ -5,10 +5,10 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Run Subflow"), Description("Executes a predefined subflow.")]
-    public class RunSubflowActivity : NativeActivity
+    public class RunSubflowActivity : Extensions.BaseNativeActivity
     {
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

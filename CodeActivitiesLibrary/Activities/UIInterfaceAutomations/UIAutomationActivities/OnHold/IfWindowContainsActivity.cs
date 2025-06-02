@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("If Window Contains")]
     // [Description("Marks the beginning of a conditional block of actions depending on whether a specific piece of text or UI element exists in a window.")]
-    public class IfWindowContainsActivity : BaseCodeActivity
+    public class IfWindowContainsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -23,8 +23,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns true if the search term is found, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

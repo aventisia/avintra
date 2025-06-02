@@ -5,52 +5,72 @@ using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
-    // Activity to display a select folder dialog
-    [DisplayName("Display Select Folder Dialog"),
-     Description("Displays the select folder dialog and prompts the user to select a folder.")]
-    public class DisplaySelectFolderDialogActivity : CodeActivity
+    [DisplayName("Display Select Folder Dialog")]
+    [Description("Displays a folder selection dialog to let users choose a folder.")]
+    public sealed class DisplaySelectFolderDialog : Extensions.BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The initial directory path to display in the dialog.")]
-        public InArgument<string> InitialDirectory { get; set; }
+        [Category("Input")]
+        [RequiredArgument]
+        [DisplayName("Dialog Description")]
+        [Description("The description or title of the folder selection dialog window.")]
+        public InArgument<string> DialogDescription { get; set; }
 
-        [Category("Output"), Description("Returns the path of the selected folder.")]
-        public OutArgument<string> Result { get; set; }
+        [Category("Input")]
+        [DisplayName("Initial Folder")]
+        [Description("The folder path where the dialog starts. If empty, defaults to Desktop.")]
+        public InArgument<string> InitialFolder { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Keep Dialog On Top")]
+        [Description("If true, keeps the dialog on top of all other windows.")]
+        public InArgument<bool> KeepDialogOnTop { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Selected Folder")]
+        [Description("The full path of the folder selected by the user.")]
+        public OutArgument<string> SelectedFolder { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Button Pressed")]
+        [Description("True if user clicked OK; False if Cancel was clicked or dialog closed.")]
+        public OutArgument<bool> ButtonPressed { get; set; }
+
+        
 
         protected override void Execute(CodeActivityContext context)
         {
-            var initialDirectory = InitialDirectory.Get(context);
-            var result = "";
-            var status = "";
+            // Retrieve input arguments
+            string dialogDescription = context.GetValue(DialogDescription);
+            string initialFolder = context.GetValue(InitialFolder) ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            bool keepDialogOnTop = context.GetValue(KeepDialogOnTop);
 
-            try
+            // Configure FolderBrowserDialog
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
-                using (var folderBrowserDialog = new FolderBrowserDialog())
-                {
-                    folderBrowserDialog.SelectedPath = initialDirectory;
+                folderBrowserDialog.Description = dialogDescription;
+                folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
+                folderBrowserDialog.SelectedPath = initialFolder;
+                folderBrowserDialog.ShowNewFolderButton = true;
 
-                    if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        result = folderBrowserDialog.SelectedPath;
-                        status = "Folder selected successfully.";
-                    }
-                    else
-                    {
-                        result = "";
-                        status = "User canceled the select folder dialog.";
-                    }
+                // Show the dialog
+                DialogResult result = folderBrowserDialog.ShowDialog();
+
+                // Set output arguments
+                if (result == DialogResult.OK)
+                {
+                    string selectedFolder = folderBrowserDialog.SelectedPath;
+                    context.SetValue(SelectedFolder, "");
+                    context.SetValue(ButtonPressed, true);
+                    context.SetValue(StatusMessage, "Folder selected successfully.");
+                }
+                else
+                {
+                    context.SetValue(SelectedFolder, "");
+                    context.SetValue(ButtonPressed, false);
+                    context.SetValue(StatusMessage, "Operation canceled by user.");
                 }
             }
-            catch (Exception ex)
-            {
-                result = "";
-                status = $"Error displaying select folder dialog: {ex.Message}";
-            }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
+
 }

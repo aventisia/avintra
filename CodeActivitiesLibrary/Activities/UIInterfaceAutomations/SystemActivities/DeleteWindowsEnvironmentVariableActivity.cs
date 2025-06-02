@@ -6,16 +6,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Delete windows environment variable")]
     [Description("Deletes an environment variable from a given scope.")]
-    public class DeleteWindowsEnvironmentVariableActivity : CodeActivity
+    public class DeleteWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
         [Description("The name of the environment variable to delete.")]
         public InArgument<string> VariableName { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

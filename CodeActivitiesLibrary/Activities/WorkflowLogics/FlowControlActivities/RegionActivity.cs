@@ -5,13 +5,13 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Region"), Description("Defines a labeled region in the workflow.")]
-    public class RegionActivity : NativeActivity
+    public class RegionActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Name of the region.")]
         public InArgument<string> RegionName { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Expand/Collapse Tree Node in Window")]
     //[Description("Expands or collapses a node of a tree view residing in a window.")]
-    public class ExpandCollapseTreeNodeInWindowActivity : BaseCodeActivity
+    public class ExpandCollapseTreeNodeInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -24,8 +24,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Whether to expand or collapse the tree node.")]
         public InArgument<bool> Expand { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

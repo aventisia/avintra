@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Increase Variable")]
     [Description("Increases a numeric variable by a specified value.")]
-    public class IncreaseVariableActivity : CodeActivity
+    public class IncreaseVariableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -33,7 +33,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the resulting value after increasing the variable.")]
         public OutArgument<double> Result { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

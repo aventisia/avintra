@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Save Excel Workbook")]
     [Description("Saves the active Excel workbook.")]
-    public class SaveExcelActivity : CodeActivity
+    public class SaveExcelActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -44,7 +44,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -64,29 +64,29 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (saveMode)
                 {
                     case ExcelFileSaveModeEnum.SaveDocument:
-                    {
-                        // Save the active workbook in its current format
-                        excelApp.ActiveWorkbook.Save();
-                        break;
-                    }
+                        {
+                            // Save the active workbook in its current format
+                            excelApp.ActiveWorkbook.Save();
+                            break;
+                        }
 
                     case ExcelFileSaveModeEnum.SaveDocumentAs:
-                    {
-                        var documentPath = DocumentPath.Get(context);
-                        var documentFormat = DocumentFormat.Get(context);
+                        {
+                            var documentPath = DocumentPath.Get(context);
+                            var documentFormat = DocumentFormat.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(documentPath))
-                            throw new ArgumentException(
-                                "Document path cannot be empty when using 'Save Document As' mode.");
+                            if (string.IsNullOrWhiteSpace(documentPath))
+                                throw new ArgumentException(
+                                    "Document path cannot be empty when using 'Save Document As' mode.");
 
-                        // Save the active workbook with the specified format and path
-                        excelApp.ActiveWorkbook.SaveAs(
-                            documentPath,
-                            documentFormat,
-                            CreateBackup: false
-                        );
-                        break;
-                    }
+                            // Save the active workbook with the specified format and path
+                            excelApp.ActiveWorkbook.SaveAs(
+                                documentPath,
+                                documentFormat,
+                                CreateBackup: false
+                            );
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(saveMode));

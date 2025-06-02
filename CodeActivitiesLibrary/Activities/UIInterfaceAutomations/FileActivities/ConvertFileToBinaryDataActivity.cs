@@ -6,7 +6,7 @@ using System.IO;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert File to Binary Data"), Description("Converts a file to binary data.")]
-    public class ConvertFileToBinaryDataActivity : CodeActivity
+    public class ConvertFileToBinaryDataActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The full path of the file to convert.")]
         public InArgument<string> FilePath { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Category("Output"), Description("Returns the binary data of the file.")]
         public OutArgument<byte[]> BinaryData { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

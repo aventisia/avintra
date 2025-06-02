@@ -3,12 +3,13 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Move File(s)")]
     [Description("Moves one or more files into a destination folder.")]
-    public class MoveFileActivity : CodeActivity
+    public class MoveFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

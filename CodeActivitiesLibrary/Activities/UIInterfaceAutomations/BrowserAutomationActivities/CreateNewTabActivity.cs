@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Create New Tab")]
     [Description("Creates a new tab in the web browser and optionally navigates to a specified URL.")]
-    public class CreateNewTabActivity : CodeActivity
+    public class CreateNewTabActivity : Extensions.BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {
@@ -101,9 +101,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         [Category("Output")]
         [DisplayName("New Browser Output")]

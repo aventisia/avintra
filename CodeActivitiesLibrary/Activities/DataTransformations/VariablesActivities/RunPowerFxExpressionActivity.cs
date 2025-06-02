@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Run Power Fx Expression")]
     [Description("Runs a simulated Power Fx expression and returns the result as text.")]
-    public class RunPowerFxExpressionActivity : CodeActivity
+    public class RunPowerFxExpressionActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,8 +28,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public OutArgument<string> ExpressionResult { get; set; }
 
         [Category("Output")]
- 
-        public OutArgument<string> StatusMessage { get; set; }
+
+        
 
         // ----------------------
         // Execution Logic

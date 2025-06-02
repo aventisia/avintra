@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Filter Cells in Excel Worksheet")]
     [Description("Filters cells in the active Excel worksheet based on criteria applied to a specific column.")]
-    public class FilterCellsInExcelWorksheetActivity : CodeActivity
+    public class FilterCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -80,7 +80,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -105,54 +105,54 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (filterMode)
                 {
                     case ExcellFilterModeEnum.ActiveSheet:
-                    {
-                        var usedRange = ws.UsedRange;
-                        ApplyFilter(ws, usedRange, columnToFilter, filterCriteria);
-                        break;
-                    }
+                        {
+                            var usedRange = ws.UsedRange;
+                            ApplyFilter(ws, usedRange, columnToFilter, filterCriteria);
+                            break;
+                        }
 
                     case ExcellFilterModeEnum.SpecificRange:
-                    {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endRow = EndRow.Get(context);
+                        {
+                            var startColStr = StartColumn.Get(context);
+                            var endColStr = EndColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endRow = EndRow.Get(context);
 
-                        int startColNum, endColNum;
+                            int startColNum, endColNum;
 
-                        if (!int.TryParse(startColStr, out startColNum))
-                            startColNum = GetColumnIndex(ws, columnToFilter);
+                            if (!int.TryParse(startColStr, out startColNum))
+                                startColNum = GetColumnIndex(ws, columnToFilter);
 
-                        if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(ws, columnToFilter);
+                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(ws, columnToFilter);
 
-                        var range = ws.Range[ws.Cells[startRow, startColNum], ws.Cells[endRow, endColNum]];
-                        ApplyFilter(ws, range, columnToFilter, filterCriteria);
-                        break;
-                    }
+                            var range = ws.Range[ws.Cells[startRow, startColNum], ws.Cells[endRow, endColNum]];
+                            ApplyFilter(ws, range, columnToFilter, filterCriteria);
+                            break;
+                        }
 
                     case ExcellFilterModeEnum.NamedCells:
-                    {
-                        var namedRangeName = NamedCells.Get(context);
-                        var namedRange = ws.Names.Item(namedRangeName)?.RefersToRange;
+                        {
+                            var namedRangeName = NamedCells.Get(context);
+                            var namedRange = ws.Names.Item(namedRangeName)?.RefersToRange;
 
-                        if (namedRange == null)
-                            throw new ArgumentException($"Named range '{namedRangeName}' not found.");
+                            if (namedRange == null)
+                                throw new ArgumentException($"Named range '{namedRangeName}' not found.");
 
-                        ApplyFilter(ws, namedRange, columnToFilter, filterCriteria);
-                        break;
-                    }
+                            ApplyFilter(ws, namedRange, columnToFilter, filterCriteria);
+                            break;
+                        }
 
                     case ExcellFilterModeEnum.Table:
-                    {
-                        var tableName = TableName.Get(context);
-                        var table = ws.ListObjects[tableName];
+                        {
+                            var tableName = TableName.Get(context);
+                            var table = ws.ListObjects[tableName];
 
-                        if (table == null)
-                            throw new ArgumentException($"Table '{tableName}' not found.");
+                            if (table == null)
+                                throw new ArgumentException($"Table '{tableName}' not found.");
 
-                        ApplyFilter(ws, table.Range, columnToFilter, filterCriteria);
-                        break;
-                    }
+                            ApplyFilter(ws, table.Range, columnToFilter, filterCriteria);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(filterMode));

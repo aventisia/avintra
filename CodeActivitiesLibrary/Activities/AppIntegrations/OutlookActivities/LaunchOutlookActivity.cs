@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Launch Outlook Application")]
     [Description("Launches an Outlook application instance. Optionally connects to a specific profile.")]
-    public class LaunchOutlookActivity : CodeActivity
+    public class LaunchOutlookActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -36,7 +36,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         [Description("The Outlook Application object created or reused by this activity.")]
         public OutArgument<Outlook.Application> OutlookApplication { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

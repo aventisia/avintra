@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Write to Excel Worksheet")]
     [Description("Writes a value to a specific cell or range of cells in an Excel worksheet.")]
-    public class WriteToExcelWorksheetActivity : CodeActivity
+    public class WriteToExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -64,7 +64,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -87,52 +87,52 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (writeMode)
                 {
                     case ExcelCellWriteModeEnum.OnSpecifiedCell:
-                    {
-                        var colLetter = Column.Get(context);
-                        var rowNumber = Row.Get(context);
+                        {
+                            var colLetter = Column.Get(context);
+                            var rowNumber = Row.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(colLetter))
-                            throw new ArgumentException("Column cannot be empty when using 'On Specified Cell' mode.");
+                            if (string.IsNullOrWhiteSpace(colLetter))
+                                throw new ArgumentException("Column cannot be empty when using 'On Specified Cell' mode.");
 
-                        var colIndex = GetColumnIndex(colLetter);
+                            var colIndex = GetColumnIndex(colLetter);
 
-                        Excel.Range targetCell = ws.Cells[rowNumber, colIndex];
-                        if (targetCell == null)
-                            throw new ArgumentException($"Invalid cell reference: {colLetter}{rowNumber}");
+                            Excel.Range targetCell = ws.Cells[rowNumber, colIndex];
+                            if (targetCell == null)
+                                throw new ArgumentException($"Invalid cell reference: {colLetter}{rowNumber}");
 
-                        targetCell.Value = valueToWrite;
-                        break;
-                    }
+                            targetCell.Value = valueToWrite;
+                            break;
+                        }
 
                     case ExcelCellWriteModeEnum.OnCurrentlyActiveCell:
-                    {
-                        var activeCell = ws.Application.Selection as Excel.Range;
-                        if (activeCell == null)
-                            throw new InvalidOperationException("No active cell found.");
+                        {
+                            var activeCell = ws.Application.Selection as Excel.Range;
+                            if (activeCell == null)
+                                throw new InvalidOperationException("No active cell found.");
 
-                        activeCell.Value = valueToWrite;
-                        break;
-                    }
+                            activeCell.Value = valueToWrite;
+                            break;
+                        }
 
                     case ExcelCellWriteModeEnum.OnNamedCells:
-                    {
-                        var name = Name.Get(context);
-                        var populateEntireRange = PopulateEntireRange.Get(context);
+                        {
+                            var name = Name.Get(context);
+                            var populateEntireRange = PopulateEntireRange.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(name))
-                            throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
+                            if (string.IsNullOrWhiteSpace(name))
+                                throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
 
-                        var namedRange = ws.Names.Item(name)?.RefersToRange;
-                        if (namedRange == null)
-                            throw new ArgumentException($"Named range '{name}' not found.");
+                            var namedRange = ws.Names.Item(name)?.RefersToRange;
+                            if (namedRange == null)
+                                throw new ArgumentException($"Named range '{name}' not found.");
 
-                        if (populateEntireRange)
-                            namedRange.Value = valueToWrite;
-                        else
-                            namedRange.Cells[1, 1].Value = valueToWrite;
+                            if (populateEntireRange)
+                                namedRange.Value = valueToWrite;
+                            else
+                                namedRange.Cells[1, 1].Value = valueToWrite;
 
-                        break;
-                    }
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(writeMode));

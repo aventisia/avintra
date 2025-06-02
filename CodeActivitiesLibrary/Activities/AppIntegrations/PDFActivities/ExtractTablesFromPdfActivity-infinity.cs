@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
     [DisplayName("Extract Tables from PDF"),
      Description(
          "Extracts tables from a PDF file by specifying the source PDF file and the range of pages to extract from.")]
-    public class ExtractTablesFromPdfActivity : CodeActivity
+    public class ExtractTablesFromPdfActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]
         public InArgument<string> SourcePdfPath { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
         [Category("Output"), Description("Returns the extracted tables as a list of strings.")]
         public OutArgument<IEnumerable<string>> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

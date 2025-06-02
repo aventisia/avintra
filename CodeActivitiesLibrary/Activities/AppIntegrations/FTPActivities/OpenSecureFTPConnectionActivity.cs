@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     [DisplayName("Open Secure FTP Connection")]
     [Description("Establishes a secure connection to an FTP server using SSL/TLS.")]
-    public class OpenSecureFtpConnectionActivity : CodeActivity
+    public class OpenSecureFtpConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -27,9 +27,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [Description("Returns the connection ID or token for the opened FTPS connection.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -8,13 +8,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 
     // Activity to close a CMD session
     [DisplayName("Close CMD Session"), Description("Closes a previously opened CMD session.")]
-    public class CloseCmdSessionActivity : CodeActivity
+    public class CloseCmdSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
         public InArgument<int> ProcessId { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

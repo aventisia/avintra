@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to insert an image into a Word document
     [DisplayName("Insert Image in Word Document"), Description("Insert an image to a Word file.")]
-    public class InsertImageInWordDocumentActivity : CodeActivity
+    public class InsertImageInWordDocumentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
         public InArgument<string> DocumentPath { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [RequiredArgument, Category("Input"), Description("The path to the image file to insert.")]
         public InArgument<string> ImagePath { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Find UI element in parent element")]
     [Description("Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.")]
-    public class FindUIElementInParentActivity : BaseCodeActivity
+    public class FindUIElementInParentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

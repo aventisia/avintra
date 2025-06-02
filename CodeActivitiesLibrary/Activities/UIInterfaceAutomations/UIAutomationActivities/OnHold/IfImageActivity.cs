@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("If Image")]
     // [Description("Checks if a specific image exists on the screen.")]
-    public class IfImageActivity : BaseCodeActivity
+    public class IfImageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -21,8 +21,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns true if the image is found, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Datetime to Text")]
     [Description("Converts a datetime value into text using either a standard or custom format.")]
-    public class ConvertDatetimeToTextActivity : CodeActivity
+    public class ConvertDatetimeToTextActivity : Extensions.BaseCodeActivity
     {
         #region Inputs
 
@@ -38,7 +38,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("The formatted datetime as a text value.")]
         public OutArgument<string> ConvertedDateTime { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         #endregion
 

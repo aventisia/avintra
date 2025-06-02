@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Hover Mouse Over UI Element")]
     //[Description("Moves the mouse over any UI element on a window.")]
-    public class HoverMouseOverUiElementActivity : BaseCodeActivity
+    public class HoverMouseOverUiElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -19,8 +19,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The selector or identifier of the UI element.")]
         public InArgument<string> UiElementSelector { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

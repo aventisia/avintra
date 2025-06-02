@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Set XML Element Attribute
     [DisplayName("Set XML Element Attribute")]
     [Description("Sets the value of an attribute of an XML element.")]
-    public class SetXmlElementAttributeActivity : CodeActivity
+    public class SetXmlElementAttributeActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -34,9 +34,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
         [Description("Returns the updated XML content.")]
         public OutArgument<string> UpdatedXmlContent { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

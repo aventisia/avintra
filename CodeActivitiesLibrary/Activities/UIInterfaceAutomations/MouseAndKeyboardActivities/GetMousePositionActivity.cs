@@ -2,40 +2,122 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
 {
-    // Activity to get mouse position
-    [DisplayName("Get Mouse Position"),
-     Description("Retrieves the current position of the mouse cursor on the screen in pixel coordinates.")]
-    public class GetMousePositionActivity : CodeActivity
-    {
-        [Category("Output"), Description("Returns the current mouse position as a Point object.")]
-        public OutArgument<Point> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+    [DisplayName("Get Mouse Position")]
+    [Description("Retrieves the current position of the mouse cursor on the screen in pixel coordinates.")]
+    public class GetMousePositionActivity : Extensions.BaseCodeActivity
+    {
+        // Input property
+        [Category("Input")]
+        [DisplayName("Relative To")]
+        [Description("Specifies whether the mouse position is relative to the Screen or Foreground Window.")]
+        public InArgument<RelativeToEnum> RelativeTo { get; set; }
+
+        // Output properties
+        [Category("Output")]
+        [DisplayName("Mouse Pos X")]
+        [Description("The horizontal (X) value of the mouse position.")]
+        public OutArgument<int> MousePosX { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Mouse Pos Y")]
+        [Description("The vertical (Y) value of the mouse position.")]
+        public OutArgument<int> MousePosY { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var result = new Point();
-            var status = "";
-
             try
             {
-                // Retrieve the current mouse position
-                result = Control.MousePosition;
-                status = "Mouse position retrieved successfully.";
+                // Retrieve input argument
+                RelativeToEnum relativeTo = context.GetValue(RelativeTo);
+
+                // Get the current mouse position
+                Point mousePosition = GetCursorPosition(relativeTo);
+
+                // Set output arguments
+                context.SetValue(MousePosX, mousePosition.X);
+                context.SetValue(MousePosY, mousePosition.Y);
             }
             catch (Exception ex)
             {
-                result = Point.Empty;
-                status = $"Error retrieving mouse position: {ex.Message}";
+                throw new InvalidOperationException("Failed to retrieve mouse position.", ex);
+            }
+        }
+
+        private Point GetCursorPosition(RelativeToEnum relativeTo)
+        {
+            switch (relativeTo)
+            {
+                case RelativeToEnum.Screen:
+                    return GetScreenCursorPosition();
+                case RelativeToEnum.ForegroundWindow:
+                    return GetForegroundWindowCursorPosition();
+                default:
+                    throw new ArgumentException("Invalid 'Relative To' value.");
+            }
+        }
+
+        private static Point GetScreenCursorPosition()
+        {
+            // Use Windows API to get the cursor position relative to the screen
+            POINT point;
+            if (!GetCursorPos(out point))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to get cursor position.");
+            }
+            return new Point(point.X, point.Y);
+        }
+
+        private static Point GetForegroundWindowCursorPosition()
+        {
+            // Get the foreground window handle
+            IntPtr hwnd = GetForegroundWindow();
+
+            // Get the cursor position relative to the screen
+            POINT point;
+            if (!GetCursorPos(out point))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to get cursor position.");
             }
 
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
+            // Convert screen coordinates to client coordinates
+            POINT clientPoint;
+            if (!ClientToScreen(hwnd, out clientPoint))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to convert coordinates.");
+            }
+
+            return new Point(clientPoint.X, clientPoint.Y);
         }
+
+        #region P/Invoke Declarations
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool ClientToScreen(IntPtr hWnd, out POINT lpPoint);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+        #endregion
     }
+
 }

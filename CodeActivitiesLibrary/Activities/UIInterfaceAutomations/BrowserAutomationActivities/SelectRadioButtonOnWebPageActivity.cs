@@ -8,13 +8,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Select Radio Button on Web Page")]
     [Description(
         "Simulates selecting a radio button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.")]
-    public class SelectRadioButtonOnWebPageActivity : CodeActivity
+    public class SelectRadioButtonOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

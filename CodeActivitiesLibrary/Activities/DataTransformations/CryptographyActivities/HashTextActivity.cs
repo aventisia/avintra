@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Hash Text")]
     [Description("Hash a string, using a specified algorithm and an encoding format")]
-    public class HashTextActivity : CodeActivity
+    public class HashTextActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -22,10 +22,6 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Category("Output")]
         [Description("Returns the hashed text.")]
         public OutArgument<string> HashedText { get; set; }
-
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {

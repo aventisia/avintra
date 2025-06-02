@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Wait for Image")]
     // [Description("Suspends execution until a specific image appears on the screen.")]
-    public class WaitForImageActivity : BaseCodeActivity
+    public class WaitForImageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -27,8 +27,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns true if the image was found, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

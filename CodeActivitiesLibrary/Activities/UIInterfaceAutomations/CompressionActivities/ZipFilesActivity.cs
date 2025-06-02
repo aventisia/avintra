@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
 {
     // Activity to compress one or more files or folders into a zip archive
     [DisplayName("Zip Files"), Description("Compress one or more files or folders into a zip archive.")]
-    public class ZipFilesActivity : CodeActivity
+    public class ZipFilesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The list of file or folder paths to zip.")]
         public InArgument<IEnumerable<string>> SourcePaths { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
         [RequiredArgument, Category("Input"), Description("The path to save the resulting zip file.")]
         public InArgument<string> OutputZipPath { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

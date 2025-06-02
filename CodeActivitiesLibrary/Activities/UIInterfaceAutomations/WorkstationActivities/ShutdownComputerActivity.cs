@@ -9,16 +9,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Shutdown Computer")]
     [Description("Shuts down the computer.")]
-    public class ShutdownComputerActivity : CodeActivity
+    public class ShutdownComputerActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
         [Description("The shutdown mode (e.g., power off, restart).")]
         public InArgument<ShutdownModeEnum> Mode { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

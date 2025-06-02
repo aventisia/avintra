@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
 {
     [DisplayName("Execute XPath Expression")]
     [Description("Executes an XPath expression on the provided XML content and returns the result.")]
-    public class ExecuteXPathExpressionActivity : CodeActivity
+    public class ExecuteXPathExpressionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -23,9 +23,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
         [Description("Returns the value of the first matching node or null if not found.")]
         public OutArgument<string> ResultValue { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

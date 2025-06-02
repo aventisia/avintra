@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to change the working directory on FTP
     [DisplayName("Change Working Directory"), Description("Sets the current working directory for an FTP connection.")]
-    public class ChangeFtpWorkingDirectoryActivity : CodeActivity
+    public class ChangeFtpWorkingDirectoryActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The new working directory path.")]
         public InArgument<string> NewDirectoryPath { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

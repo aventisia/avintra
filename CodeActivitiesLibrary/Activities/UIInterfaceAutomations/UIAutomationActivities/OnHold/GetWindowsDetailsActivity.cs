@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Get Details of Window")]
     //[Description("Gets properties of a window such as its title or source text.")]
-    public class GetWindowDetailsActivity : BaseCodeActivity
+    public class GetWindowDetailsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -18,8 +18,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns the details of the window (e.g., title or source).")]
         public OutArgument<string> WindowDetails { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
+        
         
 
         protected override void Execute(CodeActivityContext context)

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Decrypt to File with AES"),
      Description("Decrypt the contents of a file with AES based on a specified key and an encoding format")]
-    public class DecryptToFileWithAesActivity : CodeActivity
+    public class DecryptToFileWithAesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the encrypted file.")]
         public InArgument<string> EncryptedFilePath { get; set; }
@@ -22,8 +22,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [RequiredArgument, Category("Input"), Description("The path to the output file.")]
         public InArgument<string> OutputFilePath { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

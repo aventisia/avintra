@@ -7,13 +7,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Click Download Link on Web Page")]
     [Description("Simulates clicking a download link on a web page and saves the file to the specified folder.")]
-    public class ClickDownloadLinkOnWebPageActivity : CodeActivity
+    public class ClickDownloadLinkOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Status Output
-
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
 
         #endregion
 
@@ -40,7 +36,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 // Set output
                 DownloadedFile.Set(context, filePath);
-                
+
 
                 status = $"Clicked on '{uiElement}' and saved file to '{filePath}'.";
             }

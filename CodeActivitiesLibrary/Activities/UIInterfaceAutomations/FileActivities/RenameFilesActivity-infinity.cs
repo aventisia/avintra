@@ -7,7 +7,7 @@ using System.IO;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Rename File(s)"), Description("Changes the names of one or more files.")]
-    public class RenameFilesActivity : CodeActivity
+    public class RenameFilesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The source file paths to rename.")]
         public InArgument<IEnumerable<string>> SourceFilePaths { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [RequiredArgument, Category("Input"), Description("The new names for the files.")]
         public InArgument<IEnumerable<string>> NewNames { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

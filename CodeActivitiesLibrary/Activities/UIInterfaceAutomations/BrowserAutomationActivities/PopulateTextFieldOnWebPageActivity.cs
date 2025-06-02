@@ -9,13 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Populate Text Field on Web Page")]
     [Description(
         "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input and advanced UI interaction settings.")]
-    public class PopulateTextFieldOnWebPageActivity : CodeActivity
+    public class PopulateTextFieldOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

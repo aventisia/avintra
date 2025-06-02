@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     // Activity to connect to an Exchange server
     [DisplayName("Connect to Exchange Server"), Description("Open a new connection to an Exchange server.")]
-    public class ConnectToExchangeServerActivity : CodeActivity
+    public class ConnectToExchangeServerActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the Exchange server.")]
         public InArgument<string> ServerUrl { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [RequiredArgument, Category("Input"), Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

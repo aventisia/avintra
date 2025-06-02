@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     [DisplayName("If Service"),
      Description(
          "Marks the beginning of a conditional block of actions depending on whether a service is running, paused, stopped, or installed on the computer.")]
-    public class IfServiceActivity : CodeActivity
+    public class IfServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to check.")]
         public InArgument<string> ServiceName { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         [Category("Output"), Description("Returns true if the service is in the specified state, otherwise false.")]
         public OutArgument<bool> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
     // Activity to move the cursor on a terminal session
     [DisplayName("Move Cursor on Terminal Session"),
      Description("Move the terminal's cursor to the specified position.")]
-    public class MoveCursorOnTerminalSessionActivity : CodeActivity
+    public class MoveCursorOnTerminalSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }
@@ -18,8 +18,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The Y-coordinate of the target position.")]
         public InArgument<int> Y { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

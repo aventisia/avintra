@@ -1,52 +1,97 @@
-﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+﻿using System;
+using System.Activities;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
-    // Activity to display a select file dialog
-    //[DisplayName("Display Select File Dialog"),
-    // Description("Displays the select file dialog and prompts the user to select one or more files.")]
-    //public class DisplaySelectFileDialogActivity : CodeActivity
-    //{
-    //    [RequiredArgument, Category("Input"), Description("The initial directory path to display in the dialog.")]
-    //    public InArgument<string> InitialDirectory { get; set; }
+    [DisplayName("Display Select File Dialog")]
+    [Description("Displays a file selection dialog to let users choose one or more files.")]
+    public sealed class DisplaySelectFileDialog : Extensions.BaseCodeActivity
+    {
 
-    //    [Category("Output"), Description("Returns the paths of the selected files.")]
-    //    public OutArgument<IEnumerable<string>> Result { get; set; }
+        [Category("Input")]
+        [RequiredArgument]
+        [DisplayName("Dialog Title")]
+        [Description("The title of the file selection dialog window.")]
+        public InArgument<string> DialogTitle { get; set; }
 
-    //    [Category("Output"), Description("Returns the status message of the operation.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+        [Category("Input")]
+        [DisplayName("Initial Folder")]
+        [Description("The folder path where the dialog starts. If empty, defaults to Desktop.")]
+        public InArgument<string> InitialFolder { get; set; }
 
-    //    protected override void Execute(CodeActivityContext context)
-    //    {
-    //        var initialDirectory = InitialDirectory.Get(context);
-    //        IEnumerable<string> result = null;
-    //        var status = "";
+        [Category("Input")]
+        [DisplayName("File Filter")]
+        [Description("Filter for file types (e.g., \"Text Files (*.txt)|*.txt\"). Defaults to All Files.")]
+        public InArgument<string> FileFilter { get; set; }
 
-    //        try
-    //        {
-    //            using (var openFileDialog = new OpenFileDialog())
-    //            {
-    //                openFileDialog.InitialDirectory = initialDirectory;
-    //                openFileDialog.Multiselect = true;
+        [Category("Input")]
+        [DisplayName("Keep Dialog On Top")]
+        [Description("If true, keeps the dialog on top of all other windows.")]
+        public InArgument<bool> KeepFileDialogOnTop { get; set; }
 
-    //                if (openFileDialog.ShowDialog() == DialogResult.OK)
-    //                {
-    //                    result = openFileDialog.FileNames.ToList();
-    //                    status = "Files selected successfully.";
-    //                }
-    //                else
-    //                {
-    //                    result = Array.Empty<string>();
-    //                    status = "User canceled the select file dialog.";
-    //                }
-    //            }
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            result = null;
-    //            status = $"Error displaying select file dialog: {ex.Message}";
-    //        }
+        [Category("Input")]
+        [DisplayName("Allow Multiple Selection")]
+        [Description("Allows user to select multiple files if set to true.")]
+        public InArgument<bool> AllowMultipleSelection { get; set; }
 
-    //        Result.Set(context, result);
-    //        StatusMessage.Set(context, status);
-    //    }
-    //}
+        [Category("Input")]
+        [DisplayName("Check If File Exists")]
+        [Description("Validates that the selected file(s) exist before returning.")]
+        public InArgument<bool> CheckIfFileExists { get; set; }
+
+
+        [Category("Output")]
+        [DisplayName("Selected Files")]
+        [Description("A collection of full paths for the selected files.")]
+        public OutArgument<List<string>> SelectedFiles { get; set; }
+
+        [Category("Output")]
+        [DisplayName("Button Pressed")]
+        [Description("True if user clicked OK; False if Cancel was clicked or dialog closed.")]
+        public OutArgument<bool> ButtonPressed { get; set; }
+
+        
+
+        protected override void Execute(CodeActivityContext context)
+        {
+            // Retrieve input arguments
+            string dialogTitle = context.GetValue(DialogTitle);
+            string initialFolder = context.GetValue(InitialFolder) ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string fileFilter = context.GetValue(FileFilter) ?? "All Files (*.*)|*.*";
+            bool keepFileDialogOnTop = context.GetValue(KeepFileDialogOnTop);
+            bool allowMultipleSelection = context.GetValue(AllowMultipleSelection);
+            bool checkIfFileExists = context.GetValue(CheckIfFileExists);
+
+            // Configure OpenFileDialog
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = dialogTitle;
+                openFileDialog.InitialDirectory = initialFolder;
+                openFileDialog.Filter = fileFilter;
+                openFileDialog.Multiselect = allowMultipleSelection;
+                openFileDialog.CheckFileExists = checkIfFileExists;
+
+
+                // Show the dialog
+                DialogResult result = openFileDialog.ShowDialog();
+
+                // Set output arguments
+                if (result == DialogResult.OK)
+                {
+                    context.SetValue(SelectedFiles, new List<string>(openFileDialog.FileNames));
+                    context.SetValue(ButtonPressed, true);
+                    context.SetValue(StatusMessage, "Files selected successfully.");
+                }
+                else
+                {
+                    context.SetValue(SelectedFiles, new List<string>(openFileDialog.FileNames));
+                    context.SetValue(ButtonPressed, false);
+                    context.SetValue(StatusMessage, "Operation canceled by user.");
+                }
+            }
+        }
+    }
 }

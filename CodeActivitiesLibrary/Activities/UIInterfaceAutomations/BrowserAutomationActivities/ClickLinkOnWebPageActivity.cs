@@ -9,13 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Click Link on Web Page")]
     [Description(
         "Simulates clicking a UI element (e.g., a link or button) on a web page. Supports various click types, physical mouse interaction, and dialog handling.")]
-    public class ClickLinkOnWebPageActivity : CodeActivity
+    public class ClickLinkOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

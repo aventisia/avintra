@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 
     // Activity to write to a CMD session
     [DisplayName("Write to CMD Session"), Description("Writes a command to an open CMD session.")]
-    public class WriteToCmdSessionActivity : CodeActivity
+    public class WriteToCmdSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
         public InArgument<int> ProcessId { get; set; }
@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         [RequiredArgument, Category("Input"), Description("The command to be executed in the CMD session.")]
         public InArgument<string> Command { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

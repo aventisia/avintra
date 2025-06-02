@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Read XML from File
     [DisplayName("Read XML from File")]
     [Description("Reads the contents of an XML file into a variable.")]
-    public class ReadXmlFromFileActivity : CodeActivity
+    public class ReadXmlFromFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -19,9 +19,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
         [Description("Returns the XML content as a string.")]
         public OutArgument<string> XmlContent { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

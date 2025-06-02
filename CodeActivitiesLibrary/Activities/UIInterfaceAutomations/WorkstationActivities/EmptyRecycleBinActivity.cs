@@ -2,15 +2,11 @@
 {
     //[DisplayName("Empty Recycle Bin")]
     //[Description("Deletes all files from the Windows recycle bin.")]
-    //public class EmptyRecycleBinActivity : CodeActivity
+    //public class EmptyRecycleBinActivity : Extensions.BaseCodeActivity
     //{
     //    private const uint FoDelete = 0x3;
     //    private const uint FofSilent = 0x4000;
-    //    private const uint FofNoconfirmation = 0x10;
-
-    //    [Category("Output")]
-    //    [Description("Returns the status message.")]
-    //    public OutArgument<string> StatusMessage { get; set; }
+    //    private const uint FofNoconfirmation = 0x10; 
 
     //    protected override void Execute(CodeActivityContext context)
     //    {

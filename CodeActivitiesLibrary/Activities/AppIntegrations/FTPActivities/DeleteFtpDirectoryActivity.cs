@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to delete an FTP directory
     [DisplayName("Delete FTP Directory"), Description("Deletes a directory from an FTP server.")]
-    public class DeleteFtpDirectoryActivity : CodeActivity
+    public class DeleteFtpDirectoryActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The name of the directory to delete.")]
         public InArgument<string> DirectoryName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

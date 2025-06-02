@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Insert Column Into Data Table")]
     [Description("Inserts a column at the end or before a specific index value.")]
-    public sealed class InsertColumnIntoDataTable : CodeActivity
+    public sealed class InsertColumnIntoDataTable : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -49,7 +49,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -77,23 +77,23 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 switch (insertLocation)
                 {
                     case DataTableInsertLocationEnum.BeforeColumnIndex:
-                    {
-                        var columnIndex = ColumnIndex.Get(context);
+                        {
+                            var columnIndex = ColumnIndex.Get(context);
 
-                        if (columnIndex < 0 || columnIndex > dataTable.Columns.Count)
-                            throw new ArgumentOutOfRangeException(nameof(ColumnIndex),
-                                $"Column index must be between 0 and {dataTable.Columns.Count}.");
+                            if (columnIndex < 0 || columnIndex > dataTable.Columns.Count)
+                                throw new ArgumentOutOfRangeException(nameof(ColumnIndex),
+                                    $"Column index must be between 0 and {dataTable.Columns.Count}.");
 
-                        dataTable.Columns.Add(new DataColumn(columnName, dataType));
-                        dataTable.Columns[columnName].SetOrdinal(columnIndex);
-                        break;
-                    }
+                            dataTable.Columns.Add(new DataColumn(columnName, dataType));
+                            dataTable.Columns[columnName].SetOrdinal(columnIndex);
+                            break;
+                        }
 
                     case DataTableInsertLocationEnum.EndOfDataTable:
-                    {
-                        dataTable.Columns.Add(new DataColumn(columnName, dataType));
-                        break;
-                    }
+                        {
+                            dataTable.Columns.Add(new DataColumn(columnName, dataType));
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(insertLocation));

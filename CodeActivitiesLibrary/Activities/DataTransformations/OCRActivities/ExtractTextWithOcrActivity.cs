@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
 {
     [DisplayName("Extract Text with OCR")]
     [Description("Extract text from a given source using the given OCR engine")]
-    public class ExtractTextWithOcrActivity : CodeActivity
+    public class ExtractTextWithOcrActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -17,9 +17,8 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
         [Description("Returns the extracted text.")]
         public OutArgument<string> ExtractedText { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

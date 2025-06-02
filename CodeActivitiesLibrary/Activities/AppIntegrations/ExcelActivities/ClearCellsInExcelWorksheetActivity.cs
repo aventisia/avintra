@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Clear Cells in Excel Worksheet")]
     [Description("Clears a specified range or named cell in the active worksheet of an Excel instance.")]
-    public class ClearCellsInExcelWorksheetActivity : CodeActivity
+    public class ClearCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -101,7 +101,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -124,96 +124,96 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (clearMode)
                 {
                     case CellClearModeEnum.SingleCell:
-                    {
-                        var colStr = Column.Get(context);
-                        var row = Row.Get(context);
+                        {
+                            var colStr = Column.Get(context);
+                            var row = Row.Get(context);
 
-                        if (!int.TryParse(colStr, out var colNum))
-                            // Convert column letter (like "A", "B") to number
-                            colNum = GetColumnIndex(colStr);
+                            if (!int.TryParse(colStr, out var colNum))
+                                // Convert column letter (like "A", "B") to number
+                                colNum = GetColumnIndex(colStr);
 
-                        if (!(worksheet.Cells[row, colNum] is Excel.Range targetCell))
-                            throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
+                            if (!(worksheet.Cells[row, colNum] is Excel.Range targetCell))
+                                throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
 
-                        targetCell.Clear();
-                        status = $"Cleared cell at Row {row}, Column {colStr}.";
-                        break;
-                    }
+                            targetCell.Clear();
+                            status = $"Cleared cell at Row {row}, Column {colStr}.";
+                            break;
+                        }
 
                     case CellClearModeEnum.NamedCells:
-                    {
-                        var name = Name.Get(context);
-                        var namedRange = worksheet.Names.Item(name)?.RefersToRange;
-
-                        if (namedRange != null)
                         {
-                            namedRange.Clear();
-                            status = $"Cleared named range '{name}'.";
-                        }
-                        else
-                        {
-                            status = $"Named range '{name}' not found.";
-                        }
+                            var name = Name.Get(context);
+                            var namedRange = worksheet.Names.Item(name)?.RefersToRange;
 
-                        break;
-                    }
+                            if (namedRange != null)
+                            {
+                                namedRange.Clear();
+                                status = $"Cleared named range '{name}'.";
+                            }
+                            else
+                            {
+                                status = $"Named range '{name}' not found.";
+                            }
+
+                            break;
+                        }
 
                     case CellClearModeEnum.RangeOfCells:
-                    {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endRow = EndRow.Get(context);
+                        {
+                            var startColStr = StartColumn.Get(context);
+                            var endColStr = EndColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endRow = EndRow.Get(context);
 
-                        int startColNum, endColNum;
+                            int startColNum, endColNum;
 
-                        if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
+                            if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
 
-                        if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
+                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
 
-                        var range = worksheet.Range[worksheet.Cells[startRow, startColNum],
-                            worksheet.Cells[endRow, endColNum]];
-                        range.Clear();
-                        status =
-                            $"Cleared range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
-                        break;
-                    }
+                            var range = worksheet.Range[worksheet.Cells[startRow, startColNum],
+                                worksheet.Cells[endRow, endColNum]];
+                            range.Clear();
+                            status =
+                                $"Cleared range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
+                            break;
+                        }
 
                     case CellClearModeEnum.RangeRelativeToActiveCell:
-                    {
-                        var xDir = XAxisDirection.Get(context);
-                        var yDir = YAxisDirection.Get(context);
-                        var xOffset = XOffset.Get(context);
-                        var yOffset = YOffset.Get(context);
-
-                        var activeCell = (Excel.Range)excelApp.ActiveCell;
-
-                        Excel.Range targetRange = null;
-
-                        switch (xDir)
                         {
-                            case ExcelXAxisDirectionEnum.Left:
-                                targetRange = activeCell.Offset[yOffset, -xOffset];
-                                break;
-                            case ExcelXAxisDirectionEnum.Right:
-                                targetRange = activeCell.Offset[yOffset, xOffset];
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(xDir));
-                        }
+                            var xDir = XAxisDirection.Get(context);
+                            var yDir = YAxisDirection.Get(context);
+                            var xOffset = XOffset.Get(context);
+                            var yOffset = YOffset.Get(context);
 
-                        if (targetRange != null)
-                        {
-                            targetRange.Clear();
-                            status = $"Cleared cell relative to active cell ({xDir}, {yDir}).";
-                        }
-                        else
-                        {
-                            status = "Failed to clear relative cell.";
-                        }
+                            var activeCell = (Excel.Range)excelApp.ActiveCell;
 
-                        break;
-                    }
+                            Excel.Range targetRange = null;
+
+                            switch (xDir)
+                            {
+                                case ExcelXAxisDirectionEnum.Left:
+                                    targetRange = activeCell.Offset[yOffset, -xOffset];
+                                    break;
+                                case ExcelXAxisDirectionEnum.Right:
+                                    targetRange = activeCell.Offset[yOffset, xOffset];
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(xDir));
+                            }
+
+                            if (targetRange != null)
+                            {
+                                targetRange.Clear();
+                                status = $"Cleared cell relative to active cell ({xDir}, {yDir}).";
+                            }
+                            else
+                            {
+                                status = "Failed to clear relative cell.";
+                            }
+
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(clearMode));

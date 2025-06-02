@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Find Child Window")]
     [Description("Finds a child window inside a parent window by its name.")]
-    public class GetChildWindowElementActivity : BaseCodeActivity
+    public class GetChildWindowElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

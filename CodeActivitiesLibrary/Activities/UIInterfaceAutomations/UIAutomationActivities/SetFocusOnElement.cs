@@ -1,14 +1,13 @@
-using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace UserFriendlyActivities
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Focus on UI Element")]
     [Description("Brings the specified UI element into focus, allowing further interaction.")]
-    public class SetFocusOnElementActivity : BaseCodeActivity
+    public class SetFocusOnElementActivity : Extensions.BaseCodeActivity
     {
         [Category("Input")]
         [DisplayName("UI Element")]

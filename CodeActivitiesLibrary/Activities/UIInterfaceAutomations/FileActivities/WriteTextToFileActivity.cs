@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Write Text to File")]
     [Description("Writes the given text to the specified file using either Replace or Append mode.")]
-    public class WriteTextToFileActivity : CodeActivity
+    public class WriteTextToFileActivity : Extensions.BaseCodeActivity
     {
         #region Arguments
 
@@ -29,9 +29,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Description("Specifies the write mode: Append (default) or Overwrite.")]
         public InArgument<WriteModeEnum> WriteMode { get; set; } = new InArgument<WriteModeEnum>(WriteModeEnum.Append);
 
-        [Category("Output")]
-        [Description("Returns the result status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

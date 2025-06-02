@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Duplicate Items From List")]
     [Description("Removes duplicate items from a list using case-sensitive or case-insensitive comparison.")]
-    public class RemoveDuplicateItemsFromListActivity : CodeActivity
+    public class RemoveDuplicateItemsFromListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the list after removing duplicate items.")]
         public OutArgument<List<object>> DeduplicatedList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

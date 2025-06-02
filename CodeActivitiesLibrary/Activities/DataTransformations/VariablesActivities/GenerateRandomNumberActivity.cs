@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Generate Random Number")]
     [Description("Generates a random number or list of numbers within a specified range.")]
-    public class GenerateRandomNumberActivity : CodeActivity
+    public class GenerateRandomNumberActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [RenderIfCondition(nameof(GenerateMultipleNumbers), true)]
         public OutArgument<List<int>> RandomNumbers { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
 
         protected override void Execute(CodeActivityContext context)

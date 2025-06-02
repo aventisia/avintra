@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Add Item to List")]
     [Description("Adds one or more items to a list. Converts types if necessary.")]
-    public class AddItemToListActivity : CodeActivity
+    public class AddItemToListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -48,7 +48,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the updated list after items have been added.")]
         public OutArgument<List<object>> ModifiedList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

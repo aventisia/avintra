@@ -7,13 +7,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 {
     // Activity to resume a paused Windows service
     [DisplayName("Resume Service"), Description("Resumes a paused Windows service.")]
-    public class ResumeServiceActivity : CodeActivity
+    public class ResumeServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to resume.")]
         public InArgument<string> ServiceName { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

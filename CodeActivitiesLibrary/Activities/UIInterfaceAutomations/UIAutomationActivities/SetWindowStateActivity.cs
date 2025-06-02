@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Window State")]
     [Description("Change the window to normal, maximized, or minimized state.")]
-    public class SetWindowStateActivity : BaseCodeActivity
+    public class SetWindowStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

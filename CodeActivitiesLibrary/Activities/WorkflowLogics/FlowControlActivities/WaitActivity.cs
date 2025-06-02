@@ -6,13 +6,13 @@ using System.Threading;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Wait"), Description("Suspends execution for a specified duration in seconds.")]
-    public class WaitActivity : NativeActivity
+    public class WaitActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Number of seconds to wait.")]
         public InArgument<int> Seconds { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

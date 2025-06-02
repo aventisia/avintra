@@ -7,7 +7,7 @@ using System.IO;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Move File(s)"), Description("Moves one or more files into a destination folder.")]
-    public class MoveFilesActivity : CodeActivity
+    public class MoveFilesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The source file paths to move.")]
         public InArgument<IEnumerable<string>> SourceFilePaths { get; set; }
@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [RequiredArgument, Category("Input"), Description("The destination folder where files should be moved.")]
         public InArgument<string> DestinationFolder { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

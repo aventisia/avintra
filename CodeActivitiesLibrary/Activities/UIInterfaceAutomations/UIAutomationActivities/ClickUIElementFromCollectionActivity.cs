@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Click Element from Collection")]
     [Description("Finds an element in a collection by property and name, then clicks or invokes it using UI Automation or mouse click.")]
-    public class ClickUIElementFromCollectionActivity : BaseCodeActivity
+    public class ClickUIElementFromCollectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

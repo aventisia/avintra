@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read Formula from Excel Cell")]
     [Description("Reads the formula from a specific cell or named range in Excel.")]
-    public class ReadFormulaFromExcelActivity : CodeActivity
+    public class ReadFormulaFromExcelActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -51,7 +51,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [Category("Output")]
         [Description("Information about the operation status.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

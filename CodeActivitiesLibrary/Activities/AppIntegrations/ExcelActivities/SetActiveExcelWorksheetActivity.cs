@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Set Active Excel Worksheet")]
     [Description("Activates a specific worksheet in the active Excel workbook by name or index.")]
-    public class SetActiveExcelWorksheetActivity : CodeActivity
+    public class SetActiveExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -36,7 +36,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -59,28 +59,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (selectionType)
                 {
                     case WorksheetSelectionTypeEnum.Name:
-                    {
-                        if (string.IsNullOrWhiteSpace(searchValue))
-                            throw new ArgumentException("Worksheet name cannot be empty when using 'Name' mode.");
+                        {
+                            if (string.IsNullOrWhiteSpace(searchValue))
+                                throw new ArgumentException("Worksheet name cannot be empty when using 'Name' mode.");
 
-                        if (!(wb.Worksheets[searchValue] is Excel.Worksheet ws))
-                            throw new ArgumentException($"Worksheet '{searchValue}' not found.");
+                            if (!(wb.Worksheets[searchValue] is Excel.Worksheet ws))
+                                throw new ArgumentException($"Worksheet '{searchValue}' not found.");
 
-                        ws.Select();
-                        break;
-                    }
+                            ws.Select();
+                            break;
+                        }
 
                     case WorksheetSelectionTypeEnum.Index:
-                    {
-                        if (!int.TryParse(searchValue, out var sheetIndex))
-                            throw new ArgumentException("Invalid worksheet index provided.");
+                        {
+                            if (!int.TryParse(searchValue, out var sheetIndex))
+                                throw new ArgumentException("Invalid worksheet index provided.");
 
-                        if (!(wb.Worksheets[sheetIndex] is Excel.Worksheet ws))
-                            throw new ArgumentException($"Worksheet at index '{sheetIndex}' not found.");
+                            if (!(wb.Worksheets[sheetIndex] is Excel.Worksheet ws))
+                                throw new ArgumentException($"Worksheet at index '{sheetIndex}' not found.");
 
-                        ws.Select();
-                        break;
-                    }
+                            ws.Select();
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(selectionType));

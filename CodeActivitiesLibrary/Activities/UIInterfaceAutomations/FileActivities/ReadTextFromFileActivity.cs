@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Read Text from File")]
     [Description("Reads all text content from the specified file.")]
-    public class ReadTextFromFileActivity : CodeActivity
+    public class ReadTextFromFileActivity : Extensions.BaseCodeActivity
     {
         #region Arguments
 
@@ -26,10 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [DisplayName("File Content")]
         [Description("The text content read from the file.")]
         public OutArgument<string> FileContent { get; set; }
-
-        [Category("Output")]
-        [Description("Returns a status message indicating success or error.")]
-        public OutArgument<string> StatusMessage { get; set; }
+  
 
         #endregion
 

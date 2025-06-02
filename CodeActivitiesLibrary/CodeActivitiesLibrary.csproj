@@ -433,14 +433,17 @@
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\MoveFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\RenameFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\_FolderCategoryMetaData.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplayCustomFormActivities.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplayInputDialogActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplayMessageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectDateDialogActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectFileDialogActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectFolderDialogActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\DisplaySelectFromListDialogActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\Enums\DialogResultEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MessageBoxActivities\_MessageBoxCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\BlockInputActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\Enums\RelativeToEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetKeyboardIdentifierActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetMousePositionActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\MoveMouseActivity.cs" />
@@ -555,6 +558,7 @@
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\_FlowControlCategoryMetaData.cs" />
     <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
     <Compile Include="Extensions\ActivityTypeAttribute.cs" />
+    <Compile Include="Extensions\BaseNativeActivity.cs" />
     <Compile Include="Extensions\BaseCodeActivity.cs" />
     <Compile Include="Extensions\RenderIfAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -582,6 +586,10 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Helpers\" />
+    <Folder Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\OnHold\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

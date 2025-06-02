@@ -8,13 +8,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Wait For Web Page Content")]
     [Description(
         "Waits for a specific condition to be met on the current web page, such as containing an element or text.")]
-    public class WaitForWebPageContentActivity : CodeActivity
+    public class WaitForWebPageContentActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

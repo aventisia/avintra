@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Get XML Element Attribute
     [DisplayName("Get XML Element Attribute")]
     [Description("Gets the value of an attribute of an XML element.")]
-    public class GetXmlElementAttributeActivity : CodeActivity
+    public class GetXmlElementAttributeActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -29,9 +29,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
         [Description("Returns the attribute value.")]
         public OutArgument<string> AttributeValue { get; set; }
 
-        [Category("Output")]
-        [Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

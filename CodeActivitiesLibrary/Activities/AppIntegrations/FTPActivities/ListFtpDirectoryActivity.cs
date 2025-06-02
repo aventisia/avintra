@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     // Activity to list FTP directory contents
     [DisplayName("List FTP Directory"),
      Description("Retrieves the subdirectories and files contained in the current directory of an FTP connection.")]
-    public class ListFtpDirectoryActivity : CodeActivity
+    public class ListFtpDirectoryActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [Category("Output"), Description("Returns the list of subdirectories and files in the current directory.")]
         public OutArgument<IEnumerable<string>> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Lookup Range in Excel Worksheet")]
     [Description(
         "Performs a LOOKUP operation in an Excel worksheet. Searches for a lookup value in a single row or column and returns a value from the same position in another row or column.")]
-    public class LookupRangeInExcelWorksheetActivity : CodeActivity
+    public class LookupRangeInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -103,7 +103,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the matched result from the result range based on the lookup value.")]
         public OutArgument<string> LookupResult { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -132,52 +132,52 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (rangesFormat)
                 {
                     case ExcelLookupRangesFormatEnum.NamedCells:
-                    {
-                        var cellsName = CellsName.Get(context);
+                        {
+                            var cellsName = CellsName.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(cellsName))
-                            throw new ArgumentException("Cells name cannot be empty when using 'Named Cells' format.");
+                            if (string.IsNullOrWhiteSpace(cellsName))
+                                throw new ArgumentException("Cells name cannot be empty when using 'Named Cells' format.");
 
-                        lookupRange = ws.Range[cellsName];
-                        resultRange = ws.Range[cellsName]; // Assuming same range for simplicity
-                        break;
-                    }
+                            lookupRange = ws.Range[cellsName];
+                            resultRange = ws.Range[cellsName]; // Assuming same range for simplicity
+                            break;
+                        }
 
                     case ExcelLookupRangesFormatEnum.SpecificRanges:
-                    {
-                        var startCol = StartColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endCol = EndColumn.Get(context);
-                        var endRow = EndRow.Get(context);
-
-                        if (string.IsNullOrWhiteSpace(startCol) || string.IsNullOrWhiteSpace(endCol))
-                            throw new ArgumentException(
-                                "Start column and end column cannot be empty when using 'Specific Ranges' format.");
-
-                        lookupRange = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                            ws.Cells[endRow, GetColumnIndex(endCol)]];
-
-                        if (!arrayForm)
                         {
-                            var startColRes = StartColumnOfResultsSource.Get(context);
-                            var startRowRes = StartRowOfResultsSource.Get(context);
-                            var endColRes = EndColumnOfResultsSource.Get(context);
-                            var endRowRes = EndRowOfResultsSource.Get(context);
+                            var startCol = StartColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endCol = EndColumn.Get(context);
+                            var endRow = EndRow.Get(context);
 
-                            if (string.IsNullOrWhiteSpace(startColRes) || string.IsNullOrWhiteSpace(endColRes))
+                            if (string.IsNullOrWhiteSpace(startCol) || string.IsNullOrWhiteSpace(endCol))
                                 throw new ArgumentException(
-                                    "Start column and end column of results source cannot be empty when 'Array Form' is false.");
+                                    "Start column and end column cannot be empty when using 'Specific Ranges' format.");
 
-                            resultRange = ws.Range[ws.Cells[startRowRes, GetColumnIndex(startColRes)],
-                                ws.Cells[endRowRes, GetColumnIndex(endColRes)]];
-                        }
-                        else
-                        {
-                            resultRange = lookupRange; // For array form, result range is the same as lookup range
-                        }
+                            lookupRange = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
+                                ws.Cells[endRow, GetColumnIndex(endCol)]];
 
-                        break;
-                    }
+                            if (!arrayForm)
+                            {
+                                var startColRes = StartColumnOfResultsSource.Get(context);
+                                var startRowRes = StartRowOfResultsSource.Get(context);
+                                var endColRes = EndColumnOfResultsSource.Get(context);
+                                var endRowRes = EndRowOfResultsSource.Get(context);
+
+                                if (string.IsNullOrWhiteSpace(startColRes) || string.IsNullOrWhiteSpace(endColRes))
+                                    throw new ArgumentException(
+                                        "Start column and end column of results source cannot be empty when 'Array Form' is false.");
+
+                                resultRange = ws.Range[ws.Cells[startRowRes, GetColumnIndex(startColRes)],
+                                    ws.Cells[endRowRes, GetColumnIndex(endColRes)]];
+                            }
+                            else
+                            {
+                                resultRange = lookupRange; // For array form, result range is the same as lookup range
+                            }
+
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(rangesFormat));

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Excel Worksheet")]
     [Description("Deletes a specific worksheet from the active Excel workbook.")]
-    public class DeleteExcelWorksheetActivity : CodeActivity
+    public class DeleteExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -43,7 +43,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -65,27 +65,27 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (deletionMode)
                 {
                     case WorksheetDeleteByModeEnum.Name:
-                    {
-                        var worksheetName = WorksheetName.Get(context);
+                        {
+                            var worksheetName = WorksheetName.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(worksheetName))
-                            throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
+                            if (string.IsNullOrWhiteSpace(worksheetName))
+                                throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
 
-                        ws = excelApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
-                        break;
-                    }
+                            ws = excelApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
+                            break;
+                        }
 
                     case WorksheetDeleteByModeEnum.Index:
-                    {
-                        var worksheetIndex = WorksheetIndex.Get(context);
+                        {
+                            var worksheetIndex = WorksheetIndex.Get(context);
 
-                        if (worksheetIndex < 1 || worksheetIndex > excelApp.ActiveWorkbook.Worksheets.Count)
-                            throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
-                                $"Invalid worksheet index. Must be between 1 and {excelApp.ActiveWorkbook.Worksheets.Count}.");
+                            if (worksheetIndex < 1 || worksheetIndex > excelApp.ActiveWorkbook.Worksheets.Count)
+                                throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
+                                    $"Invalid worksheet index. Must be between 1 and {excelApp.ActiveWorkbook.Worksheets.Count}.");
 
-                        ws = excelApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
-                        break;
-                    }
+                            ws = excelApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(deletionMode));

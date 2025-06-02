@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Close Outlook Application")]
     [Description("Closes an Outlook application instance and releases COM resources.")]
-    public class CloseOutlookActivity : CodeActivity
+    public class CloseOutlookActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

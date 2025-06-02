@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Auto Fill Range in Excel Worksheet")]
     [Description("Copies data from a source range to a target range in the active worksheet of an Excel instance.")]
-    public class AutoFillCellsInExcelWorksheetActivity : CodeActivity
+    public class AutoFillCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -78,61 +78,61 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (rangesFormat)
                 {
                     case ExcelRangesFormatEnum.SpecificRanges:
-                    {
-                        var sourceRangeStr = SourceRange.Get(context);
-                        var targetRangeStr = TargetRange.Get(context);
+                        {
+                            var sourceRangeStr = SourceRange.Get(context);
+                            var targetRangeStr = TargetRange.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(sourceRangeStr) || string.IsNullOrWhiteSpace(targetRangeStr))
-                            throw new ArgumentException(
-                                "Both Source Range and Target Range must be specified when using Specific Ranges.");
+                            if (string.IsNullOrWhiteSpace(sourceRangeStr) || string.IsNullOrWhiteSpace(targetRangeStr))
+                                throw new ArgumentException(
+                                    "Both Source Range and Target Range must be specified when using Specific Ranges.");
 
-                        var sourceRange = worksheet.Range[sourceRangeStr];
-                        var targetRange = worksheet.Range[targetRangeStr];
+                            var sourceRange = worksheet.Range[sourceRangeStr];
+                            var targetRange = worksheet.Range[targetRangeStr];
 
-                        // Copy values only from source to target
-                        if (!(sourceRange.Value is object[,] sourceValues))
-                            throw new InvalidOperationException(
-                                $"Source range '{sourceRangeStr}' does not contain valid data.");
+                            // Copy values only from source to target
+                            if (!(sourceRange.Value is object[,] sourceValues))
+                                throw new InvalidOperationException(
+                                    $"Source range '{sourceRangeStr}' does not contain valid data.");
 
-                        var rowCount = sourceValues.GetLength(0);
-                        var colCount = sourceValues.GetLength(1);
+                            var rowCount = sourceValues.GetLength(0);
+                            var colCount = sourceValues.GetLength(1);
 
-                        for (var i = 1; i <= rowCount; i++)
-                        for (var j = 1; j <= colCount; j++)
-                            ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
+                            for (var i = 1; i <= rowCount; i++)
+                                for (var j = 1; j <= colCount; j++)
+                                    ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
 
-                        status += $" Copied data from '{sourceRangeStr}' to '{targetRangeStr}'.";
-                        break;
-                    }
+                            status += $" Copied data from '{sourceRangeStr}' to '{targetRangeStr}'.";
+                            break;
+                        }
 
                     case ExcelRangesFormatEnum.NamedCells:
-                    {
-                        var sourceNamedRange = SourceNamedRange.Get(context);
-                        var targetNamedRange = TargetNamedRange.Get(context);
+                        {
+                            var sourceNamedRange = SourceNamedRange.Get(context);
+                            var targetNamedRange = TargetNamedRange.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(sourceNamedRange) || string.IsNullOrWhiteSpace(targetNamedRange))
-                            throw new ArgumentException(
-                                "Both Source Named Range and Target Named Range must be specified when using Named Cells.");
+                            if (string.IsNullOrWhiteSpace(sourceNamedRange) || string.IsNullOrWhiteSpace(targetNamedRange))
+                                throw new ArgumentException(
+                                    "Both Source Named Range and Target Named Range must be specified when using Named Cells.");
 
-                        var sourceRange = worksheet.Names.Item(sourceNamedRange).RefersToRange;
-                        var targetRange = worksheet.Names.Item(targetNamedRange).RefersToRange;
+                            var sourceRange = worksheet.Names.Item(sourceNamedRange).RefersToRange;
+                            var targetRange = worksheet.Names.Item(targetNamedRange).RefersToRange;
 
-                        // Copy values only from source to target
-                        if (!(sourceRange.Value is object[,] sourceValues))
-                            throw new InvalidOperationException(
-                                $"Source named range '{sourceNamedRange}' does not contain valid data.");
+                            // Copy values only from source to target
+                            if (!(sourceRange.Value is object[,] sourceValues))
+                                throw new InvalidOperationException(
+                                    $"Source named range '{sourceNamedRange}' does not contain valid data.");
 
-                        var rowCount = sourceValues.GetLength(0);
-                        var colCount = sourceValues.GetLength(1);
+                            var rowCount = sourceValues.GetLength(0);
+                            var colCount = sourceValues.GetLength(1);
 
-                        for (var i = 1; i <= rowCount; i++)
-                        for (var j = 1; j <= colCount; j++)
-                            ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
+                            for (var i = 1; i <= rowCount; i++)
+                                for (var j = 1; j <= colCount; j++)
+                                    ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
 
-                        status +=
-                            $" Copied data from named range '{sourceNamedRange}' to named range '{targetNamedRange}'.";
-                        break;
-                    }
+                            status +=
+                                $" Copied data from named range '{sourceNamedRange}' to named range '{targetNamedRange}'.";
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(rangesFormat));

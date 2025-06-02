@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Split Text")]
     [Description(
         "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.")]
-    public class SplitTextActivity : CodeActivity
+    public class SplitTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -70,7 +70,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<IList> TextList { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Escape Text for Regular Expression")]
     [Description("Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.")]
-    public class EscapeTextForRegularExpressionActivity : CodeActivity
+    public class EscapeTextForRegularExpressionActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -29,7 +29,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<string> EscapedText { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         // ----------------------
         // Execution Logic

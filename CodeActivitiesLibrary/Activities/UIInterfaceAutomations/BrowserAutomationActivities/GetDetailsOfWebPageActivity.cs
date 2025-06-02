@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Details of Web Page")]
     [Description("Retrieves specific information about a web page such as title, description, URL, or source code.")]
-    public class GetDetailsOfWebPageActivity : CodeActivity
+    public class GetDetailsOfWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
@@ -21,9 +21,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         #region Status Output
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

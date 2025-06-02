@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Convert Custom Object to JSON")]
     [Description("Converts a custom object into its JSON representation.")]
-    public class ConvertCustomObjectToJsonActivity : CodeActivity
+    public class ConvertCustomObjectToJsonActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -34,7 +34,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("The converted JSON string from the provided custom object.")]
         public OutArgument<string> JsonOutput { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Merge Lists")]
     [Description("Merges two lists into a new list. The original lists remain unchanged.")]
-    public class MergeListsActivity : CodeActivity
+    public class MergeListsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns a new list containing all items from both input lists.")]
         public OutArgument<List<object>> MergedList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

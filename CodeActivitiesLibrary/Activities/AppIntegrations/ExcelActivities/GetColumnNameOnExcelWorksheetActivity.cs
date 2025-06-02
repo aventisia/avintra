@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Column Name on Excel Worksheet")]
     [Description("Gets the name of a column (e.g., 'A', 'B') based on its index in the active worksheet.")]
-    public class GetColumnNameOnExcelWorksheetActivity : CodeActivity
+    public class GetColumnNameOnExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -34,7 +34,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the column letter corresponding to the given index (e.g., 'A', 'B').")]
         public OutArgument<string> ColumnName { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

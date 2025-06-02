@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Click UI Element in Parent")]
     [Description("Finds a UI element by property and clicks or invokes it using UI Automation or mouse click.")]
-    public class ClickUIElementInParentActivity : BaseCodeActivity
+    public class ClickUIElementInParentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

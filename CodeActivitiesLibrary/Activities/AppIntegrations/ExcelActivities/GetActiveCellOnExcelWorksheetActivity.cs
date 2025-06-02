@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Cell on Excel Worksheet")]
     [Description("Gets the address of the currently active cell in the active worksheet of an Excel instance.")]
-    public class GetActiveCellOnExcelWorksheetActivity : CodeActivity
+    public class GetActiveCellOnExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -38,7 +38,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the row index of the active cell.")]
         public OutArgument<int> ActiveCellRowIndex { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

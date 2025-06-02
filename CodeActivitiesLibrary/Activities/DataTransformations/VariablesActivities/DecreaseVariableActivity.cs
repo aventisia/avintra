@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Decrease Variable")]
     [Description("Decreases a numeric variable by a specified value.")]
-    public class DecreaseVariableActivity : CodeActivity
+    public class DecreaseVariableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -34,7 +34,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the resulting value after decreasing the variable.")]
         public OutArgument<double> DecreasedVariable { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Save Outlook Email Messages")]
     [Description("Saves selected Outlook email messages (.msg files) to a specified location.")]
-    public class SaveOutlookEmailMessagesActivity : CodeActivity
+    public class SaveOutlookEmailMessagesActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -37,7 +37,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -9,17 +9,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
 {
     [DisplayName("Unzip Files")]
     [Description("Extracts files from a ZIP archive to a specified destination folder.")]
-    public class UnzipFilesActivity : CodeActivity
+    public class UnzipFilesActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
-
-        [RequiredArgument]
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
-
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";

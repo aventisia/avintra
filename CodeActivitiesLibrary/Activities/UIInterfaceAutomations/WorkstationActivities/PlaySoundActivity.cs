@@ -6,13 +6,13 @@ using System.Media;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Play Sound"), Description("Plays a sound from a WAV file.")]
-    public class PlaySoundActivity : CodeActivity
+    public class PlaySoundActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the WAV file.")]
         public InArgument<string> SoundFilePath { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Selected Radio Button")]
     [Description("Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.")]
-    public class GetSelectedRadioButtonActivity : BaseCodeActivity
+    public class GetSelectedRadioButtonActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Pad Text")]
     [Description("Creates a fixed-length text by adding characters to the left or right of an existing text.")]
-    public class PadTextActivity : CodeActivity
+    public class PadTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -45,7 +45,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("The resulting text after padding.")]
         public OutArgument<string> PaddedText { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

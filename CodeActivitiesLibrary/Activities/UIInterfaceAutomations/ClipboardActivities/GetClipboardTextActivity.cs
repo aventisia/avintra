@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
     /// </summary>
     [DisplayName("Get Clipboard Text")]
     [Description("Retrieves the text currently stored in the system clipboard.")]
-    public class GetClipboardTextActivity : CodeActivity
+    public class GetClipboardTextActivity : Extensions.BaseCodeActivity
     {
         #region Enums
 
@@ -35,6 +35,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
         [Description("Determines whether to retrieve and output the clipboard text.")]
         [DefaultValue(typeof(OutputModeEnum), "Enabled")]
         public OutputModeEnum OutputSwitch { get; set; }
+
+        #endregion
+
+        #region Outputs
+
+        [Category("Output")]
+        [Description("The text retrieved from the clipboard.")]
+        public OutArgument<string> ClipboardTextOutput { get; set; }
 
         #endregion
 
@@ -80,17 +88,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
                 : string.Empty;
         }
 
-        #region Outputs
 
-        [Category("Output")]
-        [Description("The text retrieved from the clipboard.")]
-        public OutArgument<string> ClipboardTextOutput { get; set; }
-
-        [RequiredArgument]
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        #endregion
     }
 }

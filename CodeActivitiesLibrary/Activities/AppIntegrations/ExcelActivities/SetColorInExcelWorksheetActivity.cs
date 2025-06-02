@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Set Color in Excel Worksheet")]
     [Description("Fills the background of a selected range of cells with the specified color.")]
-    public class SetColorInExcelWorksheetActivity : CodeActivity
+    public class SetColorInExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -82,7 +82,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -107,38 +107,38 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (selectionMode)
                 {
                     case ExcelSelectionModeForColorEnum.SingleCell:
-                    {
-                        var startCol = StartColumn.Get(context);
-                        var startRow = StartRow.Get(context);
+                        {
+                            var startCol = StartColumn.Get(context);
+                            var startRow = StartRow.Get(context);
 
-                        range = ws.Cells[startRow, GetColumnIndex(startCol)];
-                        break;
-                    }
+                            range = ws.Cells[startRow, GetColumnIndex(startCol)];
+                            break;
+                        }
 
                     case ExcelSelectionModeForColorEnum.RangeOfCells:
-                    {
-                        var startCol = StartColumn.Get(context);
-                        var endCol = EndColumn.Get(context);
-                        var startRow = StartRow.Get(context);
-                        var endRow = EndRow.Get(context);
+                        {
+                            var startCol = StartColumn.Get(context);
+                            var endCol = EndColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var endRow = EndRow.Get(context);
 
-                        range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                            ws.Cells[endRow, GetColumnIndex(endCol)]];
-                        break;
-                    }
+                            range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
+                                ws.Cells[endRow, GetColumnIndex(endCol)]];
+                            break;
+                        }
 
                     case ExcelSelectionModeForColorEnum.NamedCells:
-                    {
-                        var namedRange = NamedRange.Get(context);
+                        {
+                            var namedRange = NamedRange.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(namedRange))
-                            throw new ArgumentException("Named range cannot be empty when using 'Named Cells' mode.");
+                            if (string.IsNullOrWhiteSpace(namedRange))
+                                throw new ArgumentException("Named range cannot be empty when using 'Named Cells' mode.");
 
-                        range = ws.Names.Item(namedRange)?.RefersToRange;
-                        if (range == null)
-                            throw new ArgumentException($"Named range '{namedRange}' not found.");
-                        break;
-                    }
+                            range = ws.Names.Item(namedRange)?.RefersToRange;
+                            if (range == null)
+                                throw new ArgumentException($"Named range '{namedRange}' not found.");
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(selectionMode));
@@ -152,27 +152,27 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (colorFormat)
                 {
                     case ExcelColorFormatEnum.Name:
-                    {
-                        var colorName = ColorName.Get(context);
+                        {
+                            var colorName = ColorName.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(colorName))
-                            throw new ArgumentException("Color name cannot be empty when using 'Name' format.");
+                            if (string.IsNullOrWhiteSpace(colorName))
+                                throw new ArgumentException("Color name cannot be empty when using 'Name' format.");
 
-                        colorValue = GetColorValueFromName(colorName);
-                        break;
-                    }
+                            colorValue = GetColorValueFromName(colorName);
+                            break;
+                        }
 
                     case ExcelColorFormatEnum.HexadecimalValue:
-                    {
-                        var hexValue = ColorHexValue.Get(context);
+                        {
+                            var hexValue = ColorHexValue.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(hexValue))
-                            throw new ArgumentException(
-                                "Hexadecimal value cannot be empty when using 'Hexadecimal Value' format.");
+                            if (string.IsNullOrWhiteSpace(hexValue))
+                                throw new ArgumentException(
+                                    "Hexadecimal value cannot be empty when using 'Hexadecimal Value' format.");
 
-                        colorValue = Convert.ToInt32(hexValue, 16);
-                        break;
-                    }
+                            colorValue = Convert.ToInt32(hexValue, 16);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(colorFormat));

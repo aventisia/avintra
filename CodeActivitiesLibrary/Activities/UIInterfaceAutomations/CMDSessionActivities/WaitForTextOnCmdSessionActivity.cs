@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
     [DisplayName("Wait for Text on CMD Session"), Description("Waits for a specific text on an open CMD session.")]
-    public class WaitForTextOnCmdSessionActivity : CodeActivity
+    public class WaitForTextOnCmdSessionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
         public InArgument<int> ProcessId { get; set; }
@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         [Category("Output"), Description("Returns true if the expected text was found, otherwise false.")]
         public OutArgument<bool> TextFound { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

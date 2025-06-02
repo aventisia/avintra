@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Update Data Table Item")]
     [Description("Updates a specific cell in a DataTable by specifying the column, row, and new value.")]
-    public class UpdateDataTableItemActivity : CodeActivity
+    public class UpdateDataTableItemActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -38,7 +38,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The DataTable after the specified cell has been updated.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

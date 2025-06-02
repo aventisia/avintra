@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Replace Text")]
     [Description(
         "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.")]
-    public class ReplaceTextActivity : CodeActivity
+    public class ReplaceTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -59,7 +59,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("The resulting text after replacement.")]
         public OutArgument<string> ReplacedText { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

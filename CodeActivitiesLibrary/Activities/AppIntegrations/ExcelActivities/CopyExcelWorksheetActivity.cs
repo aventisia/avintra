@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Excel Worksheet")]
     [Description("Copies a worksheet from one Excel instance to another or within the same instance.")]
-    public class CopyExcelWorksheetActivity : CodeActivity
+    public class CopyExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -80,27 +80,27 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 switch (copyMode)
                 {
                     case WorksheetCopyModeEnum.Name:
-                    {
-                        var worksheetName = WorksheetName.Get(context);
+                        {
+                            var worksheetName = WorksheetName.Get(context);
 
-                        if (string.IsNullOrWhiteSpace(worksheetName))
-                            throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
+                            if (string.IsNullOrWhiteSpace(worksheetName))
+                                throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
 
-                        sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
-                        break;
-                    }
+                            sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
+                            break;
+                        }
 
                     case WorksheetCopyModeEnum.Index:
-                    {
-                        var worksheetIndex = WorksheetIndex.Get(context);
+                        {
+                            var worksheetIndex = WorksheetIndex.Get(context);
 
-                        if (worksheetIndex < 1 || worksheetIndex > sourceApp.ActiveWorkbook.Worksheets.Count)
-                            throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
-                                $"Invalid worksheet index. Must be between 1 and {sourceApp.ActiveWorkbook.Worksheets.Count}.");
+                            if (worksheetIndex < 1 || worksheetIndex > sourceApp.ActiveWorkbook.Worksheets.Count)
+                                throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
+                                    $"Invalid worksheet index. Must be between 1 and {sourceApp.ActiveWorkbook.Worksheets.Count}.");
 
-                        sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
-                        break;
-                    }
+                            sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(copyMode));

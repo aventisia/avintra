@@ -5,13 +5,13 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Label"), Description("Marks a destination point for 'Go To' statements.")]
-    public class LabelActivity : NativeActivity
+    public class LabelActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Name of the label.")]
         public InArgument<string> LabelName { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

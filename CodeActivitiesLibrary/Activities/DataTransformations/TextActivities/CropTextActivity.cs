@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Crop Text")]
     [Description("Extracts text before, after, or between specified flags.")]
-    public class CropTextActivity : CodeActivity
+    public class CropTextActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -59,7 +59,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("Indicates whether the specified flag(s) were found in the original text.")]
         public OutArgument<bool> IsFlagFound { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -83,15 +83,17 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 {
                     case CropModeEnum.BeforeFlag:
                     case CropModeEnum.AfterFlag:
-                    {
-                        if (string.IsNullOrWhiteSpace(flag))
-                            throw new ArgumentException($"Flag is required in '{mode}' mode.");
-                        break;
-                    }
+                        {
+                            if (string.IsNullOrWhiteSpace(flag))
+                                throw new ArgumentException($"Flag is required in '{mode}' mode.");
+                            break;
+                        }
                     case CropModeEnum.BetweenFlags when string.IsNullOrWhiteSpace(flag):
                         throw new ArgumentException("First flag is required in 'Between Flags' mode.");
                     case CropModeEnum.BetweenFlags when string.IsNullOrWhiteSpace(secondFlag):
                         throw new ArgumentException("Second flag is required in 'Between Flags' mode.");
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 string result = null;
@@ -110,6 +112,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                     case CropModeEnum.BetweenFlags:
                         result = GetTextBetweenFlags(originalText, flag, secondFlag, ignoreCase, out flagFound);
                         break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
                 }
 
                 CroppedText.Set(context, result);

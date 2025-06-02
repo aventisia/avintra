@@ -3,12 +3,13 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Copy File(s)")]
     [Description("Copies one or more files into a destination folder.")]
-    public class CopyFileActivity : CodeActivity
+    public class CopyFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -34,7 +35,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Description("Returns the list of successfully copied files.")]
         public OutArgument<IEnumerable<string>> CopiedFiles { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

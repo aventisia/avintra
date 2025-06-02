@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Close Window")]
     [Description("Closes the selected application window.")]
-    public class CloseWindowActivity : BaseCodeActivity
+    public class CloseWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Column from Excel Worksheet")]
     [Description("Deletes a specific column from the active worksheet of an Excel instance.")]
-    public class DeleteColumnFromExcelWorksheetActivity : CodeActivity
+    public class DeleteColumnFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -30,7 +30,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -42,28 +42,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             try
             {
                 var excelApp = ExcelApplication.Get(context);
-                var columnIndex = ColumnIndex.Get(context);
+                var columnIndexInput = ColumnIndex.Get(context);
 
                 if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
                     throw new InvalidOperationException("Excel application or worksheet is not available.");
 
                 if (!(excelApp.ActiveSheet is Excel.Worksheet worksheet))
-                    throw new InvalidOperationException("Active sheet is not available or not a valid worksheet.");
+                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
 
-                int colNum;
+                int columnNumber;
+                if (!int.TryParse(columnIndexInput, out columnNumber))
+                {
+                    columnNumber = GetColumnIndex(columnIndexInput); // Convert "A", "B" to 1, 2, etc.
+                }
 
-                if (!int.TryParse(columnIndex, out colNum))
-                    // Convert column letter (like "A", "B") to number
-                    colNum = GetColumnIndex(columnIndex);
-
-                if (colNum < 1 || colNum > worksheet.Columns.Count)
+                if (columnNumber < 1 || columnNumber > worksheet.Columns.Count)
                     throw new ArgumentOutOfRangeException(nameof(ColumnIndex),
                         $"Column index must be between 1 and {worksheet.Columns.Count}.");
 
-                // Delete the column
-                worksheet.Columns.Delete(colNum);
+                // ✅ Properly delete the specific column using Range
+                ((Excel.Range)worksheet.Columns[columnNumber]).Delete();
 
-                status = $"Successfully deleted column at index {colNum}.";
+                status = $"Successfully deleted column {columnIndexInput} (Index: {columnNumber}).";
             }
             catch (Exception ex)
             {
@@ -73,14 +73,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             StatusMessage.Set(context, status);
         }
 
-        // Helper method to convert column letters to numbers
         private int GetColumnIndex(string columnName)
         {
-            if (string.IsNullOrEmpty(columnName)) return -1;
+            if (string.IsNullOrWhiteSpace(columnName)) return -1;
 
-            columnName = columnName.ToUpperInvariant();
+            columnName = columnName.Trim().ToUpperInvariant();
 
-            return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
+            return columnName.Aggregate(0, (acc, c) => acc * 26 + (c - 'A' + 1));
         }
     }
 }

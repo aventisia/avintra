@@ -6,11 +6,11 @@ using System.Data;
 using System.IO;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
-{ 
-    
+{
+
     [DisplayName("Extract Tables From PDF")]
     [Description("Extracts tables from a PDF file.")]
-    public class ExtractTablesFromPdfActivity : CodeActivity
+    public class ExtractTablesFromPdfActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]
@@ -33,7 +33,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
         [Category("Input")]
         [DisplayName("First Line Contains Column Names")]
         public InArgument<bool> FirstLineAsHeaders { get; set; } = true;
-        
+
         [Category("Input")]
         [DisplayName("Page Number (for Single)")]
         public InArgument<int> PageNumber { get; set; }
@@ -51,7 +51,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
         public OutArgument<List<DataTable>> ExtractedTables { get; set; }
 
         [Category("Output")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
 
         protected override void Execute(CodeActivityContext context)
         {

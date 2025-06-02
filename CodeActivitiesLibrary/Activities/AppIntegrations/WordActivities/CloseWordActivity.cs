@@ -6,13 +6,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to close a Word instance
     [DisplayName("Close Word"), Description("Close a Word instance.")]
-    public class CloseWordActivity : CodeActivity
+    public class CloseWordActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the Word instance to close.")]
         public InArgument<int> ProcessId { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

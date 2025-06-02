@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
     [DisplayName("CSV File Reader")]
     [Description("Reads a CSV file from the specified path and returns the content as a DataTable.")]
-    public class ReadFromCsvFileActivity : CodeActivity
+    public class ReadFromCsvFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

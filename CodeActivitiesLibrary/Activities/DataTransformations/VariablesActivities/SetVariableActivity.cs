@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Set Variable")]
     [Description("Sets the value of a named variable within the workflow context.")]
-    public class SetVariableActivity : CodeActivity
+    public class SetVariableActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -29,8 +29,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [Category("Output")]
- 
-        public OutArgument<string> StatusMessage { get; set; }
+
+        
 
         // ----------------------
         // Execution Logic

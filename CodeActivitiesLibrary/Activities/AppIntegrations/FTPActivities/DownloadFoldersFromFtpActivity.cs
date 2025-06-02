@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to download one or more folders from an FTP server
     [DisplayName("Download Folder(s) from FTP"), Description("Downloads one or more folders from an FTP server.")]
-    public class DownloadFoldersFromFtpActivity : CodeActivity
+    public class DownloadFoldersFromFtpActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }
@@ -24,8 +24,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The local directory to save the downloaded folders.")]
         public InArgument<string> LocalDirectory { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

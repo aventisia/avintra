@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
 {
     // Activity to invoke a method from a SOAP web service
     [DisplayName("Invoke SOAP Web Service"), Description("Invokes a method from a SOAP web service.")]
-    public class InvokeSoapWebServiceActivity : CodeActivity
+    public class InvokeSoapWebServiceActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The endpoint URL of the SOAP web service.")]
         public InArgument<string> EndpointUrl { get; set; }
@@ -22,8 +22,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Category("Output"), Description("Returns the response from the SOAP web service.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

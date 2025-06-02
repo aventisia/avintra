@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Details of Element on Web Page")]
     [Description("Retrieves the value of a specified attribute from a selected UI element in a web browser.")]
-    public class GetDetailsOfElementOnWebPageActivity : CodeActivity
+    public class GetDetailsOfElementOnWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
@@ -19,9 +19,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         #region Status Output
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Hash from File with Key"),
      Description("Hash the contents of a file with a key, using a specified algorithm and an encoding format")]
-    public class HashFromFileWithKeyActivity : CodeActivity
+    public class HashFromFileWithKeyActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the file to hash.")]
         public InArgument<string> FilePath { get; set; }
@@ -21,8 +21,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Category("Output"), Description("Returns the hashed content of the file.")]
         public OutArgument<string> HashedContent { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

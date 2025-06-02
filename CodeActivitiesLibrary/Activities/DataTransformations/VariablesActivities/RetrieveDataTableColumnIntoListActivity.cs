@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [DisplayName("Retrieve Data Table Column Into List")]
     [Description(
         "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.")]
-    public class RetrieveDataTableColumnIntoListActivity : CodeActivity
+    public class RetrieveDataTableColumnIntoListActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -37,7 +37,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("Returns the contents of the selected column as a list of strings.")]
         public OutArgument<List<string>> ColumnAsList { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -74,9 +74,9 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 }
 
                 var result = (from DataRow row in dataTable.Rows
-                    select row[column] as object
+                              select row[column] as object
                     into value
-                    select value?.ToString() ?? string.Empty).ToList();
+                              select value?.ToString() ?? string.Empty).ToList();
 
                 ColumnAsList.Set(context, result);
                 status = $"Successfully extracted {result.Count} items from column '{column.ColumnName}'.";

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get UI Element Details")]
     [Description("Get information like position or text from a UI element in a window.")]
-    public class GetUiElementDetailsActivity : BaseCodeActivity
+    public class GetUiElementDetailsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

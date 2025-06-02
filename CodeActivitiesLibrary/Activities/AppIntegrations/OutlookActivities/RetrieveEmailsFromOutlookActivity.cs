@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
     [DisplayName("Retrieve Emails from Outlook")]
     [Description(
         "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.")]
-    public class RetrieveEmailsFromOutlookActivity : CodeActivity
+    public class RetrieveEmailsFromOutlookActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -51,7 +51,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         [Description("Returns the list of retrieved email messages as MailItem objects.")]
         public OutArgument<List<MailItem>> EmailMessages { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -5,10 +5,10 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Stop Flow"), Description("Terminates the currently running workflow.")]
-    public class StopFlowActivity : NativeActivity
+    public class StopFlowActivity : Extensions.BaseNativeActivity
     {
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(NativeActivityContext context)
         {

@@ -9,13 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Take Screenshot of Web Page")]
     [Description(
         "Captures a screenshot of the entire web page or a specific UI element, and saves it to clipboard or file.")]
-    public class TakeScreenshotOfWebPageActivity : CodeActivity
+    public class TakeScreenshotOfWebPageActivity : Extensions.BaseCodeActivity
     {
         #region Outputs
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
 

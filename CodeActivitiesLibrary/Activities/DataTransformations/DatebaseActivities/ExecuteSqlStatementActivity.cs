@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
     [DisplayName("Execute SQL Statement"), Description("Connect to a database and execute an SQL statement")]
-    public class ExecuteSqlStatementActivity : CodeActivity
+    public class ExecuteSqlStatementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }
@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         [RequiredArgument, Category("Input"), Description("The SQL statement to execute.")]
         public InArgument<string> SqlStatement { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

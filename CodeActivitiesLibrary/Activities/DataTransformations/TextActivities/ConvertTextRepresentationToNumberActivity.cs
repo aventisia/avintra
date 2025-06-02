@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Word to Number")]
     [Description("Converts specific words like 'hundred' into their numeric values.")]
-    public class ConvertWordToNumberActivity : CodeActivity
+    public class ConvertWordToNumberActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,8 +28,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<int> NumericValue { get; set; }
 
         [Category("Output")]
- 
-        public OutArgument<string> StatusMessage { get; set; }
+
+        
 
         // ----------------------
         // Execution Logic
@@ -42,7 +42,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             try
             {
                 var input = TextToConvert.Get(context).ToLower();
-// -TODO need to add more words and their numeric values or need
+                // -TODO need to add more words and their numeric values or need
                 switch (input)
                 {
                     case "one":

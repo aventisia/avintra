@@ -7,13 +7,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     // Activity to get keyboard identifier
     [DisplayName("Get Keyboard Identifier"),
      Description("Retrieves the active keyboard identifier from the machine's registry.")]
-    public class GetKeyboardIdentifierActivity : CodeActivity
+    public class GetKeyboardIdentifierActivity : Extensions.BaseCodeActivity
     {
         [Category("Output"), Description("Returns the active keyboard identifier.")]
         public OutArgument<string> Result { get; set; }
 
-        [Category("Output"), Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {

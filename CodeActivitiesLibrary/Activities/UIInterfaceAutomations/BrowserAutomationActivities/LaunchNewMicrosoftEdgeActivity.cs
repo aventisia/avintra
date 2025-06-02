@@ -7,12 +7,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Launch New Microsoft Edge")]
     [Description("Launches a new Microsoft Edge instance or attaches to an existing browser session.")]
-    public class LaunchNewMicrosoftEdgeActivity : CodeActivity
+    public class LaunchNewMicrosoftEdgeActivity : Extensions.BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
-            
+
             try
             {
                 var launchMode = LaunchMode.Get(context);
@@ -187,9 +187,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
 
 
-        [Category("Output")]
-        [Description("Returns the status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         #endregion
     }

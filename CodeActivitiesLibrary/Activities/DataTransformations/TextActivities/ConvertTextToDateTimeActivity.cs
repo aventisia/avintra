@@ -8,9 +8,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Text to DateTime")]
     [Description("Converts a text representation of a date and/or time value to a DateTime value.")]
-    public class ConvertTextToDateTimeActivity : CodeActivity
+    public class ConvertTextToDateTimeActivity : Extensions.BaseCodeActivity
     {
-       
+
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Text to Convert")]
@@ -29,14 +29,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [RenderIfCondition(nameof(UseCustomFormat), "True")]
         public InArgument<string> Format { get; set; }
 
-        
+
 
         [Category("Output")]
         [DisplayName("Result DateTime")]
         [Description("Returns the resulting DateTime value after conversion.")]
         public OutArgument<DateTime> ResultDateTime { get; set; }
 
-        [Category("Output")] public OutArgument<string> StatusMessage { get; set; }
+        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

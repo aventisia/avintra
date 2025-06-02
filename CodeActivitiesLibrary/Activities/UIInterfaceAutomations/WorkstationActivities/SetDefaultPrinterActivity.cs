@@ -6,13 +6,13 @@ using Microsoft.Win32;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Set Default Printer"), Description("Sets a printer as the default printer.")]
-    public class SetDefaultPrinterActivity : CodeActivity
+    public class SetDefaultPrinterActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the printer to set as default.")]
         public InArgument<string> PrinterName { get; set; }
 
-        [Category("Output"), Description("Returns the status message.")]
-        public OutArgument<string> StatusMessage { get; set; }
+        
+        
 
         protected override void Execute(CodeActivityContext context)
         {
