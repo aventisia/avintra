@@ -4,8 +4,8 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
-import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
 
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
@@ -171,74 +171,19 @@ export const useFlowOperations = () => {
   // Define deleteNode
   const deleteNode = useCallback(
     (nodeId: string) => {
-      const nodeToDelete = nodes.find((node) => node.id === nodeId);
-      if (!nodeToDelete) return;
+      const node = nodes.find((n) => n.id === nodeId);
+      if (!node) return;
 
       showDefaultAlertDialog({
         alertType: "delete",
         confirmActionFn: () => {
-          let updatedNodes = [...nodes];
-          let updatedEdges = [...edges];
-          let updatedFlowVariables = [...flowVariablesObject];
-
-          const isSpecialNode =
-            nodeToDelete.type === "conditionalNode" ||
-            nodeToDelete.type === "forLoopNode";
-
-          if (isSpecialNode) {
-            const mergeNodeId = nodeToDelete.data?.mergeBranchesNodeId;
-            if (!mergeNodeId) return;
-
-            // Get all intermediate nodes in the special branch
-            const nodeIdsToDelete = getIntermediateNodeIds(
+          const { updatedNodes, updatedEdges, updatedFlowVariables } =
+            getNodesAndEdgesAfterDeletion({
+              node,
               nodes,
               edges,
-              nodeId,
-            );
-
-            // Remove all edges connected to those nodes
-            updatedEdges = updatedEdges.filter(
-              (edge) =>
-                !nodeIdsToDelete.includes(edge.source) &&
-                !nodeIdsToDelete.includes(edge.target),
-            );
-
-            // Get incoming edge to the special node
-            const incomingEdge = edges.find((edge) => edge.target === nodeId);
-
-            // Get the outgoing edge from the merge node, excluding loop-back
-            const outgoingEdge = edges.find(
-              (edge) => edge.source === mergeNodeId && edge.target !== nodeId, // Avoid loop-back for forLoopNode
-            );
-
-            // Reconnect flow if both ends exist
-            if (incomingEdge && outgoingEdge) {
-              updatedEdges.push(
-                createPlusEdgeObj(incomingEdge.source, outgoingEdge.target),
-              );
-            }
-
-            // Remove nodes
-            updatedNodes = updatedNodes.filter(
-              (n) => !nodeIdsToDelete.includes(n.id),
-            );
-
-            // Remove flow variables
-            updatedFlowVariables = updatedFlowVariables.filter(
-              (f) => !nodeIdsToDelete.includes(f.nodeId),
-            );
-          } else {
-            // For normal nodes: reconnect flow and delete
-            updatedEdges = reconnectEdges(nodeId, updatedEdges);
-
-            // Remove the node
-            updatedNodes = updatedNodes.filter((n) => n.id !== nodeId);
-
-            // Remove related flow variables
-            updatedFlowVariables = updatedFlowVariables.filter(
-              (f) => f.nodeId !== nodeId,
-            );
-          }
+              flowVariables: flowVariablesObject,
+            });
 
           setNodes(updatedNodes);
           setEdges(updatedEdges);
@@ -249,17 +194,7 @@ export const useFlowOperations = () => {
         },
       });
     },
-    [
-      nodes,
-      edges,
-      setNodes,
-      setEdges,
-      flowVariablesObject,
-      setFlowVariablesObject,
-      showDefaultAlertDialog,
-      reconnectEdges,
-      autoLayout,
-    ],
+    [nodes, edges, flowVariablesObject, showDefaultAlertDialog, autoLayout],
   );
 
   return {
