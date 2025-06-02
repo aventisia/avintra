@@ -181,11 +181,15 @@ export const useFlowOperations = () => {
           let updatedEdges = [...edges];
           let updatedFlowVariables = [...flowVariablesObject];
 
-          if (nodeToDelete.type === "conditionalNode") {
+          const isSpecialNode =
+            nodeToDelete.type === "conditionalNode" ||
+            nodeToDelete.type === "forLoopNode";
+
+          if (isSpecialNode) {
             const mergeNodeId = nodeToDelete.data?.mergeBranchesNodeId;
             if (!mergeNodeId) return;
 
-            // Get all related node IDs (conditional, intermediates, merge)
+            // Get all intermediate nodes in the special branch
             const nodeIdsToDelete = getIntermediateNodeIds(
               nodes,
               edges,
@@ -199,10 +203,12 @@ export const useFlowOperations = () => {
                 !nodeIdsToDelete.includes(edge.target),
             );
 
-            // Find entry and exit edges
+            // Get incoming edge to the special node
             const incomingEdge = edges.find((edge) => edge.target === nodeId);
+
+            // Get the outgoing edge from the merge node, excluding loop-back
             const outgoingEdge = edges.find(
-              (edge) => edge.source === mergeNodeId,
+              (edge) => edge.source === mergeNodeId && edge.target !== nodeId, // Avoid loop-back for forLoopNode
             );
 
             // Reconnect flow if both ends exist
@@ -212,17 +218,17 @@ export const useFlowOperations = () => {
               );
             }
 
-            // Remove the conditional and merge nodes
+            // Remove nodes
             updatedNodes = updatedNodes.filter(
               (n) => !nodeIdsToDelete.includes(n.id),
             );
 
-            // Remove related flow variables
+            // Remove flow variables
             updatedFlowVariables = updatedFlowVariables.filter(
               (f) => !nodeIdsToDelete.includes(f.nodeId),
             );
           } else {
-            // Non-conditional node: reconnect using helper
+            // For normal nodes: reconnect flow and delete
             updatedEdges = reconnectEdges(nodeId, updatedEdges);
 
             // Remove the node
@@ -237,10 +243,11 @@ export const useFlowOperations = () => {
           setNodes(updatedNodes);
           setEdges(updatedEdges);
           setFlowVariablesObject(updatedFlowVariables);
+
+          // Optional: trigger layout
           autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
         },
       });
-      // Optional: trigger layout
     },
     [
       nodes,
@@ -251,6 +258,7 @@ export const useFlowOperations = () => {
       setFlowVariablesObject,
       showDefaultAlertDialog,
       reconnectEdges,
+      autoLayout,
     ],
   );
 
