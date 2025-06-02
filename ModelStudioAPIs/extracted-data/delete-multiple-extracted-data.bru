@@ -1,0 +1,18 @@
+meta {
+  name: Delete multiple extracted data
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/extracted-data/delete-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set extractedDateIds in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("EDATA_ID")}"]`)
+  )
+}
