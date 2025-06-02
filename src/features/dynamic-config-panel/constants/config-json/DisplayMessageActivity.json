@@ -2,10 +2,161 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Message",
-    "label": "Message",
-    "description": "The message to display.",
+    "name": "Title",
+    "label": "Message Box Title",
+    "description": "The title text displayed at the top of the message box.",
     "defaultValue": "",
-    "required": true
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Message",
+    "label": "Message to Display",
+    "description": "The main text content of the message box.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Icon",
+    "label": "Message Box Icon",
+    "description": "The icon to be displayed in the message box.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "None",
+        "value": "None",
+        "description": ""
+      },
+      {
+        "label": "Information",
+        "value": "Information",
+        "description": ""
+      },
+      {
+        "label": "Question",
+        "value": "Question",
+        "description": ""
+      },
+      {
+        "label": "Warning",
+        "value": "Warning",
+        "description": ""
+      },
+      {
+        "label": "Error",
+        "value": "Error",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Buttons",
+    "label": "Message Box Buttons",
+    "description": "The buttons to display in the message box.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "OK",
+        "value": "OK",
+        "description": ""
+      },
+      {
+        "label": "OKCancel",
+        "value": "OKCancel",
+        "description": ""
+      },
+      {
+        "label": "YesNo",
+        "value": "YesNo",
+        "description": ""
+      },
+      {
+        "label": "YesNoCancel",
+        "value": "YesNoCancel",
+        "description": ""
+      },
+      {
+        "label": "AbortRetryIgnore",
+        "value": "AbortRetryIgnore",
+        "description": ""
+      },
+      {
+        "label": "RetryCancel",
+        "value": "RetryCancel",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DefaultButton",
+    "label": "Default Button",
+    "description": "The button that is highlighted by default.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Button1",
+        "value": "Button1",
+        "description": ""
+      },
+      {
+        "label": "Button2",
+        "value": "Button2",
+        "description": ""
+      },
+      {
+        "label": "Button3",
+        "value": "Button3",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "KeepOnTop",
+    "label": "Keep Message Box Always on Top",
+    "description": "If true, the message box will stay on top of other windows.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "AutoClose",
+    "label": "Close Message Box Automatically",
+    "description": "If true, the message box will close automatically after the specified timeout.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Timeout",
+    "label": "Timeout (Seconds)",
+    "description": "The number of seconds after which the message box closes automatically if \u0027Close Message Box Automatically\u0027 is enabled.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ButtonPressed",
+    "label": "Button Pressed",
+    "description": "True if a button was pressed.",
+    "defaultValue": {
+      "value": "ButtonPressed",
+      "enabled": true
+    },
+    "required": false
   }
 ]

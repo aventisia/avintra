@@ -2,19 +2,83 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "X",
-    "label": "X",
-    "description": "The X-coordinate of the target position.",
+    "name": "PositionX",
+    "label": "Position X",
+    "description": "",
     "defaultValue": "",
-    "required": true
+    "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "Y",
-    "label": "Y",
-    "description": "The Y-coordinate of the target position.",
+    "name": "PositionY",
+    "label": "Position Y",
+    "description": "",
     "defaultValue": "",
-    "required": true
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "RelativeTo",
+    "label": "Relative To",
+    "description": "",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Screen",
+        "value": "Screen",
+        "description": ""
+      },
+      {
+        "label": "ForegroundWindow",
+        "value": "ForegroundWindow",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "MoveMouseFromPreviousPosition",
+    "label": "Move Mouse From Previous Position",
+    "description": "",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Instant",
+        "value": "Instant",
+        "description": ""
+      },
+      {
+        "label": "LowSpeed",
+        "value": "LowSpeed",
+        "description": ""
+      },
+      {
+        "label": "NormalSpeed",
+        "value": "NormalSpeed",
+        "description": ""
+      },
+      {
+        "label": "HighSpeed",
+        "value": "HighSpeed",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "CurrentCursorPosition",
+    "label": "Current Cursor Position",
+    "description": "",
+    "defaultValue": {
+      "value": "CurrentCursorPosition",
+      "enabled": true
+    },
+    "required": false
   }
 ]

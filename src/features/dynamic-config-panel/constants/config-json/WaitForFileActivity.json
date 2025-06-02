@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "FilePath",
+    "description": "The full path of the file to wait for.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "Mode",
+    "label": "Mode",
+    "description": "Specifies whether to wait for file creation or deletion.",
+    "defaultValue": "Create",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Wait For Creation",
+        "value": "Create",
+        "description": "Waits until the file is created."
+      },
+      {
+        "label": "Wait For Deletion",
+        "value": "Delete",
+        "description": "Waits until the file is deleted."
+      }
+    ]
+  }
+]

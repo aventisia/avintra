@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Seconds",
+    "label": "Seconds",
+    "description": "Number of seconds to wait.",
+    "defaultValue": "",
+    "required": true
+  }
+]

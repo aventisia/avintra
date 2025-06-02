@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Label",
+    "label": "Label",
+    "description": "Label to transfer execution to.",
+    "defaultValue": "",
+    "required": true
+  }
+]

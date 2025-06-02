@@ -1,12 +1,45 @@
 [
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "RelativeTo",
+    "label": "Relative To",
+    "description": "Specifies whether the mouse position is relative to the Screen or Foreground Window.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Screen",
+        "value": "Screen",
+        "description": ""
+      },
+      {
+        "label": "ForegroundWindow",
+        "value": "ForegroundWindow",
+        "description": ""
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the current mouse position as a Point object.",
+    "name": "MousePosX",
+    "label": "Mouse Pos X",
+    "description": "The horizontal (X) value of the mouse position.",
     "defaultValue": {
-      "value": "Result",
+      "value": "MousePosX",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "MousePosY",
+    "label": "Mouse Pos Y",
+    "description": "The vertical (Y) value of the mouse position.",
+    "defaultValue": {
+      "value": "MousePosY",
       "enabled": true
     },
     "required": false

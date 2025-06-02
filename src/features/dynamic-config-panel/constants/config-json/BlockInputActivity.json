@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "BlockIt",
+    "label": "Block It",
+    "description": "Toggle to enable or disable blocking of user input.",
+    "defaultValue": "",
+    "required": false
+  }
+]

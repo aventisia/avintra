@@ -1,0 +1,110 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogTitle",
+    "label": "Dialog Title",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DialogMessage",
+    "label": "Dialog Message",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ListToChooseFrom",
+    "label": "List to Choose From",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "KeepOnTop",
+    "label": "Keep Select Dialog Always On Top",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "LimitToList",
+    "label": "Limit to List",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "AllowEmptySelection",
+    "label": "Allow Empty Selection",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "AllowMultipleSelection",
+    "label": "Allow Multiple Selection",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "PreselectItemsStartingWithPlus",
+    "label": "Preselect Items Starting With \u0027\u002B\u0027",
+    "description": "",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SelectedItem",
+    "label": "Selected Item(s)",
+    "description": "",
+    "defaultValue": {
+      "value": "SelectedItem",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SelectedIndex",
+    "label": "Selected Index(es)",
+    "description": "",
+    "defaultValue": {
+      "value": "SelectedIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ButtonPressed",
+    "label": "Button Pressed",
+    "description": "",
+    "defaultValue": {
+      "value": "ButtonPressed",
+      "enabled": true
+    },
+    "required": false
+  }
+]

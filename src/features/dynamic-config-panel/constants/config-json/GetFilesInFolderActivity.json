@@ -47,42 +47,42 @@
       {
         "label": "NoSort",
         "value": "NoSort",
-        "description": ""
+        "description": "No sorting applied."
       },
       {
         "label": "FullName",
         "value": "FullName",
-        "description": ""
+        "description": "Sort by the full file path."
       },
       {
         "label": "RootPath",
         "value": "RootPath",
-        "description": ""
+        "description": "Sort by the root directory path."
       },
       {
         "label": "Directory",
         "value": "Directory",
-        "description": ""
+        "description": "Sort by the directory containing the file."
       },
       {
         "label": "Name",
         "value": "Name",
-        "description": ""
+        "description": "Sort by the file name."
       },
       {
         "label": "NameWithoutExtension",
         "value": "NameWithoutExtension",
-        "description": ""
+        "description": "Sort by the file name without the extension."
       },
       {
         "label": "Extension",
         "value": "Extension",
-        "description": ""
+        "description": "Sort by the file extension."
       },
       {
         "label": "Size",
         "value": "Size",
-        "description": ""
+        "description": "Sort by the file size."
       }
     ]
   },
@@ -107,42 +107,42 @@
       {
         "label": "NoSort",
         "value": "NoSort",
-        "description": ""
+        "description": "No sorting applied."
       },
       {
         "label": "FullName",
         "value": "FullName",
-        "description": ""
+        "description": "Sort by the full file path."
       },
       {
         "label": "RootPath",
         "value": "RootPath",
-        "description": ""
+        "description": "Sort by the root directory path."
       },
       {
         "label": "Directory",
         "value": "Directory",
-        "description": ""
+        "description": "Sort by the directory containing the file."
       },
       {
         "label": "Name",
         "value": "Name",
-        "description": ""
+        "description": "Sort by the file name."
       },
       {
         "label": "NameWithoutExtension",
         "value": "NameWithoutExtension",
-        "description": ""
+        "description": "Sort by the file name without the extension."
       },
       {
         "label": "Extension",
         "value": "Extension",
-        "description": ""
+        "description": "Sort by the file extension."
       },
       {
         "label": "Size",
         "value": "Size",
-        "description": ""
+        "description": "Sort by the file size."
       }
     ]
   },
