@@ -15,11 +15,12 @@ export const ForLoopNode = ({
 }: NodeProps<ForLoopNode>) => {
   return (
     <BaseNode selected={selected} nodeData={data} nodeId={id}>
-      <InputHandle position={targetPosition} connectionCount={2} />
+      <InputHandle position={targetPosition} connectionCount={1} />
       <InputHandle
         id="for-loop-repeat"
         position={Position.Right}
-        connectionCount={2}
+        connectionCount={1}
+        className="right-1/2"
       />
       <OutputHandle position={sourcePosition} connectionCount={2} />
     </BaseNode>
