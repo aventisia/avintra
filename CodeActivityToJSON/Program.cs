@@ -53,9 +53,9 @@ namespace CodeActivityToJSON
             {
                 // Skip if activity is ConditionalActivity 
                 // TODO: Find a better way to skip ConditionalActivity or generate json from it 
-                if (activity.Name == "ConditionalActivity")
+                if (activity.Name == "ConditionalActivity" || activity.Name == "ConditionalBranchActivity" || activity.Name == "LoopActivity")
                 {
-                    Console.WriteLine("Skipping ConditionalActivity");
+                    Console.WriteLine($"Skipping {activity.Name}");
                     continue;
                 }
 

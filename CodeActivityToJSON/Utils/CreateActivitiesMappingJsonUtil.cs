@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -68,6 +69,12 @@ namespace CodeActivityToJSON.Utils
                         {
                             // Not the same namespace as the category metadata type
                             if (categoryMetadataType.Namespace != activity.Namespace) continue;
+
+                            if (activity.Name == "ConditionalBranchActivity")
+                            {
+                                Console.WriteLine($"Skipping {activity.Name}");
+                                continue;
+                            }
 
                             // Get the DisplayName and Description attributes from the activity
                             var nodeType = activity.GetCustomAttributes(typeof(NodeTypeAttribute), false).FirstOrDefault() as NodeTypeAttribute;
