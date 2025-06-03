@@ -95,7 +95,7 @@ export const createConditionalNode = (
   // Update conditional node data
   conditionalNode.data = {
     ...conditionalNode.data,
-    branchesCount: 2, // One main branch and one default branch
+    branches: [caseBranchStartNode.id, defaultBranchStartNode.id], // One main branch and one default branch
     defaultBranchNodeId: defaultBranchStartNode.id,
     mergeBranchesNodeId: mergeBranchesNode.id,
     conditional2DefaultBranchEdgeId: conditional2DefaultBranchEdge.id,

@@ -5,33 +5,27 @@ import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { getNewNodeXY } from "../create-node-and-edges-util";
 import { createSupportNodeObj } from "./create-support-node-obj";
 import { CustomNodeType } from "@/types/custom-node-type";
-import { createConditionalBranchNodeObj } from "./conditional/create-conditional-branch-node-obj";
 import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
 
 export const createNewConditionalBranch = (
-  branchesCount: number,
   sourceNode: Node,
+  newBranchStartNode: Node,
   mergeBranchesNodeId: string,
 ): CreateNodesAndEdgesType => {
   // Case branch nodes
-  const caseBranchStartNode = createConditionalBranchNodeObj(
-    `Branch ${branchesCount}`,
-    false,
-    mergeBranchesNodeId,
-  );
   const casePlusNode = createSupportNodeObj("plusNode");
   const caseBranchEndNode = createSupportNodeObj("branchEndNode");
 
   // Conditional node -> Case branch-start node
   const conditional2CaseBranchStartEdge = createSimpleEdgeObj(
     sourceNode.id,
-    caseBranchStartNode.id,
+    newBranchStartNode.id,
     sourceNode.id,
   );
 
   // Case branch-start node -> Case plus node
   const caseBranchStart2PlusEdge = createDottedEdgeObj(
-    caseBranchStartNode.id,
+    newBranchStartNode.id,
     casePlusNode.id,
   );
 
@@ -49,7 +43,7 @@ export const createNewConditionalBranch = (
 
   // Swtich-case branch nodes and edges
   const nodesAndEdgesObj = {
-    newNodes: [caseBranchStartNode, casePlusNode, caseBranchEndNode],
+    newNodes: [newBranchStartNode, casePlusNode, caseBranchEndNode],
     newEdges: [
       conditional2CaseBranchStartEdge,
       caseBranchStart2PlusEdge,

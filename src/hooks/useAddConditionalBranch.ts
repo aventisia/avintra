@@ -4,6 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
 import { createNewConditionalBranch } from "@/utils/create-nodes/create-new-conditional-branch";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
+import { createConditionalBranchNodeObj } from "@/utils/create-nodes/conditional/create-conditional-branch-node-obj";
 
 export const useAddConditionalBranch = () => {
   // Get ReactFlowExt store state & actions
@@ -24,10 +25,15 @@ export const useAddConditionalBranch = () => {
       const sourceNode = nodes.find((node) => node.id === switchNodeId);
       if (!sourceNode) return;
 
+      // new branch start node
+      const newBranchStartNode = createConditionalBranchNodeObj(
+        `Branch ${nodeData.branches.length}`,
+      );
+
       // Create new node & edge
       const { newNodes, newEdges } = createNewConditionalBranch(
-        nodeData.branchesCount,
         sourceNode,
+        newBranchStartNode,
         nodeData.mergeBranchesNodeId,
       );
 
@@ -58,10 +64,13 @@ export const useAddConditionalBranch = () => {
       // Mapp through updatedNodes and update the branches count of the source node
       updatedNodes.forEach((node) => {
         if (node.id === sourceNode.id) {
-          node.data.branchesCount = nodeData.branchesCount + 1; // Increment branches count
+          node.data.branches = [
+            ...(node.data.branches as string[]),
+            newBranchStartNode.id,
+          ];
         }
       });
-      
+
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     },

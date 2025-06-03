@@ -1,20 +1,20 @@
-import { Header, HeaderContainer } from "@aventisia/ui/layout";
-import { Button } from "@aventisia/ui/buttons";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { AppLogo } from "./AppLogo";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShallow } from "zustand/react/shallow";
-import { Tooltip } from "@aventisia/ui/tooltip";
+import { ExecuteFlow } from "@/features/execute-flow";
 import { FlowComments } from "@/features/flow-comments/components/FlowComments";
+import { FlowVersions } from "@/features/flow-versions/components";
+import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
-import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
-import { cn } from "@aventisia/ui/lib";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { ExecuteFlow } from "@/features/execute-flow/ExecuteFlow";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
+import { Button } from "@aventisia/ui/buttons";
+import { Header, HeaderContainer } from "@aventisia/ui/layout";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
+import { AppLogo } from "./AppLogo";
 import { HeaderActionMenu } from "./header-menu-actions";
 import SearchCommandDialog from "./Search";
-import { PublishFlow } from "@/features/publish-flow/PublishFlow";
-import { FlowVersions } from "@/features/flow-versions/components";
 
 const AppHeader: React.FC = () => {
   // Get global store state and actions
