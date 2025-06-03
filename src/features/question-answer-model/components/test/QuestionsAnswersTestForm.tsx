@@ -14,10 +14,13 @@ import { useShallow } from "zustand/react/shallow";
 
 import { submitForFineTuningProps } from "../../constants/question-answer-test-form-field-props";
 import { questionAnswerTestFormZodSchema } from "../../constants/question-answer-test-form-zod-schema";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import { useQuestionAnswersTestForm } from "../../hooks/useQuestionAnswerTestForm";
 import QuestionAnswerFields from "./question-answer";
 
 const QuestionsAnswersTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     questionAnswerFields,

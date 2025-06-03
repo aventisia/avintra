@@ -14,10 +14,13 @@ import { useShallow } from "zustand/react/shallow";
 
 import { submitForFineTuningProps } from "../../constants/sentiment-analytics-test-form-field-props";
 import { sentimentalAnalyticsTestFormZodSchema } from "../../constants/sentiment-analytics-test-form-zod-schema";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import { useSentimentalAnalyticsTestForm } from "../../hooks/useSentimentAnalyticsTestForm";
 import CategoryFields from "./categories";
 
 const SentimentAnalyticsFormTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     categoryFields,

@@ -17,9 +17,12 @@ import {
   summarizedTextProps,
 } from "../../constants/summarization-model-test-form-field-props";
 import { summarizationModelTestFormZodSchema } from "../../constants/summarization-model-test-form-zod-schema";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import { useSummarizationModelTestForm } from "../../hooks/useSummarizationModelTestForm";
 
 const SummarizationModelTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     isDirty,

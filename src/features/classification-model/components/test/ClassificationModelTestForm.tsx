@@ -15,9 +15,12 @@ import { useShallow } from "zustand/react/shallow";
 import { submitForFineTuningProps } from "../../constants/classification-model-test-form-field-props";
 import { classificationModelTestFormZodSchema } from "../../constants/classification-model-test-form-zod-schema";
 import { useClassificationModelTestForm } from "../../hooks/useClassificationModelTestForm";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import CategoryFields from "./categories";
 
 const ClassificationModelTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     categoryFields,
