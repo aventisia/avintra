@@ -1101,7 +1101,7 @@
           },
           {
             "type": "activityNode",
-            "name": "PopulateTextFieldActivity",
+            "name": "PopulateTextFieldInWindowActivity",
             "label": "Populate Text Field in Window",
             "description": "Fills a text box in a window with the specified text using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
