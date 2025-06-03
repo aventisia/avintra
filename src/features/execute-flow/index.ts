@@ -4,7 +4,6 @@ export * from "./components/ExecuteFlow";
 // Hooks
 export * from "./hooks/useWebSocket";
 export * from "./hooks/useSendNodeToProcess";
-export * from "./hooks/useProcessConditionalNode";
 
 // Types
 export * from "./types/activity-node-data";
