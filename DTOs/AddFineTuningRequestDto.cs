@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 /// <summary>
 /// DTO for submitting a fine-tuning request for an existing ML model.
 /// </summary>
-public class AddFineTunningRequestDto
+public class AddFineTuningRequestDto
 {
     /// <summary>
     /// List of file identifiers to be used for fine-tuning.
