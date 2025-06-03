@@ -11,15 +11,21 @@ import useWebSocket from "../hooks/useWebSocket";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
-  const { currentFlow, executionState, setConditionalExecutionGroup, setExecutionState } =
-    useCurrentFlowStore(
-      useShallow((state) => ({
-        currentFlow: state.currentFlow,
-        executionState: state.executionState,
-        setConditionalExecutionGroup: state.setConditionalExecutionGroup,
-        setExecutionState: state.setExecutionState,
-      })),
-    );
+  const {
+    currentFlow,
+    executionState,
+    setConditionalExecutionGroup,
+    setLoopExecutionGroup,
+    setExecutionState,
+  } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+      executionState: state.executionState,
+      setConditionalExecutionGroup: state.setConditionalExecutionGroup,
+      setLoopExecutionGroup: state.setLoopExecutionGroup,
+      setExecutionState: state.setExecutionState,
+    })),
+  );
 
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
@@ -35,6 +41,8 @@ const ExecuteFlow = () => {
   const startExecution = () => {
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
+    setConditionalExecutionGroup([]);
+    setLoopExecutionGroup([]);
 
     // Open the desktop executor if the app is running in Tauri
     if (isTauri) {
@@ -100,6 +108,8 @@ const ExecuteFlow = () => {
               className="hover:bg-white/10"
               onClick={() => {
                 setConditionalExecutionGroup([]);
+                setLoopExecutionGroup([]);
+                setExecutionState("stopped");
                 sendCommand("abort");
               }}
             >
@@ -130,4 +140,3 @@ const ExecuteFlow = () => {
 };
 
 export { ExecuteFlow };
-

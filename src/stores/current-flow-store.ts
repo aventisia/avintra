@@ -15,6 +15,12 @@ interface ConditionalExecutionGroup {
   mergeBranchesNodeId: string;
 }
 
+interface LoopExecutionGroup {
+  id: string;
+  loopType: "ConditionalLoop" | "ForEachLoop";
+  mergeBranchesNodeId: string;
+}
+
 type State = {
   /** Details of the currently opened flow */
   currentFlow: ICurrentFlowDetails;
@@ -29,6 +35,8 @@ type State = {
   executionState: ExecutionStateType;
 
   conditionalExecutionGroup: ConditionalExecutionGroup[];
+
+  loopExecutionGroup?: LoopExecutionGroup[];
 
   projectInfo: IProjectInfoDTO;
 };
@@ -47,7 +55,12 @@ type Actions = {
   setExecutionState: (executionState: ExecutionStateType) => void;
 
   /** Sets the conditional execution group */
-  setConditionalExecutionGroup: (conditionalExecutionGroup: ConditionalExecutionGroup[]) => void;
+  setConditionalExecutionGroup: (
+    conditionalExecutionGroup: ConditionalExecutionGroup[],
+  ) => void;
+
+  /** Sets the loop execution group */
+  setLoopExecutionGroup: (loopExecutionGroup: LoopExecutionGroup[]) => void;
 
   /** Set Project info of the flow */
   setProjectInfo: (projectInfo: IProjectInfoDTO) => void;
@@ -59,6 +72,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   isFlowSaving: false,
   executionState: "stopped",
   conditionalExecutionGroup: [],
+  loopExecutionGroup: [],
   projectInfo: {
     versionId: "",
     versionNumber: null,
@@ -74,7 +88,10 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
 
   setExecutionState: (executionState) => set({ executionState }),
 
-  setConditionalExecutionGroup: (conditionalExecutionGroup) => set({ conditionalExecutionGroup }),
+  setConditionalExecutionGroup: (conditionalExecutionGroup) =>
+    set({ conditionalExecutionGroup }),
+
+  setLoopExecutionGroup: (loopExecutionGroup) => set({ loopExecutionGroup }),
 
   setProjectInfo: (projectInfo) => set({ projectInfo: projectInfo }),
 }));
