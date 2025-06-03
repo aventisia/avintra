@@ -33,8 +33,5 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
 
         [Display(Name = "Do While", Description = "Executes actions at least once and continues while a condition is true.")]
         DoWhile,
-
-        [Display(Name = "For", Description = "Executes actions a specified number of times.")]
-        For,
     }
 }

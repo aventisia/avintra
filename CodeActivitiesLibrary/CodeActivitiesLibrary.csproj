@@ -540,6 +540,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\SetXmlElementValueActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\WriteXmlToFileActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\_XMLCategoryMetaData.cs" />
+    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalBranchActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\LoopActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\_ConditionalsLoopsCategoryMetaData.cs" />
