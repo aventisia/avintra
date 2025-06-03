@@ -1,6 +1,9 @@
 import { DCPFieldSchemaType } from "..";
 
-const modules = import.meta.glob("../constants/config-json/*.json");
+const modules = {
+  ...import.meta.glob("../constants/config-json/*.json"),
+  ...import.meta.glob("../constants/custom-config-json/*.json"),
+};
 
 /**
  * Gets the node config JSON for a given nodeUniqueName/activityName.
@@ -9,7 +12,15 @@ const modules = import.meta.glob("../constants/config-json/*.json");
  */
 export const getNodeConfig = async (nodeUniqueName: string) => {
   // Get the path to the JSON file based on the nodeUniqueName
-  const path = `../constants/config-json/${nodeUniqueName}.json`;
+  let path = `../constants/config-json/${nodeUniqueName}.json`;
+
+  if (
+    nodeUniqueName === "ConditionalActivity" ||
+    nodeUniqueName === "ConditionalBranchActivity" ||
+    nodeUniqueName === "LoopActivity"
+  ) {
+    path = `../constants/custom-config-json/${nodeUniqueName}.json`;
+  }
 
   // Set the path to the JSON file
   const loader = modules[path];
