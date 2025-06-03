@@ -11,12 +11,12 @@ import useWebSocket from "../hooks/useWebSocket";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
-  const { currentFlow, executionState, setExecutionGroup, setExecutionState } =
+  const { currentFlow, executionState, setConditionalExecutionGroup, setExecutionState } =
     useCurrentFlowStore(
       useShallow((state) => ({
         currentFlow: state.currentFlow,
         executionState: state.executionState,
-        setExecutionGroup: state.setExecutionGroup,
+        setConditionalExecutionGroup: state.setConditionalExecutionGroup,
         setExecutionState: state.setExecutionState,
       })),
     );
@@ -99,7 +99,7 @@ const ExecuteFlow = () => {
               size="icon8"
               className="hover:bg-white/10"
               onClick={() => {
-                setExecutionGroup([]);
+                setConditionalExecutionGroup([]);
                 sendCommand("abort");
               }}
             >

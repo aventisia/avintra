@@ -8,7 +8,7 @@ interface ICurrentFlowDetails {
   // TODO: version
 }
 
-interface ExecutionGroup {
+interface ConditionalExecutionGroup {
   id: string;
   conditionalMode: "SwitchCase" | "NestedIfElse";
   branches: string[];
@@ -28,7 +28,7 @@ type State = {
   /** Indicates flow execution state */
   executionState: ExecutionStateType;
 
-  executionGroup: ExecutionGroup[];
+  conditionalExecutionGroup: ConditionalExecutionGroup[];
 
   projectInfo: IProjectInfoDTO;
 };
@@ -46,8 +46,8 @@ type Actions = {
   /** Sets the executing state of the flow */
   setExecutionState: (executionState: ExecutionStateType) => void;
 
-  /** Sets the execution group */
-  setExecutionGroup: (executionGroup: ExecutionGroup[]) => void;
+  /** Sets the conditional execution group */
+  setConditionalExecutionGroup: (conditionalExecutionGroup: ConditionalExecutionGroup[]) => void;
 
   /** Set Project info of the flow */
   setProjectInfo: (projectInfo: IProjectInfoDTO) => void;
@@ -58,7 +58,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   isFlowLoading: false,
   isFlowSaving: false,
   executionState: "stopped",
-  executionGroup: [],
+  conditionalExecutionGroup: [],
   projectInfo: {
     versionId: "",
     versionNumber: null,
@@ -74,7 +74,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
 
   setExecutionState: (executionState) => set({ executionState }),
 
-  setExecutionGroup: (executionGroup) => set({ executionGroup }),
+  setConditionalExecutionGroup: (conditionalExecutionGroup) => set({ conditionalExecutionGroup }),
 
   setProjectInfo: (projectInfo) => set({ projectInfo: projectInfo }),
 }));

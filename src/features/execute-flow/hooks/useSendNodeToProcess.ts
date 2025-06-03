@@ -17,10 +17,10 @@ export function useSendNodeToProcess(
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
 ) {
   // Get state and action from current flow store
-  const { executionGroup, setExecutionGroup } = useCurrentFlowStore(
+  const { conditionalExecutionGroup, setConditionalExecutionGroup } = useCurrentFlowStore(
     useShallow((state) => ({
-      executionGroup: state.executionGroup,
-      setExecutionGroup: state.setExecutionGroup,
+      conditionalExecutionGroup: state.conditionalExecutionGroup,
+      setConditionalExecutionGroup: state.setConditionalExecutionGroup,
     })),
   );
 
@@ -51,7 +51,7 @@ export function useSendNodeToProcess(
     // Send abort command to stop the execution
     sendCommand("abort");
 
-    setExecutionGroup([]); // Clear the execution group
+    setConditionalExecutionGroup([]); // Clear the execution group
 
     // Show a message to the user
     if (isSuccess) {
@@ -62,7 +62,7 @@ export function useSendNodeToProcess(
       );
     }
   };
-
+  // Function to process conditional node
   const processConditionalNode = (
     node: Node<ConditionalNodeDataType>,
     isBranchProcessed: boolean = false,
@@ -73,7 +73,7 @@ export function useSendNodeToProcess(
     let branchId: string;
 
     // Get execution group
-    const currentExecutionGroup = executionGroup.find(
+    const currentExecutionGroup = conditionalExecutionGroup.find(
       (item) => item.id === node.id,
     ) as ConditionalNodeData;
 
@@ -89,10 +89,10 @@ export function useSendNodeToProcess(
       conditionalNodeData.branches = conditionalNodeData.branches.slice(1);
 
       // Add conditionalNodeData to execution group
-      const newExecutionGroup = [...executionGroup, conditionalNodeData];
+      const newExecutionGroup = [...conditionalExecutionGroup, conditionalNodeData];
 
       // Set execution group with conditional node data
-      setExecutionGroup(newExecutionGroup);
+      setConditionalExecutionGroup(newExecutionGroup);
     } else {
       // If branch is processed and condtionalMode is SwitchCase, then exit the conditional group processing
       if (
@@ -104,7 +104,7 @@ export function useSendNodeToProcess(
         sendNodeToProcess(currentExecutionGroup.mergeBranchesNodeId);
 
         // If processing left, remove the conditional node data from execution group
-        setExecutionGroup(executionGroup.filter((item) => item.id !== node.id));
+        setConditionalExecutionGroup(conditionalExecutionGroup.filter((item) => item.id !== node.id));
         return;
       }
 
@@ -118,8 +118,8 @@ export function useSendNodeToProcess(
       };
 
       // Update execution group with new branches
-      setExecutionGroup(
-        executionGroup.map((item) =>
+      setConditionalExecutionGroup(
+        conditionalExecutionGroup.map((item) =>
           item.id === node.id ? conditionalNodeData : item,
         ),
       );
@@ -204,10 +204,8 @@ export function useSendNodeToProcess(
         }
         return;
       }
-      case "whileLoopNode": // While loop. Check condition
-        sendCommand("check-condition", nodeToProcess.id);
-        return;
       case "forLoopNode": // loop. Check condition
+        // TODO: We need to change the name to LoopNode only.
         sendCommand("resume");
         return;
       case "flowEndNode": // Execution is complete
