@@ -12,6 +12,8 @@ public class ClassificationController : BaseApiController
         _classificationService = ClassificationService;
     }
 
+    // -------------------- Setup & Test Endpoints --------------------
+
     // Updates an existing extraction setup
     [HttpPut("setup")]
     public async Task<ActionResult<ServiceResponse<ClassificationDto>>> UpdateClassificationSetup([FromBody] ClassificationDto classificationDto)
@@ -40,6 +42,8 @@ public class ClassificationController : BaseApiController
         return ResultHelper(await _classificationService.GetExtractedDataByMLModelIdAsync(mlModelId));
     }
 
+    // -------------------- Run & Review Data Endpoints --------------------
+
     // Retrieves a collection of extracted review data records associated with a specific machine learning model.
     [HttpGet("review-data/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ClassificationReviewDataDto>>>> GetExtractedReviewDataByMLModelId(Guid mlModelId)
@@ -54,10 +58,33 @@ public class ClassificationController : BaseApiController
         return ResultHelper(await _classificationService.UpdateExtractedReviewDataAsync(classificationExtractedDataDto));
     }
 
-     // Adds review data associated with a specific machine learning model.
+    // Adds review data associated with a specific machine learning model.
     [HttpPost("review-data")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ClassificationReviewDataDto>>>> AddReviewDataByMLModelId(CreateModelReviewRequestDto createModelReviewRequestDto)
     {
         return ResultHelper(await _classificationService.AddReviewDataAsync(createModelReviewRequestDto));
+    }
+
+    // -------------------- Fine-Tining Data Endpoints --------------------
+
+    // Retrieves a collection of fine-tuning data records associated with the specified machine learning model ID.
+    [HttpGet("fine-tuning/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ClassificationFineTuningDataDto>>>> GetFineTunningDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _classificationService.GetFineTunningDataByMLModelIdAsync(mlModelId));
+    }
+
+    // Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
+    [HttpPost("schedule-fine-tuning")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ClassificationFineTuningDataDto>>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto)
+    {
+        return ResultHelper(await _classificationService.ScheduleFineTuningAsync(addFineTuningRequestDto));
+    }
+
+    // Retrieves the fine-tuning history records associated with a specific ML model.
+    [HttpGet("fine-tuning/histories/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FineTuningHistoryDto>>>> GetFineTuningDataHistories(Guid mlModelId)
+    {
+        return ResultHelper(await _classificationService.GetFineTuningDataHistoriesAsync(mlModelId));
     }
 }
