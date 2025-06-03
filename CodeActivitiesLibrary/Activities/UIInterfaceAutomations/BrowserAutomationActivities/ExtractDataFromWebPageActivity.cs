@@ -1,7 +1,16 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using Microsoft.Office.Interop.Excel;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using DataTable = System.Data.DataTable;
+using Excel = Microsoft.Office.Interop.Excel;
 
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
@@ -10,138 +19,214 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [Description("Extracts data from a specified UI element on a web page using configurable parameters.")]
     public class ExtractDataFromWebPageActivity : Extensions.BaseCodeActivity
     {
-        #region Status Output
-
-        
-        
-
-        #endregion
-
-        protected override void Execute(CodeActivityContext context)
-        {
-            var statusMessage = "";
-
-            try
-            {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var extractionMode = ExtractionMode.Get(context);
-                var storeDataMode = StoreDataMode.Get(context);
-
-                // Simulate execution logic here
-                statusMessage = $"Extracting data from web page using '{extractionMode}' mode.";
-
-                if (storeDataMode == StoreDataModeEnum.ExcelSpreadsheet)
-                    OExcelInstanceOutput.Set(context, "GeneratedExcelInstance");
-                else
-                    ODataFromWebPageOutput.Set(context, new object());
-
-                // Optional: Add real implementation here to interact with browser automation
-            }
-            catch (Exception ex)
-            {
-                statusMessage = $"Error extracting data: {ex.Message}";
-            }
-
-            StatusMessage.Set(context, statusMessage);
-        }
-
-        #region Inputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
+        [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [Browsable(false)]
-        [Description("Select the UI element on the web page to capture.")]
+        [Category("Input")]
+        [DisplayName("UI Element")]
+        [Description("Select the UI element on the web page to extract data from.")]
         public InArgument<string> UiElement { get; set; }
 
         [Category("Input")]
-        [Description(
-            "The parameters to use when extracting data. Depending on the extraction mode, this parameter accepts different data.")]
-        public InArgument<string> ExtractionParameter { get; set; }
+        [DisplayName("Find Type")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        public InArgument<string> FindType { get; set; }
 
         [Category("Input")]
-        [Description("The maximum number of web pages to process.")]
-        public InArgument<int> MaxWebPagesToProcess { get; set; }
-
-        [Category("Input")]
-        [Description("Send physical click for next page navigation.")]
-        public InArgument<bool> SendPhysicalClickForNextPage { get; set; }
-
-        [Category("Input")]
-        [Description("CSS selector used to identify the pagination element.")]
-        public InArgument<string> PageCssSelector { get; set; }
-
-        [Category("Input")]
-        [Description("Specify what to extract from the web page.")]
+        [DisplayName("Extraction Mode")]
+        [Description("Specifies what type of data to extract (e.g., single value, list, table).")]
+        [DefaultValue(ExtractionModeEnum.SingleValue)]
         public InArgument<ExtractionModeEnum> ExtractionMode { get; set; }
 
         [Category("Input")]
-        [Description("Specify whether to use paging during extraction.")]
+        [DisplayName("Use Paging")]
+        [Description("If true, processes multiple pages by navigating through pagination.")]
         public InArgument<bool> UsePaging { get; set; }
 
         [Category("Input")]
-        [Description("Specify whether to extract all available web pages.")]
+        [DisplayName("Get All Web Pages")]
+        [Description("If true, extracts data from all available pages. Otherwise, only the first page is used.")]
         public InArgument<bool> GetAllWebPages { get; set; }
 
         [Category("Input")]
+        [DisplayName("Max Web Pages To Process")]
+        [Description("The maximum number of web pages to process when using 'Use Paging'.")]
+        [DefaultValue(10)]
+        public InArgument<int> MaxWebPagesToProcess { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Page CSS Selector")]
+        [Description("CSS selector used to locate the next page navigation element.")]
+        public InArgument<string> PageCssSelector { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Send Physical Click for Next Page")]
+        [Description("If true, simulates physical mouse click to navigate to the next page.")]
+        public InArgument<bool> SendPhysicalClickForNextPage { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Process Data Upon Extraction")]
         [Description(
-            "Specify whether to process extracted data to match visual display (e.g., handling hidden elements). Not recommended for large datasets.")]
+            "If true, processes the data to match visual display (e.g., handles hidden elements). Not recommended for large datasets.")]
         public InArgument<bool> ProcessDataUponExtraction { get; set; }
 
         [Category("Input")]
+        [DisplayName("Timeout Seconds")]
+        [Description("Maximum time in seconds to wait for an element before failing.")]
         [DefaultValue(60)]
-        [Description("Set the time in seconds to wait for the extraction before it fails.")]
-        public InArgument<int> TimeOut { get; set; }
+        public InArgument<int> Timeout { get; set; }
 
-        [RequiredArgument]
-        [Category("Input")]
-        [Description("Specify whether to store the extracted data in a variable or an Excel spreadsheet.")]
-        public InArgument<StoreDataModeEnum> StoreDataMode { get; set; }
-
-        #endregion
-
-        #region Outputs
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [Description("The Excel instance with the extracted data. Use this instance to manipulate the spreadsheet.")]
-        public OutArgument<string> OExcelInstanceOutput { get; set; }
+        [DisplayName("Excel Instance Output")]
+        [Description("Returns the Excel instance if storing data in Excel.")]
+        public OutArgument<string> ExcelInstanceOutput { get; set; }
 
         [Category("Output")]
-        [Description("The extracted data in the form of a single value, list, data row, or data table.")]
-        public OutArgument<object> ODataFromWebPageOutput { get; set; }
+        [DisplayName("Data From Web Page Output")]
+        [Description("Returns the extracted data as a single value, list, data row, or data table.")]
+        public OutArgument<object> DataFromWebPageOutput { get; set; }
 
-        #endregion
+        // ----------------------
+        // Execution Logic
+        // ----------------------
+        protected override void Execute(CodeActivityContext context)
+        {
+            var status = "Operation completed successfully.";
+            object outputData = null;
+
+            try
+            {
+                var driver = WebBrowserInstance.Get(context);
+                var uiElement = UiElement.Get(context);
+                var findType = FindType.Get(context);
+                var extractionMode = ExtractionMode.Get(context);
+                var usePaging = UsePaging.Get(context);
+                var getAllPages = GetAllWebPages.Get(context);
+                var maxPages = MaxWebPagesToProcess.Get(context);
+                var pageCssSelector = PageCssSelector.Get(context);
+                var sendPhysicalClick = SendPhysicalClickForNextPage.Get(context);
+                var processData = ProcessDataUponExtraction.Get(context);
+                var timeout = Timeout.Get(context);
+
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
+
+                if (string.IsNullOrWhiteSpace(uiElement))
+                    throw new ArgumentException("UI Element must be specified.");
+
+                if (string.IsNullOrWhiteSpace(findType))
+                    throw new ArgumentException("Find type must be specified.");
+
+                // Locate the target element
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
+                if (by == null)
+                    throw new ArgumentException("Invalid find type provided.");
+
+                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
+                var element = wait.Until(drv => drv.FindElement(by));
+
+                switch (extractionMode)
+                {
+                    case ExtractionModeEnum.SingleValue:
+                        outputData = element.Text.Trim();
+                        status = $"Extracted single value: '{outputData}'";
+                        break;
+
+                    case ExtractionModeEnum.List:
+                        var elements = driver.FindElements(by);
+                        var dataList = elements.Select(el => el.Text).ToList();
+
+                        outputData = dataList;
+                        status = $"Extracted list with {dataList.Count} items.";
+                        break;
+
+                    case ExtractionModeEnum.Table:
+                        var dataTable = ExtractTable(element);
+                        outputData = dataTable;
+                        status = $"Extracted table with {dataTable.Rows.Count} rows.";
+                        break;
+
+                    case ExtractionModeEnum.EntireHtmlTable:
+                        outputData = element.GetAttribute("outerHTML");
+                        status = "Extracted entire HTML table structure.";
+                        break;
+
+                    case ExtractionModeEnum.HandpickedValues:
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(extractionMode), "Unsupported extraction mode.");
+                }
+            }
+            catch (Exception ex)
+            {
+                status = $"Error extracting data: {ex.Message}";
+                outputData = null;
+                ExcelInstanceOutput.Set(context, false);
+            }
+
+            StatusMessage.Set(context, status);
+            DataFromWebPageOutput.Set(context, outputData);
+        }
+
+        private static DataTable ExtractTable(IWebElement tableElement)
+        {
+            var table = new DataTable();
+            var rows = tableElement.FindElements(By.TagName("tr"));
+
+            if (rows.Count == 0) return table;
+
+            // Process headers
+            var headers = rows[0].FindElements(By.TagName("th"));
+            foreach (var header in headers)
+            {
+                table.Columns.Add(header.Text.Trim());
+            }
+
+            // Process rows
+            for (var i = 1; i < rows.Count; i++)
+            {
+                var cells = rows[i].FindElements(By.TagName("td"));
+                if (cells.Count == 0) continue;
+
+                var row = table.NewRow();
+                for (var j = 0; j < Math.Min(cells.Count, table.Columns.Count); j++)
+                {
+                    row[j] = cells[j].Text.Trim();
+                }
+
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
     }
 
     public enum ExtractionModeEnum
     {
-        [Display(Name = "Undefined", Description = "No specific extraction mode selected.")]
-        Undefined = 0,
+        [Display(Name = "Single Value", Description = "Extracts a single text value from the web page.")]
+        SingleValue,
 
-        [Display(Name = "Single Value", Description = "Extracts a single value from the webpage.")]
-        SingleValue = 1,
+        [Display(Name = "Handpicked Values", Description = "Extracts manually selected values from multiple elements.")]
+        HandpickedValues,
 
-        [Display(Name = "Handpicked Values", Description = "Extracts manually selected values.")]
-        HandpickedValues = 2,
+        [Display(Name = "List", Description = "Extracts a list of items from repeated elements.")]
+        List,
 
-        [Display(Name = "List", Description = "Extracts a list of items.")]
-        List = 3,
+        [Display(Name = "Table", Description = "Extracts tabular data from a web table.")]
+        Table,
 
-        [Display(Name = "Table", Description = "Extracts tabular data.")]
-        Table = 4,
-
-        [Display(Name = "Entire HTML Table", Description = "Extracts the entire HTML table structure.")]
-        EntireHtmlTable = 5
-    }
-
-    public enum StoreDataModeEnum
-    {
-        [Display(Name = "Variable", Description = "Stores extracted data in a variable.")]
-        Variable = 0,
-
-        [Display(Name = "Excel Spreadsheet", Description = "Stores extracted data in an Excel spreadsheet.")]
-        ExcelSpreadsheet = 1
+        [Display(Name = "Entire HTML Table", Description = "Extracts the complete HTML table structure.")]
+        EntireHtmlTable
     }
 }

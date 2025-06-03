@@ -2,68 +2,142 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-
+using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Go To Web Page")]
-    [Description(
-        "Navigates a web browser instance to a specified URL, or performs navigation actions such as Back, Forward, or Reload.")]
+    [Description("Navigates a web browser instance to a specified URL, back, forward, or reload.")]
     public class GoToWebPageActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        
-        
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        #endregion
+        [Category("Input")]
+        [DisplayName("Navigate Action")]
+        [Description("Specifies the type of navigation action to perform.")]
+        [DefaultValue(NavigateActionEnum.ToUrl)]
+        public InArgument<NavigateActionEnum> NavigateAction { get; set; }
 
+        [Category("Input")]
+        [DisplayName("URL")]
+        [Description("The URL to navigate to when 'Navigate Action' is 'ToUrl'.")]
+        [RenderIfCondition(nameof(NavigateAction), "ToUrl")]
+        public InArgument<string> Url { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Wait for Page to Load")]
+        [Description("If true, waits for the page to fully load before continuing.")]
+        public InArgument<bool> WaitForPageToLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Timeout for Page Load")]
+        [Description("Maximum time in seconds to wait for the page to load.")]
+        [DefaultValue(60)]
+        public InArgument<int> TimeoutForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Handle Dialog")]
+        [Description("Specifies what to do if a dialog appears after navigating.")]
+        [DefaultValue(DialogActionEnum.DoNothing)]
+        public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Dialog Button to Press")]
+        [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
+        [DefaultValue("Ok")]
+        public InArgument<string> DialogButtonToPress { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var navigateAction = Navigate.Get(context);
+                var driver = WebBrowserInstance.Get(context);
+                var navigateAction = NavigateAction.Get(context);
                 var url = Url.Get(context);
                 var waitForPage = WaitForPageToLoad.Get(context);
-                var timeout = TimeoutForWebpageToLoad.Get(context);
-                var dialogAction = IfAPopUpDialogAppears.Get(context);
+                var timeout = TimeSpan.FromSeconds(TimeoutForPageLoad.Get(context));
+                var dialogAction = IfDialogAppears.Get(context);
                 var dialogButton = DialogButtonToPress.Get(context);
 
-                // Validate inputs
-                if (string.IsNullOrWhiteSpace(webBrowserInstanceId))
-                    throw new ArgumentException("Web Browser Instance must be specified.");
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
 
-                if (navigateAction == NavigateActionEnum.ToUrl && string.IsNullOrWhiteSpace(url))
-                    throw new ArgumentException("URL must be specified when navigating to a specific location.");
-
-                // Simulate navigation
                 switch (navigateAction)
                 {
                     case NavigateActionEnum.ToUrl:
-                        status = $"Navigated browser '{webBrowserInstanceId}' to URL '{url}'.";
+                        if (string.IsNullOrWhiteSpace(url))
+                            throw new ArgumentException("URL must be provided when navigating to a specific location.");
+                        driver.Navigate().GoToUrl(url);
+                        status = $"Navigated to '{url}'.";
                         break;
+
                     case NavigateActionEnum.Back:
-                        status = $"Navigated browser '{webBrowserInstanceId}' back.";
+                        driver.Navigate().Back();
+                        status = "Navigated back in browser history.";
                         break;
+
                     case NavigateActionEnum.Forward:
-                        status = $"Navigated browser '{webBrowserInstanceId}' forward.";
+                        driver.Navigate().Forward();
+                        status = "Navigated forward in browser history.";
                         break;
+
                     case NavigateActionEnum.Reload:
-                        status = $"Reloaded browser '{webBrowserInstanceId}'.";
+                        driver.Navigate().Refresh();
+                        status = "Page reloaded successfully.";
                         break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(navigateAction), "Unsupported navigation action.");
                 }
 
-                if (waitForPage)
+                // Optionally wait for page to load
+                if (waitForPage && navigateAction == NavigateActionEnum.ToUrl)
                 {
-                    status += $" Waited up to {timeout} seconds for the page to load.";
+                    var wait = new WebDriverWait(driver, timeout);
+                    wait.Until(d =>
+                        ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
-                    if (dialogAction == DialogActionEnum.CloseIt)
-                        status += " Closed any pop-up dialog automatically.";
-                    else if (dialogAction == DialogActionEnum.PressAButton)
-                        status += $" Pressed the '{dialogButton}' button on the dialog.";
+                    // Optional: handle alert popup
+                    if (dialogAction != DialogActionEnum.DoNothing)
+                    {
+                        try
+                        {
+                            var alert = driver.SwitchTo().Alert();
+                            if (alert != null)
+                            {
+                                if (dialogAction == DialogActionEnum.CloseIt)
+                                    alert.Accept();
+
+                                else if (dialogAction == DialogActionEnum.PressAButton)
+                                    alert.SendKeys(dialogButton);
+                            }
+                        }
+                        catch (NoAlertPresentException)
+                        {
+                            // No alert found — continue
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -73,65 +147,20 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             StatusMessage.Set(context, status);
         }
-
-        #region Inputs
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Navigate Action")]
-        [Description("Specify where to navigate to.")]
-        [DefaultValue(NavigateActionEnum.ToUrl)]
-        public InArgument<NavigateActionEnum> Navigate { get; set; }
-
-        [Category("Input")]
-        [DisplayName("URL")]
-        [Description("The URL to navigate to.")]
-        public InArgument<string> Url { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Wait for Page to Load")]
-        [Description("Specify whether to wait for the new page to load completely after navigating.")]
-        [DefaultValue(true)]
-        public InArgument<bool> WaitForPageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Timeout for Webpage to Load")]
-        [Description("Set the time in seconds for the page to load before the action throws an error.")]
-        [DefaultValue(60)]
-        public InArgument<int> TimeoutForWebpageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("If a Pop-Up Dialog Appears")]
-        [Description("Specify what to do if a pop-up dialog appears after navigating.")]
-        [DefaultValue(DialogActionEnum.DoNothing)]
-        public InArgument<DialogActionEnum> IfAPopUpDialogAppears { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Dialog Button to Press")]
-        [Description("Enter the dialog button to press if a pop-up dialog appears.")]
-        [DefaultValue("OK")]
-        public InArgument<string> DialogButtonToPress { get; set; }
-
-        #endregion
     }
 
     public enum NavigateActionEnum
     {
-        [Display(Name = "To URL", Description = "Navigate to a specific URL.")]
-        ToUrl = 0,
+        [Display(Name = "To URL", Description = "Navigates to the specified URL.")]
+        ToUrl,
 
-        [Display(Name = "Back", Description = "Navigate back in the browser history.")]
-        Back = 1,
+        [Display(Name = "Back", Description = "Navigates back in the browser history.")]
+        Back,
 
-        [Display(Name = "Forward", Description = "Navigate forward in the browser history.")]
-        Forward = 2,
+        [Display(Name = "Forward", Description = "Navigates forward in the browser history.")]
+        Forward,
 
-        [Display(Name = "Reload Web Page", Description = "Reload the current web page.")]
-        Reload = 3
+        [Display(Name = "Reload Web Page", Description = "Reloads the current web page.")]
+        Reload
     }
 }

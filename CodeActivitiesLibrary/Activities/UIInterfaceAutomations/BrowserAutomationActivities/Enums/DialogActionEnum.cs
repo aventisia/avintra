@@ -5,15 +5,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     public enum DialogActionEnum
     {
         [Display(Name = "Close It", Description = "Automatically close any pop-up dialog that appears.")]
-        CloseIt = 0,
+        CloseIt,
 
         [Display(Name = "Press a Button", Description = "Press a specified button on the dialog.")]
-        PressAButton = 1,
+        PressAButton,
 
         [Display(Name = "Do Nothing", Description = "Ignore any pop-up dialog.")]
-        DoNothing = 2,
+        DoNothing,
 
         [Display(Name = "Close It / Press a Button", Description = "Close or press a button on the dialog.")]
-        CloseOrPress = 3
+        CloseOrPress
     }
 }

@@ -1,47 +1,120 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
-    // Activity to get the value of an element's attribute on a web page
-    [DisplayName("Get Element Attribute Value"),
-     Description("Retrieve the value of an element's attribute on a web page.")]
+    [DisplayName("Get Element Attribute Value")]
+    [Description("Retrieves the value of an element's attribute from a web page.")]
     public class GetElementAttributeValueActivity : Extensions.BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The URL of the web page.")]
-        public InArgument<string> Url { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The selector for the element (e.g., CSS selector).")]
-        public InArgument<string> ElementSelector { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("The existing web browser instance (e.g., IWebDriver) to interact with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The name of the attribute to retrieve.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Find Type")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        public InArgument<string> FindType { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Search Keywords")]
+        [Description("The selector used to locate the element (e.g., 'username', '//input[@id='email']').")]
+        public InArgument<string> SearchKeywords { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Attribute Name")]
+        [Description("The name of the attribute whose value should be retrieved (e.g., 'value', 'href', 'src').")]
         public InArgument<string> AttributeName { get; set; }
 
-        [Category("Output"), Description("Returns the value of the attribute.")]
+        [Category("Advanced")]
+        [DisplayName("Wait For Element")]
+        [Description("If true, waits for the element to appear before retrieving the attribute value.")]
+        public InArgument<bool> WaitForElement { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Timeout Seconds")]
+        [Description("Maximum time in seconds to wait for the element before failing.")]
+        [DefaultValue(60)]
+        public InArgument<int> TimeoutSeconds { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [DisplayName("Attribute Value Output")]
+        [Description("Returns the value of the attribute from the found web element.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
 
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var url = Url.Get(context);
-            var elementSelector = ElementSelector.Get(context);
-            var attributeName = AttributeName.Get(context);
-            var result = "";
-            var status = "";
+            var status = "Operation completed successfully.";
+            string result = null;
 
             try
             {
-                // Simulate getting element attribute value (actual implementation would use a web automation library like Selenium)
-                result = $"Simulated attribute value for '{elementSelector}' with attribute '{attributeName}'";
-                status = "Element attribute value retrieved successfully.";
+                var driver = WebBrowserInstance.Get(context);
+                var findType = FindType.Get(context);
+                var searchKeywords = SearchKeywords.Get(context);
+                var attributeName = AttributeName.Get(context);
+                var waitForElement = WaitForElement.Get(context);
+                var timeoutSeconds = TimeoutSeconds.Get(context);
+
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
+
+                if (string.IsNullOrWhiteSpace(findType))
+                    throw new ArgumentException("Find type must be specified.");
+
+                if (string.IsNullOrWhiteSpace(searchKeywords))
+                    throw new ArgumentException("Search keywords must be specified.");
+
+                if (string.IsNullOrWhiteSpace(attributeName))
+                    throw new ArgumentException("Attribute name must be specified.");
+
+                // Locate the element
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                IWebElement element = null;
+
+                if (waitForElement && timeoutSeconds > 0)
+                {
+                    var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
+                    element = wait.Until(drv => drv.FindElement(by));
+                }
+                else
+                {
+                    element = driver.FindElement(by);
+                }
+
+                if (element == null)
+                    throw new InvalidOperationException($"No element found using '{findType}': '{searchKeywords}'");
+
+                // Retrieve attribute value
+                result = element.GetAttribute(attributeName);
+                status = $"Successfully retrieved attribute '{attributeName}' from element '{searchKeywords}'.";
             }
             catch (Exception ex)
             {
-                result = "";
                 status = $"Error retrieving element attribute value: {ex.Message}";
+                result = null;
             }
 
             Result.Set(context, result);

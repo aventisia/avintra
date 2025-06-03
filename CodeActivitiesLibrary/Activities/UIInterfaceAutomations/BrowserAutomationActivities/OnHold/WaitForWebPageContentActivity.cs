@@ -5,18 +5,10 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
-    [DisplayName("Wait For Web Page Content")]
-    [Description(
-        "Waits for a specific condition to be met on the current web page, such as containing an element or text.")]
+    //[DisplayName("Wait For Web Page Content")]
+    //[Description("Waits for a specific condition to be met on the current web page, such as containing an element or text.")]
     public class WaitForWebPageContentActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
-
-        
-        
-
-        #endregion
-
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";

@@ -1,7 +1,9 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
-
+using System.ComponentModel.DataAnnotations;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -9,64 +11,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [Description("Creates a new tab in the web browser and optionally navigates to a specified URL.")]
     public class CreateNewTabActivity : Extensions.BaseCodeActivity
     {
-        protected override void Execute(CodeActivityContext context)
-        {
-            var status = "Operation completed successfully.";
-
-            try
-            {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var urlToNavigate = UrlToNavigateTo.Get(context);
-                var waitForPage = WaitForPageToLoad.Get(context);
-                var timeout = TimeoutForWebpageToLoad.Get(context);
-                var dialogAction = IfAPopUpDialogAppears.Get(context);
-                var dialogButton = DialogButtonToPress.Get(context);
-
-                // Validate inputs
-                if (string.IsNullOrWhiteSpace(webBrowserInstanceId))
-                    throw new ArgumentException("Web Browser Instance must be specified.");
-
-                // Simulate creating a new tab and navigating
-                var newBrowserInstanceId = $"NewTab_{Guid.NewGuid():N}";
-
-                if (!string.IsNullOrWhiteSpace(urlToNavigate))
-                {
-                    status = $"Created new tab '{newBrowserInstanceId}' and navigated to '{urlToNavigate}'.";
-
-                    if (waitForPage)
-                    {
-                        status += $" Waited up to {timeout} seconds for the page to load.";
-
-                        if (dialogAction == DialogActionEnum.CloseIt)
-                            status += " Closed any pop-up dialog automatically.";
-                        else if (dialogAction == DialogActionEnum.PressAButton)
-                            status += $" Pressed the '{dialogButton}' button on the dialog.";
-                    }
-                }
-                else
-                {
-                    status = $"Created new tab '{newBrowserInstanceId}' without navigation.";
-                }
-
-                // Set outputs conditionally
-                NewBrowserInstance.Set(context, newBrowserInstanceId);
-            }
-            catch (Exception ex)
-            {
-                status = $"Error creating new tab: {ex.Message}";
-                NewBrowserInstance.Set(context, false);
-            }
-
-            StatusMessage.Set(context, status);
-        }
-
-        #region Inputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [Category("Input")]
         [DisplayName("URL to Navigate To")]
@@ -75,39 +28,133 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [Category("Advanced")]
         [DisplayName("Wait for Page to Load")]
-        [Description("Specify whether to wait for the new page to load completely after navigating.")]
+        [Description("If true, waits for the page to fully load before continuing.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageToLoad { get; set; }
 
         [Category("Advanced")]
-        [DisplayName("Timeout for Webpage to Load")]
-        [Description("Set the time in seconds for the page to load before the action throws an error.")]
+        [DisplayName("Timeout for Page Load")]
+        [Description("Maximum time (in seconds) to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForWebpageToLoad { get; set; }
 
         [Category("Advanced")]
-        [DisplayName("If a Pop-Up Dialog Appears")]
-        [Description("Specify what to do if a pop-up dialog appears after navigating.")]
-        [DefaultValue(DialogActionEnum.DoNothing)]
-        public InArgument<DialogActionEnum> IfAPopUpDialogAppears { get; set; }
+        [DisplayName("Handle Dialog")]
+        [Description("Specifies what to do if a dialog appears after navigating.")]
+        [DefaultValue(CreateTabDialogActionEnum.DoNothing)]
+        public InArgument<CreateTabDialogActionEnum> IfAPopUpDialogAppears { get; set; }
 
         [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
-        [Description("Enter the dialog button to press if a pop-up dialog appears.")]
+        [Description("The button to press if a dialog appears (e.g., 'OK', 'Cancel').")]
         [DefaultValue("OK")]
         public InArgument<string> DialogButtonToPress { get; set; }
 
-        #endregion
-
-        #region Outputs
-
-        
-        
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
-        [DisplayName("New Browser Output")]
-        [Description("The new browser instance ID (tab) created.")]
-        public OutArgument<string> NewBrowserInstance { get; set; }
-        #endregion
+        [DisplayName("New Browser Instance")]
+        [Description("Returns the newly created browser tab/window as an IWebDriver instance.")]
+        public OutArgument<IWebDriver> NewBrowserInstance { get; set; }
+
+
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
+        protected override void Execute(CodeActivityContext context)
+        {
+            var status = "Operation completed successfully.";
+            IWebDriver newDriver = null;
+
+            try
+            {
+                var driver = WebBrowserInstance.Get(context);
+                var url = UrlToNavigateTo.Get(context);
+                var waitForPage = WaitForPageToLoad.Get(context);
+                var timeout = TimeoutForWebpageToLoad.Get(context);
+                var dialogAction = IfAPopUpDialogAppears.Get(context);
+                var dialogButton = DialogButtonToPress.Get(context);
+
+                if (driver == null)
+                    throw new ArgumentException("Web Browser Instance cannot be null.");
+
+                // Create a new tab
+                ((IJavaScriptExecutor)driver).ExecuteScript("window.open();");
+
+                // Switch to the new tab
+                var windows = driver.WindowHandles;
+                driver.SwitchTo().Window(windows[windows.Count - 1]);
+
+                newDriver = driver;
+
+                // Optional: Navigate to URL
+                if (!string.IsNullOrWhiteSpace(url))
+                {
+                    newDriver.Navigate().GoToUrl(url);
+
+                    if (waitForPage && timeout > 0)
+                    {
+                        var wait = new WebDriverWait(newDriver, TimeSpan.FromSeconds(timeout));
+                        wait.Until(d =>
+                            ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+
+                        // Handle any dialogs that appear
+                        if (dialogAction != CreateTabDialogActionEnum.DoNothing)
+                        {
+                            try
+                            {
+                                var alert = newDriver.SwitchTo().Alert();
+                                switch (dialogAction)
+                                {
+                                    case CreateTabDialogActionEnum.CloseIt:
+                                        alert.Accept();
+                                        break;
+                                    case CreateTabDialogActionEnum.PressAButton:
+                                        alert.SendKeys(dialogButton);
+                                        break;
+                                    case CreateTabDialogActionEnum.DoNothing:
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
+                                }
+                            }
+                            catch (NoAlertPresentException)
+                            {
+                                // No dialog found — proceed normally
+                            }
+                        }
+                    }
+
+                    status = $"Created new tab and navigated to '{url}'.";
+                }
+                else
+                {
+                    status = "Created new tab without navigation.";
+                }
+            }
+            catch (Exception ex)
+            {
+                status = $"Error creating new tab: {ex.Message}";
+                newDriver = null;
+            }
+
+            NewBrowserInstance.Set(context, newDriver);
+            StatusMessage.Set(context, status);
+        }
+    }
+
+    public enum CreateTabDialogActionEnum
+    {
+        [Display(Name = "Do Nothing", Description = "Ignore any pop-up dialog.")]
+        DoNothing,
+
+        [Display(Name = "Close It", Description = "Closes any pop-up dialog automatically.")]
+        CloseIt,
+
+        [Display(Name = "Press a Button", Description = "Presses a specified button on the dialog.")]
+        PressAButton
     }
 }

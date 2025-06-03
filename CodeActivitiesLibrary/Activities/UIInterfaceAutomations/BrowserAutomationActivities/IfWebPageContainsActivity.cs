@@ -2,7 +2,9 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -11,6 +13,73 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.")]
     public class IfWebPageContainsActivity : Extensions.BaseCodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Check Condition")]
+        [Description("Specifies what condition to check (e.g., contains element, contains text).")]
+        [DefaultValue(CheckConditionEnum.ContainsElement)]
+        public InArgument<CheckConditionEnum> CheckCondition { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Find Type")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
+        public InArgument<string> FindType { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Search Keywords")]
+        [Description("The value used to locate the element or text content.")]
+        [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
+        public InArgument<string> SearchKeywords { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Check UI Element State")]
+        [Description("If true, checks whether the found element is enabled or disabled.")]
+        [DefaultValue(false)]
+        public InArgument<bool> CheckUiElementState { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("State")]
+        [Description("Specifies the expected state of the element (enabled or disabled).")]
+        [DefaultValue(ElementStateTypeEnum.Enabled)]
+        public InArgument<ElementStateTypeEnum> State { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Text To Search")]
+        [Description("The text to search for in the web page body or title.")]
+        [RenderIfCondition(nameof(CheckCondition), "ContainsText")]
+        public InArgument<string> TextToSearch { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Search Location")]
+        [Description("Specifies where to search for the text (e.g., Body, Title).")]
+        [DefaultValue(SearchLocationEnum.Body)]
+        public InArgument<SearchLocationEnum> SearchLocation { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [DisplayName("Result")]
+        [Description("Returns true if the condition is met, otherwise false.")]
+        public OutArgument<bool> Result { get; set; }
+
+
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
@@ -18,54 +87,107 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var checkCondition = CheckIfWebPage.Get(context);
+                var driver = WebBrowserInstance.Get(context);
+                var checkCondition = CheckCondition.Get(context);
                 var checkState = CheckUiElementState.Get(context);
-                var uiElement = UiElement.Get(context);
-                var text = Text.Get(context);
                 var expectedState = State.Get(context);
+                var findType = FindType.Get(context);
+                var searchKeywords = SearchKeywords.Get(context);
+                var textToSearch = TextToSearch.Get(context);
+                var searchLocation = SearchLocation.Get(context);
 
-                // Validate inputs
-                if (string.IsNullOrWhiteSpace(webBrowserInstanceId))
-                    throw new ArgumentException("Web Browser Instance must be specified.");
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
 
-                // Simulate checking conditions
                 switch (checkCondition)
                 {
                     case CheckConditionEnum.ContainsElement:
-                        if (string.IsNullOrWhiteSpace(uiElement))
-                            throw new ArgumentException("UI Element must be selected when checking for an element.");
-                        result = true; // Placeholder logic - simulate found
-                        if (checkState)
+                    case CheckConditionEnum.DoesNotContainElement:
+                        if (string.IsNullOrWhiteSpace(findType) || string.IsNullOrWhiteSpace(searchKeywords))
+                            throw new ArgumentException(
+                                "Find type and search keywords must be specified when checking for an element.");
+
+                        var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                        if (by == null)
+                            throw new ArgumentException("Invalid find type provided.");
+
+                        // Try to find the element
+                        var element = BrowserAutomationHelper.FindElement(driver, findType, searchKeywords);
+                        var elementExists = element != null;
+
+                        switch (checkCondition)
                         {
-                            var isElementEnabled = expectedState == ElementStateEnum.Enabled;
-                            status += $" UI element '{uiElement}' is {(isElementEnabled ? "enabled" : "disabled")}.";
-                            result &= isElementEnabled;
+                            // Check condition
+                            case CheckConditionEnum.ContainsElement when elementExists:
+                                result = true;
+                                status = $"Found element '{searchKeywords}' using '{findType}'.";
+                                break;
+                            case CheckConditionEnum.DoesNotContainElement when !elementExists:
+                                result = true;
+                                status = $"Did not find element '{searchKeywords}' using '{findType}'.";
+                                break;
+                            case CheckConditionEnum.ContainsText:
+                            case CheckConditionEnum.DoesNotContainText:
+                            default:
+                                {
+                                    result = false;
+                                    status = checkCondition == CheckConditionEnum.ContainsElement
+                                        ? $"No element found using '{findType}': '{searchKeywords}'."
+                                        : $"Element was found but should not exist.";
+                                    break;
+                                }
                         }
 
-                        status = $"Web page contains UI element '{uiElement}'.";
-                        break;
+                        // Optional: Check element state (enabled/disabled)
+                        if (checkState && element != null)
+                        {
+                            var isEnabled = element.Enabled;
+                            result &= (expectedState == ElementStateTypeEnum.Enabled && isEnabled) ||
+                                      (expectedState == ElementStateTypeEnum.Disabled && !isEnabled);
 
-                    case CheckConditionEnum.DoesNotContainElement:
-                        if (string.IsNullOrWhiteSpace(uiElement))
-                            throw new ArgumentException(
-                                "UI Element must be selected when checking for absence of element.");
-                        result = false; // Placeholder logic - simulate not found
-                        status = $"Web page does not contain UI element '{uiElement}'.";
+                            status += $" Element {(isEnabled ? "is enabled." : "is disabled.")}";
+                        }
+
                         break;
 
                     case CheckConditionEnum.ContainsText:
-                        if (string.IsNullOrWhiteSpace(text))
-                            throw new ArgumentException("Text must be provided when checking for presence of text.");
-                        result = true; // Simulated match
-                        status = $"Web page contains text '{text}'.";
-                        break;
-
                     case CheckConditionEnum.DoesNotContainText:
-                        if (string.IsNullOrWhiteSpace(text))
-                            throw new ArgumentException("Text must be provided when checking for absence of text.");
-                        result = false; // Simulated no match
-                        status = $"Web page does not contain text '{text}'.";
+                        if (string.IsNullOrWhiteSpace(textToSearch))
+                            throw new ArgumentException("Text to search must be specified when checking for text.");
+
+                        var textSource = "";
+                        switch (searchLocation)
+                        {
+                            case SearchLocationEnum.Body:
+                                textSource = driver.FindElement(By.TagName("body"))?.Text ?? "";
+                                break;
+                            case SearchLocationEnum.Title:
+                                textSource = driver.Title;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(searchLocation));
+                        }
+
+                        var containsText = textSource.IndexOf(textToSearch, StringComparison.OrdinalIgnoreCase) >= 0;
+
+                        switch (checkCondition)
+                        {
+                            case CheckConditionEnum.ContainsText when containsText:
+                                result = true;
+                                status = $"Web page contains the text '{textToSearch}'.";
+                                break;
+                            case CheckConditionEnum.DoesNotContainText when !containsText:
+                                result = true;
+                                status = $"Web page does not contain the text '{textToSearch}'.";
+                                break;
+                            default:
+                                result = false;
+                                status = checkCondition == CheckConditionEnum.ContainsText
+                                    ? $"Web page does not contain the text '{textToSearch}'."
+                                    : $"Web page contains the text '{textToSearch}', which was unexpected.";
+                                break;
+                        }
+
                         break;
 
                     default:
@@ -74,80 +196,47 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             }
             catch (Exception ex)
             {
-                status = $"Error during check: {ex.Message}";
+                status = $"Error during condition check: {ex.Message}";
                 result = false;
             }
 
             Result.Set(context, result);
             StatusMessage.Set(context, status);
         }
-
-        #region Inputs
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Check Condition")]
-        [Description("Select what condition to check in the web page.")]
-        [DefaultValue(CheckConditionEnum.ContainsElement)]
-        public InArgument<CheckConditionEnum> CheckIfWebPage { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Check UI Element State")]
-        [Description("Check whether a specific UI element is enabled or disabled.")]
-        [DefaultValue(false)]
-        public InArgument<bool> CheckUiElementState { get; set; }
-
-        [Browsable(false)]
-        [Category("Input")]
-        [DisplayName("UI Element")]
-        [Description("The UI element to look for in the web page.")]
-        public InArgument<string> UiElement { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Text")]
-        [Description("The text to look for in the web page content.")]
-        public InArgument<string> Text { get; set; }
-
-        [Category("Input")]
-        [DisplayName("State")]
-        [Description("The expected state of the UI element (enabled or disabled).")]
-        [DefaultValue(ElementStateEnum.Enabled)]
-        public InArgument<ElementStateEnum> State { get; set; }
-
-        #endregion
-
-        #region Outputs
-
-        [Category("Output")]
-        [DisplayName("Result")]
-        [Description("True if the condition is met; otherwise, false.")]
-        public OutArgument<bool> Result { get; set; }
-
-        
-        
-
-        #endregion
     }
 
     public enum CheckConditionEnum
     {
-        [Display(Name = "Contains Element", Description = "Check if the web page contains a specific UI element.")]
-        ContainsElement = 0,
+        [Display(Name = "Contains Element", Description = "Checks if the web page contains a specific UI element.")]
+        ContainsElement,
 
         [Display(Name = "Doesn't Contain Element",
-            Description = "Check if the web page does not contain a specific UI element.")]
-        DoesNotContainElement = 1,
+            Description = "Checks if the web page does not contain a specific UI element.")]
+        DoesNotContainElement,
 
-        [Display(Name = "Contains Text", Description = "Check if the web page contains a specific text.")]
-        ContainsText = 2,
+        [Display(Name = "Contains Text", Description = "Checks if the web page contains a specific text.")]
+        ContainsText,
 
         [Display(Name = "Doesn't Contain Text",
-            Description = "Check if the web page does not contain a specific text.")]
-        DoesNotContainText = 3
+            Description = "Checks if the web page does not contain a specific text.")]
+        DoesNotContainText
+    }
+
+    public enum ElementStateTypeEnum
+    {
+        [Display(Name = "Enabled", Description = "Specifies that the element should be enabled.")]
+        Enabled,
+
+        [Display(Name = "Disabled", Description = "Specifies that the element should be disabled.")]
+        Disabled
+    }
+
+    public enum SearchLocationEnum
+    {
+        [Display(Name = "Body", Description = "Searches within the visible text of the page.")]
+        Body,
+
+        [Display(Name = "Title", Description = "Searches within the title of the web page.")]
+        Title
     }
 }

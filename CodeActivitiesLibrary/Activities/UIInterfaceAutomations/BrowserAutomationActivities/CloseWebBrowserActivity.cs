@@ -1,43 +1,62 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Close Web Browser")]
-    [Description("Closes a web browser instance that was previously opened.")]
+    [Description("Closes a web browser instance or all instances if needed.")]
     public class CloseWebBrowserActivity : Extensions.BaseCodeActivity
     {
-        #region Inputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
         [Category("Input")]
         [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to close.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
+        [Description("The WebDriver instance to close.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        #endregion
+        [Category("Input")]
+        [DisplayName("Close All Instances")]
+        [Description("If true, closes all open browser windows and disposes of the driver.")]
+        public InArgument<bool> CloseAllInstances { get; set; }
 
-        #region Outputs
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
-        
-        
 
-        #endregion
 
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
+                var driver = WebBrowserInstance.Get(context);
+                var closeAll = CloseAllInstances.Get(context);
 
-                if (string.IsNullOrWhiteSpace(webBrowserInstanceId))
-                    throw new ArgumentException("Web Browser Instance must be specified.");
+                if (driver == null)
+                    throw new ArgumentException("Web Browser Instance cannot be null.");
 
-                // Simulate closing the browser
-                status = $"Web browser instance '{webBrowserInstanceId}' has been closed.";
+                if (closeAll)
+                {
+                    // Close all windows and dispose of the driver
+                    driver.Quit();
+                    status = "Successfully closed all browser windows and disposed of the WebDriver.";
+                }
+                else
+                {
+                    // Close only current window
+                    driver.Close();
+                    status = "Successfully closed the current browser window.";
+                }
             }
             catch (Exception ex)
             {

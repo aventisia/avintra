@@ -2,59 +2,247 @@
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Click Link on Web Page")]
-    [Description(
-        "Simulates clicking a UI element (e.g., a link or button) on a web page. Supports various click types, physical mouse interaction, and dialog handling.")]
+    [Description("Simulates clicking a UI element (e.g., link, button) on a web page.")]
     public class ClickLinkOnWebPageActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        
-        
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        #endregion
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("UI Element")]
+        [Description("The selector used to locate the link or button on the web page.")]
+        public InArgument<string> UiElement { get; set; }
 
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Find Type")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        public InArgument<string> FindType { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Click Type")]
+        [Description("Specifies the type of click to perform.")]
+        [DefaultValue(ClickLinClickTypeEnum.LeftClick)]
+        public InArgument<ClickLinClickTypeEnum> ClickType { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Send Physical Click")]
+        [Description("If true, simulates physical mouse movement before clicking.")]
+        [DefaultValue(true)]
+        public InArgument<bool> SendPhysicalClick { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Wait for Page Load")]
+        [Description("If true, waits for the next page to load after the click.")]
+        [DefaultValue(true)]
+        public InArgument<bool> WaitForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Timeout for Page Load")]
+        [Description("The maximum time (in seconds) to wait for the page to load.")]
+        [DefaultValue(60)]
+        public InArgument<int> TimeoutForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Handle Dialog")]
+        [Description("Specifies what to do if a dialog appears after the click.")]
+        [DefaultValue(DialogActionEnum.DoNothing)]
+        public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Dialog Button to Press")]
+        [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
+        [DefaultValue("Ok")]
+        public InArgument<string> DialogButtonToPress { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Mouse Position Relative to Element")]
+        [Description("Specifies where to position the mouse relative to the element before clicking.")]
+        [DefaultValue(ClickLinMousePositionEnum.MiddleCenter)]
+        public InArgument<ClickLinMousePositionEnum> MousePosition { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Offset X")]
+        [Description("Move the mouse this many pixels horizontally from the selected position.")]
+        [DefaultValue(0)]
+        public InArgument<int> OffsetX { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Offset Y")]
+        [Description("Move the mouse this many pixels vertically from the selected position.")]
+        [DefaultValue(0)]
+        public InArgument<int> OffsetY { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status;
+            var status = "Operation completed successfully.";
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
+                var driver = WebBrowserInstance.Get(context);
                 var uiElement = UiElement.Get(context);
+                var findType = FindType.Get(context);
                 var clickType = ClickType.Get(context);
                 var sendPhysicalClick = SendPhysicalClick.Get(context);
-                var waitForPage = WaitForPageToLoad.Get(context);
-                var timeout = TimeoutForWebpageToLoad.Get(context);
-                var dialogAction = IfAPopUpDialogAppears.Get(context);
+                var waitForPageLoad = WaitForPageLoad.Get(context);
+                var timeout = TimeoutForPageLoad.Get(context);
+                var dialogAction = IfDialogAppears.Get(context);
                 var dialogButton = DialogButtonToPress.Get(context);
-                var mousePos = MousePosition.Get(context);
+                var mousePosition = MousePosition.Get(context);
                 var offsetX = OffsetX.Get(context);
                 var offsetY = OffsetY.Get(context);
 
-                // Validate required fields conditionally
-                if (dialogAction == DialogActionEnum.PressAButton && string.IsNullOrEmpty(dialogButton))
-                    throw new ArgumentException(
-                        "Dialog Button to Press must be specified when 'Press a Button' is selected.");
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
 
-                // Simulate clicking the link
-                status = $"Clicked '{uiElement}' using '{clickType}'.";
+                if (string.IsNullOrWhiteSpace(uiElement))
+                    throw new ArgumentException("UI Element must be specified.");
 
-                if (sendPhysicalClick) status += $" Mouse moved to {mousePos} with offset ({offsetX}, {offsetY}).";
+                if (string.IsNullOrWhiteSpace(findType))
+                    throw new ArgumentException("Find Type must be specified.");
 
-                if (waitForPage)
+                // Locate the element
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
+                var element = BrowserAutomationHelper.FindElement(driver, findType, uiElement);
+
+                if (element == null)
+                    throw new InvalidOperationException($"No element found using '{findType}': '{uiElement}'");
+
+                // Optional: Move mouse to specific location before clicking
+                if (sendPhysicalClick)
                 {
-                    status += $" Waited up to {timeout} seconds for the page to load.";
+                    var action = new Actions(driver);
+                    switch (mousePosition)
+                    {
+                        case ClickLinMousePositionEnum.TopLeft:
+                            action.MoveToElement(element, -element.Size.Width / 2 + offsetX,
+                                -element.Size.Height / 2 + offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.MiddleLeft:
+                            action.MoveToElement(element, -element.Size.Width / 2 + offsetX, 0 + offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.BottomLeft:
+                            action.MoveToElement(element, -element.Size.Width / 2 + offsetX,
+                                element.Size.Height / 2 + offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.TopCenter:
+                            action.MoveToElement(element, 0 + offsetX, -element.Size.Height / 2 + offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.MiddleCenter:
+                            action.MoveToElement(element, offsetX, offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.BottomCenter:
+                            action.MoveToElement(element, 0 + offsetX, element.Size.Height / 2 + offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.TopRight:
+                            action.MoveToElement(element, element.Size.Width / 2 + offsetX,
+                                -element.Size.Height / 2 + offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.MiddleRight:
+                            action.MoveToElement(element, element.Size.Width / 2 + offsetX, offsetY);
+                            break;
+                        case ClickLinMousePositionEnum.BottomRight:
+                            action.MoveToElement(element, element.Size.Width / 2 + offsetX,
+                                element.Size.Height / 2 + offsetY);
+                            break;
+                        default:
+                            action.MoveToElement(element, offsetX, offsetY);
+                            break;
+                    }
 
-                    if (dialogAction == DialogActionEnum.CloseIt)
-                        status += " Closed any pop-up dialog automatically.";
-                    else if (dialogAction == DialogActionEnum.PressAButton)
-                        status += $" Pressed the '{dialogButton}' button on the dialog.";
+                    action.Click().Build().Perform();
                 }
+                else
+                {
+                    switch (clickType)
+                    {
+                        case ClickLinClickTypeEnum.LeftClick:
+                            element.Click();
+                            break;
+
+                        case ClickLinClickTypeEnum.DoubleClick:
+                            new Actions(driver).DoubleClick(element).Build().Perform();
+                            break;
+
+                        case ClickLinClickTypeEnum.RightClick:
+                            new Actions(driver).ContextClick(element).Build().Perform();
+                            break;
+
+                        case ClickLinClickTypeEnum.LeftButtonDown:
+                            new Actions(driver).ClickAndHold(element).Build().Perform();
+                            break;
+
+                        case ClickLinClickTypeEnum.LeftButtonUp:
+                            new Actions(driver).Release(element).Build().Perform();
+                            break;
+
+                        case ClickLinClickTypeEnum.RightButtonDown:
+                            new Actions(driver).ContextClick(element).Build().Perform();
+                            break;
+
+                        case ClickLinClickTypeEnum.RightButtonUp:
+                            new Actions(driver).Release(element).Build().Perform();
+                            break;
+
+                        case ClickLinClickTypeEnum.MiddleClick:
+                            new Actions(driver).Click(element).Build().Perform();
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(clickType));
+                    }
+                }
+
+                // Optional: Wait for page to load
+                if (waitForPageLoad && timeout > 0)
+                {
+                    var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
+                    wait.Until(d =>
+                        ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                }
+
+                // Optional: Handle alert popup
+                if (dialogAction != DialogActionEnum.DoNothing)
+                {
+                    try
+                    {
+                        var alert = driver.SwitchTo().Alert();
+                        if (dialogAction == DialogActionEnum.PressAButton)
+                            alert.SendKeys(dialogButton); // Simulate pressing a button
+                        alert.Accept(); // Close dialog
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        // No dialog found — proceed normally
+                    }
+                }
+
+                status = $"Successfully clicked '{uiElement}' using '{clickType}'.";
             }
             catch (Exception ex)
             {
@@ -63,114 +251,74 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             StatusMessage.Set(context, status);
         }
-
-        #region Inputs
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
-
-        [Browsable(false)]
-        [Category("Input")]
-        [DisplayName("UI Element")]
-        [Description("Select the UI element (link, button, etc.) on the web page to click.")]
-        public InArgument<string> UiElement { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Click Type")]
-        [Description("The kind of click to perform.")]
-        [DefaultValue(ClickTypeEnum.LeftClick)]
-        public InArgument<ClickTypeEnum> ClickType { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Send Physical Click")]
-        [Description("Physically move the mouse cursor over the element prior to clicking.")]
-        [DefaultValue(true)]
-        public InArgument<bool> SendPhysicalClick { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Wait for Page to Load")]
-        [Description("Specify whether to wait for the new web page to load after the click.")]
-        [DefaultValue(true)]
-        public InArgument<bool> WaitForPageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Timeout for Webpage to Load")]
-        [Description("Set the time in seconds for the page to load before the action throws an error.")]
-        [DefaultValue(60)]
-        public InArgument<int> TimeoutForWebpageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("If a Pop-Up Dialog Appears")]
-        [Description("Specify what to do if a pop-up dialog appears after clicking the link.")]
-        [DefaultValue(DialogActionEnum.DoNothing)]
-        public InArgument<DialogActionEnum> IfAPopUpDialogAppears { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Dialog Button to Press")]
-        [Description("Enter the dialog button to press if a pop-up dialog appears.")]
-        [DefaultValue("Ok")]
-        public InArgument<string> DialogButtonToPress { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Mouse Position Relative to Element")]
-        [Description("Specify where to position the mouse relative to the element before clicking.")]
-        public InArgument<MousePositionEnum> MousePosition { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Offset X")]
-        [Description("Move the mouse this many pixels to the right from the selected position.")]
-        [DefaultValue(0)]
-        public InArgument<int> OffsetX { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Offset Y")]
-        [Description("Move the mouse this many pixels down from the selected position.")]
-        [DefaultValue(0)]
-        public InArgument<int> OffsetY { get; set; }
-
-        #endregion
     }
 
-    public enum MousePositionEnum
-    {
-        TopLeft = 0,
-        MiddleLeft = 1,
-        BottomLeft = 2,
-        TopCenter = 3,
-        MiddleCenter = 4,
-        BottomCenter = 5,
-        TopRight = 6,
-        MiddleRight = 7,
-        BottomRight = 8
-    }
-
-    public enum ClickTypeEnum
+    public enum ClickLinClickTypeEnum
     {
         [Display(Name = "Left Click", Description = "Standard left mouse click.")]
-        LeftClick = 0,
+        LeftClick,
 
         [Display(Name = "Right Click", Description = "Right mouse click.")]
-        RightClick = 1,
+        RightClick,
 
         [Display(Name = "Double Click", Description = "Double-click with the left mouse button.")]
-        DoubleClick = 2,
+        DoubleClick,
 
         [Display(Name = "Left Button Down", Description = "Mouse left button down only.")]
-        LeftButtonDown = 3,
+        LeftButtonDown,
 
         [Display(Name = "Left Button Up", Description = "Mouse left button up only.")]
-        LeftButtonUp = 4,
+        LeftButtonUp,
 
         [Display(Name = "Right Button Down", Description = "Mouse right button down only.")]
-        RightButtonDown = 5,
+        RightButtonDown,
 
         [Display(Name = "Right Button Up", Description = "Mouse right button up only.")]
-        RightButtonUp = 6,
+        RightButtonUp,
 
         [Display(Name = "Middle Click", Description = "Middle mouse button click.")]
-        MiddleClick = 7
+        MiddleClick
+    }
+
+    public enum ClickLinkDialogActionEnum
+    {
+        [Display(Name = "Do Nothing", Description = "Ignore any pop-up dialog.")]
+        DoNothing,
+
+        [Display(Name = "Close It", Description = "Closes any pop-up dialog automatically.")]
+        CloseIt,
+
+        [Display(Name = "Press a Button", Description = "Presses a specified button on the dialog.")]
+        PressAButton
+    }
+
+    public enum ClickLinMousePositionEnum
+    {
+        [Display(Name = "Top Left", Description = "Positions the mouse at the top-left of the element.")]
+        TopLeft,
+
+        [Display(Name = "Middle Left", Description = "Positions the mouse at the middle-left of the element.")]
+        MiddleLeft,
+
+        [Display(Name = "Bottom Left", Description = "Positions the mouse at the bottom-left of the element.")]
+        BottomLeft,
+
+        [Display(Name = "Top Center", Description = "Positions the mouse at the top-center of the element.")]
+        TopCenter,
+
+        [Display(Name = "Middle Center", Description = "Positions the mouse in the center of the element.")]
+        MiddleCenter,
+
+        [Display(Name = "Bottom Center", Description = "Positions the mouse at the bottom-center of the element.")]
+        BottomCenter,
+
+        [Display(Name = "Top Right", Description = "Positions the mouse at the top-right of the element.")]
+        TopRight,
+
+        [Display(Name = "Middle Right", Description = "Positions the mouse at the middle-right of the element.")]
+        MiddleRight,
+
+        [Display(Name = "Bottom Right", Description = "Positions the mouse at the bottom-right of the element.")]
+        BottomRight
     }
 }

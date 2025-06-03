@@ -1,51 +1,143 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Select Radio Button on Web Page")]
-    [Description(
-        "Simulates selecting a radio button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.")]
+    [Description("Simulates selecting a radio button element on a web page.")]
     public class SelectRadioButtonOnWebPageActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        
-        
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        #endregion
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Find Type")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        public InArgument<string> FindType { get; set; }
 
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Search Keywords")]
+        [Description("The value used to locate the radio button (e.g., 'gender-male', '//input[@name='option1']').")]
+        public InArgument<string> SearchKeywords { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Wait for Page Load")]
+        [Description("If true, waits for the page to fully load after selection.")]
+        [DefaultValue(true)]
+        public InArgument<bool> WaitForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Timeout for Page Load")]
+        [Description("Maximum time in seconds to wait for the page to load.")]
+        [DefaultValue(60)]
+        public InArgument<int> TimeoutForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Handle Dialog")]
+        [Description("Specifies what to do if a dialog appears after selecting the radio button.")]
+        [DefaultValue(DialogActionEnum.DoNothing)]
+        public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Dialog Button to Press")]
+        [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
+        [DefaultValue("Ok")]
+        public InArgument<string> DialogButtonToPress { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var uiElement = UiElement.Get(context);
-                var waitForPage = WaitForPageToLoad.Get(context);
-                var timeout = TimeoutForWebpageToLoad.Get(context);
-                var dialogAction = IfAPopUpDialogAppears.Get(context);
+                var driver = WebBrowserInstance.Get(context);
+                var findType = FindType.Get(context);
+                var searchKeywords = SearchKeywords.Get(context);
+                var waitForPage = WaitForPageLoad.Get(context);
+                var timeout = TimeSpan.FromSeconds(TimeoutForPageLoad.Get(context));
+                var dialogAction = IfDialogAppears.Get(context);
                 var dialogButton = DialogButtonToPress.Get(context);
 
-                // Validate required fields conditionally
-                if ((dialogAction == DialogActionEnum.CloseOrPress || dialogAction == DialogActionEnum.CloseIt ||
-                     dialogAction == DialogActionEnum.PressAButton) && string.IsNullOrEmpty(dialogButton))
-                    throw new ArgumentException(
-                        "Dialog Button to Press must be specified when 'Close it, Press a button' is selected.");
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
 
-                // Simulate selecting the radio button
-                status = $"Selected radio button '{uiElement}' in browser '{webBrowserInstanceId}'.";
+                if (string.IsNullOrWhiteSpace(findType))
+                    throw new ArgumentException("Find type must be specified.");
 
+                if (string.IsNullOrWhiteSpace(searchKeywords))
+                    throw new ArgumentException("Search keywords must be specified.");
+
+                // Locate the element
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                if (by == null)
+                    throw new ArgumentException($"Invalid find type provided: '{findType}'");
+
+                var radioButton = BrowserAutomationHelper.FindElement(driver, findType, searchKeywords);
+
+                if (radioButton == null)
+                    throw new InvalidOperationException(
+                        $"No radio button found using '{findType}': '{searchKeywords}'");
+
+                // Click the radio button
+                if (!radioButton.Selected)
+                {
+                    radioButton.Click();
+                    status = $"Successfully selected radio button '{searchKeywords}'.";
+                }
+                else
+                {
+                    status = $"Radio button '{searchKeywords}' was already selected.";
+                }
+
+                // Optional: Wait for page to load
                 if (waitForPage)
                 {
-                    status += $" Waited up to {timeout} seconds for the page to load.";
+                    var wait = new WebDriverWait(driver, timeout);
+                    wait.Until(d =>
+                        ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                }
 
-                    if (dialogAction == DialogActionEnum.CloseOrPress || dialogAction == DialogActionEnum.CloseIt ||
-                        dialogAction == DialogActionEnum.PressAButton)
-                        status += $" Closed dialog or pressed '{dialogButton}'.";
+                // Optional: Handle alert popup
+                if (dialogAction != DialogActionEnum.DoNothing)
+                {
+                    try
+                    {
+                        var alert = driver.SwitchTo().Alert();
+                        if (alert != null)
+                        {
+                            if (dialogAction == DialogActionEnum.CloseIt)
+                                alert.Accept();
+
+                            else if (dialogAction == DialogActionEnum.PressAButton)
+                                alert.SendKeys(dialogButton);
+                        }
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        // No alert found — continue normally
+                    }
                 }
             }
             catch (Exception ex)
@@ -55,46 +147,5 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             StatusMessage.Set(context, status);
         }
-
-        #region Inputs
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
-
-        [Browsable(false)]
-        [Category("Input")]
-        [DisplayName("UI Element")]
-        [Description("Select the radio button UI element on the web page to select.")]
-        public InArgument<string> UiElement { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Wait for Page to Load")]
-        [Description(
-            "Specify whether to wait for the new web page to load completely after selecting the radio button.")]
-        [DefaultValue(true)]
-        public InArgument<bool> WaitForPageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Timeout for Webpage to Load")]
-        [Description("Set the time in seconds for the page to load before the action throws an error.")]
-        [DefaultValue(60)]
-        public InArgument<int> TimeoutForWebpageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("If a Pop-Up Dialog Appears")]
-        [Description("Specify what to do if a pop-up dialog appears after selecting the radio button.")]
-        [DefaultValue(DialogActionEnum.DoNothing)]
-        public InArgument<DialogActionEnum> IfAPopUpDialogAppears { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Dialog Button to Press")]
-        [Description("The dialog button to press if a pop-up dialog appears.")]
-        [DefaultValue("ok")]
-        public InArgument<string> DialogButtonToPress { get; set; }
-
-        #endregion
     }
 }

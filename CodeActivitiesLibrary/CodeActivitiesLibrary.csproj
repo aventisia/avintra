@@ -13,6 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -108,6 +110,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
+    <Reference Include="WebDriver, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.4.33.0\lib\netstandard2.0\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver.Support, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.Support.4.33.0\lib\netstandard2.0\WebDriver.Support.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -357,9 +365,11 @@
     <Compile Include="Activities\DataTransformations\VariablesActivities\SubtractListsActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\TruncateNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\_VariablesCategoryMetaData.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ClickDownloadLinkOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CheckElementStateActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ClickDownloadLinkActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ClickLinkOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CloseWebBrowserActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CloseWebBrowserTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CreateNewTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\AttachModeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\DialogActionEnum.cs" />
@@ -370,27 +380,29 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\WaitConditionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\WindowStateEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ExtractDataFromWebPageActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\FocusTextFieldOnWebPageActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetDetailsOfElementOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\FocusTextFieldActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetCheckboxValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetDetailsOfElementActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetDetailsOfWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetElementAttributeValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetElementSiblingsActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GetParentElementActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\GoToWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Helpers\BrowserAutomationHelper.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\HoverMouseOverElementActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\HoverMouseOverElementOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\IfWebPageContainsActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchNewChromeActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchNewEdgeActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchNewMicrosoftEdgeActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\LaunchBrowserActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\OnHold\TakeScreenshotOfWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\OnHold\WaitForWebPageContentActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PopulateTextFieldActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PopulateTextFieldOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\PressButtonOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\RunJavaScriptFunctionOnWebPageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\ScrollToElementOrPositionActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SelectRadioButtonOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetCheckboxStateOnWebPageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetDropDownListValueOnWebPageActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetFocusOnInputElementActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\TakeScreenshotOfWebPageActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\WaitForWebPageContentActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SetElementAttributeValueActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\SwitchToTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\_BrowserAutomationCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\ClearClipboardContentsActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ClipboardActivities\GetClipboardTextActivity.cs" />
@@ -588,9 +600,13 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Helpers\" />
-    <Folder Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\OnHold\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Selenium.WebDriver.4.33.0\build\Selenium.WebDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.4.33.0\build\Selenium.WebDriver.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.4.33.0\build\Selenium.WebDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.4.33.0\build\Selenium.WebDriver.targets'))" />
+  </Target>
 </Project>

@@ -2,7 +2,7 @@
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-
+using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -10,102 +10,110 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [Description("Retrieves specific information about a web page such as title, description, URL, or source code.")]
     public class GetDetailsOfWebPageActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Detail Type")]
+        [Description("Specifies which detail to retrieve from the web page.")]
+        [DefaultValue(WebPageDetailTypeEnum.WebPageTitle)]
+        public InArgument<WebPageDetailTypeEnum> DetailType { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
         [Category("Output")]
         [DisplayName("Web Page Property")]
         [Description("The value retrieved from the web page based on the selected detail type.")]
         public OutArgument<string> OWebPagePropertyOutput { get; set; }
 
-        #endregion
 
-        #region Status Output
 
-        
-        
-
-        #endregion
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
+            string result = null;
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var detailType = Get.Get(context);
+                var driver = WebBrowserInstance.Get(context);
+                var detailType = DetailType.Get(context);
 
-                // Simulate retrieving data from the web page
-                string result;
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
+
                 switch (detailType)
                 {
                     case WebPageDetailTypeEnum.WebPageDescription:
-                        result = "Simulated meta description.";
+                        result = driver.FindElement(By.TagName("meta[name='description']"))?.GetAttribute("content");
                         break;
+
                     case WebPageDetailTypeEnum.WebPageMetaKeywords:
-                        result = "keyword1, keyword2, keyword3";
+                        result = driver.FindElement(By.TagName("meta[name='keywords']"))?.GetAttribute("content");
                         break;
+
                     case WebPageDetailTypeEnum.WebPageTitle:
-                        result = "Simulated Web Page Title";
+                        result = driver.Title;
                         break;
+
                     case WebPageDetailTypeEnum.WebPageText:
-                        result = "This is the visible text content of the page.";
+                        result = driver.FindElement(By.TagName("body"))?.Text;
                         break;
+
                     case WebPageDetailTypeEnum.WebPageSource:
-                        result = "<html><body>Simulated HTML source</body></html>";
+                        result = driver.PageSource;
                         break;
+
                     case WebPageDetailTypeEnum.CurrentUrlAddress:
-                        result = "https://example.com/page?query=1 ";
+                        result = driver.Url;
                         break;
+
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(detailType), "Unsupported detail type.");
                 }
 
-                OWebPagePropertyOutput.Set(context, result);
+                status = $"Successfully retrieved '{detailType}' from the current web page.";
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving web page details: {ex.Message}";
             }
 
+            OWebPagePropertyOutput.Set(context, result);
             StatusMessage.Set(context, status);
         }
-
-        #region Inputs
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Get")]
-        [Description("Select what detail you want to retrieve from the web page.")]
-        [DefaultValue(WebPageDetailTypeEnum.WebPageDescription)]
-        public InArgument<WebPageDetailTypeEnum> Get { get; set; }
-
-        #endregion
     }
 
     public enum WebPageDetailTypeEnum
     {
         [Display(Name = "Web Page Description", Description = "Gets the meta description of the web page.")]
-        WebPageDescription = 0,
+        WebPageDescription,
 
         [Display(Name = "Web Page Meta Keywords", Description = "Gets the meta keywords of the web page.")]
-        WebPageMetaKeywords = 1,
+        WebPageMetaKeywords,
 
         [Display(Name = "Web Page Title", Description = "Gets the title of the web page.")]
-        WebPageTitle = 2,
+        WebPageTitle,
 
         [Display(Name = "Web Page Text", Description = "Gets the visible text content of the web page.")]
-        WebPageText = 3,
+        WebPageText,
 
         [Display(Name = "Web Page Source", Description = "Gets the full HTML source of the web page.")]
-        WebPageSource = 4,
+        WebPageSource,
 
         [Display(Name = "Current URL Address", Description = "Gets the current URL address of the browser.")]
-        CurrentUrlAddress = 5
+        CurrentUrlAddress
     }
 }

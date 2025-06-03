@@ -1,76 +1,222 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-
+using System.Linq;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Set Drop-Down List Value on Web Page")]
-    [Description(
-        "Sets or clears the value of a drop-down list element on a web page. Supports selection by name, index, or clearing all options.")]
+    [Description("Sets or clears the value of a drop-down list element on a web page.")]
     public class SetDropDownListValueOnWebPageActivity : Extensions.BaseCodeActivity
     {
-        #region Outputs
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        
-        
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Web Browser Instance")]
+        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
+        public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        #endregion
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Find Type")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        public InArgument<string> FindType { get; set; }
 
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Search Keywords")]
+        [Description("The value used to locate the drop-down list (e.g., 'country', '//select[@id='country']').")]
+        public InArgument<string> SearchKeywords { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Operation")]
+        [Description("Specifies whether to select by name, index, or clear selection.")]
+        [DefaultValue(DropDownListOperationEnum.SelectOptionsByName)]
+        public InArgument<DropDownListOperationEnum> Operation { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Option Names")]
+        [Description("Comma-separated option names to select. Only first is used if not multi-select.")]
+        public InArgument<string> OptionNames { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Use Regular Expressions")]
+        [Description("If true, matches option names using regular expressions.")]
+        [DefaultValue(false)]
+        public InArgument<bool> UseRegularExpressions { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Option Indices")]
+        [Description("Comma-separated indices of options to select.")]
+        public InArgument<string> OptionIndices { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Wait for Page Load")]
+        [Description("If true, waits for the page to load after setting the dropdown value.")]
+        [DefaultValue(true)]
+        public InArgument<bool> WaitForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Timeout for Page Load")]
+        [Description("Maximum time in seconds to wait for the page to load.")]
+        [DefaultValue(60)]
+        public InArgument<int> TimeoutForPageLoad { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Handle Dialog")]
+        [Description("Specifies what to do if a dialog appears after setting the dropdown value.")]
+        [DefaultValue(DialogActionEnum.DoNothing)]
+        public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
+
+        [Category("Advanced")]
+        [DisplayName("Dialog Button to Press")]
+        [Description("The button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
+        [DefaultValue("Ok")]
+        public InArgument<string> DialogButtonToPress { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
 
             try
             {
-                var webBrowserInstanceId = WebBrowserInstance.Get(context);
-                var uiElement = UiElement.Get(context);
+                var driver = WebBrowserInstance.Get(context);
+                var findType = FindType.Get(context);
+                var searchKeywords = SearchKeywords.Get(context);
                 var operation = Operation.Get(context);
                 var optionNames = OptionNames.Get(context);
                 var useRegex = UseRegularExpressions.Get(context);
                 var optionIndices = OptionIndices.Get(context);
-
-                var waitForPage = WaitForPageToLoad.Get(context);
-                var timeout = TimeoutForWebpageToLoad.Get(context);
-                var dialogAction = IfAPopUpDialogAppears.Get(context);
+                var waitForPage = WaitForPageLoad.Get(context);
+                var timeout = TimeSpan.FromSeconds(TimeoutForPageLoad.Get(context));
+                var dialogAction = IfDialogAppears.Get(context);
                 var dialogButton = DialogButtonToPress.Get(context);
 
-                // Validate required fields conditionally
-                if (operation == DropDownListOperationEnum.SelectOptionsByName && string.IsNullOrEmpty(optionNames))
-                    throw new ArgumentException("Option Names must be provided when selecting by name.");
+                if (driver == null)
+                    throw new ArgumentException("Web browser instance cannot be null.");
 
-                if (operation == DropDownListOperationEnum.SelectOptionsByIndex && optionIndices < 0)
-                    throw new ArgumentException("Option Indices must be provided when selecting by index.");
+                if (string.IsNullOrWhiteSpace(findType))
+                    throw new ArgumentException("Find type must be specified.");
 
-                if (dialogAction == DialogActionEnum.PressAButton && string.IsNullOrEmpty(dialogButton))
-                    throw new ArgumentException(
-                        "Dialog Button to Press must be specified when 'Press a Button' is selected.");
+                if (string.IsNullOrWhiteSpace(searchKeywords))
+                    throw new ArgumentException("Search keywords must be specified.");
 
-                // Simulate setting the drop-down value
-                switch (operation)
+                // Locate the element
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                if (by == null)
+                    throw new ArgumentException($"Invalid find type provided: '{findType}'");
+
+                var dropdownElement = BrowserAutomationHelper.FindElement(driver, findType, searchKeywords);
+                if (dropdownElement == null)
+                    throw new InvalidOperationException($"No drop-down found using '{findType}': '{searchKeywords}'");
+
+                var select = new SelectElement(dropdownElement);
+                if (!select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByIndex)
                 {
-                    case DropDownListOperationEnum.ClearAllOptions:
-                        status = $"Cleared all options in '{uiElement}' dropdown.";
-                        break;
-                    case DropDownListOperationEnum.SelectOptionsByName:
-                        status = $"Selected options by name '{optionNames}' in '{uiElement}'.";
-                        if (useRegex)
-                            status += " Using regular expressions.";
-                        break;
-                    case DropDownListOperationEnum.SelectOptionsByIndex:
-                        status = $"Selected options by index '{optionIndices}' in '{uiElement}'.";
-                        break;
+                    int selectedIndex;
+                    if (!int.TryParse(optionIndices, out selectedIndex))
+                        throw new FormatException("Invalid format for Option Indices.");
+                    select.SelectByIndex(selectedIndex);
+                    status = $"Selected option at index '{selectedIndex}' in '{searchKeywords}'.";
+                }
+                else if (!select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByName)
+                {
+                    if (useRegex)
+                    {
+                        var matchedOption = dropdownElement.FindElements(By.TagName("option"))
+                            .FirstOrDefault(e => System.Text.RegularExpressions.Regex.IsMatch(e.Text, optionNames));
+
+                        if (matchedOption != null)
+                        {
+                            matchedOption.Click();
+                            status = $"Selected option matching regex '{optionNames}' in '{searchKeywords}'.";
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("No option matched the regex pattern.");
+                        }
+                    }
+                    else
+                    {
+                        select.SelectByText(optionNames);
+                        status = $"Selected option '{optionNames}' in '{searchKeywords}'.";
+                    }
+                }
+                else if (select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByName)
+                {
+                    var selectedOptions = new List<string>(optionNames.Split(','));
+                    foreach (var option in selectedOptions)
+                    {
+                        select.SelectByText(option.Trim());
+                    }
+
+                    status = $"Selected multiple options from '{searchKeywords}' by name.";
+                }
+                else if (select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByIndex)
+                {
+                    var indices = Array.ConvertAll(optionIndices.Split(','), int.Parse);
+                    foreach (var index in indices)
+                    {
+                        select.SelectByIndex(index);
+                    }
+
+                    status = $"Selected multiple options from '{searchKeywords}' by index.";
+                }
+                else if (operation == DropDownListOperationEnum.ClearAllOptions)
+                {
+                    select.DeselectAll();
+                    status = $"Cleared all selections in '{searchKeywords}'.";
+                }
+                else
+                {
+                    throw new NotSupportedException("Unsupported operation for current drop-down type.");
                 }
 
+                // Optional: Wait for page to load
                 if (waitForPage)
                 {
-                    status += $" Waited up to {timeout} seconds for the page to load.";
+                    var wait = new WebDriverWait(driver, timeout);
+                    wait.Until(d =>
+                        ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                }
 
-                    if (dialogAction == DialogActionEnum.CloseIt)
-                        status += " Closed any pop-up dialog automatically.";
-                    else if (dialogAction == DialogActionEnum.PressAButton)
-                        status += $" Pressed the '{dialogButton}' button on the dialog.";
+                // Optional: Handle alert popup
+                if (dialogAction != DialogActionEnum.DoNothing)
+                {
+                    try
+                    {
+                        var alert = driver.SwitchTo().Alert();
+                        if (alert != null)
+                        {
+                            if (dialogAction == DialogActionEnum.CloseIt)
+                                alert.Accept();
+
+                            else if (dialogAction == DialogActionEnum.PressAButton)
+                                alert.SendKeys(dialogButton);
+                        }
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        // No alert found — continue normally
+                    }
                 }
             }
             catch (Exception ex)
@@ -80,85 +226,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             StatusMessage.Set(context, status);
         }
-
-        #region Inputs
-
-        [RequiredArgument]
-        [Category("Input")]
-        [DisplayName("Web Browser Instance")]
-        [Description("Enter or choose the variable that contains the web browser instance to work with.")]
-        public InArgument<string> WebBrowserInstance { get; set; }
-
-        [Browsable(false)]
-        [Category("Input")]
-        [DisplayName("UI Element")]
-        [Description("Select the drop-down list UI element on the web page to interact with.")]
-        public InArgument<string> UiElement { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Operation")]
-        [Description("Choose the operation to perform on the drop-down list.")]
-        [DefaultValue(DropDownListOperationEnum.ClearAllOptions)]
-        public InArgument<DropDownListOperationEnum> Operation { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Option Names")]
-        [Description("Enter an option or a list of options to be selected. Only first used if single-select.")]
-        public InArgument<string> OptionNames { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Use Regular Expressions")]
-        [Description("Match option names using regular expressions.")]
-        [DefaultValue(false)]
-        public InArgument<bool> UseRegularExpressions { get; set; }
-
-        [Category("Input")]
-        [DisplayName("Option Indices")]
-        [Description("Enter an index or list of indices to select in the drop-down list.")]
-        public InArgument<int> OptionIndices { get; set; }
-
-        #endregion
-
-        #region Advanced Options
-
-        [Category("Advanced")]
-        [DisplayName("Wait for Page to Load")]
-        [Description(
-            "Specify whether to wait for the new web page to load completely after setting the dropdown value.")]
-        [DefaultValue(true)]
-        public InArgument<bool> WaitForPageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Timeout for Webpage to Load")]
-        [Description("Set the time in seconds for the page to load before the action throws an error.")]
-        [DefaultValue(60)]
-        public InArgument<int> TimeoutForWebpageToLoad { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("If a Pop-Up Dialog Appears")]
-        [Description("Specify what to do if a pop-up dialog appears after setting the dropdown value.")]
-        [DefaultValue(DialogActionEnum.DoNothing)]
-        public InArgument<DialogActionEnum> IfAPopUpDialogAppears { get; set; }
-
-        [Category("Advanced")]
-        [DisplayName("Dialog Button to Press")]
-        [Description("Enter the dialog button to press if a pop-up dialog appears.")]
-        [DefaultValue("OK")]
-        public InArgument<string> DialogButtonToPress { get; set; }
-
-        #endregion
     }
 
     public enum DropDownListOperationEnum
     {
         [Display(Name = "Clear All Options", Description = "Clears all selected values from the drop-down list.")]
-        ClearAllOptions = 0,
+        ClearAllOptions,
 
         [Display(Name = "Select Options by Name", Description = "Selects one or more options by their display text.")]
-        SelectOptionsByName = 1,
+        SelectOptionsByName,
 
         [Display(Name = "Select Options by Index",
             Description = "Selects one or more options by their index position.")]
-        SelectOptionsByIndex = 2
+        SelectOptionsByIndex
     }
 }
