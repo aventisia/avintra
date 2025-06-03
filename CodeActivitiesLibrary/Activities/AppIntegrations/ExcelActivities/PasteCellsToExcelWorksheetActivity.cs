@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
+using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -70,11 +71,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
-
         // ----------------------
         // Execution Logic
         // ----------------------
+
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
@@ -93,14 +93,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 if (sourceApp.ActiveWorkbook == null || targetApp.ActiveWorkbook == null)
                     throw new InvalidOperationException("Both Excel instances must have an active workbook.");
 
-                if (!(sourceApp.ActiveWorkbook.Worksheets[sourceWorksheetName] is Excel.Worksheet sourceWs))
+                var sourceWorkbook = sourceApp.ActiveWorkbook;
+                if (!(sourceWorkbook.Worksheets[sourceWorksheetName] is Excel.Worksheet sourceWs))
                     throw new InvalidOperationException($"Source worksheet '{sourceWorksheetName}' not found.");
 
                 var sourceRange = sourceWs.Range[sourceRangeAddress];
-                if (sourceRange == null)
-                    throw new InvalidOperationException($"Source range '{sourceRangeAddress}' not found.");
+                if (sourceRange == null || IsRangeEmpty(sourceRange))
+                    throw new InvalidOperationException($"Source range '{sourceRangeAddress}' not found or empty.");
 
-                if (!(targetApp.ActiveWorkbook.ActiveSheet is Excel.Worksheet targetWs))
+                var targetWorkbook = targetApp.ActiveWorkbook;
+                if (!(targetWorkbook.ActiveSheet is Excel.Worksheet targetWs))
                     throw new InvalidOperationException("Target worksheet could not be retrieved.");
 
                 switch (pasteMode)
@@ -108,18 +110,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     case CellPasteModeEnum.OnNamedCells:
                         {
                             var name = Name.Get(context);
-
                             if (string.IsNullOrWhiteSpace(name))
                                 throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
 
                             var namedRange = targetWs.Names.Item(name)?.RefersToRange;
-
                             if (namedRange == null)
                                 throw new InvalidOperationException($"Named range '{name}' not found.");
 
                             sourceRange.Copy();
-                            namedRange.PasteSpecial(Excel.XlPasteType.xlPasteAll,
-                                Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                            namedRange.Select();
                             break;
                         }
 
@@ -127,11 +126,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         {
                             var activeCell = targetApp.ActiveCell;
                             if (activeCell == null)
-                                throw new InvalidOperationException("No active cell found.");
+                                throw new InvalidOperationException("No active cell found in target Excel application.");
 
                             sourceRange.Copy();
-                            activeCell.PasteSpecial(Excel.XlPasteType.xlPasteAll,
-                                Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                            ((Excel.Range)activeCell).Select(); // Focus on the active cell
                             break;
                         }
 
@@ -139,22 +137,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         {
                             var colLetter = Column.Get(context);
                             var rowIndex = Row.Get(context);
-
-                            var colIndex = GetColumnIndex(colLetter);
-
-                            if (!(targetWs.Cells[rowIndex, colIndex] is Excel.Range targetCell))
-                                throw new InvalidOperationException(
-                                    $"Target cell at Column {colLetter}, Row {rowIndex} not found.");
+                            int colIndex = GetColumnIndex(colLetter);
+                            var targetCell = (Excel.Range)targetWs.Cells[rowIndex, colIndex];
 
                             sourceRange.Copy();
-                            targetCell.PasteSpecial(Excel.XlPasteType.xlPasteAll,
-                                Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                            targetCell.Select(); // Ensure target cell is selected
                             break;
                         }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(pasteMode));
                 }
+
+                // Important: Give Excel time to process the copy operation
+                System.Threading.Thread.Sleep(500); // Small delay for COM interop
+                targetApp.ActiveWindow.Activate(); // Make sure the target window is active
+                targetApp.ActiveSheet.Paste(); // Use simpler Paste()
 
                 status = $"Successfully pasted range '{sourceRangeAddress}' from '{sourceWorksheetName}'.";
             }
@@ -175,6 +173,32 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             columnName = columnName.ToUpperInvariant();
 
             return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
+        }
+
+        // Helper method to check if a range is empty
+        private static bool IsRangeEmpty(Excel.Range range)
+        {
+            if (range == null) return true;
+
+            var value = range.Value2;
+
+            if (value == null)
+                return true;
+
+            if (value is string str)
+                return string.IsNullOrWhiteSpace(str);
+
+            if (value is object[,] array)
+            {
+                foreach (var item in array)
+                {
+                    if (item != null && !string.IsNullOrWhiteSpace(item.ToString()))
+                        return false;
+                }
+                return true;
+            }
+
+            return false; // Assume not empty if it's a non-null single cell with non-string value
         }
     }
 }

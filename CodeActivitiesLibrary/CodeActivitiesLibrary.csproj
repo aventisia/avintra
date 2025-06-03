@@ -124,6 +124,7 @@
     <Compile Include="Activities\AppIntegrations\EmailActivities\SendEmailActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\_EmailCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\ActivateCellInExcelWorksheetActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\ExcelActivities\AddNewWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\AppendCellsInExcelWorksheetActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\AttachToRunningExcelActivity.cs" />
     <Compile Include="Activities\AppIntegrations\ExcelActivities\AutoFillCellsInExcelWorksheetActivity.cs" />
@@ -422,6 +423,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertFileToBinaryDataActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\CopyFilesActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\DeleteFilesActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FileActivities\Enums\CsvEncodingEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\Enums\IfExistsActionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetFilePathPartActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\GetTemporaryFileActivity.cs" />

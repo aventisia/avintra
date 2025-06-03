@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
-using CodeActivitiesLibrary.Extensions;
+using System.Linq;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -46,15 +47,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [Category("Input")]
         [DisplayName("Starting Column")]
-        [Description("The column number where appending should start.")]
+        [Description("The starting column letter where appending should begin (e.g., 'A', 'B', 'AA').")]
         [RenderIfCondition(nameof(AppendMode), "ToActiveSheet")]
-        public InArgument<long> StartingColumn { get; set; }
+        public InArgument<string> StartingColumn { get; set; } // Changed from long to string
 
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -76,7 +75,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     throw new InvalidOperationException("Worksheet is not available.");
 
                 var hasHeaders = FirstRowHasHeaders.Get(context);
-                var startingColumn = StartingColumn.Get(context);
+                var startingColumnStr = StartingColumn.Get(context); // Now string-based
 
                 switch (appendMode)
                 {
@@ -87,19 +86,23 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (string.IsNullOrWhiteSpace(name))
                                 throw new ArgumentException("Name cannot be empty when appending to named cells.");
 
-                            var namedRange = worksheet.Names.Item(name).RefersToRange;
-                            var rowCount = namedRange.Rows.Count;
-                            var colCount = namedRange.Columns.Count;
+                            var namedRange = worksheet.Names.Item(name)?.RefersToRange;
 
-                            for (var i = 0; i < dataTable.Rows.Count; i++)
+                            if (namedRange == null)
+                                throw new ArgumentException($"Named range '{name}' not found.");
+
+                            int rowCount = namedRange.Rows.Count;
+                            int colCount = namedRange.Columns.Count;
+
+                            for (int i = 0; i < dataTable.Rows.Count; i++)
                             {
                                 var row = dataTable.Rows[i];
 
                                 if (hasHeaders && i == 0)
-                                    continue; // Skip headers if present
+                                    continue; // Skip header
 
-                                for (var j = 0; j < dataTable.Columns.Count; j++)
-                                    namedRange.Cells[rowCount + i, j + 1] = row[j]?.ToString();
+                                for (int j = 0; j < dataTable.Columns.Count; j++)
+                                    namedRange.Cells[rowCount + i + 1, j + 1] = row[j]?.ToString();
                             }
 
                             status += $" Appended data to named range '{name}'.";
@@ -108,21 +111,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     case CellAppendModeEnum.ToActiveSheet:
                         {
+                            // Convert column letter to index
+                            int startColIndex = GetColumnIndex(startingColumnStr);
                             long startRow = worksheet.UsedRange.Rows.Count + 1; // Start after last used row
 
-                            for (var i = 0; i < dataTable.Rows.Count; i++)
+                            for (int i = 0; i < dataTable.Rows.Count; i++)
                             {
                                 var row = dataTable.Rows[i];
 
                                 if (hasHeaders && i == 0)
-                                    continue; // Skip headers if present
+                                    continue; // Skip header
 
-                                for (var j = 0; j < dataTable.Columns.Count; j++)
-                                    worksheet.Cells[startRow + i, startingColumn + j] = row[j]?.ToString();
+                                for (int j = 0; j < dataTable.Columns.Count; j++)
+                                    worksheet.Cells[startRow + i, startColIndex + j] = row[j]?.ToString();
                             }
 
-                            status +=
-                                $" Appended data to active sheet starting at row {startRow}, column {startingColumn}.";
+                            status += $" Appended data to active sheet starting at row {startRow}, column {startingColumnStr}.";
                             break;
                         }
 
@@ -136,6 +140,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
 
             StatusMessage.Set(context, status);
+        }
+
+        // Helper: Converts Excel column letter to index (e.g., A -> 1, AA -> 27)
+        private static int GetColumnIndex(string columnName)
+        {
+            if (string.IsNullOrWhiteSpace(columnName))
+                throw new ArgumentException("Column name cannot be empty.", nameof(columnName));
+
+            columnName = columnName.ToUpperInvariant();
+
+            return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
         }
     }
 }

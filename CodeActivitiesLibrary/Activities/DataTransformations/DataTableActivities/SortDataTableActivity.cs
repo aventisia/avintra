@@ -3,7 +3,8 @@ using System.Activities;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using CodeActivitiesLibrary.DataTransformations.VariablesActivities.VariablesActivities;
+using CodeActivitiesLibrary.DataTransformations.VariablesActivities;
+
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -53,10 +54,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [DisplayName("Sorted Data Table")]
         [Description("The DataTable after it has been sorted based on the specified criteria.")]
         public OutArgument<DataTable> SortedDataTable { get; set; }
-
-
-        [Category("Output")] 
-
 
         protected override void Execute(CodeActivityContext context)
         {

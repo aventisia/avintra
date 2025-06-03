@@ -14,9 +14,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Category("Output"), Description("Returns the converted plain text.")]
         public OutArgument<string> PlainText { get; set; }
 
-        
-        
-
         protected override void Execute(CodeActivityContext context)
         {
             var base64 = Base64String.Get(context);

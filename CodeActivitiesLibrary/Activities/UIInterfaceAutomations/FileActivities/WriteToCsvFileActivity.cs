@@ -1,93 +1,236 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
+using System;
 using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Text;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("CSV Writer Activity")]
-    [Description("Writes the contents of a DataTable to a CSV file with options to append or overwrite.")]
+    [DisplayName("Write to CSV File")]
+    [Description("Writes a data table, data row, or list to a CSV file.")]
     public class WriteToCsvFileActivity : Extensions.BaseCodeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
-        [DisplayName("CSV Output File Path")]
-        [Description("The full path where the CSV file will be written.")]
+        [DisplayName("Variable to Write")]
+        [Description("The data to write to the CSV file (DataTable, DataRow, or List).")]
+        public InArgument<object> VariableToWrite { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("File Path")]
+        [Description("The full path of the CSV file to write.")]
         public InArgument<string> FilePath { get; set; }
 
-        [RequiredArgument]
         [Category("Input")]
-        [DisplayName("Data Table to Write")]
-        [Description("The DataTable whose contents should be written to the CSV file.")]
-        public InArgument<DataTable> InputDataTable { get; set; }
+        [DisplayName("Encoding")]
+        [Description("The encoding of the CSV file.")]
+        [DefaultValue(CsvEncodingEnum.UTF8)]
+        public InArgument<CsvEncodingEnum> EncodingOption { get; set; } // Renamed to avoid conflict
 
         [Category("Input")]
-        [DisplayName("Include Header Row")]
-        [Description("Indicates whether column names should be included as the header row in the CSV.")]
-        [DefaultValue(true)]
-        public InArgument<bool> IncludeHeader { get; set; } = new InArgument<bool>(true);
+        [DisplayName("Use Custom Column Separator")]
+        [Description("Specifies whether to use a custom column separator.")]
+        public InArgument<bool> UseCustomColumnSeparator { get; set; } = new InArgument<bool>(false);
 
         [Category("Input")]
-        [DisplayName("Append To File")]
-        [Description("Specify whether the data should be appended to the file if it exists.")]
-        [DefaultValue(false)]
-        public InArgument<bool> AppendToFile { get; set; } = new InArgument<bool>(false); 
+        [DisplayName("Custom Column Separator")]
+        [Description("The custom delimiter used in the CSV file.")]
+        [RenderIfCondition(nameof(UseCustomColumnSeparator), "True")]
+        public InArgument<string> CustomColumnSeparator { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Predefined Separator")]
+        [Description("The predefined separator used in the CSV file (e.g., Comma, Tab).")]
+        [RenderIfCondition(nameof(UseCustomColumnSeparator), "False")]
+        public InArgument<CsvPredefinedSeparatorEnum> PredefinedSeparator { get; set; } =
+            new InArgument<CsvPredefinedSeparatorEnum>(CsvPredefinedSeparatorEnum.Comma);
+
+        [Category("Input")]
+        [DisplayName("If File Exists")]
+        [Description("Specifies how to handle existing files.")]
+        [DefaultValue(FileExistOptionEnum.Overwrite)]
+        public InArgument<FileExistOptionEnum> IfFileExists { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
-            string filePath = FilePath.Get(context);
-            DataTable dataTable = InputDataTable.Get(context);
-            bool includeHeader = IncludeHeader.Get(context);
-            bool append = AppendToFile.Get(context);
+            var status = "Success";
 
             try
             {
-                using (var writer = new StreamWriter(filePath, append))
-                {
-                    // Write header if needed and if file is new or not appending
-                    if (includeHeader && (!append || new FileInfo(filePath).Length == 0))
-                    {
-                        List<string> headerValues = new List<string>();
-                        foreach (DataColumn column in dataTable.Columns)
-                        {
-                            headerValues.Add(QuoteIfNeeded(column.ColumnName));
-                        }
-                        writer.WriteLine(string.Join(",", headerValues));
-                    }
+                var variableToWrite = VariableToWrite.Get(context);
+                var filePath = FilePath.Get(context);
+                var encodingEnum = EncodingOption.Get(context); // FIXED name
+                var useCustomColumnSeparator = UseCustomColumnSeparator.Get(context);
+                var ifFileExists = IfFileExists.Get(context);
 
-                    // Write data rows
-                    foreach (DataRow row in dataTable.Rows)
+                if (string.IsNullOrWhiteSpace(filePath))
+                    throw new ArgumentException("File path cannot be empty.");
+
+                if (variableToWrite == null)
+                    throw new ArgumentException("Variable to write cannot be null.");
+
+                string separator = ",";
+                if (useCustomColumnSeparator)
+                {
+                    var customSep = CustomColumnSeparator.Get(context);
+                    if (!string.IsNullOrWhiteSpace(customSep))
+                        separator = customSep;
+                }
+                else
+                {
+                    var predefSep = PredefinedSeparator.Get(context);
+                    switch (predefSep)
                     {
-                        List<string> rowValues = new List<string>();
-                        foreach (var field in row.ItemArray)
-                        {
-                            rowValues.Add(QuoteIfNeeded(field?.ToString()));
-                        }
-                        writer.WriteLine(string.Join(",", rowValues));
+                        case CsvPredefinedSeparatorEnum.Comma:
+                            separator = ",";
+                            break;
+                        case CsvPredefinedSeparatorEnum.Tab:
+                            separator = "\t";
+                            break;
+                        case CsvPredefinedSeparatorEnum.Semicolon:
+                            separator = ";";
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
 
-                StatusMessage.Set(context, "CSV file written successfully.");
+                FileMode mode = ifFileExists == FileExistOptionEnum.Append
+                    ? FileMode.Append
+                    : FileMode.Create;
+
+                using (var writer = new StreamWriter(filePath, false, GetEncoding(encodingEnum)))
+                {
+                    if (variableToWrite is DataTable dataTable)
+                    {
+                        WriteDataTable(writer, dataTable, separator);
+                    }
+                    else if (variableToWrite is DataRow dataRow)
+                    {
+                        WriteDataRow(writer, dataRow, separator);
+                    }
+                    else if (variableToWrite is System.Collections.IEnumerable enumerable)
+                    {
+                        WriteEnumerable(writer, enumerable, separator);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Unsupported type for 'Variable to Write'. Supported types: DataTable, DataRow, IEnumerable.");
+                    }
+                }
+
+                status += $" Successfully wrote data to '{filePath}'.";
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Failed to write CSV: {ex.Message}");
+                status = $"Error writing to CSV file: {ex.Message}";
+            }
+
+            StatusMessage.Set(context, status);
+        }
+
+        // ----------------------
+        // Helper Methods
+        // ----------------------
+
+        private static void WriteDataTable(StreamWriter writer, DataTable dataTable, string separator)
+        {
+            for (int i = 0; i < dataTable.Columns.Count; i++)
+            {
+                writer.Write(dataTable.Columns[i].ColumnName);
+                if (i < dataTable.Columns.Count - 1)
+                    writer.Write(separator);
+            }
+            writer.WriteLine();
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    writer.Write((row[i] ?? "").ToString());
+                    if (i < dataTable.Columns.Count - 1)
+                        writer.Write(separator);
+                }
+                writer.WriteLine();
             }
         }
 
-        private string QuoteIfNeeded(string input)
+        private static void WriteDataRow(StreamWriter writer, DataRow dataRow, string separator)
         {
-            if (string.IsNullOrEmpty(input)) return "";
-
-            if (input.Contains(",") || input.Contains("\"") || input.Contains("\n"))
+            for (int i = 0; i < dataRow.ItemArray.Length; i++)
             {
-                input = input.Replace("\"", "\"\"");
-                return $"\"{input}\"";
+                writer.Write((dataRow[i] ?? "").ToString());
+                if (i < dataRow.ItemArray.Length - 1)
+                    writer.Write(separator);
             }
-            return input;
+            writer.WriteLine();
+        }
+
+        private static void WriteEnumerable(StreamWriter writer, System.Collections.IEnumerable enumerable, string separator)
+        {
+            foreach (var item in enumerable)
+            {
+                writer.WriteLine(item?.ToString() ?? "");
+            }
+        }
+
+        private static Encoding GetEncoding(CsvEncodingEnum encoding)
+        {
+            switch (encoding)
+            {
+                case CsvEncodingEnum.SystemDefault:
+                    return Encoding.Default;
+                case CsvEncodingEnum.UTF8:
+                    return Encoding.UTF8;
+                case CsvEncodingEnum.Unicode:
+                    return Encoding.Unicode;
+                case CsvEncodingEnum.BigEndianUnicode:
+                    return Encoding.BigEndianUnicode;
+                case CsvEncodingEnum.UTF8NoBOM:
+                    return new UTF8Encoding(false);
+                case CsvEncodingEnum.ASCII:
+                    return Encoding.ASCII;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(encoding), encoding, null);
+            }
+        }
+
+        // ----------------------
+        // Enums
+        // ----------------------
+
+        public enum CsvPredefinedSeparatorEnum
+        {
+            [Description("Comma")]
+            Comma,
+            [Description("Tab")]
+            Tab,
+            [Description("Semicolon")]
+            Semicolon
+        }
+
+        public enum FileExistOptionEnum
+        {
+            [Description("Overwrite existing content")]
+            Overwrite,
+            [Description("Append Content")]
+            Append
         }
     }
-
 }

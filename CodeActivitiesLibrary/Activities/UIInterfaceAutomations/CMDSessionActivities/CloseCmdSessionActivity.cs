@@ -5,44 +5,63 @@ using System.Diagnostics;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
-
-    // Activity to close a CMD session
-    [DisplayName("Close CMD Session"), Description("Closes a previously opened CMD session.")]
+    [DisplayName("Close CMD Session")]
+    [Description("Closes a previously opened CMD session.")]
     public class CloseCmdSessionActivity : Extensions.BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
-        public InArgument<int> ProcessId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        
-        
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("CMD Session")]
+        [Description("The process representing the open CMD session.")]
+        public InArgument<Process> CmdSession { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
-            var processId = ProcessId.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Get the CMD process using the provided process ID
-                var cmdProcess = Process.GetProcessById(processId);
+                var cmdSession = CmdSession.Get(context);
 
-                // Close the CMD session
-                if (cmdProcess != null && !cmdProcess.HasExited)
+                if (cmdSession == null)
+                    throw new ArgumentException("CMD session cannot be null.");
+
+                // Ensure the process has started and is running
+                if (!cmdSession.HasExited)
                 {
-                    cmdProcess.Kill();
-                    status = $"CMD session with process ID {processId} closed successfully.";
+                    // Close the CMD session
+                    cmdSession.Close();
+                    Console.WriteLine("CMD session closed successfully.");
                 }
                 else
                 {
-                    status = "Failed to close CMD session: Invalid process ID or session already closed.";
+                    Console.WriteLine("CMD session has already exited.");
                 }
+
+                status += $" Successfully closed CMD session.";
             }
             catch (Exception ex)
             {
                 status = $"Error closing CMD session: {ex.Message}";
             }
 
+            // Set the StatusMessage output
             StatusMessage.Set(context, status);
+
+            Console.WriteLine(status);
         }
     }
+
 }

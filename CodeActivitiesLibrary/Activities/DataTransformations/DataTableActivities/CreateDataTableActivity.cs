@@ -18,6 +18,26 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("An optional input data table to clone or use as a template.")]
         public InArgument<DataTable> DataTable { get; set; }
 
+        [Category("Input")]
+        [DisplayName("Initial Columns (Optional)")]
+        [Description("An optional input to add initial columns in data table.")]
+        public InArgument<bool> HasInitialColumns { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Data Table columns either number or comma seperated columns (Optional)")]
+        [Description("An optional input data table columns to add in data table.")]
+        public InArgument<object> Columns { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Empty Rows (Optional)")]
+        [Description("An optional input to add empty rows in data table.")]
+        public InArgument<bool> HasEmptyRows { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Data Table rows (Optional)")]
+        [Description("An optional input empty rows to add in data table.")]
+        public InArgument<int> EmptyRows { get; set; }
+
         // ----------------------
         // Output Arguments
         // ----------------------
@@ -27,15 +47,18 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The newly created or cloned data table.")]
         public OutArgument<DataTable> NewDataTable { get; set; }
 
-        [Category("Output")]
-        
-
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
+
+            var columns = Columns.Get(context);
+            var hasInitialColumns = HasInitialColumns.Get(context);
+            var hasEmptyRows = HasEmptyRows.Get(context);
+            var emptyRows = EmptyRows.Get(context);
+
             DataTable resultTable = null;
 
             try
@@ -53,6 +76,47 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 {
                     // Create a new empty data table
                     resultTable = new DataTable();
+
+                    if (hasInitialColumns)
+                    {
+                        switch (columns)
+                        {
+                            case string columnNames:
+                                {
+                                    // Split the column names by comma and add them
+                                    foreach (var colName in columnNames.Split(new[] { ',' },
+                                                 StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        resultTable.Columns.Add(colName.Trim());
+                                    }
+
+                                    break;
+                                }
+                            case int columnCount:
+                                {
+                                    // Add specified number of columns with default names
+                                    for (var i = 1; i <= columnCount; i++)
+                                    {
+                                        resultTable.Columns.Add($"Column{i}");
+                                    }
+
+                                    break;
+                                }
+                            default:
+                                throw new ArgumentException(
+                                    "Invalid format for Columns input. Use a comma-separated string or an integer.");
+                        }
+                    }
+
+                    if (hasEmptyRows && emptyRows > 0)
+                    {
+                        // Add specified number of empty rows
+                        for (var i = 0; i < emptyRows; i++)
+                        {
+                            resultTable.Rows.Add(resultTable.NewRow());
+                        }
+                    }
+
                     status += " Created a new empty data table.";
                 }
             }

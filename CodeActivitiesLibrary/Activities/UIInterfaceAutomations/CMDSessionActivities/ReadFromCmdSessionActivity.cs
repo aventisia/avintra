@@ -5,50 +5,88 @@ using System.Diagnostics;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
-    // Activity to read from a CMD session
-    [DisplayName("Read from CMD Session"), Description("Reads the output from an open CMD session.")]
+    [DisplayName("Read from CMD Session")]
+    [Description("Reads the output of a CMD session.")]
     public class ReadFromCmdSessionActivity : Extensions.BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
-        public InArgument<int> ProcessId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [Category("Output"), Description("Returns the output read from the CMD session.")]
-        public OutArgument<string> Output { get; set; }
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("CMD Session")]
+        [Description("The process representing the CMD session.")]
+        public InArgument<Process> CmdSession { get; set; }
 
-        
-        
+        [Category("Input")]
+        [DisplayName("Separate Output from Error")]
+        [Description("Specifies whether to separate standard output from standard error.")]
+        public InArgument<bool> SeparateOutputFromError { get; set; } = new InArgument<bool>(true);
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [Category("Output")]
+        [DisplayName("CmdOutput")]
+        [Description("The CMD session's standard output.")]
+        public OutArgument<string> CmdOutput { get; set; }
+
+        [Category("Output")]
+        [DisplayName("CmdError")]
+        [Description("The CMD session's standard error (if separated).")]
+        public OutArgument<string> CmdError { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
-            var processId = ProcessId.Get(context);
-            var output = "";
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Get the CMD process using the provided process ID
-                var cmdProcess = Process.GetProcessById(processId);
+                var cmdSession = CmdSession.Get(context);
+                var separateOutputFromError = SeparateOutputFromError.Get(context);
 
-                // Read the output from the CMD session
-                if (cmdProcess != null && !cmdProcess.HasExited)
+                if (cmdSession == null)
+                    throw new ArgumentException("CMD session cannot be null.");
+
+                // Ensure the process has started
+                if (!cmdSession.HasExited)
                 {
-                    output = cmdProcess.StandardOutput.ReadToEnd();
-                    status = "Output read from CMD session successfully.";
+                    // Wait for the process to exit
+                    cmdSession.WaitForExit();
+                }
+
+                // Read standard output and standard error
+                string stdout = cmdSession.StandardOutput.ReadToEnd();
+                string stderr = cmdSession.StandardError.ReadToEnd();
+
+                // Set outputs
+                CmdOutput.Set(context, stdout);
+
+                if (separateOutputFromError)
+                {
+                    CmdError.Set(context, stderr);
                 }
                 else
                 {
-                    output = "";
-                    status = "Failed to read from CMD session: Invalid process ID or session closed.";
+                    // Combine stdout and stderr into a single output
+                    CmdOutput.Set(context, $"{stdout}{stderr}");
                 }
+
+                status += $" Successfully read output from CMD session.";
             }
             catch (Exception ex)
             {
-                output = "";
-                status = $"Error reading from CMD session: {ex.Message}";
+                status = $"Error reading CMD session: {ex.Message}";
             }
 
-            Output.Set(context, output);
-            StatusMessage.Set(context, status);
+            Console.WriteLine(status);
         }
     }
+
 }

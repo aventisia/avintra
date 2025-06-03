@@ -6,48 +6,86 @@ using System.Diagnostics;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
 
-    // Activity to write to a CMD session
-    [DisplayName("Write to CMD Session"), Description("Writes a command to an open CMD session.")]
+    [DisplayName("Write to CMD Session")]
+    [Description("Executes a command on an open CMD session.")]
     public class WriteToCmdSessionActivity : Extensions.BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The process ID of the open CMD session.")]
-        public InArgument<int> ProcessId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The command to be executed in the CMD session.")]
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("CMD Session")]
+        [Description("The process representing the open CMD session.")]
+        public InArgument<Process> CmdSession { get; set; }
+
+        [RequiredArgument]
+        [Category("Input")]
+        [DisplayName("Command")]
+        [Description("The command to execute in the CMD session.")]
         public InArgument<string> Command { get; set; }
 
-        
-        
+        [Category("Input")]
+        [DisplayName("Send <Enter> After Command")]
+        [Description("Specifies whether to send an Enter key after the command.")]
+        public InArgument<bool> SendEnterAfterCommand { get; set; } = new InArgument<bool>(true);
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
-            var processId = ProcessId.Get(context);
-            var command = Command.Get(context);
-            var status = "";
+            var status = "Success";
 
             try
             {
-                // Get the CMD process using the provided process ID
-                var cmdProcess = Process.GetProcessById(processId);
+                var cmdSession = CmdSession.Get(context);
+                var command = Command.Get(context);
+                var sendEnterAfterCommand = SendEnterAfterCommand.Get(context);
 
-                // Write the command to the CMD session
-                if (cmdProcess != null && !cmdProcess.HasExited)
+                if (cmdSession == null)
+                    throw new ArgumentException("CMD session cannot be null.");
+
+                if (string.IsNullOrWhiteSpace(command))
+                    throw new ArgumentException("Command cannot be empty.");
+
+                // Ensure the process has started and is running
+                if (!cmdSession.HasExited)
                 {
-                    cmdProcess.StandardInput.WriteLine(command);
-                    cmdProcess.StandardInput.Flush();
-                    status = $"Command '{command}' written to CMD session successfully.";
+                    // Write the command to the standard input stream
+                    cmdSession.StandardInput.WriteLine(command);
+
+                    // Optionally send Enter key (\r\n)
+                    if (sendEnterAfterCommand)
+                    {
+                        cmdSession.StandardInput.WriteLine();
+                    }
+
+                    Console.WriteLine($"Command executed: {command}");
                 }
                 else
                 {
-                    status = "Failed to write to CMD session: Invalid process ID or session closed.";
+                    throw new InvalidOperationException("CMD session has already exited.");
                 }
+
+                status += $" Successfully wrote command to CMD session.";
             }
             catch (Exception ex)
             {
                 status = $"Error writing to CMD session: {ex.Message}";
             }
 
+            // Set the StatusMessage output
             StatusMessage.Set(context, status);
+
+            Console.WriteLine(status);
         }
     }
+
 }

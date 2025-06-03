@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
 
-    [DisplayName("Calculate Date Difference")]
+    [DisplayName("Substract Dates")]
     [Description("Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).")]
     public class SubtractDatesActivity : Extensions.BaseCodeActivity
     {

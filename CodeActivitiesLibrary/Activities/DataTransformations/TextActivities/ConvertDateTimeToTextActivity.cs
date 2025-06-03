@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Globalization;
-
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -13,21 +13,26 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         #region Inputs
 
         [Category("Input")]
+        [DisplayName("Datetime to Convert")]
         [Description("The datetime value to convert to text.")]
-        public InArgument<string> DatetimeToConvert { get; set; }
+        public InArgument<DateTime> DatetimeToConvert { get; set; }
 
         [Category("Input")]
+        [DisplayName("Format to Use")]
         [Description("Specifies whether to use a standard datetime format or create a custom one.")]
-        [DefaultValue(typeof(FormatOptionEnum), "standard")]
-        public FormatOptionEnum FormatToUse { get; set; }
+        [DefaultValue(FormatOptionEnum.Standard)]
+        public FormatOptionEnum FormatToUse { get; set; } = FormatOptionEnum.Standard;
 
         [Category("Input")]
+        [DisplayName("Standard Format")]
         [Description("The standard datetime format to use when displaying the datetime value.")]
-        [DefaultValue(typeof(StandardFormatOptionEnum), "shortDate")]
-        public StandardFormatOptionEnum StandardFormat { get; set; }
+        [RenderIfCondition(nameof(FormatToUse), "Standard")]
+        public StandardFormatOptionEnum StandardFormat { get; set; } = StandardFormatOptionEnum.ShortDate;
 
         [Category("Input")]
+        [DisplayName("Custom Format")]
         [Description("A custom format string for formatting the datetime value (e.g., yyyyMMdd).")]
+        [RenderIfCondition(nameof(FormatToUse), "Custom")]
         public InArgument<string> CustomFormat { get; set; }
 
         #endregion
@@ -35,10 +40,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         #region Outputs
 
         [Category("Output")]
+        [DisplayName("Formatted DateTime")]
         [Description("The formatted datetime as a text value.")]
-        public OutArgument<string> ConvertedDateTime { get; set; }
-
-        [Category("Output")] 
+        public OutArgument<string> FormattedDateTime { get; set; }
 
         #endregion
 
@@ -46,69 +50,77 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         {
             var status = "Success";
             var result = "";
-            var input = DatetimeToConvert.Get(context);
+
             try
             {
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    ConvertedDateTime.Set(context, null);
-                    return;
-                }
+                // Get inputs
+                var datetimeToConvert = DatetimeToConvert.Get(context); // Already a DateTime
+                var formatToUse = FormatToUse;
+                var standardFormat = StandardFormat;
+                var customFormat = CustomFormat.Get(context);
 
-                if (!DateTime.TryParse(input, out var parsedDateTime))
-                    throw new ArgumentException($"Invalid datetime format: {input}");
+                // Validate inputs
+                if (datetimeToConvert == null)
+                    throw new ArgumentException("Datetime to Convert cannot be null.");
 
-                switch (FormatToUse)
+                // Format based on selected option
+                switch (formatToUse)
                 {
                     case FormatOptionEnum.Standard:
-                        result = FormatStandard(parsedDateTime, StandardFormat);
+                        result = FormatStandard(datetimeToConvert, standardFormat);
                         break;
                     case FormatOptionEnum.Custom:
-                        result = FormatCustom(parsedDateTime, CustomFormat.Get(context));
+                        result = FormatCustom(datetimeToConvert, customFormat);
                         break;
                     default:
-                        result = parsedDateTime.ToString(CultureInfo.InvariantCulture);
-                        break;
+                        throw new ArgumentOutOfRangeException(nameof(formatToUse), formatToUse, "Invalid format option.");
                 }
             }
             catch (Exception ex)
             {
-                status = $"Error padding text: {ex.Message}";
+                status = $"Error converting datetime: {ex.Message}";
             }
 
-            ConvertedDateTime.Set(context, result);
+            // Set outputs
+            FormattedDateTime.Set(context, result);
             StatusMessage.Set(context, status);
+
+            Console.WriteLine($"Status: {status}");
+            Console.WriteLine($"Formatted DateTime: {result}");
         }
 
-        private static string FormatStandard(DateTime dt, StandardFormatOptionEnum format)
+        private static string FormatStandard(DateTime dateTime, StandardFormatOptionEnum format)
         {
             switch (format)
             {
                 case StandardFormatOptionEnum.ShortDate:
-                    return dt.ToShortDateString();
+                    return dateTime.ToShortDateString();
                 case StandardFormatOptionEnum.LongDate:
-                    return dt.ToLongDateString();
+                    return dateTime.ToLongDateString();
                 case StandardFormatOptionEnum.ShortTime:
-                    return dt.ToShortTimeString();
+                    return dateTime.ToShortTimeString();
                 case StandardFormatOptionEnum.LongTime:
-                    return dt.ToLongTimeString();
+                    return dateTime.ToLongTimeString();
                 case StandardFormatOptionEnum.FullDatetimeShortTime:
-                case StandardFormatOptionEnum.FullDatetimeLongTime:
-                    return dt.ToString("F");
+                    return dateTime.ToString("F");
                 case StandardFormatOptionEnum.GeneralDatetimeShortTime:
-                    return dt.ToString("g");
+                    return dateTime.ToString("g");
                 case StandardFormatOptionEnum.GeneralDatetimeLongTime:
-                    return dt.ToString("G");
+                    return dateTime.ToString("G");
                 case StandardFormatOptionEnum.SortableDatetime:
-                    return dt.ToString("u");
+                    return dateTime.ToString("u");
                 default:
-                    return dt.ToString(CultureInfo.InvariantCulture);
+                    throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid standard format.");
             }
         }
 
-        private static string FormatCustom(DateTime dt, string format)
+        private static string FormatCustom(DateTime dateTime, string customFormat)
         {
-            return string.IsNullOrEmpty(format) ? dt.ToString(CultureInfo.InvariantCulture) : dt.ToString(format);
+            if (string.IsNullOrWhiteSpace(customFormat))
+                throw new ArgumentException("Custom format cannot be empty or whitespace.");
+
+            return dateTime.ToString(customFormat);
         }
     }
+
 }

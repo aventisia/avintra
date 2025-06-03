@@ -1,52 +1,81 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 
-
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-    [DisplayName("Wait For File"), Description("Suspends running the flow until a file is created or deleted.")]
-    public class WaitForFileActivity : Extensions.BaseNativeActivity
+    [DisplayName("Wait For File")]
+    [Description("Suspends running the flow until a file is created or deleted.")]
+    public class WaitForFileActivity : BaseNativeActivity
     {
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
         [RequiredArgument]
         [Category("Input")]
+        [DisplayName("File Path")]
         [Description("The full path of the file to wait for.")]
         public InArgument<string> FilePath { get; set; }
 
         [Category("Input")]
+        [DisplayName("Wait for File to be")]
         [Description("Specifies whether to wait for file creation or deletion.")]
         public InArgument<WaitForFileModeEnum> Mode { get; set; } =
-        new InArgument<WaitForFileModeEnum>(WaitForFileModeEnum.Create);
+            new InArgument<WaitForFileModeEnum>(WaitForFileModeEnum.Create);
 
-        
-        
+        [Category("Input")]
+        [DisplayName("Fail with Timeout Error")]
+        [Description("Enable this to fail the activity if the file does not appear within the specified duration.")]
+        public InArgument<bool> FailWithTimeoutError { get; set; } = new InArgument<bool>(false);
 
+        [Category("Input")]
+        [DisplayName("Duration (seconds)")]
+        [Description("The maximum time to wait for the file before timing out.")]
+        [RenderIfCondition(nameof(FailWithTimeoutError), "True")]
+        public InArgument<int> Duration { get; set; } = new InArgument<int>(5);
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(NativeActivityContext context)
         {
             var filePath = FilePath.Get(context);
             var mode = Mode.Get(context);
+            var failWithTimeoutError = FailWithTimeoutError.Get(context);
+            var duration = Duration.Get(context);
             var status = "";
 
             try
             {
+                DateTime startTime = DateTime.Now;
+
                 while (true)
                 {
-                    if (mode == WaitForFileModeEnum.Create && File.Exists(filePath))
+                    bool fileExists = File.Exists(filePath);
+
+                    if ((mode == WaitForFileModeEnum.Create && fileExists) ||
+                        (mode == WaitForFileModeEnum.Delete && !fileExists))
                     {
-                        status = $"File '{filePath}' created.";
+                        status = $"File '{filePath}' {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")}.";
                         break;
                     }
 
-                    if (mode == WaitForFileModeEnum.Delete && !File.Exists(filePath))
+                    if (failWithTimeoutError && (DateTime.Now - startTime).TotalSeconds >= duration)
                     {
-                        status = $"File '{filePath}' deleted.";
-                        break;
+                        status = $"Timeout: File '{filePath}' was not {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")} within {duration} seconds.";
+                        throw new TimeoutException(status);
                     }
 
-                    Thread.Sleep(1000); // Wait for 1 second before checking again
+                    Thread.Sleep(100); // Wait for 100 milliseconds before checking again
                 }
 
                 StatusMessage.Set(context, status);
@@ -59,12 +88,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         }
     }
 
+    // Enum for specifying the mode
     public enum WaitForFileModeEnum
     {
-        [Display(Name = "Wait For Creation", Description = "Waits until the file is created.")]
-        Create = 0,
+        [Display(Name = "Created", Description = "Waits until the file is created.")]
+        Create,
 
-        [Display(Name = "Wait For Deletion", Description = "Waits until the file is deleted.")]
-        Delete = 1
+        [Display(Name = "Deleted", Description = "Waits until the file is deleted.")]
+        Delete
     }
 }

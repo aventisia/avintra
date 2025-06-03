@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities.VariablesActivities
+namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Sort List")]
     [Description("Sorts a list by one or more properties. Supports ascending or descending order.")]

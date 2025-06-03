@@ -27,35 +27,59 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<ExcelRangesFormatEnum> RangesFormat { get; set; }
 
+        // Specific Ranges Fields
         [Category("Input")]
-        [DisplayName("Source Range")]
-        [Description("The range containing the data to be copied (e.g., 'A1:A5').")]
+        [DisplayName("Start Column")]
+        [Description("The starting column of the source range (e.g., 'A').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
-        public InArgument<string> SourceRange { get; set; }
+        public InArgument<string> StartColumn { get; set; }
 
         [Category("Input")]
-        [DisplayName("Target Range")]
-        [Description("The range where the data should be pasted (e.g., 'A6:A10').")]
+        [DisplayName("Start Row")]
+        [Description("The starting row of the source range (e.g., '1').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
-        public InArgument<string> TargetRange { get; set; }
+        public InArgument<int> StartRow { get; set; }
 
         [Category("Input")]
-        [DisplayName("Source Named Range")]
+        [DisplayName("Source End Column")]
+        [Description("The ending column of the source range (e.g., 'B').")]
+        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        public InArgument<string> SourceEndColumn { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Source End Row")]
+        [Description("The ending row of the source range (e.g., '5').")]
+        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        public InArgument<int> SourceEndRow { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Destination End Column")]
+        [Description("The ending column of the target range (e.g., 'C').")]
+        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        public InArgument<string> DestinationEndColumn { get; set; }
+
+        [Category("Input")]
+        [DisplayName("Destination End Row")]
+        [Description("The ending row of the target range (e.g., '10').")]
+        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        public InArgument<int> DestinationEndRow { get; set; }
+
+        // Named Cells Fields
+        [Category("Input")]
+        [DisplayName("Source Cells Name")]
         [Description("The name of the named range containing the source data.")]
         [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
-        public InArgument<string> SourceNamedRange { get; set; }
+        public InArgument<string> SourceCellsName { get; set; }
 
         [Category("Input")]
-        [DisplayName("Target Named Range")]
+        [DisplayName("Destination Cells Name")]
         [Description("The name of the named range where the data should be pasted.")]
         [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
-        public InArgument<string> TargetNamedRange { get; set; }
+        public InArgument<string> DestinationCellsName { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic
@@ -79,12 +103,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 {
                     case ExcelRangesFormatEnum.SpecificRanges:
                         {
-                            var sourceRangeStr = SourceRange.Get(context);
-                            var targetRangeStr = TargetRange.Get(context);
+                            var startColumn = StartColumn.Get(context);
+                            var startRow = StartRow.Get(context);
+                            var sourceEndColumn = SourceEndColumn.Get(context);
+                            var sourceEndRow = SourceEndRow.Get(context);
+                            var destinationEndColumn = DestinationEndColumn.Get(context);
+                            var destinationEndRow = DestinationEndRow.Get(context);
 
-                            if (string.IsNullOrWhiteSpace(sourceRangeStr) || string.IsNullOrWhiteSpace(targetRangeStr))
+                            if (string.IsNullOrWhiteSpace(startColumn) || string.IsNullOrWhiteSpace(sourceEndColumn) ||
+                                string.IsNullOrWhiteSpace(destinationEndColumn) ||
+                                startRow <= 0 || sourceEndRow <= 0 || destinationEndRow <= 0)
                                 throw new ArgumentException(
-                                    "Both Source Range and Target Range must be specified when using Specific Ranges.");
+                                    "All fields for Specific Ranges must be specified and valid.");
+
+                            // Construct source and target ranges
+                            var sourceRangeStr = $"{startColumn}{startRow}:{sourceEndColumn}{sourceEndRow}";
+                            var targetRangeStr = $"{startColumn}{destinationEndRow - (sourceEndRow - startRow)}:{destinationEndColumn}{destinationEndRow}";
 
                             var sourceRange = worksheet.Range[sourceRangeStr];
                             var targetRange = worksheet.Range[targetRangeStr];
@@ -107,20 +141,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     case ExcelRangesFormatEnum.NamedCells:
                         {
-                            var sourceNamedRange = SourceNamedRange.Get(context);
-                            var targetNamedRange = TargetNamedRange.Get(context);
+                            var sourceCellsName = SourceCellsName.Get(context);
+                            var destinationCellsName = DestinationCellsName.Get(context);
 
-                            if (string.IsNullOrWhiteSpace(sourceNamedRange) || string.IsNullOrWhiteSpace(targetNamedRange))
+                            if (string.IsNullOrWhiteSpace(sourceCellsName) || string.IsNullOrWhiteSpace(destinationCellsName))
                                 throw new ArgumentException(
-                                    "Both Source Named Range and Target Named Range must be specified when using Named Cells.");
+                                    "Both Source Cells Name and Destination Cells Name must be specified when using Named Cells.");
 
-                            var sourceRange = worksheet.Names.Item(sourceNamedRange).RefersToRange;
-                            var targetRange = worksheet.Names.Item(targetNamedRange).RefersToRange;
+                            var sourceRange = worksheet.Names.Item(sourceCellsName).RefersToRange;
+                            var targetRange = worksheet.Names.Item(destinationCellsName).RefersToRange;
 
                             // Copy values only from source to target
                             if (!(sourceRange.Value is object[,] sourceValues))
                                 throw new InvalidOperationException(
-                                    $"Source named range '{sourceNamedRange}' does not contain valid data.");
+                                    $"Source named range '{sourceCellsName}' does not contain valid data.");
 
                             var rowCount = sourceValues.GetLength(0);
                             var colCount = sourceValues.GetLength(1);
@@ -130,7 +164,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                                     ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
 
                             status +=
-                                $" Copied data from named range '{sourceNamedRange}' to named range '{targetNamedRange}'.";
+                                $" Copied data from named range '{sourceCellsName}' to named range '{destinationCellsName}'.";
                             break;
                         }
 
