@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
 
         [RequiredArgument]
-
         [DisplayName("Number to Convert")]
         [Description("The numeric value to convert to text.")]
         public InArgument<double> NumberToConvert { get; set; }

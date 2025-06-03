@@ -14,13 +14,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table from which the row will be deleted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Row Index")]
         [Description("The zero-based index of the row to delete.")]
         public InArgument<int> RowIndex { get; set; }

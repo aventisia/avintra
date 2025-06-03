@@ -13,13 +13,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetUiElementDetailsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("UI Element")]
         [Description("Select the UI element you want to get details from.")]
         public InArgument<AutomationElement> Element { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Detail Type")]
         [Description("Choose what information you want to get from the UI element.")]
         [DefaultValue(UIElementDetailTypeEnum.BoundingRectangle)]

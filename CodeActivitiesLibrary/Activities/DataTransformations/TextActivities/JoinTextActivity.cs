@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Text List")]
         [Description("The list of strings to join.")]
         public InArgument<IEnumerable<string>> TextList { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Delimiter Type")]
         [Description("Specifies how to separate the items in the list.")]
         public InArgument<StringJoinDelimiterTypeEnum> DelimiterType { get; set; }

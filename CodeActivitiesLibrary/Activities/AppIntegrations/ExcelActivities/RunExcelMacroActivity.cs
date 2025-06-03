@@ -14,13 +14,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target workbook.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Macro Name")]
         [Description("The name of the VBA macro to execute.")]
         public InArgument<string> MacroName { get; set; }

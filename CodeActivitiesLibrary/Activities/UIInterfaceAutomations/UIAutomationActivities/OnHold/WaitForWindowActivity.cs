@@ -9,12 +9,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class WaitForWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-
         [Description("The maximum time to wait (in seconds).")]
         public InArgument<int> TimeoutSeconds { get; set; }
 

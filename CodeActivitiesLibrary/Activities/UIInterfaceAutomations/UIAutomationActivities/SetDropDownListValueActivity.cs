@@ -13,26 +13,22 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SetDropDownListValueActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Window")]
         [Description("Select the window or parent element where the drop-down list is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("Choose how you want to search for the drop-down list (by Name, ID, Class Name, or Control Type).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("Enter the value to search for (for example, the drop-down list's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Option to Select")]
         [Description("The value or text of the option to select in the drop-down list.")]
         public InArgument<string> OptionToSelect { get; set; }

@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class FocusWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Window")]
         [Description("Select the window you want to focus.")]
         public InArgument<AutomationElement> WindowElement { get; set; }

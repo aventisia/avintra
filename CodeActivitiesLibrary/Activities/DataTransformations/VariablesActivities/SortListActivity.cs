@@ -17,7 +17,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("List to Sort")]
         [Description("The variable that holds the list to sort.")]
         public InArgument<List<object>> ListToSort { get; set; }

@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class CloseWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Window")]
         [Description("Select the window you want to close.")]
         public InArgument<AutomationElement> WindowElement { get; set; }

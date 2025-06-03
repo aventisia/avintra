@@ -13,13 +13,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Minimum Length")]
         [Description("The minimum length of the random text to generate.")]
         public InArgument<int> MinimumLength { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Maximum Length")]
         [Description("The maximum length of the random text to generate.")]
         public InArgument<int> MaximumLength { get; set; }

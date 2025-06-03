@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Text To Analyze")]
         [Description("The text from which entities will be recognized.")]
         public InArgument<string> TextToAnalyze { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Entity Type")]
         [Description("Specifies the type of entities to recognize (e.g., Date, Number, Email).")]
         public InArgument<EntityTypeEnum> EntityType { get; set; }

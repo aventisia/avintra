@@ -15,7 +15,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Working Folder")]
         [Description("The directory where the CMD session should start.")]
         public InArgument<string> WorkingFolder { get; set; }

@@ -15,19 +15,16 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Original Text")]
         [Description("The original text to modify.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Pattern")]
         [Description("The subtext or regular expression pattern to replace.")]
         public InArgument<string> SearchPattern { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Replacement Text")]
         [Description("The replacement text.")]
         public InArgument<string> ReplacementText { get; set; }

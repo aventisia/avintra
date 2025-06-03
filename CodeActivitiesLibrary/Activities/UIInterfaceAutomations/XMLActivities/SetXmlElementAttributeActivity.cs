@@ -11,22 +11,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class SetXmlElementAttributeActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The XML content as a string.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-
         [Description("The XPath expression to locate the element.")]
         public InArgument<string> XPath { get; set; }
 
         [RequiredArgument]
-
         [Description("The name of the attribute to set.")]
         public InArgument<string> AttributeName { get; set; }
 
         [RequiredArgument]
-
         [Description("The value to set for the attribute.")]
         public InArgument<string> AttributeValue { get; set; }
 

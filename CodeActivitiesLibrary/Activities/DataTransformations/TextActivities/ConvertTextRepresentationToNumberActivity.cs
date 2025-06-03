@@ -13,7 +13,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Text to Convert")]
         [Description("The word to convert into a numeric value.")]
         public InArgument<string> TextToConvert { get; set; }

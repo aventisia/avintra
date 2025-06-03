@@ -17,19 +17,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the button (e.g., 'submit', '//button[@id='login']').")]
         public InArgument<string> SearchKeywords { get; set; }

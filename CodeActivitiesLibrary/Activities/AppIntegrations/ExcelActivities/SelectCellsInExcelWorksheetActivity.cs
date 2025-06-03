@@ -16,13 +16,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Selection Mode")]
         [Description("Specifies how to select the cells.")]
         [DefaultValue(ExcelCellSelectionModeEnum.NamedCells)]

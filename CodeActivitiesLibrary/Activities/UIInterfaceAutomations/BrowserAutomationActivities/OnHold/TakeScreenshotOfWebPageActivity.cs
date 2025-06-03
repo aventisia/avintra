@@ -21,13 +21,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Capture Mode")]
         [Description("Specifies whether to capture the entire page or a specific element.")]
         [DefaultValue(CaptureModeEnum.EntireWebPage)]
@@ -46,7 +44,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<string> SearchKeywords { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Save Mode")]
         [Description("Specifies where to store the image: Clipboard or File.")]
         [DefaultValue(SaveModeEnum.Clipboard)]

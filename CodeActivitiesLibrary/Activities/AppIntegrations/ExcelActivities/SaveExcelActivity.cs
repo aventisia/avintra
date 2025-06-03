@@ -16,13 +16,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the workbook to save.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Save Mode")]
         [Description("Specifies how to save the workbook.")]
         [DefaultValue(ExcelFileSaveModeEnum.SaveDocument)]

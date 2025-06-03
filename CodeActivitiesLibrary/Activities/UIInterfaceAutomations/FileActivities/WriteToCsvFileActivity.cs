@@ -18,13 +18,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Variable to Write")]
         [Description("The data to write to the CSV file (DataTable, DataRow, or List).")]
         public InArgument<object> VariableToWrite { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("File Path")]
         [Description("The full path of the CSV file to write.")]
         public InArgument<string> FilePath { get; set; }

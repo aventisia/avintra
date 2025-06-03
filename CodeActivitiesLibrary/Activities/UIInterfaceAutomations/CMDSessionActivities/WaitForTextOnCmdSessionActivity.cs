@@ -16,13 +16,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("CMD Session")]
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Text to Wait For")]
         [Description("The text or regular expression to wait for in the CMD session output.")]
         public InArgument<string> TextToWaitFor { get; set; }

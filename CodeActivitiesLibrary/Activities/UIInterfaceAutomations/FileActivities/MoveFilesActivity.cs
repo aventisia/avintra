@@ -11,19 +11,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class MoveFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("File(s) to move")]
         [Description("The path(s) of the file(s) to move. Supports wildcards like *.txt.")]
         public InArgument<string> SourceFiles { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Destination folder")]
         [Description("The destination folder where the files will be moved.")]
         public InArgument<string> DestinationFolder { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("If file exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]

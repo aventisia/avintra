@@ -15,7 +15,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object to close.")]
         public InArgument<Application> OutlookApplication { get; set; }

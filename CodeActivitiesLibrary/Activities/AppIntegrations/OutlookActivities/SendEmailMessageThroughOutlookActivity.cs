@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to send the email.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Recipient(s)")]
         [Description("The email address(es) of the recipient(s). Separate multiple addresses by semicolons (;).")]
         public InArgument<string> To { get; set; }
@@ -39,13 +37,11 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
         public InArgument<string> BCC { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Subject")]
         [Description("The subject line of the email message.")]
         public InArgument<string> Subject { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Body")]
         [Description("The body content of the email message.")]
         public InArgument<string> Body { get; set; }

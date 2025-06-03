@@ -9,7 +9,6 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
     public class ExtractTextWithOcrActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The path to the image file.")]
         public InArgument<string> ImagePath { get; set; }
 

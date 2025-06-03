@@ -11,19 +11,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class MergeDataTablesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("First Data Table")]
         [Description("The first DataTable to be merged.")]
         public InArgument<DataTable> FirstDataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Second Data Table")]
         [Description("The second DataTable to be merged.")]
         public InArgument<DataTable> SecondDataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Merge Mode")]
         [Description(
             "Specifies how to handle columns that are present in the second table but not in the first table.")]

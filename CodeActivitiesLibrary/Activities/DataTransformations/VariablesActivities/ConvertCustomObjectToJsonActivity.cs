@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Custom Object")]
         [Description("The custom object to convert to JSON.")]
         public InArgument<object> CustomObject { get; set; }

@@ -18,19 +18,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to process messages.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Email Messages")]
         [Description("The list of email messages to be processed (e.g., moved or deleted).")]
         public InArgument<List<MailItem>> EmailMessages { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Action Type")]
         [Description("Select whether to move or delete the selected email messages.")]
         [DefaultValue(ActionTypeEnum.Delete)]

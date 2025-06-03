@@ -13,13 +13,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         #region Arguments
 
         [RequiredArgument]
-
         [DisplayName("File Path")]
         [Description("The full file path where the text should be written.")]
         public InArgument<string> FilePath { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Text to Write")]
         [Description("The text content to write to the file.")]
         public InArgument<string> TextToWrite { get; set; }

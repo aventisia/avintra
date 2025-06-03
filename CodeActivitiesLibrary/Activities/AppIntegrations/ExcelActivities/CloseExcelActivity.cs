@@ -16,7 +16,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object to close.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }

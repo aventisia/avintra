@@ -13,13 +13,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Variable Name")]
         [Description("The name of the variable to set.")]
         public InArgument<string> VariableName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Value To Set")]
         [Description("The value (text, number, list, or object) to assign to the variable.")]
         public InArgument<object> ValueToSet { get; set; }

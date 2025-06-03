@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ClickUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Element Instance")]
         [Description("The AutomationElement instance to click.")]
         public InArgument<AutomationElement> ElementInstance { get; set; }

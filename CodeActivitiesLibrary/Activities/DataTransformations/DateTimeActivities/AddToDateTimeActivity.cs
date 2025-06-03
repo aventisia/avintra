@@ -10,19 +10,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
     public class AddToDateTimeActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Base DateTime")]
         [Description("The original DateTime value to which the time should be added.")]
         public InArgument<DateTime> BaseDateTime { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Value to Add")]
         [Description("The numeric value of time to add to the DateTime.")]
         public InArgument<int> ValueToAdd { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Time Unit")]
         [Description("Specifies the unit of time (e.g., Seconds, Minutes, Hours, Days, Months, Years).")]
         [DefaultValue(TimeUnitEnum.Days)]

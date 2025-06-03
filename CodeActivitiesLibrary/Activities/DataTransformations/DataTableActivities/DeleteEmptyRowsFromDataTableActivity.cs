@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table containing the rows to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Empty Row Mode")]
         [Description("Specifies how to detect empty rows.")]
         [DefaultValue(DataTableEmptyRowModeEnum.AllEmpty)]

@@ -12,13 +12,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class RenameFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("File(s) to rename")]
         [Description("The path(s) of the file(s) to rename. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToRename { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Rename scheme")]
         [Description("Specifies the rename scheme to apply.")]
         [DefaultValue(RenameSchemeEnum.SetNewName)]
@@ -30,13 +28,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         public InArgument<string> NewFileName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Keep extension")]
         [Description("Indicates whether to keep the original file extension.")]
         public InArgument<bool> KeepExtension { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("If file exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]

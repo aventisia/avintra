@@ -9,12 +9,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SelectMenuOptionInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-
         [Description("The selector or identifier of the menu option.")]
         public InArgument<string> MenuOptionSelector { get; set; }
 

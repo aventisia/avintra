@@ -14,13 +14,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Original Text")]
         [Description("The full text value from which to extract a substring.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-
         [DefaultValue(StartIndexTypeEnum.StartOfText)]
         [DisplayName("Start Index Type")]
         [Description("Specifies whether to start from the beginning of the text or at a specific character position.")]

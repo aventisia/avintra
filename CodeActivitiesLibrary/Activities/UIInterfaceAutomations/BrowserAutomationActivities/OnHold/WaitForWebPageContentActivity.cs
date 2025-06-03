@@ -86,7 +86,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         #region Inputs
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<string> WebBrowserInstance { get; set; }

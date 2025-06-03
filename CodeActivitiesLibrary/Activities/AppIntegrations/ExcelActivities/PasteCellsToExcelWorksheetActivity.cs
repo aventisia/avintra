@@ -17,31 +17,26 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Target Excel Application")]
         [Description("The Excel Application object where the data will be pasted.")]
         public InArgument<Excel.Application> TargetExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Source Excel Application")]
         [Description("The Excel Application object where the data is coming from.")]
         public InArgument<Excel.Application> SourceExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Source Worksheet Name")]
         [Description("Name of the worksheet in the source Excel instance containing the data to copy.")]
         public InArgument<string> SourceWorksheetName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Source Range Address")]
         [Description("The range address (e.g., 'A1:B10') in the source worksheet to copy.")]
         public InArgument<string> SourceRangeAddress { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Paste Mode")]
         [Description("Specifies how to determine the paste location.")]
         [DefaultValue(CellPasteModeEnum.OnSpecifiedCell)]

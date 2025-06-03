@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("List to Clear")]
         [Description("The list variable whose elements will be removed.")]
         public InArgument<IList<object>> ListToClear { get; set; }

@@ -12,7 +12,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         #region Arguments
 
         [RequiredArgument]
-
         [DisplayName("File Path")]
         [Description("The full path of the file to read.")]
         public InArgument<string> FilePath { get; set; }

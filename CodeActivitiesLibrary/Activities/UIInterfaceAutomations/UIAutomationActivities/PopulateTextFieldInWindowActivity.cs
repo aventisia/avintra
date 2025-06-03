@@ -27,26 +27,22 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class PopulateTextFieldInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Window")]
         [Description("Select the window or parent element where the text box is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("Choose how you want to search for the text box (by Name, ID, Class Name, or Control Type).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("Enter the value to search for (for example, the text box's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Text to Enter")]
         [Description("The text to populate the text field with.")]
         public InArgument<string> TextToEnter { get; set; }

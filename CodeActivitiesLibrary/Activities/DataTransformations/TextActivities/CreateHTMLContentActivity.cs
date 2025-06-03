@@ -11,13 +11,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         #region Arguments
 
         [RequiredArgument]
-
         [DisplayName("Title")]
         [Description("The title of the HTML document.")]
         public InArgument<string> Title { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Body Content")]
         [Description("The body content of the HTML document.")]
         public InArgument<string> BodyContent { get; set; }

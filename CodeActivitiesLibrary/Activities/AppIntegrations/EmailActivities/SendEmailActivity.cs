@@ -18,13 +18,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("From")]
         [Description("The sender's email address.")]
         public InArgument<string> From { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("To")]
         [Description("The recipient's email address(es) (comma-separated).")]
         public InArgument<string> To { get; set; }
@@ -40,13 +38,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         public InArgument<string> Bcc { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Subject")]
         [Description("The subject of the email.")]
         public InArgument<string> Subject { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Body")]
         [Description("The body of the email.")]
         public InArgument<string> Body { get; set; }
@@ -63,7 +59,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         public InArgument<string> Attachments { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("SMTP Server")]
         [Description("The SMTP server URL.")]
         public InArgument<string> SmtpServer { get; set; }

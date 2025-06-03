@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("First List")]
         [Description("The variable that holds the first list to compare.")]
         public InArgument<List<object>> FirstList { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Second List")]
         [Description("The variable that contains the second list used to subtract items from the first list.")]
         public InArgument<List<object>> SecondList { get; set; }

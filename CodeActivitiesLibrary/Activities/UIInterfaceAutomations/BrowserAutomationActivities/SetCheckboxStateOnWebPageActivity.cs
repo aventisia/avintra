@@ -17,25 +17,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Find Type")]
         [Description("Specifies how to find the checkbox element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the checkbox (e.g., 'rememberMe', '//input[@id='remember']').")]
         public InArgument<string> SearchKeywords { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Check Box State")]
         [Description("Specifies whether to check or uncheck the checkbox.")]
         [DefaultValue(CheckBoxStateEnum.Checked)]

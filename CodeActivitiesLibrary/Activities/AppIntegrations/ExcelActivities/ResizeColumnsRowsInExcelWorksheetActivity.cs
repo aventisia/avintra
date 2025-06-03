@@ -16,20 +16,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Resize Target")]
         [Description("Specifies whether to resize Columns or Rows.")]
         [DefaultValue(ExcelColumnResizeTargetEnum.Columns)]
         public InArgument<ExcelColumnResizeTargetEnum> ResizeTarget { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Selection Range")]
         [Description("Specifies how to select the range to resize: All available, Range, or Single.")]
         [DefaultValue(ExcelColumnSelectionRangeEnum.AllAvailable)]
@@ -54,7 +51,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> Column { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Resize Type")]
         [Description("Choose whether to resize using a custom size or autofit.")]
         [DefaultValue(ExcelColumnResizeTypeEnum.CustomSize)]

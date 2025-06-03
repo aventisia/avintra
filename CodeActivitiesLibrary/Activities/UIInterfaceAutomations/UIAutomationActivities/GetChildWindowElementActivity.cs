@@ -11,13 +11,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetChildWindowElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Window")]
         [Description("Select the parent window where you want to search for the child window.")]
         public InArgument<AutomationElement> ParentWindow { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Child Window Name")]
         [Description("Enter the name (title) of the child window you want to find.")]
         public InArgument<string> ChildWindowName { get; set; }

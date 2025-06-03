@@ -12,7 +12,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class GetSubfoldersInFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Source Folder Path")]
         [Description("The full path of the directory from which subfolders will be retrieved.")]
         public InArgument<string> FolderPath { get; set; }

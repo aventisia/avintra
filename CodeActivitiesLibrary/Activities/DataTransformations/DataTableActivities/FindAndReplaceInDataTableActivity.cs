@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Mode")]
         [Description("Specifies whether to find or find and replace values.")]
         [DefaultValue(DataTableFindOrReplaceModeEnum.Find)]

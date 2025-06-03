@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SelectUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Element Instance")]
         [Description("The UI element instance to select.")]
         public InArgument<AutomationElement> ElementInstance { get; set; }

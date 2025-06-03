@@ -20,7 +20,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Browser Type")]
         [Description("Specifies which browser to launch (Microsoft Edge, Google Chrome, Mozilla Firefox).")]
         [DefaultValue(BrowserTypeEnum.MicrosoftEdge)]

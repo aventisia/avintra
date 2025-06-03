@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunDosCommandActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The DOS command to execute.")]
         public InArgument<string> Command { get; set; }
 

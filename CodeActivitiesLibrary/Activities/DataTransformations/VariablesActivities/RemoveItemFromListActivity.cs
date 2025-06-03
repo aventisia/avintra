@@ -15,7 +15,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Remove Mode")]
         [Description("Specifies whether to remove by Index or Value.")]
         public InArgument<RemoveModeEnum> RemoveMode { get; set; }
@@ -26,13 +25,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public InArgument<int> IndexToRemove { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Value To Remove")]
         [Description("The value of the item to remove from the list.")]
         public InArgument<object> ValueToRemove { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Source List")]
         [Description("The list from which the item will be removed.")]
         public InArgument<List<object>> SourceList { get; set; }

@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Window Name")]
         [Description("The name (title) of the window to find.")]
         public InArgument<string> WindowName { get; set; }

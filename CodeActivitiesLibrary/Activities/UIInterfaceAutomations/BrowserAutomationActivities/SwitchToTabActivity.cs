@@ -20,13 +20,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Switch Mode")]
         [Description("Specifies how to locate the tab: by index, title, or URL fragment.")]
         [DefaultValue(SwitchModeEnum.ByIndex)]

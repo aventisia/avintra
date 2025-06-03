@@ -12,34 +12,29 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SetCheckboxStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Element")]
         [Description("The parent UI element under which to search for the checkbox.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("The value of the property to match for the checkbox.")]
         [DefaultValue("")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Checkbox Name")]
         [Description("The name of the checkbox to set.")]
         [DefaultValue("")]
         public InArgument<string> CheckboxName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Desired State")]
         [Description("Whether to check or uncheck the checkbox.")]
         [DefaultValue(false)]

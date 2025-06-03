@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunVbScriptActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The VBScript code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
 

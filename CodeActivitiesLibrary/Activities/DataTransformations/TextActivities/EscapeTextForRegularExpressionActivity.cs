@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Text to Escape")]
         [Description("The text value that will be escaped for use in regular expressions.")]
         public InArgument<string> TextToEscape { get; set; }

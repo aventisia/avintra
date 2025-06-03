@@ -11,17 +11,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class InsertXmlElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The XML content as a string.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-
         [Description("The XPath expression to locate the parent element.")]
         public InArgument<string> ParentXPath { get; set; }
 
         [RequiredArgument]
-
         [Description("The name of the new element to insert.")]
         public InArgument<string> NewElementName { get; set; }
 

@@ -19,13 +19,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Text to Split")]
         [Description("The text value that will be split into parts based on the specified delimiter or pattern.")]
         public InArgument<string> TextToSplit { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Delimiter Type")]
         [Description("Specifies how to split the text.")]
         public InArgument<DelimiterTypeEnum> DelimiterType { get; set; }

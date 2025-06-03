@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("List To Modify")]
         [Description("The list variable to which new elements will be added.")]
         public InArgument<List<object>> TargetList { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Item To Add")]
         [Description("A single item or comma-separated values to add to the list.")]
         public InArgument<string> ItemToAdd { get; set; }

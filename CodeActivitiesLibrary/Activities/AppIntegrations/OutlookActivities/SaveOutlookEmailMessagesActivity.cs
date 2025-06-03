@@ -16,19 +16,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to access mail items.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Email Messages")]
         [Description("A list of MailItem objects representing the emails to save.")]
         public InArgument<List<MailItem>> EmailMessages { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Save Location")]
         [Description("The folder path where the .msg files should be saved.")]
         public InArgument<string> SaveLocation { get; set; }

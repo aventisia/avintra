@@ -11,19 +11,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
     public class SubtractDatesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Start DateTime")]
         [Description("The earlier DateTime value to subtract from.")]
         public InArgument<DateTime> StartDateTime { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("End DateTime")]
         [Description("The later DateTime value to subtract.")]
         public InArgument<DateTime> EndDateTime { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Difference Unit")]
         [Description("Specifies the unit in which to return the time difference.")]
         [DefaultValue(DateDifferenceUnit.Days)]

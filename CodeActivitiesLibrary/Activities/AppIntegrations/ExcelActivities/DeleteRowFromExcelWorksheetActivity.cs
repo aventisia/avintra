@@ -10,13 +10,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     public class DeleteRowFromExcelWorksheetActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Row Index")]
         [Description("The index (1-based) of the row to delete.")]
         public InArgument<int> RowIndex { get; set; }

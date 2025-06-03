@@ -17,7 +17,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("File Path")]
         [Description("The full path of the file to wait for.")]
         public InArgument<string> FilePath { get; set; }

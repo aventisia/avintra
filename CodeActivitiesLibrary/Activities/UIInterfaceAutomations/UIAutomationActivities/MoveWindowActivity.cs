@@ -10,19 +10,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class MoveWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Window")]
         [Description("Select the window you want to move.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("X Position")]
         [Description("Enter the new X position (in pixels) for the window.")]
         public InArgument<double> XPosition { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Y Position")]
         [Description("Enter the new Y position (in pixels) for the window.")]
         public InArgument<double> YPosition { get; set; }

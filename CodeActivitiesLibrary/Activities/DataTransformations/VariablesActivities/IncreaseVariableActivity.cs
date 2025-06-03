@@ -13,13 +13,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Variable To Increase")]
         [Description("The numeric variable to increase.")]
         public InArgument<double> VariableToIncrease { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Value To Add")]
         [Description("The amount to add to the variable. Can be a number or another variable containing a number.")]
         public InArgument<double> ValueToAdd { get; set; }

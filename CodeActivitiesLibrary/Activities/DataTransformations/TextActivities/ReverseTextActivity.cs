@@ -13,7 +13,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Original Text")]
         [Description("The original text to reverse. Example: 'Hello' → 'olleH'.")]
         public InArgument<string> OriginalText { get; set; }

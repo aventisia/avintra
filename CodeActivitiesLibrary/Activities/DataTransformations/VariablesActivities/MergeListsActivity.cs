@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("First List")]
         [Description("The first list of items to merge.")]
         public InArgument<List<object>> FirstList { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Second List")]
         [Description("The second list of items to merge.")]
         public InArgument<List<object>> SecondList { get; set; }

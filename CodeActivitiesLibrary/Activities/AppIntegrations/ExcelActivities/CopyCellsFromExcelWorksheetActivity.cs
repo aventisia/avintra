@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the source worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Copy Mode")]
         [Description("Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range of Cells.")]
         [DefaultValue(CellCopyModeEnum.SingleCell)]

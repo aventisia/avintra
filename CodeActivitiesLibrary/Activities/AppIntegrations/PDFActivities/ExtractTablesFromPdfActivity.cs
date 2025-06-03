@@ -13,12 +13,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
     public class ExtractTablesFromPdfActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("PDF File Path")]
         public InArgument<string> PdfFile { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Page Selection Mode")]
         public InArgument<PageSelectionMode> PageSelection { get; set; }
 

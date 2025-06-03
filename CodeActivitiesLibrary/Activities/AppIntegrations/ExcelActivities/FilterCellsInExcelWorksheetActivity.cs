@@ -16,13 +16,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Filter Mode")]
         [Description("Specifies how to filter cells: Active Sheet, Specific Range, Named Cells, or Table.")]
         [DefaultValue(ExcellFilterModeEnum.ActiveSheet)]
@@ -65,13 +63,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> TableName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Column To Filter")]
         [Description("The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) to apply the filter on.")]
         public InArgument<string> ColumnToFilter { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Filter Criteria")]
         [Description("The filter condition to apply. Example: '=Apple', '>10', '<>Complete'.")]
         public InArgument<string> FilterCriteria { get; set; }

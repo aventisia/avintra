@@ -9,17 +9,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ExpandCollapseTreeNodeInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-
         [Description("The selector or identifier of the tree node.")]
         public InArgument<string> TreeNodeSelector { get; set; }
 
         [RequiredArgument]
-
         [Description("Whether to expand or collapse the tree node.")]
         public InArgument<bool> Expand { get; set; }
 

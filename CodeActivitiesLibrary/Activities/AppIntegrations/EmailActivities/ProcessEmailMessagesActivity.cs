@@ -21,14 +21,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Operation")]
         [Description("The action to perform on the email messages.")]
         [DefaultValue(EmailOperationEnum.Delete)]
         public InArgument<EmailOperationEnum> Operation { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Email Messages to Process")]
         [Description("The IDs of the email messages to process.")]
         public InArgument<List<string>> MessageIds { get; set; }

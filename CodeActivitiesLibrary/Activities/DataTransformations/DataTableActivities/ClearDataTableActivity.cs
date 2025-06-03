@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table variable to clear. Must have been previously created or assigned.")]
         public InArgument<DataTable> DataTable { get; set; }

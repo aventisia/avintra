@@ -9,17 +9,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class DragAndDropUiElementInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-
         [Description("The selector or identifier of the source UI element.")]
         public InArgument<string> SourceUiElementSelector { get; set; }
 
         [RequiredArgument]
-
         [Description("The selector or identifier of the target UI element.")]
         public InArgument<string> TargetUiElementSelector { get; set; }
 

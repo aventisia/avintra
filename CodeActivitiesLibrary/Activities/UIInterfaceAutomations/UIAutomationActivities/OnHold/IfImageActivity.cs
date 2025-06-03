@@ -12,7 +12,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class IfImageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The path to the image file to check for.")]
         public InArgument<string> ImagePath { get; set; }
 

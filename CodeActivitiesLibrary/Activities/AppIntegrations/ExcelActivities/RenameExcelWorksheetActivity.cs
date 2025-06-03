@@ -14,26 +14,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Selection Type")]
         [Description("Specifies whether to select the worksheet by Name or Index.")]
         [DefaultValue(WorksheetSelectionTypeEnum.Name)]
         public InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Value")]
         [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').")]
         public InArgument<string> SearchValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("New Worksheet Name")]
         [Description("The new name to assign to the selected worksheet.")]
         public InArgument<string> NewWorksheetName { get; set; }

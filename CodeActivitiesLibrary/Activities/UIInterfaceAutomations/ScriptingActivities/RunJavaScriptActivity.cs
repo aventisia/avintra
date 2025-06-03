@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunJavaScriptActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The JavaScript code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
 

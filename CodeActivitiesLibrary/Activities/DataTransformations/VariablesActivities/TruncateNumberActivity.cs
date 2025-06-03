@@ -16,13 +16,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Number to Truncate")]
         [Description("The numeric value to truncate or round.")]
         public InArgument<double> NumberToTruncate { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Operation")]
         [Description("Specifies how to truncate or round the number.")]
         [DefaultValue(TruncateOperationEnum.GetIntegerPart)]

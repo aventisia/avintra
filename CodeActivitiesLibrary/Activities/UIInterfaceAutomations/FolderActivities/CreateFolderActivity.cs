@@ -11,13 +11,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class CreateFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Create New Folder Into")]
         [Description("The full path of the parent directory where the new folder should be created.")]
         public InArgument<string> ParentDirectory { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("New Folder Name")]
         [Description("The name of the folder to be created inside the specified parent directory.")]
         public InArgument<string> FolderName { get; set; }

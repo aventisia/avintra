@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table containing the column to convert into a list.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Column Name or Index")]
         [Description("Specifies which column to extract by name (if defined) or index (zero-based).")]
         public InArgument<string> ColumnNameOrIndex { get; set; }

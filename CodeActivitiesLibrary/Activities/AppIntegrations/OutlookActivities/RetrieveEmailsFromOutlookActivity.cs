@@ -17,7 +17,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to retrieve emails.")]
         public InArgument<Application> OutlookApplication { get; set; }
@@ -46,7 +45,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Email Messages")]
         [Description("Returns the list of retrieved email messages as MailItem objects.")]
         public OutArgument<List<MailItem>> EmailMessages { get; set; }

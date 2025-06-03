@@ -15,20 +15,17 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Original Text")]
         [Description("The full text value from which to extract a portion.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Mode")]
         [Description("Specifies how to crop the text relative to the flag(s).")]
         [DefaultValue(CropModeEnum.BeforeFlag)]
         public InArgument<CropModeEnum> Mode { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Flag")]
         [Description("The flag used to locate the text to extract. Required in 'Before Flag' and 'After Flag' modes.")]
         public InArgument<string> Flag { get; set; }

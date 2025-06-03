@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class ReadXmlFromFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The path to the XML file.")]
         public InArgument<string> FilePath { get; set; }
 

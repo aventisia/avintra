@@ -13,14 +13,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     {
 
         [RequiredArgument]
-
         [DisplayName("Wait for file to be")]
         [Description("Specifies whether to wait for the file to be Created or Deleted.")]
         public InArgument<WaitForFileAction> Action { get; set; }
 
 
         [RequiredArgument]
-
         [DisplayName("File path")]
         [Description("The path to the file to monitor.")]
         public InArgument<string> FilePath { get; set; }

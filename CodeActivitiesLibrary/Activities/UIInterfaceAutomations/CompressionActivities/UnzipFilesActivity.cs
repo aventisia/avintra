@@ -112,12 +112,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
         #region Inputs
 
         [RequiredArgument]
-
         [Description("The full path of the ZIP file to extract.")]
         public InArgument<string> ArchivePath { get; set; }
 
         [RequiredArgument]
-
         [Description("The full path of the folder to extract the archive to. Existing files may be overwritten.")]
         public InArgument<string> DestinationFolder { get; set; }
 

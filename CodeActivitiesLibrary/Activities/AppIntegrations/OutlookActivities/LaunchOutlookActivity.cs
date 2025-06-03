@@ -31,7 +31,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object created or reused by this activity.")]
         public OutArgument<Outlook.Application> OutlookApplication { get; set; }

@@ -9,12 +9,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class IfWindowContainsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-
         [Description("The text or UI element to search for in the window.")]
         public InArgument<string> SearchTerm { get; set; }
 

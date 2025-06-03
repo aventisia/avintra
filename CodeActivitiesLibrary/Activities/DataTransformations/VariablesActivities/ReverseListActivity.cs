@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("List to Reverse")]
         [Description("The list whose item order will be reversed.")]
         public InArgument<List<object>> ListToReverse { get; set; }

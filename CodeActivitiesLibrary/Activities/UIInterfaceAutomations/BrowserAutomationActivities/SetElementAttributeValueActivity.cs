@@ -16,31 +16,26 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the element whose attribute will be updated.")]
         public InArgument<string> SearchKeywords { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Attribute Name")]
         [Description("The name of the attribute to set (e.g., 'value', 'class', 'style').")]
         public InArgument<string> AttributeName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("New Attribute Value")]
         [Description("The new value to assign to the attribute.")]
         public InArgument<string> NewAttributeValue { get; set; }

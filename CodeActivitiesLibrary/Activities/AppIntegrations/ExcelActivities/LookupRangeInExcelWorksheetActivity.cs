@@ -17,19 +17,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Lookup Value")]
         [Description("The value to search for in the lookup range.")]
         public InArgument<string> LookupValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Ranges Format")]
         [Description("Specifies how the ranges are defined: Named Cells or Specific Ranges.")]
         [DefaultValue(ExcelLookupRangesFormatEnum.NamedCells)]

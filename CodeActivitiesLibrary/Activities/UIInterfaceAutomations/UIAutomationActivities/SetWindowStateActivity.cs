@@ -11,13 +11,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SetWindowStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Window")]
         [Description("Select the window you want to change.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Window State")]
         [Description("Choose how you want the window to appear (Normal, Maximized, or Minimized).")]
         [DefaultValue(WindowStateEnum.Normal)]

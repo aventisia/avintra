@@ -11,13 +11,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     public class GenerateRandomNumberActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Minimum Value")]
         [Description("The lower boundary for the random number(s) to generate.")]
         public InArgument<int> MinimumValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Maximum Value")]
         [Description("The upper boundary for the random number(s) to generate.")]
         public InArgument<int> MaximumValue { get; set; }

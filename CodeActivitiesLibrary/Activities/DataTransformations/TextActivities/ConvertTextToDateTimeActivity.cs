@@ -12,7 +12,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
 
         [RequiredArgument]
-
         [DisplayName("Text to Convert")]
         [Description("The text value that will be converted to a DateTime.")]
         public InArgument<string> TextToConvert { get; set; }

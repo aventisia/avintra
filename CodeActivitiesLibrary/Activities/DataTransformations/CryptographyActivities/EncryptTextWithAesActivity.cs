@@ -10,17 +10,14 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
     public class EncryptTextWithAesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The plaintext to encrypt.")]
         public InArgument<string> Plaintext { get; set; }
 
         [RequiredArgument]
-
         [Description("The encryption key.")]
         public InArgument<string> Key { get; set; }
 
         [RequiredArgument]
-
         [Description("The encoding format for the encrypted text.")]
         public InArgument<EncodingFormat> EncodingFormat { get; set; }
 

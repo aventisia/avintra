@@ -12,7 +12,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
     public class ShutdownComputerActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The shutdown mode (e.g., power off, restart).")]
         public InArgument<ShutdownModeEnum> Mode { get; set; }
 

@@ -10,19 +10,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class ConvertBinaryDataToFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Binary Data")]
         [Description("The binary data to convert.")]
         public InArgument<byte[]> BinaryData { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("File Path")]
         [Description("The full path where the file should be saved.")]
         public InArgument<string> FilePath { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("If File Exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]

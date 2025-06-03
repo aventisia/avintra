@@ -10,25 +10,21 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class UpdateDataTableItemActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The DataTable containing the data to be updated.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Column")]
         [Description("The name of the column where the update should occur.")]
         public InArgument<string> Column { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Row")]
         [Description("The row index or primary key value of the row to update.")]
         public InArgument<int> Row { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("New Value")]
         [Description("The new value to set for the specified cell.")]
         public InArgument<object> NewValue { get; set; }

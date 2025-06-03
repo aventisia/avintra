@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     public class IfProcessActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The name of the process to check.")]
         public InArgument<string> ProcessName { get; set; }
 

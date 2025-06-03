@@ -13,12 +13,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class WaitForImageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The path to the image file to wait for.")]
         public InArgument<string> ImagePath { get; set; }
 
         [RequiredArgument]
-
         [Description("The maximum time to wait (in seconds).")]
         public InArgument<int> TimeoutSeconds { get; set; }
 

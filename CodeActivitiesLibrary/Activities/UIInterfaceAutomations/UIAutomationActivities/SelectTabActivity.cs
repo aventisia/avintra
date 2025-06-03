@@ -13,26 +13,22 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SelectTabActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Window")]
         [Description("Select the window or parent element where the tab control is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("Choose how you want to search for the tab control (by Name, ID, Class Name, or Control Type).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("Enter the value to search for (for example, the tab control's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Tab Identifier")]
         [Description("The index (zero-based) or name of the tab to select.")]
         public InArgument<string> TabIdentifier { get; set; }

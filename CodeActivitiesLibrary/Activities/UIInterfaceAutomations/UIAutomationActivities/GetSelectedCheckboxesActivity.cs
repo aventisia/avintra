@@ -13,20 +13,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetSelectedCheckboxesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Element")]
         [Description("The parent UI element or window where the checkbox group is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("How to search for the checkbox group (by Name, AutomationId, ClassName, or ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("The value to search for (for example, the group or container's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }

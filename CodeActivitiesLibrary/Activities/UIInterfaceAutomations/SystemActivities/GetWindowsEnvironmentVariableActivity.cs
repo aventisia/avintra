@@ -9,7 +9,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     public class GetWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The name of the environment variable to retrieve.")]
         public InArgument<string> VariableName { get; set; }
 

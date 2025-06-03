@@ -11,19 +11,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class CopyFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Folder to Copy")]
         [Description("The path of the source folder that you want to duplicate.")]
         public InArgument<string> SourceFolder { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Destination Folder")]
         [Description("The path where the folder should be copied.")]
         public InArgument<string> DestinationFolder { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("If Folder Exists")]
         [Description("Specifies what action to take if the destination folder already exists.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]

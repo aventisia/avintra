@@ -17,13 +17,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Text To Parse")]
         [Description("The text value that will be parsed based on the specified search pattern.")]
         public InArgument<string> TextToParse { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Search Pattern")]
         [Description("The subtext or regular expression pattern to search for.")]
         public InArgument<string> SearchPattern { get; set; }

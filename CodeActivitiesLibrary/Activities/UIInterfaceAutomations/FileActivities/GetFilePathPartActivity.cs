@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class GetFilePathPartsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Source File Path")]
         [Description("The full path of the file from which to extract components.")]
         public InArgument<string> FilePath { get; set; }

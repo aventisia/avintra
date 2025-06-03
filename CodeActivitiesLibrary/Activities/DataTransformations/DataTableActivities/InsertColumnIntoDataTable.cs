@@ -15,19 +15,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table to modify.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Column Name")]
         [Description("The name of the new column.")]
         public InArgument<string> ColumnName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Data Type")]
         [Description("The data type of the new column.")]
         public InArgument<Type> DataType { get; set; }

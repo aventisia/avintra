@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the workbook.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
@@ -25,7 +24,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> NewWorksheetName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Add Worksheet As")]
         [Description("Specifies whether to add the worksheet as the first or last sheet.")]
         [DefaultValue(ExcelWorksheetPositionEnum.First)]

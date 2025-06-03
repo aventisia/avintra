@@ -17,7 +17,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table to process.")]
         public InArgument<DataTable> DataTable { get; set; }

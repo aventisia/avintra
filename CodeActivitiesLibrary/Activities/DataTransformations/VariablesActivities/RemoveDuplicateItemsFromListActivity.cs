@@ -15,7 +15,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("List to Deduplicate")]
         [Description("The list variable to remove duplicate values from.")]
         public InArgument<List<object>> ListToDeduplicate { get; set; }

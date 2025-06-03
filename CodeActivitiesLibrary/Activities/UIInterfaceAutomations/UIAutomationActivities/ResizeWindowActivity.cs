@@ -10,19 +10,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ResizeWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Window")]
         [Description("Select the window you want to resize.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Width")]
         [Description("Enter the new width for the window (in pixels).")]
         public InArgument<double> Width { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Height")]
         [Description("Enter the new height for the window (in pixels).")]
         public InArgument<double> Height { get; set; }

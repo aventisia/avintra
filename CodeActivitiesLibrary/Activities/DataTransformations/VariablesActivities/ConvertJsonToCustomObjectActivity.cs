@@ -14,13 +14,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("JSON Data")]
         [Description("The JSON string that will be converted to a custom object.")]
         public InArgument<string> JsonData { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Target Type")]
         [Description("Specifies the type of the custom object to deserialize the JSON into.")]
         public InArgument<Type> TargetType { get; set; }

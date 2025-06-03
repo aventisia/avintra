@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Source Excel Application")]
         [Description("The Excel Application object containing the source worksheet.")]
         public InArgument<Excel.Application> SourceExcelApplication { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Copy Mode")]
         [Description("Specifies how to identify the source worksheet: by Name or Index.")]
         [DefaultValue(WorksheetCopyModeEnum.Name)]
@@ -40,7 +38,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<int> WorksheetIndex { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Target Excel Application")]
         [Description("The Excel Application object where the worksheet will be copied.")]
         public InArgument<Excel.Application> TargetExcelApplication { get; set; }

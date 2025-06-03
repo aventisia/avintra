@@ -23,19 +23,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("IMAP Server")]
         [Description("The IMAP server URL.")]
         public InArgument<string> ImapServer { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Username")]
         [Description("The username for authentication.")]
         public InArgument<string> Username { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Password")]
         [Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }

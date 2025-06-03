@@ -14,13 +14,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table to filter.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Filter Expression")]
         [Description("The filter expression (e.g., \"Age > 30\").")]
         public InArgument<string> FilterExpression { get; set; }

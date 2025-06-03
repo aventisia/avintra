@@ -14,20 +14,17 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Original Text")]
         [Description("The original text from which characters will be trimmed.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Trim Mode")]
         [Description("Specifies whether to trim characters from the beginning, end, or both sides of the text.")]
         [DefaultValue(TrimModeEnum.TrimBoth)]
         public InArgument<TrimModeEnum> TrimMode { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("What to Trim")]
         [Description(
             "A string containing the characters to remove. Leave empty to trim only whitespace (space, tab, newline).")]

@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table to which the row will be inserted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Row Values")]
         [Description("An array of values to insert into the row.")]
         public InArgument<object[]> RowValues { get; set; }

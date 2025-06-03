@@ -17,7 +17,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("CSV Text")]
         [Description("The CSV text to parse.")]
         public InArgument<string> CsvText { get; set; }

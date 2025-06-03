@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Detail Type")]
         [Description("Specifies which detail to retrieve from the web page.")]
         [DefaultValue(WebPageDetailTypeEnum.WebPageTitle)]

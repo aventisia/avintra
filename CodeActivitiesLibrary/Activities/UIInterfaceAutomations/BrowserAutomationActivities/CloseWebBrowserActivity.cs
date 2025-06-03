@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("The WebDriver instance to close.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }

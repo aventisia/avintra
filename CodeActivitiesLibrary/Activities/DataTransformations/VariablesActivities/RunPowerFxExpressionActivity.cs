@@ -13,7 +13,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Power Fx Expression")]
         [Description("The Power Fx-like expression to evaluate (e.g., '1 + 2', 'Text(Now(), \"yyyy-mm-dd\")'.")]
         public InArgument<string> PowerFxExpression { get; set; }

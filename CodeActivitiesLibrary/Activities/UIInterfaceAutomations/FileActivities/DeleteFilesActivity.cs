@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class DeleteFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("File(s) to delete")]
         [Description("The path(s) of the file(s) to delete. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToDelete { get; set; }

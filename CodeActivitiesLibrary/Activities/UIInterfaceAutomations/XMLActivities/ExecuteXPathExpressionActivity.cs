@@ -10,12 +10,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class ExecuteXPathExpressionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The XML content to query with XPath.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-
         [Description("The XPath expression to execute.")]
         public InArgument<string> XPathExpression { get; set; }
 

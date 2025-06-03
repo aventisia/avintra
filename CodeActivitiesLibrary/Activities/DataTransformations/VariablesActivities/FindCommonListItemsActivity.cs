@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("First List")]
         [Description("The first list to compare.")]
         public InArgument<IEnumerable<object>> FirstList { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Second List")]
         [Description("The second list to compare.")]
         public InArgument<IEnumerable<object>> SecondList { get; set; }

@@ -11,17 +11,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class GetXmlElementAttributeActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The XML content as a string.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-
         [Description("The XPath expression to locate the element.")]
         public InArgument<string> XPath { get; set; }
 
         [RequiredArgument]
-
         [Description("The name of the attribute to retrieve.")]
         public InArgument<string> AttributeName { get; set; }
 

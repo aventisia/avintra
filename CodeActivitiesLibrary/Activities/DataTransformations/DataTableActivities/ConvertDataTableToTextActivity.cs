@@ -18,7 +18,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The data table variable to convert to CSV text.")]
         public InArgument<DataTable> DataTable { get; set; }

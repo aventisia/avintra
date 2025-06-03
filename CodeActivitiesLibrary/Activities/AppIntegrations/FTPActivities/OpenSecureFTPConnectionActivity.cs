@@ -9,17 +9,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     public class OpenSecureFtpConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }
 
         [RequiredArgument]
-
         [Description("The username for authentication.")]
         public InArgument<string> Username { get; set; }
 
         [RequiredArgument]
-
         [Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 

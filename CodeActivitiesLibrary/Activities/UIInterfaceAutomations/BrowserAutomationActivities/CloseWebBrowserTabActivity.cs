@@ -20,7 +20,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Web Browser Instance")]
         [Description("The WebDriver instance containing browser session.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }

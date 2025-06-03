@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
     public class CloseSqlConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }
 

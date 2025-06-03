@@ -10,13 +10,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
     public class IsCorrectDateTimeFormatActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("DateTime String")]
         [Description("The date and time string to validate.")]
         public InArgument<string> InputDateTime { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Expected Format")]
         [Description("The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss).")]
         public InArgument<string> DateTimeFormat { get; set; }

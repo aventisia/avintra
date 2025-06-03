@@ -12,20 +12,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class FindUIElementInParentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Window")]
         [Description("Select the window or parent element where you want to search for the UI element.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("Choose how you want to search for the element (by Name, ID, Class Name, or Control Type).")]
         [DefaultValue(PropertyTypeEnum.AutomationId)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("Enter the value to search for (for example, the button name or ID).")]
         public InArgument<string> PropertyValue { get; set; }

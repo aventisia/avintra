@@ -14,14 +14,12 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class SortDataTableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Data Table")]
         [Description("The DataTable containing the data to be sorted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
 
         [RequiredArgument]
-
         [DisplayName("Specify Column With")]
         [Description("Choose whether to specify the column by name or index.")]
         [DefaultValue(DataTableSortColumnByEnum.Name)]
@@ -42,7 +40,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
 
         [RequiredArgument]
-
         [DisplayName("Order")]
         [Description("Specifies whether to sort in ascending or descending order.")]
         [DefaultValue(SortOrderEnum.Ascending)]

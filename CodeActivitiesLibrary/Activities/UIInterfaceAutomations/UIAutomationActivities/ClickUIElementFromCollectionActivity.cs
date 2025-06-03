@@ -15,27 +15,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ClickUIElementFromCollectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("Parent Element")]
         [Description("The parent UI element under which to search for the collection.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Type")]
         [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Property Value")]
         [Description("The value of the property to match for the collection.")]
         [DefaultValue("")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Element Name")]
         [Description("The name of the element to match within the collection.")]
         [DefaultValue("")]

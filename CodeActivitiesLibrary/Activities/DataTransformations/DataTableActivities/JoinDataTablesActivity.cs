@@ -12,26 +12,22 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class JoinDataTablesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-
         [DisplayName("First Data Table")]
         [Description("The first DataTable to be joined.")]
         public InArgument<DataTable> FirstDataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Second Data Table")]
         [Description("The second DataTable to be joined.")]
         public InArgument<DataTable> SecondDataTable { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("Join Operation")]
         [Description("Specifies the type of join operation (Inner, Left, Full).")]
         public InArgument<DataTableJoinOperationEnum> JoinOperation { get; set; } =
             new InArgument<DataTableJoinOperationEnum>(DataTableJoinOperationEnum.Inner);
 
         [RequiredArgument]
-
         [DisplayName("Join Rules")]
         [Description("Specifies the join condition (e.g., 'FirstTable.ID = SecondTable.ID').")]
         public InArgument<string> JoinRules { get; set; }

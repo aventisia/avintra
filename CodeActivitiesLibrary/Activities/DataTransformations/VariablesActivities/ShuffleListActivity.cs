@@ -15,7 +15,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("List to Shuffle")]
         [Description("The list to be randomly reordered.")]
         public InArgument<IEnumerable<object>> ListToShuffle { get; set; }
