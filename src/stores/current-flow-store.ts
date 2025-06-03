@@ -8,6 +8,13 @@ interface ICurrentFlowDetails {
   // TODO: version
 }
 
+interface ExecutionGroup {
+  id: string;
+  conditionalMode: "SwitchCase" | "NestedIfElse";
+  branches: string[];
+  mergeBranchesNodeId: string;
+}
+
 type State = {
   /** Details of the currently opened flow */
   currentFlow: ICurrentFlowDetails;
@@ -20,6 +27,8 @@ type State = {
 
   /** Indicates flow execution state */
   executionState: ExecutionStateType;
+
+  executionGroup: ExecutionGroup | null;
 
   projectInfo: IProjectInfoDTO;
 };
@@ -37,6 +46,9 @@ type Actions = {
   /** Sets the executing state of the flow */
   setExecutionState: (executionState: ExecutionStateType) => void;
 
+  /** Sets the execution group */
+  setExecutionGroup: (executionGroup: ExecutionGroup | null) => void;
+
   /** Set Project info of the flow */
   setProjectInfo: (projectInfo: IProjectInfoDTO) => void;
 };
@@ -46,6 +58,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   isFlowLoading: false,
   isFlowSaving: false,
   executionState: "stopped",
+  executionGroup: null,
   projectInfo: {
     versionId: "",
     versionNumber: null,
@@ -60,6 +73,8 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   setIsFlowSaving: (isSaving) => set({ isFlowSaving: isSaving }),
 
   setExecutionState: (executionState) => set({ executionState }),
+  
+  setExecutionGroup: (executionGroup) => set({ executionGroup }),
 
   setProjectInfo: (projectInfo) => set({ projectInfo: projectInfo }),
 }));

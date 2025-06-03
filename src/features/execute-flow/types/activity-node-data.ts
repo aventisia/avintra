@@ -1,17 +1,11 @@
-import { NodeOutputType } from "..";
-
-type ActivityNodeInputType = {
-  key: string;
-  value: unknown;
-};
-
+import { NodeInputType, NodeOutputType } from "..";
 interface ActivityNodeData {
   id: string;
   type: string;
   nodeName: string;
   codeActivityName: string;
-  nodeInputs: ActivityNodeInputType[];
+  nodeInputs: NodeInputType[];
   nodeOutputs: NodeOutputType[];
 }
 
-export type { ActivityNodeData, ActivityNodeInputType };
+export type { ActivityNodeData };
