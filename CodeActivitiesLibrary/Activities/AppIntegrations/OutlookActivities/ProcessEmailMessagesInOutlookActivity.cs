@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Outlook;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
-using Microsoft.Office.Interop.Outlook;
 using Exception = System.Exception;
 
 namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
@@ -18,25 +18,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to process messages.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Email Messages")]
         [Description("The list of email messages to be processed (e.g., moved or deleted).")]
         public InArgument<List<MailItem>> EmailMessages { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Action Type")]
         [Description("Select whether to move or delete the selected email messages.")]
         [DefaultValue(ActionTypeEnum.Delete)]
         public InArgument<ActionTypeEnum> ActionType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Target Folder")]
         [Description("If action is 'Move', specify the target folder (Inbox, Sent, Junk, Outbox).")]
         [RenderIfCondition(nameof(ActionType), "Move")]
@@ -46,7 +46,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

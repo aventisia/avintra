@@ -12,18 +12,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         [DisplayName("Original Folder Path")]
         [Description("Specifies the path of the folder that needs to be renamed.")]
-        [Category("Input")]
+
         public InArgument<string> OriginalFolderPath { get; set; }
 
 
         [DisplayName("New Folder Name")]
         [Description("Specifies the new name for the folder.")]
-        [Category("Input")]
+
         public InArgument<string> NewFolderName { get; set; }
 
         [DisplayName("Renamed Folder Path")]
         [Description("The path of the folder after it has been successfully renamed.")]
-        [Category("Output")]
+
         public OutArgument<string> RenamedFolderPath { get; set; }
 
         protected override void Execute(CodeActivityContext context)

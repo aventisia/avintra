@@ -12,12 +12,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
     public class ShutdownComputerActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The shutdown mode (e.g., power off, restart).")]
         public InArgument<ShutdownModeEnum> Mode { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

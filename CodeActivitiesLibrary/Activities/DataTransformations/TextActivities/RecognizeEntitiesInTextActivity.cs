@@ -17,18 +17,18 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text To Analyze")]
         [Description("The text from which entities will be recognized.")]
         public InArgument<string> TextToAnalyze { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Entity Type")]
         [Description("Specifies the type of entities to recognize (e.g., Date, Number, Email).")]
         public InArgument<EntityTypeEnum> EntityType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Language")]
         [Description("The language of the text. Optional, but can improve recognition accuracy.")]
         public InArgument<string> Language { get; set; }
@@ -37,12 +37,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Recognized Entities")]
         [Description("Returns the list of recognized entities based on the specified entity type.")]
         public OutArgument<IEnumerable<string>> RecognizedEntities { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

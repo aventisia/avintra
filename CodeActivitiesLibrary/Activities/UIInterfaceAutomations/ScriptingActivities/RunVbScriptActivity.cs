@@ -10,16 +10,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunVbScriptActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The VBScript code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

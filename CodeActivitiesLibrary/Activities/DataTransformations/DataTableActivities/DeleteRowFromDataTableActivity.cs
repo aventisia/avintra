@@ -14,13 +14,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table from which the row will be deleted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Row Index")]
         [Description("The zero-based index of the row to delete.")]
         public InArgument<int> RowIndex { get; set; }
@@ -29,7 +29,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Modified Data Table")]
         [Description("Returns the updated data table after the row is deleted.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }

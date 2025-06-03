@@ -3,7 +3,6 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -18,50 +17,50 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Target Excel Application")]
         [Description("The Excel Application object where the data will be pasted.")]
         public InArgument<Excel.Application> TargetExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source Excel Application")]
         [Description("The Excel Application object where the data is coming from.")]
         public InArgument<Excel.Application> SourceExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source Worksheet Name")]
         [Description("Name of the worksheet in the source Excel instance containing the data to copy.")]
         public InArgument<string> SourceWorksheetName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source Range Address")]
         [Description("The range address (e.g., 'A1:B10') in the source worksheet to copy.")]
         public InArgument<string> SourceRangeAddress { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Paste Mode")]
         [Description("Specifies how to determine the paste location.")]
         [DefaultValue(CellPasteModeEnum.OnSpecifiedCell)]
         public InArgument<CellPasteModeEnum> PasteMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range to paste into (required if 'Paste Mode' is 'On Named Cells').")]
         [RenderIfCondition(nameof(PasteMode), "OnNamedCells")]
         public InArgument<string> Name { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column")]
         [Description(
             "The column letter (e.g., 'A', 'B') where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
         [RenderIfCondition(nameof(PasteMode), "OnSpecifiedCell")]
         public InArgument<string> Column { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Row")]
         [Description("The row number where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
         [RenderIfCondition(nameof(PasteMode), "OnSpecifiedCell")]

@@ -17,13 +17,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table containing the column to convert into a list.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Column Name or Index")]
         [Description("Specifies which column to extract by name (if defined) or index (zero-based).")]
         public InArgument<string> ColumnNameOrIndex { get; set; }
@@ -32,12 +32,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Column as List")]
         [Description("Returns the contents of the selected column as a list of strings.")]
         public OutArgument<List<string>> ColumnAsList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -11,24 +10,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class MoveWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Window")]
         [Description("Select the window you want to move.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("X Position")]
         [Description("Enter the new X position (in pixels) for the window.")]
         public InArgument<double> XPosition { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Y Position")]
         [Description("Enter the new Y position (in pixels) for the window.")]
         public InArgument<double> YPosition { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

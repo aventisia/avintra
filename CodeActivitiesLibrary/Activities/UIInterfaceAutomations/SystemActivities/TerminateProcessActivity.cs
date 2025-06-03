@@ -10,12 +10,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     public class TerminateProcessActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The name of the process to terminate.")]
         public InArgument<string> ProcessName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

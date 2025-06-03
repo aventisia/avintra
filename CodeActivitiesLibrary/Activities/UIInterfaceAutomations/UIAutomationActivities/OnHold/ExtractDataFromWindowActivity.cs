@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -10,16 +9,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ExtractDataFromWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the extracted data as a string.")]
         public OutArgument<string> ExtractedData { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

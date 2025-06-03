@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("List to Reverse")]
         [Description("The list whose item order will be reversed.")]
         public InArgument<List<object>> ListToReverse { get; set; }
@@ -23,12 +23,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Reversed List")]
         [Description("Returns the list after reversing the order of its items.")]
         public OutArgument<List<object>> ReversedList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

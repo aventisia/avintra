@@ -12,51 +12,51 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a dialog box with options that lets the user select from a list.")]
     public class DisplaySelectFromListDialogActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("Dialog Title")]
         public InArgument<string> DialogTitle { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Dialog Message")]
         public InArgument<string> DialogMessage { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("List to Choose From")]
         public InArgument<string> ListToChooseFrom { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Keep Select Dialog Always On Top")]
         public InArgument<bool> KeepOnTop { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Limit to List")]
         public InArgument<bool> LimitToList { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Allow Empty Selection")]
         public InArgument<bool> AllowEmptySelection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Allow Multiple Selection")]
         public InArgument<bool> AllowMultipleSelection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Preselect Items Starting With '+'")]
         public InArgument<bool> PreselectItemsStartingWithPlus { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Selected Item(s)")]
         public OutArgument<string> SelectedItem { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Selected Index(es)")]
         public OutArgument<int[]> SelectedIndex { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Button Pressed")]
         public OutArgument<bool> ButtonPressed { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

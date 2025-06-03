@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         [Category("Output"), Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

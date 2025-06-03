@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
@@ -13,37 +12,37 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class RenameFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File(s) to rename")]
         [Description("The path(s) of the file(s) to rename. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToRename { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Rename scheme")]
         [Description("Specifies the rename scheme to apply.")]
         [DefaultValue(RenameSchemeEnum.SetNewName)]
         public InArgument<RenameSchemeEnum> RenameScheme { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("New file name")]
         [Description("The new name for the file(s). Required for some rename schemes.")]
         public InArgument<string> NewFileName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Keep extension")]
         [Description("Indicates whether to keep the original file extension.")]
         public InArgument<bool> KeepExtension { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("If file exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Renamed Files")]
         [Description("Returns the list of successfully renamed files.")]
         public OutArgument<List<string>> RenamedFiles { get; set; }

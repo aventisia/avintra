@@ -13,24 +13,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         #region Arguments
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full file path where the text should be written.")]
         public InArgument<string> FilePath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Write")]
         [Description("The text content to write to the file.")]
         public InArgument<string> TextToWrite { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Write Mode")]
         [Description("Specifies the write mode: Append (default) or Overwrite.")]
         public InArgument<WriteModeEnum> WriteMode { get; set; } = new InArgument<WriteModeEnum>(WriteModeEnum.Append);
 
-        
-        
+
+
 
         #endregion
 

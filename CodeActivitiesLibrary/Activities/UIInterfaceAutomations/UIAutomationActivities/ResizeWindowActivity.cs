@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -11,24 +10,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ResizeWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Window")]
         [Description("Select the window you want to resize.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Width")]
         [Description("Enter the new width for the window (in pixels).")]
         public InArgument<double> Width { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Height")]
         [Description("Enter the new height for the window (in pixels).")]
         public InArgument<double> Height { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

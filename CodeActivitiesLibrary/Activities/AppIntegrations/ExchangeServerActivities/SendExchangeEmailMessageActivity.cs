@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [RequiredArgument, Category("Input"), Description("The body of the email.")]
         public InArgument<string> Body { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

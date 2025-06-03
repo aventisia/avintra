@@ -1,6 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-
-namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
+﻿namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     //[ActivityCategoryMetadata(
     //    primaryCategory: "Workflow Logics",

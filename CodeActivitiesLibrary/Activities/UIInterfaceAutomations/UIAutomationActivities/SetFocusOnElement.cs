@@ -9,19 +9,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     [Description("Brings the specified UI element into focus, allowing further interaction.")]
     public class SetFocusOnElementActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("UI Element")]
         [Description("The UI element to bring into focus.")]
         [RequiredArgument]
         public InArgument<AutomationElement> Element { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Result")]
         [Description("Shows whether the focus was set successfully or not")]
         [DefaultValue("")]
         public OutArgument<bool> Result { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

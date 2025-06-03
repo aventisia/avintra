@@ -1,12 +1,11 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -15,18 +14,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ClickUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Element Instance")]
         [Description("The AutomationElement instance to click.")]
         public InArgument<AutomationElement> ElementInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Click Type")]
         [Description("Type of click: UIAutomationClick or MouseClick.")]
         [DefaultValue(ClickTypeEnum.UIAutomationClick)]
         public InArgument<ClickTypeEnum> ClickType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the click action (in seconds).")]
         [DefaultValue(5)]

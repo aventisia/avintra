@@ -7,8 +7,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
     [DisplayName("Stop Flow"), Description("Terminates the currently running workflow.")]
     public class StopFlowActivity : Extensions.BaseNativeActivity
     {
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {

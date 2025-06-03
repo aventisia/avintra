@@ -19,8 +19,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns the list of occurrences of the searched text.")]
         public OutArgument<IEnumerable<string>> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

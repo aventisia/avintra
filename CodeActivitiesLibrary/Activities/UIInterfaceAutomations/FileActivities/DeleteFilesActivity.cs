@@ -11,12 +11,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class DeleteFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File(s) to delete")]
         [Description("The path(s) of the file(s) to delete. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToDelete { get; set; }
 
-        [Category("Output")] 
+
 
         protected override void Execute(CodeActivityContext context)
         {

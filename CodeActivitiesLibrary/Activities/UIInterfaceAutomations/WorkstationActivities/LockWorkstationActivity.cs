@@ -8,8 +8,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
     [DisplayName("Lock Workstation"), Description("Locks the workstation's display to protect it from unauthorized use.")]
     public class LockWorkstationActivity : Extensions.BaseCodeActivity
     {
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [RequiredArgument, Category("Input"), Description("The text to write or append.")]
         public InArgument<string> TextToWrite { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -9,8 +9,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
     [DisplayName("Take Screenshot"), Description("Takes a screenshot of all screens and saves it to the clipboard.")]
     public class TakeScreenshotActivity : Extensions.BaseCodeActivity
     {
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

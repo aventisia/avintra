@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         [RequiredArgument, Category("Input"), Description("The path to the document to print.")]
         public InArgument<string> DocumentPath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

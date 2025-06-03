@@ -15,13 +15,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("First List")]
         [Description("The first list of items to merge.")]
         public InArgument<List<object>> FirstList { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Second List")]
         [Description("The second list of items to merge.")]
         public InArgument<List<object>> SecondList { get; set; }
@@ -30,12 +30,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Merged List")]
         [Description("Returns a new list containing all items from both input lists.")]
         public OutArgument<List<object>> MergedList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

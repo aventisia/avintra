@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.DataTransformations.VariablesActivities;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using CodeActivitiesLibrary.DataTransformations.VariablesActivities;
 
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
@@ -14,14 +14,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class SortDataTableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The DataTable containing the data to be sorted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Specify Column With")]
         [Description("Choose whether to specify the column by name or index.")]
         [DefaultValue(DataTableSortColumnByEnum.Name)]
@@ -29,20 +29,20 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             new InArgument<DataTableSortColumnByEnum>(DataTableSortColumnByEnum.Name);
 
 
-        [Category("Input")]
+
         [DisplayName("Column Name")]
         [Description("The name of the column to sort by (used when 'Specify Column With' is set to 'Name').")]
         public InArgument<string> ColumnName { get; set; }
 
 
-        [Category("Input")]
+
         [DisplayName("Column Index")]
         [Description("The index of the column to sort by (used when 'Specify Column With' is set to 'Index').")]
         public InArgument<int> ColumnIndex { get; set; }
 
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Order")]
         [Description("Specifies whether to sort in ascending or descending order.")]
         [DefaultValue(SortOrderEnum.Ascending)]
@@ -50,7 +50,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             new InArgument<SortOrderEnum>(SortOrderEnum.Ascending);
 
 
-        [Category("Output")]
+
         [DisplayName("Sorted Data Table")]
         [Description("The DataTable after it has been sorted based on the specified criteria.")]
         public OutArgument<DataTable> SortedDataTable { get; set; }

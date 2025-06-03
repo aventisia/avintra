@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -14,21 +13,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class WaitForImageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the image file to wait for.")]
         public InArgument<string> ImagePath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The maximum time to wait (in seconds).")]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns true if the image was found, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -15,24 +15,24 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text List")]
         [Description("The list of strings to join.")]
         public InArgument<IEnumerable<string>> TextList { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Delimiter Type")]
         [Description("Specifies how to separate the items in the list.")]
         public InArgument<StringJoinDelimiterTypeEnum> DelimiterType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Standard Delimiter")]
         [Description("The standard delimiter to use when 'Delimiter Type' is 'Standard'.")]
         [RenderIfCondition(nameof(DelimiterType), "Standard")]
         public InArgument<StandardStringJoinDelimiterEnum> StandardDelimiter { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Custom Delimiter")]
         [Description("The custom delimiter to use when 'Delimiter Type' is 'Custom'.")]
         [RenderIfCondition(nameof(DelimiterType), "Custom")]
@@ -42,12 +42,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Joined Text")]
         [Description("Returns the resulting joined text after applying the delimiter.")]
         public OutArgument<string> JoinedText { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
@@ -23,22 +23,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Active Cell Address")]
         [Description("Returns the address of the active cell (e.g., 'A1').")]
         public OutArgument<string> ActiveCellAddress { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Active Cell Column Index")]
         [Description("Returns the column index of the active cell.")]
         public OutArgument<int> ActiveCellColumnIndex { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Active Cell Row Index")]
         [Description("Returns the row index of the active cell.")]
         public OutArgument<int> ActiveCellRowIndex { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

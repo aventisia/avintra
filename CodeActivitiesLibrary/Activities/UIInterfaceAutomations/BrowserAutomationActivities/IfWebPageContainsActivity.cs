@@ -1,10 +1,10 @@
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
-using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -18,25 +18,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Check Condition")]
         [Description("Specifies what condition to check (e.g., contains element, contains text).")]
         [DefaultValue(CheckConditionEnum.ContainsElement)]
         public InArgument<CheckConditionEnum> CheckCondition { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
         public InArgument<string> FindType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the element or text content.")]
         [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
@@ -54,13 +54,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(ElementStateTypeEnum.Enabled)]
         public InArgument<ElementStateTypeEnum> State { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Text To Search")]
         [Description("The text to search for in the web page body or title.")]
         [RenderIfCondition(nameof(CheckCondition), "ContainsText")]
         public InArgument<string> TextToSearch { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Search Location")]
         [Description("Specifies where to search for the text (e.g., Body, Title).")]
         [DefaultValue(SearchLocationEnum.Body)]
@@ -70,7 +70,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Result")]
         [Description("Returns true if the condition is met, otherwise false.")]
         public OutArgument<bool> Result { get; set; }

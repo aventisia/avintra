@@ -12,8 +12,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [Category("Output"), Description("Returns the active keyboard identifier.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     [Description("Creates a uniquely named empty temporary file on disk and returns its FileInfo object.")]
     public class GetTemporaryFileActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output")]
+
         [DisplayName("Temporary File")]
         [Description("The FileInfo object representing the temporary file created on disk.")]
         public OutArgument<FileInfo> TempFile { get; set; }

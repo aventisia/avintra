@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The key to send (e.g., 'Enter', 'Tab').")]
         public InArgument<string> Key { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

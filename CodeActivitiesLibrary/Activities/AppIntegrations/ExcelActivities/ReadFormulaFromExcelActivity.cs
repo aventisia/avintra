@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,25 +16,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Reference Type")]
         [Description("Specifies whether to reference by cell address or named range.")]
         [DefaultValue(CellReferenceTypeEnum.CellAddress)]
         public InArgument<CellReferenceTypeEnum> ReferenceType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Cell Address")]
         [Description("The address of the cell to read (e.g., 'A1', 'B2').")]
         [RenderIfCondition(nameof(ReferenceType), CellReferenceTypeEnum.CellAddress)]
         public InArgument<string> CellAddress { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Named Range")]
         [Description("The name of the range to read the formula from.")]
         [RenderIfCondition(nameof(ReferenceType), CellReferenceTypeEnum.NamedRange)]
@@ -44,14 +44,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Cell Formula")]
         [Description("The formula contained in the specified cell or range.")]
         public OutArgument<string> CellFormula { get; set; }
-
-        [Category("Output")]
-        [Description("Information about the operation status.")]
-        
 
         // ----------------------
         // Execution Logic

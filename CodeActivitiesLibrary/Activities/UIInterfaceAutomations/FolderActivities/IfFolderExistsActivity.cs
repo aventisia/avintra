@@ -13,20 +13,20 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         [RequiredArgument]
         [DisplayName("If Folder")]
         [Description("Select the condition to check for the folder (Exists or Doesn't exist).")]
-        [Category("Input")]
+
         public InArgument<FolderCondition> Condition { get; set; } = new InArgument<FolderCondition>(FolderCondition.Exists);
 
 
         [RequiredArgument]
         [DisplayName("Folder Path")]
         [Description("The path of the folder to check for existence.")]
-        [Category("Input")]
+
         public InArgument<string> FolderPath { get; set; }
 
 
         [DisplayName("Result")]
         [Description("Returns true if the folder meets the specified condition, otherwise false.")]
-        [Category("Output")]
+
         public OutArgument<bool> Result { get; set; }
 
         protected override void Execute(CodeActivityContext context)

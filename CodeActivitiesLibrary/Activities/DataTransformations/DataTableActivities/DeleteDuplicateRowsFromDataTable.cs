@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -17,18 +17,18 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Compare Mode")]
         [Description("Specifies whether to compare all columns or only selected ones.")]
         [DefaultValue(DataTableColumnCompareModeEnum.AllColumns)]
         public InArgument<DataTableColumnCompareModeEnum> CompareMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column Names To Compare")]
         [Description("List of column names to compare when 'Compare Mode' is 'Selected Columns'.")]
         [RenderIfCondition(nameof(CompareMode), "SelectedColumns")]
@@ -37,9 +37,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")]
-        
 
         // ----------------------
         // Execution Logic

@@ -12,12 +12,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         [DisplayName("Special Folder Name")]
         [Description("Select the name of the special folder whose path you want to retrieve.")]
-        [Category("Input")]
+
         public InArgument<SpecialFolder> SpecialFolderName { get; set; } = new InArgument<SpecialFolder>(SpecialFolder.Desktop);
 
         [DisplayName("Special Folder Path")]
         [Description("The retrieved path of the special folder.")]
-        [Category("Output")]
+
         public OutArgument<string> SpecialFolderPath { get; set; }
 
         protected override void Execute(CodeActivityContext context)

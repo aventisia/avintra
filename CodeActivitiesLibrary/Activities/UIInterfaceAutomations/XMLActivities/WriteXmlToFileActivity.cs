@@ -11,17 +11,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class WriteXmlToFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The XML content to write.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the output XML file.")]
         public InArgument<string> FilePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -10,16 +10,16 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
     public class HashTextActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The text to hash.")]
         public InArgument<string> Text { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The hashing algorithm to use.")]
         public InArgument<HashAlgorithm> Algorithm { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the hashed text.")]
         public OutArgument<string> HashedText { get; set; }
 

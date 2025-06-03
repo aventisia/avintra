@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns the session ID of the opened terminal session.")]
         public OutArgument<int> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

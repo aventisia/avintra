@@ -13,45 +13,43 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
     public class ExtractTablesFromPdfActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("PDF File Path")]
         public InArgument<string> PdfFile { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Page Selection Mode")]
         public InArgument<PageSelectionMode> PageSelection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Password")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Merge Tables Across Pages")]
         public InArgument<bool> MergeTablesAcrossPages { get; set; } = true;
 
-        [Category("Input")]
+
         [DisplayName("First Line Contains Column Names")]
         public InArgument<bool> FirstLineAsHeaders { get; set; } = true;
 
-        [Category("Input")]
+
         [DisplayName("Page Number (for Single)")]
         public InArgument<int> PageNumber { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("From Page Number (for Range)")]
         public InArgument<int> FromPageNumber { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("To Page Number (for Range)")]
         public InArgument<int> ToPageNumber { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Extracted Tables")]
         public OutArgument<List<DataTable>> ExtractedTables { get; set; }
 
-        [Category("Output")]
-        
 
         protected override void Execute(CodeActivityContext context)
         {

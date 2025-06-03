@@ -10,21 +10,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class ExecuteXPathExpressionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The XML content to query with XPath.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The XPath expression to execute.")]
         public InArgument<string> XPathExpression { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the value of the first matching node or null if not found.")]
         public OutArgument<string> ResultValue { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

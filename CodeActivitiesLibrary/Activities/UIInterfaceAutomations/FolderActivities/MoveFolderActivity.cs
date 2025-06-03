@@ -12,18 +12,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         [DisplayName("Folder to Move")]
         [Description("Specifies the path of the folder that needs to be moved.")]
-        [Category("Input")]
+
         public InArgument<string> SourceFolderPath { get; set; }
 
 
         [DisplayName("Destination Folder")]
         [Description("Specifies the path of the destination folder where the source folder will be moved.")]
-        [Category("Input")]
+
         public InArgument<string> DestinationFolderPath { get; set; }
 
         [DisplayName("Moved Folder Path")]
         [Description("The path of the folder after it has been successfully moved.")]
-        [Category("Output")]
+
         public OutArgument<string> MovedFolderPath { get; set; }
 
 

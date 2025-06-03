@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Outlook;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.Office.Interop.Outlook;
 using Exception = System.Exception;
 
 namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
@@ -17,25 +17,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to retrieve emails.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
         [DefaultValue("Inbox")]
-        [Category("Input")]
+
         [DisplayName("Folder Name")]
         [Description("The name of the folder to retrieve emails from. Example: 'Inbox', 'Sent', 'Junk'")]
         public InArgument<string> FolderName { get; set; }
 
-        [Category("Input")]
+
         [DefaultValue(null)]
         [DisplayName("Filter Subject")]
         [Description("Optional: Filter emails containing this text in the subject.")]
         public InArgument<string> FilterSubject { get; set; }
 
-        [Category("Input")]
+
         [DefaultValue(false)]
         [DisplayName("Only Unread")]
         [Description("If true, only unread emails are retrieved.")]
@@ -46,12 +46,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Output")]
+
         [DisplayName("Email Messages")]
         [Description("Returns the list of retrieved email messages as MailItem objects.")]
         public OutArgument<List<MailItem>> EmailMessages { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

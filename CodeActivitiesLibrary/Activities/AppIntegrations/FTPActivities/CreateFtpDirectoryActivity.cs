@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The name of the directory to create.")]
         public InArgument<string> DirectoryName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

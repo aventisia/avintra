@@ -18,8 +18,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The remote directory on the FTP server.")]
         public InArgument<string> RemoteDirectory { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

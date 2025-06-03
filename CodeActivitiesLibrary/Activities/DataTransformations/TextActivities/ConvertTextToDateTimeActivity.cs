@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Globalization;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -12,18 +12,18 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Convert")]
         [Description("The text value that will be converted to a DateTime.")]
         public InArgument<string> TextToConvert { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Custom Format")]
         [Description("If true, uses the specified format string for parsing the date/time.")]
         [DefaultValue(false)]
         public InArgument<bool> UseCustomFormat { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Format String")]
         [Description("The format string to use for parsing the date/time (e.g., 'yyyy-MM-dd').")]
         [RenderIfCondition(nameof(UseCustomFormat), "True")]
@@ -31,12 +31,12 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
 
 
-        [Category("Output")]
+
         [DisplayName("Result DateTime")]
         [Description("Returns the resulting DateTime value after conversion.")]
         public OutArgument<DateTime> ResultDateTime { get; set; }
 
-        [Category("Output")] 
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -1,11 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -14,37 +12,37 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SelectRadioButtonActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Element")]
         [Description("The window or parent element where the radio button group is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("How to search for the radio button group (by Name, AutomationId, ClassName, or ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("The value to search for (for example, the group or container's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Radio Button Identifier")]
         [Description("The name or zero-based index of the radio button to select.")]
         public InArgument<string> RadioButtonIdentifier { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the radio button group and selection (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Was Selected")]
         [Description("True if the radio button was selected successfully, otherwise false.")]
         [DefaultValue(false)]

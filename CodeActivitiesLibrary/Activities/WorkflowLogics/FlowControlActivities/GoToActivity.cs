@@ -10,8 +10,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
         [RequiredArgument, Category("Input"), Description("Label to transfer execution to.")]
         public InArgument<string> Label { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {

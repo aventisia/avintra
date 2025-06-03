@@ -12,21 +12,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         #region Arguments
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path of the file to read.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Trim Content")]
         [Description("Set to true to trim the content after reading.")]
         public InArgument<bool> TrimContent { get; set; } = new InArgument<bool>(true);
 
-        [Category("Output")]
+
         [DisplayName("File Content")]
         [Description("The text content read from the file.")]
         public OutArgument<string> FileContent { get; set; }
-  
+
 
         #endregion
 

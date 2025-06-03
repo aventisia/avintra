@@ -1,6 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using Microsoft.Win32;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         [RequiredArgument, Category("Input"), Description("The name of the printer to set as default.")]
         public InArgument<string> PrinterName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

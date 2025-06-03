@@ -15,25 +15,25 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("List To Modify")]
         [Description("The list variable to which new elements will be added.")]
         public InArgument<List<object>> TargetList { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Item To Add")]
         [Description("A single item or comma-separated values to add to the list.")]
         public InArgument<string> ItemToAdd { get; set; }
 
 
-        [Category("Input")]
+
         [DisplayName("Custom Separator")]
         [Description(
             "Optional. If provided, splits the input using this separator instead of default ones (',', ';', '|').")]
         public InArgument<string> CustomSeparator { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Trim Values")]
         [Description("If true, trims whitespace from each value before adding it to the list.")]
         [DefaultValue(false)]
@@ -43,12 +43,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Modified List")]
         [Description("Returns the updated list after items have been added.")]
         public OutArgument<List<object>> ModifiedList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

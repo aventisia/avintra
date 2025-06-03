@@ -10,8 +10,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
         [RequiredArgument, Category("Input"), Description("Name of the region.")]
         public InArgument<string> RegionName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {

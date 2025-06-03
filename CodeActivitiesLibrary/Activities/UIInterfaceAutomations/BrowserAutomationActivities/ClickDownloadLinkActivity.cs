@@ -1,11 +1,11 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -18,35 +18,35 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("UI Element")]
         [Description("The selector (XPath, ID, etc.) used to locate the download link on the page.")]
         public InArgument<string> UiElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Destination Folder")]
         [Description("The full path of the folder where the downloaded file will be saved.")]
         public InArgument<string> DestinationFolder { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Wait for File to Download")]
         [Description("If true, waits until the file appears in the destination folder.")]
         public InArgument<bool> WaitForDownload { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Maximum Wait Time (Seconds)")]
         [Description("The maximum time to wait for the file to appear in the destination folder.")]
         public InArgument<int> MaxWaitTime { get; set; }
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Downloaded File Output")]
         [Description("Returns the full path of the downloaded file.")]
         public OutArgument<string> DownloadedFile { get; set; }

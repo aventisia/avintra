@@ -21,8 +21,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Category("Output"), Description("Returns the hashed text.")]
         public OutArgument<string> HashedText { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

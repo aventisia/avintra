@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [RequiredArgument, Category("Input"), Description("Whether to enable (true) or disable (false) the key state.")]
         public InArgument<bool> Enable { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

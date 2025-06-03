@@ -17,35 +17,35 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The DataTable containing the data to be appended to the worksheet.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Append Mode")]
         [Description("Specifies how to append data: To Named Cells or To Active Sheet.")]
         [DefaultValue(CellAppendModeEnum.ToActiveSheet)]
         public InArgument<CellAppendModeEnum> AppendMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range to which data should be appended.")]
         [RenderIfCondition(nameof(AppendMode), "ToNamedCells")]
         public InArgument<string> Name { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("First Row Has Headers")]
         [Description("If true, skips the first row of the DataTable as it contains headers.")]
         public InArgument<bool> FirstRowHasHeaders { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Starting Column")]
         [Description("The starting column letter where appending should begin (e.g., 'A', 'B', 'AA').")]
         [RenderIfCondition(nameof(AppendMode), "ToActiveSheet")]

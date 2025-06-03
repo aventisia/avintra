@@ -3,7 +3,6 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
@@ -12,30 +11,30 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class CopyFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File(s) to copy")]
         [Description("The path(s) of the file(s) to copy. Supports wildcards like *.txt.")]
         public InArgument<string> SourceFiles { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Destination folder")]
         [Description("The destination folder where the files will be copied.")]
         public InArgument<string> DestinationFolder { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("If file exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Copied Files")]
         [Description("Returns the list of successfully copied files.")]
         public OutArgument<IEnumerable<string>> CopiedFiles { get; set; }
 
-        [Category("Output")] 
+
 
         protected override void Execute(CodeActivityContext context)
         {

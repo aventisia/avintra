@@ -1,8 +1,8 @@
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -15,13 +15,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("JavaScript Function")]
         [Description(
             "The JavaScript function to execute (e.g., 'document.getElementById(\"myId\").value = \"test\";')")]
@@ -48,7 +48,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Result Output")]
         [Description("Returns the result of the JavaScript execution, if any.")]
         public OutArgument<object> Result { get; set; }

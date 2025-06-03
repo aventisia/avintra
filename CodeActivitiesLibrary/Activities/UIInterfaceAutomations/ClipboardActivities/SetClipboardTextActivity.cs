@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
     {
         #region Inputs
 
-        [Category("Input")]
+
         [Description("The text to set to the clipboard.")]
         public InArgument<string> ClipboardText { get; set; }
 

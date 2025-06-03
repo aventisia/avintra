@@ -3,7 +3,6 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
@@ -16,17 +15,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Working Folder")]
         [Description("The directory where the CMD session should start.")]
         public InArgument<string> WorkingFolder { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Change Code Page")]
         [Description("Specifies whether to change the code page in the CMD session.")]
         public InArgument<bool> ChangeCodePage { get; set; } = new InArgument<bool>(false);
 
-        [Category("Input")]
+
         [DisplayName("Encoding")]
         [Description("The encoding to use if 'Change Code Page' is enabled.")]
         [DefaultValue(EncodingEnum.UTF8)]
@@ -38,7 +37,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("CMD Session")]
         [Description("Details of the opened CMD session.")]
         public OutArgument<string> CmdSession { get; set; }

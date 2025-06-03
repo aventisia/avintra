@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
-using CodeActivitiesLibrary.Extensions;
-using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -20,12 +20,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("The WebDriver instance containing browser session.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Close Mode")]
         [Description("Specifies how to close the tab(s): Current, By Title/URL, All Except Main, or After Timeout.")]
         [DefaultValue(CloseModeEnum.Current)]

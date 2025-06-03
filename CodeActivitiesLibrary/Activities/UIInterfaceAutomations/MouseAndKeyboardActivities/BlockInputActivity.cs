@@ -11,12 +11,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     public class BlockInputActivity : Extensions.BaseCodeActivity
     {
         // Input property
-        [Category("Input")]
+
         [DisplayName("Block It")]
         [Description("Toggle to enable or disable blocking of user input.")]
         public InArgument<bool> BlockIt { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

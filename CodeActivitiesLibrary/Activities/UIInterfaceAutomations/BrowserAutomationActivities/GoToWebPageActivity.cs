@@ -1,10 +1,10 @@
+using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -17,18 +17,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Navigate Action")]
         [Description("Specifies the type of navigation action to perform.")]
         [DefaultValue(NavigateActionEnum.ToUrl)]
         public InArgument<NavigateActionEnum> NavigateAction { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("URL")]
         [Description("The URL to navigate to when 'Navigate Action' is 'ToUrl'.")]
         [RenderIfCondition(nameof(NavigateAction), "ToUrl")]

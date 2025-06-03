@@ -14,13 +14,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target workbook.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Macro Name")]
         [Description("The name of the VBA macro to execute.")]
         public InArgument<string> MacroName { get; set; }
@@ -29,12 +29,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Macro Return Value")]
         [Description("Returns the value returned by the macro, if any.")]
         public OutArgument<string> MacroReturnValue { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

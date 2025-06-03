@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,62 +16,62 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Filter Mode")]
         [Description("Specifies how to filter cells: Active Sheet, Specific Range, Named Cells, or Table.")]
         [DefaultValue(ExcellFilterModeEnum.ActiveSheet)]
         public InArgument<ExcellFilterModeEnum> FilterMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
         public InArgument<int> EndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Named Cells")]
         [Description("The name of the named range to filter (required if 'Filter Mode' is 'NamedCells').")]
         [RenderIfCondition(nameof(FilterMode), "NamedCells")]
         public InArgument<string> NamedCells { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Table Name")]
         [Description("The name of the table to filter (required if 'Filter Mode' is 'Table').")]
         [RenderIfCondition(nameof(FilterMode), "Table")]
         public InArgument<string> TableName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Column To Filter")]
         [Description("The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) to apply the filter on.")]
         public InArgument<string> ColumnToFilter { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Filter Criteria")]
         [Description("The filter condition to apply. Example: '=Apple', '>10', '<>Complete'.")]
         public InArgument<string> FilterCriteria { get; set; }
@@ -80,7 +80,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

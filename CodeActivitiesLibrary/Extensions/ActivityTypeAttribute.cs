@@ -6,7 +6,7 @@ namespace CodeActivitiesLibrary.Extensions
     public class NodeTypeAttribute : Attribute
     {
         public string NodeType { get; }
-        public NodeTypeAttribute(string nodeType) 
+        public NodeTypeAttribute(string nodeType)
         {
             NodeType = nodeType;
         }

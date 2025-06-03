@@ -22,8 +22,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [Category("Output"), Description("Returns the connection ID or token for the opened FTP connection.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

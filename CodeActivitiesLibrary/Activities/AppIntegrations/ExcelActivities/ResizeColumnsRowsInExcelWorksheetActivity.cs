@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,51 +16,51 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Resize Target")]
         [Description("Specifies whether to resize Columns or Rows.")]
         [DefaultValue(ExcelColumnResizeTargetEnum.Columns)]
         public InArgument<ExcelColumnResizeTargetEnum> ResizeTarget { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Selection Range")]
         [Description("Specifies how to select the range to resize: All available, Range, or Single.")]
         [DefaultValue(ExcelColumnSelectionRangeEnum.AllAvailable)]
         public InArgument<ExcelColumnSelectionRangeEnum> SelectionRange { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to resize (required if 'Selection Range' is 'Range').")]
         [RenderIfCondition(nameof(SelectionRange), "Range")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to resize (required if 'Selection Range' is 'Range').")]
         [RenderIfCondition(nameof(SelectionRange), "Range")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column")]
         [Description("The column letter (e.g., 'A', 'B') to resize (required if 'Selection Range' is 'Single').")]
         [RenderIfCondition(nameof(SelectionRange), "Single")]
         public InArgument<string> Column { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Resize Type")]
         [Description("Choose whether to resize using a custom size or autofit.")]
         [DefaultValue(ExcelColumnResizeTypeEnum.CustomSize)]
         public InArgument<ExcelColumnResizeTypeEnum> ResizeType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Width")]
         [Description("The new width for columns or height for rows (required if 'Resize Type' is 'Custom Size').")]
         [RenderIfCondition(nameof(ResizeType), "CustomSize")]
@@ -70,7 +70,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

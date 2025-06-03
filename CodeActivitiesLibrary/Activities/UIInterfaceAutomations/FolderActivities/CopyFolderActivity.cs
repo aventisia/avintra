@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
@@ -11,25 +11,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class CopyFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Folder to Copy")]
         [Description("The path of the source folder that you want to duplicate.")]
         public InArgument<string> SourceFolder { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Destination Folder")]
         [Description("The path where the folder should be copied.")]
         public InArgument<string> DestinationFolder { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("If Folder Exists")]
         [Description("Specifies what action to take if the destination folder already exists.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Copied Folder")]
         [Description("The copied folder path as a confirmation output.")]
         public OutArgument<string> CopiedFolder { get; set; }

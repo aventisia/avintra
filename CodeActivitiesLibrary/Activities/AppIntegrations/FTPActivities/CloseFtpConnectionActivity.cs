@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

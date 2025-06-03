@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [Category("Output"), Description("Returns the list of subdirectories and files in the current directory.")]
         public OutArgument<IEnumerable<string>> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

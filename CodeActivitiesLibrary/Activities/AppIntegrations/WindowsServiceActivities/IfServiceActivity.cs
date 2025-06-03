@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         [Category("Output"), Description("Returns true if the service is in the specified state, otherwise false.")]
         public OutArgument<bool> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

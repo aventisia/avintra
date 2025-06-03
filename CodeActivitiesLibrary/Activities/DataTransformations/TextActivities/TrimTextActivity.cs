@@ -14,20 +14,20 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Original Text")]
         [Description("The original text from which characters will be trimmed.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Trim Mode")]
         [Description("Specifies whether to trim characters from the beginning, end, or both sides of the text.")]
         [DefaultValue(TrimModeEnum.TrimBoth)]
         public InArgument<TrimModeEnum> TrimMode { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("What to Trim")]
         [Description(
             "A string containing the characters to remove. Leave empty to trim only whitespace (space, tab, newline).")]
@@ -37,13 +37,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Trimmed Text")]
         [Description("The resulting text after trimming.")]
         public OutArgument<string> TrimmedText { get; set; }
 
-        [Category("Output")]
-        
+
+
 
         // ----------------------
         // Execution Logic

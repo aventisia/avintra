@@ -14,13 +14,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // Input Arguments
         // ----------------------
 
-        [Category("Input")]
+
         [DefaultValue(null)]
         [DisplayName("Profile Name")]
         [Description("Optional: The Outlook profile name to use when launching Outlook.")]
         public InArgument<string> ProfileName { get; set; }
 
-        [Category("Input")]
+
         [DefaultValue(true)]
         [DisplayName("Create New Instance")]
         [Description("Determines whether to create a new Outlook instance or reuse an existing one.")]
@@ -31,12 +31,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Output")]
+
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object created or reused by this activity.")]
         public OutArgument<Outlook.Application> OutlookApplication { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

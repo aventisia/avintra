@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [RequiredArgument, Category("Input"), Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

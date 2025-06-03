@@ -1,13 +1,13 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using MailKit;
+using MailKit.Net.Imap;
+using MailKit.Security;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
-using MailKit;
-using MailKit.Net.Imap;
-using MailKit.Security;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
@@ -21,49 +21,49 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Operation")]
         [Description("The action to perform on the email messages.")]
         [DefaultValue(EmailOperationEnum.Delete)]
         public InArgument<EmailOperationEnum> Operation { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Email Messages to Process")]
         [Description("The IDs of the email messages to process.")]
         public InArgument<List<string>> MessageIds { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("IMAP Server")]
         [Description("The IMAP server address.")]
         public InArgument<string> ImapServer { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Port")]
         [Description("The port number for the IMAP server.")]
         public InArgument<int> Port { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Enable SSL")]
         [Description("If true, enables SSL encryption for the connection.")]
         public InArgument<bool> EnableSSL { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Username")]
         [Description("The username for the IMAP account.")]
         public InArgument<string> Username { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Password")]
         [Description("The password for the IMAP account.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Accept Untrusted Certificates")]
         [Description("If true, accepts untrusted SSL certificates.")]
         public InArgument<bool> AcceptUntrustedCertificates { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Mail Folder")]
         [Description("The destination mail folder for moving emails (required if 'Operation' is 'Move').")]
         [RenderIfCondition(nameof(Operation), "MoveToFolder")]

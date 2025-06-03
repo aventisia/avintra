@@ -1,7 +1,7 @@
+using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -14,12 +14,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("The WebDriver instance to close.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Close All Instances")]
         [Description("If true, closes all open browser windows and disposes of the driver.")]
         public InArgument<bool> CloseAllInstances { get; set; }

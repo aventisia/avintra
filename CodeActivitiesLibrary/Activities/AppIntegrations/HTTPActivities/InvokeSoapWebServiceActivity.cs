@@ -22,8 +22,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Category("Output"), Description("Returns the response from the SOAP web service.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

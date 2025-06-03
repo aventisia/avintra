@@ -1,11 +1,10 @@
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -14,43 +13,43 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ClickUIElementInParentActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Element")]
         [Description("The parent UI element under which to search for the target element.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("The value of the property to match for the target element.")]
         [DefaultValue("")]
         public InArgument<string> PropertyValue { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Click Type")]
         [Description("How to click the element: UI Automation Click or Mouse Click.")]
         [DefaultValue(ClickTypeEnum.UIAutomationClick)]
         public InArgument<ClickTypeEnum> ClickType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the element and click action (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Was Clicked")]
         [Description("True if the element was clicked successfully, otherwise false.")]
         [DefaultValue(false)]
         public OutArgument<bool> WasClicked { get; set; }
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

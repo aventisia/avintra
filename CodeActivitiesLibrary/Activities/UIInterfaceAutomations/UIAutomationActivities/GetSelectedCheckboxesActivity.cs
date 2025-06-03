@@ -1,11 +1,10 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -14,30 +13,30 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetSelectedCheckboxesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Element")]
         [Description("The parent UI element or window where the checkbox group is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("How to search for the checkbox group (by Name, AutomationId, ClassName, or ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("The value to search for (for example, the group or container's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Selected Checkboxes")]
         [Description("Returns the list of selected checkbox names.")]
         public OutArgument<List<string>> SelectedCheckboxes { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

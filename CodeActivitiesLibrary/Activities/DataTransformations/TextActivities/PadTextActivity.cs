@@ -13,25 +13,25 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Original Text")]
         [Description("The original text to pad.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Padding Direction")]
         [Description("Specifies whether to pad the text on the left or right side.")]
         public InArgument<PadDirection> PaddingDirection { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Padding Character")]
         [Description("The character(s) to use for padding.")]
         public InArgument<string> PaddingCharacter { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Total Length")]
         [Description("The desired total length of the padded text.")]
         public InArgument<int> TotalLength { get; set; }
@@ -40,12 +40,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Padded Text")]
         [Description("The resulting text after padding.")]
         public OutArgument<string> PaddedText { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

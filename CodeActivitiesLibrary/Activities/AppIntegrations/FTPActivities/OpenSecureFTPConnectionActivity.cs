@@ -9,26 +9,26 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     public class OpenSecureFtpConnectionActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The username for authentication.")]
         public InArgument<string> Username { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the connection ID or token for the opened FTPS connection.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

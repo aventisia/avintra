@@ -1,12 +1,11 @@
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Windows.Automation;
-using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -15,38 +14,38 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class ExpandOrCollapseUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Element")]
         [Description("The parent UI element under which to search for the target element.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("The value of the property to match for the target element.")]
         [DefaultValue("")]
         public InArgument<string> PropertyValue { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Action Type")]
         [Description("Choose whether to expand or collapse the element.")]
         [DefaultValue(ExpandCollapseActionEnum.Expand)]
         public InArgument<ExpandCollapseActionEnum> ActionType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the element and action (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Was Successful")]
         [Description("True if the element was expanded or collapsed successfully, otherwise false.")]
         [DefaultValue(false)]
@@ -121,7 +120,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
     public enum ExpandCollapseActionEnum
     {
-         [Display(Name = "Expand", Description = "Expand the UI element.")]
+        [Display(Name = "Expand", Description = "Expand the UI element.")]
         Expand = 0,
 
         [Display(Name = "Collapse", Description = "Collapse the UI element.")]

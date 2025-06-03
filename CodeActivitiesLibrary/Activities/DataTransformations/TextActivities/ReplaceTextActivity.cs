@@ -15,36 +15,36 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Original Text")]
         [Description("The original text to modify.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Search Pattern")]
         [Description("The subtext or regular expression pattern to replace.")]
         public InArgument<string> SearchPattern { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Replacement Text")]
         [Description("The replacement text.")]
         public InArgument<string> ReplacementText { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Regular Expressions")]
         [Description("If true, treats 'Search Pattern' as a regular expression.")]
         [DefaultValue(false)]
         public InArgument<bool> UseRegex { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Ignore Case")]
         [Description("If true, performs a case-insensitive search.")]
         [DefaultValue(false)]
         public InArgument<bool> IgnoreCase { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Activate Escape Sequences")]
         [Description("If true, interprets escape sequences in the replacement text.")]
         [DefaultValue(false)]
@@ -54,12 +54,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Replaced Text")]
         [Description("The resulting text after replacement.")]
         public OutArgument<string> ReplacedText { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

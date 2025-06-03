@@ -12,8 +12,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
         [RequiredArgument, Category("Input"), Description("The path of the application or document to run.")]
         public InArgument<string> FilePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

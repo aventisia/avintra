@@ -10,35 +10,33 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class UpdateDataTableItemActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The DataTable containing the data to be updated.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Column")]
         [Description("The name of the column where the update should occur.")]
         public InArgument<string> Column { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Row")]
         [Description("The row index or primary key value of the row to update.")]
         public InArgument<int> Row { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("New Value")]
         [Description("The new value to set for the specified cell.")]
         public InArgument<object> NewValue { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Modified Data Table")]
         [Description("The DataTable after the specified cell has been updated.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
-
-        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

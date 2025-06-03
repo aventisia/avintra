@@ -10,16 +10,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunDosCommandActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The DOS command to execute.")]
         public InArgument<string> Command { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the output of the command.")]
         public OutArgument<string> CommandOutput { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

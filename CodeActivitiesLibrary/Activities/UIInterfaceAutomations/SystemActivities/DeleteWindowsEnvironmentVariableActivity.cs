@@ -9,12 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     public class DeleteWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The name of the environment variable to delete.")]
         public InArgument<string> VariableName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

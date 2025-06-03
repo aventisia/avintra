@@ -18,41 +18,41 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path of the CSV file to read.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Encoding")]
         [Description("The encoding of the CSV file.")]
         [DefaultValue(CsvEncodingEnum.UTF8)]
         public InArgument<CsvEncodingEnum> EncodingOption { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Trim Fields")]
         [Description("Specifies whether to trim whitespace from the fields.")]
         public InArgument<bool> TrimFields { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("First Line Contains Column Names")]
         [Description("Specifies whether the first row of the CSV file contains column names.")]
         public InArgument<bool> FirstLineContainsColumnNames { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("Columns Separator")]
         [Description("The type of separator used in the CSV file (Predefined or Custom).")]
         public InArgument<SeparatorTypeEnum> ColumnsSeparatorType { get; set; } =
             new InArgument<SeparatorTypeEnum>(SeparatorTypeEnum.Predefined);
 
-        [Category("Input")]
+
         [DisplayName("Predefined Separator")]
         [Description("The predefined delimiter used in the CSV file (e.g., Comma, Tab).")]
         [RenderIfCondition(nameof(ColumnsSeparatorType), "Predefined")]
         public InArgument<PredefinedSeparatorEnum> PredefinedSeparator { get; set; } =
             new InArgument<PredefinedSeparatorEnum>(PredefinedSeparatorEnum.Comma);
 
-        [Category("Input")]
+
         [DisplayName("Custom Separator")]
         [Description("The custom delimiter used in the CSV file.")]
         [RenderIfCondition(nameof(ColumnsSeparatorType), "Custom")]
@@ -62,7 +62,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("CSV Table")]
         [Description("The contents of the CSV file as a DataTable.")]
         public OutArgument<DataTable> CsvTable { get; set; }

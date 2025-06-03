@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -14,24 +14,24 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Input Arguments
         // ----------------------
 
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table to modify.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Specify Column With")]
         [Description("Specifies whether to delete the column by name or index.")]
         [DefaultValue(DataTableDeleteColumnByEnum.Name)]
         public InArgument<DataTableDeleteColumnByEnum> SpecifyColumnWith { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column Name")]
         [Description("The name of the column to delete (required if 'Specify Column With' is 'Name').")]
         [RenderIfCondition(nameof(SpecifyColumnWith), "Name")]
         public InArgument<string> ColumnName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column Index")]
         [Description("The zero-based index of the column to delete (required if 'Specify Column With' is 'Index').")]
         [RenderIfCondition(nameof(SpecifyColumnWith), "Index")]

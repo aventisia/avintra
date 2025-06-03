@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -11,12 +10,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class CloseWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Window")]
         [Description("Select the window you want to close.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

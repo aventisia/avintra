@@ -10,12 +10,12 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
         #region Inputs
 
-        [Category("Input")]
+
         [DisplayName("Text to Convert")]
         [Description("The text to convert.")]
         public InArgument<string> TextToConvert { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Convert To")]
         [Description("Specify the target case style: Upper, Lower, Title, or Sentence.")]
         public InArgument<TextCaseEnum> ConvertTo { get; set; }
@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         #region Outputs
 
-        [Category("Output")]
+
         [DisplayName("Result")]
         [Description("The converted text based on selected case style.")]
         public OutArgument<string> Result { get; set; }

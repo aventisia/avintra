@@ -10,16 +10,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     public class IfProcessActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The name of the process to check.")]
         public InArgument<string> ProcessName { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns true if the process is running, otherwise false.")]
         public OutArgument<bool> IsRunning { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -17,36 +17,36 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text To Parse")]
         [Description("The text value that will be parsed based on the specified search pattern.")]
         public InArgument<string> TextToParse { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Search Pattern")]
         [Description("The subtext or regular expression pattern to search for.")]
         public InArgument<string> SearchPattern { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Is Regular Expression")]
         [Description("If true, treats 'Search Pattern' as a regular expression pattern.")]
         [DefaultValue(false)]
         public InArgument<bool> IsRegularExpression { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Parsing At Position")]
         [Description("The index at which to start parsing the text.")]
         [DefaultValue(0)]
         public InArgument<int> StartPosition { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("First Occurrence Only")]
         [Description("If true, returns only the first occurrence of the search pattern.")]
         [DefaultValue(true)]
         public InArgument<bool> FirstOccurrenceOnly { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Ignore Case")]
         [Description("If true, performs a case-insensitive search.")]
         [DefaultValue(false)]
@@ -56,12 +56,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Parsed Matches")]
         [Description("Returns the list of matches found in the text.")]
         public OutArgument<IEnumerable<string>> ParsedMatches { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

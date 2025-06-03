@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class DeleteFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Folder to Delete")]
         [Description("Full path of the folder that you want to delete.")]
         public InArgument<string> FolderPath { get; set; }

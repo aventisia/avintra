@@ -1,11 +1,11 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -18,7 +18,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table variable to convert to CSV text.")]
         public InArgument<DataTable> DataTable { get; set; }
@@ -51,13 +51,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("CSV Text Output")]
         [Description("The CSV text representation of the data table.")]
         public OutArgument<string> CsvTextOutput { get; set; }
-
-        [Category("Output")]
-        
 
         // ----------------------
         // Execution Logic

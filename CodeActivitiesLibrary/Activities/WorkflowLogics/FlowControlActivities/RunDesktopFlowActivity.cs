@@ -7,8 +7,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
     [DisplayName("Run Desktop Flow"), Description("Runs another desktop flow and waits until completion.")]
     public class RunDesktopFlowActivity : Extensions.BaseNativeActivity
     {
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {

@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The list of file names to delete.")]
         public InArgument<IEnumerable<string>> FilesToDelete { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

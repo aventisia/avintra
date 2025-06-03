@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -17,19 +17,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table containing the rows to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Empty Row Mode")]
         [Description("Specifies how to detect empty rows.")]
         [DefaultValue(DataTableEmptyRowModeEnum.AllEmpty)]
         public InArgument<DataTableEmptyRowModeEnum> EmptyRowMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column Names To Check")]
         [Description("List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
         [RenderIfCondition(nameof(EmptyRowMode), "SpecificColumns")]
@@ -38,9 +38,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")]
-        
 
         // ----------------------
         // Execution Logic

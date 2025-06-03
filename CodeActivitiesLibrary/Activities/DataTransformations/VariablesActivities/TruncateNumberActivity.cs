@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -16,26 +16,26 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Number to Truncate")]
         [Description("The numeric value to truncate or round.")]
         public InArgument<double> NumberToTruncate { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Operation")]
         [Description("Specifies how to truncate or round the number.")]
         [DefaultValue(TruncateOperationEnum.GetIntegerPart)]
         public InArgument<TruncateOperationEnum> Operation { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Decimal Places")]
         [Description("The number of decimal places to round to. Only applicable for rounding operations.")]
         [DefaultValue(2)]
         [RenderIfCondition(nameof(Operation), TruncateOperationEnum.Round)]
         public InArgument<int> DecimalPlaces { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Round Operation")]
         [Description("Specifies round up or round down the number.")]
         [DefaultValue(TruncateNumberRoundOperationEnum.RoundUp)]
@@ -46,7 +46,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Truncated Value")]
         [Description("Returns the truncated or rounded numeric value.")]
         public OutArgument<double> TruncatedValue { get; set; }

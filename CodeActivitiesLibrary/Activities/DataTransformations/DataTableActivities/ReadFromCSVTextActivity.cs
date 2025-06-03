@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -17,39 +17,39 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("CSV Text")]
         [Description("The CSV text to parse.")]
         public InArgument<string> CsvText { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Trim Fields")]
         [Description("If true, trims whitespace from fields.")]
         public InArgument<bool> TrimFields { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("First Line Contains Column Names")]
         [Description("If true, treats the first line as column names.")]
         public InArgument<bool> FirstLineContainsColumnNames { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Get CSV Fields as Text")]
         [Description("If true, converts all fields to text.")]
         public InArgument<bool> GetCsvFieldsAsText { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Columns Separator")]
         [Description("Specifies how columns are separated in the CSV text.")]
         [DefaultValue(ReadCsvSeparatorEnum.Predefined)]
         public InArgument<ReadCsvSeparatorEnum> ColumnsSeparator { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Custom Separator")]
         [Description("The custom separator to use when 'Columns Separator' is 'Custom'.")]
         [RenderIfCondition(nameof(ColumnsSeparator), "Custom")]
         public InArgument<string> CustomSeparator { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Fixed Column Widths")]
         [Description("The fixed widths of columns when 'Columns Separator' is 'Fixed Column Widths'.")]
         [RenderIfCondition(nameof(ColumnsSeparator), "FixedColumnWidths")]
@@ -59,12 +59,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Result Data Table")]
         [Description("The generated data table.")]
         public OutArgument<DataTable> ResultDataTable { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,25 +16,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the workbook to save.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Save Mode")]
         [Description("Specifies how to save the workbook.")]
         [DefaultValue(ExcelFileSaveModeEnum.SaveDocument)]
         public InArgument<ExcelFileSaveModeEnum> SaveMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Document Path")]
         [Description("The file path to save the workbook (required if 'Save Mode' is 'Save Document As').")]
         [RenderIfCondition(nameof(SaveMode), "SaveDocumentAs")]
         public InArgument<string> DocumentPath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Document Format")]
         [Description("The file format to save the workbook as (required if 'Save Mode' is 'Save Document As').")]
         [RenderIfCondition(nameof(SaveMode), "SaveDocumentAs")]
@@ -44,7 +44,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

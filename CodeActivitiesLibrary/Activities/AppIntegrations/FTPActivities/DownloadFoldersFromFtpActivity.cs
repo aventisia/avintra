@@ -24,8 +24,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The local directory to save the downloaded folders.")]
         public InArgument<string> LocalDirectory { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -15,13 +15,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the source worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Range to Copy")]
         [Description("The range of cells to copy (e.g., 'A1:B10').")]
         public InArgument<string> RangeToCopy { get; set; }
@@ -30,12 +30,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Copied Data")]
         [Description("Returns the copied data as a DataTable for further processing.")]
         public OutArgument<DataTable> CopiedData { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

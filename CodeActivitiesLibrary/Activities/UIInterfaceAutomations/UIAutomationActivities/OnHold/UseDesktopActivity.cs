@@ -1,7 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
-using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -9,8 +7,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     // [Description("Performs desktop and taskbar-related operations.")]
     public class UseDesktopActivity : Extensions.BaseCodeActivity
     {
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

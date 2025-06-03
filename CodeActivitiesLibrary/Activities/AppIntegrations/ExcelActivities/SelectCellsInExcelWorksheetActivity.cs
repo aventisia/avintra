@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,49 +16,49 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Selection Mode")]
         [Description("Specifies how to select the cells.")]
         [DefaultValue(ExcelCellSelectionModeEnum.NamedCells)]
         public InArgument<ExcelCellSelectionModeEnum> SelectionMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range to select (required if 'Selection Mode' is 'Named Cells').")]
         [RenderIfCondition(nameof(SelectionMode), "NamedCells")]
         public InArgument<string> Name { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<int> EndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("X-Axis Direction")]
         [Description(
             "Specifies the direction along the X-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
@@ -66,7 +66,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
         public InArgument<ExcelXAxisDirectionEnum> XAxisDirection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Y-Axis Direction")]
         [Description(
             "Specifies the direction along the Y-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
@@ -74,14 +74,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
         public InArgument<ExcelYAxisDirectionEnum> YAxisDirection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("X Offset")]
         [Description(
             "The number of columns to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
         public InArgument<int> XOffset { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Y Offset")]
         [Description(
             "The number of rows to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
@@ -92,7 +92,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

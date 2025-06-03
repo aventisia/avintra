@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
         [RequiredArgument, Category("Input"), Description("The target folder to save the extracted images.")]
         public InArgument<string> TargetFolder { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

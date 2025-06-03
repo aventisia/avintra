@@ -14,18 +14,18 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table to filter.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Filter Expression")]
         [Description("The filter expression (e.g., \"Age > 30\").")]
         public InArgument<string> FilterExpression { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Match Case")]
         [Description("If true, performs a case-sensitive filter.")]
         public InArgument<bool> MatchCase { get; set; }
@@ -34,13 +34,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Filtered Data Table")]
         [Description("The filtered data table.")]
         public OutArgument<DataTable> FilteredDataTable { get; set; }
-
-        [Category("Output")]
-        
 
         // ----------------------
         // Execution Logic

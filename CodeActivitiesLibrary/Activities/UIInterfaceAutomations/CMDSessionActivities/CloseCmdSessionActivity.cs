@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("CMD Session")]
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }

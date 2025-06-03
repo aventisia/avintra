@@ -11,26 +11,26 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     [Description("Suspends running the flow until a file is created or deleted.")]
     public class WaitForFileActivity : Extensions.BaseNativeActivity
     {
-       
+
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Wait for file to be")]
         [Description("Specifies whether to wait for the file to be Created or Deleted.")]
         public InArgument<WaitForFileAction> Action { get; set; }
 
-       
+
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File path")]
         [Description("The path to the file to monitor.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Fail with timeout error")]
         [Description("Indicates whether to fail with a timeout error if the file is not created/deleted within the specified time.")]
         public bool FailWithTimeoutError { get; set; }
 
-        
+
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -102,7 +102,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         {
             int retryCount = 0;
             const int maxRetries = 10; // Maximum number of retries
-            const int delayMilliseconds = 500; 
+            const int delayMilliseconds = 500;
             while (retryCount < maxRetries)
             {
                 if (!File.Exists(filePath))

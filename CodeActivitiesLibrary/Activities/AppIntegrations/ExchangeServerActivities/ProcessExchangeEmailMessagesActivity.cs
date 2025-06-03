@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [RequiredArgument, Category("Input"), Description("The IDs of the email messages to process.")]
         public InArgument<IEnumerable<string>> MessageIds { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

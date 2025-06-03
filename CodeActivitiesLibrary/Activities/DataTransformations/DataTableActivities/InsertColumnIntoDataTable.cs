@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -15,30 +15,30 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table to modify.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Column Name")]
         [Description("The name of the new column.")]
         public InArgument<string> ColumnName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Type")]
         [Description("The data type of the new column.")]
         public InArgument<Type> DataType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Insert Location")]
         [Description("Specifies where to insert the new column.")]
         [DefaultValue(DataTableInsertLocationEnum.BeforeColumnIndex)]
         public InArgument<DataTableInsertLocationEnum> InsertLocation { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column Index")]
         [Description(
             "The zero-based index at which to insert the column (required if 'Insert Location' is 'Before Column Index').")]
@@ -49,7 +49,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

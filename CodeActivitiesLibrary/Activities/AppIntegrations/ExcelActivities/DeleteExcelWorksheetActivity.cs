@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -15,25 +15,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Deletion Mode")]
         [Description("Specifies how to identify the worksheet to delete: by Name or Index.")]
         [DefaultValue(WorksheetDeleteByModeEnum.Name)]
         public InArgument<WorksheetDeleteByModeEnum> DeletionMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Worksheet Name")]
         [Description("The name of the worksheet to delete (required if 'Deletion Mode' is 'Name').")]
         [RenderIfCondition(nameof(DeletionMode), "Name")]
         public InArgument<string> WorksheetName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Worksheet Index")]
         [Description("The index of the worksheet to delete (required if 'Deletion Mode' is 'Index').")]
         [RenderIfCondition(nameof(DeletionMode), "Index")]
@@ -42,8 +42,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

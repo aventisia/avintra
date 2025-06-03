@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         [RequiredArgument, Category("Input"), Description("The desired state of the service (e.g., Running, Stopped).")]
         public InArgument<ServiceControllerStatus> DesiredState { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

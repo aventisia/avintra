@@ -86,35 +86,35 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         #region Inputs
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<string> WebBrowserInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Wait For Web Page To")]
         [Description("Select what condition to wait for in the current web page.")]
         [DefaultValue(WaitConditionEnum.ContainElement)]
         public InArgument<WaitConditionEnum> WaitForWebPageTo { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Check UI Element State")]
         [Description("Check whether a specific UI element is enabled or disabled.")]
         [DefaultValue(false)]
         public InArgument<bool> CheckUiElementState { get; set; }
 
         [Browsable(false)]
-        [Category("Input")]
+
         [DisplayName("UI Element")]
         [Description("The UI element to look for in the web page.")]
         public InArgument<string> UiElement { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Text")]
         [Description("The text to look for in the web page content.")]
         public InArgument<string> Text { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("State")]
         [Description("The expected state of the UI element (enabled or disabled).")]
         [DefaultValue(ElementStateEnum.Enabled)]

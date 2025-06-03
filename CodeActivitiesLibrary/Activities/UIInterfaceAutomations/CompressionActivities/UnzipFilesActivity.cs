@@ -112,25 +112,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
         #region Inputs
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The full path of the ZIP file to extract.")]
         public InArgument<string> ArchivePath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The full path of the folder to extract the archive to. Existing files may be overwritten.")]
         public InArgument<string> DestinationFolder { get; set; }
 
-        [Category("Input")]
+
         [Description("The password used for this archive, if any.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Input")]
+
         [Description(
             "Limits the extracted files to those matching the mask. Use wildcards like '*.txt'. Multiple filters separated by ';'.")]
         public InArgument<string> IncludeMask { get; set; }
 
-        [Category("Input")]
+
         [Description("Excludes files matching the mask. Use wildcards like '*.log'. Multiple filters separated by ';'.")]
         public InArgument<string> ExcludeMask { get; set; }
 

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-
-namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
+﻿namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     //[DisplayName("Get Last Error"), Description("Retrieves information about the last error in the workflow.")]
     //public class GetLastErrorActivity : Extensions.BaseNativeActivity
     //{
-        
-        
+
+
 
     //    protected override void Execute(NativeActivityContext context)
     //    {

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -14,31 +14,31 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Original Text")]
         [Description("The full text value from which to extract a substring.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DefaultValue(StartIndexTypeEnum.StartOfText)]
         [DisplayName("Start Index Type")]
         [Description("Specifies whether to start from the beginning of the text or at a specific character position.")]
         public InArgument<StartIndexTypeEnum> StartIndexType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Index")]
         [Description(
             "The zero-based starting position of the substring. Only used if 'Start Index Type' is 'Character Position'.")]
         public InArgument<int> StartIndex { get; set; }
 
-        [Category("Input")]
+
         [DefaultValue(LengthTypeEnum.SpecificLength)]
         [DisplayName("Length Type")]
         [Description("Specifies whether to extract a specific number of characters or until the end of the string.")]
         public InArgument<LengthTypeEnum> LengthType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Number of Characters")]
         [Description("The number of characters to extract. Only used if 'Length Type' is 'Specific Length'.")]
         [RenderIfCondition(nameof(LengthType), nameof(LengthTypeEnum.SpecificLength))]
@@ -48,12 +48,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Substring Result")]
         [Description("Returns the extracted substring.")]
         public OutArgument<string> SubstringResult { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

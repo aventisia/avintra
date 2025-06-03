@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Original Text")]
         [Description("The original text to reverse. Example: 'Hello' → 'olleH'.")]
         public InArgument<string> OriginalText { get; set; }
@@ -22,13 +22,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Reversed Text")]
         [Description("Returns the reversed version of the input text.")]
         public OutArgument<string> ReversedText { get; set; }
 
-        [Category("Output")]
-        
+
+
 
         // ----------------------
         // Execution Logic

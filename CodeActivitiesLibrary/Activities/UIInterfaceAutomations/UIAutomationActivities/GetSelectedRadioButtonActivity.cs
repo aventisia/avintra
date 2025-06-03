@@ -1,11 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -14,25 +12,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetSelectedRadioButtonActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Element")]
         [Description("The window or parent element where the radio button group is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("How to search for the radio button group (by Name, AutomationId, ClassName, or ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("The value to search for (for example, the group or container's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Selected Radio Button Name")]
         [Description("Returns the name of the selected radio button, or empty if none is selected.")]
         public OutArgument<string> SelectedRadioButton { get; set; }

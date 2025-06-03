@@ -1,9 +1,9 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Activities;
+using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -16,25 +16,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [Browsable(false)]
-        [Category("Input")]
+
         [DisplayName("UI Element")]
         [Description("Selector used to locate the element (e.g., XPath, ID).")]
         public InArgument<string> UiElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Attribute Name")]
         [Description("The name of the attribute whose value should be retrieved. Use 'Text' to get inner text.")]
         [DefaultValue("Text")]
@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Attribute Value Output")]
         [Description("Returns the value of the attribute from the found web element.")]
         public OutArgument<string> AttributeValueOutput { get; set; }

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,18 +16,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object to close.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Before Closing Excel")]
         [Description("Specifies what to do before closing Excel.")]
         [DefaultValue(ExcelCloseOptionEnum.SaveDocument)]
         public InArgument<ExcelCloseOptionEnum> BeforeClosingExcel { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Save Path")]
         [Description("The file path to save the document when 'Save Document As' is selected.")]
         [RenderIfCondition(nameof(BeforeClosingExcel), "SaveDocumentAs")]
@@ -36,8 +36,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

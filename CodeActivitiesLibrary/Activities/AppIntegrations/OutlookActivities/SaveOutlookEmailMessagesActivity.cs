@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Outlook;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.Office.Interop.Outlook;
 using Exception = System.Exception;
 
 namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
@@ -16,19 +16,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to access mail items.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Email Messages")]
         [Description("A list of MailItem objects representing the emails to save.")]
         public InArgument<List<MailItem>> EmailMessages { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Save Location")]
         [Description("The folder path where the .msg files should be saved.")]
         public InArgument<string> SaveLocation { get; set; }
@@ -37,7 +37,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

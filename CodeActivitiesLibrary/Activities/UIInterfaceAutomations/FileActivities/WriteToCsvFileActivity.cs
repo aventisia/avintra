@@ -18,42 +18,42 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Variable to Write")]
         [Description("The data to write to the CSV file (DataTable, DataRow, or List).")]
         public InArgument<object> VariableToWrite { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path of the CSV file to write.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Encoding")]
         [Description("The encoding of the CSV file.")]
         [DefaultValue(CsvEncodingEnum.UTF8)]
         public InArgument<CsvEncodingEnum> EncodingOption { get; set; } // Renamed to avoid conflict
 
-        [Category("Input")]
+
         [DisplayName("Use Custom Column Separator")]
         [Description("Specifies whether to use a custom column separator.")]
         public InArgument<bool> UseCustomColumnSeparator { get; set; } = new InArgument<bool>(false);
 
-        [Category("Input")]
+
         [DisplayName("Custom Column Separator")]
         [Description("The custom delimiter used in the CSV file.")]
         [RenderIfCondition(nameof(UseCustomColumnSeparator), "True")]
         public InArgument<string> CustomColumnSeparator { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Predefined Separator")]
         [Description("The predefined separator used in the CSV file (e.g., Comma, Tab).")]
         [RenderIfCondition(nameof(UseCustomColumnSeparator), "False")]
         public InArgument<CsvPredefinedSeparatorEnum> PredefinedSeparator { get; set; } =
             new InArgument<CsvPredefinedSeparatorEnum>(CsvPredefinedSeparatorEnum.Comma);
 
-        [Category("Input")]
+
         [DisplayName("If File Exists")]
         [Description("Specifies how to handle existing files.")]
         [DefaultValue(FileExistOptionEnum.Overwrite)]

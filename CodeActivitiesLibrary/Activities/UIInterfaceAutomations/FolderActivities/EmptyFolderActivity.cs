@@ -11,12 +11,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class EmptyFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Folder to Empty")]
         [Description("Specify the path of the folder whose contents should be deleted.")]
         public InArgument<string> FolderPath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Include Subfolders")]
         [Description("Determines whether subfolders and their contents should also be deleted.")]
         [DefaultValue(true)]

@@ -10,23 +10,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     [Description("Moves the mouse cursor to a specific position on the screen.")]
     public class MoveMouseActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("Position X")]
         public InArgument<int> PositionX { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Position Y")]
         public InArgument<int> PositionY { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Relative To")]
         public InArgument<RelativeToEnum> RelativeTo { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Move Mouse From Previous Position")]
         public InArgument<AnimationSpeedEnum> MoveMouseFromPreviousPosition { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Current Cursor Position")]
         public OutArgument<Point> CurrentCursorPosition { get; set; }
 

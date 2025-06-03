@@ -22,8 +22,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [RequiredArgument, Category("Input"), Description("The path to the output file.")]
         public InArgument<string> OutputFilePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

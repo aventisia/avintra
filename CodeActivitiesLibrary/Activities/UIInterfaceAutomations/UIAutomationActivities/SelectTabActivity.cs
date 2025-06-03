@@ -1,11 +1,10 @@
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -14,37 +13,37 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SelectTabActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Window")]
         [Description("Select the window or parent element where the tab control is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("Choose how you want to search for the tab control (by Name, ID, Class Name, or Control Type).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("Enter the value to search for (for example, the tab control's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Tab Identifier")]
         [Description("The index (zero-based) or name of the tab to select.")]
         public InArgument<string> TabIdentifier { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the tab control and selection (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Was Tab Selected")]
         [Description("True if the tab was selected successfully, otherwise false.")]
         [DefaultValue(false)]

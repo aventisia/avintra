@@ -17,8 +17,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
         [RequiredArgument, Category("Input"), Description("The path to save the resulting zip file.")]
         public InArgument<string> OutputZipPath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

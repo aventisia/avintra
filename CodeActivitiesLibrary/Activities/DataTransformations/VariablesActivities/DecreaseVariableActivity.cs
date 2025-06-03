@@ -13,13 +13,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Variable To Decrease")]
         [Description("The numeric variable that will be decreased.")]
         public InArgument<double> VariableToDecrease { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Value To Subtract")]
         [Description(
             "The amount to subtract from the variable. Can be a number or another variable containing a number.")]
@@ -29,12 +29,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Decreased Variable")]
         [Description("Returns the resulting value after decreasing the variable.")]
         public OutArgument<double> DecreasedVariable { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

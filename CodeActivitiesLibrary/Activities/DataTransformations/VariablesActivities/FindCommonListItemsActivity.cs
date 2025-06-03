@@ -15,13 +15,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("First List")]
         [Description("The first list to compare.")]
         public InArgument<IEnumerable<object>> FirstList { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Second List")]
         [Description("The second list to compare.")]
         public InArgument<IEnumerable<object>> SecondList { get; set; }
@@ -30,12 +30,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Intersection List")]
         [Description("Returns a list containing the common items from both input lists.")]
         public OutArgument<List<object>> IntersectionList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

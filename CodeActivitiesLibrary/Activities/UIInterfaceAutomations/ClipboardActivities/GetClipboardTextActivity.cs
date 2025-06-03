@@ -40,7 +40,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
 
         #region Outputs
 
-        [Category("Output")]
+
         [Description("The text retrieved from the clipboard.")]
         public OutArgument<string> ClipboardTextOutput { get; set; }
 

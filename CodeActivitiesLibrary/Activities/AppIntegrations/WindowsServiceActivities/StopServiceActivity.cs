@@ -12,8 +12,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         [RequiredArgument, Category("Input"), Description("The name of the service to stop.")]
         public InArgument<string> ServiceName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -5,7 +5,7 @@
     //public class MoveMouseToImageActivity : Extensions.BaseCodeActivity
     //{
     //    [RequiredArgument]
-    //    [Category("Input")]
+    //    
     //    [Description("The path to the image file to locate.")]
     //    public InArgument<string> ImagePath { get; set; }  
 

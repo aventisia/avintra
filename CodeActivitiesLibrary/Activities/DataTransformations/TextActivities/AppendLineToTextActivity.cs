@@ -21,11 +21,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         #region Inputs
 
-        [Category("Input")]
+
         [Description("The original text to which a new line will be appended.")]
         public InArgument<string> OriginalText { get; set; }
 
-        [Category("Input")]
+
         [Description("The new line of text to append.")]
         public InArgument<string> NewLine { get; set; }
 
@@ -33,7 +33,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         #region Outputs
 
-        [Category("Output")]
+
         [Description("The resulting text after appending the new line.")]
         public OutArgument<string> OResultOutput { get; set; }
 

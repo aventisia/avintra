@@ -1,8 +1,8 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using OpenQA.Selenium;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -15,13 +15,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Detail Type")]
         [Description("Specifies which detail to retrieve from the web page.")]
         [DefaultValue(WebPageDetailTypeEnum.WebPageTitle)]
@@ -31,7 +31,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Web Page Property")]
         [Description("The value retrieved from the web page based on the selected detail type.")]
         public OutArgument<string> OWebPagePropertyOutput { get; set; }

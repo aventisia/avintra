@@ -9,8 +9,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
     [Description("Logs off the current user.")]
     public class LogOffUserActivity : Extensions.BaseCodeActivity
     {
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

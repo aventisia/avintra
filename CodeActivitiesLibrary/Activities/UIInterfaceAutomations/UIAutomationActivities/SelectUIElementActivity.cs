@@ -3,7 +3,6 @@ using System.Activities;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -12,18 +11,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SelectUIElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Element Instance")]
         [Description("The UI element instance to select.")]
         public InArgument<AutomationElement> ElementInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the selection action (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Was Selected")]
         [Description("True if the element was selected successfully, otherwise false.")]
         [DefaultValue(false)]

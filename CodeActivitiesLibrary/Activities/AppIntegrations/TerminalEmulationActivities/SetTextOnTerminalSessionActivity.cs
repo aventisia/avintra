@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The text to set on the terminal session.")]
         public InArgument<string> Text { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

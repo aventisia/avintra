@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
         [RequiredArgument, Category("Input"), Description("Number of seconds to wait.")]
         public InArgument<int> Seconds { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {

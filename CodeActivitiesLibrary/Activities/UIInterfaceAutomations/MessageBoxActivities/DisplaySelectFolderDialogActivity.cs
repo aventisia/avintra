@@ -9,33 +9,33 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a folder selection dialog to let users choose a folder.")]
     public sealed class DisplaySelectFolderDialog : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [RequiredArgument]
         [DisplayName("Dialog Description")]
         [Description("The description or title of the folder selection dialog window.")]
         public InArgument<string> DialogDescription { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Initial Folder")]
         [Description("The folder path where the dialog starts. If empty, defaults to Desktop.")]
         public InArgument<string> InitialFolder { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Keep Dialog On Top")]
         [Description("If true, keeps the dialog on top of all other windows.")]
         public InArgument<bool> KeepDialogOnTop { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Selected Folder")]
         [Description("The full path of the folder selected by the user.")]
         public OutArgument<string> SelectedFolder { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Button Pressed")]
         [Description("True if user clicked OK; False if Cancel was clicked or dialog closed.")]
         public OutArgument<bool> ButtonPressed { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

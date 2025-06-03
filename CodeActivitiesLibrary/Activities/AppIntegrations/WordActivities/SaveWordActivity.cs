@@ -12,8 +12,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [RequiredArgument, Category("Input"), Description("The path to save the Word document.")]
         public InArgument<string> SavePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

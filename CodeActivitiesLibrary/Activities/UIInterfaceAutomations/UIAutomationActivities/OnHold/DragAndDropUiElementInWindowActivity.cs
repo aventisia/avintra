@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -10,22 +9,22 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class DragAndDropUiElementInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The selector or identifier of the source UI element.")]
         public InArgument<string> SourceUiElementSelector { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The selector or identifier of the target UI element.")]
         public InArgument<string> TargetUiElementSelector { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

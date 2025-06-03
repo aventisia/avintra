@@ -10,29 +10,29 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Number to Convert")]
         [Description("The numeric value to convert to text.")]
         public InArgument<double> NumberToConvert { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Decimal Places")]
         [Description("The number of decimal places to include in the formatted text.")]
         [DefaultValue(2)]
         public InArgument<int> DecimalPlaces { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Thousands Separator")]
         [Description("If true, includes a thousands separator in the formatted text.")]
         [DefaultValue(true)]
         public InArgument<bool> UseThousandsSeparator { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Formatted Number")]
         [Description("The resulting formatted number as text.")]
         public OutArgument<string> FormattedNumber { get; set; }
 
-        [Category("Output")] 
+
 
 
         protected override void Execute(CodeActivityContext context)

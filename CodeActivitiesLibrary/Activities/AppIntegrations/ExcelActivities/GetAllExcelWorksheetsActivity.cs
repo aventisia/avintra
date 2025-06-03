@@ -16,7 +16,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target workbook.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
@@ -25,12 +25,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Worksheet Names")]
         [Description("Returns a list of all worksheet names in the active Excel workbook.")]
         public OutArgument<IEnumerable<string>> WorksheetNames { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

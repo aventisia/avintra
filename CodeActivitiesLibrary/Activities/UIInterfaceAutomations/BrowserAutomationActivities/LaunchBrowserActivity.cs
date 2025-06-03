@@ -1,13 +1,13 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
+using System;
+using System.Activities;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
 {
@@ -20,39 +20,39 @@ namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Browser Type")]
         [Description("Specifies which browser to launch (Microsoft Edge, Google Chrome, Mozilla Firefox).")]
         [DefaultValue(BrowserTypeEnum.MicrosoftEdge)]
         public InArgument<BrowserTypeEnum> BrowserType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Browsing Mode")]
         [Description("Specifies whether to open in normal or private browsing mode.")]
         [DefaultValue(BrowsingModeEnum.Normal)]
         public InArgument<BrowsingModeEnum> BrowsingMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Custom Browser Name")]
         [Description("Name of the custom browser (required if 'Browser Type' is 'Custom').")]
         [RenderIfCondition(nameof(BrowserType), "Custom")]
         public InArgument<string> CustomBrowserName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Browser Executable Path")]
         [Description(
             "The path to the browser executable (e.g., firefox.exe, chrome.exe). Required if 'Browser Type' is 'Custom'.")]
         [RenderIfCondition(nameof(BrowserType), "Custom")]
         public InArgument<string> BrowserExecutablePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Driver Executable Path")]
         [Description(
             "The path to the driver executable (e.g., geckodriver.exe for Firefox). Required if 'Browser Type' is 'Custom'.")]
         [RenderIfCondition(nameof(BrowserType), "Custom")]
         public InArgument<string> DriverExecutablePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Window State")]
         [Description("Specifies the initial browser window state.")]
         [DefaultValue(WindowStateEnum.Maximized)]
@@ -62,7 +62,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Web Driver")]
         [Description("Returns the WebDriver object for further automation steps.")]
         public OutArgument<IWebDriver> WebDriver { get; set; }

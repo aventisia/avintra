@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Outlook;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using Microsoft.Office.Interop.Outlook;
 using Exception = System.Exception;
 
 namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
@@ -17,52 +17,52 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object used to send the email.")]
         public InArgument<Application> OutlookApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Recipient(s)")]
         [Description("The email address(es) of the recipient(s). Separate multiple addresses by semicolons (;).")]
         public InArgument<string> To { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("CC Recipient(s)")]
         [Description("Optional: The CC email address(es), separated by semicolons (;).")]
         public InArgument<string> CC { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("BCC Recipient(s)")]
         [Description("Optional: The BCC email address(es), separated by semicolons (;).")]
         public InArgument<string> BCC { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Subject")]
         [Description("The subject line of the email message.")]
         public InArgument<string> Subject { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Body")]
         [Description("The body content of the email message.")]
         public InArgument<string> Body { get; set; }
 
-        [Category("Input")]
+
         [DefaultValue(false)]
         [DisplayName("Is Body HTML")]
         [Description("Determines whether the body should be interpreted as HTML.")]
         public InArgument<bool> BodyIsHtml { get; set; }
 
-        [Category("Input")]
+
         [DefaultValue(false)]
         [DisplayName("Save As Draft")]
         [Description("If true, the email is saved as a draft instead of being sent immediately.")]
         public InArgument<bool> SaveAsDraft { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Attachments")]
         [Description("Full path of any attachment files. Multiple paths can be separated by spaces.")]
         public InArgument<string> Attachments { get; set; }
@@ -71,7 +71,6 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

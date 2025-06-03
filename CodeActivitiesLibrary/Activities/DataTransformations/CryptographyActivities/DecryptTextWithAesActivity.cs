@@ -21,8 +21,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Category("Output"), Description("Returns the decrypted text.")]
         public OutArgument<string> DecryptedText { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

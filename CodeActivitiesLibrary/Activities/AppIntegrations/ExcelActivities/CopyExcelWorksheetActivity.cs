@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -15,37 +15,37 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source Excel Application")]
         [Description("The Excel Application object containing the source worksheet.")]
         public InArgument<Excel.Application> SourceExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Copy Mode")]
         [Description("Specifies how to identify the source worksheet: by Name or Index.")]
         [DefaultValue(WorksheetCopyModeEnum.Name)]
         public InArgument<WorksheetCopyModeEnum> CopyMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Worksheet Name")]
         [Description("The name of the worksheet to copy (required if 'Copy Mode' is 'Name').")]
         [RenderIfCondition(nameof(CopyMode), "Name")]
         public InArgument<string> WorksheetName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Worksheet Index")]
         [Description("The index of the worksheet to copy (required if 'Copy Mode' is 'Index').")]
         [RenderIfCondition(nameof(CopyMode), "Index")]
         public InArgument<int> WorksheetIndex { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Target Excel Application")]
         [Description("The Excel Application object where the worksheet will be copied.")]
         public InArgument<Excel.Application> TargetExcelApplication { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Paste Position")]
         [Description("Specifies where to paste the copied worksheet in the target workbook.")]
         [DefaultValue(WorksheetPastePositionEnum.FirstWorksheet)]
@@ -55,7 +55,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

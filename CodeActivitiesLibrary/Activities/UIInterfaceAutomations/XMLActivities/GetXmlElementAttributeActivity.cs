@@ -11,26 +11,26 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class GetXmlElementAttributeActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The XML content as a string.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The XPath expression to locate the element.")]
         public InArgument<string> XPath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The name of the attribute to retrieve.")]
         public InArgument<string> AttributeName { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the attribute value.")]
         public OutArgument<string> AttributeValue { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

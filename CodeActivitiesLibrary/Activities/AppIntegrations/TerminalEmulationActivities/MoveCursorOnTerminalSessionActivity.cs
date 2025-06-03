@@ -18,8 +18,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The Y-coordinate of the target position.")]
         public InArgument<int> Y { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

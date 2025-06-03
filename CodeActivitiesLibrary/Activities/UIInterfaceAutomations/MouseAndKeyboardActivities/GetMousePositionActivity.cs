@@ -3,7 +3,6 @@ using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
 {
@@ -13,18 +12,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     public class GetMousePositionActivity : Extensions.BaseCodeActivity
     {
         // Input property
-        [Category("Input")]
+
         [DisplayName("Relative To")]
         [Description("Specifies whether the mouse position is relative to the Screen or Foreground Window.")]
         public InArgument<RelativeToEnum> RelativeTo { get; set; }
 
         // Output properties
-        [Category("Output")]
+
         [DisplayName("Mouse Pos X")]
         [Description("The horizontal (X) value of the mouse position.")]
         public OutArgument<int> MousePosX { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Mouse Pos Y")]
         [Description("The vertical (Y) value of the mouse position.")]
         public OutArgument<int> MousePosY { get; set; }

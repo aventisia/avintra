@@ -3,7 +3,6 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
@@ -12,25 +11,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class MoveFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File(s) to move")]
         [Description("The path(s) of the file(s) to move. Supports wildcards like *.txt.")]
         public InArgument<string> SourceFiles { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Destination folder")]
         [Description("The destination folder where the files will be moved.")]
         public InArgument<string> DestinationFolder { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("If file exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Moved File")]
         [Description("Returns the path of the successfully moved file.")]
         public OutArgument<string> MovedFile { get; set; }

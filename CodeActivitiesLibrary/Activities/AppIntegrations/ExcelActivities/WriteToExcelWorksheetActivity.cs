@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,45 +16,45 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Value To Write")]
         [Description("The value to write into the specified cell or range.")]
         public InArgument<string> ValueToWrite { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Write Mode")]
         [Description("Specifies how to determine the target cell(s) for writing.")]
         [DefaultValue(ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column")]
         [Description(
             "The column letter (e.g., 'A', 'B') where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
         [RenderIfCondition(nameof(WriteMode), "OnSpecifiedCell")]
         public InArgument<string> Column { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Row")]
         [Description(
             "The row number where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
         [RenderIfCondition(nameof(WriteMode), "OnSpecifiedCell")]
         public InArgument<int> Row { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range to write to (required if 'Write Mode' is 'On Named Cells').")]
         [RenderIfCondition(nameof(WriteMode), "OnNamedCells")]
         public InArgument<string> Name { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Populate Entire Range")]
         [Description("If true, populates the entire named range with the same value.")]
         [RenderIfCondition(nameof(WriteMode), "OnNamedCells")]
@@ -64,7 +64,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

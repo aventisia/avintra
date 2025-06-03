@@ -1,4 +1,3 @@
-using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -12,29 +11,29 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetChildWindowElementActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Window")]
         [Description("Select the parent window where you want to search for the child window.")]
         public InArgument<AutomationElement> ParentWindow { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Child Window Name")]
         [Description("Enter the name (title) of the child window you want to find.")]
         public InArgument<string> ChildWindowName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("How many seconds to wait while searching for the child window.")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Child Window Element")]
         [Description("The found child window AutomationElement.")]
         public OutArgument<AutomationElement> ChildWindowElement { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

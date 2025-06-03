@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [RequiredArgument, Category("Input"), Description("Whether to press (true) or release (false) the key.")]
         public InArgument<bool> Press { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

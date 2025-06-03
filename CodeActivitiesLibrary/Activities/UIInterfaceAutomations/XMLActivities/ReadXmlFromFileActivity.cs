@@ -11,16 +11,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class ReadXmlFromFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the XML file.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the XML content as a string.")]
         public OutArgument<string> XmlContent { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

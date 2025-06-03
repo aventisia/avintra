@@ -2,7 +2,6 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Globalization;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -12,24 +11,24 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
         #region Inputs
 
-        [Category("Input")]
+
         [DisplayName("Datetime to Convert")]
         [Description("The datetime value to convert to text.")]
         public InArgument<DateTime> DatetimeToConvert { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Format to Use")]
         [Description("Specifies whether to use a standard datetime format or create a custom one.")]
         [DefaultValue(FormatOptionEnum.Standard)]
         public FormatOptionEnum FormatToUse { get; set; } = FormatOptionEnum.Standard;
 
-        [Category("Input")]
+
         [DisplayName("Standard Format")]
         [Description("The standard datetime format to use when displaying the datetime value.")]
         [RenderIfCondition(nameof(FormatToUse), "Standard")]
         public StandardFormatOptionEnum StandardFormat { get; set; } = StandardFormatOptionEnum.ShortDate;
 
-        [Category("Input")]
+
         [DisplayName("Custom Format")]
         [Description("A custom format string for formatting the datetime value (e.g., yyyyMMdd).")]
         [RenderIfCondition(nameof(FormatToUse), "Custom")]
@@ -39,7 +38,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         #region Outputs
 
-        [Category("Output")]
+
         [DisplayName("Formatted DateTime")]
         [Description("The formatted datetime as a text value.")]
         public OutArgument<string> FormattedDateTime { get; set; }

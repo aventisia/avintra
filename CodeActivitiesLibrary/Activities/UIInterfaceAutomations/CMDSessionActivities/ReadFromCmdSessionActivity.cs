@@ -14,12 +14,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("CMD Session")]
         [Description("The process representing the CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Separate Output from Error")]
         [Description("Specifies whether to separate standard output from standard error.")]
         public InArgument<bool> SeparateOutputFromError { get; set; } = new InArgument<bool>(true);
@@ -28,12 +28,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("CmdOutput")]
         [Description("The CMD session's standard output.")]
         public OutArgument<string> CmdOutput { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("CmdError")]
         [Description("The CMD session's standard error (if separated).")]
         public OutArgument<string> CmdError { get; set; }

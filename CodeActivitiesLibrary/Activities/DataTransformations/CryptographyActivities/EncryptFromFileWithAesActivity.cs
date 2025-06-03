@@ -10,27 +10,27 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
     public class EncryptFromFileWithAesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the input file.")]
         public InArgument<string> InputFilePath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The encryption key.")]
         public InArgument<string> Key { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The encoding format for the encrypted content.")]
         public InArgument<EncodingFormat> EncodingFormat { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the output file.")]
         public InArgument<string> OutputFilePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

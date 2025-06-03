@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         [RequiredArgument, Category("Input"), Description("The path to the WAV file.")]
         public InArgument<string> SoundFilePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -1,4 +1,9 @@
-﻿using System;
+﻿using MailKit;
+using MailKit.Net.Imap;
+using MailKit.Search;
+using MailKit.Security;
+using MimeKit;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,11 +11,6 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using MailKit;
-using MailKit.Net.Imap;
-using MailKit.Search;
-using MailKit.Security;
-using MimeKit;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
@@ -23,82 +23,82 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("IMAP Server")]
         [Description("The IMAP server URL.")]
         public InArgument<string> ImapServer { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Username")]
         [Description("The username for authentication.")]
         public InArgument<string> Username { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Password")]
         [Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Port")]
         [Description("The port number for the IMAP server (default is 993).")]
         public InArgument<int> Port { get; set; } = 993;
 
-        [Category("Input")]
+
         [DisplayName("Enable SSL")]
         [Description("If true, uses SSL encryption for the connection.")]
         public InArgument<bool> EnableSSL { get; set; } = true;
 
-        [Category("Input")]
+
         [DisplayName("Accept Untrusted Certificates")]
         [Description("If true, accepts untrusted SSL certificates.")]
         public InArgument<bool> AcceptUntrustedCertificates { get; set; } = false;
 
-        [Category("Input")]
+
         [DisplayName("Mail Folder")]
         [Description("The folder to retrieve emails from (e.g., Inbox).")]
         public InArgument<string> MailFolder { get; set; } = "Inbox";
 
-        [Category("Input")]
+
         [DisplayName("Retrieve Mode")]
         [Description("Specifies which emails to retrieve.")]
         [DefaultValue(EmailRetrieveModeEnum.AllEmails)]
         public InArgument<EmailRetrieveModeEnum> RetrieveMode { get; set; } = EmailRetrieveModeEnum.AllEmails;
 
-        [Category("Input")]
+
         [DisplayName("Mark as Read")]
         [Description("If true, marks retrieved emails as read.")]
         public InArgument<bool> MarkAsRead { get; set; } = false;
 
-        [Category("Input")]
+
         [DisplayName("From Field Contains")]
         [Description("Filters emails where the 'From' field contains this text.")]
         public InArgument<string> FromContains { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("To Field Contains")]
         [Description("Filters emails where the 'To' field contains this text.")]
         public InArgument<string> ToContains { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Subject Contains")]
         [Description("Filters emails where the subject contains this text.")]
         public InArgument<string> SubjectContains { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Body Contains")]
         [Description("Filters emails where the body contains this text.")]
         public InArgument<string> BodyContains { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Save Attachments")]
         [Description("Specifies whether to save attachments.")]
         [DefaultValue(EmailSaveAttachmentsEnum.DoNotSaveAttachments)]
         public InArgument<EmailSaveAttachmentsEnum> SaveAttachments { get; set; } =
             EmailSaveAttachmentsEnum.DoNotSaveAttachments;
 
-        [Category("Input")]
+
         [DisplayName("Save Attachments Into")]
         [Description("The directory where attachments will be saved (required if 'Save Attachments' is enabled).")]
         public InArgument<string> SaveDirectory { get; set; }
@@ -107,12 +107,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Retrieved Emails")]
         [Description("Returns the retrieved email messages.")]
         public OutArgument<IEnumerable<MailMessage>> RetrievedEmails { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

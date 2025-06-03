@@ -14,14 +14,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Condition")]
         [Description("Specifies whether to check if the file exists or doesn't exist.")]
         [DefaultValue(FileExistenceEnum.Exists)]
         public InArgument<FileExistenceEnum> Condition { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path of the file to check.")]
         public InArgument<string> FilePath { get; set; }

@@ -13,27 +13,27 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Input Arguments
         // ----------------------
 
-        [Category("Input")]
+
         [DisplayName("Data Table (Optional)")]
         [Description("An optional input data table to clone or use as a template.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Initial Columns (Optional)")]
         [Description("An optional input to add initial columns in data table.")]
         public InArgument<bool> HasInitialColumns { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Data Table columns either number or comma seperated columns (Optional)")]
         [Description("An optional input data table columns to add in data table.")]
         public InArgument<object> Columns { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Empty Rows (Optional)")]
         [Description("An optional input to add empty rows in data table.")]
         public InArgument<bool> HasEmptyRows { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Data Table rows (Optional)")]
         [Description("An optional input empty rows to add in data table.")]
         public InArgument<int> EmptyRows { get; set; }
@@ -42,7 +42,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("New Data Table")]
         [Description("The newly created or cloned data table.")]
         public OutArgument<DataTable> NewDataTable { get; set; }

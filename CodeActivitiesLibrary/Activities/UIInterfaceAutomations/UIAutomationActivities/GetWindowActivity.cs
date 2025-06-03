@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
@@ -12,23 +11,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Window Name")]
         [Description("The name (title) of the window to find.")]
         public InArgument<string> WindowName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the window (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [Category("Output")]
+
         [DisplayName("Automation Element")]
         [Description("The found AutomationElement for the window.")]
         public OutArgument<AutomationElement> WindowElement { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

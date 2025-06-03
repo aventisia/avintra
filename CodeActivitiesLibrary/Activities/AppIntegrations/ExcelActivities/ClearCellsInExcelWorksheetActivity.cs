@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,82 +16,82 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Clear Mode")]
         [Description(
             "Specifies how to clear cells: Single Cell, Named Cells, Range of Cells, or Relative to Active Cell.")]
         [DefaultValue(CellClearModeEnum.SingleCell)]
         public InArgument<CellClearModeEnum> ClearMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column")]
         [Description("The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) of the target cell.")]
         [RenderIfCondition(nameof(ClearMode), "SingleCell")]
         public InArgument<string> Column { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Row")]
         [Description("The row number of the target cell.")]
         [RenderIfCondition(nameof(ClearMode), "SingleCell")]
         public InArgument<int> Row { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range or cell to clear.")]
         [RenderIfCondition(nameof(ClearMode), "NamedCells")]
         public InArgument<string> Name { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to clear.")]
         [RenderIfCondition(nameof(ClearMode), "RangeOfCells")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to clear.")]
         [RenderIfCondition(nameof(ClearMode), "RangeOfCells")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the range to clear.")]
         [RenderIfCondition(nameof(ClearMode), "RangeOfCells")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the range to clear.")]
         [RenderIfCondition(nameof(ClearMode), "RangeOfCells")]
         public InArgument<int> EndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("X-Axis Direction")]
         [Description("The direction to move from the currently active cell when clearing relatively.")]
         [DefaultValue(ExcelXAxisDirectionEnum.Left)]
         [RenderIfCondition(nameof(ClearMode), "RangeRelativeToActiveCell")]
         public InArgument<ExcelXAxisDirectionEnum> XAxisDirection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Y-Axis Direction")]
         [Description("The direction to move from the currently active cell when clearing relatively.")]
         [DefaultValue(ExcelYAxisDirectionEnum.Above)]
         [RenderIfCondition(nameof(ClearMode), "RangeRelativeToActiveCell")]
         public InArgument<ExcelYAxisDirectionEnum> YAxisDirection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("X Offset")]
         [Description("Number of cells to move horizontally from the active cell when clearing relatively.")]
         [RenderIfCondition(nameof(ClearMode), "RangeRelativeToActiveCell")]
         public InArgument<int> XOffset { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Y Offset")]
         [Description("Number of cells to move vertically from the active cell when clearing relatively.")]
         [RenderIfCondition(nameof(ClearMode), "RangeRelativeToActiveCell")]
@@ -100,8 +100,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

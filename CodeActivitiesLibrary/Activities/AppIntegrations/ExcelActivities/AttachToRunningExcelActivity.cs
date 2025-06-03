@@ -10,19 +10,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     public class AttachToRunningExcelActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The running Excel Application object to attach to.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path of the Excel file to open or attach to in the running Excel instance.")]
         public InArgument<string> FilePath { get; set; }
 
-
-        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

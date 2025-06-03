@@ -11,32 +11,32 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class GetFilePathPartsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source File Path")]
         [Description("The full path of the file from which to extract components.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Root Path")]
         [Description("The root path of the source file.")]
         public OutArgument<string> RootPath { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Directory Path")]
         [Description("The directory of the source file.")]
         public OutArgument<string> Directory { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("File Name")]
         [Description("The name of the source file.")]
         public OutArgument<string> FileName { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("File Name Without Extension")]
         [Description("The file name (without the extension) of the source file.")]
         public OutArgument<string> FileNameNoExtension { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("File Extension")]
         [Description("The extension (for example, .doc) of the source file.")]
         public OutArgument<string> FileExtension { get; set; }

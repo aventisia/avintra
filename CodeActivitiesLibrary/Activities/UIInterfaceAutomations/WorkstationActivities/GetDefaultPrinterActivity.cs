@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using Microsoft.Win32;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
@@ -9,12 +9,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
     [Description("Gets the name of the default printer.")]
     public class GetDefaultPrinterActivity : Extensions.BaseCodeActivity
     {
-        [Category("Output")]
+
         [Description("Returns the name of the default printer.")]
         public OutArgument<string> DefaultPrinterName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

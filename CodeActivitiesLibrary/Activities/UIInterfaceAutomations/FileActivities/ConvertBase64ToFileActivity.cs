@@ -11,25 +11,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class ConvertBase64ToFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Base64 Encoded Text")]
         [Description("The Base64 encoded string to be converted into a file.")]
         public InArgument<string> Base64Text { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The destination file path where the decoded content will be saved.")]
         public InArgument<string> FilePath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("If File Exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

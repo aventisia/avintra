@@ -2,7 +2,6 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -17,28 +16,28 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("CMD Session")]
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Wait For")]
         [Description("The text or regular expression to wait for in the CMD session output.")]
         public InArgument<string> TextToWaitFor { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Is Regular Expression")]
         [Description("Specifies whether the 'Text to Wait For' is a regular expression.")]
         public InArgument<bool> IsRegularExpression { get; set; } = new InArgument<bool>(false);
 
-        [Category("Input")]
+
         [DisplayName("Ignore Case")]
         [Description("Specifies whether to ignore case when matching the text.")]
         public InArgument<bool> IgnoreCase { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("Timeout")]
         [Description("The maximum time (in seconds) to wait before timing out. Use 0 for no timeout.")]
         public InArgument<int> Timeout { get; set; } = new InArgument<int>(10); // Default timeout

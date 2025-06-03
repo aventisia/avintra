@@ -15,7 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
@@ -24,17 +24,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("First Free Column")]
         [Description("Returns the first free column as a letter (e.g., 'A', 'B').")]
         public OutArgument<string> FirstFreeColumn { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("First Free Row")]
         [Description("Returns the first free row as a number.")]
         public OutArgument<int> FirstFreeRow { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

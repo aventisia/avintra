@@ -12,19 +12,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         [RequiredArgument]
         [DisplayName("Retrieve Type")]
         [Description("Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).")]
-        [Category("Input")]
+
         public InArgument<RetrieveTypeEnum> RetrieveType { get; set; } = new InArgument<RetrieveTypeEnum>(RetrieveTypeEnum.CurrentDateTime);
 
         [RequiredArgument]
         [DisplayName("Time Zone")]
         [Description("Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).")]
-        [Category("Input")]
+
         public InArgument<TimezoneTypeEnum> TimezoneType { get; set; } = new InArgument<TimezoneTypeEnum>(TimezoneTypeEnum.SystemTimeZone);
 
 
         [DisplayName("Result")]
         [Description("The retrieved date and time based on the specified options.")]
-        [Category("Output")]
+
         public OutArgument<DateTime> Result { get; set; }
 
 

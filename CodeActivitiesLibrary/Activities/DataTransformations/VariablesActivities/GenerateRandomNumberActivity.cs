@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
@@ -11,30 +11,30 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     public class GenerateRandomNumberActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Minimum Value")]
         [Description("The lower boundary for the random number(s) to generate.")]
         public InArgument<int> MinimumValue { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Maximum Value")]
         [Description("The upper boundary for the random number(s) to generate.")]
         public InArgument<int> MaximumValue { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Generate Multiple Numbers")]
         [Description("Specify whether to generate a single number or multiple numbers.")]
         [DefaultValue(false)]
         public InArgument<bool> GenerateMultipleNumbers { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("How Many Numbers")]
         [Description("Specify how many random numbers to generate.")]
         [RenderIfCondition(nameof(GenerateMultipleNumbers), true)]
         public InArgument<int> HowManyNumbers { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Allow Duplicates")]
         [Description("Specify whether to permit duplicate values in the generated list.")]
         [DefaultValue(false)]
@@ -42,20 +42,20 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public InArgument<bool> AllowDuplicates { get; set; }
 
 
-        [Category("Output")]
+
         [DisplayName("Random Number Output")]
         [Description("The newly generated random number (for single mode).")]
         [RenderIfCondition(nameof(GenerateMultipleNumbers), false)]
         public OutArgument<int> RandomNumber { get; set; }
 
 
-        [Category("Output")]
+
         [DisplayName("Random Numbers List Output")]
         [Description("The newly generated list of random numbers (for multi-mode).")]
         [RenderIfCondition(nameof(GenerateMultipleNumbers), true)]
         public OutArgument<List<int>> RandomNumbers { get; set; }
 
-        [Category("Output")] 
+
 
 
         protected override void Execute(CodeActivityContext context)

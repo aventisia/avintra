@@ -13,36 +13,36 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Minimum Length")]
         [Description("The minimum length of the random text to generate.")]
         public InArgument<int> MinimumLength { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Maximum Length")]
         [Description("The maximum length of the random text to generate.")]
         public InArgument<int> MaximumLength { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Uppercase Letters")]
         [Description("If true, includes uppercase letters (A-Z) in the generated text.")]
         [DefaultValue(true)]
         public InArgument<bool> UseUppercaseLetters { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("Use Lowercase Letters")]
         [Description("If true, includes lowercase letters (a-z) in the generated text.")]
         [DefaultValue(true)]
         public InArgument<bool> UseLowercaseLetters { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("Use Digits")]
         [Description("If true, includes digits (0-9) in the generated text.")]
         [DefaultValue(true)]
         public InArgument<bool> UseDigits { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("Use Symbols")]
         [Description("If true, includes symbols (!@#$%^&*()_+-=[]{}|;:,.<>? ) in the generated text.")]
         [DefaultValue(false)]
@@ -52,14 +52,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Random Text")]
         [Description("The generated random text.")]
         public OutArgument<string> RandomText { get; set; }
 
-        [Category("Output")]
 
-        
+
+
 
         // ----------------------
         // Execution Logic

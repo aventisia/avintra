@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         [RequiredArgument, Category("Input"), Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

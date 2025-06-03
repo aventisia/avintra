@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Power Fx Expression")]
         [Description("The Power Fx-like expression to evaluate (e.g., '1 + 2', 'Text(Now(), \"yyyy-mm-dd\")'.")]
         public InArgument<string> PowerFxExpression { get; set; }
@@ -22,14 +22,14 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Expression Result")]
         [Description("Returns the evaluated result of the Power Fx expression (simulated).")]
         public OutArgument<string> ExpressionResult { get; set; }
 
-        [Category("Output")]
 
-        
+
+
 
         // ----------------------
         // Execution Logic

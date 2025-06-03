@@ -18,8 +18,8 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
         [Category("Output"), Description("Returns the hashed content of the file.")]
         public OutArgument<string> HashedContent { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

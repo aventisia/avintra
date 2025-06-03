@@ -14,20 +14,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target workbook.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Selection Type")]
         [Description("Choose whether to select the worksheet by Name or Index.")]
         [DefaultValue(WorksheetSelectionTypeEnum.Name)]
         public InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Search Value")]
         [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').")]
         public InArgument<string> SearchValue { get; set; }
@@ -36,7 +36,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -18,44 +18,42 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
         [DisplayName("Activation Mode")]
         [Description("Choose how to activate the cell: absolutely, relatively, or via named range.")]
         [DefaultValue(ActivationModeEnum.Absolute)]
         public InArgument<ActivationModeEnum> ActivationMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column")]
         [Description("The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) of the target cell.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Absolute)]
         public InArgument<string> Column { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Row")]
         [Description("The row number of the target cell.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Absolute)]
         public InArgument<int> Row { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range or cell to activate.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.NamedRange)]
         public InArgument<string> Name { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Direction")]
         [Description("The direction to move from the currently active cell when activating relatively.")]
         [DefaultValue(CellMoveDirectionEnum.Down)]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Relative)]
         public InArgument<CellMoveDirectionEnum> Direction { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Offset From Active Cell")]
         [Description("Number of cells to move from the current active cell when activating relatively.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Relative)]

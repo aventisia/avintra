@@ -13,13 +13,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Convert")]
         [Description("The text value that will be converted to a numeric type.")]
         public InArgument<string> TextToConvert { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Output Type")]
         [Description("Specifies the numeric type to which the text should be converted.")]
         public InArgument<OutputTypeEnum> OutputType { get; set; }
@@ -28,12 +28,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Converted Value")]
         [Description("Returns the resulting numeric value after conversion.")]
         public OutArgument<object> ConvertedValue { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

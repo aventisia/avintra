@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Outlook;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using Microsoft.Office.Interop.Outlook;
 using Exception = System.Exception;
 
 namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
@@ -15,7 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Outlook Application")]
         [Description("The Outlook Application object to close.")]
         public InArgument<Application> OutlookApplication { get; set; }
@@ -24,7 +24,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -14,25 +13,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class GetUiElementDetailsActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("UI Element")]
         [Description("Select the UI element you want to get details from.")]
         public InArgument<AutomationElement> Element { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Detail Type")]
         [Description("Choose what information you want to get from the UI element.")]
         [DefaultValue(UIElementDetailTypeEnum.BoundingRectangle)]
         public InArgument<UIElementDetailTypeEnum> DetailType { get; set; }
 
         // TODO: Add different output arguments for each detail type if needed
-        [Category("Output")]
+
         [DisplayName("Element Details")]
         [Description("Returns the requested details of the UI element (for example, position or text).")]
         public OutArgument<string> ElementDetails { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

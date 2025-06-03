@@ -14,17 +14,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     {
         [DisplayName("Folder Path")]
         [Description("Specifies the path to the folder where files will be retrieved.")]
-        [Category("Input")]
+
         public InArgument<string> FolderPath { get; set; }
 
         [DisplayName("File Filter")]
         [Description("A pattern to filter the files (e.g., \"*.txt\" for text files).")]
-        [Category("Input")]
+
         public InArgument<string> FileFilter { get; set; } = new InArgument<string>("*");
 
         [DisplayName("Include Subfolders")]
         [Description("If true, includes files from all subfolders within the specified folder.")]
-        [Category("Input")]
+
         public InArgument<bool> IncludeSubfolders { get; set; } = new InArgument<bool>(true);
 
         [DisplayName("Fail on Denied Access")]
@@ -49,7 +49,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         [DisplayName("Retrieved Files")]
         [Description("The list of files that were retrieved based on the specified criteria.")]
-        [Category("Output")]
+
         public OutArgument<IEnumerable<string>> RetrievedFiles { get; set; }
 
         protected override void Execute(CodeActivityContext context)

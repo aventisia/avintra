@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -10,21 +9,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class TakeUiElementScreenshotActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The handle or identifier of the window.")]
         public InArgument<string> WindowHandle { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The selector or identifier of the UI element.")]
         public InArgument<string> ElementSelector { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the path to the saved screenshot file.")]
         public OutArgument<string> ScreenshotPath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

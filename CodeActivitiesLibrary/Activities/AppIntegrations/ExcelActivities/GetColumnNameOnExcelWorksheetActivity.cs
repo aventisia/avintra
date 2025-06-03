@@ -14,13 +14,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Column Index")]
         [Description("The 1-based index of the column to convert to a letter (e.g., 1 → A).")]
         public InArgument<int> ColumnIndex { get; set; }
@@ -29,12 +29,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Column Name")]
         [Description("Returns the column letter corresponding to the given index (e.g., 'A', 'B').")]
         public OutArgument<string> ColumnName { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

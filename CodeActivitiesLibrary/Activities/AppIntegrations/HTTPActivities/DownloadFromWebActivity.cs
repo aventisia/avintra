@@ -16,8 +16,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Category("Output"), Description("Returns the downloaded content as a string.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

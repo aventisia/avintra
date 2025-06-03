@@ -14,12 +14,12 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Custom Object")]
         [Description("The custom object to convert to JSON.")]
         public InArgument<object> CustomObject { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Pretty Print")]
         [Description("If true, formats the JSON output with indentation for better readability.")]
         [DefaultValue(true)]
@@ -29,12 +29,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("JSON Output")]
         [Description("The converted JSON string from the provided custom object.")]
         public OutArgument<string> JsonOutput { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

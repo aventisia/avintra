@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [RequiredArgument, Category("Input"), Description("The path to the image file to insert.")]
         public InArgument<string> ImagePath { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

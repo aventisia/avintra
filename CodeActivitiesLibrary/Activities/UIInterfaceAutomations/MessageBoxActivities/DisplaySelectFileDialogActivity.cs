@@ -11,49 +11,49 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     public sealed class DisplaySelectFileDialog : Extensions.BaseCodeActivity
     {
 
-        [Category("Input")]
+
         [RequiredArgument]
         [DisplayName("Dialog Title")]
         [Description("The title of the file selection dialog window.")]
         public InArgument<string> DialogTitle { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Initial Folder")]
         [Description("The folder path where the dialog starts. If empty, defaults to Desktop.")]
         public InArgument<string> InitialFolder { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("File Filter")]
         [Description("Filter for file types (e.g., \"Text Files (*.txt)|*.txt\"). Defaults to All Files.")]
         public InArgument<string> FileFilter { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Keep Dialog On Top")]
         [Description("If true, keeps the dialog on top of all other windows.")]
         public InArgument<bool> KeepFileDialogOnTop { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Allow Multiple Selection")]
         [Description("Allows user to select multiple files if set to true.")]
         public InArgument<bool> AllowMultipleSelection { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Check If File Exists")]
         [Description("Validates that the selected file(s) exist before returning.")]
         public InArgument<bool> CheckIfFileExists { get; set; }
 
 
-        [Category("Output")]
+
         [DisplayName("Selected Files")]
         [Description("A collection of full paths for the selected files.")]
         public OutArgument<List<string>> SelectedFiles { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Button Pressed")]
         [Description("True if user clicked OK; False if Cancel was clicked or dialog closed.")]
         public OutArgument<bool> ButtonPressed { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

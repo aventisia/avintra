@@ -19,8 +19,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [RequiredArgument, Category("Input"), Description("The text to replace with.")]
         public InArgument<string> ReplaceText { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

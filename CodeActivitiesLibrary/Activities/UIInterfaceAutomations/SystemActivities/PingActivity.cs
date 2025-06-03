@@ -15,8 +15,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
         [Category("Output"), Description("Returns true if the host is reachable, otherwise false.")]
         public OutArgument<bool> IsReachable { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

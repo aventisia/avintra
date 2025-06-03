@@ -1,6 +1,6 @@
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using System.Threading;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers
 {

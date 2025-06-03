@@ -1,11 +1,11 @@
-﻿using System;
-using System.Activities;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Activities;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -18,36 +18,36 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Scroll Mode")]
         [Description("Specifies how to scroll: by element or by coordinates.")]
         [DefaultValue(ScrollModeEnum.ByElement)]
         public InArgument<ScrollModeEnum> ScrollMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element to scroll to (e.g., ID, XPath).")]
         [RenderIfCondition(nameof(ScrollMode), "ByElement")]
         public InArgument<string> FindType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the element to scroll to (e.g., 'username', '//input[@id='email']').")]
         [RenderIfCondition(nameof(ScrollMode), "ByElement")]
         public InArgument<string> SearchKeywords { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("X Coordinate")]
         [Description("Horizontal scroll position. Only used in 'By Coordinates' mode.")]
         [RenderIfCondition(nameof(ScrollMode), "ByCoordinates")]
         public InArgument<int> XCoordinate { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Y Coordinate")]
         [Description("Vertical scroll position. Only used in 'By Coordinates' mode.")]
         [RenderIfCondition(nameof(ScrollMode), "ByCoordinates")]

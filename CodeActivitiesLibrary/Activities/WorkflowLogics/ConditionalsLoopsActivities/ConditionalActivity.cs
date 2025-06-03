@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     public class ConditionalActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Conditional Mode")]
         [DefaultValue(ConditionModeEnum.SwitchCase)]
         [Description("Trigger execution for the first match or all matching branches, depending on the evaluation mode.")]

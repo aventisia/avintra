@@ -12,18 +12,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     public class GetSubfoldersInFolderActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source Folder Path")]
         [Description("The full path of the directory from which subfolders will be retrieved.")]
         public InArgument<string> FolderPath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Include Nested Subfolders")]
         [Description("Determines whether to include all nested subdirectories recursively.")]
         [DefaultValue(false)]
         public InArgument<bool> IncludeSubfolders { get; set; } = false;
 
-        [Category("Output")]
+
         [DisplayName("Subfolder List")]
         [Description("The collection of subfolder paths found in the specified directory.")]
         public OutArgument<IEnumerable<string>> Subfolders { get; set; }

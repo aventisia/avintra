@@ -1,11 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
-using System.Threading;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -14,40 +12,40 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SetCheckboxStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Element")]
         [Description("The parent UI element under which to search for the checkbox.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("The value of the property to match for the checkbox.")]
         [DefaultValue("")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Checkbox Name")]
         [Description("The name of the checkbox to set.")]
         [DefaultValue("")]
         public InArgument<string> CheckboxName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Desired State")]
         [Description("Whether to check or uncheck the checkbox.")]
         [DefaultValue(false)]
         public InArgument<bool> Checked { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Was State Changed")]
         [Description("True if the checkbox state was changed successfully, otherwise false.")]
         [DefaultValue(false)]

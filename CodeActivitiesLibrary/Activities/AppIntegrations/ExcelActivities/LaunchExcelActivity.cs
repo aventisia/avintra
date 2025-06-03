@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -14,47 +14,47 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Input Arguments
         // ----------------------
 
-        [Category("Input")]
+
         [DisplayName("Launch Mode")]
         [Description("Specifies whether to open an existing document or create a new one.")]
         [DefaultValue(ExcelLaunchModeEnum.OpenExisting)]
         public InArgument<ExcelLaunchModeEnum> LaunchMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Document Path")]
         [Description("The path to the Excel document to open. Required if 'Launch Mode' is 'Open Existing'.")]
         [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
         public InArgument<string> DocumentPath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Make Instance Visible")]
         [Description("Determines whether the Excel application should be visible.")]
         [DefaultValue(true)]
         public InArgument<bool> MakeInstanceVisible { get; set; } = new InArgument<bool>(true);
 
-        [Category("Input")]
+
         [DisplayName("Open as ReadOnly")]
         [Description("If true, opens the document in read-only mode.")]
         [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
         public InArgument<bool> OpenAsReadOnly { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Nest Under New Process")]
         [Description("If true, launches Excel in a new process.")]
         public InArgument<bool> NestUnderNewProcess { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Machine Locale")]
         [Description("If true, uses the machine's locale settings.")]
         public InArgument<bool> UseMachineLocale { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Read Protection Password")]
         [Description("Optional password to protect the document from being modified.")]
         [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
         public InArgument<string> ReadProtectionPassword { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Write Protection Password")]
         [Description("Optional password to protect the document from being saved.")]
         [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
@@ -64,12 +64,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Excel Instance")]
         [Description("Returns the launched Excel Application object.")]
         public OutArgument<Excel.Application> ExcelInstance { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

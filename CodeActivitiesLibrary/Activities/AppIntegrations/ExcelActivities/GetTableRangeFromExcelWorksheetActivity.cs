@@ -14,18 +14,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Table Name")]
         [Description("The name of the table (ListObject) or pivot table to retrieve the range for.")]
         public InArgument<string> TableName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Is Pivot Table")]
         [Description("If true, retrieves the range of a pivot table instead of a regular table.")]
         public InArgument<bool> IsPivotTable { get; set; }
@@ -34,27 +34,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("First Column Index")]
         [Description("Returns the column index of the first cell in the table range.")]
         public OutArgument<int> FirstColumnIndex { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("First Row Index")]
         [Description("Returns the row index of the first cell in the table range.")]
         public OutArgument<int> FirstRowIndex { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Last Column Index")]
         [Description("Returns the column index of the last cell in the table range.")]
         public OutArgument<int> LastColumnIndex { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Last Row Index")]
         [Description("Returns the row index of the last cell in the table range.")]
         public OutArgument<int> LastRowIndex { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

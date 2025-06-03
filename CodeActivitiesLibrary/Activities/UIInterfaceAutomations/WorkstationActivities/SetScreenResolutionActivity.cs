@@ -12,27 +12,27 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         private const int CdsUpdateregistry = 0x01;
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The width of the screen.")]
         public InArgument<int> Width { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The height of the screen.")]
         public InArgument<int> Height { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The bit count of the screen.")]
         public InArgument<int> BitCount { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The frequency (refresh rate) of the screen.")]
         public InArgument<int> Frequency { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [Category("Output"), Description("Returns the text content of the Word document.")]
         public OutArgument<string> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -9,17 +9,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     public class SetWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The name of the environment variable.")]
         public InArgument<string> VariableName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The value to set for the environment variable.")]
         public InArgument<string> Value { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

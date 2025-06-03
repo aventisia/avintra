@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -16,43 +16,43 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Deletion Mode")]
         [Description("Specifies how to delete cells: Single Cell or Range of Cells.")]
         [DefaultValue(CellDeletionModeEnum.RangeOfCells)]
         public InArgument<CellDeletionModeEnum> DeletionMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to delete.")]
         [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to delete.")]
         [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the range to delete.")]
         [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the range to delete.")]
         [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
         public InArgument<int> EndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Shift Direction")]
         [Description("Specifies how to shift remaining cells after deletion.")]
         [DefaultValue(CellShiftDirectionEnum.Up)]
@@ -62,7 +62,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

@@ -13,13 +13,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Variable To Increase")]
         [Description("The numeric variable to increase.")]
         public InArgument<double> VariableToIncrease { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Value To Add")]
         [Description("The amount to add to the variable. Can be a number or another variable containing a number.")]
         public InArgument<double> ValueToAdd { get; set; }
@@ -28,12 +28,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Result")]
         [Description("Returns the resulting value after increasing the variable.")]
         public OutArgument<double> Result { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

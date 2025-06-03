@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using Enumerable = System.Linq.Enumerable;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
@@ -20,31 +20,31 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Switch Mode")]
         [Description("Specifies how to locate the tab: by index, title, or URL fragment.")]
         [DefaultValue(SwitchModeEnum.ByIndex)]
         public InArgument<SwitchModeEnum> SwitchMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Tab Index")]
         [Description("The index (1-based) of the tab to switch to.")]
         [RenderIfCondition(nameof(SwitchMode), "ByIndex")]
         public InArgument<int> TabIndex { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Tab Title")]
         [Description("The title of the tab to switch to.")]
         [RenderIfCondition(nameof(SwitchMode), "ByTitle")]
         public InArgument<string> TabTitle { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("URL Fragment")]
         [Description("A partial URL (e.g., 'example.com') to match the tab.")]
         [RenderIfCondition(nameof(SwitchMode), "ByUrlFragment")]
@@ -62,12 +62,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
 
 
-        [Category("Output")]
+
         [DisplayName("Current Tab Title")]
         [Description("Returns the title of the tab after switching.")]
         public OutArgument<string> CurrentTabTitle { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Current Tab URL")]
         [Description("Returns the current URL after switching tabs.")]
         public OutArgument<string> CurrentTabUrl { get; set; }

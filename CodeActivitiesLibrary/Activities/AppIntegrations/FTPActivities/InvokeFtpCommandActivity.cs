@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         [RequiredArgument, Category("Input"), Description("The FTP command to execute.")]
         public InArgument<string> Command { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

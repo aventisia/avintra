@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -17,54 +17,54 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the source worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Copy Mode")]
         [Description("Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range of Cells.")]
         [DefaultValue(CellCopyModeEnum.SingleCell)]
         public InArgument<CellCopyModeEnum> CopyMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Source Worksheet Name")]
         [Description("Name of the worksheet in the source Excel application.")]
         public InArgument<string> SourceWorksheetName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Source Range Address")]
         [Description("The range address (e.g., 'A1:B10') in the source worksheet to copy.")]
         [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
         public InArgument<string> SourceRangeAddress { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
         public InArgument<int> EndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Name")]
         [Description("The name of the named range to copy.")]
         [RenderIfCondition(nameof(CopyMode), "NamedCells")]
@@ -74,7 +74,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

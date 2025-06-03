@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Category("Output"), Description("Returns the binary data of the file.")]
         public OutArgument<byte[]> BinaryData { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

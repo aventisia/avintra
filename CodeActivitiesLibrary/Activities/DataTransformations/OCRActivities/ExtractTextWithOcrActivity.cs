@@ -9,16 +9,16 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
     public class ExtractTextWithOcrActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the image file.")]
         public InArgument<string> ImagePath { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns the extracted text.")]
         public OutArgument<string> ExtractedText { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

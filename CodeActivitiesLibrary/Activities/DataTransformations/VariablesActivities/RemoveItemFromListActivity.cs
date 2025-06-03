@@ -15,24 +15,24 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Remove Mode")]
         [Description("Specifies whether to remove by Index or Value.")]
         public InArgument<RemoveModeEnum> RemoveMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Index To Remove")]
         [Description("The zero-based index of the item to remove.")]
         public InArgument<int> IndexToRemove { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Value To Remove")]
         [Description("The value of the item to remove from the list.")]
         public InArgument<object> ValueToRemove { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Source List")]
         [Description("The list from which the item will be removed.")]
         public InArgument<List<object>> SourceList { get; set; }
@@ -41,12 +41,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Modified List")]
         [Description("Returns the updated list after removing the item(s).")]
         public OutArgument<List<object>> ModifiedList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

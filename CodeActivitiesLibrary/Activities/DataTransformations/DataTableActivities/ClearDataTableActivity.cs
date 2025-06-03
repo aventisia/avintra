@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table variable to clear. Must have been previously created or assigned.")]
         public InArgument<DataTable> DataTable { get; set; }
@@ -22,9 +22,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         // Output Arguments
         // ----------------------
-
-        [Category("Output")]
-        
 
         // ----------------------
         // Execution Logic

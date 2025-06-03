@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session to close.")]
         public InArgument<int> SessionId { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

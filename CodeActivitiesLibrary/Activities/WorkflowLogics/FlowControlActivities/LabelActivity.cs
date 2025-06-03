@@ -10,8 +10,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
         [RequiredArgument, Category("Input"), Description("Name of the label.")]
         public InArgument<string> LabelName { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {

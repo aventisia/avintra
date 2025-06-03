@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -17,46 +17,46 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Search Mode")]
         [Description("Specifies whether to perform a find operation or a find-and-replace operation.")]
         [DefaultValue(ExcelSearchModeEnum.Find)]
         public InArgument<ExcelSearchModeEnum> SearchMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Text To Find")]
         [Description("The text or value to find in the worksheet.")]
         public InArgument<string> TextToFind { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Text To Replace With")]
         [Description(
             "The text or value to replace the found text with (required if 'Search Mode' is 'Find and Replace').")]
         [RenderIfCondition(nameof(SearchMode), "FindAndReplace")]
         public InArgument<string> TextToReplaceWith { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("All Matches")]
         [Description("If true, replaces all occurrences of the text. If false, replaces only the first occurrence.")]
         public InArgument<bool> AllMatches { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Match Case")]
         [Description("If true, performs a case-sensitive search.")]
         public InArgument<bool> MatchCase { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Match Entire Cell Contents")]
         [Description("If true, matches only cells that contain exactly the specified text.")]
         public InArgument<bool> MatchEntireCellContents { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Search By")]
         [Description("Specifies whether to search by rows or columns.")]
         [DefaultValue(ExcelSearchByEnum.Rows)]
@@ -66,19 +66,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Found Cells")]
         [Description("Returns a list of all matched cells when 'All Matches' is true.")]
         [RenderIfCondition(nameof(AllMatches), "True")]
         public OutArgument<List<Excel.Range>> FoundCells { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Found Column Index")]
         [Description("Returns the column index of the found cell (if any).")]
         [RenderIfCondition(nameof(AllMatches), "False")]
         public OutArgument<int> FoundColumnIndex { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Found Row Index")]
         [Description("Returns the row index of the found cell (if any).")]
         [RenderIfCondition(nameof(AllMatches), "False")]

@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Escape")]
         [Description("The text value that will be escaped for use in regular expressions.")]
         public InArgument<string> TextToEscape { get; set; }
@@ -23,13 +23,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Escaped Text")]
         [Description("Returns the text after escaping special characters for regular expressions.")]
         public OutArgument<string> EscapedText { get; set; }
 
-        [Category("Output")]
-        
+
+
 
         // ----------------------
         // Execution Logic

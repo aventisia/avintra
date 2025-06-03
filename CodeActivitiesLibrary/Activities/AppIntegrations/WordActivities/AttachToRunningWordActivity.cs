@@ -11,8 +11,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [RequiredArgument, Category("Input"), Description("The process ID of the running Word instance.")]
         public InArgument<int> ProcessId { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

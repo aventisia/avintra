@@ -1,5 +1,4 @@
-﻿using System;
-using System.Activities;
+﻿using System.Activities;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -9,47 +8,47 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a message box.")]
     public class DisplayMessageActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("Message Box Title")]
         [Description("The title text displayed at the top of the message box.")]
         public InArgument<string> Title { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Message to Display")]
         [Description("The main text content of the message box.")]
         public InArgument<string> Message { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Message Box Icon")]
         [Description("The icon to be displayed in the message box.")]
         public InArgument<MessageBoxIconEnum> Icon { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Message Box Buttons")]
         [Description("The buttons to display in the message box.")]
         public InArgument<MessageBoxButtonsEnum> Buttons { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Default Button")]
         [Description("The button that is highlighted by default.")]
         public InArgument<DefaultButtonEnum> DefaultButton { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Keep Message Box Always on Top")]
         [Description("If true, the message box will stay on top of other windows.")]
         public InArgument<bool> KeepOnTop { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Close Message Box Automatically")]
         [Description("If true, the message box will close automatically after the specified timeout.")]
         public InArgument<bool> AutoClose { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Timeout (Seconds)")]
         [Description("The number of seconds after which the message box closes automatically if 'Close Message Box Automatically' is enabled.")]
         public InArgument<int> Timeout { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Button Pressed")]
         [Description("True if a button was pressed.")]
         public OutArgument<bool> ButtonPressed { get; set; }

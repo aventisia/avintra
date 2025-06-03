@@ -13,13 +13,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Variable Name")]
         [Description("The name of the variable to set.")]
         public InArgument<string> VariableName { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Value To Set")]
         [Description("The value (text, number, list, or object) to assign to the variable.")]
         public InArgument<object> ValueToSet { get; set; }
@@ -28,9 +28,9 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
 
-        
+
+
 
         // ----------------------
         // Execution Logic

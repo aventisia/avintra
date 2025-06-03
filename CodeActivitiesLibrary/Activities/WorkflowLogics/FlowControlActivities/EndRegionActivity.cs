@@ -8,8 +8,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
     [Description("Marks the end of a group of actions.")]
     public class EndRegionActivity : Extensions.BaseCodeActivity
     {
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

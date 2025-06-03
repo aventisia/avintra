@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -13,16 +12,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class IfImageActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [Description("The path to the image file to check for.")]
         public InArgument<string> ImagePath { get; set; }
 
-        [Category("Output")]
+
         [Description("Returns true if the image is found, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

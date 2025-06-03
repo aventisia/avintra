@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -17,78 +17,78 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Lookup Value")]
         [Description("The value to search for in the lookup range.")]
         public InArgument<string> LookupValue { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Ranges Format")]
         [Description("Specifies how the ranges are defined: Named Cells or Specific Ranges.")]
         [DefaultValue(ExcelLookupRangesFormatEnum.NamedCells)]
         public InArgument<ExcelLookupRangesFormatEnum> RangesFormat { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Cells Name")]
         [Description("The name of the named range to use for lookup (required if 'Ranges Format' is 'Named Cells').")]
         [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
         public InArgument<string> CellsName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<string> EndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<int> EndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Array Form")]
         [Description("If true, performs array-based lookup; otherwise, performs scalar lookup.")]
         public InArgument<bool> ArrayForm { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Column of Results Source")]
         [Description("The starting column of the result range (required if 'Array Form' is false).")]
         [RenderIfCondition(nameof(ArrayForm), "false")]
         public InArgument<string> StartColumnOfResultsSource { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row of Results Source")]
         [Description("The starting row of the result range (required if 'Array Form' is false).")]
         [RenderIfCondition(nameof(ArrayForm), "false")]
         public InArgument<int> StartRowOfResultsSource { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column of Results Source")]
         [Description("The ending column of the result range (required if 'Array Form' is false).")]
         [RenderIfCondition(nameof(ArrayForm), "false")]
         public InArgument<string> EndColumnOfResultsSource { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row of Results Source")]
         [Description("The ending row of the result range (required if 'Array Form' is false).")]
         [RenderIfCondition(nameof(ArrayForm), "false")]
@@ -98,12 +98,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Lookup Result")]
         [Description("Returns the matched result from the result range based on the lookup value.")]
         public OutArgument<string> LookupResult { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

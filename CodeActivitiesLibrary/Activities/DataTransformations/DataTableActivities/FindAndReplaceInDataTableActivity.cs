@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -17,56 +17,56 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table to process.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Search Mode")]
         [Description("Specifies whether to find or find and replace values.")]
         [DefaultValue(DataTableFindOrReplaceModeEnum.Find)]
         public InArgument<DataTableFindOrReplaceModeEnum> SearchMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Text to Find")]
         [Description("The value to find in the data table.")]
         public InArgument<string> TextToFind { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Text to Replace With")]
         [Description("The value to replace with (required if 'Search Mode' is 'Find and Replace').")]
         [RenderIfCondition(nameof(SearchMode), "FindAndReplace")]
         public InArgument<string> TextToReplaceWith { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("All Matches")]
         [Description("If true, processes all occurrences. If false, processes only the first occurrence.")]
         public InArgument<bool> AllMatches { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Find Using a Regular Expression")]
         [Description("If true, uses regular expressions for matching.")]
         public InArgument<bool> UseRegularExpression { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Match Case")]
         [Description("If true, performs a case-sensitive search.")]
         public InArgument<bool> MatchCase { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Match Entire Cell Contents")]
         [Description("If true, matches only cells that contain exactly the specified text.")]
         public InArgument<bool> MatchEntireCellContents { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Search By")]
         [Description("Specifies how to search the data table.")]
         [DefaultValue(DataTableSearchByEnum.Everywhere)]
         public InArgument<DataTableSearchByEnum> SearchBy { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Column Index or Name")]
         [Description("The column index or name to search within (required if 'Search By' is 'On Column').")]
         [RenderIfCondition(nameof(SearchBy), "OnColumn")]
@@ -76,7 +76,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Matched Rows")]
         [Description("Returns the rows that match the search criteria.")]
         public OutArgument<List<DataRow>> MatchedRows { get; set; }

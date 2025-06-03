@@ -15,13 +15,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("First List")]
         [Description("The variable that holds the first list to compare.")]
         public InArgument<List<object>> FirstList { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Second List")]
         [Description("The variable that contains the second list used to subtract items from the first list.")]
         public InArgument<List<object>> SecondList { get; set; }
@@ -30,12 +30,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("List Difference Output")]
         [Description("The resulting list after subtracting items from the second list.")]
         public OutArgument<List<object>> ListDifferenceOutput { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

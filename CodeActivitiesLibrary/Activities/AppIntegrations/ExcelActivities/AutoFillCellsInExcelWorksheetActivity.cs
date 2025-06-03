@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -15,63 +15,63 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Ranges Format")]
         [Description("Specifies how ranges are defined: by specific ranges or named cells.")]
         [DefaultValue(ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<ExcelRangesFormatEnum> RangesFormat { get; set; }
 
         // Specific Ranges Fields
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the source range (e.g., 'A').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the source range (e.g., '1').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<int> StartRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Source End Column")]
         [Description("The ending column of the source range (e.g., 'B').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<string> SourceEndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Source End Row")]
         [Description("The ending row of the source range (e.g., '5').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<int> SourceEndRow { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Destination End Column")]
         [Description("The ending column of the target range (e.g., 'C').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<string> DestinationEndColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Destination End Row")]
         [Description("The ending row of the target range (e.g., '10').")]
         [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
         public InArgument<int> DestinationEndRow { get; set; }
 
         // Named Cells Fields
-        [Category("Input")]
+
         [DisplayName("Source Cells Name")]
         [Description("The name of the named range containing the source data.")]
         [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
         public InArgument<string> SourceCellsName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Destination Cells Name")]
         [Description("The name of the named range where the data should be pasted.")]
         [RenderIfCondition(nameof(RangesFormat), "NamedCells")]

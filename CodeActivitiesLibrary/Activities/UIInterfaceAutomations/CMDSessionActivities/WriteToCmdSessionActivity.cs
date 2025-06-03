@@ -15,18 +15,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("CMD Session")]
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Command")]
         [Description("The command to execute in the CMD session.")]
         public InArgument<string> Command { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Send <Enter> After Command")]
         [Description("Specifies whether to send an Enter key after the command.")]
         public InArgument<bool> SendEnterAfterCommand { get; set; } = new InArgument<bool>(true);

@@ -1,15 +1,10 @@
-﻿using System;
+﻿using MailKit.Security;
+using MimeKit;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
-using System.Net.Mail;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using Microsoft.Office.Interop.Excel;
-using MimeKit;
-using MimeKit.Text;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
@@ -23,88 +18,88 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("From")]
         [Description("The sender's email address.")]
         public InArgument<string> From { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("To")]
         [Description("The recipient's email address(es) (comma-separated).")]
         public InArgument<string> To { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("CC")]
         [Description("The CC recipients' email addresses (comma-separated).")]
         public InArgument<string> Cc { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("BCC")]
         [Description("The BCC recipients' email addresses (comma-separated).")]
         public InArgument<string> Bcc { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Subject")]
         [Description("The subject of the email.")]
         public InArgument<string> Subject { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Body")]
         [Description("The body of the email.")]
         public InArgument<string> Body { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Body Format")]
         [Description("The format of the email body (Text or Html).")]
         [DefaultValue(EmailBodyFormatEnum.Text)]
         public InArgument<EmailBodyFormatEnum> BodyFormat { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Attachments")]
         [Description("Paths to files to attach to the email (comma-separated).")]
         public InArgument<string> Attachments { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("SMTP Server")]
         [Description("The SMTP server URL.")]
         public InArgument<string> SmtpServer { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Server Port")]
         [Description("The port number for the SMTP server (default is 587).")]
         public InArgument<int> ServerPort { get; set; } = 587;
 
-        [Category("Input")]
+
         [DisplayName("Security Protocol")]
         [Description("The security protocol to use for the connection.")]
         [DefaultValue(SecureSocketOptions.Auto)]
         public InArgument<SecureSocketOptions> SecurityProtocol { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("SMTP Server Needs Authentication")]
         [Description("If true, authenticates with the SMTP server using credentials.")]
         public InArgument<bool> SmtpServerNeedsAuthentication { get; set; } = true;
 
-        [Category("Input")]
+
         [DisplayName("User Name")]
         [Description("The username for authentication.")]
         public InArgument<string> UserName { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Password")]
         [Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Accept Untrusted Certificates")]
         [Description("If true, accepts untrusted SSL certificates.")]
         public InArgument<bool> EnableSsl { get; set; } = false;
 
-        [Category("Input")]
+
         [DisplayName("Timeout (seconds)")]
         [Description("Connection timeout in seconds (default is 30).")]
         public InArgument<int> Timeout { get; set; } = 30;
@@ -113,9 +108,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // Output Arguments
         // ----------------------
 
-        
 
-        [Category("Output")]
         [DisplayName("Is Success")]
         [Description("Returns true if the email was sent successfully.")]
         public OutArgument<bool> IsSuccess { get; set; }

@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Windows.Automation;
 using System.Windows.Forms;
-using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -27,43 +27,43 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class PopulateTextFieldInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Parent Window")]
         [Description("Select the window or parent element where the text box is located.")]
         public InArgument<AutomationElement> ParentElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Type")]
         [Description("Choose how you want to search for the text box (by Name, ID, Class Name, or Control Type).")]
         [DefaultValue(PropertyTypeEnum.Name)]
         public InArgument<PropertyTypeEnum> PropertyType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Property Value")]
         [Description("Enter the value to search for (for example, the text box's name or ID).")]
         public InArgument<string> PropertyValue { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Enter")]
         [Description("The text to populate the text field with.")]
         public InArgument<string> TextToEnter { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Fill Method")]
         [Description("Choose how to fill the text field (Type, Paste, or Set Value).")]
         [DefaultValue(FillMethodEnum.Typing)]
         public InArgument<FillMethodEnum> FillMethod { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Wait Time (seconds)")]
         [Description("How many seconds to wait while searching for the text box.")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

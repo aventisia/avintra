@@ -8,37 +8,37 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a dialog box that prompts the user to enter text.")]
     public class DisplayInputDialogActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("Input Dialog Title")]
         [Description("The title text displayed at the top of the input dialog.")]
         public InArgument<string> InputDialogTitle { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Input Dialog Message")]
         [Description("The main text content of the input dialog.")]
         public InArgument<string> InputDialogMessage { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Default Value")]
         [Description("The default text pre-filled in the input field.")]
         public InArgument<string> DefaultValue { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Input Type")]
         [Description("The type of input field (Text or Password).")]
         public InArgument<InputTypeEnum> InputType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Keep Input Dialog Always on Top")]
         [Description("If true, the input dialog will stay on top of other windows.")]
         public InArgument<bool> KeepOnTop { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("User Input")]
         [Description("The text entered by the user.")]
         public OutArgument<string> UserInput { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Button Pressed")]
         [Description("The result indicating which button was pressed by the user.")]
         public OutArgument<DialogResultEnum> ButtonPressed { get; set; }

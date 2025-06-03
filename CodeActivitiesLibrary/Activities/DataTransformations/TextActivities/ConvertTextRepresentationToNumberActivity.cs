@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Text to Convert")]
         [Description("The word to convert into a numeric value.")]
         public InArgument<string> TextToConvert { get; set; }
@@ -22,14 +22,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Numeric Value")]
         [Description("Returns the numeric representation of the word.")]
         public OutArgument<int> NumericValue { get; set; }
 
-        [Category("Output")]
 
-        
+
+
 
         // ----------------------
         // Execution Logic

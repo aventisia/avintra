@@ -12,8 +12,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         [RequiredArgument, Category("Input"), Description("The action to perform on the screensaver.")]
         public InArgument<ScreensaverActionEnum> Action { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

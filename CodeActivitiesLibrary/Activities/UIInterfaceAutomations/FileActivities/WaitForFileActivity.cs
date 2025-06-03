@@ -17,23 +17,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path of the file to wait for.")]
         public InArgument<string> FilePath { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Wait for File to be")]
         [Description("Specifies whether to wait for file creation or deletion.")]
         public InArgument<WaitForFileModeEnum> Mode { get; set; } =
             new InArgument<WaitForFileModeEnum>(WaitForFileModeEnum.Create);
 
-        [Category("Input")]
+
         [DisplayName("Fail with Timeout Error")]
         [Description("Enable this to fail the activity if the file does not appear within the specified duration.")]
         public InArgument<bool> FailWithTimeoutError { get; set; } = new InArgument<bool>(false);
 
-        [Category("Input")]
+
         [DisplayName("Duration (seconds)")]
         [Description("The maximum time to wait for the file before timing out.")]
         [RenderIfCondition(nameof(FailWithTimeoutError), "True")]

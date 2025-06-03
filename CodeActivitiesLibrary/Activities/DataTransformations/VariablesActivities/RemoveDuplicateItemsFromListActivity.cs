@@ -15,12 +15,12 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("List to Deduplicate")]
         [Description("The list variable to remove duplicate values from.")]
         public InArgument<List<object>> ListToDeduplicate { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Ignore Case")]
         [Description("If true, performs case-insensitive comparison when checking for duplicates.")]
         [DefaultValue(false)]
@@ -30,12 +30,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Deduplicated List")]
         [Description("Returns the list after removing duplicate items.")]
         public OutArgument<List<object>> DeduplicatedList { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

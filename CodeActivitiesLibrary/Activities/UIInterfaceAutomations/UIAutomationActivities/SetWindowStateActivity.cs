@@ -1,9 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
@@ -12,13 +11,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class SetWindowStateActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Window")]
         [Description("Select the window you want to change.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Window State")]
         [Description("Choose how you want the window to appear (Normal, Maximized, or Minimized).")]
         [DefaultValue(WindowStateEnum.Normal)]

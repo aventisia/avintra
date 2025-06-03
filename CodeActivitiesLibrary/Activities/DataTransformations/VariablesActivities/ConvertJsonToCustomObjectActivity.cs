@@ -14,13 +14,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("JSON Data")]
         [Description("The JSON string that will be converted to a custom object.")]
         public InArgument<string> JsonData { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Target Type")]
         [Description("Specifies the type of the custom object to deserialize the JSON into.")]
         public InArgument<Type> TargetType { get; set; }
@@ -29,12 +29,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Custom Object")]
         [Description("Returns the resulting custom object after JSON deserialization.")]
         public OutArgument<object> CustomObject { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

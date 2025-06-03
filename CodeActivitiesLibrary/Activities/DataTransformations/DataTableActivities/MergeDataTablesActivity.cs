@@ -11,32 +11,30 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     public class MergeDataTablesActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("First Data Table")]
         [Description("The first DataTable to be merged.")]
         public InArgument<DataTable> FirstDataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Second Data Table")]
         [Description("The second DataTable to be merged.")]
         public InArgument<DataTable> SecondDataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Merge Mode")]
         [Description(
             "Specifies how to handle columns that are present in the second table but not in the first table.")]
         public InArgument<DataTableMergeModeEnum> MergeMode { get; set; } =
             new InArgument<DataTableMergeModeEnum>(DataTableMergeModeEnum.AddExtraColumns);
 
-        [Category("Output")]
+
         [DisplayName("Merged Data Table")]
         [Description("The resulting DataTable after merging the two input Data Tables.")]
         public OutArgument<DataTable> MergedDataTable { get; set; }
 
-
-        [Category("Output")] 
 
         protected override void Execute(CodeActivityContext context)
         {

@@ -2,7 +2,6 @@
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
@@ -11,26 +10,26 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     public class ConvertBinaryDataToFileActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Binary Data")]
         [Description("The binary data to convert.")]
         public InArgument<byte[]> BinaryData { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("File Path")]
         [Description("The full path where the file should be saved.")]
         public InArgument<string> FilePath { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("If File Exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
         [DefaultValue(IfExistsActionEnum.DoNothing)]
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

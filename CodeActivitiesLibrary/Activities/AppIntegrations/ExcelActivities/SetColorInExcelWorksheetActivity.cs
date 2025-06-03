@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -15,79 +15,79 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Input Arguments
         // ----------------------
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Selection Mode")]
         [Description("Specifies how to select the cells to color.")]
         [DefaultValue(ExcelSelectionModeForColorEnum.SingleCell)]
         public InArgument<ExcelSelectionModeForColorEnum> SelectionMode { get; set; }
 
         // Single Cell Fields
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the cell to color (e.g., 'A').")]
         [RenderIfCondition(nameof(SelectionMode), "SingleCell")]
         public InArgument<string> StartColumn { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the cell to color (e.g., '1').")]
         [RenderIfCondition(nameof(SelectionMode), "SingleCell")]
         public InArgument<int> StartRow { get; set; }
 
         // Range of Cells Fields
-        [Category("Input")]
+
         [DisplayName("Start Column")]
         [Description("The starting column of the range to color (e.g., 'A').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<string> StartColumnRange { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Start Row")]
         [Description("The starting row of the range to color (e.g., '1').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<int> StartRowRange { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Column")]
         [Description("The ending column of the range to color (e.g., 'B').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<string> EndColumnRange { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("End Row")]
         [Description("The ending row of the range to color (e.g., '5').")]
         [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
         public InArgument<int> EndRowRange { get; set; }
 
         // Named Cells Fields
-        [Category("Input")]
+
         [DisplayName("Named Range")]
         [Description("The name of the named range to color.")]
         [RenderIfCondition(nameof(SelectionMode), "NamedCells")]
         public InArgument<string> NamedRange { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Color Format")]
         [Description("Specifies the format of the color input.")]
         [DefaultValue(ExcelColorFormatEnum.Name)]
         public InArgument<ExcelColorFormatEnum> ColorFormat { get; set; }
 
         // Color Name Field
-        [Category("Input")]
+
         [DisplayName("Color Name")]
         [Description("The name of the color to apply (e.g., 'Red', 'Green').")]
         [RenderIfCondition(nameof(ColorFormat), "Name")]
         public InArgument<ExcelColorEnum> ColorName { get; set; }
 
         // Hexadecimal Value Field
-        [Category("Input")]
+
         [DisplayName("Color Hexadecimal Value")]
         [Description("The hexadecimal value of the color to apply (e.g., '#FF0000' for Red).")]
         [RenderIfCondition(nameof(ColorFormat), "HexadecimalValue")]

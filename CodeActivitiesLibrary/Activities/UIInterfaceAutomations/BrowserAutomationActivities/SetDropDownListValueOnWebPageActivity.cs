@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -19,42 +19,42 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the drop-down list (e.g., 'country', '//select[@id='country']').")]
         public InArgument<string> SearchKeywords { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Operation")]
         [Description("Specifies whether to select by name, index, or clear selection.")]
         [DefaultValue(DropDownListOperationEnum.SelectOptionsByName)]
         public InArgument<DropDownListOperationEnum> Operation { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Option Names")]
         [Description("Comma-separated option names to select. Only first is used if not multi-select.")]
         public InArgument<string> OptionNames { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Regular Expressions")]
         [Description("If true, matches option names using regular expressions.")]
         [DefaultValue(false)]
         public InArgument<bool> UseRegularExpressions { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Option Indices")]
         [Description("Comma-separated indices of options to select.")]
         public InArgument<string> OptionIndices { get; set; }

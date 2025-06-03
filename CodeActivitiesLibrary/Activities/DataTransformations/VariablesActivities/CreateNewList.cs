@@ -8,14 +8,14 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Creates a new empty list to be used in other activities.")]
     public class CreateNewList : Extensions.BaseCodeActivity
     {
-        [Category("Output")]
+
         [DisplayName("New List")]
         [Description("The newly created empty list.")]
         public OutArgument<List<object>> NewList { get; set; }
 
         // Output argument to return the newly created list
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

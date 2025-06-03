@@ -14,8 +14,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         [RequiredArgument, Category("Input"), Description("The SQL statement to execute.")]
         public InArgument<string> SqlStatement { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(CodeActivityContext context)
         {

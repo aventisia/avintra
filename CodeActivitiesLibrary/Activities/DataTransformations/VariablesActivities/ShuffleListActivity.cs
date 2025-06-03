@@ -15,7 +15,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("List to Shuffle")]
         [Description("The list to be randomly reordered.")]
         public InArgument<IEnumerable<object>> ListToShuffle { get; set; }
@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Shuffled List")]
         [Description("The shuffled version of the input list.")]
         public OutArgument<IEnumerable<object>> ShuffledList { get; set; }

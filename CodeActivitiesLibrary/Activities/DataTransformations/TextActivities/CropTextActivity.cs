@@ -15,31 +15,31 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Original Text")]
         [Description("The full text value from which to extract a portion.")]
         public InArgument<string> OriginalText { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Mode")]
         [Description("Specifies how to crop the text relative to the flag(s).")]
         [DefaultValue(CropModeEnum.BeforeFlag)]
         public InArgument<CropModeEnum> Mode { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Flag")]
         [Description("The flag used to locate the text to extract. Required in 'Before Flag' and 'After Flag' modes.")]
         public InArgument<string> Flag { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Second Flag")]
         [Description("The second flag used in 'Between Flags' mode to mark the end of the extracted text.")]
         [RenderIfCondition(nameof(Mode), nameof(CropModeEnum.BetweenFlags))]
         public InArgument<string> SecondFlag { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Ignore Case")]
         [Description("When true, ignores case when matching flags.")]
         [DefaultValue(true)]
@@ -49,17 +49,17 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Cropped Text")]
         [Description("The extracted portion of the original text based on the specified mode.")]
         public OutArgument<string> CroppedText { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Is Flag Found")]
         [Description("Indicates whether the specified flag(s) were found in the original text.")]
         public OutArgument<bool> IsFlagFound { get; set; }
 
-        [Category("Output")] 
+
 
         // ----------------------
         // Execution Logic

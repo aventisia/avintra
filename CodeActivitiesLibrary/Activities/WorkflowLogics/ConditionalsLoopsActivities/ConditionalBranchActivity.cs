@@ -14,12 +14,12 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [Description("Evaluates one or more groups of conditions. Each group is treated as an AND block, and the activity returns true if any group evaluates to true (OR logic between groups). Use this activity to create branching logic in your workflow based on custom conditions.")]
     public class ConditionalBranchActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("Conditions")]
         [Description("Add one or more groups of conditions. Each group is evaluated as AND, and the activity returns true if any group is true.")]
         public InArgument<List<List<ConditionObjectGroup>>> Conditions { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Condition Result")]
         [Description("Returns true if any group of conditions evaluates to true, otherwise false.")]
         public OutArgument<bool> ConditionResult { get; set; }

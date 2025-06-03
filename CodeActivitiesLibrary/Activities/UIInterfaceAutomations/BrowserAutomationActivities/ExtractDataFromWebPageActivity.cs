@@ -1,16 +1,12 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using System;
 using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
-using Microsoft.Office.Interop.Excel;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using DataTable = System.Data.DataTable;
-using Excel = Microsoft.Office.Interop.Excel;
 
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
@@ -24,61 +20,61 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Web Browser Instance")]
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [Browsable(false)]
-        [Category("Input")]
+
         [DisplayName("UI Element")]
         [Description("Select the UI element on the web page to extract data from.")]
         public InArgument<string> UiElement { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Extraction Mode")]
         [Description("Specifies what type of data to extract (e.g., single value, list, table).")]
         [DefaultValue(ExtractionModeEnum.SingleValue)]
         public InArgument<ExtractionModeEnum> ExtractionMode { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Use Paging")]
         [Description("If true, processes multiple pages by navigating through pagination.")]
         public InArgument<bool> UsePaging { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Get All Web Pages")]
         [Description("If true, extracts data from all available pages. Otherwise, only the first page is used.")]
         public InArgument<bool> GetAllWebPages { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Max Web Pages To Process")]
         [Description("The maximum number of web pages to process when using 'Use Paging'.")]
         [DefaultValue(10)]
         public InArgument<int> MaxWebPagesToProcess { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Page CSS Selector")]
         [Description("CSS selector used to locate the next page navigation element.")]
         public InArgument<string> PageCssSelector { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Send Physical Click for Next Page")]
         [Description("If true, simulates physical mouse click to navigate to the next page.")]
         public InArgument<bool> SendPhysicalClickForNextPage { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Process Data Upon Extraction")]
         [Description(
             "If true, processes the data to match visual display (e.g., handles hidden elements). Not recommended for large datasets.")]
         public InArgument<bool> ProcessDataUponExtraction { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for an element before failing.")]
         [DefaultValue(60)]
@@ -88,12 +84,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Excel Instance Output")]
         [Description("Returns the Excel instance if storing data in Excel.")]
         public OutArgument<string> ExcelInstanceOutput { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Data From Web Page Output")]
         [Description("Returns the extracted data as a single value, list, data row, or data table.")]
         public OutArgument<object> DataFromWebPageOutput { get; set; }

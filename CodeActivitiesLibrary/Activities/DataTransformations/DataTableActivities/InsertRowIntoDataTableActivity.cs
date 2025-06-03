@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -15,24 +15,24 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Data Table")]
         [Description("The data table to which the row will be inserted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Row Values")]
         [Description("An array of values to insert into the row.")]
         public InArgument<object[]> RowValues { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Insert Location")]
         [Description("Specifies where to insert the new row.")]
         [DefaultValue(DataTableInsertRowLocationEnum.BeforeRowIndex)]
         public InArgument<DataTableInsertRowLocationEnum> InsertLocation { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Row Index")]
         [Description(
             "The zero-based index before which to insert the row (required if 'Insert Location' is 'Before Row Index').")]
@@ -43,7 +43,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

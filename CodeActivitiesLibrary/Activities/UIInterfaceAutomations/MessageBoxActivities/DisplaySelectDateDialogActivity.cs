@@ -9,47 +9,47 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a dialog box that prompts the user to enter a date or date range.")]
     public class DisplaySelectDateDialogActivity : Extensions.BaseCodeActivity
     {
-        [Category("Input")]
+
         [DisplayName("Dialog Title")]
         [Description("The title text displayed at the top of the date dialog.")]
         public InArgument<string> DialogTitle { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Dialog Message")]
         [Description("The message displayed in the date dialog.")]
         public InArgument<string> DialogMessage { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Dialog Type")]
         [Description("Specifies whether the dialog prompts for a single date or a date range.")]
         public InArgument<DialogTypeEnum> DialogType { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Prompt For")]
         [Description("Specifies whether to prompt for date only or date and time.")]
         public InArgument<PromptForEnum> PromptFor { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Default Value")]
         [Description("The default date value displayed.")]
         public InArgument<string> DefaultValue { get; set; }
 
-        [Category("Input")]
+
         [DisplayName("Keep Date Selection Dialog Always On Top")]
         [Description("If true, the dialog stays on top of other windows.")]
         public InArgument<bool> KeepOnTop { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Selected Date")]
         [Description("The date or date range selected by the user.")]
         public OutArgument<string> SelectedDate { get; set; } // <-- Fixed here
 
-        [Category("Output")]
+
         [DisplayName("Button Pressed")]
         [Description("Indicates whether the OK or Cancel button was pressed.")]
         public OutArgument<bool> ButtonPressed { get; set; }
 
-        
+
 
         protected override void Execute(CodeActivityContext context)
         {

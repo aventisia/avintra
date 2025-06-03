@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [Category("Input")]
+
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target workbook.")]
         public InArgument<Excel.Application> ExcelApplication { get; set; }
@@ -23,17 +23,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-        [Category("Output")]
+
         [DisplayName("Sheet Name")]
         [Description("Returns the name of the currently active worksheet.")]
         public OutArgument<string> SheetName { get; set; }
 
-        [Category("Output")]
+
         [DisplayName("Sheet Index")]
         [Description("Returns the index of the currently active worksheet.")]
         public OutArgument<int> SheetIndex { get; set; }
-
-        [Category("Output")] 
 
         // ----------------------
         // Execution Logic

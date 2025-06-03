@@ -10,8 +10,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
         [Category("Input"), Description("Text input for documentation/comments.")]
         public InArgument<string> CommentText { get; set; }
 
-        
-        
+
+
 
         protected override void Execute(NativeActivityContext context)
         {
