@@ -6,6 +6,9 @@ import { useCallback } from "react";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
+import { toast } from "@aventisia/ui/sonner";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+import { useShallow } from "zustand/react/shallow";
 
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
@@ -18,6 +21,13 @@ export const useFlowOperations = () => {
     setNodes,
     setEdges,
   } = useReactFlowExtStore();
+
+  // Get Studio Preferences store state
+  const { deleteAlert } = useStudioPreferencesStore(
+    useShallow((state) => ({
+      deleteAlert: state.studioPreferences.deleteAlert,
+    })),
+  );
 
   // Auto layout the flow
   const autoLayout = useDagreAutoLayout();
@@ -171,28 +181,53 @@ export const useFlowOperations = () => {
   // Define deleteNode
   const deleteNode = useCallback(
     (nodeId: string) => {
+      // Find the node to delete
       const node = nodes.find((n) => n.id === nodeId);
       if (!node) return;
 
-      showDefaultAlertDialog({
-        alertType: "delete",
-        confirmActionFn: () => {
-          const { updatedNodes, updatedEdges, updatedFlowVariables } =
-            getNodesAndEdgesAfterDeletion({
-              node,
-              nodes,
-              edges,
-              flowVariables: flowVariablesObject,
-            });
+      // Find the parent conditional node (if any) that this node branches from
+      const parentNode = nodes.find(
+        (n) =>
+          n.type === "conditionalNode" &&
+          n.data?.mergeBranchesNodeId === node?.data?.mergeBranchesNodeId,
+      );
 
-          setNodes(updatedNodes);
-          setEdges(updatedEdges);
-          setFlowVariablesObject(updatedFlowVariables);
+      // Get the list of branch IDs from the parent node
+      const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
 
-          // Optional: trigger layout
-          autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
-        },
-      });
+      // Prevent deletion if fewer than 2 branches would remain
+      if (branches.length <= 2 && parentNode) {
+        toast.info("At least two branches are required.");
+        return;
+      }
+
+      // Perform the actual deletion logic
+      const performDelete = () => {
+        const { updatedNodes, updatedEdges, updatedFlowVariables } =
+          getNodesAndEdgesAfterDeletion({
+            node,
+            nodes,
+            edges,
+            flowVariables: flowVariablesObject,
+          });
+
+        setNodes(updatedNodes);
+        setEdges(updatedEdges);
+        setFlowVariablesObject(updatedFlowVariables);
+
+        // Trigger auto-layout to reposition nodes after deletion
+        autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
+      };
+
+      // Conditionally show alert dialog before deleting
+      if (deleteAlert) {
+        showDefaultAlertDialog({
+          alertType: "delete",
+          confirmActionFn: performDelete,
+        });
+      } else {
+        performDelete();
+      }
     },
     [nodes, edges, flowVariablesObject, showDefaultAlertDialog, autoLayout],
   );
