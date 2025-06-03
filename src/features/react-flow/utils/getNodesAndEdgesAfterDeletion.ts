@@ -68,9 +68,10 @@ export function getNodesAndEdgesAfterDeletion({
         n.type === "conditionalNode" &&
         n.data?.mergeBranchesNodeId === mergeNodeId,
     );
-    const branchCount = (parentNode?.data?.branchesCount ?? 0) as number;
 
-    if (branchCount <= 2 && !allowBranchDeletion) {
+    const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
+
+    if (branches.length <= 2 && !allowBranchDeletion) {
       throw new Error("At least two branches are required.");
     }
 
@@ -95,7 +96,7 @@ export function getNodesAndEdgesAfterDeletion({
             ...n,
             data: {
               ...n.data,
-              branchesCount: branchCount - 1,
+              branches: branches.filter((id) => id !== nodeId),
             },
           };
         }
