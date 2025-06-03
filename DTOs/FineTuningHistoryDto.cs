@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 /// <summary>
 /// DTO representing the history record of a fine-tuning operation for an existing ML model.
 /// </summary>
-public class FineTunningHistoryDto
+public class FineTuningHistoryDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of this fine-tuning history record.
