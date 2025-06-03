@@ -77,6 +77,7 @@ public class SummarizationMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
 
+        // Mapping of DTO to get list of fine tuning data.
         config.NewConfig<ExtractedData, SummarizationFineTuningDataDto>()
             .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeSummarizationSetupDto(src.DataObject) : null)
             .Map(dest => dest.DocName,

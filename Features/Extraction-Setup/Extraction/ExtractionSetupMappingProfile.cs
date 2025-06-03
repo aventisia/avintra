@@ -76,6 +76,21 @@ public class ExtractionSetupMappingProfile : IRegister
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
                 ? src.CreatedByUser.UserName
                 : null);
+            
+        // Mapping of DTO to get list of fine tuning data.
+        config.NewConfig<ExtractedData, ExtractionFineTuningDataDto>()
+            .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeExtractionSetupDto(src.DataObject) : null)
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
     }
 
     // Deserializes a JSON string into an ExtractionSetupData object and converts its fields into a list of ColumnsDto, where each item contains a field name and its corresponding value.

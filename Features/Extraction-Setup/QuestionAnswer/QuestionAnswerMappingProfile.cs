@@ -76,6 +76,21 @@ public class QuestionAnswerMappingProfile : IRegister
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
                 ? src.CreatedByUser.UserName
                 : null);
+
+        // Mapping of DTO to get list of fine tuning data.
+        config.NewConfig<ExtractedData, QuestionAnswerFineTuningDataDto>()
+            .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeQuestionAnswerSetupDto(src.DataObject) : null)
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
     }
 
     // Deserializes a JSON string into a list of QuestionAnswerSetupData objects and converts it into a list of ColumnsDto objects
