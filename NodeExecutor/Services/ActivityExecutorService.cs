@@ -1,11 +1,14 @@
 ﻿using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
+using Newtonsoft.Json;
 using NodeExecutor.Models;
 using System;
 using System.Activities;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace NodeExecutor.Services
@@ -131,7 +134,7 @@ namespace NodeExecutor.Services
 
                     // Trim the output value
                     nodeOutput.Value.Value = nodeOutput.Value.Value.Trim();
-                    
+
                     // Set the output value in the execution context
                     if (outputs != null && outputs.ContainsKey(nodeOutput.Key))
                     {
@@ -163,8 +166,15 @@ namespace NodeExecutor.Services
                     var resolvedGroup = new List<ConditionObjectGroup>();
                     foreach (var cond in group)
                     {
+                        // Resolve the first value
                         var resolvedFirst = ResolveTemplate(cond.FirstValue, executionContext);
+                        if (resolvedFirst is string s1 && !cond.FirstValue.Trim().StartsWith("{{"))
+                            resolvedFirst = InferType(s1);
+
+                        // Resolve the second value
                         var resolvedSecond = ResolveTemplate(cond.SecondValue, executionContext);
+                        if (resolvedSecond is string s2 && !cond.SecondValue.Trim().StartsWith("{{"))
+                            resolvedSecond = InferType(s2);
 
                         resolvedGroup.Add(new ConditionObjectGroup
                         {
@@ -230,32 +240,94 @@ namespace NodeExecutor.Services
             }
         }
 
+        private static object InferType(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return value;
+
+            // Try bool
+            if (bool.TryParse(value, out var boolResult))
+                return boolResult;
+
+            // Try int
+            if (int.TryParse(value, out var intResult))
+                return intResult;
+
+            // Try long
+            if (long.TryParse(value, out var longResult))
+                return longResult;
+
+            // Try decimal
+            if (decimal.TryParse(value, out var decResult))
+                return decResult;
+
+            // Try double
+            if (double.TryParse(value, out var dblResult))
+                return dblResult;
+
+            // Try DateTime
+            if (DateTime.TryParse(value, out var dtResult))
+                return dtResult;
+
+            // Fallback to string
+            return value;
+        }
+
         // Helper to resolve variable if value is in {{varName}} format
         public static object ResolveTemplate(string template, ExecutionContext context)
         {
             try
             {
+                // If template is null or empty, return as-is
+                if (string.IsNullOrEmpty(template))
+                    return template;
+
+                // If the template is exactly a single variable reference like {{myVar}}
+                var singleVarMatch = Regex.Match(template, @"^\s*\{\{([^\}]+)\}\}\s*$");
+                if (singleVarMatch.Success)
+                {
+                    var key = singleVarMatch.Groups[1].Value.Trim();
+                    if (context.TryGet(key, out var value))
+                        return value;
+                    return null;
+                }
+
+                // Otherwise, do string replacement for embedded variables
                 // Match double curly-brace variables like {{username}} but not \{{username}}
                 Regex PlaceholderRegex = new Regex(@"(?<!\\)\{\{(?<key>[^\}]+)\}\}");
 
                 // Replace {{key}} with context value
-                var key = PlaceholderRegex.Replace(template, match =>
+                var result = PlaceholderRegex.Replace(template, match =>
                 {
-                    return match.Groups["key"].Value;
+                    var key = match.Groups["key"].Value.Trim();
+                    if (context.TryGet(key, out var value) && value != null)
+                    {
+                        // Handle DataTable
+                        if (value is DataTable dt)
+                        {
+                            // Example: Convert DataTable to CSV string
+                            var sb = new StringBuilder();
+                            var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
+                            sb.AppendLine(string.Join(",", columns));
+                            foreach (DataRow row in dt.Rows)
+                                sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
+                            return sb.ToString().Trim();
+                        }
+                        // Handle IEnumerable (but not string)
+                        else if (value is System.Collections.IEnumerable enumerable && !(value is string))
+                        {
+                            return JsonConvert.SerializeObject(value); // for JSON
+                        }
+                        // Default: ToString
+                        else
+                        {
+                            return value.ToString();
+                        }
+                    }
+                    return match.Value; // leave as-is if not found
                 });
 
-                // If the key is empty, return the template as-is
-                if (string.IsNullOrEmpty(key))
-                    return template;
-
-                // Try to get the value from the context
-                var contextValue = context.TryGet(key, out var val) ? val : null;
-                
-                // If value is null, return the placeholder as-is
-                if (contextValue == null)
-                    return $"{{{{{key}}}}}"; // leave as-is if not found
-
-                return contextValue;
+                return result;
             }
             catch (Exception ex)
             {
