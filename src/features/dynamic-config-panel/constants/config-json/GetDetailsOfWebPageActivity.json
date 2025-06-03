@@ -1,17 +1,5 @@
 [
   {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "OWebPagePropertyOutput",
-    "label": "Web Page Property",
-    "description": "The value retrieved from the web page based on the selected detail type.",
-    "defaultValue": {
-      "value": "OWebPagePropertyOutput",
-      "enabled": true
-    },
-    "required": false
-  },
-  {
     "direction": "Input",
     "type": "text",
     "name": "WebBrowserInstance",
@@ -23,11 +11,11 @@
   {
     "direction": "Input",
     "type": "select",
-    "name": "Get",
-    "label": "Get",
-    "description": "Select what detail you want to retrieve from the web page.",
-    "defaultValue": "WebPageDescription",
-    "required": false,
+    "name": "DetailType",
+    "label": "Detail Type",
+    "description": "Specifies which detail to retrieve from the web page.",
+    "defaultValue": "WebPageTitle",
+    "required": true,
     "selectOptions": [
       {
         "label": "Web Page Description",
@@ -60,5 +48,17 @@
         "description": "Gets the current URL address of the browser."
       }
     ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "OWebPagePropertyOutput",
+    "label": "Web Page Property",
+    "description": "The value retrieved from the web page based on the selected detail type.",
+    "defaultValue": {
+      "value": "OWebPagePropertyOutput",
+      "enabled": true
+    },
+    "required": false
   }
 ]

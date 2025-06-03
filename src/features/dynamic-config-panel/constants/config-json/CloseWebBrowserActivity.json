@@ -4,8 +4,17 @@
     "type": "text",
     "name": "WebBrowserInstance",
     "label": "Web Browser Instance",
-    "description": "Enter or choose the variable that contains the web browser instance to close.",
+    "description": "The WebDriver instance to close.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "CloseAllInstances",
+    "label": "Close All Instances",
+    "description": "If true, closes all open browser windows and disposes of the driver.",
+    "defaultValue": "",
+    "required": false
   }
 ]

@@ -2,37 +2,141 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "FilePath",
-    "label": "CSV Output File Path",
-    "description": "The full path where the CSV file will be written.",
+    "name": "VariableToWrite",
+    "label": "Variable to Write",
+    "description": "The data to write to the CSV file (DataTable, DataRow, or List).",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "InputDataTable",
-    "label": "Data Table to Write",
-    "description": "The DataTable whose contents should be written to the CSV file.",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "The full path of the CSV file to write.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "switch",
-    "name": "IncludeHeader",
-    "label": "Include Header Row",
-    "description": "Indicates whether column names should be included as the header row in the CSV.",
-    "defaultValue": true,
-    "required": false
+    "type": "select",
+    "name": "EncodingOption",
+    "label": "Encoding",
+    "description": "The encoding of the CSV file.",
+    "defaultValue": "UTF8",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "SystemDefault",
+        "value": "SystemDefault",
+        "description": ""
+      },
+      {
+        "label": "UTF8",
+        "value": "UTF8",
+        "description": ""
+      },
+      {
+        "label": "Unicode",
+        "value": "Unicode",
+        "description": ""
+      },
+      {
+        "label": "BigEndianUnicode",
+        "value": "BigEndianUnicode",
+        "description": ""
+      },
+      {
+        "label": "UTF8NoBOM",
+        "value": "UTF8NoBOM",
+        "description": ""
+      },
+      {
+        "label": "ASCII",
+        "value": "ASCII",
+        "description": ""
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "switch",
-    "name": "AppendToFile",
-    "label": "Append To File",
-    "description": "Specify whether the data should be appended to the file if it exists.",
+    "name": "UseCustomColumnSeparator",
+    "label": "Use Custom Column Separator",
+    "description": "Specifies whether to use a custom column separator.",
     "defaultValue": false,
     "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomColumnSeparator",
+    "label": "Custom Column Separator",
+    "description": "The custom delimiter used in the CSV file.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "UseCustomColumnSeparator",
+          "equals": "True"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PredefinedSeparator",
+    "label": "Predefined Separator",
+    "description": "The predefined separator used in the CSV file (e.g., Comma, Tab).",
+    "defaultValue": "Comma",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Comma",
+        "value": "Comma",
+        "description": ""
+      },
+      {
+        "label": "Tab",
+        "value": "Tab",
+        "description": ""
+      },
+      {
+        "label": "Semicolon",
+        "value": "Semicolon",
+        "description": ""
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "UseCustomColumnSeparator",
+          "equals": "False"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfFileExists",
+    "label": "If File Exists",
+    "description": "Specifies how to handle existing files.",
+    "defaultValue": "Overwrite",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Overwrite",
+        "value": "Overwrite",
+        "description": ""
+      },
+      {
+        "label": "Append",
+        "value": "Append",
+        "description": ""
+      }
+    ]
   }
 ]

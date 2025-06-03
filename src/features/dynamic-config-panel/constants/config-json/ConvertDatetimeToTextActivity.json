@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "DatetimeToConvert",
-    "label": "DatetimeToConvert",
+    "label": "Datetime to Convert",
     "description": "The datetime value to convert to text.",
     "defaultValue": "",
     "required": false
@@ -12,19 +12,27 @@
     "direction": "Input",
     "type": "text",
     "name": "CustomFormat",
-    "label": "CustomFormat",
+    "label": "Custom Format",
     "description": "A custom format string for formatting the datetime value (e.g., yyyyMMdd).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "FormatToUse",
+          "equals": "Custom"
+        }
+      ]
+    }
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ConvertedDateTime",
-    "label": "ConvertedDateTime",
+    "name": "FormattedDateTime",
+    "label": "Formatted DateTime",
     "description": "The formatted datetime as a text value.",
     "defaultValue": {
-      "value": "ConvertedDateTime",
+      "value": "FormattedDateTime",
       "enabled": true
     },
     "required": false

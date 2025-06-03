@@ -11,31 +11,31 @@
   {
     "direction": "Input",
     "type": "select",
-    "name": "Navigate",
+    "name": "NavigateAction",
     "label": "Navigate Action",
-    "description": "Specify where to navigate to.",
+    "description": "Specifies the type of navigation action to perform.",
     "defaultValue": "ToUrl",
     "required": false,
     "selectOptions": [
       {
         "label": "To URL",
         "value": "ToUrl",
-        "description": "Navigate to a specific URL."
+        "description": "Navigates to the specified URL."
       },
       {
         "label": "Back",
         "value": "Back",
-        "description": "Navigate back in the browser history."
+        "description": "Navigates back in the browser history."
       },
       {
         "label": "Forward",
         "value": "Forward",
-        "description": "Navigate forward in the browser history."
+        "description": "Navigates forward in the browser history."
       },
       {
         "label": "Reload Web Page",
         "value": "Reload",
-        "description": "Reload the current web page."
+        "description": "Reloads the current web page."
       }
     ]
   },
@@ -44,34 +44,42 @@
     "type": "text",
     "name": "Url",
     "label": "URL",
-    "description": "The URL to navigate to.",
+    "description": "The URL to navigate to when \u0027Navigate Action\u0027 is \u0027ToUrl\u0027.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "NavigateAction",
+          "equals": "ToUrl"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
     "type": "switch",
     "name": "WaitForPageToLoad",
     "label": "Wait for Page to Load",
-    "description": "Specify whether to wait for the new page to load completely after navigating.",
-    "defaultValue": true,
+    "description": "If true, waits for the page to fully load before continuing.",
+    "defaultValue": "",
     "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "TimeoutForWebpageToLoad",
-    "label": "Timeout for Webpage to Load",
-    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "name": "TimeoutForPageLoad",
+    "label": "Timeout for Page Load",
+    "description": "Maximum time in seconds to wait for the page to load.",
     "defaultValue": 60,
     "required": false
   },
   {
     "direction": "Input",
     "type": "select",
-    "name": "IfAPopUpDialogAppears",
-    "label": "If a Pop-Up Dialog Appears",
-    "description": "Specify what to do if a pop-up dialog appears after navigating.",
+    "name": "IfDialogAppears",
+    "label": "Handle Dialog",
+    "description": "Specifies what to do if a dialog appears after navigating.",
     "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
@@ -102,8 +110,8 @@
     "type": "text",
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
-    "description": "Enter the dialog button to press if a pop-up dialog appears.",
-    "defaultValue": "OK",
+    "description": "The name of the button to press if a dialog appears (e.g., \u0027Ok\u0027, \u0027Cancel\u0027).",
+    "defaultValue": "Ok",
     "required": false
   }
 ]

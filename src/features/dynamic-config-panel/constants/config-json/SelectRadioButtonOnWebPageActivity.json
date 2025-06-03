@@ -11,36 +11,45 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "UiElement",
-    "label": "UI Element",
-    "description": "Select the radio button UI element on the web page to select.",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchKeywords",
+    "label": "Search Keywords",
+    "description": "The value used to locate the radio button (e.g., \u0027gender-male\u0027, \u0027//input[@name=\u0027option1\u0027]\u0027).",
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
     "type": "switch",
-    "name": "WaitForPageToLoad",
-    "label": "Wait for Page to Load",
-    "description": "Specify whether to wait for the new web page to load completely after selecting the radio button.",
+    "name": "WaitForPageLoad",
+    "label": "Wait for Page Load",
+    "description": "If true, waits for the page to fully load after selection.",
     "defaultValue": true,
     "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "TimeoutForWebpageToLoad",
-    "label": "Timeout for Webpage to Load",
-    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "name": "TimeoutForPageLoad",
+    "label": "Timeout for Page Load",
+    "description": "Maximum time in seconds to wait for the page to load.",
     "defaultValue": 60,
     "required": false
   },
   {
     "direction": "Input",
     "type": "select",
-    "name": "IfAPopUpDialogAppears",
-    "label": "If a Pop-Up Dialog Appears",
-    "description": "Specify what to do if a pop-up dialog appears after selecting the radio button.",
+    "name": "IfDialogAppears",
+    "label": "Handle Dialog",
+    "description": "Specifies what to do if a dialog appears after selecting the radio button.",
     "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
@@ -71,8 +80,8 @@
     "type": "text",
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
-    "description": "The dialog button to press if a pop-up dialog appears.",
-    "defaultValue": "ok",
+    "description": "The name of the button to press if a dialog appears (e.g., \u0027Ok\u0027, \u0027Cancel\u0027).",
+    "defaultValue": "Ok",
     "required": false
   }
 ]

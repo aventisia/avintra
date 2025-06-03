@@ -1,0 +1,143 @@
+[
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "BrowserType",
+    "label": "Browser Type",
+    "description": "Specifies which browser to launch (Microsoft Edge, Google Chrome, Mozilla Firefox).",
+    "defaultValue": "MicrosoftEdge",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Microsoft Edge",
+        "value": "MicrosoftEdge",
+        "description": "Launches Microsoft Edge browser."
+      },
+      {
+        "label": "Google Chrome",
+        "value": "GoogleChrome",
+        "description": "Launches Google Chrome browser."
+      },
+      {
+        "label": "Mozilla Firefox",
+        "value": "MozillaFirefox",
+        "description": "Launches Mozilla Firefox browser."
+      },
+      {
+        "label": "Custom",
+        "value": "Custom",
+        "description": "Launches a custom browser by specifying its executable and driver paths."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "BrowsingMode",
+    "label": "Browsing Mode",
+    "description": "Specifies whether to open in normal or private browsing mode.",
+    "defaultValue": "Normal",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Normal",
+        "value": "Normal",
+        "description": "Opens browser in normal mode."
+      },
+      {
+        "label": "Private",
+        "value": "Private",
+        "description": "Opens browser in private/incognito mode."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomBrowserName",
+    "label": "Custom Browser Name",
+    "description": "Name of the custom browser (required if \u0027Browser Type\u0027 is \u0027Custom\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "BrowserType",
+          "equals": "Custom"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BrowserExecutablePath",
+    "label": "Browser Executable Path",
+    "description": "The path to the browser executable (e.g., firefox.exe, chrome.exe). Required if \u0027Browser Type\u0027 is \u0027Custom\u0027.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "BrowserType",
+          "equals": "Custom"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DriverExecutablePath",
+    "label": "Driver Executable Path",
+    "description": "The path to the driver executable (e.g., geckodriver.exe for Firefox). Required if \u0027Browser Type\u0027 is \u0027Custom\u0027.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "BrowserType",
+          "equals": "Custom"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "WindowState",
+    "label": "Window State",
+    "description": "Specifies the initial browser window state.",
+    "defaultValue": "Maximized",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Maximized",
+        "value": "Maximized",
+        "description": "Launches browser in maximized window state."
+      },
+      {
+        "label": "Minimized",
+        "value": "Minimized",
+        "description": "Launches browser in minimized window state."
+      },
+      {
+        "label": "Normal",
+        "value": "Normal",
+        "description": "Launches browser in normal window state."
+      }
+    ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WebDriver",
+    "label": "Web Driver",
+    "description": "Returns the WebDriver object for further automation steps.",
+    "defaultValue": {
+      "value": "WebDriver",
+      "enabled": true
+    },
+    "required": false
+  }
+]

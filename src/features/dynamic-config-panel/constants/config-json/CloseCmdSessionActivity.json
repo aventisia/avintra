@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ProcessId",
-    "label": "ProcessId",
-    "description": "The process ID of the open CMD session.",
+    "name": "CmdSession",
+    "label": "CMD Session",
+    "description": "The process representing the open CMD session.",
     "defaultValue": "",
     "required": true
   }

@@ -2,19 +2,46 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Url",
-    "label": "Url",
-    "description": "The URL of the web page.",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "ElementSelector",
-    "label": "ElementSelector",
-    "description": "The selector for the element to hover over (e.g., CSS selector).",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchKeywords",
+    "label": "Search Keywords",
+    "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForElement",
+    "label": "Wait for Element",
+    "description": "If true, waits for the element to appear before hovering.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for the element before failing.",
+    "defaultValue": 60,
+    "required": false
   }
 ]

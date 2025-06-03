@@ -202,6 +202,15 @@
           },
           {
             "type": "activityNode",
+            "name": "SortListActivity",
+            "label": "Sort List",
+            "description": "Sorts a list by one or more properties. Supports ascending or descending order.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "SubtractListsActivity",
             "label": "Subtract Lists",
             "description": "Removes items from the first list that exist in the second list.",
@@ -455,7 +464,7 @@
           {
             "type": "activityNode",
             "name": "SubtractDatesActivity",
-            "label": "Calculate Date Difference",
+            "label": "Substract Dates",
             "description": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -1461,6 +1470,15 @@
         "actions": [
           {
             "type": "activityNode",
+            "name": "CopyFolderActivity",
+            "label": "Folder to Copy",
+            "description": "The path of the source folder that you want to copy the folder",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "CreateFolderActivity",
             "label": "Create Folder",
             "description": "Generates a new folder within the specified parent directory using a given folder name.",
@@ -1616,7 +1634,7 @@
             "type": "activityNode",
             "name": "IfFileExistsActivity",
             "label": "If File Exists",
-            "description": "Checks if a file exists.",
+            "description": "Checks if a file exists and marks the beginning of a conditional block of actions.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1633,8 +1651,8 @@
           {
             "type": "activityNode",
             "name": "ReadFromCsvFileActivity",
-            "label": "CSV File Reader",
-            "description": "Reads a CSV file from the specified path and returns the content as a DataTable.",
+            "label": "Read from CSV File",
+            "description": "Reads a CSV file into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1669,8 +1687,8 @@
           {
             "type": "activityNode",
             "name": "WriteToCsvFileActivity",
-            "label": "CSV Writer Activity",
-            "description": "Writes the contents of a DataTable to a CSV file with options to append or overwrite.",
+            "label": "Write to CSV File",
+            "description": "Writes a data table, data row, or list to a CSV file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1733,7 +1751,7 @@
             "type": "activityNode",
             "name": "OpenCmdSessionActivity",
             "label": "Open CMD Session",
-            "description": "Opens a new CMD session and returns the process ID.",
+            "description": "Opens a new CMD session with optional encoding settings.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1742,7 +1760,7 @@
             "type": "activityNode",
             "name": "ReadFromCmdSessionActivity",
             "label": "Read from CMD Session",
-            "description": "Reads the output from an open CMD session.",
+            "description": "Reads the output of a CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1751,7 +1769,7 @@
             "type": "activityNode",
             "name": "WaitForTextOnCmdSessionActivity",
             "label": "Wait for Text on CMD Session",
-            "description": "Waits for a specific text on an open CMD session.",
+            "description": "Waits for a specific text on a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1760,7 +1778,7 @@
             "type": "activityNode",
             "name": "WriteToCmdSessionActivity",
             "label": "Write to CMD Session",
-            "description": "Writes a command to an open CMD session.",
+            "description": "Executes a command on an open CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1812,7 +1830,16 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "ClickDownloadLinkOnWebPageActivity",
+            "name": "CheckElementStateActivity",
+            "label": "Check Element State",
+            "description": "Verifies if an element is visible, enabled, or selected.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClickDownloadLinkActivity",
             "label": "Click Download Link on Web Page",
             "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
             "docsLink": "https://docs.aventisia.com",
@@ -1823,7 +1850,7 @@
             "type": "activityNode",
             "name": "ClickLinkOnWebPageActivity",
             "label": "Click Link on Web Page",
-            "description": "Simulates clicking a UI element (e.g., a link or button) on a web page. Supports various click types, physical mouse interaction, and dialog handling.",
+            "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1832,7 +1859,16 @@
             "type": "activityNode",
             "name": "CloseWebBrowserActivity",
             "label": "Close Web Browser",
-            "description": "Closes a web browser instance that was previously opened.",
+            "description": "Closes a web browser instance or all instances if needed.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseWebBrowserTabActivity",
+            "label": "Close Web Browser Tab",
+            "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1857,16 +1893,25 @@
           },
           {
             "type": "activityNode",
-            "name": "FocusTextFieldOnWebPageActivity",
+            "name": "FocusTextFieldActivity",
             "label": "Focus Text Field on Web Page",
-            "description": "Focuses a specific text field in a web browser. Optionally waits for the page to load and handles pop-up dialogs.",
+            "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "GetDetailsOfElementOnWebPageActivity",
+            "name": "GetCheckboxValueActivity",
+            "label": "Get Checkbox Value",
+            "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetDetailsOfElementActivity",
             "label": "Get Details of Element on Web Page",
             "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
             "docsLink": "https://docs.aventisia.com",
@@ -1886,7 +1931,25 @@
             "type": "activityNode",
             "name": "GetElementAttributeValueActivity",
             "label": "Get Element Attribute Value",
-            "description": "Retrieve the value of an element's attribute on a web page.",
+            "description": "Retrieves the value of an element's attribute from a web page.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetElementSiblingsActivity",
+            "label": "Get Element Siblings",
+            "description": "Finds and returns all sibling elements of the specified web element.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetParentElementActivity",
+            "label": "Get Parent Element",
+            "description": "Finds and returns the parent element of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1895,7 +1958,7 @@
             "type": "activityNode",
             "name": "GoToWebPageActivity",
             "label": "Go To Web Page",
-            "description": "Navigates a web browser instance to a specified URL, or performs navigation actions such as Back, Forward, or Reload.",
+            "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1903,17 +1966,8 @@
           {
             "type": "activityNode",
             "name": "HoverMouseOverElementActivity",
-            "label": "Hover Mouse Over Element on Web Page",
-            "description": "Move the mouse cursor over an element on a web page.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "HoverMouseOverElementOnWebPageActivity",
-            "label": "Hover Mouse Over Element on Web Page",
-            "description": "Simulates hovering the mouse over a specified UI element on a web page. Optionally uses physical mouse movement.",
+            "label": "Hover Over Element on Web Page",
+            "description": "Moves the mouse cursor over a specified element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1929,45 +1983,9 @@
           },
           {
             "type": "activityNode",
-            "name": "LaunchNewChromeActivity",
-            "label": "Launch New Chrome",
-            "description": "Launches a new web browser instance or attaches to an existing one.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "LaunchNewEdgeActivity",
-            "label": "Launch New Microsoft Edge",
-            "description": "Launch a new instance of Microsoft Edge or attach to a running instance of Microsoft Edge for automating websites and web applications.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "LaunchNewMicrosoftEdgeActivity",
-            "label": "Launch New Microsoft Edge",
-            "description": "Launches a new Microsoft Edge instance or attaches to an existing browser session.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "PopulateTextFieldActivity",
             "label": "Populate Text Field on Web Page",
-            "description": "Fill in a text field on a web page with the specified text.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "PopulateTextFieldOnWebPageActivity",
-            "label": "Populate Text Field on Web Page",
-            "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input and advanced UI interaction settings.",
+            "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1985,7 +2003,16 @@
             "type": "activityNode",
             "name": "RunJavaScriptFunctionOnWebPageActivity",
             "label": "Run JavaScript Function on Web Page",
-            "description": "Runs a custom JavaScript function in the context of the current web page.",
+            "description": "Executes a custom JavaScript function in the context of the current web page.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ScrollToElementOrPositionActivity",
+            "label": "Scroll To Element or Position",
+            "description": "Scrolls the browser window to a specified element or coordinates.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1994,7 +2021,7 @@
             "type": "activityNode",
             "name": "SelectRadioButtonOnWebPageActivity",
             "label": "Select Radio Button on Web Page",
-            "description": "Simulates selecting a radio button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+            "description": "Simulates selecting a radio button element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2003,7 +2030,7 @@
             "type": "activityNode",
             "name": "SetCheckboxStateOnWebPageActivity",
             "label": "Set Checkbox State on Web Page",
-            "description": "Sets the state (checked/unchecked) of a checkbox element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+            "description": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2012,34 +2039,25 @@
             "type": "activityNode",
             "name": "SetDropDownListValueOnWebPageActivity",
             "label": "Set Drop-Down List Value on Web Page",
-            "description": "Sets or clears the value of a drop-down list element on a web page. Supports selection by name, index, or clearing all options.",
+            "description": "Sets or clears the value of a drop-down list element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "SetFocusOnInputElementActivity",
-            "label": "Set Focus on Input Element",
-            "description": "Set the focus on an input element on a web page and scroll it into view.",
+            "name": "SetElementAttributeValueActivity",
+            "label": "Set Element Attribute Value",
+            "description": "Sets the value of a specified attribute of a web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "TakeScreenshotOfWebPageActivity",
-            "label": "Take Screenshot of Web Page",
-            "description": "Captures a screenshot of the entire web page or a specific UI element, and saves it to clipboard or file.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "WaitForWebPageContentActivity",
-            "label": "Wait For Web Page Content",
-            "description": "Waits for a specific condition to be met on the current web page, such as containing an element or text.",
+            "name": "SwitchToTabActivity",
+            "label": "Switch To Tab",
+            "description": "Switches control to a browser tab using index, title, or partial URL.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2579,6 +2597,15 @@
             "name": "ActivateCellInExcelWorksheetActivity",
             "label": "Activate Cell in Excel Worksheet",
             "description": "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddNewWorksheetActivity",
+            "label": "Add New Worksheet",
+            "description": "Adds a new worksheet to the document of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

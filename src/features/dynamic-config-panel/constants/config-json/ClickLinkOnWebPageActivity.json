@@ -13,16 +13,25 @@
     "type": "text",
     "name": "UiElement",
     "label": "UI Element",
-    "description": "Select the UI element (link, button, etc.) on the web page to click.",
+    "description": "The selector used to locate the link or button on the web page.",
     "defaultValue": "",
-    "required": false
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Input",
     "type": "select",
     "name": "ClickType",
     "label": "Click Type",
-    "description": "The kind of click to perform.",
+    "description": "Specifies the type of click to perform.",
     "defaultValue": "LeftClick",
     "required": false,
     "selectOptions": [
@@ -73,34 +82,34 @@
     "type": "switch",
     "name": "SendPhysicalClick",
     "label": "Send Physical Click",
-    "description": "Physically move the mouse cursor over the element prior to clicking.",
+    "description": "If true, simulates physical mouse movement before clicking.",
     "defaultValue": true,
     "required": false
   },
   {
     "direction": "Input",
     "type": "switch",
-    "name": "WaitForPageToLoad",
-    "label": "Wait for Page to Load",
-    "description": "Specify whether to wait for the new web page to load after the click.",
+    "name": "WaitForPageLoad",
+    "label": "Wait for Page Load",
+    "description": "If true, waits for the next page to load after the click.",
     "defaultValue": true,
     "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "TimeoutForWebpageToLoad",
-    "label": "Timeout for Webpage to Load",
-    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "name": "TimeoutForPageLoad",
+    "label": "Timeout for Page Load",
+    "description": "The maximum time (in seconds) to wait for the page to load.",
     "defaultValue": 60,
     "required": false
   },
   {
     "direction": "Input",
     "type": "select",
-    "name": "IfAPopUpDialogAppears",
-    "label": "If a Pop-Up Dialog Appears",
-    "description": "Specify what to do if a pop-up dialog appears after clicking the link.",
+    "name": "IfDialogAppears",
+    "label": "Handle Dialog",
+    "description": "Specifies what to do if a dialog appears after the click.",
     "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
@@ -131,7 +140,7 @@
     "type": "text",
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
-    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "description": "The name of the button to press if a dialog appears (e.g., \u0027Ok\u0027, \u0027Cancel\u0027).",
     "defaultValue": "Ok",
     "required": false
   },
@@ -140,54 +149,54 @@
     "type": "select",
     "name": "MousePosition",
     "label": "Mouse Position Relative to Element",
-    "description": "Specify where to position the mouse relative to the element before clicking.",
-    "defaultValue": "",
+    "description": "Specifies where to position the mouse relative to the element before clicking.",
+    "defaultValue": "MiddleCenter",
     "required": false,
     "selectOptions": [
       {
-        "label": "TopLeft",
+        "label": "Top Left",
         "value": "TopLeft",
-        "description": ""
+        "description": "Positions the mouse at the top-left of the element."
       },
       {
-        "label": "MiddleLeft",
+        "label": "Middle Left",
         "value": "MiddleLeft",
-        "description": ""
+        "description": "Positions the mouse at the middle-left of the element."
       },
       {
-        "label": "BottomLeft",
+        "label": "Bottom Left",
         "value": "BottomLeft",
-        "description": ""
+        "description": "Positions the mouse at the bottom-left of the element."
       },
       {
-        "label": "TopCenter",
+        "label": "Top Center",
         "value": "TopCenter",
-        "description": ""
+        "description": "Positions the mouse at the top-center of the element."
       },
       {
-        "label": "MiddleCenter",
+        "label": "Middle Center",
         "value": "MiddleCenter",
-        "description": ""
+        "description": "Positions the mouse in the center of the element."
       },
       {
-        "label": "BottomCenter",
+        "label": "Bottom Center",
         "value": "BottomCenter",
-        "description": ""
+        "description": "Positions the mouse at the bottom-center of the element."
       },
       {
-        "label": "TopRight",
+        "label": "Top Right",
         "value": "TopRight",
-        "description": ""
+        "description": "Positions the mouse at the top-right of the element."
       },
       {
-        "label": "MiddleRight",
+        "label": "Middle Right",
         "value": "MiddleRight",
-        "description": ""
+        "description": "Positions the mouse at the middle-right of the element."
       },
       {
-        "label": "BottomRight",
+        "label": "Bottom Right",
         "value": "BottomRight",
-        "description": ""
+        "description": "Positions the mouse at the bottom-right of the element."
       }
     ]
   },
@@ -196,7 +205,7 @@
     "type": "text",
     "name": "OffsetX",
     "label": "Offset X",
-    "description": "Move the mouse this many pixels to the right from the selected position.",
+    "description": "Move the mouse this many pixels horizontally from the selected position.",
     "defaultValue": 0,
     "required": false
   },
@@ -205,7 +214,7 @@
     "type": "text",
     "name": "OffsetY",
     "label": "Offset Y",
-    "description": "Move the mouse this many pixels down from the selected position.",
+    "description": "Move the mouse this many pixels vertically from the selected position.",
     "defaultValue": 0,
     "required": false
   }

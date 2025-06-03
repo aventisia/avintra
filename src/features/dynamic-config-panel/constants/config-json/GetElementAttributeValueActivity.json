@@ -2,18 +2,27 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Url",
-    "label": "Url",
-    "description": "The URL of the web page.",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "The existing web browser instance (e.g., IWebDriver) to interact with.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "ElementSelector",
-    "label": "ElementSelector",
-    "description": "The selector for the element (e.g., CSS selector).",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchKeywords",
+    "label": "Search Keywords",
+    "description": "The selector used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
     "defaultValue": "",
     "required": true
   },
@@ -21,17 +30,35 @@
     "direction": "Input",
     "type": "text",
     "name": "AttributeName",
-    "label": "AttributeName",
-    "description": "The name of the attribute to retrieve.",
+    "label": "Attribute Name",
+    "description": "The name of the attribute whose value should be retrieved (e.g., \u0027value\u0027, \u0027href\u0027, \u0027src\u0027).",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForElement",
+    "label": "Wait For Element",
+    "description": "If true, waits for the element to appear before retrieving the attribute value.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for the element before failing.",
+    "defaultValue": 60,
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "Result",
-    "label": "Result",
-    "description": "Returns the value of the attribute.",
+    "label": "Attribute Value Output",
+    "description": "Returns the value of the attribute from the found web element.",
     "defaultValue": {
       "value": "Result",
       "enabled": true

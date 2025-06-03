@@ -11,59 +11,75 @@
   {
     "direction": "Input",
     "type": "select",
-    "name": "CheckIfWebPage",
+    "name": "CheckCondition",
     "label": "Check Condition",
-    "description": "Select what condition to check in the web page.",
+    "description": "Specifies what condition to check (e.g., contains element, contains text).",
     "defaultValue": "ContainsElement",
-    "required": false,
+    "required": true,
     "selectOptions": [
       {
         "label": "Contains Element",
         "value": "ContainsElement",
-        "description": "Check if the web page contains a specific UI element."
+        "description": "Checks if the web page contains a specific UI element."
       },
       {
         "label": "Doesn\u0027t Contain Element",
         "value": "DoesNotContainElement",
-        "description": "Check if the web page does not contain a specific UI element."
+        "description": "Checks if the web page does not contain a specific UI element."
       },
       {
         "label": "Contains Text",
         "value": "ContainsText",
-        "description": "Check if the web page contains a specific text."
+        "description": "Checks if the web page contains a specific text."
       },
       {
         "label": "Doesn\u0027t Contain Text",
         "value": "DoesNotContainText",
-        "description": "Check if the web page does not contain a specific text."
+        "description": "Checks if the web page does not contain a specific text."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "CheckCondition",
+          "equals": "ContainsElement"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchKeywords",
+    "label": "Search Keywords",
+    "description": "The value used to locate the element or text content.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "CheckCondition",
+          "equals": "ContainsElement"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
     "type": "switch",
     "name": "CheckUiElementState",
     "label": "Check UI Element State",
-    "description": "Check whether a specific UI element is enabled or disabled.",
+    "description": "If true, checks whether the found element is enabled or disabled.",
     "defaultValue": false,
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "UiElement",
-    "label": "UI Element",
-    "description": "The UI element to look for in the web page.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Text",
-    "label": "Text",
-    "description": "The text to look for in the web page content.",
-    "defaultValue": "",
     "required": false
   },
   {
@@ -71,19 +87,57 @@
     "type": "select",
     "name": "State",
     "label": "State",
-    "description": "The expected state of the UI element (enabled or disabled).",
+    "description": "Specifies the expected state of the element (enabled or disabled).",
     "defaultValue": "Enabled",
     "required": false,
     "selectOptions": [
       {
         "label": "Enabled",
         "value": "Enabled",
-        "description": "UI element must be enabled."
+        "description": "Specifies that the element should be enabled."
       },
       {
         "label": "Disabled",
         "value": "Disabled",
-        "description": "UI element must be disabled."
+        "description": "Specifies that the element should be disabled."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToSearch",
+    "label": "Text To Search",
+    "description": "The text to search for in the web page body or title.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "CheckCondition",
+          "equals": "ContainsText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SearchLocation",
+    "label": "Search Location",
+    "description": "Specifies where to search for the text (e.g., Body, Title).",
+    "defaultValue": "Body",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Body",
+        "value": "Body",
+        "description": "Searches within the visible text of the page."
+      },
+      {
+        "label": "Title",
+        "value": "Title",
+        "description": "Searches within the title of the web page."
       }
     ]
   },
@@ -92,7 +146,7 @@
     "type": "config-panel-output",
     "name": "Result",
     "label": "Result",
-    "description": "True if the condition is met; otherwise, false.",
+    "description": "Returns true if the condition is met, otherwise false.",
     "defaultValue": {
       "value": "Result",
       "enabled": true

@@ -13,16 +13,43 @@
     "type": "text",
     "name": "JavaScriptFunction",
     "label": "JavaScript Function",
-    "description": "Enter the JavaScript function to run on the current web page.",
-    "defaultValue": "function ExecuteScript() { /*your code here, return something (optionally); */ }",
+    "description": "The JavaScript function to execute (e.g., \u0027document.getElementById(\u0022myId\u0022).value = \u0022test\u0022;\u0027)",
+    "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ScriptArguments",
+    "label": "Arguments",
+    "description": "Optional arguments to pass to the script function.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForCompletion",
+    "label": "Wait for Completion",
+    "description": "If true, waits for the script to complete before continuing.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for script completion before failing.",
+    "defaultValue": 60,
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "Result",
     "label": "Result Output",
-    "description": "The result returned after executing the JavaScript function.",
+    "description": "Returns the result of the JavaScript execution, if any.",
     "defaultValue": {
       "value": "Result",
       "enabled": true

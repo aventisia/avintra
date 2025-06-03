@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "WebBrowserInstance",
-    "label": "WebBrowserInstance",
+    "label": "Web Browser Instance",
     "description": "Enter or choose the variable that contains the web browser instance to work with.",
     "defaultValue": "",
     "required": true
@@ -12,44 +12,17 @@
     "direction": "Input",
     "type": "text",
     "name": "UiElement",
-    "label": "UiElement",
-    "description": "Select the UI element on the web page to capture.",
+    "label": "UI Element",
+    "description": "Select the UI element on the web page to extract data from.",
     "defaultValue": "",
     "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExtractionParameter",
-    "label": "ExtractionParameter",
-    "description": "The parameters to use when extracting data. Depending on the extraction mode, this parameter accepts different data.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "MaxWebPagesToProcess",
-    "label": "MaxWebPagesToProcess",
-    "description": "The maximum number of web pages to process.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "SendPhysicalClickForNextPage",
-    "label": "SendPhysicalClickForNextPage",
-    "description": "Send physical click for next page navigation.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "PageCssSelector",
-    "label": "PageCssSelector",
-    "description": "CSS selector used to identify the pagination element.",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
     "defaultValue": "",
     "required": false
   },
@@ -57,40 +30,35 @@
     "direction": "Input",
     "type": "select",
     "name": "ExtractionMode",
-    "label": "ExtractionMode",
-    "description": "Specify what to extract from the web page.",
-    "defaultValue": "",
+    "label": "Extraction Mode",
+    "description": "Specifies what type of data to extract (e.g., single value, list, table).",
+    "defaultValue": "SingleValue",
     "required": false,
     "selectOptions": [
       {
-        "label": "Undefined",
-        "value": "Undefined",
-        "description": "No specific extraction mode selected."
-      },
-      {
         "label": "Single Value",
         "value": "SingleValue",
-        "description": "Extracts a single value from the webpage."
+        "description": "Extracts a single text value from the web page."
       },
       {
         "label": "Handpicked Values",
         "value": "HandpickedValues",
-        "description": "Extracts manually selected values."
+        "description": "Extracts manually selected values from multiple elements."
       },
       {
         "label": "List",
         "value": "List",
-        "description": "Extracts a list of items."
+        "description": "Extracts a list of items from repeated elements."
       },
       {
         "label": "Table",
         "value": "Table",
-        "description": "Extracts tabular data."
+        "description": "Extracts tabular data from a web table."
       },
       {
         "label": "Entire HTML Table",
         "value": "EntireHtmlTable",
-        "description": "Extracts the entire HTML table structure."
+        "description": "Extracts the complete HTML table structure."
       }
     ]
   },
@@ -98,8 +66,8 @@
     "direction": "Input",
     "type": "switch",
     "name": "UsePaging",
-    "label": "UsePaging",
-    "description": "Specify whether to use paging during extraction.",
+    "label": "Use Paging",
+    "description": "If true, processes multiple pages by navigating through pagination.",
     "defaultValue": "",
     "required": false
   },
@@ -107,8 +75,35 @@
     "direction": "Input",
     "type": "switch",
     "name": "GetAllWebPages",
-    "label": "GetAllWebPages",
-    "description": "Specify whether to extract all available web pages.",
+    "label": "Get All Web Pages",
+    "description": "If true, extracts data from all available pages. Otherwise, only the first page is used.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWebPagesToProcess",
+    "label": "Max Web Pages To Process",
+    "description": "The maximum number of web pages to process when using \u0027Use Paging\u0027.",
+    "defaultValue": 10,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PageCssSelector",
+    "label": "Page CSS Selector",
+    "description": "CSS selector used to locate the next page navigation element.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "SendPhysicalClickForNextPage",
+    "label": "Send Physical Click for Next Page",
+    "description": "If true, simulates physical mouse click to navigate to the next page.",
     "defaultValue": "",
     "required": false
   },
@@ -116,49 +111,28 @@
     "direction": "Input",
     "type": "switch",
     "name": "ProcessDataUponExtraction",
-    "label": "ProcessDataUponExtraction",
-    "description": "Specify whether to process extracted data to match visual display (e.g., handling hidden elements). Not recommended for large datasets.",
+    "label": "Process Data Upon Extraction",
+    "description": "If true, processes the data to match visual display (e.g., handles hidden elements). Not recommended for large datasets.",
     "defaultValue": "",
     "required": false
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "TimeOut",
-    "label": "TimeOut",
-    "description": "Set the time in seconds to wait for the extraction before it fails.",
+    "name": "Timeout",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for an element before failing.",
     "defaultValue": 60,
     "required": false
   },
   {
-    "direction": "Input",
-    "type": "select",
-    "name": "StoreDataMode",
-    "label": "StoreDataMode",
-    "description": "Specify whether to store the extracted data in a variable or an Excel spreadsheet.",
-    "defaultValue": "",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "Variable",
-        "value": "Variable",
-        "description": "Stores extracted data in a variable."
-      },
-      {
-        "label": "Excel Spreadsheet",
-        "value": "ExcelSpreadsheet",
-        "description": "Stores extracted data in an Excel spreadsheet."
-      }
-    ]
-  },
-  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "OExcelInstanceOutput",
-    "label": "OExcelInstanceOutput",
-    "description": "The Excel instance with the extracted data. Use this instance to manipulate the spreadsheet.",
+    "name": "ExcelInstanceOutput",
+    "label": "Excel Instance Output",
+    "description": "Returns the Excel instance if storing data in Excel.",
     "defaultValue": {
-      "value": "OExcelInstanceOutput",
+      "value": "ExcelInstanceOutput",
       "enabled": true
     },
     "required": false
@@ -166,11 +140,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ODataFromWebPageOutput",
-    "label": "ODataFromWebPageOutput",
-    "description": "The extracted data in the form of a single value, list, data row, or data table.",
+    "name": "DataFromWebPageOutput",
+    "label": "Data From Web Page Output",
+    "description": "Returns the extracted data as a single value, list, data row, or data table.",
     "defaultValue": {
-      "value": "ODataFromWebPageOutput",
+      "value": "DataFromWebPageOutput",
       "enabled": true
     },
     "required": false

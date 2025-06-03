@@ -32,9 +32,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "SourceRange",
-    "label": "Source Range",
-    "description": "The range containing the data to be copied (e.g., \u0027A1:A5\u0027).",
+    "name": "StartColumn",
+    "label": "Start Column",
+    "description": "The starting column of the source range (e.g., \u0027A\u0027).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -49,9 +49,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "TargetRange",
-    "label": "Target Range",
-    "description": "The range where the data should be pasted (e.g., \u0027A6:A10\u0027).",
+    "name": "StartRow",
+    "label": "Start Row",
+    "description": "The starting row of the source range (e.g., \u00271\u0027).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -66,8 +66,76 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "SourceNamedRange",
-    "label": "Source Named Range",
+    "name": "SourceEndColumn",
+    "label": "Source End Column",
+    "description": "The ending column of the source range (e.g., \u0027B\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceEndRow",
+    "label": "Source End Row",
+    "description": "The ending row of the source range (e.g., \u00275\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DestinationEndColumn",
+    "label": "Destination End Column",
+    "description": "The ending column of the target range (e.g., \u0027C\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DestinationEndRow",
+    "label": "Destination End Row",
+    "description": "The ending row of the target range (e.g., \u002710\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RangesFormat",
+          "equals": "SpecificRanges"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourceCellsName",
+    "label": "Source Cells Name",
     "description": "The name of the named range containing the source data.",
     "defaultValue": "",
     "required": false,
@@ -83,8 +151,8 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "TargetNamedRange",
-    "label": "Target Named Range",
+    "name": "DestinationCellsName",
+    "label": "Destination Cells Name",
     "description": "The name of the named range where the data should be pasted.",
     "defaultValue": "",
     "required": false,

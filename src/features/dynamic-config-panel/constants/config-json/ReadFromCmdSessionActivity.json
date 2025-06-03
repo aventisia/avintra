@@ -2,20 +2,41 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ProcessId",
-    "label": "ProcessId",
-    "description": "The process ID of the open CMD session.",
+    "name": "CmdSession",
+    "label": "CMD Session",
+    "description": "The process representing the CMD session.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "SeparateOutputFromError",
+    "label": "Separate Output from Error",
+    "description": "Specifies whether to separate standard output from standard error.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Output",
-    "label": "Output",
-    "description": "Returns the output read from the CMD session.",
+    "name": "CmdOutput",
+    "label": "CmdOutput",
+    "description": "The CMD session\u0027s standard output.",
     "defaultValue": {
-      "value": "Output",
+      "value": "CmdOutput",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "CmdError",
+    "label": "CmdError",
+    "description": "The CMD session\u0027s standard error (if separated).",
+    "defaultValue": {
+      "value": "CmdError",
       "enabled": true
     },
     "required": false

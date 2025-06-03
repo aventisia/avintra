@@ -1,0 +1,59 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the checkbox (e.g., ID, XPath, CssSelector).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchKeywords",
+    "label": "Search Keywords",
+    "description": "The value used to locate the checkbox (e.g., \u0027rememberMe\u0027, \u0027//input[@id=\u0027remember\u0027]\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForElement",
+    "label": "Wait For Element",
+    "description": "If true, waits for the checkbox to appear before retrieving the value.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for the element before failing.",
+    "defaultValue": 60,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsChecked",
+    "label": "Is Checked",
+    "description": "Returns true if the checkbox is checked, false otherwise.",
+    "defaultValue": {
+      "value": "IsChecked",
+      "enabled": true
+    },
+    "required": false
+  }
+]

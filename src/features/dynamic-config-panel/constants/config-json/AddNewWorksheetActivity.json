@@ -1,0 +1,41 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the workbook.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewWorksheetName",
+    "label": "New Worksheet Name",
+    "description": "The name of the new worksheet.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AddWorksheetAs",
+    "label": "Add Worksheet As",
+    "description": "Specifies whether to add the worksheet as the first or last sheet.",
+    "defaultValue": "First",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "First",
+        "value": "First",
+        "description": ""
+      },
+      {
+        "label": "Last",
+        "value": "Last",
+        "description": ""
+      }
+    ]
+  }
+]

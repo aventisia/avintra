@@ -1,0 +1,127 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WebBrowserInstance",
+    "label": "Web Browser Instance",
+    "description": "Enter or choose the variable that contains the web browser instance to work with.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ScrollMode",
+    "label": "Scroll Mode",
+    "description": "Specifies how to scroll: by element or by coordinates.",
+    "defaultValue": "ByElement",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "By Element",
+        "value": "ByElement",
+        "description": "Scrolls to a specific UI element on the page."
+      },
+      {
+        "label": "By Coordinates",
+        "value": "ByCoordinates",
+        "description": "Scrolls to a specific (X,Y) position on the page."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FindType",
+    "label": "Find Type",
+    "description": "Specifies how to find the element to scroll to (e.g., ID, XPath).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ScrollMode",
+          "equals": "ByElement"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SearchKeywords",
+    "label": "Search Keywords",
+    "description": "The value used to locate the element to scroll to (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ScrollMode",
+          "equals": "ByElement"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "XCoordinate",
+    "label": "X Coordinate",
+    "description": "Horizontal scroll position. Only used in \u0027By Coordinates\u0027 mode.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ScrollMode",
+          "equals": "ByCoordinates"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "YCoordinate",
+    "label": "Y Coordinate",
+    "description": "Vertical scroll position. Only used in \u0027By Coordinates\u0027 mode.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ScrollMode",
+          "equals": "ByCoordinates"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "WaitForElement",
+    "label": "Wait For Element",
+    "description": "If true, waits for the element to be present before scrolling.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for the element before failing.",
+    "defaultValue": 60,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "SmoothScroll",
+    "label": "Smooth Scroll",
+    "description": "If true, scrolls smoothly instead of jumping to the target.",
+    "defaultValue": "",
+    "required": false
+  }
+]

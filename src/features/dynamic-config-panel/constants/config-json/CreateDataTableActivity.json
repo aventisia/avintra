@@ -9,6 +9,42 @@
     "required": false
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "HasInitialColumns",
+    "label": "Initial Columns (Optional)",
+    "description": "An optional input to add initial columns in data table.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Columns",
+    "label": "Data Table columns either number or comma seperated columns (Optional)",
+    "description": "An optional input data table columns to add in data table.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "HasEmptyRows",
+    "label": "Empty Rows (Optional)",
+    "description": "An optional input to add empty rows in data table.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EmptyRows",
+    "label": "Data Table rows (Optional)",
+    "description": "An optional input empty rows to add in data table.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "NewDataTable",

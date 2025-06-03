@@ -22,7 +22,7 @@
     "type": "switch",
     "name": "WaitForPageToLoad",
     "label": "Wait for Page to Load",
-    "description": "Specify whether to wait for the new page to load completely after navigating.",
+    "description": "If true, waits for the page to fully load before continuing.",
     "defaultValue": true,
     "required": false
   },
@@ -30,8 +30,8 @@
     "direction": "Input",
     "type": "text",
     "name": "TimeoutForWebpageToLoad",
-    "label": "Timeout for Webpage to Load",
-    "description": "Set the time in seconds for the page to load before the action throws an error.",
+    "label": "Timeout for Page Load",
+    "description": "Maximum time (in seconds) to wait for the page to load.",
     "defaultValue": 60,
     "required": false
   },
@@ -39,30 +39,25 @@
     "direction": "Input",
     "type": "select",
     "name": "IfAPopUpDialogAppears",
-    "label": "If a Pop-Up Dialog Appears",
-    "description": "Specify what to do if a pop-up dialog appears after navigating.",
+    "label": "Handle Dialog",
+    "description": "Specifies what to do if a dialog appears after navigating.",
     "defaultValue": "DoNothing",
     "required": false,
     "selectOptions": [
-      {
-        "label": "Close It",
-        "value": "CloseIt",
-        "description": "Automatically close any pop-up dialog that appears."
-      },
-      {
-        "label": "Press a Button",
-        "value": "PressAButton",
-        "description": "Press a specified button on the dialog."
-      },
       {
         "label": "Do Nothing",
         "value": "DoNothing",
         "description": "Ignore any pop-up dialog."
       },
       {
-        "label": "Close It / Press a Button",
-        "value": "CloseOrPress",
-        "description": "Close or press a button on the dialog."
+        "label": "Close It",
+        "value": "CloseIt",
+        "description": "Closes any pop-up dialog automatically."
+      },
+      {
+        "label": "Press a Button",
+        "value": "PressAButton",
+        "description": "Presses a specified button on the dialog."
       }
     ]
   },
@@ -71,7 +66,7 @@
     "type": "text",
     "name": "DialogButtonToPress",
     "label": "Dialog Button to Press",
-    "description": "Enter the dialog button to press if a pop-up dialog appears.",
+    "description": "The button to press if a dialog appears (e.g., \u0027OK\u0027, \u0027Cancel\u0027).",
     "defaultValue": "OK",
     "required": false
   },
@@ -79,8 +74,8 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "NewBrowserInstance",
-    "label": "New Browser Output",
-    "description": "The new browser instance ID (tab) created.",
+    "label": "New Browser Instance",
+    "description": "Returns the newly created browser tab/window as an IWebDriver instance.",
     "defaultValue": {
       "value": "NewBrowserInstance",
       "enabled": true

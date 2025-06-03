@@ -69,7 +69,7 @@
     "type": "text",
     "name": "StartingColumn",
     "label": "Starting Column",
-    "description": "The column number where appending should start.",
+    "description": "The starting column letter where appending should begin (e.g., \u0027A\u0027, \u0027B\u0027, \u0027AA\u0027).",
     "defaultValue": "",
     "required": false,
     "renderIf": {

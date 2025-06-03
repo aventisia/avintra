@@ -3,28 +3,150 @@
     "direction": "Input",
     "type": "text",
     "name": "FilePath",
-    "label": "CSV File Path",
-    "description": "The full path to the CSV file to be read.",
+    "label": "File Path",
+    "description": "The full path of the CSV file to read.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "EncodingOption",
+    "label": "Encoding",
+    "description": "The encoding of the CSV file.",
+    "defaultValue": "UTF8",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "SystemDefault",
+        "value": "SystemDefault",
+        "description": ""
+      },
+      {
+        "label": "UTF8",
+        "value": "UTF8",
+        "description": ""
+      },
+      {
+        "label": "Unicode",
+        "value": "Unicode",
+        "description": ""
+      },
+      {
+        "label": "BigEndianUnicode",
+        "value": "BigEndianUnicode",
+        "description": ""
+      },
+      {
+        "label": "UTF8NoBOM",
+        "value": "UTF8NoBOM",
+        "description": ""
+      },
+      {
+        "label": "ASCII",
+        "value": "ASCII",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "switch",
-    "name": "HasHeader",
-    "label": "Has Header Row",
-    "description": "Specify whether the CSV file includes a header row.",
+    "name": "TrimFields",
+    "label": "Trim Fields",
+    "description": "Specifies whether to trim whitespace from the fields.",
     "defaultValue": true,
     "required": false
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "FirstLineContainsColumnNames",
+    "label": "First Line Contains Column Names",
+    "description": "Specifies whether the first row of the CSV file contains column names.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ColumnsSeparatorType",
+    "label": "Columns Separator",
+    "description": "The type of separator used in the CSV file (Predefined or Custom).",
+    "defaultValue": "Predefined",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Predefined",
+        "value": "Predefined",
+        "description": ""
+      },
+      {
+        "label": "Custom",
+        "value": "Custom",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PredefinedSeparator",
+    "label": "Predefined Separator",
+    "description": "The predefined delimiter used in the CSV file (e.g., Comma, Tab).",
+    "defaultValue": "Comma",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Comma",
+        "value": "Comma",
+        "description": ""
+      },
+      {
+        "label": "Tab",
+        "value": "Tab",
+        "description": ""
+      },
+      {
+        "label": "Semicolon",
+        "value": "Semicolon",
+        "description": ""
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ColumnsSeparatorType",
+          "equals": "Predefined"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomSeparator",
+    "label": "Custom Separator",
+    "description": "The custom delimiter used in the CSV file.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "ColumnsSeparatorType",
+          "equals": "Custom"
+        }
+      ]
+    }
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "OutputDataTable",
-    "label": "CSV Data Table",
-    "description": "The output DataTable containing the contents of the CSV file.",
+    "name": "CsvTable",
+    "label": "CSV Table",
+    "description": "The contents of the CSV file as a DataTable.",
     "defaultValue": {
-      "value": "OutputDataTable",
+      "value": "CsvTable",
       "enabled": true
     },
     "required": false
