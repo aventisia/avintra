@@ -1,6 +1,6 @@
 import { DTCrudDialogWrapper } from "@aventisia/ui/data-table";
 import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
-import { ScrollArea } from "@aventisia/ui/scroll";
+// import { ScrollArea } from "@aventisia/ui/scroll";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
@@ -29,9 +29,9 @@ export const RunReviewCrudDialog = ({ children }: React.PropsWithChildren) => {
           heading={dialogHeaderOptions.heading}
           description={dialogHeaderOptions.description}
         />
-        <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
-          <RunReviewCrudForm />
-        </ScrollArea>
+        {/* <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4"> */}
+        <RunReviewCrudForm />
+        {/* </ScrollArea> */}
       </DialogContent>
     </DTCrudDialogWrapper>
   );

@@ -1,28 +1,26 @@
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 
+import { useOpenRunReviewRecord } from "../../hooks/useOpenRunReviewRecords";
+
 // import { useOpenModel } from "../hooks/useOpenModel";
 
 interface RunReviewTableCellLinkProps {
   /** The ID of the model to open. */
-  rowId: string;
+  rowId?: string;
 
   /** The cell value to display. */
   cellValue: string;
 }
 
 export const RunReviewTableCellLink = ({
-  rowId,
   cellValue,
 }: RunReviewTableCellLinkProps) => {
-  // Get handle open label data action function
-  //   const handleOpenModelAction = useOpenModel();
+  const handleOpenRunReviewAction = useOpenRunReviewRecord();
 
-  // Return the component
   return (
     <Button
-      //   onClick={() => handleOpenModelAction(rowId, "View")}
-      onClick={() => console.log("open row", rowId)}
+      onClick={() => handleOpenRunReviewAction()}
       variant={"link"}
       className={cn(
         "!h-6 w-auto justify-start truncate font-medium text-foreground hover:text-primary",

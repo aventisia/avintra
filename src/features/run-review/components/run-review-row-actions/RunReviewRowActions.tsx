@@ -26,7 +26,7 @@ export const RunReviewRowActions = ({ rowId }: RunReviewRowActionsProps) => {
       {/* <ModelTestAction rowId={rowId} /> */}
 
       {/* To open a row */}
-      <RunReviewRowOpenAction rowId={rowId} />
+      <RunReviewRowOpenAction />
 
       {/* DropdownMenuSeparator component */}
       {/* <DropdownMenuSeparator /> */}

@@ -13,6 +13,7 @@ import {
   ResizablePanelGroup,
 } from "@/react-toolkit/ui/resizable";
 
+import { toast } from "@aventisia/ui/sonner";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -68,10 +69,10 @@ export const LabelDataContainer = () => {
         return <QuestionAnswerModel />;
       default:
         // Optionally log an error or return a fallback component
-        console.warn(
+        toast.error(
           `Unknown model type: ${modelType}. Falling back to default.`,
         );
-        return <InformationExtractor />; // Default component
+        return <>Failed to open the Model. Please Try again</>; // Default component
     }
   };
 

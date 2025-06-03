@@ -15,10 +15,13 @@ import { useShallow } from "zustand/react/shallow";
 import { submitForFineTuningProps } from "../../constants/info-extractor-test-form-field-props";
 import { infoExtractorTestFormZodSchema } from "../../constants/info-extractor-test-zod-schema";
 import { useAddInformationExtractorTestForm } from "../../hooks/useAddInfoExtractorTestForm";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import DataFields from "./fields";
 import ExtractedTablesData from "./tables";
 
 const InformationExtractorTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     dataFields,

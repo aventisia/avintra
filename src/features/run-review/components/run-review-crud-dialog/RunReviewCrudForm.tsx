@@ -4,6 +4,7 @@ import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
@@ -80,17 +81,19 @@ const RunReviewCrudForm = () => {
       onSubmit={form.handleSubmit(submitHandler)}
       disabled={isSubmitting}
     >
-      <FormProvider {...form}>
-        <div className="space-y-4 px-4 pb-1">
-          <RunReviewFileUploader />
-          <Separator />
-          <p className="!mt-4 font-semibold">Schedule Fine-Tuning</p>
-          <ScheduleFineTuning />
-        </div>
-      </FormProvider>
+      <ScrollArea className="h-[calc(100vh-9rem)] px-2.5 pb-0 pt-4">
+        <FormProvider {...form}>
+          <div className="space-y-4 px-4 pb-1">
+            <RunReviewFileUploader />
+            <Separator />
+            <p className="!mt-4 font-semibold">Schedule Execution</p>
+            <ScheduleFineTuning />
+          </div>
+        </FormProvider>
+      </ScrollArea>
 
       {/* Sticky footer button */}
-      <div className="flex w-full justify-end px-2 pb-4 border-t pt-3 mt-auto bg-white">
+      <div className="flex w-full  justify-end px-2 pb-4 border-t pt-3 mt-auto bg-white">
         <Button
           size="xs"
           type="submit"
