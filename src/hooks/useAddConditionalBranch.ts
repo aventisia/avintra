@@ -28,6 +28,8 @@ export const useAddConditionalBranch = () => {
       // new branch start node
       const newBranchStartNode = createConditionalBranchNodeObj(
         `Branch ${nodeData.branches.length}`,
+        false,
+        nodeData.mergeBranchesNodeId,
       );
 
       // Create new node & edge

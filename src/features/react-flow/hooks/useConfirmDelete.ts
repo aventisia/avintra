@@ -3,6 +3,7 @@ import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { OnBeforeDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { toast } from "@aventisia/ui/sonner";
 
 export const useConfirmDelete = () => {
   // Get Studio Preferences store state
@@ -18,9 +19,6 @@ export const useConfirmDelete = () => {
   // Confirm delete handler
   const onBeforeDelete: OnBeforeDelete = useCallback(
     async ({ nodes, edges }) => {
-      // Return true if delete alert is disabled
-      if (!deleteAlert) return true;
-
       // Get selected & deletable nodes and edges
       const selectedNodes = nodes.filter(
         (node) => node.selected && node.deletable,
@@ -31,6 +29,24 @@ export const useConfirmDelete = () => {
 
       // Return if no nodes or edges found
       if (selectedNodes.length + selectedEdges.length === 0) return false;
+
+      const parentNode = nodes.find(
+        (n) =>
+          n.type === "conditionalNode" &&
+          n.data?.mergeBranchesNodeId ===
+            selectedNodes[0]?.data?.mergeBranchesNodeId,
+      );
+
+      const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
+
+      if (branches.length <= 2 && selectedNodes[0]?.type == "branchNode1") {
+        toast.info("At least two branches are required.");
+
+        return false;
+      }
+
+      // Return true if delete alert is disabled
+      if (!deleteAlert) return true;
 
       // Get confirmation from user
       const isConfirmed = await new Promise<boolean>((resolve) => {

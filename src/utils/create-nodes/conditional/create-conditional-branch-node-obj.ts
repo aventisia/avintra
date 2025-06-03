@@ -3,6 +3,7 @@ import { Node } from "@xyflow/react";
 export const createConditionalBranchNodeObj = (
   label: string,
   isDefaultBranch: boolean = false,
+  mergeBranchesNodeId: string,
 ): Node => {
   return {
     id: window.crypto.randomUUID(),
@@ -12,6 +13,7 @@ export const createConditionalBranchNodeObj = (
       name: isDefaultBranch ? "DefaultBranch" : "ConditionalBranchActivity",
       label: label,
       description: label,
+      mergeBranchesNodeId: mergeBranchesNodeId,
     },
     position: { x: 0, y: 0 },
     deletable: isDefaultBranch ? false : true,

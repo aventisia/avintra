@@ -1,16 +1,10 @@
 /* Inspired from: https://reactflow.dev/examples/nodes/delete-middle-node */
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
-import {
-  getConnectedEdges,
-  getIncomers,
-  getOutgoers,
-  OnNodesDelete,
-} from "@xyflow/react";
+import { OnNodesDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
+import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
 
 export const useOnNodeDelete = () => {
   // Get ReactFlowExt store state & actions
@@ -36,94 +30,35 @@ export const useOnNodeDelete = () => {
   const autoLayout = useDagreAutoLayout();
 
   const onNodesDelete: OnNodesDelete = useCallback(
-    (deleted) => {
-      let newNodes = [...nodes];
-      let newEdges = [...edges];
-      let updatedFlowVariables = [...flowVariablesObject];
+    (deletedNodes) => {
+      try {
+        let updatedNodes = [...nodes];
+        let updatedEdges = [...edges];
+        let updatedFlowVariables = [...flowVariablesObject];
 
-      deleted.forEach((node) => {
-        const isSpecialNode =
-          node.type === "conditionalNode" || node.type === "forLoopNode";
+        for (const node of deletedNodes) {
+          const result = getNodesAndEdgesAfterDeletion({
+            node,
+            nodes: updatedNodes,
+            edges: updatedEdges,
+            flowVariables: updatedFlowVariables,
+            allowBranchDeletion: true, // safe to allow in bulk delete
+          });
 
-        if (isSpecialNode) {
-          const specialNodeId = node.id;
-          const mergeNodeId = node.data?.mergeBranchesNodeId;
-
-          if (!mergeNodeId) return;
-
-          const nodeIdsToDelete = getIntermediateNodeIds(
-            nodes,
-            edges,
-            specialNodeId,
-          );
-
-          // Remove all edges connected to these nodes
-          newEdges = newEdges.filter(
-            (edge) =>
-              !nodeIdsToDelete.includes(edge.source) &&
-              !nodeIdsToDelete.includes(edge.target),
-          );
-
-          // Reconnect incoming and outgoing flow
-          const incomingEdge = edges.find(
-            (edge) => edge.target === specialNodeId,
-          );
-          const outgoingEdge = edges.find(
-            (edge) =>
-              edge.source === mergeNodeId && edge.target !== specialNodeId, // Exclude loop-back edge,
-          );
-
-          if (incomingEdge && outgoingEdge) {
-            newEdges.push(
-              createPlusEdgeObj(incomingEdge.source, outgoingEdge.target),
-            );
-          }
-
-          // Remove nodes
-          newNodes = newNodes.filter((n) => !nodeIdsToDelete.includes(n.id));
-
-          // Remove any associated flow variables
-          updatedFlowVariables = updatedFlowVariables.filter(
-            (f) => !nodeIdsToDelete.includes(f.nodeId),
-          );
-        } else {
-          // Handle standard node deletion
-          const incomers = getIncomers(node, nodes, edges);
-          const outgoers = getOutgoers(node, nodes, edges);
-          const connectedEdges = getConnectedEdges([node], edges);
-
-          newEdges = newEdges.filter((edge) => !connectedEdges.includes(edge));
-
-          const createdEdges = incomers.flatMap(({ id: source }) =>
-            outgoers.map(({ id: target }) => createPlusEdgeObj(source, target)),
-          );
-
-          newEdges = [...newEdges, ...createdEdges];
-
-          // Remove the node
-          newNodes = newNodes.filter((n) => n.id !== node.id);
-          updatedFlowVariables = updatedFlowVariables.filter(
-            (f) => f.nodeId !== node.id,
-          );
+          updatedNodes = result.updatedNodes;
+          updatedEdges = result.updatedEdges;
+          updatedFlowVariables = result.updatedFlowVariables;
         }
-      });
 
-      setNodes(newNodes);
-      setEdges(newEdges);
-      setFlowVariablesObject(updatedFlowVariables);
-
-      // Optional: trigger layout
-      autoLayout({ newNodes, newEdges });
+        setNodes(updatedNodes);
+        setEdges(updatedEdges);
+        setFlowVariablesObject(updatedFlowVariables);
+        autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
+      } catch (err) {
+        console.warn((err as Error).message);
+      }
     },
-    [
-      nodes,
-      edges,
-      setNodes,
-      setEdges,
-      flowVariablesObject,
-      setFlowVariablesObject,
-      autoLayout,
-    ],
+    [nodes, edges, flowVariablesObject, autoLayout],
   );
 
   return { onNodesDelete };
