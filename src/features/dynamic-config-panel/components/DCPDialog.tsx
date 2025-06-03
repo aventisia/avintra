@@ -32,6 +32,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         className={cn(
           "!max-w-[32rem]",
           nodeData?.name === "ConditionalBranchActivity" && "!max-w-[40rem]",
+          nodeData?.name === "LoopActivity" && "!max-w-[40rem]",
         )}
       >
         <DialogDefaultHeader
