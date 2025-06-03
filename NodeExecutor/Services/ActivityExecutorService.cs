@@ -1,11 +1,12 @@
-﻿using NodeExecutor.Models;
+﻿using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
+using NodeExecutor.Models;
 using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 
 namespace NodeExecutor.Services
 {
@@ -48,7 +49,7 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static bool ExecuteNode(NodeData node, ExecutionContext executionContext)
+        public static bool ExecuteNode(ActivityNodeData node, ExecutionContext executionContext)
         {
             try
             {
@@ -101,13 +102,6 @@ namespace NodeExecutor.Services
                         }
                         else
                         {
-                            // Use expression-based InArgument<T>
-                            //var funcType = typeof(Func<,>).MakeGenericType(typeof(ActivityContext), genericType);
-                            //var lambdaExpr = Delegate.CreateDelegate(funcType, convertedValue, nameof(ToString)); // workaround for delegate instantiation
-
-                            //inArgument = Activator.CreateInstance(inArgGenericType, new object[] { (Func<ActivityContext, object>)(ctx => convertedValue) });
-
-
                             var valueConst = Expression.Constant(convertedValue, genericType);
                             var lambdaExpr = Expression.Lambda(
                                 typeof(Func<,>).MakeGenericType(typeof(ActivityContext), genericType),
@@ -120,19 +114,6 @@ namespace NodeExecutor.Services
 
                         prop.SetValue(activityInstance, inArgument);
                     }
-
-
-                    //// Set the value to the property
-                    //if (convertedValue != null && genericType != null)
-                    //{
-                    //    var inArgGenericType = typeof(InArgument<>).MakeGenericType(genericType);
-                    //    var lambdaExpr = Activator.CreateInstance(inArgGenericType, new object[] { (Func<ActivityContext, object>)(ctx => convertedValue) });
-                    //    prop.SetValue(activityInstance, lambdaExpr);
-                    //    continue;
-                    //}
-
-                    //object inArgument = Activator.CreateInstance(propType, convertedValue);
-                    //prop.SetValue(activityInstance, inArgument);
                 }
 
                 // Execute the activity
@@ -167,6 +148,68 @@ namespace NodeExecutor.Services
             }
         }
 
+        public static bool ExecuteCondition(ConditionalBranchNodeData node, ExecutionContext executionContext)
+        {
+            try
+            {
+                // Get Code activity instance
+                var activityInstance = GetCodeActivityInstance("ConditionalBranchActivity");
+                var activityType = activityInstance.GetType();
+
+                // Prepare the nested list of ConditionObjectGroup with resolved values
+                var resolvedGroups = new List<List<ConditionObjectGroup>>();
+                foreach (var group in node.Conditions) // node.Conditions: IList<IList<ConditionGroup>>
+                {
+                    var resolvedGroup = new List<ConditionObjectGroup>();
+                    foreach (var cond in group)
+                    {
+                        var resolvedFirst = ResolveTemplate(cond.FirstValue, executionContext);
+                        var resolvedSecond = ResolveTemplate(cond.SecondValue, executionContext);
+
+                        resolvedGroup.Add(new ConditionObjectGroup
+                        {
+                            FirstValue = resolvedFirst,
+                            ComparisonOperator = cond.ComparisonOperator,
+                            SecondValue = resolvedSecond
+                        });
+                    }
+                    resolvedGroups.Add(resolvedGroup);
+                }
+
+                // Set the Conditions property
+                var prop = activityType.GetProperty("Conditions", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (prop != null)
+                {
+                    var argType = typeof(InArgument<List<List<ConditionObjectGroup>>>);
+
+                    // Build: ctx => resolvedGroups
+                    var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
+                    var valueExpr = Expression.Constant(resolvedGroups, typeof(List<List<ConditionObjectGroup>>));
+                    var lambda = Expression.Lambda(valueExpr, ctxParam);
+
+                    var inArgument = Activator.CreateInstance(argType, lambda);
+                    prop.SetValue(activityInstance, inArgument);
+                }
+
+                // Execute the activity
+                var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
+
+                // Directly return the ConditionResult output (do not set in execution context)
+                if (outputs != null && outputs.ContainsKey("ConditionResult"))
+                {
+                    var result = outputs["ConditionResult"];
+                    return result is bool b ? b : false;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteCondition: {ex.Message}");
+                return false;
+            }
+        }
+
         private static object ConvertArgument(object inputValue, Type targetType)
         {
             if (inputValue == null || targetType == null)
@@ -187,6 +230,7 @@ namespace NodeExecutor.Services
             }
         }
 
+        // Helper to resolve variable if value is in {{varName}} format
         public static object ResolveTemplate(string template, ExecutionContext context)
         {
             try

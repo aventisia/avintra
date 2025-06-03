@@ -2,7 +2,7 @@
 
 namespace NodeExecutor.Models
 {
-    public class NodeData
+    public class ActivityNodeData
     {
         public string Id { get; set; }
         public string Type { get; set; }
@@ -10,6 +10,7 @@ namespace NodeExecutor.Models
         public string CodeActivityName { get; set; }
         public List<NodeInput> NodeInputs { get; set; }
         public List<NodeOutput> NodeOutputs { get; set; }
+        public string NextNodeId { get; set; }
     }
 
     public class NodeInput

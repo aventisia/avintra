@@ -66,7 +66,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\NodeData.cs" />
+    <Compile Include="Models\ActivityNodeData.cs" />
+    <Compile Include="Models\ConditionalBranchNodeData.cs" />
     <Compile Include="Services\AppTimerService.cs" />
     <Compile Include="Services\ActivityExecutorService.cs" />
     <Compile Include="Services\ExecutionContext.cs" />

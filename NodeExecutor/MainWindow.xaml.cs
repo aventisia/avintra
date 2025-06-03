@@ -23,12 +23,20 @@ namespace NodeExecutor
 
             // Set the window position to the bottom right of the screen
             Loaded += OnLoaded;
+            Closed += OnClosed;
 
             // Start the timer
             InitServices();
 
             // Set the agent name
             this._agentName = agentName;
+        }
+
+        // Window Closed Event
+        private void OnClosed(object sender, EventArgs e)
+        {
+            // Close the WebSocket connection
+            _webSocket?.DisconnectAsync();
         }
 
         // Window Loaded Event
@@ -79,8 +87,11 @@ namespace NodeExecutor
                     case "abort":
                         DoAbort();
                         break;
-                    case "nextnode":
-                        ExecuteNextNodeAsync(data);
+                    case "process-node":
+                        ExecuteNodeAsync(data);
+                        break;
+                    case "check-condition":
+                        ExecuteConditionAsync(data);
                         break;
                 }
             });
@@ -121,8 +132,6 @@ namespace NodeExecutor
             DoAbort();
         }
 
-
-
         private void DoPause()
         {
             // Hide the Pause button and show the Resume button
@@ -152,10 +161,32 @@ namespace NodeExecutor
             Application.Current.Shutdown();
         }
 
-        private async void ExecuteNextNodeAsync(string data)
+        private async void ExecuteConditionAsync(string data)
         {
             // Deserialize the node data
-            var nodeData = JsonConvert.DeserializeObject<NodeData>(data);
+            var conditionalBrnachNodeData = JsonConvert.DeserializeObject<ConditionalBranchNodeData>(data);
+
+            if (conditionalBrnachNodeData == null)
+            {
+                MessageBox.Show("Invalid node data received.");
+                return;
+            }
+
+            // Set the node name
+            lbl_NodeName.Text = conditionalBrnachNodeData.NodeName.Length > 0 ? conditionalBrnachNodeData.NodeName : "Node name not found";
+
+            bool result = ActivityExecutorService.ExecuteCondition(conditionalBrnachNodeData, _executionContext);
+            
+            await _webSocket.SendCommandAsync("next-node",
+                result
+                    ? conditionalBrnachNodeData.NextNodeId
+                    : conditionalBrnachNodeData.ConditionalNodeId);
+        }
+
+        private async void ExecuteNodeAsync(string data)
+        {
+            // Deserialize the node data
+            var nodeData = JsonConvert.DeserializeObject<ActivityNodeData>(data);
 
             if (nodeData == null)
             {
@@ -164,28 +195,13 @@ namespace NodeExecutor
             }
 
             // Set the node name
-            lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Finishing...";
+            lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Node name not found";
 
-            if (nodeData.Type == "flowEndNode")
-            {
-                await _webSocket.SendCommandAsync("abort", nodeData.Id);
-                DoAbort();
-            }
-
-
-            // Allow UI to update before continuing
-            //await Task.Delay(500);
-
-            // Run the activity on a background thread // TODO: Try BackgroundWorker later
-            //await Task.Run(() =>
-            //{
-            //    ActivityExecutorService.ExecuteNode(nodeData, _executionContext);
-            //});
-
+            // Execute single node
             ActivityExecutorService.ExecuteNode(nodeData, _executionContext);
 
             // Send next node command to the server
-            await _webSocket.SendCommandAsync("nextnode", nodeData.Id);
+            await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
         }
     }
 }
