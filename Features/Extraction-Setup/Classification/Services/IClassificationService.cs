@@ -77,7 +77,7 @@ public interface IClassificationService
     /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
     /// <returns>
     /// A task that represents the asynchronous operation. 
-    /// The task result contains a <see cref="ServiceResponse{T}"/> with a list of <see cref="SummarizationFineTuningDataDto"/>.
+    /// The task result contains a <see cref="ServiceResponse{T}"/> with a list of <see cref="ClassificationFineTuningDataDto"/>.
     /// </returns>
     Task<ServiceResponse<IEnumerable<ClassificationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId);
 

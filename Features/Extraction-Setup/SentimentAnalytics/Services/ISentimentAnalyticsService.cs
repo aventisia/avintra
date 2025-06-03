@@ -76,16 +76,16 @@ public interface ISentimentAnalyticsService
     /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
     /// <returns>
     /// A task that represents the asynchronous operation. 
-    /// The task result contains a <see cref="ServiceResponse{T}"/> with a list of <see cref="SummarizationFineTuningDataDto"/>.
+    /// The task result contains a <see cref="ServiceResponse{T}"/> with a list of <see cref="SentimentAnalyticsFineTuningDataDto"/>.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId);
+    Task<ServiceResponse<IEnumerable<SentimentAnalyticsFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId);
 
     /// <summary>
     /// Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
     /// </summary>
     /// <param name="addFineTuningRequestDto">The details of the fine-tuning request, such as model parameters and data.</param>
     /// <returns>A service response containing a list of fine-tuning data or an error message.</returns>
-    Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto);
+    Task<ServiceResponse<IEnumerable<SentimentAnalyticsFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto);
 
     /// <summary>
     /// Retrieves the fine-tuning history records for a specified machine learning model.

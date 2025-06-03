@@ -550,9 +550,9 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
     }
 
     // Retrieves Fine tuning data records associated with the specified machine learning model ID.
-    public async Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId)
+    public async Task<ServiceResponse<IEnumerable<SentimentAnalyticsFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SentimentAnalyticsFineTuningDataDto>>
         {
             Data = null,
             Message = "Failed to retrieve fine tuning data. Please try again later."
@@ -566,7 +566,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 .GetByConditionAsync(w => w.MLModelId == mlModelId && w.SubmitForFineTuning)
                 .Include(x => x.CreatedByUser)
                 .Include(x => x.UploadedDoc)
-                .ProjectToType<SummarizationFineTuningDataDto>()
+                .ProjectToType<SentimentAnalyticsFineTuningDataDto>()
                 .ToListAsync();
 
             _logger.LogInformation("Successfully retrieved {Count} Fine tuning data records for ML model ID: {MLModelId}", fineTuningDataList.Count, mlModelId);
@@ -584,10 +584,10 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
     }
 
     // Schedules a Fine tuning job for a specific machine learning model by sending the Fine tuning request details.
-    public async Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto fineTuningRequest)
+    public async Task<ServiceResponse<IEnumerable<SentimentAnalyticsFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto fineTuningRequest)
     {
         // Initialize the service response with a default failure message
-        var serviceResponse = new ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SentimentAnalyticsFineTuningDataDto>>
         {
             Data = null,
             Message = "Failed to schedule Fine tuning. Please try again later."
@@ -639,7 +639,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
             // Log success and return the successful service response
             _logger.LogInformation("Fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
 
-            serviceResponse.Data = extractedDataList.Adapt<IEnumerable<SummarizationFineTuningDataDto>>();
+            serviceResponse.Data = extractedDataList.Adapt<IEnumerable<SentimentAnalyticsFineTuningDataDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Fine tuning job scheduled successfully.";
         }

@@ -69,14 +69,14 @@ public class QuestionAnswerController : BaseApiController
 
     // Retrieves a collection of fine-tuning data records associated with the specified machine learning model ID.
     [HttpGet("fine-tuning/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>>> GetFineTunningDataByMLModelId(Guid mlModelId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QuestionAnswerFineTuningDataDto>>>> GetFineTunningDataByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _questionAnswerService.GetFineTunningDataByMLModelIdAsync(mlModelId));
     }
 
     // Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
     [HttpPost("schedule-fine-tuning")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QuestionAnswerFineTuningDataDto>>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto)
     {
         return ResultHelper(await _questionAnswerService.ScheduleFineTuningAsync(addFineTuningRequestDto));
     }
