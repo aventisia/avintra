@@ -4,11 +4,9 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
 using System.Windows.Forms;
-using System.Windows;
+using System.ComponentModel.DataAnnotations;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
-using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
