@@ -68,9 +68,16 @@ public class SummarizationController : BaseApiController
     // -------------------- Fine-Tining Data Endpoints --------------------
 
     /// Retrieves a collection of fine-tuning data records associated with the specified machine learning model ID.
-    [HttpGet("fine-tune/{mlModelId}")]
+    [HttpGet("fine-tuning/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>>> GetFineTunningDataByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _summarizationService.GetFineTunningDataByMLModelIdAsync(mlModelId));
+    }
+
+    // Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
+    [HttpPost("schedule-fine-tuning")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto)
+    {
+        return ResultHelper(await _summarizationService.ScheduleFineTuningAsync(addFineTuningRequestDto));
     }
 }

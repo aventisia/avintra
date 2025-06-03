@@ -80,4 +80,11 @@ public interface ISummarizationService
     /// The task result contains a <see cref="ServiceResponse{T}"/> with a list of <see cref="SummarizationFineTuningDataDto"/>.
     /// </returns>
     Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
+    /// </summary>
+    /// <param name="addFineTuningRequestDto">The details of the fine-tuning request, such as model parameters and data.</param>
+    /// <returns>A service response containing a list of fine-tuning data or an error message.</returns>
+    Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto);
 }

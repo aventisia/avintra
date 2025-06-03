@@ -621,6 +621,75 @@ public class SummarizationService : ISummarizationService
         return serviceResponse;
     }
 
+    // Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
+    public async Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto fineTuningRequest)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>
+        {
+            Data = null,
+            Message = "Failed to schedule fine-tuning. Please try again later."
+        };
+
+        try
+        {
+            // Log the start of the fine-tuning process
+            _logger.LogInformation("Starting fine-tuning scheduling for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+
+            // Fetch extracted data associated with the specified file IDs and ML model
+            var extractedDataList = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => w.MLModelId == fineTuningRequest.MLModelId && fineTuningRequest.FileIds.Contains(w.Id))
+                .Include(i => i.UploadedDoc)
+                .Include(i => i.CreatedByUser)
+                .ToListAsync();
+
+            if (!extractedDataList.Any())
+            {
+                // Log and return response when no data is found
+                _logger.LogWarning("No extracted data found for provided file IDs: {FileIds} under ML model ID: {MLModelId}",
+                    string.Join(", ", fineTuningRequest.FileIds), fineTuningRequest.MLModelId);
+
+                serviceResponse.Message = "No extracted data found for the provided file IDs.";
+                return serviceResponse;
+            }
+
+            // Create and insert a new scheduled fine-tuning job
+            var scheduledModel = new ScheduledModel
+            {
+                MLModelId = fineTuningRequest.MLModelId,
+                TimeZone = fineTuningRequest.TimeZone,
+                ScheduledAt = fineTuningRequest.ScheduledAt,
+                ScheduleType = ModelOperationTypesEnum.FineTuning,
+                FileIds = extractedDataList.Select(file => file.DocId).ToList(),
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModel);
+
+            // Attempt to save the scheduled fine-tuning job
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist scheduled fine-tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+                return serviceResponse;
+            }
+
+            // Log success and return the successful service response
+            _logger.LogInformation("Fine-tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+
+            serviceResponse.Data = extractedDataList.Adapt<IEnumerable<SummarizationFineTuningDataDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Fine-tuning job scheduled successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected exceptions that occur during the process
+            _logger.LogError(ex, "An error occurred while scheduling fine-tuning for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string for the summarization model using the setup settings
     private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
     {
