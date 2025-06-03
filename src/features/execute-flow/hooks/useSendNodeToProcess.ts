@@ -1,6 +1,7 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
+import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { NodeDataType } from "@/types/node-data-type";
 import { toast } from "@aventisia/ui/sonner";
 import { Node } from "@xyflow/react";
@@ -11,16 +12,26 @@ import {
   getActivityNodeData,
   getConditionNodeData,
 } from "..";
+import { LoopNodeData } from "../types/loop-node-data";
 import { getConditionalBranchNodeData } from "../utils/get-conditional-branch-node-data";
+import { getLoopNodeData } from "../utils/get-loop-node-data";
+import { getWpfLoopNodeData } from "../utils/get-wpf-loop-node-data";
 
 export function useSendNodeToProcess(
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
 ) {
   // Get state and action from current flow store
-  const { conditionalExecutionGroup, setConditionalExecutionGroup } = useCurrentFlowStore(
+  const {
+    conditionalExecutionGroup,
+    loopExecutionGroup,
+    setConditionalExecutionGroup,
+    setLoopExecutionGroup,
+  } = useCurrentFlowStore(
     useShallow((state) => ({
       conditionalExecutionGroup: state.conditionalExecutionGroup,
+      loopExecutionGroup: state.loopExecutionGroup,
       setConditionalExecutionGroup: state.setConditionalExecutionGroup,
+      setLoopExecutionGroup: state.setLoopExecutionGroup,
     })),
   );
 
@@ -62,6 +73,7 @@ export function useSendNodeToProcess(
       );
     }
   };
+
   // Function to process conditional node
   const processConditionalNode = (
     node: Node<ConditionalNodeDataType>,
@@ -77,7 +89,7 @@ export function useSendNodeToProcess(
       (item) => item.id === node.id,
     ) as ConditionalNodeData;
 
-    // Set execution group (conditional or loop)
+    // Set execution group
     if (!currentExecutionGroup) {
       // Get conditional node data
       const conditionalNodeData = getConditionNodeData(node);
@@ -89,7 +101,10 @@ export function useSendNodeToProcess(
       conditionalNodeData.branches = conditionalNodeData.branches.slice(1);
 
       // Add conditionalNodeData to execution group
-      const newExecutionGroup = [...conditionalExecutionGroup, conditionalNodeData];
+      const newExecutionGroup = [
+        ...conditionalExecutionGroup,
+        conditionalNodeData,
+      ];
 
       // Set execution group with conditional node data
       setConditionalExecutionGroup(newExecutionGroup);
@@ -104,7 +119,9 @@ export function useSendNodeToProcess(
         sendNodeToProcess(currentExecutionGroup.mergeBranchesNodeId);
 
         // If processing left, remove the conditional node data from execution group
-        setConditionalExecutionGroup(conditionalExecutionGroup.filter((item) => item.id !== node.id));
+        setConditionalExecutionGroup(
+          conditionalExecutionGroup.filter((item) => item.id !== node.id),
+        );
         return;
       }
 
@@ -147,6 +164,39 @@ export function useSendNodeToProcess(
       JSON.stringify(
         getConditionalBranchNodeData(branchNode, node.id, nextNodeId),
       ),
+    );
+  };
+
+  // Function to process loop node
+  const processLoopNode = (node: Node<LoopNodeDataType>) => {
+    // Invalid node
+    if (!node || node.type !== "forLoopNode") return;
+
+    // Get execution group
+    const currentExecutionGroup = loopExecutionGroup.find(
+      (item) => item.id === node.id,
+    ) as LoopNodeData;
+
+    // Set execution group
+    if (!currentExecutionGroup) {
+      // Get loop node data
+      const loopNodeData = getLoopNodeData(node);
+
+      // Add loopNodeData to execution group
+      const newExecutionGroup = [...loopExecutionGroup, loopNodeData];
+
+      // Set execution group with loop node data
+      setLoopExecutionGroup(newExecutionGroup);
+    }
+
+    // Get next node id from edges
+    const nextNodeId =
+      edges.find((edge) => edge.source === node.id)?.target ?? "nextNodeId";
+
+    // Send loop node to check condition
+    sendCommand(
+      "check-loop-condition",
+      JSON.stringify(getWpfLoopNodeData(node, nextNodeId)),
     );
   };
 
@@ -201,12 +251,14 @@ export function useSendNodeToProcess(
             parentNode as Node<ConditionalNodeDataType>,
             true,
           );
+        } else if (nodeToProcess.data.groupType === "LoopBranch") {
+          processLoopNode(parentNode as Node<LoopNodeDataType>);
         }
         return;
       }
       case "forLoopNode": // loop. Check condition
-        // TODO: We need to change the name to LoopNode only.
-        sendCommand("resume");
+        // TODO: We need to change the name from "forLoopNode" to "LoopNode" only.
+        processLoopNode(nodeToProcess as Node<LoopNodeDataType>);
         return;
       case "flowEndNode": // Execution is complete
         sendExecutionComplete(true);
