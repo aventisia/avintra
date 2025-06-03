@@ -36,7 +36,7 @@ type State = {
 
   conditionalExecutionGroup: ConditionalExecutionGroup[];
 
-  loopExecutionGroup?: LoopExecutionGroup[];
+  loopExecutionGroup: LoopExecutionGroup[];
 
   projectInfo: IProjectInfoDTO;
 };
