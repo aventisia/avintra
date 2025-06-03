@@ -39,7 +39,7 @@ export const useConfirmDelete = () => {
 
       const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
 
-      if (branches.length <= 2 && parentNode) {
+      if (branches.length <= 2 && selectedNodes[0]?.type == "branchNode1") {
         toast.info("At least two branches are required.");
 
         return false;

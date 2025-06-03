@@ -196,7 +196,7 @@ export const useFlowOperations = () => {
       const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
 
       // Prevent deletion if fewer than 2 branches would remain
-      if (branches.length <= 2 && parentNode) {
+      if (branches.length <= 2 && node?.type == "branchNode1") {
         toast.info("At least two branches are required.");
         return;
       }
