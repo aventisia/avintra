@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
 {
     [NodeType("forLoopNode")]
     [DisplayName("Loop")]
-    [Description("This allows you to loop through a set of conditions and execute actions based on the evaluation of those conditions.")]
+    [Description("Use this to keep doing something again and again, as long as certain conditions are met.")]
     public class LoopActivity : Extensions.BaseCodeActivity
     {
         [Required]
@@ -22,6 +22,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
         }
     }
 
+    // Placeholder enum. Not using this one currently
     public enum LoopTypeEnum
     {
         [Display(Name = "For Each", Description = "Iterates over each item in a collection.")]
