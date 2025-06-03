@@ -6,6 +6,7 @@ interface ActivityNodeData {
   codeActivityName: string;
   nodeInputs: NodeInputType[];
   nodeOutputs: NodeOutputType[];
+  nextNodeId: string;
 }
 
 export type { ActivityNodeData };

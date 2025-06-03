@@ -11,11 +11,12 @@ import useWebSocket from "../hooks/useWebSocket";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
-  const { currentFlow, executionState, setExecutionState } =
+  const { currentFlow, executionState, setExecutionGroup, setExecutionState } =
     useCurrentFlowStore(
       useShallow((state) => ({
         currentFlow: state.currentFlow,
         executionState: state.executionState,
+        setExecutionGroup: state.setExecutionGroup,
         setExecutionState: state.setExecutionState,
       })),
     );
@@ -97,7 +98,10 @@ const ExecuteFlow = () => {
               variant="ghost"
               size="icon8"
               className="hover:bg-white/10"
-              onClick={() => sendCommand("abort")}
+              onClick={() => {
+                setExecutionGroup([]);
+                sendCommand("abort");
+              }}
             >
               <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
             </Button>
@@ -126,3 +130,4 @@ const ExecuteFlow = () => {
 };
 
 export { ExecuteFlow };
+

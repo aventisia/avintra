@@ -11,6 +11,7 @@ import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
 import { createSupportNodeObj } from "./create-support-node-obj";
+import { createBranchEndNodeObj } from "./create-branch-end-node-obj";
 
 export const createForLoopNode = (
   nodeData: NodeDataType,
@@ -22,7 +23,7 @@ export const createForLoopNode = (
   // Loop-body branch nodes
   const loopBodyStartNode = createSupportNodeObj("branchStartNode");
   const loopBodyPlusNode = createSupportNodeObj("plusNode");
-  const loopBodyEndNode = createSupportNodeObj("branchEndNode");
+  const loopBodyEndNode = createBranchEndNodeObj("LoopBranch", forLoopNode.id);
 
   // Merge branches node
   const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode");

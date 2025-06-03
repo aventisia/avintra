@@ -1,19 +1,29 @@
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { NodeDataType } from "@/types/node-data-type";
 import { toast } from "@aventisia/ui/sonner";
 import { Node } from "@xyflow/react";
-import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
+  ConditionalNodeData,
   WebSocketCommandType,
   getActivityNodeData,
-  useProcessConditionalNode,
+  getConditionNodeData,
 } from "..";
+import { getConditionalBranchNodeData } from "../utils/get-conditional-branch-node-data";
 
 export function useSendNodeToProcess(
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
 ) {
+  // Get state and action from current flow store
+  const { executionGroup, setExecutionGroup } = useCurrentFlowStore(
+    useShallow((state) => ({
+      executionGroup: state.executionGroup,
+      setExecutionGroup: state.setExecutionGroup,
+    })),
+  );
+
   // Get nodes and edges from ReactFlowExt store
   const { nodes, edges } = useReactFlowExtStore(
     useShallow((state) => ({
@@ -22,96 +32,191 @@ export function useSendNodeToProcess(
     })),
   );
 
-  // Get process conditional node hook
-  const { processConditionalNode } = useProcessConditionalNode(sendCommand);
-
-  // Get node Id to process
-  const getNextNodeIdToProcess = (previousNodeId?: string) => {
+  // Send next node Id to process
+  const sendNextNodeToProcess = (currentNodeId?: string) => {
     // TODO: need to change triggerNode to flowStartNode (FE and BE)
     // Decide on previous node id or find the start node id
     const nodeId =
-      previousNodeId || nodes.find((node) => node.type === "triggerNode")?.id;
+      currentNodeId || nodes.find((node) => node.type === "triggerNode")?.id;
 
     // Find node edge -> then get target node id
     const targetNodeId = edges.find((edge) => edge.source === nodeId)?.target;
 
-    // Send the target node id to process
+    // Send node to process
     sendNodeToProcess(targetNodeId || "nodeId");
   };
 
   // Send execution complete command
-  const sendExecutionComplete = useCallback(
-    (isSuccess: boolean) => {
-      // Send abort command to stop the execution
-      sendCommand("abort");
+  const sendExecutionComplete = (isSuccess: boolean) => {
+    // Send abort command to stop the execution
+    sendCommand("abort");
 
-      // Show a message to the user
-      if (isSuccess) {
-        toast.info("Execution completed successfully.");
-      } else {
-        toast.error(
-          "Execution failed. Please check the execution logs for details.",
-        );
-      }
-    },
-    [sendCommand],
-  );
+    setExecutionGroup([]); // Clear the execution group
 
-  // Function to find the node and send its data
-  const sendNodeToProcess = useCallback(
-    (nodeId: string) => {
-      // Get node first
-      const nodeToProcess = nodes.find((node) => node.id === nodeId);
+    // Show a message to the user
+    if (isSuccess) {
+      toast.success("Execution completed successfully.");
+    } else {
+      toast.error(
+        "Execution failed. Please check the execution logs for details.",
+      );
+    }
+  };
 
-      // If target node is not found, show an error message
-      if (!nodeToProcess || !nodeToProcess.type) {
-        sendExecutionComplete(false);
+  const processConditionalNode = (
+    node: Node<ConditionalNodeDataType>,
+    isBranchProcessed: boolean = false,
+  ) => {
+    // Invalid node
+    if (!node || node.type !== "conditionalNode") return;
+
+    let branchId: string;
+
+    // Get execution group
+    const currentExecutionGroup = executionGroup.find(
+      (item) => item.id === node.id,
+    ) as ConditionalNodeData;
+
+    // Set execution group (conditional or loop)
+    if (!currentExecutionGroup) {
+      // Get conditional node data
+      const conditionalNodeData = getConditionNodeData(node);
+
+      // Set branch id to process
+      branchId = conditionalNodeData.branches[0];
+
+      // Slice the branchId from conndtionalNodeData
+      conditionalNodeData.branches = conditionalNodeData.branches.slice(1);
+
+      // Add conditionalNodeData to execution group
+      const newExecutionGroup = [...executionGroup, conditionalNodeData];
+
+      // Set execution group with conditional node data
+      setExecutionGroup(newExecutionGroup);
+    } else {
+      // If branch is processed and condtionalMode is SwitchCase, then exit the conditional group processing
+      if (
+        (isBranchProcessed &&
+          currentExecutionGroup.conditionalMode === "SwitchCase") ||
+        currentExecutionGroup.branches.length === 0
+      ) {
+        // Send mergeBranchesNode to process
+        sendNodeToProcess(currentExecutionGroup.mergeBranchesNodeId);
+
+        // If processing left, remove the conditional node data from execution group
+        setExecutionGroup(executionGroup.filter((item) => item.id !== node.id));
         return;
       }
 
-      // Check the type of the target node and handle accordingly
-      switch (nodeToProcess.type) {
-        case "triggerNode": // Start node
-          getNextNodeIdToProcess();
-          return;
-        case "plusNode": // Empty node, go to next node
-        case "mergeBranchesNode": // Conditional or loop ends, go to next node
-        case "branchStartNode": // Placeholder node, go to next node. We can remove this node later
-        case "branchNode1": // Conditional branch node. Check condition. branch node id is passed which means condition is checked and its true so we'll start the branch processing
-          getNextNodeIdToProcess(nodeToProcess.id);
-          return;
-        case "activityNode": // Get activity node data -> Send the command to websocket
-          sendCommand(
-            "process-node",
-            JSON.stringify(
-              getActivityNodeData(nodeToProcess as Node<NodeDataType>),
-            ),
-          );
-          return;
-        case "conditionalNode": // Save conditional mode (SwitchCase or nestedIfElse) in store and pick the branch node as per execution state
-          processConditionalNode(
-            nodeToProcess as Node<ConditionalNodeDataType>,
-          );
-          return;
-        case "whileLoopNode": // While loop. Check condition
-          sendCommand("check-condition", nodeToProcess.id);
-          return;
-        case "forLoopNode": // loop. Check condition
-          sendCommand("resume");
-          return;
-        case "flowEndNode": // Execution is complete
-          sendExecutionComplete(true);
-          return;
-        default: // If unknown node type, show an error message
-          toast.error(
-            `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
-          );
-          sendExecutionComplete(false);
-          return;
-      }
-    },
-    [nodes, processConditionalNode, sendCommand, sendExecutionComplete],
-  );
+      // Set branch id to process
+      branchId = currentExecutionGroup.branches[0];
 
-  return { sendNodeToProcess };
+      // Slice the branchId from currentExecutionGroup
+      const conditionalNodeData = {
+        ...currentExecutionGroup,
+        branches: currentExecutionGroup.branches.slice(1),
+      };
+
+      // Update execution group with new branches
+      setExecutionGroup(
+        executionGroup.map((item) =>
+          item.id === node.id ? conditionalNodeData : item,
+        ),
+      );
+    }
+
+    // Get branch node
+    const branchNode = nodes.find((node) => node.id === branchId);
+
+    // Get next node id from edges
+    const nextNodeId =
+      edges.find((edge) => edge.source === branchNode?.id)?.target ??
+      "nextNodeId";
+
+    // Send first branch to process
+    sendCommand(
+      "check-condition",
+      JSON.stringify(
+        getConditionalBranchNodeData(
+          branchNode as Node<NodeDataType>,
+          node.id,
+          nextNodeId,
+        ),
+      ),
+    );
+  };
+
+  // Function to find the node and send its data
+  const sendNodeToProcess = (nodeId: string) => {
+    // Get node first
+    const nodeToProcess = nodes.find((node) => node.id === nodeId);
+
+    // If target node is not found, show an error message
+    if (!nodeToProcess || !nodeToProcess.type) {
+      sendExecutionComplete(false);
+      return;
+    }
+
+    // Get next node id
+    const nextNodeId =
+      edges.find((edge) => edge.source === nodeToProcess.id)?.target ??
+      "nextNodeId";
+
+    // Check the type of the target node and handle accordingly
+    switch (nodeToProcess.type) {
+      // case "triggerNode": - this will be processed by the "start" command and being handleed in useWebSocket hook
+      case "plusNode": // Empty node, go to next node
+      case "mergeBranchesNode": // Conditional or loop ends, go to next node
+      case "branchStartNode": // Placeholder node, go to next node. We can remove this node later
+      case "branchNode1": // Conditional branch node. Check condition. branch node id is passed which means condition is checked and its true so we'll start the branch processing
+        sendNextNodeToProcess(nodeToProcess.id);
+        return;
+      case "activityNode": // Get activity node data -> Send the command to websocket
+        sendCommand(
+          "process-node",
+          JSON.stringify(
+            getActivityNodeData(
+              nodeToProcess as Node<NodeDataType>,
+              nextNodeId,
+            ),
+          ),
+        );
+        return;
+      case "conditionalNode": // Save conditional mode (SwitchCase or nestedIfElse) in store and pick the branch node as per execution state
+        processConditionalNode(nodeToProcess as Node<ConditionalNodeDataType>);
+        return;
+      case "branchEndNode": {
+        // Either Conditional or loop branch ends, so we need to process the conditional or loop node to move forward or end the group execution
+        // Get branch parent node loop or conditional node
+        const parentNode = nodes.find(
+          (node) => node.id === nodeToProcess?.data?.customParentId,
+        );
+
+        if (nodeToProcess.data.groupType === "CondtionalBranch") {
+          processConditionalNode(
+            parentNode as Node<ConditionalNodeDataType>,
+            true,
+          );
+        }
+        return;
+      }
+      case "whileLoopNode": // While loop. Check condition
+        sendCommand("check-condition", nodeToProcess.id);
+        return;
+      case "forLoopNode": // loop. Check condition
+        sendCommand("resume");
+        return;
+      case "flowEndNode": // Execution is complete
+        sendExecutionComplete(true);
+        return;
+      default: // If unknown node type, show an error message
+        toast.error(
+          `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
+        );
+        sendExecutionComplete(false);
+        return;
+    }
+  };
+
+  return { sendNextNodeToProcess, sendNodeToProcess };
 }

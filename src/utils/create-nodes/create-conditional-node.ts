@@ -3,10 +3,11 @@ import { NodeDataType } from "@/types/node-data-type";
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
-import { createNodeObj } from "./create-node-obj";
-import { createSupportNodeObj } from "./create-support-node-obj";
 import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
 import { createConditionalBranchNodeObj } from "./conditional/create-conditional-branch-node-obj";
+import { createBranchEndNodeObj } from "./create-branch-end-node-obj";
+import { createNodeObj } from "./create-node-obj";
+import { createSupportNodeObj } from "./create-support-node-obj";
 
 export const createConditionalNode = (
   nodeData: NodeDataType,
@@ -18,7 +19,10 @@ export const createConditionalNode = (
   // Case branch nodes
   const caseBranchStartNode = createConditionalBranchNodeObj("Branch");
   const casePlusNode = createSupportNodeObj("plusNode");
-  const caseBranchEndNode = createSupportNodeObj("branchEndNode");
+  const caseBranchEndNode = createBranchEndNodeObj(
+    "CondtionalBranch",
+    conditionalNode.id,
+  );
 
   // Default branch nodes
   const defaultBranchStartNode = createConditionalBranchNodeObj(
@@ -26,7 +30,10 @@ export const createConditionalNode = (
     true,
   );
   const defaultPlusNode = createSupportNodeObj("plusNode");
-  const defaultBranchEndNode = createSupportNodeObj("branchEndNode");
+  const defaultBranchEndNode = createBranchEndNodeObj(
+    "CondtionalBranch",
+    conditionalNode.id,
+  );
 
   // Merge branches node
   const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode");

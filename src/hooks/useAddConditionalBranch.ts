@@ -1,10 +1,10 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
+import { createConditionalBranchNodeObj } from "@/utils/create-nodes/conditional/create-conditional-branch-node-obj";
+import { createNewConditionalBranch } from "@/utils/create-nodes/create-new-conditional-branch";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
-import { createNewConditionalBranch } from "@/utils/create-nodes/create-new-conditional-branch";
-import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
-import { createConditionalBranchNodeObj } from "@/utils/create-nodes/conditional/create-conditional-branch-node-obj";
 
 export const useAddConditionalBranch = () => {
   // Get ReactFlowExt store state & actions
@@ -61,12 +61,15 @@ export const useAddConditionalBranch = () => {
         ...edges.slice(stepEdgeIndex),
       ];
 
-      // Mapp through updatedNodes and update the branches count of the source node
+      // Mapp through updatedNodes and update the branches id of the source node
       updatedNodes.forEach((node) => {
         if (node.id === sourceNode.id) {
+          const branches = node.data.branches as string[];
+          // Insert newBranchStartNode.id before the last (default) branch id
           node.data.branches = [
-            ...(node.data.branches as string[]),
+            ...branches.slice(0, branches.length - 1),
             newBranchStartNode.id,
+            branches[branches.length - 1],
           ];
         }
       });

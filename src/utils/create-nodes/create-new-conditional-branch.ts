@@ -6,6 +6,7 @@ import { getNewNodeXY } from "../create-node-and-edges-util";
 import { createSupportNodeObj } from "./create-support-node-obj";
 import { CustomNodeType } from "@/types/custom-node-type";
 import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
+import { createBranchEndNodeObj } from "./create-branch-end-node-obj";
 
 export const createNewConditionalBranch = (
   sourceNode: Node,
@@ -14,7 +15,10 @@ export const createNewConditionalBranch = (
 ): CreateNodesAndEdgesType => {
   // Case branch nodes
   const casePlusNode = createSupportNodeObj("plusNode");
-  const caseBranchEndNode = createSupportNodeObj("branchEndNode");
+  const caseBranchEndNode = createBranchEndNodeObj(
+    "CondtionalBranch",
+    sourceNode.id,
+  );
 
   // Conditional node -> Case branch-start node
   const conditional2CaseBranchStartEdge = createSimpleEdgeObj(

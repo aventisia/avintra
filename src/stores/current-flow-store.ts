@@ -1,5 +1,5 @@
-import { IProjectInfoDTO } from "@/features/react-flow/dtos/load-flow-dto";
 import { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
+import { IProjectInfoDTO } from "@/features/react-flow/dtos/load-flow-dto";
 import { create } from "zustand";
 
 interface ICurrentFlowDetails {
@@ -28,7 +28,7 @@ type State = {
   /** Indicates flow execution state */
   executionState: ExecutionStateType;
 
-  executionGroup: ExecutionGroup | null;
+  executionGroup: ExecutionGroup[];
 
   projectInfo: IProjectInfoDTO;
 };
@@ -47,7 +47,7 @@ type Actions = {
   setExecutionState: (executionState: ExecutionStateType) => void;
 
   /** Sets the execution group */
-  setExecutionGroup: (executionGroup: ExecutionGroup | null) => void;
+  setExecutionGroup: (executionGroup: ExecutionGroup[]) => void;
 
   /** Set Project info of the flow */
   setProjectInfo: (projectInfo: IProjectInfoDTO) => void;
@@ -58,7 +58,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   isFlowLoading: false,
   isFlowSaving: false,
   executionState: "stopped",
-  executionGroup: null,
+  executionGroup: [],
   projectInfo: {
     versionId: "",
     versionNumber: null,
@@ -73,7 +73,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   setIsFlowSaving: (isSaving) => set({ isFlowSaving: isSaving }),
 
   setExecutionState: (executionState) => set({ executionState }),
-  
+
   setExecutionGroup: (executionGroup) => set({ executionGroup }),
 
   setProjectInfo: (projectInfo) => set({ projectInfo: projectInfo }),

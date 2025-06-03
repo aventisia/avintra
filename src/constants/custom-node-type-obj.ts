@@ -1,4 +1,5 @@
 import { ActivityNode } from "@/components/nodes/ActivityNode";
+import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
 import { BranchNode1 } from "@/components/nodes/BranchNode1";
 import { ConditionalNode } from "@/components/nodes/ConditionalNode";
@@ -16,7 +17,7 @@ export const CustomNodeTypeObj = {
   plusNode: PlusNode, // Used to add first node in a branch.
   flowEndNode: FlowEndNode,
   branchStartNode: BranchNode,
-  branchEndNode: BranchNode,
+  branchEndNode: BranchEndNode,
   mergeBranchesNode: MergeBranchesNode,
 
   // ---Logical node types

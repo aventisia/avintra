@@ -52,7 +52,8 @@ export default function useWebSocket() {
   );
 
   // Custom hook handler to send node to process
-  const { sendNodeToProcess } = useSendNodeToProcess(sendCommand);
+  const { sendNextNodeToProcess, sendNodeToProcess } =
+    useSendNodeToProcess(sendCommand);
 
   // Connect to web socket and handle messages
   useEffect(() => {
@@ -83,8 +84,14 @@ export default function useWebSocket() {
         // If the command is to pause or abort, we don't need to send a node
         if (msg.command === "pause" || msg.command === "abort") return;
 
+        // if command is start
+        if (msg.command === "start") {
+          sendNextNodeToProcess();
+          return;
+        }
+
         // Send the node to process
-        sendNodeToProcess(msg.data);
+        sendNodeToProcess(msg.data || "nodeId");
       } catch (err) {
         console.error("Failed to parse WebSocket message:", err);
       }
@@ -104,7 +111,7 @@ export default function useWebSocket() {
     return () => {
       socket.close();
     };
-  }, [isTauri, sendNodeToProcess, setExecutionState]);
+  }, [isTauri, sendNextNodeToProcess, sendNodeToProcess, setExecutionState]);
 
   return { sendCommand };
 }

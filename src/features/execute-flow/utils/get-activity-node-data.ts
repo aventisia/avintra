@@ -8,6 +8,7 @@ import { ActivityNodeData } from "..";
 
 export function getActivityNodeData(
   nodeObj: Node<NodeDataType> | undefined,
+  nextNodeId: string,
 ): ActivityNodeData {
   return {
     id: nodeObj?.id ?? "",
@@ -27,5 +28,6 @@ export function getActivityNodeData(
           enabled: output.value.enabled,
         },
       })) ?? [],
+    nextNodeId: nextNodeId,
   };
 }
