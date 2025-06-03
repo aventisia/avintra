@@ -126,22 +126,26 @@ export function useSendNodeToProcess(
     }
 
     // Get branch node
-    const branchNode = nodes.find((node) => node.id === branchId);
+    const branchNode = nodes.find(
+      (node) => node.id === branchId,
+    ) as Node<NodeDataType>;
 
     // Get next node id from edges
     const nextNodeId =
       edges.find((edge) => edge.source === branchNode?.id)?.target ??
       "nextNodeId";
 
-    // Send first branch to process
+    // If branch is default branch, then send next node to process
+    if (branchNode.data.name === "DefaultBranch") {
+      sendNextNodeToProcess(branchNode.id);
+      return;
+    }
+
+    // Send branch to check condition
     sendCommand(
       "check-condition",
       JSON.stringify(
-        getConditionalBranchNodeData(
-          branchNode as Node<NodeDataType>,
-          node.id,
-          nextNodeId,
-        ),
+        getConditionalBranchNodeData(branchNode, node.id, nextNodeId),
       ),
     );
   };
