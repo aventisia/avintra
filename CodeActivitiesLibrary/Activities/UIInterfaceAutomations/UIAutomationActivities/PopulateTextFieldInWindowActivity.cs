@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
     [DisplayName("Populate Text Field in Window")]
     [Description("Fills a text box in a window with the specified text using the method you choose.")]
-    public class PopulateTextFieldActivity : Extensions.BaseCodeActivity
+    public class PopulateTextFieldInWindowActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument]
         [Category("Input")]

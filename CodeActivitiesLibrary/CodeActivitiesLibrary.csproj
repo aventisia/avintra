@@ -505,7 +505,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\OnHold\WaitForImageActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\OnHold\WaitForWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\OnHold\WaitForWindowContentActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PopulateTextFieldActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PopulateTextFieldInWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ResizeWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectRadioButtonActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectTabActivity.cs" />
