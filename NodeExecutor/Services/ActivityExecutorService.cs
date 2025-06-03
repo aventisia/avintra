@@ -151,8 +151,13 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static bool ExecuteCondition(ConditionalBranchNodeData node, ExecutionContext executionContext)
+        public static bool ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext)
         {
+            // If conditions null or empty return false
+            if (conditions != null || conditions.Count == 0)
+                return false;
+
+            // Check conditions
             try
             {
                 // Get Code activity instance
@@ -161,7 +166,7 @@ namespace NodeExecutor.Services
 
                 // Prepare the nested list of ConditionObjectGroup with resolved values
                 var resolvedGroups = new List<List<ConditionObjectGroup>>();
-                foreach (var group in node.Conditions) // node.Conditions: IList<IList<ConditionGroup>>
+                foreach (var group in conditions) // node.Conditions: IList<IList<ConditionGroup>>
                 {
                     var resolvedGroup = new List<ConditionObjectGroup>();
                     foreach (var cond in group)
@@ -220,6 +225,55 @@ namespace NodeExecutor.Services
             }
         }
 
+        public static bool MoveNextListItem(string listVarName, string currentItemVarName, ExecutionContext executionContext)
+        {
+            // If listVarName or currentItemVarName is null or empty, return false
+            if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || executionContext == null)
+                return false;
+
+            try
+            {
+                // Resolve the list variable name in case it contains a template
+                var resolvedListVar = ResolveTemplate(listVarName, executionContext);
+
+                // If resolvedListVar is a string, treat it as the key to look up in executionContext
+                object listObj = resolvedListVar;
+                if (resolvedListVar is string key)
+                {
+                    if (!executionContext.TryGet(key, out listObj) || listObj == null)
+                        return false;
+                }
+
+                // Try to cast to IEnumerable (but not string)
+                if (!(listObj is System.Collections.IEnumerable enumerable) || listObj is string)
+                    return false;
+
+                // Convert to a list for indexing
+                var items = enumerable.Cast<object>().ToList();
+                if (items.Count == 0)
+                    return false;
+
+                // Track current index in executionContext (use a hidden variable)
+                string indexKey = $"__{listVarName}_CurrentIndex";
+                int currentIndex = 0;
+                if (executionContext.TryGet(indexKey, out var idxObj) && idxObj is int idx)
+                    currentIndex = idx + 1; // Move to next item
+
+                if (currentIndex >= items.Count)
+                    return false; // No more items
+
+                // Set current item and index in executionContext
+                executionContext.Set(currentItemVarName, items[currentIndex]);
+                executionContext.Set(indexKey, currentIndex);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in MoveNextListItem: {ex.Message}");
+                return false;
+            }
+        }
         private static object ConvertArgument(object inputValue, Type targetType)
         {
             if (inputValue == null || targetType == null)
@@ -242,35 +296,42 @@ namespace NodeExecutor.Services
 
         private static object InferType(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    return value;
+
+                // Try bool
+                if (bool.TryParse(value, out var boolResult))
+                    return boolResult;
+
+                // Try int
+                if (int.TryParse(value, out var intResult))
+                    return intResult;
+
+                // Try long
+                if (long.TryParse(value, out var longResult))
+                    return longResult;
+
+                // Try decimal
+                if (decimal.TryParse(value, out var decResult))
+                    return decResult;
+
+                // Try double
+                if (double.TryParse(value, out var dblResult))
+                    return dblResult;
+
+                // Try DateTime
+                if (DateTime.TryParse(value, out var dtResult))
+                    return dtResult;
+
                 return value;
-
-            // Try bool
-            if (bool.TryParse(value, out var boolResult))
-                return boolResult;
-
-            // Try int
-            if (int.TryParse(value, out var intResult))
-                return intResult;
-
-            // Try long
-            if (long.TryParse(value, out var longResult))
-                return longResult;
-
-            // Try decimal
-            if (decimal.TryParse(value, out var decResult))
-                return decResult;
-
-            // Try double
-            if (double.TryParse(value, out var dblResult))
-                return dblResult;
-
-            // Try DateTime
-            if (DateTime.TryParse(value, out var dtResult))
-                return dtResult;
-
-            // Fallback to string
-            return value;
+            }
+            catch
+            {
+                // If any error occurs, return the original value
+                return value;
+            }
         }
 
         // Helper to resolve variable if value is in {{varName}} format

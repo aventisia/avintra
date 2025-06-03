@@ -68,6 +68,8 @@
     </ApplicationDefinition>
     <Compile Include="Models\ActivityNodeData.cs" />
     <Compile Include="Models\ConditionalBranchNodeData.cs" />
+    <Compile Include="Models\ConditionGroup.cs" />
+    <Compile Include="Models\WpfLoopNodeData.cs" />
     <Compile Include="Services\AppTimerService.cs" />
     <Compile Include="Services\ActivityExecutorService.cs" />
     <Compile Include="Services\ExecutionContext.cs" />
