@@ -12,6 +12,8 @@ public class ExtractionSetupController : BaseApiController
         _extractionSetupService = extractionSetupService;
     }
 
+    // -------------------- Setup & Test Endpoints --------------------
+
     // Updates an existing extraction setup
     [HttpPut("setup")]
     public async Task<ActionResult<ServiceResponse<ExtractionSetupDto>>> UpdateExtractionSetup([FromBody] MLModelSetupDto mlModelSetupDto)
@@ -40,6 +42,8 @@ public class ExtractionSetupController : BaseApiController
         return ResultHelper(await _extractionSetupService.GetExtractedDataByMLModelIdAsync(mlModelId));
     }
 
+    // -------------------- Run & Review Data Endpoints --------------------
+
     // Retrieves a collection of extracted review data records associated with a specific machine learning model.
     [HttpGet("review-data/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractionReviewDataDto>>>> GetExtractedReviewDataByMLModelId(Guid mlModelId)
@@ -59,5 +63,28 @@ public class ExtractionSetupController : BaseApiController
     public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractionReviewDataDto>>>> AddReviewDataByMLModelId(CreateModelReviewRequestDto createModelReviewRequestDto)
     {
         return ResultHelper(await _extractionSetupService.AddReviewDataAsync(createModelReviewRequestDto));
+    }
+
+    // -------------------- Fine-Tining Data Endpoints --------------------
+
+    // Retrieves a collection of fine-tuning data records associated with the specified machine learning model ID.
+    [HttpGet("fine-tuning/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractionFineTuningDataDto>>>> GetFineTunningDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _extractionSetupService.GetFineTunningDataByMLModelIdAsync(mlModelId));
+    }
+
+    // Schedules a fine-tuning job for a specific machine learning model by sending the fine-tuning request details.
+    [HttpPost("schedule-fine-tuning")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractionFineTuningDataDto>>>> ScheduleFineTuningAsync(AddFineTuningRequestDto addFineTuningRequestDto)
+    {
+        return ResultHelper(await _extractionSetupService.ScheduleFineTuningAsync(addFineTuningRequestDto));
+    }
+
+    // Retrieves the fine-tuning history records associated with a specific ML model.
+    [HttpGet("fine-tuning/histories/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FineTuningHistoryDto>>>> GetFineTuningDataHistories(Guid mlModelId)
+    {
+        return ResultHelper(await _extractionSetupService.GetFineTuningDataHistoriesAsync(mlModelId));
     }
 }
