@@ -70,4 +70,14 @@ public interface ISummarizationService
     /// A task that represents the asynchronous operation. The task result contains a ServiceResponse with a collection of SummarizationReviewDataDto representing the added or affected review data.
     /// </returns>
     Task<ServiceResponse<IEnumerable<SummarizationReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto);
+
+    /// <summary>
+    /// Retrieves a collection of fine-tuning data records associated with the specified machine learning model ID.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. 
+    /// The task result contains a <see cref="ServiceResponse{T}"/> with a list of <see cref="SummarizationFineTuningDataDto"/>.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId);
 }

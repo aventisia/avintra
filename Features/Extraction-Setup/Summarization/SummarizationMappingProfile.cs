@@ -76,6 +76,20 @@ public class SummarizationMappingProfile : IRegister
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
                 ? src.CreatedByUser.UserName
                 : null);
+
+        config.NewConfig<ExtractedData, SummarizationFineTuningDataDto>()
+            .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeSummarizationSetupDto(src.DataObject) : null)
+            .Map(dest => dest.DocName,
+                src => src.UploadedDoc != null
+                ? src.UploadedDoc.Name
+                : null)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
     }
 
     // Deserializes a JSON string into a list of SummarizationSetupData objects and converts it into a list of ColumnsDto objects

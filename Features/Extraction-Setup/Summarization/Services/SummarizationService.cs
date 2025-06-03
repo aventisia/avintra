@@ -587,6 +587,40 @@ public class SummarizationService : ISummarizationService
         return serviceResponse;
     }
 
+    // Retrieves fine-tuning data records associated with the specified machine learning model ID.
+    public async Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve fine tuning data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Starting retrieval of fine-tuning data for ML model ID: {MLModelId}", mlModelId);
+
+            var fineTuningDataList = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => w.MLModelId == mlModelId && w.SubmitForFineTuning)
+                .Include(x => x.CreatedByUser)
+                .Include(x => x.UploadedDoc)
+                .ProjectToType<SummarizationFineTuningDataDto>()
+                .ToListAsync();
+
+            _logger.LogInformation("Successfully retrieved {Count} fine-tuning data records for ML model ID: {MLModelId}", fineTuningDataList.Count, mlModelId);
+
+            serviceResponse.Data = fineTuningDataList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Fine tuning data retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving fine-tuning data for ML model ID: {MLModelId}", mlModelId);
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string for the summarization model using the setup settings
     private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
     {
