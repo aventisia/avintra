@@ -12,7 +12,7 @@ export const createConditionalBranchNodeObj = (
       type: "branchNode1",
       name: isDefaultBranch ? "DefaultBranch" : "ConditionalBranchActivity",
       label: label,
-      description: label,
+      description: "Add one or more conditions",
       mergeBranchesNodeId: mergeBranchesNodeId,
     },
     position: { x: 0, y: 0 },
