@@ -41,7 +41,8 @@ public class ExtractedDataService : IExtractedDataService
         {
             //Try to get extracted data
             var extractedData = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(d => d.MLModelId == mlModelId && d.Type == type).Include(c => c.CreatedByUser)
+                .GetByConditionAsync(w => w.MLModelId == mlModelId && w.Type == type)
+                .Include(i => i.CreatedByUser)
                 .OrderByDescending(ml => ml.CreatedOn)
                 .ProjectToType<ExtractedDataDto>()
                 .ToListAsync();
@@ -172,7 +173,8 @@ public class ExtractedDataService : IExtractedDataService
         {
             //Try to get a existing data using identifier
             var data = await _unitOfWork.ExtractedDataRepo
-            .GetByConditionAsync(v => v.Id == id)
+            .GetByConditionAsync(w => w.Id == id)
+            .Include(i => i.UploadedDoc)
             .SingleOrDefaultAsync();
 
             //Check if data not exists
@@ -183,8 +185,14 @@ public class ExtractedDataService : IExtractedDataService
                 return serviceResponse;
             }
 
-            //Delete data permonently
+            // Delete the extracted data
             _unitOfWork.ExtractedDataRepo.Delete(data);
+
+            // Delete the associated uploaded document if it exists
+            if (data.UploadedDoc != null)
+            {
+                _unitOfWork.UploadedDocRepo.Delete(data.UploadedDoc);
+            }
 
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
@@ -221,7 +229,8 @@ public class ExtractedDataService : IExtractedDataService
         {
             //Try to get data using identifier
             var data = await _unitOfWork.ExtractedDataRepo
-            .GetByConditionAsync(v => v.Id == id).Include(c => c.CreatedByUser)
+            .GetByConditionAsync(w => w.Id == id)
+            .Include(i => i.CreatedByUser)
             .SingleOrDefaultAsync();
 
             //Check if data not exists
@@ -331,8 +340,18 @@ public class ExtractedDataService : IExtractedDataService
 
             // TODO: Verify if there are any dependent entities or relationships tied to the extracted data
 
-            // Perform the deletion of the matching extracted data items
-            _unitOfWork.ExtractedDataRepo.Delete(extractedDataList);
+            // Loop through the extracted data items
+            foreach (var data in extractedDataList)
+            {
+                // Delete the extracted data
+                _unitOfWork.ExtractedDataRepo.Delete(data);
+
+                // Delete the associated uploaded document if it exists
+                if (data.UploadedDoc != null)
+                {
+                    _unitOfWork.UploadedDocRepo.Delete(data.UploadedDoc);
+                }
+            }
 
             // Attempt to save changes to the database; if it fails, log an error and return failure
             if (!await _unitOfWork.SaveAsync())
