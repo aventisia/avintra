@@ -328,6 +328,7 @@ public class ExtractedDataService : IExtractedDataService
             // Retrieve the list of extracted data items matching the provided IDs
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
                                                     .GetByConditionAsync(w => ids.Contains(w.Id))
+                                                    .Include(i => i.UploadedDoc)
                                                     .ToListAsync();
 
             // If no matching data found, return a message indicating no data was found
