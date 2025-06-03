@@ -78,6 +78,12 @@ export const createForLoopNode = (
     markerEnd: `${MARKER_ARROW_PREFIX}${repeatEdgeId}`,
   } as Edge;
 
+  // Update loop node data (merge branches node ID)
+  forLoopNode.data = {
+    ...forLoopNode.data,
+    mergeBranchesNodeId: mergeBranchesNode.id,
+  };
+
   //Update LoopNode Data
   forLoopNode.data = {
     ...forLoopNode.data,

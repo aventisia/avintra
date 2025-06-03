@@ -1,10 +1,10 @@
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeDataType } from "@/types/node-data-type";
+import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { Node, NodeProps, Position } from "@xyflow/react";
 import BaseNode from "./BaseNode";
 
-type ForLoopNode = Node<NodeDataType, "forLoopNode">;
+type ForLoopNode = Node<LoopNodeDataType, "forLoopNode">;
 
 export const ForLoopNode = ({
   id,
