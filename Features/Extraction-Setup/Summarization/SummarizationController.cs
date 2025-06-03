@@ -80,4 +80,11 @@ public class SummarizationController : BaseApiController
     {
         return ResultHelper(await _summarizationService.ScheduleFineTuningAsync(addFineTuningRequestDto));
     }
+
+    // Retrieves the fine-tuning history records associated with a specific ML model.
+    [HttpGet("fine-tuning/histories/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FineTuningHistoryDto>>>> GetFineTuningDataHistories(Guid mlModelId)
+    {
+        return ResultHelper(await _summarizationService.GetFineTuningDataHistoriesAsync(mlModelId));
+    }
 }
