@@ -19,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
     public ILLMRepo LLMRepo => new LLMRepo(_mlModelBuilderDbContext);
     public IScheduledModelRepo ScheduledModelRepo => new ScheduledModelRepo(_mlModelBuilderDbContext);
+    public IFineTuningLogRepo FineTuningLogRepo => new FineTuningLogRepo(_mlModelBuilderDbContext);
 
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
