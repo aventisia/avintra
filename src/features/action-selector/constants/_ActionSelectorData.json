@@ -25,7 +25,7 @@
             "type": "forLoopNode",
             "name": "LoopActivity",
             "label": "Loop",
-            "description": "This allows you to loop through a set of conditions and execute actions based on the evaluation of those conditions.",
+            "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1977,6 +1977,15 @@
             "name": "IfWebPageContainsActivity",
             "label": "If Web Page Contains",
             "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchBrowserActivity",
+            "label": "Launch Browser",
+            "description": "Launches a web browser instance (Edge, Chrome, Firefox) with optional window state.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
