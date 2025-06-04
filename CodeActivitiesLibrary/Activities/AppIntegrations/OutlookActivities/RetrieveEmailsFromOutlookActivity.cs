@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Outlook;
+﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Outlook;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
     [DisplayName("Retrieve Emails from Outlook")]
     [Description(
         "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.")]
-    public class RetrieveEmailsFromOutlookActivity : Extensions.BaseCodeActivity
+    public class RetrieveEmailsFromOutlookActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

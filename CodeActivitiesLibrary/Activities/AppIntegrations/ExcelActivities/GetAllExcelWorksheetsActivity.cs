@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get All Excel Worksheets")]
     [Description("Retrieves all worksheet names from the active Excel workbook.")]
-    public class GetAllExcelWorksheetsActivity : Extensions.BaseCodeActivity
+    public class GetAllExcelWorksheetsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

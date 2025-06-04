@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -12,7 +13,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Set Drop-Down List Value on Web Page")]
     [Description("Sets or clears the value of a drop-down list element on a web page.")]
-    public class SetDropDownListValueOnWebPageActivity : Extensions.BaseCodeActivity
+    public class SetDropDownListValueOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -55,25 +56,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("Comma-separated indices of options to select.")]
         public InArgument<string> OptionIndices { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the page to load after setting the dropdown value.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after setting the dropdown value.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]

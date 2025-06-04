@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Copy Cells from Excel Worksheet")]
     [Description(
         "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.")]
-    public class CopyCellsFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class CopyCellsFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

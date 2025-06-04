@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Element Siblings")]
     [Description("Finds and returns all sibling elements of the specified web element.")]
-    public class GetElementSiblingsActivity : Extensions.BaseCodeActivity
+    public class GetElementSiblingsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -32,12 +33,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The value used to locate the base element whose siblings will be retrieved.")]
         public InArgument<string> SearchKeywords { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to appear before retrieving its siblings.")]
         public InArgument<bool> WaitForElement { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]

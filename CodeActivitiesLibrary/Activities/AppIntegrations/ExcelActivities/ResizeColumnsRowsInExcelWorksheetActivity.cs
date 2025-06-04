@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Resize Columns/Rows in Excel Worksheet")]
     [Description("Resizes the width of columns or the height of rows in the active Excel worksheet.")]
-    public class ResizeColumnsRowsInExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class ResizeColumnsRowsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

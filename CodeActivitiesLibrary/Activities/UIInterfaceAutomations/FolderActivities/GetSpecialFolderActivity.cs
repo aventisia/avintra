@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
     [DisplayName("Get Special Folder Path")]
     [Description("This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.")]
-    public class GetSpecialFolderPathActivity : Extensions.BaseCodeActivity
+    public class GetSpecialFolderPathActivity : BaseCodeActivity
     {
 
         [DisplayName("Special Folder Name")]

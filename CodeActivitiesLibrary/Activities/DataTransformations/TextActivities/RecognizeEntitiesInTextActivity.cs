@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Recognize Entities in Text")]
     [Description(
         "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.")]
-    public class RecognizeEntitiesInTextActivity : Extensions.BaseCodeActivity
+    public class RecognizeEntitiesInTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

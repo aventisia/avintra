@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data.SqlClient;
@@ -6,7 +7,7 @@ using System.Data.SqlClient;
 namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
     [DisplayName("Open SQL Connection"), Description("Open a new connection to a database")]
-    public class OpenSqlConnectionActivity : Extensions.BaseCodeActivity
+    public class OpenSqlConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }

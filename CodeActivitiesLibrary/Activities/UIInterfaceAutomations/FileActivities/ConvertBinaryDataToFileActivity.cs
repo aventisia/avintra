@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Binary Data to File")]
     [Description("Converts binary data to a file at the specified path.")]
-    public class ConvertBinaryDataToFileActivity : Extensions.BaseCodeActivity
+    public class ConvertBinaryDataToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Binary Data")]

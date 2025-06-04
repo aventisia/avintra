@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Range from Excel Worksheet")]
     [Description("Deletes a range of cells from the active worksheet of an Excel instance.")]
-    public class DeleteFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class DeleteFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

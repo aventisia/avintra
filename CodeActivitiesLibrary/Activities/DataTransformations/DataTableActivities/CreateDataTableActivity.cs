@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Create Data Table")]
     [Description("Creates a new data table. If an existing data table is provided, it will be cloned.")]
-    public class CreateDataTableActivity : Extensions.BaseCodeActivity
+    public class CreateDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

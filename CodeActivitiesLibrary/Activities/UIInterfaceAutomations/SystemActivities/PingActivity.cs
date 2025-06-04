@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Ping"),
      Description("Sends a message to determine whether a remote computer is accessible over the network.")]
-    public class PingActivity : Extensions.BaseCodeActivity
+    public class PingActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The IP address or hostname to ping.")]
         public InArgument<string> Host { get; set; }

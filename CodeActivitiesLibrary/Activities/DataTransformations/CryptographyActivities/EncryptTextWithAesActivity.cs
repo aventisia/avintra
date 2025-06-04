@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Encrypt Text with AES")]
     [Description("Encrypt a string with AES, using a key and a specified encoding format")]
-    public class EncryptTextWithAesActivity : Extensions.BaseCodeActivity
+    public class EncryptTextWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The plaintext to encrypt.")]

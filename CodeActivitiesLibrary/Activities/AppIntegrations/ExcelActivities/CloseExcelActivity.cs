@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Close Excel Application")]
     [Description("Closes the active Excel application instance and optionally saves changes.")]
-    public class CloseExcelActivity : Extensions.BaseCodeActivity
+    public class CloseExcelActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

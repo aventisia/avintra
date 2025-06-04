@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [NodeType("forLoopNode")]
     [DisplayName("Loop")]
     [Description("Use this to keep doing something again and again, as long as certain conditions are met.")]
-    public class LoopActivity : Extensions.BaseCodeActivity
+    public class LoopActivity : BaseCodeActivity
     {
         [Required]
         [DisplayName("Loop Type")]

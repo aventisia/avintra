@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to invoke an FTP command
     [DisplayName("Invoke FTP Command"), Description("Invokes the given literal FTP command on the server.")]
-    public class InvokeFtpCommandActivity : Extensions.BaseCodeActivity
+    public class InvokeFtpCommandActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

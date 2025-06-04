@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
     /// </summary>
     [DisplayName("Get Clipboard Text")]
     [Description("Retrieves the text currently stored in the system clipboard.")]
-    public class GetClipboardTextActivity : Extensions.BaseCodeActivity
+    public class GetClipboardTextActivity : BaseCodeActivity
     {
         #region Enums
 

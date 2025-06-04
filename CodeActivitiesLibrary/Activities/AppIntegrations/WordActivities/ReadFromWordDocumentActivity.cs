@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to read from a Word document
     [DisplayName("Read from Word Document"), Description("Reads the text content from a document of a Word instance.")]
-    public class ReadFromWordDocumentActivity : Extensions.BaseCodeActivity
+    public class ReadFromWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
         public InArgument<string> DocumentPath { get; set; }

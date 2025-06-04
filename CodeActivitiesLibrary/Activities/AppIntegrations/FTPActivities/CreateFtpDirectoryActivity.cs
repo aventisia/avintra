@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to create an FTP directory
     [DisplayName("Create FTP Directory"), Description("Creates a directory on an FTP server.")]
-    public class CreateFtpDirectoryActivity : Extensions.BaseCodeActivity
+    public class CreateFtpDirectoryActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

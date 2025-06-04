@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Expand or Collapse UI Element")]
     [Description("Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.")]
-    public class ExpandOrCollapseUIElementActivity : Extensions.BaseCodeActivity
+    public class ExpandOrCollapseUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Element")]

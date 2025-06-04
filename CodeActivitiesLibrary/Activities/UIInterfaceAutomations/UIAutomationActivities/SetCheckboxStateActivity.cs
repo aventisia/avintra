@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Checkbox State")]
     [Description("Checks or unchecks a checkbox UI element by searching for it using property and name.")]
-    public class SetCheckboxStateActivity : Extensions.BaseCodeActivity
+    public class SetCheckboxStateActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Element")]

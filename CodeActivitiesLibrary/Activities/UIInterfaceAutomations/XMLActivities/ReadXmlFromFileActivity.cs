@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Read XML from File
     [DisplayName("Read XML from File")]
     [Description("Reads the contents of an XML file into a variable.")]
-    public class ReadXmlFromFileActivity : Extensions.BaseCodeActivity
+    public class ReadXmlFromFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The path to the XML file.")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Column from Excel Worksheet")]
     [Description("Deletes a specific column from the active worksheet of an Excel instance.")]
-    public class DeleteColumnFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class DeleteColumnFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

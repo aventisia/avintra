@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Increase Variable")]
     [Description("Increases a numeric variable by a specified value.")]
-    public class IncreaseVariableActivity : Extensions.BaseCodeActivity
+    public class IncreaseVariableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

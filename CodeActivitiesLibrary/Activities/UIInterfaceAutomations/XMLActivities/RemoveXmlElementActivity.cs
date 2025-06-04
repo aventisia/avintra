@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Remove XML Element
     [DisplayName("Remove XML Element")]
     [Description("Removes one or more XML elements from an XML document.")]
-    public class RemoveXmlElementActivity : Extensions.BaseCodeActivity
+    public class RemoveXmlElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content as a string.")]

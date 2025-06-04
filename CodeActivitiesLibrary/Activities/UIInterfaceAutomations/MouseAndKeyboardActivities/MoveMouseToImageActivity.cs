@@ -2,7 +2,7 @@
 {
     //[DisplayName("Move Mouse to Image")]
     //[Description("Moves the mouse cursor to the center of a specified image on the screen.")]
-    //public class MoveMouseToImageActivity : Extensions.BaseCodeActivity
+    //public class MoveMouseToImageActivity : BaseCodeActivity
     //{
     //    [RequiredArgument]
     //    

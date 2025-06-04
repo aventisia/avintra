@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("If process")]
     [Description("Marks the beginning of a conditional block of actions depending on whether a process is running or not.")]
-    public class IfProcessActivity : Extensions.BaseCodeActivity
+    public class IfProcessActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The name of the process to check.")]

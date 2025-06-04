@@ -1,4 +1,5 @@
-﻿using System.Activities;
+﻿using CodeActivitiesLibrary.Extensions;
+using System.Activities;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Input Dialog")]
     [Description("Displays a dialog box that prompts the user to enter text.")]
-    public class DisplayInputDialogActivity : Extensions.BaseCodeActivity
+    public class DisplayInputDialogActivity : BaseCodeActivity
     {
 
         [DisplayName("Input Dialog Title")]

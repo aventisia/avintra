@@ -1,4 +1,5 @@
-﻿using MailKit.Security;
+﻿using CodeActivitiesLibrary.Extensions;
+using MailKit.Security;
 using MimeKit;
 using System;
 using System.Activities;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
     [DisplayName("Send Email")]
     [Description("Creates and sends a new email message using MailKit.")]
-    public class SendEmailActivity : Extensions.BaseCodeActivity
+    public class SendEmailActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

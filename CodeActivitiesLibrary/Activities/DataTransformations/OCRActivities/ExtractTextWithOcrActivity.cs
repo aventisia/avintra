@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
 {
     [DisplayName("Extract Text with OCR")]
     [Description("Extract text from a given source using the given OCR engine")]
-    public class ExtractTextWithOcrActivity : Extensions.BaseCodeActivity
+    public class ExtractTextWithOcrActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The path to the image file.")]

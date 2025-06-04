@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Parse Text")]
     [Description(
         "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.")]
-    public class ParseTextActivity : Extensions.BaseCodeActivity
+    public class ParseTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

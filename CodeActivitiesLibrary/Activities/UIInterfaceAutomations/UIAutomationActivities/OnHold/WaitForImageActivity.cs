@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Wait for Image")]
     // [Description("Suspends execution until a specific image appears on the screen.")]
-    public class WaitForImageActivity : Extensions.BaseCodeActivity
+    public class WaitForImageActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The path to the image file to wait for.")]

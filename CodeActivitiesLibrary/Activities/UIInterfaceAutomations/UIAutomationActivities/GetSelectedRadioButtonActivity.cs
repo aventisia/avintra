@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Selected Radio Button")]
     [Description("Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.")]
-    public class GetSelectedRadioButtonActivity : Extensions.BaseCodeActivity
+    public class GetSelectedRadioButtonActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Element")]

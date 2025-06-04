@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Attach to Running Excel Workbook")]
     [Description("Attaches to a running Excel instance and opens the specified workbook if not already open.")]
-    public class AttachToRunningExcelActivity : Extensions.BaseCodeActivity
+    public class AttachToRunningExcelActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Excel Application")]

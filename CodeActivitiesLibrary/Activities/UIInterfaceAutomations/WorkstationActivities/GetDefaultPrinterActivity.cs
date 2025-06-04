@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Win32;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Get Default Printer")]
     [Description("Gets the name of the default printer.")]
-    public class GetDefaultPrinterActivity : Extensions.BaseCodeActivity
+    public class GetDefaultPrinterActivity : BaseCodeActivity
     {
 
         [Description("Returns the name of the default printer.")]

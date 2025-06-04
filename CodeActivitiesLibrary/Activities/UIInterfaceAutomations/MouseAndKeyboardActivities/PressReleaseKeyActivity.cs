@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     // Activity to press/release keys
     [DisplayName("Press/Release Key"),
      Description("Presses (and holds) or releases one or more modifier keys (Alt, Control, or Shift).")]
-    public class PressReleaseKeyActivity : Extensions.BaseCodeActivity
+    public class PressReleaseKeyActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"),
          Description("The key to press or release (e.g., 'Alt', 'Control', 'Shift').")]

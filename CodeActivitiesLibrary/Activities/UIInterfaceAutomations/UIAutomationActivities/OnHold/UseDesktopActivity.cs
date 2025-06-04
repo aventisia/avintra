@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Use Desktop")]
     // [Description("Performs desktop and taskbar-related operations.")]
-    public class UseDesktopActivity : Extensions.BaseCodeActivity
+    public class UseDesktopActivity : BaseCodeActivity
     {
 
 

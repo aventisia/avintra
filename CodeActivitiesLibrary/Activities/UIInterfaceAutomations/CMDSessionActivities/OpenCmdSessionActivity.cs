@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
     [DisplayName("Open CMD Session")]
     [Description("Opens a new CMD session with optional encoding settings.")]
-    public class OpenCmdSessionActivity : Extensions.BaseCodeActivity
+    public class OpenCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

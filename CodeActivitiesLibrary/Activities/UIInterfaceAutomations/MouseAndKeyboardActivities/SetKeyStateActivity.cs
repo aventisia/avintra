@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     // Activity to set key state
     [DisplayName("Set Key State"),
      Description("Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.")]
-    public class SetKeyStateActivity : Extensions.BaseCodeActivity
+    public class SetKeyStateActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"),
          Description("The key to modify (e.g., 'CapsLock', 'NumLock', 'ScrollLock').")]

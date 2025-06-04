@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Check Element State")]
     [Description("Verifies if an element is visible, enabled, or selected.")]
-    public class CheckElementStateActivity : Extensions.BaseCodeActivity
+    public class CheckElementStateActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -37,12 +38,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(ElementStatusEnum.Visible)]
         public InArgument<ElementStatusEnum> StateToCheck { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to appear before checking its state.")]
         public InArgument<bool> WaitForElement { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]

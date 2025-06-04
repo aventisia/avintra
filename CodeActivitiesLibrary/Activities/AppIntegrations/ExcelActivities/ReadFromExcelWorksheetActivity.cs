@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read from Excel Worksheet")]
     [Description("Reads values from a specified cell range in the active Excel worksheet.")]
-    public class ReadFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class ReadFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

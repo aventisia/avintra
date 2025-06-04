@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Element Attribute Value")]
     [Description("Retrieves the value of an element's attribute from a web page.")]
-    public class GetElementAttributeValueActivity : Extensions.BaseCodeActivity
+    public class GetElementAttributeValueActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -35,12 +36,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The name of the attribute whose value should be retrieved (e.g., 'value', 'href', 'src').")]
         public InArgument<string> AttributeName { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to appear before retrieving the attribute value.")]
         public InArgument<bool> WaitForElement { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("If Folder Exists")]
     [Description("Checks whether the specified folder exists or doesn't exist based on the selected condition.")]
-    public class IfFolderExistsActivity : Extensions.BaseCodeActivity
+    public class IfFolderExistsActivity : BaseCodeActivity
     {
 
         [RequiredArgument]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     // Activity to find and replace words in a Word document
     [DisplayName("Find and Replace Words in Word Document"),
      Description("Finds text and replaces it with another in the active document of a Word instance.")]
-    public class FindAndReplaceWordsInWordDocumentActivity : Extensions.BaseCodeActivity
+    public class FindAndReplaceWordsInWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
         public InArgument<string> DocumentPath { get; set; }

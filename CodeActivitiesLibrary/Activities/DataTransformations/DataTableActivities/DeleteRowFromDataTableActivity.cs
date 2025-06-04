@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Row From Data Table")]
     [Description("Deletes a row from a data table based on its zero-based index.")]
-    public sealed class DeleteRowFromDataTableActivity : Extensions.BaseCodeActivity
+    public sealed class DeleteRowFromDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

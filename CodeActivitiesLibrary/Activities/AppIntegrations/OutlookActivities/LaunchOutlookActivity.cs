@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Reflection;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Launch Outlook Application")]
     [Description("Launches an Outlook application instance. Optionally connects to a specific profile.")]
-    public class LaunchOutlookActivity : Extensions.BaseCodeActivity
+    public class LaunchOutlookActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

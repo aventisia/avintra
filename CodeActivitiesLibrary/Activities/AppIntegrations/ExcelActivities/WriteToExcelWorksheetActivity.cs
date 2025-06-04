@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Write to Excel Worksheet")]
     [Description("Writes a value to a specific cell or range of cells in an Excel worksheet.")]
-    public class WriteToExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class WriteToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Filter Cells in Excel Worksheet")]
     [Description("Filters cells in the active Excel worksheet based on criteria applied to a specific column.")]
-    public class FilterCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class FilterCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

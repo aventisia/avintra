@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to insert an image into a Word document
     [DisplayName("Insert Image in Word Document"), Description("Insert an image to a Word file.")]
-    public class InsertImageInWordDocumentActivity : Extensions.BaseCodeActivity
+    public class InsertImageInWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
         public InArgument<string> DocumentPath { get; set; }

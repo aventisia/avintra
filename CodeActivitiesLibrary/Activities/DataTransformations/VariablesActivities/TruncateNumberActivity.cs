@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Truncate Number")]
     [Description(
         "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.")]
-    public class TruncateNumberActivity : Extensions.BaseCodeActivity
+    public class TruncateNumberActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

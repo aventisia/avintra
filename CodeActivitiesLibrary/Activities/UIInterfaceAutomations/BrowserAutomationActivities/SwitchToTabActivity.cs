@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Switch To Tab")]
     [Description("Switches control to a browser tab using index, title, or partial URL.")]
-    public class SwitchToTabActivity : Extensions.BaseCodeActivity
+    public class SwitchToTabActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -48,7 +48,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(SwitchMode), "ByUrlFragment")]
         public InArgument<string> UrlFragment { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the tab to become available.")]
         [DefaultValue(60)]

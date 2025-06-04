@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     [DisplayName("Block Input")]
     [Description(
         "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.")]
-    public class BlockInputActivity : Extensions.BaseCodeActivity
+    public class BlockInputActivity : BaseCodeActivity
     {
         // Input property
 

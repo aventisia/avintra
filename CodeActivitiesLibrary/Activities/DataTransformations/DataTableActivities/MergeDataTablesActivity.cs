@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [DisplayName("Merge Data Tables")]
     [Description(
         "Merges two data tables together, specifying the merging behavior in case their columns are different.")]
-    public class MergeDataTablesActivity : Extensions.BaseCodeActivity
+    public class MergeDataTablesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("First Data Table")]

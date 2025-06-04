@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Write XML to File
     [DisplayName("Write XML to File")]
     [Description("Writes the contents of an XML node variable into a file.")]
-    public class WriteXmlToFileActivity : Extensions.BaseCodeActivity
+    public class WriteXmlToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content to write.")]

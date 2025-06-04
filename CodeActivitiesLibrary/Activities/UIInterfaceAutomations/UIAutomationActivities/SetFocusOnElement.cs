@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Focus on UI Element")]
     [Description("Brings the specified UI element into focus, allowing further interaction.")]
-    public class SetFocusOnElementActivity : Extensions.BaseCodeActivity
+    public class SetFocusOnElementActivity : BaseCodeActivity
     {
 
         [DisplayName("UI Element")]

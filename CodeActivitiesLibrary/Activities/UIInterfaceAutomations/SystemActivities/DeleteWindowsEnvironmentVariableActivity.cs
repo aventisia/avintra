@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Delete windows environment variable")]
     [Description("Deletes an environment variable from a given scope.")]
-    public class DeleteWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
+    public class DeleteWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The name of the environment variable to delete.")]

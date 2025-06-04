@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
     // Activity to move the cursor on a terminal session
     [DisplayName("Move Cursor on Terminal Session"),
      Description("Move the terminal's cursor to the specified position.")]
-    public class MoveCursorOnTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class MoveCursorOnTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }

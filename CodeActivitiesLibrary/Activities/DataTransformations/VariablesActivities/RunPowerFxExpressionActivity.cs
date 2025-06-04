@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Run Power Fx Expression")]
     [Description("Runs a simulated Power Fx expression and returns the result as text.")]
-    public class RunPowerFxExpressionActivity : Extensions.BaseCodeActivity
+    public class RunPowerFxExpressionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

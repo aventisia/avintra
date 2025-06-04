@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Reverse Text")]
     [Description("Reverses the order of characters in a given text string.")]
-    public class ReverseTextActivity : Extensions.BaseCodeActivity
+    public class ReverseTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

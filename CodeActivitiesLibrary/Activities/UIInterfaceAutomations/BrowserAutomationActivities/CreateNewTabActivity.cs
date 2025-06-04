@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Create New Tab")]
     [Description("Creates a new tab in the web browser and optionally navigates to a specified URL.")]
-    public class CreateNewTabActivity : Extensions.BaseCodeActivity
+    public class CreateNewTabActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -25,25 +26,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The URL to navigate to after creating the new tab.")]
         public InArgument<string> UrlToNavigateTo { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page to Load")]
         [Description("If true, waits for the page to fully load before continuing.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageToLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time (in seconds) to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForWebpageToLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after navigating.")]
         [DefaultValue(CreateTabDialogActionEnum.DoNothing)]
         public InArgument<CreateTabDialogActionEnum> IfAPopUpDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The button to press if a dialog appears (e.g., 'OK', 'Cancel').")]
         [DefaultValue("OK")]

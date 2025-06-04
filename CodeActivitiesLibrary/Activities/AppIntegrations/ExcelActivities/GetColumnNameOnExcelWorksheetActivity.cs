@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Column Name on Excel Worksheet")]
     [Description("Gets the name of a column (e.g., 'A', 'B') based on its index in the active worksheet.")]
-    public class GetColumnNameOnExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class GetColumnNameOnExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

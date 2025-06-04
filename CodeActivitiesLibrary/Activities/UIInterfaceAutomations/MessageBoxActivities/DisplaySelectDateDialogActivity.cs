@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select Date Dialog")]
     [Description("Displays a dialog box that prompts the user to enter a date or date range.")]
-    public class DisplaySelectDateDialogActivity : Extensions.BaseCodeActivity
+    public class DisplaySelectDateDialogActivity : BaseCodeActivity
     {
 
         [DisplayName("Dialog Title")]

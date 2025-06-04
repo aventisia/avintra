@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("If Image")]
     // [Description("Checks if a specific image exists on the screen.")]
-    public class IfImageActivity : Extensions.BaseCodeActivity
+    public class IfImageActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The path to the image file to check for.")]
@@ -107,4 +108,3 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         }
     }
 }
-

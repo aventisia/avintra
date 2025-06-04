@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Select Cells in Excel Worksheet")]
     [Description("Selects a specific range of cells in the active Excel worksheet.")]
-    public class SelectCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class SelectCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

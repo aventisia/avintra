@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Extract Data from Window")]
     // [Description("Extracts data from specific parts of a window in the form of single values, lists, or tables.")]
-    public class ExtractDataFromWindowActivity : Extensions.BaseCodeActivity
+    public class ExtractDataFromWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

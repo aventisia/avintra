@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
     // Activity to process Exchange email messages
     [DisplayName("Process Exchange Email Messages"),
      Description("Move, delete, or mark as unread an email message (or a list of email messages).")]
-    public class ProcessExchangeEmailMessagesActivity : Extensions.BaseCodeActivity
+    public class ProcessExchangeEmailMessagesActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The action to perform (e.g., Move, Delete, MarkAsUnread).")]
         public InArgument<string> Action { get; set; }

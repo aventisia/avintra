@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Security.Cryptography;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Hash Text with Key"),
      Description("Hash a string with a key, using a specified algorithm and an encoding format")]
-    public class HashTextWithKeyActivity : Extensions.BaseCodeActivity
+    public class HashTextWithKeyActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The text to hash.")]
         public InArgument<string> Text { get; set; }

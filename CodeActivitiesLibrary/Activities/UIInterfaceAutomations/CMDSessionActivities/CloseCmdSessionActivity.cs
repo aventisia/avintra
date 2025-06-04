@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
     [DisplayName("Close CMD Session")]
     [Description("Closes a previously opened CMD session.")]
-    public class CloseCmdSessionActivity : Extensions.BaseCodeActivity
+    public class CloseCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

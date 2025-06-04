@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ServiceProcess;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 {
     // Activity to resume a paused Windows service
     [DisplayName("Resume Service"), Description("Resumes a paused Windows service.")]
-    public class ResumeServiceActivity : Extensions.BaseCodeActivity
+    public class ResumeServiceActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to resume.")]
         public InArgument<string> ServiceName { get; set; }

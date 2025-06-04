@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
     // Activity to extract images from a PDF file
     [DisplayName("Extract Images from PDF"),
      Description("Extracts images from a PDF file by specifying the source PDF file and the pages to extract from.")]
-    public class ExtractImagesFromPdfActivity : Extensions.BaseCodeActivity
+    public class ExtractImagesFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]
         public InArgument<string> SourcePdfPath { get; set; }

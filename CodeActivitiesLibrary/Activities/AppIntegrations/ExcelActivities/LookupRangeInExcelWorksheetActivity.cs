@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Lookup Range in Excel Worksheet")]
     [Description(
         "Performs a LOOKUP operation in an Excel worksheet. Searches for a lookup value in a single row or column and returns a value from the same position in another row or column.")]
-    public class LookupRangeInExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class LookupRangeInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

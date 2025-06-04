@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to get text from a terminal session
     [DisplayName("Get Text from Terminal Session"), Description("Get text from a terminal session.")]
-    public class GetTextFromTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class GetTextFromTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }

@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Details of Web Page")]
     [Description("Retrieves specific information about a web page such as title, description, URL, or source code.")]
-    public class GetDetailsOfWebPageActivity : Extensions.BaseCodeActivity
+    public class GetDetailsOfWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

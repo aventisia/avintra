@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Word to Number")]
     [Description("Converts specific words like 'hundred' into their numeric values.")]
-    public class ConvertWordToNumberActivity : Extensions.BaseCodeActivity
+    public class ConvertWordToNumberActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

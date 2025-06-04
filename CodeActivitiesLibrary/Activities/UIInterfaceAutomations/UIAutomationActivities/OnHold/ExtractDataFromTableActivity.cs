@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Extract Data from Table")]
     // [Description("Extracts data from a table in the form of a datatable.")]
-    public class ExtractDataFromTableActivity : Extensions.BaseCodeActivity
+    public class ExtractDataFromTableActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

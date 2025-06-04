@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Folder to Copy")]
     [Description("The path of the source folder that you want to copy the folder")]
-    public class CopyFolderActivity : Extensions.BaseCodeActivity
+    public class CopyFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Folder to Copy")]

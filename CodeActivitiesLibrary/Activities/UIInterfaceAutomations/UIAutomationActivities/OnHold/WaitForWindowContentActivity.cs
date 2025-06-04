@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Wait for Window Content")]
     // [Description("Suspends the execution of the automation until a specific piece of text or UI element appears or disappears from a window.")]
-    public class WaitForWindowContentActivity : Extensions.BaseCodeActivity
+    public class WaitForWindowContentActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

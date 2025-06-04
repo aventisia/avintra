@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Remove XML Element Attribute
     [DisplayName("Remove XML Element Attribute")]
     [Description("Removes an attribute from an XML element.")]
-    public class RemoveXmlElementAttributeActivity : Extensions.BaseCodeActivity
+    public class RemoveXmlElementAttributeActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content as a string.")]

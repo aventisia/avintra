@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Hover Mouse Over UI Element")]
     //[Description("Moves the mouse over any UI element on a window.")]
-    public class HoverMouseOverUiElementActivity : Extensions.BaseCodeActivity
+    public class HoverMouseOverUiElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

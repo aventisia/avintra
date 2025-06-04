@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Rename Excel Worksheet")]
     [Description("Renames a specific worksheet in the active Excel workbook.")]
-    public class RenameExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class RenameExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

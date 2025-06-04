@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Drag and Drop UI Element in Window")]
     //[Description("Drags a UI element from one location to another within a specified window.")]
-    public class DragAndDropUiElementInWindowActivity : Extensions.BaseCodeActivity
+    public class DragAndDropUiElementInWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Convert Data Table to CSV Text")]
     [Description("Converts a data table into a CSV (comma-separated values) text representation.")]
-    public class ConvertDataTableToTextActivity : Extensions.BaseCodeActivity
+    public class ConvertDataTableToTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -22,25 +22,21 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The data table variable to convert to CSV text.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Include Column Names")]
         [Description("Specifies whether to include column names as the first row in the CSV output.")]
         [DefaultValue(true)]
         public InArgument<bool> IncludeColumnNames { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Use Custom Columns Separator")]
         [Description("Specifies whether to use a custom column separator instead of a predefined one.")]
         [DefaultValue(false)]
         public InArgument<bool> UseCustomColumnsSeparator { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Separator")]
         [Description("The column separator to use in the CSV text.")]
         [DefaultValue(CsvSeparatorEnum.SystemDefault)]
         public InArgument<CsvSeparatorEnum> Separator { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Custom Columns Separator")]
         [Description("A custom string used to separate columns in the CSV output.")]
         [RenderIfCondition(nameof(UseCustomColumnsSeparator), "true")]

@@ -5,7 +5,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
     // Activity to retrieve Exchange email messages
     //[DisplayName("Retrieve Exchange Email Messages"),
     // Description("Retrieve email messages from the specified Exchange server.")]
-    //public class RetrieveExchangeEmailMessagesActivity : Extensions.BaseCodeActivity
+    //public class RetrieveExchangeEmailMessagesActivity : BaseCodeActivity
     //{
     //    [RequiredArgument, Category("Input"), Description("The folder path in the Exchange server (e.g., 'Inbox').")]
     //    public InArgument<string> FolderPath { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Reverse List")]
     [Description("Reverses the order of items in a list.")]
-    public class ReverseListActivity : Extensions.BaseCodeActivity
+    public class ReverseListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

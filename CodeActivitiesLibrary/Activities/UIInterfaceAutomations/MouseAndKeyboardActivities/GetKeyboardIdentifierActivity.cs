@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     // Activity to get keyboard identifier
     [DisplayName("Get Keyboard Identifier"),
      Description("Retrieves the active keyboard identifier from the machine's registry.")]
-    public class GetKeyboardIdentifierActivity : Extensions.BaseCodeActivity
+    public class GetKeyboardIdentifierActivity : BaseCodeActivity
     {
         [Category("Output"), Description("Returns the active keyboard identifier.")]
         public OutArgument<string> Result { get; set; }

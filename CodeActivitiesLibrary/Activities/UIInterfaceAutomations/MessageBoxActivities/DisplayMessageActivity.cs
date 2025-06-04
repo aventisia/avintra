@@ -1,4 +1,5 @@
-﻿using System.Activities;
+﻿using CodeActivitiesLibrary.Extensions;
+using System.Activities;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Message")]
     [Description("Displays a message box.")]
-    public class DisplayMessageActivity : Extensions.BaseCodeActivity
+    public class DisplayMessageActivity : BaseCodeActivity
     {
 
         [DisplayName("Message Box Title")]

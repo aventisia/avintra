@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to rename an FTP file
     [DisplayName("Rename FTP File"), Description("Renames a file that resides on an FTP server.")]
-    public class RenameFtpFileActivity : Extensions.BaseCodeActivity
+    public class RenameFtpFileActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 
     [DisplayName("Substract Dates")]
     [Description("Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).")]
-    public class SubtractDatesActivity : Extensions.BaseCodeActivity
+    public class SubtractDatesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Start DateTime")]

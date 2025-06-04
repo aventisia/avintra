@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Outlook;
+﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Outlook;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
 {
     [DisplayName("Send Email Message Through Outlook")]
     [Description("Sends an email message through Microsoft Outlook using real COM interop.")]
-    public class SendEmailMessageThroughOutlookActivity : Extensions.BaseCodeActivity
+    public class SendEmailMessageThroughOutlookActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

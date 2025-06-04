@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Shuffle List")]
     [Description("Randomly reorders the items in a list.")]
-    public class ShuffleListActivity : Extensions.BaseCodeActivity
+    public class ShuffleListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

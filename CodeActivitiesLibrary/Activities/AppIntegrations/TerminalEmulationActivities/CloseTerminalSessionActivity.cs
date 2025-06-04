@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to close an open terminal session
     [DisplayName("Close Terminal Session"), Description("Close an open terminal session.")]
-    public class CloseTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class CloseTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session to close.")]
         public InArgument<int> SessionId { get; set; }

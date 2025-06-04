@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -6,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Lock Workstation"), Description("Locks the workstation's display to protect it from unauthorized use.")]
-    public class LockWorkstationActivity : Extensions.BaseCodeActivity
+    public class LockWorkstationActivity : BaseCodeActivity
     {
 
 

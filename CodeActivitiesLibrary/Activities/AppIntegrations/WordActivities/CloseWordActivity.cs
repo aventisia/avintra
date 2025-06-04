@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to close a Word instance
     [DisplayName("Close Word"), Description("Close a Word instance.")]
-    public class CloseWordActivity : Extensions.BaseCodeActivity
+    public class CloseWordActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the Word instance to close.")]
         public InArgument<int> ProcessId { get; set; }

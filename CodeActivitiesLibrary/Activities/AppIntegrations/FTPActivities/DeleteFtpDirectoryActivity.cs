@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to delete an FTP directory
     [DisplayName("Delete FTP Directory"), Description("Deletes a directory from an FTP server.")]
-    public class DeleteFtpDirectoryActivity : Extensions.BaseCodeActivity
+    public class DeleteFtpDirectoryActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Item From List")]
     [Description("Removes an item from a list by index or value.")]
-    public class RemoveItemFromListActivity : Extensions.BaseCodeActivity
+    public class RemoveItemFromListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

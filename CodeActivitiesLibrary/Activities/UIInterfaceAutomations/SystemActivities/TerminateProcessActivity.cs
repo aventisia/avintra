@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Terminate process")]
     [Description("Immediately stops a running process.")]
-    public class TerminateProcessActivity : Extensions.BaseCodeActivity
+    public class TerminateProcessActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The name of the process to terminate.")]

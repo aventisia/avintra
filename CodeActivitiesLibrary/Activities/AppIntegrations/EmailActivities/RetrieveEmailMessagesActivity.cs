@@ -1,4 +1,5 @@
-﻿using MailKit;
+﻿using CodeActivitiesLibrary.Extensions;
+using MailKit;
 using MailKit.Net.Imap;
 using MailKit.Search;
 using MailKit.Security;
@@ -16,7 +17,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
     [DisplayName("Retrieve Email Messages")]
     [Description("Retrieves email messages from an IMAP server.")]
-    public class RetrieveEmailMessagesActivity : Extensions.BaseCodeActivity
+    public class RetrieveEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Click UI Element in Parent")]
     [Description("Finds a UI element by property and clicks or invokes it using UI Automation or mouse click.")]
-    public class ClickUIElementInParentActivity : Extensions.BaseCodeActivity
+    public class ClickUIElementInParentActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Element")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
     [DisplayName("Create Folder")]
     [Description("Generates a new folder within the specified parent directory using a given folder name.")]
-    public class CreateFolderActivity : Extensions.BaseCodeActivity
+    public class CreateFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Create New Folder Into")]

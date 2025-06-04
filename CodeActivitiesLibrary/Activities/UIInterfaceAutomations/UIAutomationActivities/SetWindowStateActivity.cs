@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Window State")]
     [Description("Change the window to normal, maximized, or minimized state.")]
-    public class SetWindowStateActivity : Extensions.BaseCodeActivity
+    public class SetWindowStateActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Window")]

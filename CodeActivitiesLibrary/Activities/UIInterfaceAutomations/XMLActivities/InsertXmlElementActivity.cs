@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Insert XML Element
     [DisplayName("Insert XML Element")]
     [Description("Inserts a new XML element into an XML document.")]
-    public class InsertXmlElementActivity : Extensions.BaseCodeActivity
+    public class InsertXmlElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content as a string.")]

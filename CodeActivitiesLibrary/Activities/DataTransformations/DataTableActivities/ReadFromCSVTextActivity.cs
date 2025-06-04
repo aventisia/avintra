@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Read From CSV Text")]
     [Description("Generates a data table from a CSV text.")]
-    public sealed class ReadFromCsvTextActivity : Extensions.BaseCodeActivity
+    public sealed class ReadFromCsvTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

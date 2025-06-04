@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     // Activity to send an Exchange email message
     [DisplayName("Send Exchange Email Message"), Description("Create and send a new email message.")]
-    public class SendExchangeEmailMessageActivity : Extensions.BaseCodeActivity
+    public class SendExchangeEmailMessageActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The recipient's email address.")]
         public InArgument<string> Recipient { get; set; }
@@ -41,4 +42,3 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         }
     }
 }
-

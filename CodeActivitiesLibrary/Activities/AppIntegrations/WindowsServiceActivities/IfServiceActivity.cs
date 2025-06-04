@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ServiceProcess;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     [DisplayName("If Service"),
      Description(
          "Marks the beginning of a conditional block of actions depending on whether a service is running, paused, stopped, or installed on the computer.")]
-    public class IfServiceActivity : Extensions.BaseCodeActivity
+    public class IfServiceActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to check.")]
         public InArgument<string> ServiceName { get; set; }
@@ -46,4 +47,3 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         }
     }
 }
-

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [DisplayName("Retrieve Data Table Column Into List")]
     [Description(
         "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.")]
-    public class RetrieveDataTableColumnIntoListActivity : Extensions.BaseCodeActivity
+    public class RetrieveDataTableColumnIntoListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

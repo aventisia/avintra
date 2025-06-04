@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Run Excel Macro")]
     [Description("Runs a specified VBA macro in the active Excel workbook.")]
-    public class RunExcelMacroActivity : Extensions.BaseCodeActivity
+    public class RunExcelMacroActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

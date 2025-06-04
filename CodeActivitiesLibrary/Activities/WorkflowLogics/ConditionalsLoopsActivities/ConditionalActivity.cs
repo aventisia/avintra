@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [NodeType("conditionalNode")]
     [DisplayName("Conditional")]
     [Description("Use conditions to decide which direction the flow should take")]
-    public class ConditionalActivity : Extensions.BaseCodeActivity
+    public class ConditionalActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Conditional Mode")]

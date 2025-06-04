@@ -1,4 +1,5 @@
-﻿using System.Activities;
+﻿using CodeActivitiesLibrary.Extensions;
+using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Create New List")]
     [Description("Creates a new empty list to be used in other activities.")]
-    public class CreateNewList : Extensions.BaseCodeActivity
+    public class CreateNewList : BaseCodeActivity
     {
 
         [DisplayName("New List")]

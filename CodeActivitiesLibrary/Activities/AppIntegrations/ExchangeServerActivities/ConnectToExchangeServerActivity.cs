@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     // Activity to connect to an Exchange server
     [DisplayName("Connect to Exchange Server"), Description("Open a new connection to an Exchange server.")]
-    public class ConnectToExchangeServerActivity : Extensions.BaseCodeActivity
+    public class ConnectToExchangeServerActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The URL of the Exchange server.")]
         public InArgument<string> ServerUrl { get; set; }

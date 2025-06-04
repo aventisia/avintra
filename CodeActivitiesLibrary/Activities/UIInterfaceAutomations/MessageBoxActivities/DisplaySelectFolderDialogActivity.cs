@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select Folder Dialog")]
     [Description("Displays a folder selection dialog to let users choose a folder.")]
-    public sealed class DisplaySelectFolderDialog : Extensions.BaseCodeActivity
+    public sealed class DisplaySelectFolderDialog : BaseCodeActivity
     {
 
         [RequiredArgument]

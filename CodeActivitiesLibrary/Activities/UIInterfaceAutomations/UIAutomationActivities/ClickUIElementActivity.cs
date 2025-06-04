@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Click UI Element")]
     [Description("Invokes or clicks a UI element using UI Automation or mouse click.")]
-    public class ClickUIElementActivity : Extensions.BaseCodeActivity
+    public class ClickUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Element Instance")]

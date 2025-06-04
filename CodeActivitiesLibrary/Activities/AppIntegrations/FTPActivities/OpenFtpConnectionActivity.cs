@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     [DisplayName("Open FTP Connection"),
      Description(
          "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.")]
-    public class OpenFtpConnectionActivity : Extensions.BaseCodeActivity
+    public class OpenFtpConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }
@@ -50,12 +51,3 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         }
     }
 }
-
-
-
-
-
-
-
-
-

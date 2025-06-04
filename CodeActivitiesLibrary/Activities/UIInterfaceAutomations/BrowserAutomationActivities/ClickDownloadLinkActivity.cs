@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Click Download Link on Web Page")]
     [Description("Simulates clicking a download link on a web page and saves the file to the specified folder.")]
-    public class ClickDownloadLinkActivity : Extensions.BaseCodeActivity
+    public class ClickDownloadLinkActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Add Item to List")]
     [Description("Adds one or more items to a list. Converts types if necessary.")]
-    public class AddItemToListActivity : Extensions.BaseCodeActivity
+    public class AddItemToListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

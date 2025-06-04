@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Insert Row to Excel Worksheet")]
     [Description("Inserts a new row above the selected row in the active Excel worksheet.")]
-    public class InsertRowToExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class InsertRowToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

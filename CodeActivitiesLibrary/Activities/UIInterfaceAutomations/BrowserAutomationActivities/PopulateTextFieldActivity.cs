@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -13,7 +14,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Populate Text Field on Web Page")]
     [Description(
         "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.")]
-    public class PopulateTextFieldActivity : Extensions.BaseCodeActivity
+    public class PopulateTextFieldActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -39,57 +40,47 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The text to type into the text field.")]
         public InArgument<string> TextToPopulate { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Input Mode")]
         [Description("Specifies whether to use plain text or secure string input.")]
         [DefaultValue(InputTextModeEnum.PlainText)]
         public InArgument<InputTextModeEnum> InputMode { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Field Content Action")]
         [Description("Specifies what to do if the text field already has content.")]
         [DefaultValue(IfFieldNotEmptyActionEnum.ReplaceText)]
         public InArgument<IfFieldNotEmptyActionEnum> FieldContentAction { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to appear before typing.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForElement { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Emulate Typing")]
         [Description("If true, types character-by-character instead of pasting all at once.")]
         public InArgument<bool> EmulateTyping { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Use Physical Keystrokes")]
         [Description("If true, uses JavaScript to simulate real keyboard interaction.")]
         public InArgument<bool> UsePhysicalKeystrokes { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Unfocus After Typing")]
         [Description("If true, unfocuses the text box after filling it (e.g., to trigger auto-complete).")]
         public InArgument<bool> UnfocusAfterTyping { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the page to fully load before proceeding.")]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after populating the field.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]

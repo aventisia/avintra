@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Win32;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -6,7 +7,7 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Set Default Printer"), Description("Sets a printer as the default printer.")]
-    public class SetDefaultPrinterActivity : Extensions.BaseCodeActivity
+    public class SetDefaultPrinterActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the printer to set as default.")]
         public InArgument<string> PrinterName { get; set; }

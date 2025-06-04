@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Wait for Window")]
     // [Description("Suspends the execution or the process until a specific window opens, closes, gets or loses the focus.")]
-    public class WaitForWindowActivity : Extensions.BaseCodeActivity
+    public class WaitForWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

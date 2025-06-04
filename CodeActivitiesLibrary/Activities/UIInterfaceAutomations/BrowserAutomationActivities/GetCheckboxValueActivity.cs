@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Checkbox Value")]
     [Description("Retrieves the current value (checked/unchecked) of a checkbox element on a web page.")]
-    public class GetCheckboxValueActivity : Extensions.BaseCodeActivity
+    public class GetCheckboxValueActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -30,12 +31,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The value used to locate the checkbox (e.g., 'rememberMe', '//input[@id='remember']').")]
         public InArgument<string> SearchKeywords { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the checkbox to appear before retrieving the value.")]
         public InArgument<bool> WaitForElement { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]

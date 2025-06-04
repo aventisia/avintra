@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Select Tab")]
     [Description("Selects a tab from a group of tabs in a window by index or name.")]
-    public class SelectTabActivity : Extensions.BaseCodeActivity
+    public class SelectTabActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Window")]

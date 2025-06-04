@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Excel Worksheet")]
     [Description("Deletes a specific worksheet from the active Excel workbook.")]
-    public class DeleteExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class DeleteExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

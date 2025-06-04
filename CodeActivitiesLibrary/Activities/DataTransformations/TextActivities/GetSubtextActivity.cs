@@ -7,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Extract Substring from Text")]
     [Description("Retrieves a substring from the original text based on start index and length.")]
-    public class GetSubtextActivity : Extensions.BaseCodeActivity
+    public class GetSubtextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

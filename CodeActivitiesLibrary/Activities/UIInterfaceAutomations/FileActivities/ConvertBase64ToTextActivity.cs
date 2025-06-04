@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to Text"), Description("Converts a Base64-encoded string to plain text.")]
-    public class ConvertBase64ToTextActivity : Extensions.BaseCodeActivity
+    public class ConvertBase64ToTextActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The Base64-encoded string to convert.")]
         public InArgument<string> Base64String { get; set; }

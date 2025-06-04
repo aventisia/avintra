@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to write or append text to a Word document
     [DisplayName("Write to Word Document"), Description("Write or append text to a Word file.")]
-    public class WriteToWordDocumentActivity : Extensions.BaseCodeActivity
+    public class WriteToWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
         public InArgument<string> DocumentPath { get; set; }

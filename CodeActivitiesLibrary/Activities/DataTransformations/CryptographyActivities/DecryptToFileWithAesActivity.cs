@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Decrypt to File with AES"),
      Description("Decrypt the contents of a file with AES based on a specified key and an encoding format")]
-    public class DecryptToFileWithAesActivity : Extensions.BaseCodeActivity
+    public class DecryptToFileWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the encrypted file.")]
         public InArgument<string> EncryptedFilePath { get; set; }

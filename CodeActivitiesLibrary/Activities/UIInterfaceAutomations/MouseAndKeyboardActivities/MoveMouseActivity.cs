@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Move Mouse")]
     [Description("Moves the mouse cursor to a specific position on the screen.")]
-    public class MoveMouseActivity : Extensions.BaseCodeActivity
+    public class MoveMouseActivity : BaseCodeActivity
     {
 
         [DisplayName("Position X")]

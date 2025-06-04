@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Get XML Element Attribute
     [DisplayName("Get XML Element Attribute")]
     [Description("Gets the value of an attribute of an XML element.")]
-    public class GetXmlElementAttributeActivity : Extensions.BaseCodeActivity
+    public class GetXmlElementAttributeActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content as a string.")]

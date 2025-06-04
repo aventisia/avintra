@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
     [DisplayName("Empty Folder")]
     [Description("Removes all files and subdirectories within the specified folder, preserving the folder itself.")]
-    public class EmptyFolderActivity : Extensions.BaseCodeActivity
+    public class EmptyFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Folder to Empty")]

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Excel Worksheet")]
     [Description("Copies a worksheet from one Excel instance to another or within the same instance.")]
-    public class CopyExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class CopyExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

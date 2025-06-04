@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Find Common List Items")]
     [Description("Finds common items between two lists and returns them as a new list.")]
-    public class FindCommonListItemsActivity : Extensions.BaseCodeActivity
+    public class FindCommonListItemsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Find Child Window")]
     [Description("Finds a child window inside a parent window by its name.")]
-    public class GetChildWindowElementActivity : Extensions.BaseCodeActivity
+    public class GetChildWindowElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Window")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Select Menu Option in Window")]
     //[Description("Selects an option in a menu of a window.")]
-    public class SelectMenuOptionInWindowActivity : Extensions.BaseCodeActivity
+    public class SelectMenuOptionInWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Set Screen Resolution")]
     [Description("Sets the width, height, bit count, and frequency of a selected monitor.")]
-    public class SetScreenResolutionActivity : Extensions.BaseCodeActivity
+    public class SetScreenResolutionActivity : BaseCodeActivity
     {
         private const int CdsUpdateregistry = 0x01;
 

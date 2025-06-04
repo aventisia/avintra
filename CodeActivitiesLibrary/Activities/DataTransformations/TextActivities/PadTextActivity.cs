@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Pad Text")]
     [Description("Creates a fixed-length text by adding characters to the left or right of an existing text.")]
-    public class PadTextActivity : Extensions.BaseCodeActivity
+    public class PadTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Security.Cryptography;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Hash from File"),
      Description("Hash the contents of a file, using a specified algorithm and an encoding format")]
-    public class HashFromFileActivity : Extensions.BaseCodeActivity
+    public class HashFromFileActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the file to hash.")]
         public InArgument<string> FilePath { get; set; }

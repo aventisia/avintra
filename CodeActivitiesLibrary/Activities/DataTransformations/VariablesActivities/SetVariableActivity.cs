@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Set Variable")]
     [Description("Sets the value of a named variable within the workflow context.")]
-    public class SetVariableActivity : Extensions.BaseCodeActivity
+    public class SetVariableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

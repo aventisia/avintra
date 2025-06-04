@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to upload one or more folders to an FTP server
     [DisplayName("Upload Folder(s) to FTP"), Description("Uploads one or more folders to an FTP server.")]
-    public class UploadFoldersToFtpActivity : Extensions.BaseCodeActivity
+    public class UploadFoldersToFtpActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }

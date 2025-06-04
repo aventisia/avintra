@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Press Button on Web Page")]
     [Description(
         "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.")]
-    public class PressButtonOnWebPageActivity : Extensions.BaseCodeActivity
+    public class PressButtonOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -31,25 +32,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The value used to locate the button (e.g., 'submit', '//button[@id='login']').")]
         public InArgument<string> SearchKeywords { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the next page to load after pressing the button.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after the click.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]

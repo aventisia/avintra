@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Add New Worksheet")]
     [Description("Adds a new worksheet to the document of an Excel instance.")]
-    public class AddNewWorksheetActivity : Extensions.BaseCodeActivity
+    public class AddNewWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

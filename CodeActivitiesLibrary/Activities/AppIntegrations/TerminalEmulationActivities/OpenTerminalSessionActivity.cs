@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to open a new terminal session
     [DisplayName("Open Terminal Session"), Description("Open a new terminal session.")]
-    public class OpenTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class OpenTerminalSessionActivity : BaseCodeActivity
     {
         [Category("Output"), Description("Returns the session ID of the opened terminal session.")]
         public OutArgument<int> Result { get; set; }
@@ -36,6 +37,3 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         }
     }
 }
-
-
-

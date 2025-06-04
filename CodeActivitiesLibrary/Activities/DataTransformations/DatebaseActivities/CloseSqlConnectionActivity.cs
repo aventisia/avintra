@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
     [DisplayName("Close SQL Connection")]
     [Description("Close an open connection to a database")]
-    public class CloseSqlConnectionActivity : Extensions.BaseCodeActivity
+    public class CloseSqlConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The connection string to the database.")]

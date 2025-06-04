@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Find or Replace in Data Table")]
     [Description("Finds and/or replaces data table values.")]
-    public sealed class FindAndReplaceInDataTableActivity : Extensions.BaseCodeActivity
+    public sealed class FindAndReplaceInDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

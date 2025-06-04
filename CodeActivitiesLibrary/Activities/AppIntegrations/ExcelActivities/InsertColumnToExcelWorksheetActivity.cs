@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Insert Column to Excel Worksheet")]
     [Description("Inserts a new column to the left of the specified column in the active Excel worksheet.")]
-    public class InsertColumnToExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class InsertColumnToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Row from Excel Worksheet")]
     [Description("Deletes a specific row from the active worksheet of an Excel instance.")]
-    public class DeleteRowFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class DeleteRowFromExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Excel Application")]

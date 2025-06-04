@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Text to Number")]
     [Description("Converts a text representation of a number to a numeric value.")]
-    public class ConvertTextToNumberActivity : Extensions.BaseCodeActivity
+    public class ConvertTextToNumberActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

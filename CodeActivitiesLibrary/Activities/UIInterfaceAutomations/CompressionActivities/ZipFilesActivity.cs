@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
 {
     // Activity to compress one or more files or folders into a zip archive
     [DisplayName("Zip Files"), Description("Compress one or more files or folders into a zip archive.")]
-    public class ZipFilesActivity : Extensions.BaseCodeActivity
+    public class ZipFilesActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The list of file or folder paths to zip.")]
         public InArgument<IEnumerable<string>> SourcePaths { get; set; }

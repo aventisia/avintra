@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
 
     [DisplayName("Get Mouse Position")]
     [Description("Retrieves the current position of the mouse cursor on the screen in pixel coordinates.")]
-    public class GetMousePositionActivity : Extensions.BaseCodeActivity
+    public class GetMousePositionActivity : BaseCodeActivity
     {
         // Input property
 

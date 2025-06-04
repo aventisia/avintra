@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Set windows environment variable")]
     [Description("Sets an environment variable to a given value.")]
-    public class SetWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
+    public class SetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The name of the environment variable.")]

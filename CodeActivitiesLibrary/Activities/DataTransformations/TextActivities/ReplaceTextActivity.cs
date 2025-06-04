@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Replace Text")]
     [Description(
         "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.")]
-    public class ReplaceTextActivity : Extensions.BaseCodeActivity
+    public class ReplaceTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

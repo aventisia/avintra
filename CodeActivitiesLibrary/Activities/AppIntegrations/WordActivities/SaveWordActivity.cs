@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
     // Activity to save a previously launched Word instance
     [DisplayName("Save Word"), Description("Saves a previously launched Word instance.")]
-    public class SaveWordActivity : Extensions.BaseCodeActivity
+    public class SaveWordActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to save the Word document.")]
         public InArgument<string> SavePath { get; set; }

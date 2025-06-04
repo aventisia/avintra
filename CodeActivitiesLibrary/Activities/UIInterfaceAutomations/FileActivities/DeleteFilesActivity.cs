@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Delete File(s)")]
     [Description("Deletes one or more files.")]
-    public class DeleteFileActivity : Extensions.BaseCodeActivity
+    public class DeleteFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("File(s) to delete")]

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Scroll To Element or Position")]
     [Description("Scrolls the browser window to a specified element or coordinates.")]
-    public class ScrollToElementOrPositionActivity : Extensions.BaseCodeActivity
+    public class ScrollToElementOrPositionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -52,18 +52,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(ScrollMode), "ByCoordinates")]
         public InArgument<int> YCoordinate { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to be present before scrolling.")]
         public InArgument<bool> WaitForElement { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Smooth Scroll")]
         [Description("If true, scrolls smoothly instead of jumping to the target.")]
         public InArgument<bool> SmoothScroll { get; set; }

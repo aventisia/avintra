@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
     [DisplayName("Display Select From List Dialog")]
     [Description("Displays a dialog box with options that lets the user select from a list.")]
-    public class DisplaySelectFromListDialogActivity : Extensions.BaseCodeActivity
+    public class DisplaySelectFromListDialogActivity : BaseCodeActivity
     {
 
         [DisplayName("Dialog Title")]

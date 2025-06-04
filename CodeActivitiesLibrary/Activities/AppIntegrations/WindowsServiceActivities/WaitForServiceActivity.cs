@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ServiceProcess;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     [DisplayName("Wait for Service"),
      Description(
          "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.")]
-    public class WaitForServiceActivity : Extensions.BaseCodeActivity
+    public class WaitForServiceActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to wait for.")]
         public InArgument<string> ServiceName { get; set; }

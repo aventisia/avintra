@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Paste Cells to Excel Worksheet")]
     [Description(
         "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.")]
-    public class PasteCellsToExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class PasteCellsToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

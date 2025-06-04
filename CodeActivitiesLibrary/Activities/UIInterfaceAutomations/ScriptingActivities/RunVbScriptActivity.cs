@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run VBScript")]
     [Description("Executes some custom VBScript code and retrieves its output into a variable.")]
-    public class RunVbScriptActivity : Extensions.BaseCodeActivity
+    public class RunVbScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The VBScript code to execute.")]

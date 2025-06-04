@@ -4,7 +4,7 @@
     //Activity to extract PDF file pages to a new PDF file
     //[DisplayName("Extract PDF File Pages to New PDF File"),
     // Description("Creates a new PDF file by extracting pages from an existing PDF file.")]
-    // public class ExtractPdfPagesToNewPdfFileActivity : Extensions.BaseCodeActivity
+    // public class ExtractPdfPagesToNewPdfFileActivity : BaseCodeActivity
     // {
     //     [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]
     //     public InArgument<string> SourcePdfPath { get; set; }

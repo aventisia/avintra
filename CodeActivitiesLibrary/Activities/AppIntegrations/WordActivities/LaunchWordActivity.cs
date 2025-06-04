@@ -3,7 +3,7 @@
 
     // Activity to launch a new Word instance or open a Word document
     //[DisplayName("Launch Word"), Description("Launches a new Word instance or opens a Word document.")]
-    //public class LaunchWordActivity : Extensions.BaseCodeActivity
+    //public class LaunchWordActivity : BaseCodeActivity
     //{
     //    [Category("Input"), Description("The path to the Word document to open (optional).")]
     //    public InArgument<string> DocumentPath { get; set; }

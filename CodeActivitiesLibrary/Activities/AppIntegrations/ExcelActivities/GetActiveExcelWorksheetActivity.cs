@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Excel Worksheet")]
     [Description("Retrieves the name and index of the currently active worksheet in an Excel instance.")]
-    public class GetActiveExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class GetActiveExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

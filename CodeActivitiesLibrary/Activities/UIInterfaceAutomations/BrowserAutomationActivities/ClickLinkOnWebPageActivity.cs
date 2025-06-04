@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -11,7 +12,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Click Link on Web Page")]
     [Description("Simulates clicking a UI element (e.g., link, button) on a web page.")]
-    public class ClickLinkOnWebPageActivity : Extensions.BaseCodeActivity
+    public class ClickLinkOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -38,49 +39,41 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(ClickLinClickTypeEnum.LeftClick)]
         public InArgument<ClickLinClickTypeEnum> ClickType { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Send Physical Click")]
         [Description("If true, simulates physical mouse movement before clicking.")]
         [DefaultValue(true)]
         public InArgument<bool> SendPhysicalClick { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the next page to load after the click.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("The maximum time (in seconds) to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after the click.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Mouse Position Relative to Element")]
         [Description("Specifies where to position the mouse relative to the element before clicking.")]
         [DefaultValue(ClickLinMousePositionEnum.MiddleCenter)]
         public InArgument<ClickLinMousePositionEnum> MousePosition { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Offset X")]
         [Description("Move the mouse this many pixels horizontally from the selected position.")]
         [DefaultValue(0)]
         public InArgument<int> OffsetX { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Offset Y")]
         [Description("Move the mouse this many pixels vertically from the selected position.")]
         [DefaultValue(0)]

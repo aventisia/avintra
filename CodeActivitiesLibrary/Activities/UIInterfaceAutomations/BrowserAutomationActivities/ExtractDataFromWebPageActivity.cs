@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -13,7 +14,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Extract Data From Web Page")]
     [Description("Extracts data from a specified UI element on a web page using configurable parameters.")]
-    public class ExtractDataFromWebPageActivity : Extensions.BaseCodeActivity
+    public class ExtractDataFromWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

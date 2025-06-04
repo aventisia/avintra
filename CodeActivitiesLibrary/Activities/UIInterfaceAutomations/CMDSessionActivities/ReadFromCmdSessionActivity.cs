@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
     [DisplayName("Read from CMD Session")]
     [Description("Reads the output of a CMD session.")]
-    public class ReadFromCmdSessionActivity : Extensions.BaseCodeActivity
+    public class ReadFromCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

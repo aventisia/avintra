@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Escape Text for Regular Expression")]
     [Description("Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.")]
-    public class EscapeTextForRegularExpressionActivity : Extensions.BaseCodeActivity
+    public class EscapeTextForRegularExpressionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

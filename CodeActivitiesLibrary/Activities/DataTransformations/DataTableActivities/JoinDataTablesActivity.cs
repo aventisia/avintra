@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Join Data Tables")]
     [Description("Joins two data tables based on the specified join rule.")]
-    public class JoinDataTablesActivity : Extensions.BaseCodeActivity
+    public class JoinDataTablesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("First Data Table")]

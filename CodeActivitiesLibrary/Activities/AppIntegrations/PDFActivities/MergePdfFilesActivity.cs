@@ -2,7 +2,7 @@
 {
     // Activity to merge multiple PDF files into a new one
     //[DisplayName("Merge PDF Files"), Description("Merges multiple PDF files into a new one.")]
-    //public class MergePdfFilesActivity : Extensions.BaseCodeActivity
+    //public class MergePdfFilesActivity : BaseCodeActivity
     //{
     //    [RequiredArgument, Category("Input"), Description("The paths of the PDF files to merge.")]
     //    public InArgument<IEnumerable<string>> PdfFilePaths { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Text.Json;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Convert JSON to Custom Object")]
     [Description("Converts a JSON string into a strongly-typed custom object.")]
-    public class ConvertJsonToCustomObjectActivity : Extensions.BaseCodeActivity
+    public class ConvertJsonToCustomObjectActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

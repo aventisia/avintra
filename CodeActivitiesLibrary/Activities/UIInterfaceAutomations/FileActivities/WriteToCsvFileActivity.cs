@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Write to CSV File")]
     [Description("Writes a data table, data row, or list to a CSV file.")]
-    public class WriteToCsvFileActivity : Extensions.BaseCodeActivity
+    public class WriteToCsvFileActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

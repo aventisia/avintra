@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Set Drop-Down List Value in Window")]
     [Description("Selects an option in a drop-down list in a window form using the property you choose.")]
-    public class SetDropDownListValueActivity : Extensions.BaseCodeActivity
+    public class SetDropDownListValueActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Window")]

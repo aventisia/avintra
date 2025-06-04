@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Cell on Excel Worksheet")]
     [Description("Gets the address of the currently active cell in the active worksheet of an Excel instance.")]
-    public class GetActiveCellOnExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class GetActiveCellOnExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

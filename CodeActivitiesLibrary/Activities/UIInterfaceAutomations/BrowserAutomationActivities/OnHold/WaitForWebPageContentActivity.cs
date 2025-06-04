@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     //[DisplayName("Wait For Web Page Content")]
     //[Description("Waits for a specific condition to be met on the current web page, such as containing an element or text.")]
-    public class WaitForWebPageContentActivity : Extensions.BaseCodeActivity
+    public class WaitForWebPageContentActivity : BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {
@@ -119,13 +120,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(ElementStateEnum.Enabled)]
         public InArgument<ElementStateEnum> State { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Fail With Timeout Error")]
         [Description("Specify whether to fail if the condition isn't met within the specified time.")]
         [DefaultValue(false)]
         public InArgument<bool> FailWithTimeoutError { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Duration (Seconds)")]
         [Description("How long to wait before failing if the condition isn't met.")]
         [DefaultValue(5)]

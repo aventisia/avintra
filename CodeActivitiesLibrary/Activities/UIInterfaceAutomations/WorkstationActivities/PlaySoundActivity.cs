@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Media;
@@ -6,7 +7,7 @@ using System.Media;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Play Sound"), Description("Plays a sound from a WAV file.")]
-    public class PlaySoundActivity : Extensions.BaseCodeActivity
+    public class PlaySoundActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the WAV file.")]
         public InArgument<string> SoundFilePath { get; set; }

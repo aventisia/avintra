@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Retrieve Subfolders from Directory")]
     [Description("Returns a list of subfolder paths within the specified directory.")]
-    public class GetSubfoldersInFolderActivity : Extensions.BaseCodeActivity
+    public class GetSubfoldersInFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Source Folder Path")]

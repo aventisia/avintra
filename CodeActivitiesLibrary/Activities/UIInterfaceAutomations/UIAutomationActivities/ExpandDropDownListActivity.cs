@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Expand Drop-Down List")]
     [Description("Expands a drop-down list so you can see all available options.")]
-    public class ExpandDropDownListActivity : Extensions.BaseCodeActivity
+    public class ExpandDropDownListActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Window")]

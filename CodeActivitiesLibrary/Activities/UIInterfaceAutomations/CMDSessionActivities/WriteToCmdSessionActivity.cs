@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 
     [DisplayName("Write to CMD Session")]
     [Description("Executes a command on an open CMD session.")]
-    public class WriteToCmdSessionActivity : Extensions.BaseCodeActivity
+    public class WriteToCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

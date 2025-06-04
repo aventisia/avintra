@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
     [DisplayName("Get File Path Components")]
     [Description("Extracts various parts (directory, name, extension) from the given file path.")]
-    public class GetFilePathPartsActivity : Extensions.BaseCodeActivity
+    public class GetFilePathPartsActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Source File Path")]

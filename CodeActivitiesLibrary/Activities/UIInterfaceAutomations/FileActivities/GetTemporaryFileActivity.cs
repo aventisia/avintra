@@ -1,4 +1,5 @@
-﻿using System.Activities;
+﻿using CodeActivitiesLibrary.Extensions;
+using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
     [DisplayName("Get Temporary File")]
     [Description("Creates a uniquely named empty temporary file on disk and returns its FileInfo object.")]
-    public class GetTemporaryFileActivity : Extensions.BaseCodeActivity
+    public class GetTemporaryFileActivity : BaseCodeActivity
     {
 
         [DisplayName("Temporary File")]

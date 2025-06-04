@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Duplicate Items From List")]
     [Description("Removes duplicate items from a list using case-sensitive or case-insensitive comparison.")]
-    public class RemoveDuplicateItemsFromListActivity : Extensions.BaseCodeActivity
+    public class RemoveDuplicateItemsFromListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

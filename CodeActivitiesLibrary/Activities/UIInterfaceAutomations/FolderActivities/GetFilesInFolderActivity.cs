@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Retrieve Files in Folder")]
     [Description("This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.")]
-    public class GetFilesInFolderActivity : Extensions.BaseCodeActivity
+    public class GetFilesInFolderActivity : BaseCodeActivity
     {
         [DisplayName("Folder Path")]
         [Description("Specifies the path to the folder where files will be retrieved.")]
@@ -29,22 +30,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         [DisplayName("Fail on Denied Access")]
         [Description("If true, the activity will fail if access to any subfolder is denied.")]
-        [Category("Advanced")]
         public InArgument<bool> FailUponDeniedAccess { get; set; } = new InArgument<bool>(true);
 
         [DisplayName("Sort By")]
         [Description("The primary criterion to sort the retrieved files (e.g., \"Name\", \"LastWriteTime\").")]
-        [Category("Advanced")]
         public InArgument<FileSortCriteria> SortBy { get; set; } = new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
 
         [DisplayName("Descending Order")]
         [Description("If true, sorts the files in descending order based on the primary sort criterion.")]
-        [Category("Advanced")]
         public InArgument<bool> Descending { get; set; } = new InArgument<bool>(false);
 
         [DisplayName("Then By")]
         [Description("The secondary criterion to sort the retrieved files (e.g., \"Size\", \"CreationTime\").")]
-        [Category("Advanced")]
         public InArgument<FileSortCriteria> ThenBy { get; set; } = new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
 
         [DisplayName("Retrieved Files")]

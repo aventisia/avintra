@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
 {
     [DisplayName("Set Clipboard Text")]
     [Description("Sets the specified text to the system clipboard.")]
-    public class SetClipboardTextActivity : Extensions.BaseCodeActivity
+    public class SetClipboardTextActivity : BaseCodeActivity
     {
         #region Inputs
 

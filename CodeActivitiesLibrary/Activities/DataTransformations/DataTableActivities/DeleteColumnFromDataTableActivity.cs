@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Column From Data Table")]
     [Description("Deletes a data table column at the specified column index or column name.")]
-    public sealed class DeleteColumnFromDataTableActivity : Extensions.BaseCodeActivity
+    public sealed class DeleteColumnFromDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

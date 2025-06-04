@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Insert Row Into Data Table")]
     [Description("Inserts a row at the end or before a specific index value.")]
-    public sealed class InsertRowIntoDataTableActivity : Extensions.BaseCodeActivity
+    public sealed class InsertRowIntoDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

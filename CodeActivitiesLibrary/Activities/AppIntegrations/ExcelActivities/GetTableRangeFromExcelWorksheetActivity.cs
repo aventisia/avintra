@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Table Range from Excel Worksheet")]
     [Description("Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.")]
-    public class GetTableRangeFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class GetTableRangeFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

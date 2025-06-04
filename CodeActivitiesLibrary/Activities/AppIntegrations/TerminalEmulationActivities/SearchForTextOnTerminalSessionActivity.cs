@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
     // Activity to search for text on a terminal session
     [DisplayName("Search for Text on Terminal Session"),
      Description("Search for all occurrences of a specific text on a terminal session.")]
-    public class SearchForTextOnTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class SearchForTextOnTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }

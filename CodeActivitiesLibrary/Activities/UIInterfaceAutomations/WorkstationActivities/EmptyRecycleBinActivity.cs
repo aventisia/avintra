@@ -2,7 +2,7 @@
 {
     //[DisplayName("Empty Recycle Bin")]
     //[Description("Deletes all files from the Windows recycle bin.")]
-    //public class EmptyRecycleBinActivity : Extensions.BaseCodeActivity
+    //public class EmptyRecycleBinActivity : BaseCodeActivity
     //{
     //    private const uint FoDelete = 0x3;
     //    private const uint FofSilent = 0x4000;

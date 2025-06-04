@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Focus Text Field on Web Page")]
     [Description("Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.")]
-    public class FocusTextFieldActivity : Extensions.BaseCodeActivity
+    public class FocusTextFieldActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -31,25 +32,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         public InArgument<string> FindType { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page to Load")]
         [Description("If true, waits for the page to fully load before proceeding.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageToLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time (in seconds) to wait for the page to load before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after focusing the field.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]

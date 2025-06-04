@@ -1,7 +1,7 @@
 ﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     //[DisplayName("Show Desktop"), Description("Shows the desktop by minimizing all windows.")]
-    //public class ShowDesktopActivity : Extensions.BaseCodeActivity
+    //public class ShowDesktopActivity : BaseCodeActivity
     //{
     //    
     //    

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Update Data Table Item")]
     [Description("Updates a specific cell in a DataTable by specifying the column, row, and new value.")]
-    public class UpdateDataTableItemActivity : Extensions.BaseCodeActivity
+    public class UpdateDataTableItemActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Data Table")]

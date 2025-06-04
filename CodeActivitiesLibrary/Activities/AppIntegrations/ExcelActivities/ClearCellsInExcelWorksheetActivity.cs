@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Clear Cells in Excel Worksheet")]
     [Description("Clears a specified range or named cell in the active worksheet of an Excel instance.")]
-    public class ClearCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class ClearCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

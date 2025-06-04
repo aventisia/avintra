@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("Take Screenshot of UI Element")]
     // [Description("Takes a screenshot of a UI element in a window.")]
-    public class TakeUiElementScreenshotActivity : Extensions.BaseCodeActivity
+    public class TakeUiElementScreenshotActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

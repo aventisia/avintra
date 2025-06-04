@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Run JavaScript Function on Web Page")]
     [Description("Executes a custom JavaScript function in the context of the current web page.")]
-    public class RunJavaScriptFunctionOnWebPageActivity : Extensions.BaseCodeActivity
+    public class RunJavaScriptFunctionOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -25,18 +26,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             "The JavaScript function to execute (e.g., 'document.getElementById(\"myId\").value = \"test\";')")]
         public InArgument<string> JavaScriptFunction { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Arguments")]
         [Description("Optional arguments to pass to the script function.")]
         public InArgument<object[]> ScriptArguments { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Completion")]
         [Description("If true, waits for the script to complete before continuing.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForCompletion { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for script completion before failing.")]
         [DefaultValue(60)]

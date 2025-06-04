@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Move Folder")]
     [Description("This activity moves an existing folder to a specified destination folder.")]
-    public class MoveFolderActivity : Extensions.BaseCodeActivity
+    public class MoveFolderActivity : BaseCodeActivity
     {
 
         [DisplayName("Folder to Move")]

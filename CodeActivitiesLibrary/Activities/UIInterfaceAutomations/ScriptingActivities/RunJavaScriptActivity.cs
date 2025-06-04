@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run JavaScript")]
     [Description("Executes some custom JavaScript code and retrieves its output into a variable.")]
-    public class RunJavaScriptActivity : Extensions.BaseCodeActivity
+    public class RunJavaScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The JavaScript code to execute.")]

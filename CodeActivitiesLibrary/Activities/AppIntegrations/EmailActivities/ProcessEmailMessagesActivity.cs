@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
     [DisplayName("Process Email Messages")]
     [Description(
         "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.")]
-    public class ProcessEmailMessagesActivity : Extensions.BaseCodeActivity
+    public class ProcessEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

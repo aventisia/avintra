@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Get Current Date and Time")]
     [Description("This activity retrieves the current date and time based on the specified retrieval type and time zone.")]
-    public class GetCurrentDateTimeActivity : Extensions.BaseCodeActivity
+    public class GetCurrentDateTimeActivity : BaseCodeActivity
     {
 
         [RequiredArgument]

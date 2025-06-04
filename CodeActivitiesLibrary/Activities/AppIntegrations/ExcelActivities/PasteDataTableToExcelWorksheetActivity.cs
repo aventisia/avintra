@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Paste Cells to Excel Worksheet")]
     [Description("Pastes a DataTable of data to the active Excel worksheet starting at the specified range.")]
-    public class PasteDataTableToExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class PasteDataTableToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

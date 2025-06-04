@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 
     [DisplayName("Extract Tables From PDF")]
     [Description("Extracts tables from a PDF file.")]
-    public class ExtractTablesFromPdfActivity : Extensions.BaseCodeActivity
+    public class ExtractTablesFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("PDF File Path")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Number to Text")]
     [Description("Converts a numeric value into text with specified formatting options.")]
-    public class ConvertNumberToTextActivity : Extensions.BaseCodeActivity
+    public class ConvertNumberToTextActivity : BaseCodeActivity
     {
 
         [RequiredArgument]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
 {
     [DisplayName("Unzip Files")]
     [Description("Extracts files from a ZIP archive to a specified destination folder.")]
-    public class UnzipFilesActivity : Extensions.BaseCodeActivity
+    public class UnzipFilesActivity : BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)
         {

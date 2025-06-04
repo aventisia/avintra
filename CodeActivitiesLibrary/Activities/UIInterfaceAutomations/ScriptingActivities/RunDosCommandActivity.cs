@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run DOS Command")]
     [Description("Runs a DOS command or console application in invisible mode and retrieves its output upon completion.")]
-    public class RunDosCommandActivity : Extensions.BaseCodeActivity
+    public class RunDosCommandActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The DOS command to execute.")]

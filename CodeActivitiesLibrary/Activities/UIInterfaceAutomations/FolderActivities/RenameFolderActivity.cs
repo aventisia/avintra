@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Rename Folder")]
     [Description("This activity renames an existing folder by specifying the original folder path and the new folder name.")]
-    public class RenameFolderActivity : Extensions.BaseCodeActivity
+    public class RenameFolderActivity : BaseCodeActivity
     {
 
         [DisplayName("Original Folder Path")]

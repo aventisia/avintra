@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Go To Web Page")]
     [Description("Navigates a web browser instance to a specified URL, back, forward, or reload.")]
-    public class GoToWebPageActivity : Extensions.BaseCodeActivity
+    public class GoToWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -33,24 +33,20 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(NavigateAction), "ToUrl")]
         public InArgument<string> Url { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page to Load")]
         [Description("If true, waits for the page to fully load before continuing.")]
         public InArgument<bool> WaitForPageToLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after navigating.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]

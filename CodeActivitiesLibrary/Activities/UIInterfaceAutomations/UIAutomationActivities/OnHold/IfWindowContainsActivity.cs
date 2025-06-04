@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("If Window Contains")]
     // [Description("Marks the beginning of a conditional block of actions depending on whether a specific piece of text or UI element exists in a window.")]
-    public class IfWindowContainsActivity : Extensions.BaseCodeActivity
+    public class IfWindowContainsActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

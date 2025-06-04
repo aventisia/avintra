@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select File Dialog")]
     [Description("Displays a file selection dialog to let users choose one or more files.")]
-    public sealed class DisplaySelectFileDialog : Extensions.BaseCodeActivity
+    public sealed class DisplaySelectFileDialog : BaseCodeActivity
     {
 
 

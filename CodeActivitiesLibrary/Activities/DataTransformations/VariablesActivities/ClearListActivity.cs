@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Clear List")]
     [Description("Removes all elements from the specified list.")]
-    public class ClearListActivity : Extensions.BaseCodeActivity
+    public class ClearListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

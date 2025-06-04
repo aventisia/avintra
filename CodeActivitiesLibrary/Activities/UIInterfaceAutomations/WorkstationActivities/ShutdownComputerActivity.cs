@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Shutdown Computer")]
     [Description("Shuts down the computer.")]
-    public class ShutdownComputerActivity : Extensions.BaseCodeActivity
+    public class ShutdownComputerActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The shutdown mode (e.g., power off, restart).")]

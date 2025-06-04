@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     // Activity: Set XML Element Value
     [DisplayName("Set XML Element Value")]
     [Description("Sets the value of an XML element.")]
-    public class SetXmlElementValueActivity : Extensions.BaseCodeActivity
+    public class SetXmlElementValueActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content as a string.")]

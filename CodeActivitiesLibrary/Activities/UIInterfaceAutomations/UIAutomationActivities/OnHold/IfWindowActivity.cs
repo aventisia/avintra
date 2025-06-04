@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     // [DisplayName("If Window")]
     // [Description("This action marks the beginning of a conditional block of actions depending on whether a window is open or not or whether a window is the focused (foreground) window.")]
-    public class IfWindowActivity : Extensions.BaseCodeActivity
+    public class IfWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

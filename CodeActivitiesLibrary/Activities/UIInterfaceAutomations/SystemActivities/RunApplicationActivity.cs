@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Run application"),
      Description("Executes an application or opens a document by executing the associated application.")]
-    public class RunApplicationActivity : Extensions.BaseCodeActivity
+    public class RunApplicationActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path of the application or document to run.")]
         public InArgument<string> FilePath { get; set; }

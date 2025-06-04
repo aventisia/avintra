@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
     [DisplayName("Delete Folder")]
     [Description("Removes the specified folder and its contents from the file system.")]
-    public class DeleteFolderActivity : Extensions.BaseCodeActivity
+    public class DeleteFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Folder to Delete")]

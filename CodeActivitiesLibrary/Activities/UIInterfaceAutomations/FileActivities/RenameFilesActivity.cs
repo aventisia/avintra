@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Rename File(s)")]
     [Description("Renames one or more files.")]
-    public class RenameFileActivity : Extensions.BaseCodeActivity
+    public class RenameFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("File(s) to rename")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to download files from FTP
     [DisplayName("Download File(s) from FTP"), Description("Downloads one or more files from an FTP server.")]
-    public class DownloadFilesFromFtpActivity : Extensions.BaseCodeActivity
+    public class DownloadFilesFromFtpActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

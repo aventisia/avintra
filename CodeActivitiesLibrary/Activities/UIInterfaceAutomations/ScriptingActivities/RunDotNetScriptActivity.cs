@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run .NET Script"),
      Description("Executes some custom .NET script and retrieves its output into a variable.")]
-    public class RunDotNetScriptActivity : Extensions.BaseCodeActivity
+    public class RunDotNetScriptActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The .NET script code to execute.")]
         public InArgument<string> ScriptCode { get; set; }

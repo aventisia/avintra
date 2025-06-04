@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Split Text")]
     [Description(
         "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.")]
-    public class SplitTextActivity : Extensions.BaseCodeActivity
+    public class SplitTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

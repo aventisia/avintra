@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Select Radio Button on Web Page")]
     [Description("Simulates selecting a radio button element on a web page.")]
-    public class SelectRadioButtonOnWebPageActivity : Extensions.BaseCodeActivity
+    public class SelectRadioButtonOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -30,25 +31,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The value used to locate the radio button (e.g., 'gender-male', '//input[@name='option1']').")]
         public InArgument<string> SearchKeywords { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the page to fully load after selection.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after selecting the radio button.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Join Text")]
     [Description("Converts a list into a text value by separating its items with a specified delimiter.")]
-    public class JoinTextActivity : Extensions.BaseCodeActivity
+    public class JoinTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

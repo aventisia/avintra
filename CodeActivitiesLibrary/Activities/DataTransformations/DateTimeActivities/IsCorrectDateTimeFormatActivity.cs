@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Globalization;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Validate DateTime Format")]
     [Description("Checks if the input string matches the specified date and time format.")]
-    public class IsCorrectDateTimeFormatActivity : Extensions.BaseCodeActivity
+    public class IsCorrectDateTimeFormatActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("DateTime String")]
@@ -57,4 +58,3 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         }
     }
 }
-

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Decrypt Text with AES"),
      Description("Decrypt a string with AES based on a specified key and an encoding format")]
-    public class DecryptTextWithAesActivity : Extensions.BaseCodeActivity
+    public class DecryptTextWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The ciphertext to decrypt.")]
         public InArgument<string> Ciphertext { get; set; }

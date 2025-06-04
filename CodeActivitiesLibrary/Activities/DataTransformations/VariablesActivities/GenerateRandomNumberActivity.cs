@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Generate Random Number")]
     [Description("Generates a random number or list of numbers within a specified range.")]
-    public class GenerateRandomNumberActivity : Extensions.BaseCodeActivity
+    public class GenerateRandomNumberActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Minimum Value")]

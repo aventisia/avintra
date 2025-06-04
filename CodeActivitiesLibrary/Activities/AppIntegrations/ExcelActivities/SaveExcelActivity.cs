@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Save Excel Workbook")]
     [Description("Saves the active Excel workbook.")]
-    public class SaveExcelActivity : Extensions.BaseCodeActivity
+    public class SaveExcelActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

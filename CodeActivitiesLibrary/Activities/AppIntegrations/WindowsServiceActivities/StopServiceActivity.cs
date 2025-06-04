@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ServiceProcess;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 {
     // Activity to stop a running Windows service
     [DisplayName("Stop Service"), Description("Stops a running Windows service.")]
-    public class StopServiceActivity : Extensions.BaseCodeActivity
+    public class StopServiceActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to stop.")]
         public InArgument<string> ServiceName { get; set; }

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read Formula from Excel Cell")]
     [Description("Reads the formula from a specific cell or named range in Excel.")]
-    public class ReadFormulaFromExcelActivity : Extensions.BaseCodeActivity
+    public class ReadFormulaFromExcelActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

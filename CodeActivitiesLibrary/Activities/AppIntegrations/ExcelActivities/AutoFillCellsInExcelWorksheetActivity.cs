@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Auto Fill Range in Excel Worksheet")]
     [Description("Copies data from a source range to a target range in the active worksheet of an Excel instance.")]
-    public class AutoFillCellsInExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class AutoFillCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

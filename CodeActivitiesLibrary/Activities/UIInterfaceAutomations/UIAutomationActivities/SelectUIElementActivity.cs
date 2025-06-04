@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Select UI Element")]
     [Description("Selects the provided UI element, such as a list item or combo box option, using UI Automation.")]
-    public class SelectUIElementActivity : Extensions.BaseCodeActivity
+    public class SelectUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Element Instance")]

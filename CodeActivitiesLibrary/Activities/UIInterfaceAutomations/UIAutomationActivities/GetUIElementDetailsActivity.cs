@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get UI Element Details")]
     [Description("Get information like position or text from a UI element in a window.")]
-    public class GetUiElementDetailsActivity : Extensions.BaseCodeActivity
+    public class GetUiElementDetailsActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("UI Element")]

@@ -1,4 +1,5 @@
-﻿using System.Activities;
+﻿using CodeActivitiesLibrary.Extensions;
+using System.Activities;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
     // Activity to mark the end of a group of actions
     [DisplayName("End Region")]
     [Description("Marks the end of a group of actions.")]
-    public class EndRegionActivity : Extensions.BaseCodeActivity
+    public class EndRegionActivity : BaseCodeActivity
     {
 
 

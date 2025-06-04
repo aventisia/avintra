@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data.SqlClient;
@@ -6,7 +7,7 @@ using System.Data.SqlClient;
 namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
     [DisplayName("Execute SQL Statement"), Description("Connect to a database and execute an SQL statement")]
-    public class ExecuteSqlStatementActivity : Extensions.BaseCodeActivity
+    public class ExecuteSqlStatementActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }

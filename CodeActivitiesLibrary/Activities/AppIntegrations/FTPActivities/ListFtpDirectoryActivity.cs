@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     // Activity to list FTP directory contents
     [DisplayName("List FTP Directory"),
      Description("Retrieves the subdirectories and files contained in the current directory of an FTP connection.")]
-    public class ListFtpDirectoryActivity : Extensions.BaseCodeActivity
+    public class ListFtpDirectoryActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

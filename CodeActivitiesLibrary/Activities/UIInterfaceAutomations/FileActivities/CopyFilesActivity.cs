@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Copy File(s)")]
     [Description("Copies one or more files into a destination folder.")]
-    public class CopyFileActivity : Extensions.BaseCodeActivity
+    public class CopyFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("File(s) to copy")]

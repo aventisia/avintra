@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Trim Text")]
     [Description("Removes specified characters from the start, end, or both ends of a text string.")]
-    public class TrimTextActivity : Extensions.BaseCodeActivity
+    public class TrimTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

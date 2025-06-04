@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Create HTML Content")]
     [Description("Generates rich HTML content and stores it in a variable.")]
-    public class CreateHtmlContentActivity : Extensions.BaseCodeActivity
+    public class CreateHtmlContentActivity : BaseCodeActivity
     {
         #region Arguments
 

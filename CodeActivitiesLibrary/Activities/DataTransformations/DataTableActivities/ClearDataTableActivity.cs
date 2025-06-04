@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Clear Data Table")]
     [Description("Removes all rows from a data table while preserving its structure.")]
-    public class ClearDataTableActivity : Extensions.BaseCodeActivity
+    public class ClearDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Create Random Text")]
     [Description("Generates a text of specified length consisting of random characters.")]
-    public class CreateRandomTextActivity : Extensions.BaseCodeActivity
+    public class CreateRandomTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

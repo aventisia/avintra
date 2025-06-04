@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
@@ -24,7 +25,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
     [DisplayName("Populate Text Field in Window")]
     [Description("Fills a text box in a window with the specified text using the method you choose.")]
-    public class PopulateTextFieldInWindowActivity : Extensions.BaseCodeActivity
+    public class PopulateTextFieldInWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Window")]

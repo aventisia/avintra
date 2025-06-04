@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
     // Activity to wait for specific text on a terminal session
     [DisplayName("Wait for Text on Terminal Session"),
      Description("Wait for a specific text to appear on a terminal session.")]
-    public class WaitForTextOnTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class WaitForTextOnTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }

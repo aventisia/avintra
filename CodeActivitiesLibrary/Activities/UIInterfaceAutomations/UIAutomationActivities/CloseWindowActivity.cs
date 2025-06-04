@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Close Window")]
     [Description("Closes the selected application window.")]
-    public class CloseWindowActivity : Extensions.BaseCodeActivity
+    public class CloseWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Window")]

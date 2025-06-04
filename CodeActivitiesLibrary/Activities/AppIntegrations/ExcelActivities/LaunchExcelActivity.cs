@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Launch Excel Application")]
     [Description("Launches a new Excel application instance or opens an existing Excel document.")]
-    public class LaunchExcelActivity : Extensions.BaseCodeActivity
+    public class LaunchExcelActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

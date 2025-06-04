@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     [DisplayName("Open Secure FTP Connection")]
     [Description("Establishes a secure connection to an FTP server using SSL/TLS.")]
-    public class OpenSecureFtpConnectionActivity : Extensions.BaseCodeActivity
+    public class OpenSecureFtpConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The FTP server URL (e.g., ftp://example.com).")]

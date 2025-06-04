@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Duplicate Rows From Data Table")]
     [Description("Deletes all rows that are exact duplicates from the data table.")]
-    public sealed class DeleteDuplicateRowsFromDataTable : Extensions.BaseCodeActivity
+    public sealed class DeleteDuplicateRowsFromDataTable : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

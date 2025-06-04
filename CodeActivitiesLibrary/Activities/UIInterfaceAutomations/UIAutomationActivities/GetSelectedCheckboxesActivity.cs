@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
 using System;
 using System.Activities;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Get Selected Checkboxes")]
     [Description("Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.")]
-    public class GetSelectedCheckboxesActivity : Extensions.BaseCodeActivity
+    public class GetSelectedCheckboxesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Parent Element")]

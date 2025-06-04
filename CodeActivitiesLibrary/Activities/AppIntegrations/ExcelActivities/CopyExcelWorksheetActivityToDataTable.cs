@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Range from Excel Worksheet to DataTable")]
     [Description("Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.")]
-    public class CopyExcelWorksheetActivityToDataTable : Extensions.BaseCodeActivity
+    public class CopyExcelWorksheetActivityToDataTable : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Process Email Messages in Outlook")]
     [Description("Moves or deletes a collection of email messages in Outlook.")]
-    public class ProcessEmailMessagesInOutlookActivity : Extensions.BaseCodeActivity
+    public class ProcessEmailMessagesInOutlookActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

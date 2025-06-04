@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
     // Activity to synchronize directories
     [DisplayName("Synchronize Directories"),
      Description("Synchronizes the files and subdirectories of a given Folder with a given remote FTP directory.")]
-    public class SynchronizeDirectoriesActivity : Extensions.BaseCodeActivity
+    public class SynchronizeDirectoriesActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
         public InArgument<string> ConnectionId { get; set; }

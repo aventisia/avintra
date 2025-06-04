@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     // Activity to download one or more folders from an FTP server
     [DisplayName("Download Folder(s) from FTP"), Description("Downloads one or more folders from an FTP server.")]
-    public class DownloadFoldersFromFtpActivity : Extensions.BaseCodeActivity
+    public class DownloadFoldersFromFtpActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
         public InArgument<string> FtpServerUrl { get; set; }

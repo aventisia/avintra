@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Close Web Browser Tab")]
     [Description(
         "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).")]
-    public class CloseWebBrowserTabActivity : Extensions.BaseCodeActivity
+    public class CloseWebBrowserTabActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -30,19 +30,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(CloseModeEnum.Current)]
         public InArgument<CloseModeEnum> CloseMode { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Match Type")]
         [Description("Select whether to match by URL or Title when using 'ByTitleOrUrl' mode.")]
         [RenderIfCondition(nameof(CloseMode), "ByTitleOrUrl")]
         public InArgument<string> MatchType { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Match Criteria")]
         [Description("Enter the URL or Title to match when using 'ByTitleOrUrl' mode.")]
         [RenderIfCondition(nameof(CloseMode), "ByTitleOrUrl")]
         public InArgument<string> MatchCriteria { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds before closing the tab automatically.")]
         [DefaultValue(60)]

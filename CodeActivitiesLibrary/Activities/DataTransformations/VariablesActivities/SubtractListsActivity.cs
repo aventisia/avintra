@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Subtract Lists")]
     [Description("Removes items from the first list that exist in the second list.")]
-    public class SubtractListsActivity : Extensions.BaseCodeActivity
+    public class SubtractListsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

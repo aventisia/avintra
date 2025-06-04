@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("If Web Page Contains")]
     [Description(
         "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.")]
-    public class IfWebPageContainsActivity : Extensions.BaseCodeActivity
+    public class IfWebPageContainsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -40,13 +40,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
         public InArgument<string> SearchKeywords { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("Check UI Element State")]
         [Description("If true, checks whether the found element is enabled or disabled.")]
         [DefaultValue(false)]
         public InArgument<bool> CheckUiElementState { get; set; }
 
-        [Category("Advanced")]
         [DisplayName("State")]
         [Description("Specifies the expected state of the element (enabled or disabled).")]
         [DefaultValue(ElementStateTypeEnum.Enabled)]

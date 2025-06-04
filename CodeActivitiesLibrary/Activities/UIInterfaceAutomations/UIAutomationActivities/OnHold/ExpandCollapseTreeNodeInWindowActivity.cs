@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     //[DisplayName("Expand/Collapse Tree Node in Window")]
     //[Description("Expands or collapses a node of a tree view residing in a window.")]
-    public class ExpandCollapseTreeNodeInWindowActivity : Extensions.BaseCodeActivity
+    public class ExpandCollapseTreeNodeInWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The handle or identifier of the window.")]

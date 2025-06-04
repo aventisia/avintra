@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     //[DisplayName("Take Screenshot of Web Page")]
     //[Description("Captures a screenshot of the entire web page or a specific UI element. Can save to clipboard or file.")]
-    public class TakeScreenshotOfWebPageActivity : Extensions.BaseCodeActivity
+    public class TakeScreenshotOfWebPageActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

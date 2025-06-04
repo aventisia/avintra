@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Control Screensaver"), Description("Enables, disables, starts, or stops the screensaver.")]
-    public class ControlScreensaverActivity : Extensions.BaseCodeActivity
+    public class ControlScreensaverActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The action to perform on the screensaver.")]
         public InArgument<ScreensaverActionEnum> Action { get; set; }

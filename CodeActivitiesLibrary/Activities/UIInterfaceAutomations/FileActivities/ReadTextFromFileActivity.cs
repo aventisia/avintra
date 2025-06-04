@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Read Text from File")]
     [Description("Reads all text content from the specified file.")]
-    public class ReadTextFromFileActivity : Extensions.BaseCodeActivity
+    public class ReadTextFromFileActivity : BaseCodeActivity
     {
         #region Arguments
 

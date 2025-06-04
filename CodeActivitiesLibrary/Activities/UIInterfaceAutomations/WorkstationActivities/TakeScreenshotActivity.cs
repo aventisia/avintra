@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Drawing;
@@ -7,7 +8,7 @@ using System.Windows.Forms;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Take Screenshot"), Description("Takes a screenshot of all screens and saves it to the clipboard.")]
-    public class TakeScreenshotActivity : Extensions.BaseCodeActivity
+    public class TakeScreenshotActivity : BaseCodeActivity
     {
 
 

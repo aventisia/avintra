@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Move Window")]
     [Description("Moves a window to the position you choose on the screen.")]
-    public class MoveWindowActivity : Extensions.BaseCodeActivity
+    public class MoveWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Window")]

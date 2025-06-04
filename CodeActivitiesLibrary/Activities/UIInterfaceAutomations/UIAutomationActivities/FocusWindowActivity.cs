@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Focus Window")]
     [Description("Brings the selected window to the front and makes it active.")]
-    public class FocusWindowActivity : Extensions.BaseCodeActivity
+    public class FocusWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Window")]

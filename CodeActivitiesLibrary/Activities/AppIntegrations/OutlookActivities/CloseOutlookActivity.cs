@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Outlook;
+﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Outlook;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Close Outlook Application")]
     [Description("Closes an Outlook application instance and releases COM resources.")]
-    public class CloseOutlookActivity : Extensions.BaseCodeActivity
+    public class CloseOutlookActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

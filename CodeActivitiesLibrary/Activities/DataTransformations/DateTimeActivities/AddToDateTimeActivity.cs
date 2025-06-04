@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Add Time to DateTime")]
     [Description("Adds a specified time value to the given DateTime based on the selected time unit.")]
-    public class AddToDateTimeActivity : Extensions.BaseCodeActivity
+    public class AddToDateTimeActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Base DateTime")]
@@ -86,4 +87,3 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         Years
     }
 }
-

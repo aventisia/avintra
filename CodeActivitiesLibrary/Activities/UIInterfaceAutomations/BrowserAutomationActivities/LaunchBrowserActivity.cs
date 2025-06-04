@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Launch Browser")]
     [Description("Launches a web browser instance (Edge, Chrome, Firefox) with optional window state.")]
-    public sealed class LaunchBrowserActivity : Extensions.BaseCodeActivity
+    public sealed class LaunchBrowserActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -86,28 +86,28 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 switch (browserType)
                 {
                     case BrowserTypeEnum.MicrosoftEdge:
-                        {
-                            driver = OpenMicrosoftEdgeBrowser(browsingMode);
-                            break;
-                        }
+                    {
+                        driver = OpenMicrosoftEdgeBrowser(browsingMode);
+                        break;
+                    }
 
                     case BrowserTypeEnum.GoogleChrome:
-                        {
-                            driver = OpenChromeBrowser(browsingMode);
-                            break;
-                        }
+                    {
+                        driver = OpenChromeBrowser(browsingMode);
+                        break;
+                    }
 
                     case BrowserTypeEnum.MozillaFirefox:
-                        {
-                            driver = OpenFireFox(browsingMode);
-                            break;
-                        }
+                    {
+                        driver = OpenFireFox(browsingMode);
+                        break;
+                    }
 
                     case BrowserTypeEnum.Custom:
-                        {
-                            driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode);
-                            break;
-                        }
+                    {
+                        driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode);
+                        break;
+                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(browserType));
@@ -152,8 +152,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     var firefoxOptions = new FirefoxOptions();
                     firefoxOptions.SetPreference("dom.disable_beforeunload", true);
 
+                    firefoxOptions.AddArgument("--start-maximized");
                     if (browsingMode == BrowsingModeEnum.Private)
-                        firefoxOptions.AddArgument("-private");
+                        firefoxOptions.AddArguments("--private");
 
                     var service = FirefoxDriverService.CreateDefaultService();
                     service.HideCommandPromptWindow = true;
@@ -174,8 +175,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 try
                 {
                     var chromeOptions = new ChromeOptions();
-                    chromeOptions.AddArgument("start-maximized");
-                    chromeOptions.AddArguments(browsingMode == BrowsingModeEnum.Private ? "--incognito" : "");
+                    chromeOptions.AddArgument("--start-maximized");
+                    if (browsingMode == BrowsingModeEnum.Private)
+                        chromeOptions.AddArguments("--incognito");
 
                     var chromeService = ChromeDriverService.CreateDefaultService();
 
@@ -195,8 +197,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 try
                 {
                     var edgeOptions = new EdgeOptions();
-                    edgeOptions.AddArgument("start-maximized");
-                    edgeOptions.AddArguments(browsingMode == BrowsingModeEnum.Private ? "--inprivate" : "");
+                    edgeOptions.AddArgument("--start-maximized");
+                    if (browsingMode == BrowsingModeEnum.Private)
+                        edgeOptions.AddArgument("--inprivate");
 
                     var edgeService = EdgeDriverService.CreateDefaultService();
                     edgeService.HideCommandPromptWindow = true;
@@ -233,8 +236,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         BinaryLocation = browserExePath
                     };
 
+                    options.AddArgument("--start-maximized");
                     if (browsingMode == BrowsingModeEnum.Private)
-                        options.AddArgument("-private");
+                        options.AddArgument("--private");
 
                     driver = new FirefoxDriver(
                         Path.GetDirectoryName(driverExePath) ?? throw new InvalidOperationException(), options);
@@ -245,8 +249,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         BinaryLocation = browserExePath
                     };
-                    options.AddArguments(browsingMode == BrowsingModeEnum.Private ? "--incognito" : "");
-                    options.AddArgument("start-maximized");
+                    options.AddArgument("--start-maximized");
+                    if (browsingMode == BrowsingModeEnum.Private)
+                        options.AddArguments("--incognito");
 
                     driver = new ChromeDriver(
                         Path.GetDirectoryName(driverExePath) ?? throw new InvalidOperationException(), options);
@@ -257,8 +262,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         BinaryLocation = browserExePath
                     };
-                    options.AddArguments(browsingMode == BrowsingModeEnum.Private ? "--inprivate" : "");
-                    options.AddArgument("start-maximized");
+                    options.AddArgument("--start-maximized");
+                    if (browsingMode == BrowsingModeEnum.Private)
+                        options.AddArguments("--inprivate");
 
                     var service = EdgeDriverService.CreateDefaultService(
                         Path.GetDirectoryName(driverExePath),
@@ -318,6 +324,4 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Display(Name = "Private", Description = "Opens browser in private/incognito mode.")]
         Private
     }
-
-    
 }

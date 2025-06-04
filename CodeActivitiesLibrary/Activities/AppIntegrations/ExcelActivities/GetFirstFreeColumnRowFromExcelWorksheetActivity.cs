@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Get First Free Column/Row from Excel Worksheet")]
     [Description(
         "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.")]
-    public class GetFirstFreeColumnRowFromExcelWorksheetActivity : Extensions.BaseCodeActivity
+    public class GetFirstFreeColumnRowFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

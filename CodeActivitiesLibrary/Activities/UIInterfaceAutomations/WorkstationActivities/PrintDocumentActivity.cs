@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,7 +7,7 @@ using System.Diagnostics;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Print Document"), Description("Prints a document on the default printer.")]
-    public class PrintDocumentActivity : Extensions.BaseCodeActivity
+    public class PrintDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the document to print.")]
         public InArgument<string> DocumentPath { get; set; }

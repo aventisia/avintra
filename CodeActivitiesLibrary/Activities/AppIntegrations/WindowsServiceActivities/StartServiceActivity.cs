@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ServiceProcess;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 {
     // Activity to start a stopped Windows service
     [DisplayName("Start Service"), Description("Starts a stopped Windows service.")]
-    public class StartServiceActivity : Extensions.BaseCodeActivity
+    public class StartServiceActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The name of the service to start.")]
         public InArgument<string> ServiceName { get; set; }

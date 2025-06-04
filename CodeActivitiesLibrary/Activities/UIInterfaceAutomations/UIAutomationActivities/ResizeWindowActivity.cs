@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 {
     [DisplayName("Resize Window")]
     [Description("Change the size of a window to the width and height you want.")]
-    public class ResizeWindowActivity : Extensions.BaseCodeActivity
+    public class ResizeWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Window")]

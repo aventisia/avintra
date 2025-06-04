@@ -2,7 +2,7 @@
 {
     //[DisplayName("Get Screen Resolution")]
     //[Description("Gets the width, height, bit count, and frequency of a selected monitor.")]
-    //public class GetScreenResolutionActivity : Extensions.BaseCodeActivity
+    //public class GetScreenResolutionActivity : BaseCodeActivity
     //{
     //    
     //    [Description("Returns the screen resolution details.")]

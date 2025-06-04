@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     // Activity to attach to a running Word instance
     [DisplayName("Attach to Running Word"), Description("Attach to a Word document that's already open.")]
-    public class AttachToRunningWordActivity : Extensions.BaseCodeActivity
+    public class AttachToRunningWordActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The process ID of the running Word instance.")]
         public InArgument<int> ProcessId { get; set; }

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Read from CSV File")]
     [Description("Reads a CSV file into a DataTable.")]
-    public class ReadFromCsvFileActivity : Extensions.BaseCodeActivity
+    public class ReadFromCsvFileActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

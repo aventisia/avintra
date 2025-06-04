@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
 {
     [DisplayName("Execute XPath Expression")]
     [Description("Executes an XPath expression on the provided XML content and returns the result.")]
-    public class ExecuteXPathExpressionActivity : Extensions.BaseCodeActivity
+    public class ExecuteXPathExpressionActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The XML content to query with XPath.")]

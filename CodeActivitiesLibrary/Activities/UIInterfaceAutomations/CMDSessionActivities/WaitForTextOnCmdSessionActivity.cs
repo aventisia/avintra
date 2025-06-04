@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 {
     [DisplayName("Wait for Text on CMD Session")]
     [Description("Waits for a specific text on a previously opened CMD session.")]
-    public class WaitForTextOnCmdSessionActivity : Extensions.BaseCodeActivity
+    public class WaitForTextOnCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

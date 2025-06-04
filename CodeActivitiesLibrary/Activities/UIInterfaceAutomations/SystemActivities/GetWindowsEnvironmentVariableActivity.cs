@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 {
     [DisplayName("Get windows environment variable")]
     [Description("Retrieves the value of an environment variable.")]
-    public class GetWindowsEnvironmentVariableActivity : Extensions.BaseCodeActivity
+    public class GetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The name of the environment variable to retrieve.")]

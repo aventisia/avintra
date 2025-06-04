@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("If File Exists")]
     [Description("Checks if a file exists and marks the beginning of a conditional block of actions.")]
-    public class IfFileExistsActivity : Extensions.BaseCodeActivity
+    public class IfFileExistsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

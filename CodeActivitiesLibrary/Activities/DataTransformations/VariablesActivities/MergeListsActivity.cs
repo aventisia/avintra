@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Merge Lists")]
     [Description("Merges two lists into a new list. The original lists remain unchanged.")]
-    public class MergeListsActivity : Extensions.BaseCodeActivity
+    public class MergeListsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

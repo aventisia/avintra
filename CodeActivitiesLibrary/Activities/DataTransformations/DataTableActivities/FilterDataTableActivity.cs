@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Filter Data Table")]
     [Description("Filters the data table rows based on the applied rules.")]
-    public sealed class FilterDataTableActivity : Extensions.BaseCodeActivity
+    public sealed class FilterDataTableActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

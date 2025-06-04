@@ -1,3 +1,4 @@
+using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using System;
 using System.Activities;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Close Web Browser")]
     [Description("Closes a web browser instance or all instances if needed.")]
-    public class CloseWebBrowserActivity : Extensions.BaseCodeActivity
+    public class CloseWebBrowserActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -8,7 +9,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     [DisplayName("Wait for Mouse"),
      Description(
          "Suspends the execution of the flow until the mouse pointer changes, usually to or from the 'wait cursor' or hourglass.")]
-    public class WaitForMouseActivity : Extensions.BaseCodeActivity
+    public class WaitForMouseActivity : BaseCodeActivity
     {
 
 

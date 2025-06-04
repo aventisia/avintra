@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 
@@ -6,7 +7,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to send a control key to a terminal session
     [DisplayName("Send Key to Terminal Session"), Description("Send a control key to a terminal session.")]
-    public class SendKeyToTerminalSessionActivity : Extensions.BaseCodeActivity
+    public class SendKeyToTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
         public InArgument<int> SessionId { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run Python Script"),
      Description("Executes some custom Python script and retrieves its output into a variable.")]
-    public class RunPythonScriptActivity : Extensions.BaseCodeActivity
+    public class RunPythonScriptActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The Python script code to execute.")]
         public InArgument<string> ScriptCode { get; set; }

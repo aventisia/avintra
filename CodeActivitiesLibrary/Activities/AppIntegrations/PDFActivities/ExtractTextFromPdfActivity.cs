@@ -4,7 +4,7 @@
     // Activity to extract text from a PDF file
     //[DisplayName("Extract Text from PDF"),
     // Description("Extracts text from a PDF file by specifying the source PDF file and the pages to extract from.")]
-    //public class ExtractTextFromPdfActivity : Extensions.BaseCodeActivity
+    //public class ExtractTextFromPdfActivity : BaseCodeActivity
     //{
     //    [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]
     //    public InArgument<string> SourcePdfPath { get; set; }
@@ -46,4 +46,3 @@
     //    }
     //}
 }
-
