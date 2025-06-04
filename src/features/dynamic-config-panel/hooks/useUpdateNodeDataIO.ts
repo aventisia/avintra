@@ -26,6 +26,7 @@ export const useUpdateNodeDataIO = () => {
    */
   const updateNodeDataIO = (
     nodeId: string,
+    nodeLabel: string,
     newInputs: NodeInputType[],
     newOutputs: NodeOutputType[],
   ) => {
@@ -36,6 +37,7 @@ export const useUpdateNodeDataIO = () => {
           ...node,
           data: {
             ...node.data,
+            label: nodeLabel,
             inputs: newInputs,
             outputs: newOutputs,
           },
