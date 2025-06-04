@@ -76,7 +76,7 @@ namespace CodeActivityToJSON
 
                 var fileName = Path.Combine(outputDir, activity.Name + ".json");
                 File.WriteAllText(fileName, json);
-                Console.WriteLine($"{activity.Name + ".json"} saved");
+                //Console.WriteLine($"{activity.Name + ".json"} saved");
             }
 
             Console.ReadLine();
