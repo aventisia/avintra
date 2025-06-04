@@ -40,4 +40,9 @@ public class ScheduledModel : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of fine-tuning logs associated with this schedule model, representing the history or status of machine learning model tuning processes.
+    /// </summary>
+    public virtual ICollection<FineTuningLog>? FineTuningLogs { get; set; }
 }

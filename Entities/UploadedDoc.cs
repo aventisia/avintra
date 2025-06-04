@@ -49,4 +49,8 @@ public class UploadedDoc : BaseEntity, IMustHaveTenant
     /// </summary>
     public virtual ExtractedData? ExtractedData { get; set; }
 
+    /// <summary>
+    /// Gets or sets the fine-tuning log associated with this data model, representing a specific instance of the machine learning model's tuning process.
+    /// </summary>
+    public virtual FineTuningLog? FineTuningLog { get; set; }
 }
