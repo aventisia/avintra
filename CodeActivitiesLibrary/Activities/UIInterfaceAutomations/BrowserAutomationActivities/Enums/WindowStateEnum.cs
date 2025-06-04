@@ -4,13 +4,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 {
     public enum WindowStateEnum
     {
-        [Display(Name = "Normal", Description = "Launch browser in normal state.")]
-        Normal = 0,
+        [Display(Name = "Maximized", Description = "Launches browser in maximized window state.")]
+        Maximized,
 
-        [Display(Name = "Maximized", Description = "Launch browser maximized.")]
-        Maximized = 1,
+        [Display(Name = "Minimized", Description = "Launches browser in minimized window state.")]
+        Minimized,
 
-        [Display(Name = "Minimized", Description = "Launch browser minimized.")]
-        Minimized = 2
+        [Display(Name = "Normal", Description = "Launches browser in normal window state.")]
+        Normal
     }
 }
