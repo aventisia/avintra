@@ -1,43 +1,111 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
+using System.Xml.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
 {
-    // Activity to invoke a method from a SOAP web service
-    [DisplayName("Invoke SOAP Web Service"), Description("Invokes a method from a SOAP web service.")]
-    public class InvokeSoapWebServiceActivity : Extensions.BaseCodeActivity
+    [DisplayName("Invoke SOAP Web Service")]
+    [Description("Invokes a specified method from a SOAP web service and returns the response.")]
+    public class InvokeSoapWebServiceActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The endpoint URL of the SOAP web service.")]
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+
+        [RequiredArgument]
+        [DisplayName("Endpoint URL")]
+        [Description("The endpoint URL of the SOAP web service (e.g., http://example.com/Service.asmx).")]
         public InArgument<string> EndpointUrl { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The name of the SOAP method to invoke.")]
+        [RequiredArgument]
+        [DisplayName("Method Name")]
+        [Description("The name of the method to invoke on the SOAP service.")]
         public InArgument<string> MethodName { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The parameters for the SOAP method (as a dictionary).")]
+        [RequiredArgument]
+        [DisplayName("Parameters")]
+        [Description("The parameters for the method as a Dictionary<string, object>.")]
         public InArgument<Dictionary<string, object>> Parameters { get; set; }
 
-        [Category("Output"), Description("Returns the response from the SOAP web service.")]
+        [DisplayName("Timeout Seconds")]
+        [Description("Maximum time in seconds to wait for the web service to respond.")]
+        [DefaultValue(60)]
+        public InArgument<int> TimeoutSeconds { get; set; }
+
+        [DisplayName("Action Namespace")]
+        [Description("Optional namespace for the action (if required by the service).")]
+        public InArgument<string> ActionNamespace { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        [DisplayName("Result")]
+        [Description("Returns the raw XML response from the SOAP service.")]
         public OutArgument<string> Result { get; set; }
 
-
-
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var endpointUrl = EndpointUrl.Get(context);
-            var methodName = MethodName.Get(context);
-            var parameters = Parameters.Get(context);
             var result = "";
-            var status = "";
+            var status = "Operation completed successfully.";
 
             try
             {
-                // Simulate invoking SOAP web service (actual implementation would use WCF or similar)
-                result = $"Simulated SOAP response for method '{methodName}' with parameters: {string.Join(", ", parameters.Select(p => $"{p.Key}={p.Value}"))}";
-                status = "SOAP web service invoked successfully.";
+                var url = EndpointUrl.Get(context);
+                var method = MethodName.Get(context);
+                var parameters = Parameters.Get(context);
+                var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
+                var actionNamespace = ActionNamespace.Get(context);
+
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new ArgumentException("Endpoint URL must be provided.");
+
+                if (string.IsNullOrWhiteSpace(method))
+                    throw new ArgumentException("Method name must be provided.");
+
+                if (parameters == null || parameters.Count == 0)
+                    throw new ArgumentException("At least one parameter is required.");
+
+                // Build the SOAP envelope
+                XNamespace soapNs = "http://schemas.xmlsoap.org/soap/envelope/";
+                XNamespace actionNs = !string.IsNullOrEmpty(actionNamespace) ? actionNamespace : "http://tempuri.org/";
+
+                var envelope = new XElement(soapNs + "Envelope",
+                    new XElement(soapNs + "Body",
+                        new XElement(actionNs + method,
+                            parameters.Select(p => new XElement(p.Key, p.Value))
+                        )
+                    )
+                );
+
+                // Send request
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = timeout;
+
+                    var content = new StringContent(envelope.ToString(), System.Text.Encoding.UTF8, "text/xml");
+                    content.Headers.Add("SOAPAction", $"{actionNs}{method}");
+
+                    var response = client.PostAsync(url, content).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        result = response.Content.ReadAsStringAsync().Result;
+                        status = $"Successfully invoked '{method}' on '{url}'.";
+                    }
+                    else
+                    {
+                        result = "";
+                        status = $"Failed to invoke '{method}': {response.ReasonPhrase}";
+                    }
+                }
             }
             catch (Exception ex)
             {
