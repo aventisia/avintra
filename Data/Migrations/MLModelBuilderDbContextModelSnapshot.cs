@@ -149,6 +149,41 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("ExtractedData");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.FineTuningLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DocId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("EndedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ScheduledModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("StartedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocId")
+                        .IsUnique();
+
+                    b.HasIndex("ScheduledModelId");
+
+                    b.ToTable("FineTuningLogs");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.LLM", b =>
                 {
                     b.Property<Guid>("Id")
@@ -482,6 +517,25 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("UploadedDoc");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.FineTuningLog", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.UploadedDoc", "UploadedDoc")
+                        .WithOne("FineTuningLog")
+                        .HasForeignKey("MLModelBuilderAPIs.Entities.FineTuningLog", "DocId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ScheduledModel", "ScheduledModel")
+                        .WithMany("FineTuningLogs")
+                        .HasForeignKey("ScheduledModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ScheduledModel");
+
+                    b.Navigation("UploadedDoc");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.LLM", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -585,9 +639,16 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("UploadedDocs");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ScheduledModel", b =>
+                {
+                    b.Navigation("FineTuningLogs");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
                 {
                     b.Navigation("ExtractedData");
+
+                    b.Navigation("FineTuningLog");
                 });
 #pragma warning restore 612, 618
         }
