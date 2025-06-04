@@ -51,7 +51,10 @@ export function useSendNodeToProcess(
       currentNodeId || nodes.find((node) => node.type === "triggerNode")?.id;
 
     // Find node edge -> then get target node id
-    const targetNodeId = edges.find((edge) => edge.source === nodeId)?.target;
+    const targetNodeId = edges.find(
+      (edge) => edge.source === nodeId &&
+    (edge.sourceHandle === undefined || edge.sourceHandle !== "branch-return"),
+    )?.target;
 
     // Send node to process
     sendNodeToProcess(targetNodeId || "nodeId");
