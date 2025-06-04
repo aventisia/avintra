@@ -1,0 +1,11 @@
+meta {
+  name: Get fine tuning data by model id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/summarization/fine-tuning/{{MLMODEL_ID}}
+  body: json
+  auth: none
+}

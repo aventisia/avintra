@@ -17,7 +17,7 @@ script:pre-request {
     fileIds: [bru.getGlobalEnvVar("DOC_ID")],
     scheduleInfo:{
       timeZone: faker.location.timeZone() ,
-      scheduleAt: faker.date.future()
+      scheduledAt: faker.date.future()
     }
   });
   

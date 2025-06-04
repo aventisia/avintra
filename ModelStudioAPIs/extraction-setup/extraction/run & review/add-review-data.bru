@@ -11,13 +11,15 @@ post {
 }
 
 script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
   req.setBody({
     mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
     type: "TestData",
     fileIds: [bru.getGlobalEnvVar("DOC_ID")],
     scheduleInfo:{
       timeZone: faker.location.timeZone() ,
-      scheduleAt: faker.date.future()
+      scheduledAt: faker.date.future()
     }
   });
   
