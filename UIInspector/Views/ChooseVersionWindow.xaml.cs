@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using FlaUI.Core;
+﻿using FlaUI.Core;
+using System.Windows;
 
 namespace UIInspector.Views
 {

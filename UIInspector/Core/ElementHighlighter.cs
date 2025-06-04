@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Exceptions;
+using System;
 using System.Drawing;
 using System.Threading.Tasks;
-using FlaUI.Core.AutomationElements;
-using FlaUI.Core.Exceptions;
 
 namespace UIInspector.Core
 {

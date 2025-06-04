@@ -1,11 +1,11 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivityToJSON.Utils;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivityToJSON.Utils;
 
 namespace CodeActivityToJSON
 {

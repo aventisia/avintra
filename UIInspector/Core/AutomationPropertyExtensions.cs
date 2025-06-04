@@ -1,5 +1,5 @@
-﻿using System;
-using FlaUI.Core;
+﻿using FlaUI.Core;
+using System;
 
 namespace UIInspector.Core
 {

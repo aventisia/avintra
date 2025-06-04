@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using FlaUI.Core.Definitions;
+﻿using FlaUI.Core.Definitions;
+using System.Collections.Generic;
 
 namespace UIInspector.Models
 {

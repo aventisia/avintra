@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using FlaUI.Core;
+﻿using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.EventHandlers;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace UIInspector.Core
 {

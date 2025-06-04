@@ -1,13 +1,12 @@
-﻿using System;
-using System.Activities;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivityToJSON.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivityToJSON.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace CodeActivityToJSON.Utils
 {

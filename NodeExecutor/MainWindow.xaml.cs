@@ -179,7 +179,7 @@ namespace NodeExecutor
             lbl_NodeName.Text = conditionalBrnachNodeData.NodeName.Length > 0 ? conditionalBrnachNodeData.NodeName : "Node name not found";
 
             bool result = ActivityExecutorService.ExecuteCondition(conditionalBrnachNodeData.Conditions, _executionContext);
-            
+
             await _webSocket.SendCommandAsync("next-node",
                 result
                     ? conditionalBrnachNodeData.NextNodeId
@@ -206,7 +206,7 @@ namespace NodeExecutor
                 result = ActivityExecutorService.ExecuteCondition(loopNodeData.Conditions, _executionContext);
             }
             else if (loopNodeData.LoopType == "ForEachLoop")
-            { 
+            {
                 result = ActivityExecutorService.MoveNextListItem(loopNodeData.ListVariableName, loopNodeData.ItemVariableName, _executionContext);
             }
 
