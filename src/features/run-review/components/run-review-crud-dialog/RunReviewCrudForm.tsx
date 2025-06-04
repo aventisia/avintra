@@ -52,7 +52,7 @@ const RunReviewCrudForm = () => {
   });
 
   const {
-    formState: { isSubmitting, isDirty },
+    formState: { isSubmitting },
   } = form;
 
   async function submitHandler(
@@ -97,7 +97,7 @@ const RunReviewCrudForm = () => {
         <Button
           size="xs"
           type="submit"
-          disabled={isSubmitting || !isDirty}
+          disabled={isSubmitting}
           className="min-w-[5rem]"
         >
           {isSubmitting ? <LoadingSpinner className="h-4 w-4" /> : "Save"}

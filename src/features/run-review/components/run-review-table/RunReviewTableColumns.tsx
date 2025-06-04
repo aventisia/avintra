@@ -32,7 +32,7 @@ export const getRunReviewTableColumns = (
   // ✅ Step 2: Build column definitions based on unique names
   const dynamicColumns: ColumnDef<RunReviewTableDTO>[] =
     uniqueDynamicColNames.map((name) => ({
-      id: `dynamic-${name}`,
+      id: `${name}`,
       accessorFn: (row) => {
         return row.columns?.find((col) => col.name === name)?.value ?? "";
       },
@@ -41,7 +41,7 @@ export const getRunReviewTableColumns = (
       ),
       cell: ({ row }: CellContext<RunReviewTableDTO, unknown>) => (
         <div className="truncate w-36 font-medium">
-          {row.getValue(`dynamic-${name}`)}
+          {row.getValue(`${name}`)}
         </div>
       ),
     }));

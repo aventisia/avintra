@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import { MLModelBuilderLayout } from "./components/layout/MLModelBuilderLayout";
+import { FineTunePage } from "./pages/FineTunePage";
 import { LabelDataPage } from "./pages/LabelDataPage";
 import { RunReivewPage } from "./pages/RunReivewPage";
 import { RunReivewViewPage } from "./pages/RunReviewViewPage";
@@ -27,9 +28,10 @@ const router = createBrowserRouter(
       children: [
         { path: "/", element: <Navigate to="/setup-test" /> },
         { path: "/setup-test", element: <LabelDataPage /> },
-        { path: "/model", element: <h1>Model </h1> },
         { path: "/run-review", element: <RunReivewPage /> },
         { path: "/run-review-view", element: <RunReivewViewPage /> },
+        { path: "/fine-tune", element: <FineTunePage /> },
+
         { path: "/*", element: <NotFoundPage /> },
       ],
     },
