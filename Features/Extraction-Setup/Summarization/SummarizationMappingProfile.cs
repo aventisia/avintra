@@ -91,6 +91,13 @@ public class SummarizationMappingProfile : IRegister
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
                 ? src.CreatedByUser.UserName
                 : null);
+
+        // Mapping of DTO to get list of fine tuning data.
+        config.NewConfig<FineTuningLog, FineTuningHistoryDto>()
+            .Map(dest => dest.DocName, src => src.UploadedDoc != null ? src.UploadedDoc.Name : null)
+            .Map(dest => dest.Duration, src => src.EndedOn.HasValue ? (double?)(src.EndedOn.Value - src.StartedOn).TotalSeconds : null)
+            .Map(dest => dest.FineTunedOn, src => src.EndedOn.HasValue ? src.StartedOn : (DateTime?)null)
+            .Map(dest => dest.MLModelId, src => src.ScheduledModel != null ? src.ScheduledModel.MLModelId : Guid.Empty);
     }
 
     // Deserializes a JSON string into a list of SummarizationSetupData objects and converts it into a list of ColumnsDto objects

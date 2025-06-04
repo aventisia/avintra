@@ -599,7 +599,7 @@ public class QuestionAnswerService : IQuestionAnswerService
 
             // Fetch extracted data associated with the specified file IDs and ML model
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(w => w.MLModelId == fineTuningRequest.MLModelId && fineTuningRequest.FileIds.Contains(w.Id))
+                .GetByConditionAsync(w => w.MLModelId == fineTuningRequest.MLModelId && fineTuningRequest.FileIds.Contains(w.DocId))
                 .Include(i => i.UploadedDoc)
                 .Include(i => i.CreatedByUser)
                 .ToListAsync();
@@ -651,38 +651,50 @@ public class QuestionAnswerService : IQuestionAnswerService
         return serviceResponse;
     }
 
-    // Retrieves the Fine tuning history records for a specified machine learning model.
+    // Retrieves the fine tuning history records for a specified machine learning model.
     public async Task<ServiceResponse<IEnumerable<FineTuningHistoryDto>>> GetFineTuningDataHistoriesAsync(Guid mlModelId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<FineTuningHistoryDto>>
         {
             Data = null,
-            Message = "Failed to retrieve Fine tuning history. Please try again later."
+            Message = "Failed to retrieve fine tuning history. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Starting the process to fetch Fine tuning history for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Initiating retrieval of fine-tuning history for ML Model ID: {MLModelId}", mlModelId);
 
-            // Fetching Fine tuning records related to the provided ML model ID
-            var fineTuningHistory = await _unitOfWork.ScheduledModelRepo
+            // Retrieve scheduled models associated with the specified ML model ID and of type 'FineTuning'
+            var scheduledModels = await _unitOfWork.ScheduledModelRepo
                 .GetByConditionAsync(w => w.MLModelId == mlModelId && w.ScheduleType == ModelOperationTypesEnum.FineTuning)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.MLModel)
-                .ThenInclude(i2 => i2.UploadedDocs)
-                .ProjectToType<FineTuningHistoryDto>()
                 .ToListAsync();
 
-            _logger.LogInformation("Successfully fetched {Count} Fine tuning records for ML model ID: {MLModelId}", fineTuningHistory.Count, mlModelId);
+            var fineTuningLogs = new List<FineTuningHistoryDto>();
 
-            serviceResponse.Data = fineTuningHistory;
+            if (scheduledModels.Any())
+            {
+                // Retrieve fine-tuning logs that match the scheduled model IDs and have a status of 'FineTuning'
+                fineTuningLogs = await _unitOfWork.FineTuningLogRepo
+                    .GetByConditionAsync(w =>
+                        scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId) &&
+                        w.Status == ExtractedDataStatusesEnums.FineTuning
+                    )
+                    .Include(i => i.ScheduledModel)
+                    .Include(i => i.UploadedDoc)
+                    .ProjectToType<FineTuningHistoryDto>()
+                    .ToListAsync();
+            }
+
+            _logger.LogInformation("Retrieved {Count} fine-tuning record(s) for ML Model ID: {MLModelId}", fineTuningLogs.Count, mlModelId);
+
+            serviceResponse.Data = fineTuningLogs;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Fine tuning history successfully retrieved.";
+            serviceResponse.Message = "Fine tuning history retrieved successfully.";
         }
         catch (Exception ex)
         {
             // Log error if something goes wrong during the data retrieval process
-            _logger.LogError(ex, "Error while fetching Fine tuning history for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogError(ex, "Error while fetching fine tuning history for ML model ID: {MLModelId}", mlModelId);
         }
 
         return serviceResponse;

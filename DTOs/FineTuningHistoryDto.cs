@@ -13,7 +13,7 @@ public class FineTuningHistoryDto
     /// <summary>
     /// Gets or sets the identifier of the file used in the fine-tuning process.
     /// </summary>
-    public Guid FileId { get; set; }
+    public Guid DocId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the machine learning model associated with this fine-tuning request.
@@ -39,5 +39,5 @@ public class FineTuningHistoryDto
     /// <summary>
     /// Gets or sets the duration of the fine-tuning process in seconds.
     /// </summary>
-    public int? Duration { get; set; }
+    public double? Duration { get; set; }
 }

@@ -587,7 +587,7 @@ public class SummarizationService : ISummarizationService
         return serviceResponse;
     }
 
-    // Retrieves Fine tuning data records associated with the specified machine learning model ID.
+    // Retrieves fine tuning data records associated with the specified machine learning model ID.
     public async Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> GetFineTunningDataByMLModelIdAsync(Guid mlModelId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>
@@ -598,7 +598,7 @@ public class SummarizationService : ISummarizationService
 
         try
         {
-            _logger.LogInformation("Starting retrieval of Fine tuning data for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Starting retrieval of fine tuning data for ML model ID: {MLModelId}", mlModelId);
 
             var fineTuningDataList = await _unitOfWork.ExtractedDataRepo
                 .GetByConditionAsync(w => w.MLModelId == mlModelId && w.SubmitForFineTuning)
@@ -607,38 +607,38 @@ public class SummarizationService : ISummarizationService
                 .ProjectToType<SummarizationFineTuningDataDto>()
                 .ToListAsync();
 
-            _logger.LogInformation("Successfully retrieved {Count} Fine tuning data records for ML model ID: {MLModelId}", fineTuningDataList.Count, mlModelId);
+            _logger.LogInformation("Successfully retrieved {Count} fine tuning data records for ML model ID: {MLModelId}", fineTuningDataList.Count, mlModelId);
 
             serviceResponse.Data = fineTuningDataList;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Fine tuning data retrieved successfully.";
+            serviceResponse.Message = "fine tuning data retrieved successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving Fine tuning data for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogError(ex, "An error occurred while retrieving fine tuning data for ML model ID: {MLModelId}", mlModelId);
         }
 
         return serviceResponse;
     }
 
-    // Schedules a Fine tuning job for a specific machine learning model by sending the Fine tuning request details.
+    // Schedules a fine tuning job for a specific machine learning model by sending the fine tuning request details.
     public async Task<ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto fineTuningRequest)
     {
         // Initialize the service response with a default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<SummarizationFineTuningDataDto>>
         {
             Data = null,
-            Message = "Failed to schedule Fine tuning. Please try again later."
+            Message = "Failed to schedule fine tuning. Please try again later."
         };
 
         try
         {
-            // Log the start of the Fine tuning process
-            _logger.LogInformation("Starting Fine tuning scheduling for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+            // Log the start of the fine tuning process
+            _logger.LogInformation("Starting fine tuning scheduling for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
 
             // Fetch extracted data associated with the specified file IDs and ML model
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(w => w.MLModelId == fineTuningRequest.MLModelId && fineTuningRequest.FileIds.Contains(w.Id))
+                .GetByConditionAsync(w => w.MLModelId == fineTuningRequest.MLModelId && fineTuningRequest.FileIds.Contains(w.DocId))
                 .Include(i => i.UploadedDoc)
                 .Include(i => i.CreatedByUser)
                 .ToListAsync();
@@ -653,7 +653,7 @@ public class SummarizationService : ISummarizationService
                 return serviceResponse;
             }
 
-            // Create and insert a new scheduled Fine tuning job
+            // Create and insert a new scheduled fine tuning job
             var scheduledModel = new ScheduledModel
             {
                 MLModelId = fineTuningRequest.MLModelId,
@@ -667,66 +667,77 @@ public class SummarizationService : ISummarizationService
 
             await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModel);
 
-            // Attempt to save the scheduled Fine tuning job
+            // Attempt to save the scheduled fine tuning job
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to persist scheduled Fine tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+                _logger.LogError("Failed to persist scheduled fine tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
                 return serviceResponse;
             }
 
             // Log success and return the successful service response
-            _logger.LogInformation("Fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+            _logger.LogInformation("fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
 
             serviceResponse.Data = extractedDataList.Adapt<IEnumerable<SummarizationFineTuningDataDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Fine tuning job scheduled successfully.";
+            serviceResponse.Message = "fine tuning job scheduled successfully.";
         }
         catch (Exception ex)
         {
             // Log any unexpected exceptions that occur during the process
-            _logger.LogError(ex, "An error occurred while scheduling Fine tuning for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+            _logger.LogError(ex, "An error occurred while scheduling fine tuning for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
         }
 
         return serviceResponse;
     }
 
-    // Retrieves the Fine tuning history records for a specified machine learning model.
+    // Retrieves the fine tuning history records for a specified machine learning model.
     public async Task<ServiceResponse<IEnumerable<FineTuningHistoryDto>>> GetFineTuningDataHistoriesAsync(Guid mlModelId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<FineTuningHistoryDto>>
         {
             Data = null,
-            Message = "Failed to retrieve Fine tuning history. Please try again later."
+            Message = "Failed to retrieve fine tuning history. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Starting the process to fetch Fine tuning history for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Initiating retrieval of fine-tuning history for ML Model ID: {MLModelId}", mlModelId);
 
-            // Fetching Fine tuning records related to the provided ML model ID
-            var fineTuningHistory = await _unitOfWork.ScheduledModelRepo
+            // Retrieve scheduled models associated with the specified ML model ID and of type 'FineTuning'
+            var scheduledModels = await _unitOfWork.ScheduledModelRepo
                 .GetByConditionAsync(w => w.MLModelId == mlModelId && w.ScheduleType == ModelOperationTypesEnum.FineTuning)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.MLModel)
-                .ThenInclude(i2 => i2.UploadedDocs)
-                .ProjectToType<FineTuningHistoryDto>()
                 .ToListAsync();
 
-            _logger.LogInformation("Successfully fetched {Count} Fine tuning records for ML model ID: {MLModelId}", fineTuningHistory.Count, mlModelId);
+            var fineTuningLogs = new List<FineTuningHistoryDto>();
 
-            serviceResponse.Data = fineTuningHistory;
+            if (scheduledModels.Any())
+            {
+                // Retrieve fine-tuning logs that match the scheduled model IDs and have a status of 'FineTuning'
+                fineTuningLogs = await _unitOfWork.FineTuningLogRepo
+                    .GetByConditionAsync(w =>
+                        scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId) &&
+                        w.Status == ExtractedDataStatusesEnums.FineTuning
+                    )
+                    .Include(i => i.ScheduledModel)
+                    .Include(i => i.UploadedDoc)
+                    .ProjectToType<FineTuningHistoryDto>()
+                    .ToListAsync();
+            }
+
+            _logger.LogInformation("Retrieved {Count} fine-tuning record(s) for ML Model ID: {MLModelId}", fineTuningLogs.Count, mlModelId);
+
+            serviceResponse.Data = fineTuningLogs;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Fine tuning history successfully retrieved.";
+            serviceResponse.Message = "Fine tuning history retrieved successfully.";
         }
         catch (Exception ex)
         {
             // Log error if something goes wrong during the data retrieval process
-            _logger.LogError(ex, "Error while fetching Fine tuning history for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogError(ex, "Error while fetching fine tuning history for ML model ID: {MLModelId}", mlModelId);
         }
 
         return serviceResponse;
     }
-
 
     // Builds the prompt string for the summarization model using the setup settings
     private string? GenerateSummarizationPrompt(SummarizationDto summarizationDto)
