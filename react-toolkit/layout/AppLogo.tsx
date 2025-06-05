@@ -2,6 +2,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useNavigate, useNavigationType } from "react-router-dom";
 
 interface AppLogoProps {
   /** Set to true, if want to show aventisia logo */
@@ -25,12 +26,22 @@ const AppLogo = ({
 }: AppLogoProps) => {
   // Logo file
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
+  const navigate = useNavigate();
+  const navigationType = useNavigationType();
+  const workspaceModelURL = `${import.meta.env.VITE_WORKSPACE_URL}/ai-models`;
+
+  const handleBack = () => {
+    if (navigationType === "POP") {
+      navigate(workspaceModelURL, { replace: true });
+    } else {
+      navigate(-1);
+    }
+  };
 
   // Logo path
   const logoSrc = showFullLogo
     ? import.meta.env.BASE_URL + "logo.svg"
     : import.meta.env.BASE_URL + logoFile;
-  const workspaceModelURL = `${import.meta.env.VITE_WORKSPACE_URL}/ai-models`;
 
   // Return logo with app name
   return (
@@ -40,17 +51,7 @@ const AppLogo = ({
           size="icon8"
           variant="ghost"
           className="hover:bg-white/10"
-          onClick={() => {
-            console.log("window.history", window.history);
-
-            if (window.history.length > 1) {
-              console.log("greater than 1");
-              window.history.back();
-            } else {
-              console.log("less than 1");
-              window.location.href = workspaceModelURL; // example fallback URL
-            }
-          }}
+          onClick={handleBack}
         >
           <ArrowLeftIcon className="h-4 w-4 text-white/80" />
         </Button>
