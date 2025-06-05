@@ -3,7 +3,7 @@ export * from "./components/ExecuteFlow";
 
 // Hooks
 export * from "./hooks/useWebSocket";
-export * from "./hooks/useSendNodeToProcess";
+export * from "./utils/send-node-to-process";
 
 // Types
 export * from "./types/activity-node-data";

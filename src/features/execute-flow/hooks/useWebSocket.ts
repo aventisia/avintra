@@ -1,10 +1,10 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useTauriStore } from "@/stores/tauri-store";
 import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   getExecutionState,
-  useSendNodeToProcess,
+  sendNextNodeToProcess,
+  sendNodeToProcess,
   WebSocketCommandType,
   WebSocketMessageType,
 } from "..";
@@ -16,13 +16,6 @@ export default function useWebSocket() {
   const { setExecutionState } = useCurrentFlowStore(
     useShallow((state) => ({
       setExecutionState: state.setExecutionState,
-    })),
-  );
-
-  // Get the state if app is open in tauri window
-  const { isTauri } = useTauriStore(
-    useShallow((state) => ({
-      isTauri: state.isTauri,
     })),
   );
 
@@ -51,14 +44,10 @@ export default function useWebSocket() {
     [setExecutionState],
   );
 
-  // Custom hook handler to send node to process
-  const { sendNextNodeToProcess, sendNodeToProcess } =
-    useSendNodeToProcess(sendCommand);
-
   // Connect to web socket and handle messages
   useEffect(() => {
     // App is outside of tauri, web socket not available
-    if (!isTauri) return;
+    if (!("isTauri" in window)) return;
 
     // Create WebSocket connection
     const socket = new WebSocket("ws://127.0.0.1:9001");
@@ -86,12 +75,12 @@ export default function useWebSocket() {
 
         // if command is start
         if (msg.command === "start") {
-          sendNextNodeToProcess();
+          sendNextNodeToProcess(sendCommand);
           return;
         }
 
         // Send the node to process
-        sendNodeToProcess(msg.data || "nodeId");
+        sendNodeToProcess(msg.data || "nodeId", sendCommand);
       } catch (err) {
         console.error("Failed to parse WebSocket message:", err);
       }
@@ -116,8 +105,7 @@ export default function useWebSocket() {
         socket.close(1000, "Component unmounted");
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sendCommand, setExecutionState]);
 
   return { sendCommand };
 }
