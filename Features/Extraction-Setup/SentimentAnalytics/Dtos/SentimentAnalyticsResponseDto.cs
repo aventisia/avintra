@@ -46,4 +46,9 @@ public class SentimentAnalyticsSetupData
     /// Gets or sets the value associated with the sentiment analytics data item. 
     /// </summary>
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the confidence score of the extracted field.
+    /// </summary>
+    public string? ConfidenceScore { get; set; }
 }
