@@ -66,9 +66,9 @@ public class AIPersonaSetupDto
     // Behavioral Settings
 
     /// <summary>
-    /// Gets or sets the list of tone(s) or voice styles for the persona (e.g., formal, friendly, professional).
+    /// Gets or sets the tone(s) or voice styles for the persona (e.g., formal, friendly, professional).
     /// </summary>
-    public required List<string> ToneOfVoices { get; set; }
+    public required string ToneOfVoice { get; set; }
 
     /// <summary>
     /// Gets or sets the instructions for how the persona should behave or respond.
@@ -90,7 +90,7 @@ public class AIPersonaSetupDto
     /// <summary>
     /// Gets or sets the timeframe for context retention and memory. Defines how long past interactions remain relevant.
     /// </summary>
-    public required List<string> ContextMemoryTimeframes { get; set; }
+    public required string ContextMemoryTimeframe { get; set; }
 
     /// <summary>
     /// Gets or sets the temperature setting for creativity and randomness in the persona’s responses.
@@ -116,14 +116,19 @@ public class AIPersonaSetupDto
 }
 
 /// <summary>
-/// Represents specific instructions for handling individual documents associated with the AI persona.
+/// Defines specific handling instructions for documents associated with an AI persona.
 /// </summary>
 public class DocumentInstruction
 {
     /// <summary>
+    /// Gets or sets the unique identifier for the uploaded file.
+    /// </summary>
+    public required Guid Id { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the document being referenced for the persona.
     /// </summary>
-    public required string FileName { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets any custom instructions related to the document that affect the persona's behavior.
