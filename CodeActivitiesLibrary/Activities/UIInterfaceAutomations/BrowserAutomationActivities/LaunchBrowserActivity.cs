@@ -1,16 +1,15 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities;
+﻿using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
+using System;
+using System.Activities;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
