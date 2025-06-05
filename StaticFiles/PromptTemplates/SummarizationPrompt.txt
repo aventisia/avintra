@@ -9,6 +9,7 @@ Length Requirements:
 - Maximum Word Count: {{TotalMaximumWords}} words
 
 Instructions:
+- Do not include any numbers, explanations, or extra text outside the JSON.
 - Focus on key points and essential details: Highlight the most crucial aspects of the original content.
 - Avoid unnecessary repetition and irrelevant content: Strip away anything that doesn’t directly contribute to the core message.
 - Maintain original tone: Ensure the tone of the summary aligns with the tone of the original content.
