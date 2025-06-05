@@ -16,7 +16,7 @@ Instructions:
 - Each result must include:
     - "question": the original question text
     - "answer": the corresponding answer based on the context
-    - "confidenceScore": a string value representing the model’s confidence in the accuracy of the answer (e.g., "0.94")
+    - "confidenceScore": a string value representing the model’s confidence in the accuracy of the answer scaled from 1 to 100 (e.g., "94")
 
 Output Format:
 - Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:

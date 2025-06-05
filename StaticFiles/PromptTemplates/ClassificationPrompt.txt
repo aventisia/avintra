@@ -11,15 +11,16 @@ Instructions:
 - Do not include any numbers, explanations, or extra text outside the JSON.
 - Analyze the provided input and context.
 - For each category, return "true" if it matches or is relevant, otherwise return "false".
-- If AllowMultipleClasses is set to false, return "true" only for the single most accurate category, and "false" for all others.- Use "false" for any category that does not match or is irrelevant.
+- If AllowMultipleClasses is set to false, return "true" only for the single most accurate category, and "false" for all others.
+- Use "false" for any category that does not match or is irrelevant.
 - If AllowMultipleClasses is set to true, return "true" for all categories that are relevant or match the input.
 - Format the output as a JSON array. Each object must include:
     - "name": the category name
     - "value": a string value "true" or "false"
     - "confidenceScore": a string representing the model's confidence in the classification
 - Use only the given input and context.
-- For each extracted categories, include a confidence score representing the model's certainty about the accuracy of the extracted value.
-- Confidence scores must be returned as string values.
+- For each extracted category, include a confidence score representing the model's certainty about the accuracy of the extracted value.
+- Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "85" for 0.85 confidence).
 
 Output Format:
 

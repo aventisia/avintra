@@ -13,7 +13,7 @@ Instructions:
 - Ensure complete structural accuracy and formatting consistency.
 - Include only the specified columns. Do not include extra headers or columns not listed above.
 - For each extracted field, include a confidence score representing the model's certainty about the accuracy of the extracted value.
-- Confidence scores must be returned as string values.
+- Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "85" for 0.85 confidence).
 
 Expected Output Format: 
 - Provide the response as a valid JSON string only. Ensure the response follows this exact structure

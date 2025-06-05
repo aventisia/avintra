@@ -19,7 +19,7 @@ Instructions:
 - Each category result must include:
     - "name": the category name
     - "value": "true" or "false"
-    - "confidenceScore": a string representing the model's confidence (e.g., "0.92").
+    - "confidenceScore": a string representing the model's confidence scaled from 1 to 100 (e.g., "92").
 
 Output Format:
 "[{"name": "category_name", "value": "true", "confidenceScore": "confidence_score"}, {"name": "another_category_name", "value": "false", "confidenceScore": "another_confidence_score"}]"
