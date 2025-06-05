@@ -41,9 +41,13 @@ const AppLogo = ({
           variant="ghost"
           className="hover:bg-white/10"
           onClick={() => {
+            console.log("window.history", window.history);
+
             if (window.history.length > 1) {
+              console.log("greater than 1");
               window.history.back();
             } else {
+              console.log("less than 1");
               window.location.href = workspaceModelURL; // example fallback URL
             }
           }}
