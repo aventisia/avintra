@@ -7,6 +7,7 @@ Please extract the following table column data as per the instructions if any:
 {{Tables}}
 
 Instructions:
+- Do not include any numbers, explanations, or extra text outside the JSON.
 - Provide the response as a valid JSON string only.
 - Do not include any additional text, explanation, or commentary outside the JSON.
 - Ensure complete structural accuracy and formatting consistency.
