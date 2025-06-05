@@ -35,11 +35,11 @@ const ExecuteFlow = () => {
   const startExecution = () => {
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
-    localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-    localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
 
     // Open the desktop executor if the app is running in Tauri
     if ("isTauri" in window) {
+      localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+      localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
       openDesktopExecutor();
     } else {
       toast.info(
