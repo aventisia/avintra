@@ -18,6 +18,7 @@ Communication Modes:
 - Video Enabled: {EnableVideo}
 
 Instructions: You will be given a task prompt and a context to work with. Based on the above persona settings and documents:
+- Do not include any numbers, explanations, or extra text outside the JSON.
 - Read and understand the context carefully.
 - Follow persona-specific behavior, tone, and limitations.
 - Use document-based knowledge only where relevant.
