@@ -94,7 +94,7 @@ export const useFetchFlowToLoad = () => {
     }
 
     // Set document title
-    document.title = `${data.data.name} - ${import.meta.env.VITE_COMPANY_NAME} ${import.meta.env.VITE_APP_NAME}`;
+    document.title = `${data.data.name} - ${import.meta.env.VITE_APP_NAME} | ${import.meta.env.VITE_COMPANY_NAME}`;
   }, [
     data,
     setCurrentFlow,
