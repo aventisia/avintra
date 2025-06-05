@@ -1,0 +1,17 @@
+meta {
+  name: Convert text to speech
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/tts/synthesize/?text=Hi how are you&indext=12&speed=150
+  body: none
+  auth: none
+}
+
+params:query {
+  text: Hi how are you
+  indext: 12
+  speed: 150
+}
