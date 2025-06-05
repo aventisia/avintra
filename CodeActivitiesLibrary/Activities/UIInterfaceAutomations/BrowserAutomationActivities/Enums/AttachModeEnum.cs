@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums
 {
     public enum AttachModeEnum
     {
