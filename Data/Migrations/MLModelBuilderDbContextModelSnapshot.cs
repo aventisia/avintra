@@ -108,6 +108,12 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<Guid>("DocId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("ExecutionCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FailedCount")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -125,6 +131,9 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("TokenCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .HasColumnType("text");
