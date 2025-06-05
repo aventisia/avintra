@@ -116,7 +116,8 @@ export default function useWebSocket() {
         socket.close(1000, "Component unmounted");
       }
     };
-  }, [isTauri, sendNextNodeToProcess, sendNodeToProcess, setExecutionState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { sendCommand };
 }
