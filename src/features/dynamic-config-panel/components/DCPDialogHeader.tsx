@@ -5,12 +5,12 @@ import {
   DialogTitle,
 } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
-import { X } from "lucide-react";
-// import { InputField } from "@aventisia/ui/form";
-// import { DCPForm } from "./DCPForm";
+import { Pen, X } from "lucide-react";
 import { Input } from "@aventisia/ui";
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 import { useShallow } from "zustand/react/shallow";
+// import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 interface DialogDefaultHeaderProps extends React.PropsWithChildren {
   description?: string;
@@ -22,6 +22,8 @@ const DCPDialogHeader = ({
   children,
   className,
 }: DialogDefaultHeaderProps) => {
+  const [editing, setEditing] = useState(false);
+
   // Get node unique name state (required to get config panel data)
   const { nodeLabel = "Dynamic Config Panel", setNodeLabel } =
     useDynamicConfigPanelStore(
@@ -41,12 +43,24 @@ const DCPDialogHeader = ({
       {/* Left side - Dialog Heading and description */}
       <div className="ml-2 flex flex-col">
         <DialogTitle className="flex items-center font-semibold text-foreground">
-          <Input
-            name="label"
-            className="-ml-2 truncate !border-0 !border-none !shadow-none !outline-none !ring-0 focus:!border focus:!border-input focus:!bg-background focus:!shadow-sm focus:!outline-none focus:!ring-2 focus:!ring-ring"
-            value={nodeLabel}
-            onChange={(e) => setNodeLabel(e.target.value)}
-          />
+          {editing ? (
+            <Input
+              name="label"
+              className="truncate !border-0 !border-none !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
+              value={nodeLabel}
+              autoFocus
+              onChange={(e) => setNodeLabel(e.target.value)}
+              onBlur={() => setEditing(false)}
+            />
+          ) : (
+            <div
+              onClick={() => setEditing(true)}
+              className="flex h-10 items-center gap-2"
+            >
+              <span className="max-w-52 truncate">{nodeLabel}</span>
+              <Pen className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
         </DialogTitle>
         <DialogDescription className="text-sm tracking-normal text-muted-foreground">
           {description}
