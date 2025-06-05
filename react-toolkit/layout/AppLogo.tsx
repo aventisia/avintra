@@ -1,4 +1,7 @@
+import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 interface AppLogoProps {
   /** Set to true, if want to show aventisia logo */
@@ -30,15 +33,19 @@ const AppLogo = ({
 
   // Return logo with app name
   return (
-    <a
-      href={import.meta.env.BASE_URL}
-      className={cn(
-        "flex items-center justify-center gap-2 font-medium",
-        className,
-      )}
-    >
+    <div className="flex items-center gap-1.5">
+      <Tooltip content="Back">
+        <Button
+          size="icon8"
+          variant="ghost"
+          className="hover:bg-white/10"
+          onClick={() => window.history.back()}
+        >
+          <ArrowLeftIcon className="h-4 w-4 text-white/80" />
+        </Button>
+      </Tooltip>
       <img className={cn(className)} src={logoSrc} alt="Logo" />
-    </a>
+    </div>
   );
 };
 
