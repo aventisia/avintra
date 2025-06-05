@@ -2,7 +2,6 @@ import { AutosizeTextareaFieldProps, CheckboxFieldProps } from "@aventisia/ui/fo
 
 const summarizedTextProps: AutosizeTextareaFieldProps = {
     name: "summarizedText",
-    placeholder: "Summarized Text",
     minHeight: 10,
     isRequired: true,
     className: "text-sm resize-none"

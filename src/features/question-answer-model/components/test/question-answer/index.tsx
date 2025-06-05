@@ -41,11 +41,7 @@ const QuestionAnswerFields = ({
                 control={control}
                 name={`questionAnswers.${index}.answer`}
                 render={({ field }) => (
-                  <AutosizeTextareaField
-                    {...answerProps}
-                    {...field}
-                    placeholder="Type..."
-                  />
+                  <AutosizeTextareaField {...answerProps} {...field} />
                 )}
               />
             </FormControl>

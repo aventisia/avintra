@@ -66,11 +66,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
                 control={control}
                 name={`fields.${index}.value`}
                 render={({ field }) => (
-                  <InputField
-                    {...fieldValueProps}
-                    {...field}
-                    placeholder={`Enter value for ${fieldName}`}
-                  />
+                  <InputField {...fieldValueProps} {...field} />
                 )}
               />
             </FormControl>
