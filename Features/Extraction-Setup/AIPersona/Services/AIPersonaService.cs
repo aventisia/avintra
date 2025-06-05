@@ -688,21 +688,46 @@ public class AIPersonaService : IAIPersonaService
         }
 
         return serviceResponse;
+    
     }
 
-    // Builds the prompt string for the summarization model using the setup settings
+    // Builds the prompt string for the ai persona model using the setup settings
     private string? GenerateAIPersonaPrompt(AIPersonaDto aiPersonaDto)
     {
-        var defaultPrompt = new StringBuilder();
+        var documentPrompt = new StringBuilder();
 
+        // Check if there are any documents provided in the SetupObject
+        if (aiPersonaDto.SetupObject.Documents != null && aiPersonaDto.SetupObject.Documents.Any())
+        {
+            // Loop through each document and append its name and optional instructions to the prompt
+            foreach (var doc in aiPersonaDto.SetupObject.Documents)
+            {
+                documentPrompt.AppendLine($"Document Name: {doc.Name}");
+                if (!string.IsNullOrWhiteSpace(doc.Instructions))
+                {
+                    documentPrompt.AppendLine($"Instructions: {doc.Instructions}");
+                }
+                documentPrompt.AppendLine(); // Add a blank line for spacing between documents
+            }
+        }
 
         // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SummarizationPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Context}}, {{CharactersPerChunk}}, {{ChunkOverlap}}, {{TotalMinimumWords}}, and {{TotalMaximumWords}} in the template with the respective sections
-                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                    }
-                );
+        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("AIPersonaPrompt.txt", new Dictionary<string, string>()
+            {
+                // Replace the placeholders {{Name}}, {{RoleOrObjective}}, {{CategoryOrDomain}}, {{ToneOfVoice}}, {{Instructions}}, {{ExclusionsOrBoundaries}}, {{ContextMemoryTimeframe}}, {{Temperature}}, {{Documents}}, {{EnableChat}}, {{EnableAudio}} and {{EnableVideo}} in the template with the respective sections
+                {"{{Name}}", aiPersonaDto.SetupObject.Name?.Replace("\n", "").Trim()},
+                {"{{RoleOrObjective}}", aiPersonaDto.SetupObject.RoleOrObjective?.Replace("\n", "").Trim()},
+                {"{{CategoryOrDomain}}", aiPersonaDto.SetupObject.CategoryOrDomain?.ToString()},
+                {"{{ToneOfVoice}}", aiPersonaDto.SetupObject.ToneOfVoice?.ToString() },
+                {"{{Instructions}}", aiPersonaDto.SetupObject.Instructions?.ToString() },
+                {"{{ExclusionsOrBoundaries}}", aiPersonaDto.SetupObject.ExclusionsOrBoundaries?.ToString()},
+                {"{{ContextMemoryTimeframe}}", aiPersonaDto.SetupObject.ContextMemoryTimeframe?.ToString()},
+                {"{{Temperature}}", aiPersonaDto.SetupObject.Temperature.ToString()},
+                {"{{Documents}}", documentPrompt.ToString().Replace("\n", " ").Trim()},
+                {"{{EnableChat}}", aiPersonaDto.SetupObject.EnableChat.ToString()},
+                {"{{EnableAudio}}", aiPersonaDto.SetupObject.EnableAudio.ToString()},
+                {"{{EnableVideo}}", aiPersonaDto.SetupObject.EnableVideo.ToString()}
+            });
 
         // Return the final generated prompt after replacing newline characters and returning the string
         return generatedPrompt.Replace("\n", "").ToString();
