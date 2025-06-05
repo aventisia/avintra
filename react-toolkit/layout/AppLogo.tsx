@@ -30,6 +30,7 @@ const AppLogo = ({
   const logoSrc = showFullLogo
     ? import.meta.env.BASE_URL + "logo.svg"
     : import.meta.env.BASE_URL + logoFile;
+  const workspaceModelURL = `${import.meta.env.VITE_WORKSPACE_URL}/ai-models`;
 
   // Return logo with app name
   return (
@@ -39,11 +40,18 @@ const AppLogo = ({
           size="icon8"
           variant="ghost"
           className="hover:bg-white/10"
-          onClick={() => window.history.back()}
+          onClick={() => {
+            if (window.history.length > 1) {
+              window.history.back();
+            } else {
+              window.location.href = workspaceModelURL; // example fallback URL
+            }
+          }}
         >
           <ArrowLeftIcon className="h-4 w-4 text-white/80" />
         </Button>
       </Tooltip>
+
       <img className={cn(className)} src={logoSrc} alt="Logo" />
     </div>
   );
