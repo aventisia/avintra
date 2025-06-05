@@ -1,9 +1,8 @@
-use std::sync::{Arc, Mutex};
 use futures_util::{SinkExt, StreamExt};
+use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
-//use tokio_tungstenite::{accept_async, tungstenite::Message};
-use tokio_tungstenite::{accept_async};
 use std::net::SocketAddr;
+use tokio_tungstenite::accept_async;
 
 pub async fn start_websocket_server() {
     let addr = "127.0.0.1:9001".parse::<SocketAddr>().unwrap();
