@@ -8,6 +8,7 @@ import { format, isValid } from "date-fns";
 import { getColumnName } from "../../constants/column-display-names";
 import { FineTuneTableDTO } from "../../dtos/fine-tune-table-dto";
 import { FineTuneRowActions } from "../fine-tune-row-actions/FineTuneRowActions";
+import { FineTuneTableCellLink } from "./FineTuneTableCellLink";
 
 // import { FineTuneTableCellLink } from "./FineTuneTableCellLink";
 
@@ -85,10 +86,13 @@ export const getFineTuneTableColumns = (
         />
       ),
       cell: ({ row }) => {
-        const { docName } = row.original;
+        const { docName, docId, id } = row.original;
         return (
-          // <FineTuneTableCellLink rowId={id || "rowId"} cellValue={docName} />
-          <div className="w-auto font-medium">{docName}</div>
+          <FineTuneTableCellLink
+            rowId={id || "rowId"}
+            cellValue={docName}
+            fileId={docId}
+          />
         );
       },
     },
@@ -221,7 +225,12 @@ export const getFineTuneTableColumns = (
       header: ({ column }) => (
         <DTColumnHeader className="w-7" column={column} title={""} />
       ),
-      cell: ({ row }) => <FineTuneRowActions rowId={row.original.id} />,
+      cell: ({ row }) => (
+        <FineTuneRowActions
+          rowId={row.original.id}
+          fileId={row.original.docId}
+        />
+      ),
     },
   ];
 };

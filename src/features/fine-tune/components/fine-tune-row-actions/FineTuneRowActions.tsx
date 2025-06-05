@@ -11,11 +11,15 @@ import { FineTuneRowOpenAction } from "./FineTuneRowOpenAction";
 
 // import { ModelTestAction } from "./ModelTestAction";
 
-interface RunReviewRowActionsProps {
+interface FineTuneRowActionsProps {
   rowId: string;
+  fileId: string;
 }
 
-export const FineTuneRowActions = ({ rowId }: RunReviewRowActionsProps) => {
+export const FineTuneRowActions = ({
+  rowId,
+  fileId,
+}: FineTuneRowActionsProps) => {
   return (
     // Dropdown menu for model table row action */}
     <DataTableRowActions className="w-32">
@@ -26,7 +30,7 @@ export const FineTuneRowActions = ({ rowId }: RunReviewRowActionsProps) => {
       {/* <ModelTestAction rowId={rowId} /> */}
 
       {/* To open a row */}
-      <FineTuneRowOpenAction />
+      <FineTuneRowOpenAction fileId={fileId} />
 
       {/* DropdownMenuSeparator component */}
       {/* <DropdownMenuSeparator /> */}

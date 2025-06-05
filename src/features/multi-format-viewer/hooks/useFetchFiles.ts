@@ -57,5 +57,5 @@ export const useFetchUploadedFiles = () => {
   }, [error, isError]);
 
   // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading, refetch };
+  return { data, isFetching, isLoading, refetch, error };
 };

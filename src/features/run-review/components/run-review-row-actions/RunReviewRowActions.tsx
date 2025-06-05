@@ -13,9 +13,13 @@ import { RunReviewRowOpenAction } from "./RunReviewRowOpenAction";
 
 interface RunReviewRowActionsProps {
   rowId: string;
+  fileId: string;
 }
 
-export const RunReviewRowActions = ({ rowId }: RunReviewRowActionsProps) => {
+export const RunReviewRowActions = ({
+  rowId,
+  fileId,
+}: RunReviewRowActionsProps) => {
   return (
     // Dropdown menu for model table row action */}
     <DataTableRowActions className="w-32">
@@ -26,7 +30,7 @@ export const RunReviewRowActions = ({ rowId }: RunReviewRowActionsProps) => {
       {/* <ModelTestAction rowId={rowId} /> */}
 
       {/* To open a row */}
-      <RunReviewRowOpenAction />
+      <RunReviewRowOpenAction fileId={fileId} />
 
       {/* DropdownMenuSeparator component */}
       {/* <DropdownMenuSeparator /> */}

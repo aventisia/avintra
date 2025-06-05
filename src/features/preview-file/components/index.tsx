@@ -5,6 +5,7 @@ import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import QuestionsAnswersTestForm from "@/features/question-answer-model/components/test/QuestionsAnswersTestForm";
 import SentimentAnalyticsFormTestForm from "@/features/sentiment-analytics/components/test/SentimentAnalysisTestForm";
 import SummarizationModelTestForm from "@/features/summarization-model/components/test/SummarizationModelTestForm";
@@ -18,22 +19,52 @@ import { useTabStore } from "@/store/tab-store";
 import { toast } from "@aventisia/ui/sonner";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
-export const RunReviewView = () => {
+import { useValidateFidQueryParam } from "../hooks/useValidateFidQueryParams";
+
+export const PreviewFile = () => {
   useLabelDataQueryKey();
-  const { data: pdfList, refetch, isLoading } = useFetchUploadedFiles();
+  const { isValid, isLoading: isFileListLoading } = useValidateFidQueryParam();
+  const { data: fileList, refetch, isLoading } = useFetchUploadedFiles();
   const { data: modelData, isLoading: isModelDataLoading } = useFetchModel();
   const { setActiveTab } = useTabStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { selectedFile } = useFileListStore(
+    useShallow((state) => ({
+      setSelectedFile: state.setSelectedFile,
+      selectedFile: state.selectedFile,
+    })),
+  );
 
   useEffect(() => {
     setActiveTab("test");
   }, [setActiveTab]);
 
-  if (isLoading || isModelDataLoading) {
+  useEffect(() => {
+    if (selectedFile?.id) {
+      const currentFid = searchParams.get("fid");
+      if (currentFid !== selectedFile.id) {
+        searchParams.set("fid", selectedFile.id);
+        setSearchParams(searchParams);
+      }
+    }
+  }, [selectedFile, searchParams, setSearchParams]);
+
+  if (isLoading || isModelDataLoading || isFileListLoading) {
     return (
       <div className="flex h-[calc(100vh-3.5rem)] w-full items-center justify-center gap-3">
         <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
         <span> Loading...</span>
+      </div>
+    );
+  }
+
+  if (!isValid) {
+    return (
+      <div className="flex h-[calc(100vh-3.5rem)] w-full items-center justify-center gap-3">
+        <span> Failed to load Model. Please try again.... </span>
       </div>
     );
   }
@@ -63,7 +94,7 @@ export const RunReviewView = () => {
 
   return (
     <>
-      <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
+      <Nav isPdfAvailable={!!fileList?.data.length} refetchList={refetch} />
 
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={70} minSize={35}>

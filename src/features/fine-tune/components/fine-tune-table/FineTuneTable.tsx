@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { SEARCH_COLUMN, TABLE_HEADING } from "../../constants";
 import { columnDisplayNames } from "../../constants/column-display-names";
 import { columnVisibilityState } from "../../constants/column-visibility-state";
-import { useFetchFineTuneRecords } from "../../hooks/useFetchRunReviewRecords";
+import { useFetchFineTuneRecords } from "../../hooks/useFetchFineTuneRecords";
 import { useScheduleFineTuneStore } from "../../stores/schedule-fine-tune-store";
 import { FineTuneBulkActions } from "../FineTuneBulkActions";
 import FineTuneStats from "../FineTuneStats";

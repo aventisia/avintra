@@ -3,7 +3,13 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 import { useOpenRunReviewRecord } from "../../hooks/useOpenRunReviewRecords";
 
-export const RunReviewRowOpenAction = () => {
+interface RunReviewRowOpenActionProps {
+  fileId: string;
+}
+
+export const RunReviewRowOpenAction = ({
+  fileId,
+}: RunReviewRowOpenActionProps) => {
   // Get handle function to open Record
   const handleOpenRunReviewAction = useOpenRunReviewRecord();
 
@@ -12,7 +18,7 @@ export const RunReviewRowOpenAction = () => {
     <SimpleDDMenuItem
       content="Open"
       Icon={ArrowTopRightOnSquareIcon}
-      onClick={() => handleOpenRunReviewAction()}
+      onClick={() => handleOpenRunReviewAction(fileId)}
     />
   );
 };

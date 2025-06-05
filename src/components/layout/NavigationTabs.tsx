@@ -16,9 +16,9 @@ export const NavigationTabs = () => {
   useEffect(() => {
     const currentPath = window.location.pathname.split("/")[1];
 
-    const normalizedPath =
-      currentPath === "run-review-view" ? "run-review" : currentPath;
-    setActiveTab(normalizedPath);
+    // const normalizedPath =
+    //   currentPath === "run-review-view" ? "run-review" : currentPath;
+    setActiveTab(currentPath);
   }, []);
 
   const { navigateWithQueryParams, modelName } = useNavigatePreserveQuery();

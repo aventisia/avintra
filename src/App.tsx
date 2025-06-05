@@ -12,8 +12,8 @@ import {
 import { MLModelBuilderLayout } from "./components/layout/MLModelBuilderLayout";
 import { FineTunePage } from "./pages/FineTunePage";
 import { LabelDataPage } from "./pages/LabelDataPage";
+import { PreviewFilePage } from "./pages/PreveiwFilePage";
 import { RunReivewPage } from "./pages/RunReivewPage";
-import { RunReivewViewPage } from "./pages/RunReviewViewPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60 * 1000 } },
@@ -29,7 +29,7 @@ const router = createBrowserRouter(
         { path: "/", element: <Navigate to="/setup-test" /> },
         { path: "/setup-test", element: <LabelDataPage /> },
         { path: "/run-review", element: <RunReivewPage /> },
-        { path: "/run-review-view", element: <RunReivewViewPage /> },
+        { path: "/preview", element: <PreviewFilePage /> },
         { path: "/fine-tune", element: <FineTunePage /> },
 
         { path: "/*", element: <NotFoundPage /> },

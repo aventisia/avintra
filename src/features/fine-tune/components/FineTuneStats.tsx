@@ -1,5 +1,5 @@
 // import { RunReviewTableDTO } from "../dtos/run-review-table-dto";
-import { useFetchFineTuneRecords } from "../hooks/useFetchRunReviewRecords";
+import { useFetchFineTuneRecords } from "../hooks/useFetchFineTuneRecords";
 
 const StatCard = ({
   label,

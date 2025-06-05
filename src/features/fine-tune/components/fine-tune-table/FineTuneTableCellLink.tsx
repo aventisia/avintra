@@ -1,7 +1,7 @@
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 
-import { useOpenRunReviewRecord } from "../../hooks/useOpenRunReviewRecords";
+import { useOpenFineTuneRecord } from "../../hooks/useOpenFineTuneRecords";
 
 // import { useOpenModel } from "../hooks/useOpenModel";
 
@@ -11,16 +11,20 @@ interface FineTuneTableCellLinkProps {
 
   /** The cell value to display. */
   cellValue: string;
+
+  /** File id of the record/doc */
+  fileId: string;
 }
 
 export const FineTuneTableCellLink = ({
   cellValue,
+  fileId,
 }: FineTuneTableCellLinkProps) => {
-  const handleOpenRunReviewAction = useOpenRunReviewRecord();
+  const handleOpenFineTuneAction = useOpenFineTuneRecord();
 
   return (
     <Button
-      onClick={() => handleOpenRunReviewAction()}
+      onClick={() => handleOpenFineTuneAction(fileId)}
       variant={"link"}
       className={cn(
         "!h-6 w-auto justify-start truncate font-medium text-foreground hover:text-primary",

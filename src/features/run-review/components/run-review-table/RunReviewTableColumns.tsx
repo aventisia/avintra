@@ -83,9 +83,13 @@ export const getRunReviewTableColumns = (
         />
       ),
       cell: ({ row }) => {
-        const { id, docName } = row.original;
+        const { id, docName, docId } = row.original;
         return (
-          <RunReviewTableCellLink rowId={id || "rowId"} cellValue={docName} />
+          <RunReviewTableCellLink
+            rowId={id || "rowId"}
+            cellValue={docName}
+            fileId={docId}
+          />
         );
       },
     },
@@ -178,7 +182,12 @@ export const getRunReviewTableColumns = (
       header: ({ column }) => (
         <DTColumnHeader className="w-7" column={column} title={""} />
       ),
-      cell: ({ row }) => <RunReviewRowActions rowId={row.original.id} />,
+      cell: ({ row }) => (
+        <RunReviewRowActions
+          rowId={row.original.id}
+          fileId={row.original.docId}
+        />
+      ),
     },
   ];
 };

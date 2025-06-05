@@ -1,18 +1,24 @@
 import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
-import { useOpenRunReviewRecord } from "../../hooks/useOpenRunReviewRecords";
+import { useOpenFineTuneRecord } from "../../hooks/useOpenFineTuneRecords";
 
-export const FineTuneRowOpenAction = () => {
+interface FineTuneRowOpenActionProps {
+  fileId: string;
+}
+
+export const FineTuneRowOpenAction = ({
+  fileId,
+}: FineTuneRowOpenActionProps) => {
   // Get handle function to open Record
-  const handleOpenRunReviewAction = useOpenRunReviewRecord();
+  const handleOpenFineTuneRecord = useOpenFineTuneRecord();
 
   // Return the component
   return (
     <SimpleDDMenuItem
       content="Open"
       Icon={ArrowTopRightOnSquareIcon}
-      onClick={() => handleOpenRunReviewAction()}
+      onClick={() => handleOpenFineTuneRecord(fileId)}
     />
   );
 };

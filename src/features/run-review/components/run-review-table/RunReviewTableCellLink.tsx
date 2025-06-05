@@ -11,16 +11,20 @@ interface RunReviewTableCellLinkProps {
 
   /** The cell value to display. */
   cellValue: string;
+
+  /** File id of the record/doc */
+  fileId: string;
 }
 
 export const RunReviewTableCellLink = ({
+  fileId,
   cellValue,
 }: RunReviewTableCellLinkProps) => {
   const handleOpenRunReviewAction = useOpenRunReviewRecord();
 
   return (
     <Button
-      onClick={() => handleOpenRunReviewAction()}
+      onClick={() => handleOpenRunReviewAction(fileId)}
       variant={"link"}
       className={cn(
         "!h-6 w-auto justify-start truncate font-medium text-foreground hover:text-primary",
