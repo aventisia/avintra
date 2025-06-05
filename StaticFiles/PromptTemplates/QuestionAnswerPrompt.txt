@@ -2,15 +2,23 @@
 
 Context: {{Context}}
 
-Please extract the answers to the following questions and format them as shown below.
-{{Questions}}
+Please extract answers to the following questions from the provided context. Include a confidence score for each extracted answer based on accuracy and relevance.
+
+Questions: {{Questions}}
 
 Instructions:
-Use only the provided question for answer.
-Classify each question and answer based on their intent and content.
-Do not include any text outside the JSON structure.
+- Do not modify, rephrase, or alter the questions in any way. Use them exactly as provided.
+- Do not include any numbers, explanations, or extra text outside the JSON.
+- Answer only the questions listed.
+- Base all answers strictly on the given context.
+- Classify and extract each answer based on the question’s intent and content.
+- Do not include any text or commentary outside the specified JSON output.
+- Each result must include:
+    - "question": the original question text
+    - "answer": the corresponding answer based on the context
+    - "confidenceScore": a string value representing the model’s confidence in the accuracy of the answer (e.g., "0.94")
 
 Output Format:
 - Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
 
-"[{"question": "question_1", "answer": "answer_1."}, {"question": "another_question", "answer": "another_answer"}]"
+"[{"question": "question_1", "answer": "answer_1", "confidenceScore": "confidence_score1"}, {"question": "another_question", "answer": "another_answer", "confidenceScore": "another_confidence_score"}]"

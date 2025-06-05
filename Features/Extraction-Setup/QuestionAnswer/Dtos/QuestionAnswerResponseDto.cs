@@ -46,4 +46,9 @@ public class QuestionAnswerSetupData
     /// Gets or sets the text of the answer. 
     /// </summary>
     public string? Answer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the confidence score of the extracted field.
+    /// </summary>
+    public string? ConfidenceScore { get; set; }
 }
