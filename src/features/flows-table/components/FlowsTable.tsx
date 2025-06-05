@@ -54,7 +54,7 @@ export const FlowsTable = () => {
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
-                  placeholder="Search flows..."
+                  placeholder="Search agents..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
                 <Separator orientation="vertical" className="mx-2 h-6" />
