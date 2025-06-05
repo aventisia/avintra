@@ -13,13 +13,15 @@ import {
 
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)
-  const { nodeId, nodeData, setShowDialog } = useDynamicConfigPanelStore(
-    useShallow((state) => ({
-      nodeId: state.nodeId,
-      nodeData: state.nodeData,
-      setShowDialog: state.setShowDialog,
-    })),
-  );
+  const { nodeId, nodeData, nodeLabel, setShowDialog } =
+    useDynamicConfigPanelStore(
+      useShallow((state) => ({
+        nodeId: state.nodeId,
+        nodeData: state.nodeData,
+        nodeLabel: state.nodeLabel,
+        setShowDialog: state.setShowDialog,
+      })),
+    );
 
   // Get name (activityName), inputs and outputs from nodeData
   const nodeUniqueName = nodeData?.name ?? "activityName";
@@ -83,6 +85,7 @@ export const useDefineDCPForm = () => {
     nodeId,
     inputKeys,
     outputKeys,
+    nodeLabel,
     setShowDialog,
   };
 };
