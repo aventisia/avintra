@@ -113,7 +113,7 @@ export const FlowCrudForm = () => {
             disabled={!isDirty || !isAvailable || isCheckPending}
             className="min-w-[5rem]"
           >
-            {crudAction === "create" ? "Create flow" : "Save changes"}
+            {crudAction === "create" ? "Create agent" : "Save changes"}
           </Button>
         </div>
       )}

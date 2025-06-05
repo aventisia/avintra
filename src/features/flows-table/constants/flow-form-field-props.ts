@@ -11,7 +11,7 @@ import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 // Flow Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Flow Id",
+  label: "Agent Id",
   disabled: true,
 };
 

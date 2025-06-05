@@ -3,7 +3,7 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "id" },
-  { key: "flowId", value: "Flow Id" },
+  { key: "flowId", value: "Agent Id" },
   { key: "name", value: "Name" },
   { key: "isLocked", value: "Locked" },
   { key: "isArchived", value: "Archived" },

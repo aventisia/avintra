@@ -57,7 +57,7 @@ export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "flows" : "flow"}`,
+                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "agents" : "agent"}`,
               });
             }}
           />

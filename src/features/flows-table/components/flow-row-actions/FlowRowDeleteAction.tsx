@@ -34,7 +34,7 @@ export const FlowRowDeleteAction = ({ rowId }: FlowRowDeleteActionProps) => {
               crudAction: "delete",
             }),
           alertType: "delete-record",
-          additionalText: "flow",
+          additionalText: "agent",
         });
       }}
     />

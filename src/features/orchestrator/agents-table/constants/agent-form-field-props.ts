@@ -4,13 +4,6 @@ import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelec
 
 import { getLicensesToSelect } from "../../licenses-table/apis/licenses-table-apis";
 
-// Project Id
-export const projectIdProps: InputFieldProps = {
-  name: "flowId",
-  label: "Flow Id",
-  disabled: true,
-};
-
 // Agent Id
 export const idProps: InputFieldProps = {
   name: "id",

@@ -11,10 +11,10 @@ import { z } from "zod";
  */
 export const flowNameSchema = z
   .string()
-  .min(1, { message: reqError("Flow name") })
-  .max(255, { message: maxLenError("Flow name", 255) })
+  .min(1, { message: reqError("Agent name") })
+  .max(255, { message: maxLenError("Agent name", 255) })
   .regex(alphaNumericRegex, {
-    message: alphaNumericError("Flow name"),
+    message: alphaNumericError("Agent name"),
   });
 
 /**
@@ -22,11 +22,11 @@ export const flowNameSchema = z
  */
 export const flowZodSchema = z.object({
   id: z.string(),
-  type: z.string().min(1, { message: reqError("Flow type") }),
+  type: z.string().min(1, { message: reqError("Agent type") }),
   name: flowNameSchema,
   description: z
     .string()
-    .max(500, { message: maxLenError("Flow description", 500) }),
+    .max(500, { message: maxLenError("Agent description", 500) }),
   thumbnail: z.string(),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
