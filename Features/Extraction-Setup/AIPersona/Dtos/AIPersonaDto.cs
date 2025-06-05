@@ -126,6 +126,12 @@ public class AIPersonaSetupDto
 /// </summary>
 public class DocumentInstruction
 {
+
+    /// <summary>
+    /// Gets or sets the path of uploaded file. 
+    /// </summary>
+    public required string FilePath { get; set; }
+
     /// <summary>
     /// Gets or sets the unique identifier for the uploaded file.
     /// </summary>
