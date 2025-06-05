@@ -1,0 +1,11 @@
+meta {
+  name: Convert speech to text by url
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/stt/voices/
+  body: none
+  auth: none
+}
