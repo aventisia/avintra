@@ -109,7 +109,12 @@ export default function useWebSocket() {
 
     // Cleanup function to close the socket when the component unmounts
     return () => {
-      socket.close();
+      if (
+        socket.readyState === WebSocket.OPEN ||
+        socket.readyState === WebSocket.CONNECTING
+      ) {
+        socket.close(1000, "Component unmounted");
+      }
     };
   }, [isTauri, sendNextNodeToProcess, sendNodeToProcess, setExecutionState]);
 
