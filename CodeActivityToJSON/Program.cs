@@ -46,7 +46,11 @@ namespace CodeActivityToJSON
                 return;
             }
 
+            // Create the activities mapping JSON file
             CreateActivitiesMappingJsonUtil.CreateActivitiesMappingJson(outputDir, categoryMetadataTypes, activities);
+
+            // Create the activities CSV file
+            ExportActivitiesToCsvUtil.ExportActivitiesToCsv(activities);
 
             // Convert each activity to JSON and save to file
             foreach (var activity in activities)
@@ -78,7 +82,7 @@ namespace CodeActivityToJSON
                 File.WriteAllText(fileName, json);
                 //Console.WriteLine($"{activity.Name + ".json"} saved");
             }
-
+            Console.WriteLine("Task complete");
             Console.ReadLine();
         }
 
