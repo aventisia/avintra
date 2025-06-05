@@ -46,4 +46,9 @@ public class ClassificationSetupData
     /// Gets or sets the value corresponding to the classification setup data. 
     /// </summary>
     public string? Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the confidence score of the extracted field.
+    /// </summary>
+    public string? ConfidenceScore { get; set; }
 }
