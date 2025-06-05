@@ -2,7 +2,8 @@ import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useNavigate, useNavigationType } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface AppLogoProps {
   /** Set to true, if want to show aventisia logo */
@@ -27,16 +28,26 @@ const AppLogo = ({
   // Logo file
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
   const navigate = useNavigate();
-  const navigationType = useNavigationType();
+  const isFirstLoad = useRef(true); // persists across renders
   const workspaceModelURL = `${import.meta.env.VITE_WORKSPACE_URL}/ai-models`;
 
   const handleBack = () => {
-    if (navigationType === "POP") {
-      navigate(workspaceModelURL, { replace: true });
+    if (isFirstLoad.current) {
+      // No in-app navigation has occurred yet
+      window.location.href = workspaceModelURL;
     } else {
       navigate(-1);
     }
   };
+
+  useEffect(() => {
+    // Any time this component mounts, mark that the user is not on the first load anymore
+    // after a short delay to avoid triggering it on initial load
+    const timeout = setTimeout(() => {
+      isFirstLoad.current = false;
+    }, 100); // Wait a moment to ensure route is stabilized
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Logo path
   const logoSrc = showFullLogo
@@ -56,7 +67,6 @@ const AppLogo = ({
           <ArrowLeftIcon className="h-4 w-4 text-white/80" />
         </Button>
       </Tooltip>
-
       <img className={cn(className)} src={logoSrc} alt="Logo" />
     </div>
   );
