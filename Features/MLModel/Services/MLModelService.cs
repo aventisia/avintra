@@ -428,17 +428,40 @@ public class MLModelService : IMLModelService
                     Context = string.Empty,
                     Prompt = string.Empty,
                     QuestionAnswers = new List<QuestionAnswerLabelDto>()
-                {
-                    new QuestionAnswerLabelDto()
                     {
-                        Name = string.Empty,
-                        Instructions = string.Empty
+                        new QuestionAnswerLabelDto()
+                        {
+                            Name = string.Empty,
+                            Instructions = string.Empty
+                        }
                     }
-                }
                 };
 
                 // Serialize the question answer setup configuration and return as a JSON string.
                 return JsonSerializer.Serialize(questionAnswerSetup);
+
+            // Initialize configuration for the AI Persona model type (currently using default or empty values).
+            case ModelTypesEnum.AIPersona:
+                // Placeholder setup for future enhancements to the AI Persona model configuration.
+                var aiPersonaSetup = new AIPersonaSetupDto
+                {
+                    Name = string.Empty,
+                    RoleOrObjective = string.Empty,
+                    CategoryOrDomain = string.Empty,
+                    ToneOfVoices = new List<string>(),
+                    Instructions = string.Empty,
+                    ExclusionsOrBoundaries = string.Empty,
+                    Documents = null,
+                    ContextMemoryTimeframes = new List<string>(),
+                    Temperature = 0,
+                    EnableAudio = false,
+                    EnableVideo = false,
+                    EnableChat = false,
+                };
+
+                // Convert the AI Persona setup configuration into a JSON string and return it.
+                return JsonSerializer.Serialize(aiPersonaSetup);
+
 
             // Default case: returns an empty string for any unrecognized model types.
             default:
