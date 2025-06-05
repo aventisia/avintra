@@ -28,13 +28,13 @@ const router = createBrowserRouter(
       children: [
         {
           path: "/",
-          element: <Navigate to="/flow" />,
+          element: <Navigate to="/agent" />,
         },
         {
-          path: "/flow",
+          path: "/agent",
           element: <FlowPage />,
         },
-        { path: "/flow-logs", element: <LogsPage /> },
+        { path: "/agent-logs", element: <LogsPage /> },
         {
           path: "/page-not-found",
           element: <NotFoundPage />,
