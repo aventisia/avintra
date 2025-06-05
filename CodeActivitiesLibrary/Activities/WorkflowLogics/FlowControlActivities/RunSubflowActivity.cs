@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Run Subflow"), Description("Executes a predefined subflow.")]
+    //[DisplayName("Run Subflow"), Description("Executes a predefined subflow.")]
     public class RunSubflowActivity : Extensions.BaseNativeActivity
     {
 

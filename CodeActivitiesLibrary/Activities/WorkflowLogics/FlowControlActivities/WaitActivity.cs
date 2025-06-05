@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Wait"), Description("Suspends execution for a specified duration in seconds.")]
+    //[DisplayName("Wait"), Description("Suspends execution for a specified duration in seconds.")]
     public class WaitActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Number of seconds to wait.")]

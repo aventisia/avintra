@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Comment"), Description("Adds a comment to the workflow for documentation purposes.")]
+    //[DisplayName("Comment"), Description("Adds a comment to the workflow for documentation purposes.")]
     public class CommentActivity : Extensions.BaseNativeActivity
     {
         [Category("Input"), Description("Text input for documentation/comments.")]

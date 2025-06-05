@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Exit Subflow"), Description("Exits the current subflow and returns to the caller.")]
+    //[DisplayName("Exit Subflow"), Description("Exits the current subflow and returns to the caller.")]
     public class ExitSubflowActivity : Extensions.BaseNativeActivity
     {
 

@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Region"), Description("Defines a labeled region in the workflow.")]
+    //[DisplayName("Region"), Description("Defines a labeled region in the workflow.")]
     public class RegionActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Name of the region.")]

@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Stop Flow"), Description("Terminates the currently running workflow.")]
+    //[DisplayName("Stop Flow"), Description("Terminates the currently running workflow.")]
     public class StopFlowActivity : Extensions.BaseNativeActivity
     {
 
