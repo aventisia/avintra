@@ -19,21 +19,10 @@ script:pre-request {
       name: faker.company.catchPhrase(),
       roleOrObjective: faker.name.jobTitle(),
       categoryOrDomain: faker.commerce.department(), 
-      toneOfVoices: [
-        "Professional",
-        "Casual",
-        "Friendly",
-        "Academic",
-        "Witty"
-      ],
+      toneOfVoices: "Academic",
       instructions: faker.lorem.paragraph(),
       exclusionsOrBoundaries: faker.lorem.sentence(), 
-      contextMemoryTimeframes: [
-        "Last 7 days",
-        "Current session",
-        "Indefinite",
-        "Last 3 interactions"
-      ],
+      contextMemoryTimeframes: "Current session",
       temperature: 0.1,
       documents: null,
       enableAudio: false,

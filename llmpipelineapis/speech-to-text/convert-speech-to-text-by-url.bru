@@ -4,8 +4,12 @@ meta {
   seq: 1
 }
 
-get {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/stt/voices/
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/stt/transcribe_from_url/?url=file:/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3
   body: none
   auth: none
+}
+
+params:query {
+  url: file:/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3
 }
