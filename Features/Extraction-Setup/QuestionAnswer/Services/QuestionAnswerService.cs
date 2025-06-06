@@ -144,15 +144,6 @@ public class QuestionAnswerService : IQuestionAnswerService
                 return serviceResponse;
             }
 
-            // Convert model to SentimentAnalyticDto and get categories
-            // Create a dictionary with category Id as key and Name as value
-            // If anything is null, use an empty dictionary instead
-            var categoryDict = model.Adapt<SentimentAnalyticDto>()?
-                    .SetupObject?
-                    .Categories?
-                    .ToDictionary(c => c.Id, c => c.Name)
-                ?? new Dictionary<string, string>();
-
             // Check if the model has a prompt available for Q&A extraction
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
             {
@@ -245,14 +236,6 @@ public class QuestionAnswerService : IQuestionAnswerService
                 try
                 {
                     extractedData.ExtractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(llmResponse.Data, options) ?? new List<QuestionAnswerSetupData>();
-                    // Assign names using dictionary lookup
-                    foreach (var category in extractedData.ExtractedData)
-                    {
-                        if (categoryDict.TryGetValue(category.Id, out var name))
-                        {
-                            category.Question = name;
-                        }
-                    }
                     extractedData.Remarks = "";
                 }
                 catch (Exception ex)
@@ -783,8 +766,8 @@ public class QuestionAnswerService : IQuestionAnswerService
             for (int i = 0; i < QuestionAnswerDto.SetupObject.QuestionAnswers.Count; i++)
             {
                 var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
-                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", Instructions- {category.Instructions}";
-                questionAnswerBuilder.AppendLine($"{i + 1}. Id: {category.Id}, Question- {category.Name}{instructions}");
+                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
+                questionAnswerBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
             }
         }
 

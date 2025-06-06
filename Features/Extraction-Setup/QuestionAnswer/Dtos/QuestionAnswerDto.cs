@@ -79,11 +79,6 @@ public class QuestionAnswerSetupDto
 public class QuestionAnswerLabelDto
 {
     /// <summary>
-    /// Gets or sets unique identifier for the sentiment category.
-    /// </summary>
-    public string Id { get; set; } = $"{Guid.NewGuid()}";
-
-    /// <summary>
     /// Descriptive name of the label (e.g., "Relevant", "Not Relevant").
     /// </summary>
     [Required, StringLength(255)]
