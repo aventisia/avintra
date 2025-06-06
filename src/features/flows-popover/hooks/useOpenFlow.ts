@@ -38,7 +38,7 @@ export const useOpenFlow = () => {
     const query = versionId ? `?f=${rowId}&v=${versionId}` : `?f=${rowId}`;
 
     // Navigate to flow
-    navigate(`/flow${query}`);
+    navigate(`/agent${query}`);
   };
 
   // Return the handle open flow action function
