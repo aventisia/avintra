@@ -1,14 +1,45 @@
+import FlowLogHeader from "@/features/flow-logs/components/FlowLogHeader";
+import { useTauriStore } from "@/stores/tauri-store";
 import {
   DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuSeparator,
   SimpleDDMenuItem,
 } from "@aventisia/ui/dropdown-menu";
-import { DropdownMenuContent } from "@aventisia/ui/dropdown-menu";
+import { toast } from "@aventisia/ui/sonner";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { invoke } from "@tauri-apps/api/core";
+import {
+  DockIcon,
+  DownloadIcon,
+  KeyboardIcon,
+  LockOpenIcon,
+  UploadIcon,
+} from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
-import { DockIcon, KeyboardIcon, LockOpenIcon, UploadIcon } from "lucide-react";
-import FlowLogHeader from "@/features/flow-logs/components/FlowLogHeader";
 
 export const HeaderActionMenu: React.FC = () => {
+  // Get the state if app is open in tauri window
+  const { isTauri } = useTauriStore(
+    useShallow((state) => ({
+      isTauri: state.isTauri,
+    })),
+  );
+
+  // Tauri API to open the UI inspector
+  const openUIInspector = async () => {
+    try {
+      // Call the Tauri command to launch the UI inspector
+      await invoke("launch_ui_inspector")
+        .then((res) => console.log(res))
+        .catch((e) => console.error(e));
+    } catch (error) {
+      // Inform the user about the failure
+      toast.error("Failed to launch the UI Inspector. Please try again.");
+    }
+  };
+
   // Return the component
   return (
     // Header actions menu
@@ -17,8 +48,29 @@ export const HeaderActionMenu: React.FC = () => {
       <HeaderActionMenuTrigger />
 
       {/* Header actions menu content */}
-      <DropdownMenuContent align="end" className="mt-2 w-[12rem] min-w-[12rem]">
+      <DropdownMenuContent
+        align="end"
+        className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
+      >
         <FlowLogHeader />
+        {isTauri ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={ArrowTopRightOnSquareIcon}
+            content="Open UI Inspector"
+            onClick={openUIInspector}
+          />
+        ) : null}
+        {!isTauri ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={DownloadIcon}
+            content="Download Desktop App"
+            onClick={() => {
+              window.open(import.meta.env.VITE_DOWNLOAD_URL, "_blank");
+            }}
+          />
+        ) : null}
         <SimpleDDMenuItem size="md" Icon={UploadIcon} content="Export" />
 
         {/* DropdownMenuSeparator component */}

@@ -32,6 +32,32 @@
   },
   {
     "direction": "Input",
+    "type": "switch",
+    "name": "LaunchWithUrl",
+    "label": "Launch with Url",
+    "description": "If true, launches the browser with a specific url. If false, opens to the default homepage.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "LaunchUrl",
+    "label": "Launch Url",
+    "description": "Launches the browser with a specific url. If not specified, the browser will open to its default homepage.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "LaunchWithUrl",
+          "equals": true
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
     "type": "select",
     "name": "BrowsingMode",
     "label": "Browsing Mode",
@@ -50,6 +76,15 @@
         "description": "Opens browser in private/incognito mode."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UserDataStoragePath",
+    "label": "User Data Storage Path",
+    "description": "Path to store browser data (e.g., user profiles). Required if need for store data somewhere else.",
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
@@ -131,11 +166,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "WebDriver",
-    "label": "Web Driver",
+    "name": "BrowserInstance",
+    "label": "Browser Instance",
     "description": "Returns the WebDriver object for further automation steps.",
     "defaultValue": {
-      "value": "WebDriver",
+      "value": "BrowserInstance",
       "enabled": true
     },
     "required": false

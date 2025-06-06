@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "EndpointUrl",
-    "label": "EndpointUrl",
-    "description": "The endpoint URL of the SOAP web service.",
+    "label": "Endpoint URL",
+    "description": "The endpoint URL of the SOAP web service (e.g., http://example.com/Service.asmx).",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "MethodName",
-    "label": "MethodName",
-    "description": "The name of the SOAP method to invoke.",
+    "label": "Method Name",
+    "description": "The name of the method to invoke on the SOAP service.",
     "defaultValue": "",
     "required": true
   },
@@ -22,16 +22,34 @@
     "type": "text",
     "name": "Parameters",
     "label": "Parameters",
-    "description": "The parameters for the SOAP method (as a dictionary).",
+    "description": "The parameters for the method as a Dictionary\u003Cstring, object\u003E.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for the web service to respond.",
+    "defaultValue": 60,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ActionNamespace",
+    "label": "Action Namespace",
+    "description": "Optional namespace for the action (if required by the service).",
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "Result",
     "label": "Result",
-    "description": "Returns the response from the SOAP web service.",
+    "description": "Returns the raw XML response from the SOAP service.",
     "defaultValue": {
       "value": "Result",
       "enabled": true

@@ -15,7 +15,7 @@
           {
             "type": "conditionalNode",
             "name": "ConditionalActivity",
-            "label": "Conditional",
+            "label": "Router",
             "description": "Use conditions to decide which direction the flow should take",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2389,7 +2389,7 @@
             "type": "activityNode",
             "name": "DownloadFromWebActivity",
             "label": "Download from Web",
-            "description": "Downloads text or a file from the web and stores it.",
+            "description": "Downloads text or a file from the web and stores it in memory or saves it to a file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2398,7 +2398,7 @@
             "type": "activityNode",
             "name": "InvokeSoapWebServiceActivity",
             "label": "Invoke SOAP Web Service",
-            "description": "Invokes a method from a SOAP web service.",
+            "description": "Invokes a specified method from a SOAP web service and returns the response.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2407,7 +2407,7 @@
             "type": "activityNode",
             "name": "InvokeWebServiceActivity",
             "label": "Invoke Web Service",
-            "description": "Invokes a web service and stores the response text.",
+            "description": "Invokes a web service (REST or SOAP) and returns the response text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

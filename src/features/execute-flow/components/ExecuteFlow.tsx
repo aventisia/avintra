@@ -1,5 +1,4 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useTauriStore } from "@/stores/tauri-store";
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -8,44 +7,39 @@ import { invoke } from "@tauri-apps/api/core";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import useWebSocket from "../hooks/useWebSocket";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
-  const {
-    currentFlow,
-    executionState,
-    setConditionalExecutionGroup,
-    setLoopExecutionGroup,
-    setExecutionState,
-  } = useCurrentFlowStore(
+  const { currentFlow, executionState, setExecutionState } =
+    useCurrentFlowStore(
+      useShallow((state) => ({
+        currentFlow: state.currentFlow,
+        executionState: state.executionState,
+        setExecutionState: state.setExecutionState,
+      })),
+    );
+
+  // Get nodes and edges from ReactFlowExt store
+  const { nodes, edges } = useReactFlowExtStore(
     useShallow((state) => ({
-      currentFlow: state.currentFlow,
-      executionState: state.executionState,
-      setConditionalExecutionGroup: state.setConditionalExecutionGroup,
-      setLoopExecutionGroup: state.setLoopExecutionGroup,
-      setExecutionState: state.setExecutionState,
+      nodes: state.nodes,
+      edges: state.edges,
     })),
   );
 
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
 
-  // Get the state if app is open in tauri window
-  const { isTauri } = useTauriStore(
-    useShallow((state) => ({
-      isTauri: state.isTauri,
-    })),
-  );
-
   // Start execution
   const startExecution = () => {
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
-    setConditionalExecutionGroup([]);
-    setLoopExecutionGroup([]);
 
     // Open the desktop executor if the app is running in Tauri
-    if (isTauri) {
+    if ("isTauri" in window) {
+      localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+      localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
       openDesktopExecutor();
     } else {
       toast.info(
@@ -63,7 +57,13 @@ const ExecuteFlow = () => {
       await invoke("launch_desktop_executor", {
         agentName: currentFlow.name,
       })
-        .then((res) => console.log(res))
+        .then((res) => {
+          console.log("Executor launched successfully:", res);
+
+          // Set nodes and edges in local storage for executor
+          localStorage.setItem("nodes", JSON.stringify(nodes));
+          localStorage.setItem("edges", JSON.stringify(edges));
+        })
         .catch((e) => console.error(e));
     } catch (error) {
       // Inform the user about the failure
@@ -107,8 +107,11 @@ const ExecuteFlow = () => {
               size="icon8"
               className="hover:bg-white/10"
               onClick={() => {
-                setConditionalExecutionGroup([]);
-                setLoopExecutionGroup([]);
+                localStorage.setItem(
+                  "conditionalExecutionGroup",
+                  JSON.stringify([]),
+                );
+                localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
                 setExecutionState("stopped");
                 sendCommand("abort");
               }}
