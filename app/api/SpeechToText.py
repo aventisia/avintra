@@ -17,12 +17,6 @@ from typing import List
 # Initialize FastAPI router
 router = APIRouter()
 
-# Load Whisper base model for transcription
-model = whisper.load_model("base.pt")
-
-# Load Resemblyzer encoder for speaker embedding
-encoder = VoiceEncoder()
-
 def process_audio_file(audio_path: str) -> List[TranscriptionSegment]:
     """
     Transcribes an MP3 audio file and assigns speaker labels using Resemblyzer embeddings and KMeans clustering.
@@ -36,6 +30,12 @@ def process_audio_file(audio_path: str) -> List[TranscriptionSegment]:
     # Convert MP3 to WAV for speaker embedding extraction
     wav_path = audio_path.replace(".mp3", ".wav")
     AudioSegment.from_mp3(audio_path).export(wav_path, format="wav")
+
+    # Load Resemblyzer encoder for speaker embedding
+    encoder = VoiceEncoder()
+    
+    # Load Whisper base model for transcription
+    model = whisper.load_model("base.pt")
 
     # Run transcription with Whisper
     result = model.transcribe(audio_path, language="en")
