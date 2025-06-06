@@ -1,99 +1,99 @@
 # SpeechToText.py
 
-from fastapi import APIRouter, UploadFile, File, Query
+from pathlib import Path
+import platform
+from fastapi import APIRouter, HTTPException, UploadFile, File
+import requests
 import whisper
 from resemblyzer import preprocess_wav, VoiceEncoder
 from sklearn.cluster import KMeans
 from pydub import AudioSegment
 import tempfile, shutil, os
 import numpy as np
-from urllib.parse import urlparse, unquote
+from app.models.FileRequest import FileRequest
+from app.models.TranscriptionSegment import TranscriptionSegment
+from typing import List
 
-# Create an API router instance
+# Initialize FastAPI router
 router = APIRouter()
 
-# Load the Whisper model (base version) for speech-to-text
-model = whisper.load_model("base")
+# Load Whisper base model for transcription
+model = whisper.load_model("base.pt")
 
-# Load the speaker encoder from Resemblyzer
+# Load Resemblyzer encoder for speaker embedding
 encoder = VoiceEncoder()
 
-def process_audio_file(audio_path: str):
+def process_audio_file(audio_path: str) -> List[TranscriptionSegment]:
     """
-    Transcribes an audio file and applies basic speaker diarization using embeddings and KMeans clustering.
+    Transcribes an MP3 audio file and assigns speaker labels using Resemblyzer embeddings and KMeans clustering.
     
-    Parameters:
-        audio_path (str): Path to the input MP3 audio file.
+    Args:
+        audio_path (str): Path to the input MP3 file.
 
     Returns:
-        dict: A dictionary containing transcription segments with speaker labels.
+        List[dict]: List of segments, each with speaker, start, end, and text.
     """
-    # Convert MP3 to WAV to prepare for embedding generation
+    # Convert MP3 to WAV for speaker embedding extraction
     wav_path = audio_path.replace(".mp3", ".wav")
     AudioSegment.from_mp3(audio_path).export(wav_path, format="wav")
 
-    # Run Whisper transcription on the original MP3
+    # Run transcription with Whisper
     result = model.transcribe(audio_path, language="en")
     segments = result.get("segments", [])
     
-    # Return error if no transcription segments were detected
+    # If no segments found, raise error
     if not segments:
-        return {"error": "No transcription segments found."}
+        raise HTTPException(status_code=400, detail="No transcription segments found.")
 
-    # Generate speaker embeddings using the Resemblyzer encoder
+    # Preprocess WAV audio for speaker embedding extraction
     wav = preprocess_wav(wav_path)
     _, partial_embeds, _ = encoder.embed_utterance(wav, return_partials=True)
     partial_embeds = np.array(partial_embeds)
 
-    # If there are not enough embeddings for clustering, fallback to a single speaker
+    # If not enough embeddings, assume single speaker
     if len(partial_embeds) < 2:
-        return {
-            "segments": [
-                {
-                    "speaker": "Speaker 1",
-                    "start": seg.get("start", 0),
-                    "end": seg.get("end", 0),
-                    "text": seg.get("text", "")
-                } for seg in segments
-            ]
-        }
+        diarized_output = [
+            {
+                "speaker": "Speaker 1",
+                "start": seg.get("start", 0),
+                "end": seg.get("end", 0),
+                "text": seg.get("text", "")
+            } for seg in segments
+        ]
+    else:
+        # Perform KMeans clustering (max 2 speakers)
+        n_clusters = min(2, len(partial_embeds))
+        kmeans = KMeans(n_clusters=n_clusters, random_state=0)
+        labels = kmeans.fit_predict(partial_embeds)
 
-    # Perform KMeans clustering to group embeddings by speaker (assume 2 speakers max)
-    n_clusters = min(2, len(partial_embeds))
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0)
-    labels = kmeans.fit_predict(partial_embeds)
+        # Assign speaker labels to each segment based on clustering
+        speakers = [f"Speaker {i+1}" for i in range(n_clusters)]
+        diarized_output = []
+        for idx, seg in enumerate(segments):
+            label_index = idx % len(labels)  # Avoid index error
+            diarized_output.append({
+                "speaker": speakers[labels[label_index]],
+                "start": seg.get("start", 0),
+                "end": seg.get("end", 0),
+                "text": seg["text"]
+            })
 
-    # Create speaker labels like "Speaker 1", "Speaker 2"
-    speakers = [f"Speaker {i+1}" for i in range(n_clusters)]
-
-    # Assign each transcription segment to a speaker label
-    diarized_output = []
-    for idx, seg in enumerate(segments):
-        label_index = idx % len(labels)  # Use modulo to avoid index errors
-        diarized_output.append({
-            "speaker": speakers[labels[label_index]],
-            "start": seg.get("start", 0),
-            "end": seg.get("end", 0),
-            "text": seg["text"]
-        })
-
-    # Remove temporary WAV file after processing
+    # Clean up temporary WAV file
     if os.path.exists(wav_path):
         os.remove(wav_path)
 
-    return {"segments": diarized_output}
+    return diarized_output
 
-
-@router.post("/stt/transcribe/")
+@router.post("/transcriptions/upload")
 async def transcribe_audio(file: UploadFile = File(...)):
     """
-    API endpoint to upload an MP3 file and return a diarized transcription.
+    FastAPI endpoint to accept an uploaded MP3 file, transcribe it, and return speaker-diarized text.
     
-    Parameters:
-        file (UploadFile): The uploaded MP3 audio file.
+    Args:
+        file (UploadFile): The uploaded MP3 file.
 
     Returns:
-        JSON response with diarized transcription segments or error message.
+        List[dict]: Diarized transcription segments.
     """
     temp_path = ""
     try:
@@ -102,46 +102,51 @@ async def transcribe_audio(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, temp_audio)
             temp_path = temp_audio.name
 
-        # Process the saved file
+        # Process and return the transcription
         return process_audio_file(temp_path)
 
     except Exception as e:
-        return {"error": str(e)}
+        # Return internal server error with exception message
+        raise HTTPException(status_code=500, detail=str(e))
     
     finally:
-        # Clean up the temporary file
+        # Ensure temporary file is deleted
         if os.path.exists(temp_path):
             os.remove(temp_path)
 
-
-@router.post("/stt/transcribe_from_url/")
-async def transcribe_from_url(url: str = Query(..., description="Local file:// URL of the MP3 file")):
+@router.post("/transcriptions/from-url")
+async def transcribe_from_url(request: FileRequest):
     """
-    API endpoint to transcribe a locally hosted MP3 file using a file:// URL.
+    FastAPI endpoint to transcribe a remote or local audio file (MP3) using its URL.
     
-    Parameters:
-        url (str): The file:// URL pointing to a local MP3 file.
+    Args:
+        request (FileRequest): JSON body containing file_url and download flag.
 
     Returns:
-        JSON response with diarized transcription segments or error message.
+        List[dict]: Diarized transcription segments.
     """
     try:
-        # Parse the provided URL
-        parsed = urlparse(url)
-        if parsed.scheme != "file":
-            return {"error": "Only file:// URLs are supported."}
+        if request.download:
+            # Download file from URL to temporary file
+            response = requests.get(request.file_url)
+            if response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Failed to download file.")
 
-        # Decode and adjust file path
-        file_path = unquote(parsed.path)
-        if os.name == "nt" and file_path.startswith("/"):
-            file_path = file_path[1:]  # Windows file path fix
+            temp_audio_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
+            with open(temp_audio_path, "wb") as f:
+                f.write(response.content)
 
-        # Ensure the file exists
-        if not os.path.exists(file_path):
-            return {"error": f"File does not exist: {file_path}"}
+            file_path = temp_audio_path
+        else:
+            # Use local path depending on operating system
+            if platform.system() == "Linux":
+                file_path = Path("/var/www/aventisia.com") / request.file_url
+            else:
+                file_path = request.file_url  # Adjust for Windows or other OS
 
-        # Process the file
+        # Transcribe the file
         return process_audio_file(file_path)
 
     except Exception as e:
-        return {"error": str(e)}
+        # Catch and report any errors
+        raise HTTPException(status_code=500, detail=str(e))
