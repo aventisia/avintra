@@ -1,4 +1,3 @@
-import { Separator } from "@aventisia/ui";
 import {
   DTHeading,
   DTPagination,
@@ -8,8 +7,6 @@ import {
   DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useEffect } from "react";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../../constants";
@@ -50,62 +47,28 @@ export const FineTuneTable = () => {
   return (
     <>
       {data ? (
-        <div className="space-y-4 pb-4 pt-[17px] px-1">
+        <div className="space-y-4 pb-4  px-1">
           <FineTuneCrudDialog>
             {/* ✅ Tabs wrapper surrounds both header and content */}
-            <Tabs defaultValue="fine-tune" className="space-y-4">
-              {/* ✅ Header with tabs in it */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <DTHeading heading={TABLE_HEADING} />
+            {/* ✅ Header with tabs in it */}
+            <div className="flex items-center justify-between">
+              <DTHeading heading={TABLE_HEADING} />
 
-                  <TabsList className="bg-slate-200 rounded-full ">
-                    <TabsTrigger
-                      value="fine-tune"
-                      className="rounded-full data-[state=active]:text-primary text-xs"
-                    >
-                      Fine-tune
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="history"
-                      className="rounded-full data-[state=active]:text-primary text-xs"
-                    >
-                      History
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <DTSearchBox
-                    table={table}
-                    searchColumn={SEARCH_COLUMN}
-                    placeholder="Search..."
-                  />
-                  <DTViewOptions {...{ table, columnDisplayNames }} />
-                  <Separator orientation="vertical" className="mx-2 h-6" />
-                </div>
+              <div className="flex items-center gap-2">
+                <DTSearchBox
+                  table={table}
+                  searchColumn={SEARCH_COLUMN}
+                  placeholder="Search..."
+                />
+                <DTViewOptions {...{ table, columnDisplayNames }} />
               </div>
+            </div>
 
-              <FineTuneStats />
-
-              {/* ✅ TabsContent changes only below header */}
-              <TabsContent value="fine-tune">
-                <ScrollArea className="w-[calc(100vw-1.5rem)]">
-                  <div className="rounded-md border bg-white">
-                    <DataTable table={table} columnsLength={columns.length} />
-                  </div>
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </TabsContent>
-
-              <TabsContent value="history">
-                <div className="rounded-md border bg-white p-6 text-sm text-muted-foreground">
-                  Coming soon
-                </div>
-              </TabsContent>
-            </Tabs>
+            <FineTuneStats />
           </FineTuneCrudDialog>
-
+          <div className="bg-white rounded-lg">
+            <DataTable table={table} columnsLength={columns.length} />
+          </div>
           <DTPagination table={table} />
           <FineTuneBulkActions table={table} />
         </div>

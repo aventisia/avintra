@@ -5,7 +5,6 @@ const contextProps: AutosizeTextareaFieldProps = {
     name: "context",
     label: "Context",
     minHeight: 10,
-    placeholder: "We need to pass Context to LLM",
     isRequired: true,
     className: "text-sm resize-none"
 } 
@@ -15,7 +14,6 @@ const totalMinWordsProps: InputFieldProps = {
     label: "Total Minimum Words",
     type: "number",
     min: 0,
-    placeholder: "00",
     isRequired: true,
     className: "text-sm"
 }
@@ -25,7 +23,6 @@ const totalMaxWordsProps: InputFieldProps = {
     label: "Total Maximum Words",
     type: "number",
     min: 0,
-    placeholder: "00",
     isRequired: true,
     className: "text-sm"
 }
@@ -35,7 +32,6 @@ const promptProps: AutosizeTextareaFieldProps = {
     name: "stuffPrompt",
     label: "Prompt",
     minHeight: 10,
-    placeholder: "Please provide a Prompt",
     isRequired: true,
     className: "text-sm resize-none"
 } 

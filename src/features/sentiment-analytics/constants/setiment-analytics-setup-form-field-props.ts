@@ -5,7 +5,6 @@ const contextProps: AutosizeTextareaFieldProps = {
     name: "context",
     label: "Context",
     minHeight: 10,
-    placeholder: "We need to pass Context to LLM",
     isRequired: true,
     className: "text-sm resize-none"
 } 
@@ -15,14 +14,12 @@ const categoryNameProps : InputFieldProps = {
     isRequired: true,
     type: "text",
     className: "text-sm",
-    placeholder: "Category"
 }
 
 const instructionsProps: InputFieldProps = {
     name: "",
     type: "text",
     className: "text-sm",
-    placeholder: "Instructions"
 }
 
 const nodePropmptProps: AutosizeTextareaFieldProps = {

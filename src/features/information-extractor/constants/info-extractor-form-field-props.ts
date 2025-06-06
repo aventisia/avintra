@@ -8,7 +8,6 @@ const documentContextProps: AutosizeTextareaFieldProps = {
     name: "context",
     label: "Context",
     minHeight: 10,
-    placeholder: "We need to pass Context to LLM",
     isRequired: true,
     className: "text-sm resize-none"
 } 
@@ -18,13 +17,11 @@ const fieldNameProps : InputFieldProps = {
     isRequired: true,
     type: "text",
     className: "text-sm",
-    placeholder: "Field Name"
 }
 
 const typeProps: SelectFieldProps = {
     name: "",
     isRequired: true,
-    placeholder: "Select",
     selectOptions: enumToArray(DataTypeEnum),
     className: "text-sm"
 }
@@ -33,7 +30,6 @@ const instructionsProps: InputFieldProps = {
     name: "",
     type: "text",
     className: "text-sm",
-    placeholder: "Instructions"
 }
 
 const tableContextProps: InputFieldProps = {
@@ -42,7 +38,6 @@ const tableContextProps: InputFieldProps = {
     isRequired: false,
     type: "text",
     className: "text-sm",
-    placeholder: "Table context"
 }
 
 const tableNameProps: InputFieldProps = {
@@ -57,7 +52,6 @@ const headerNameProps: InputFieldProps = {
     isRequired: true,
     type: "text",
     className: "text-sm",
-    placeholder: "Header Name"
 }
 
 const nodePropmptProps: AutosizeTextareaFieldProps = {

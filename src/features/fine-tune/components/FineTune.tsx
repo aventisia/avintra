@@ -1,8 +1,8 @@
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 
-import { FineTuneTable } from "./fine-tune-table/FineTuneTable";
+import DynamicTableContainer from "./DynamicTableContainer";
 
 export const FineTune = () => {
   useLabelDataQueryKey();
-  return <FineTuneTable />;
+  return <DynamicTableContainer />;
 };
