@@ -5,11 +5,10 @@ import {
   DialogTitle,
 } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
-import { Pen, X } from "lucide-react";
+import { PencilIcon, X } from "lucide-react";
 import { Input } from "@aventisia/ui";
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 import { useShallow } from "zustand/react/shallow";
-// import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 interface DialogDefaultHeaderProps extends React.PropsWithChildren {
@@ -46,7 +45,7 @@ const DCPDialogHeader = ({
           {editing ? (
             <Input
               name="label"
-              className="truncate !border-0 !border-none !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
+              className="w-[25rem] !max-w-[25rem] truncate !border-0 !border-none !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
               value={nodeLabel}
               autoFocus
               onChange={(e) => setNodeLabel(e.target.value)}
@@ -57,8 +56,8 @@ const DCPDialogHeader = ({
               onClick={() => setEditing(true)}
               className="flex h-10 items-center gap-2"
             >
-              <span className="max-w-52 truncate">{nodeLabel}</span>
-              <Pen className="h-4 w-4 text-muted-foreground" />
+              <span className="max-w-[25rem] truncate">{nodeLabel}</span>
+              <PencilIcon className="h-3 w-3 text-muted-foreground" />
             </div>
           )}
         </DialogTitle>
