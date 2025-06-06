@@ -235,7 +235,7 @@ public class UploadedDocService : IUploadedDocService
         {
             // Try to get uploaded docs
             var docs = await _unitOfWork.UploadedDocRepo
-                        .GetByConditionAsync(w => w.MLModelId == mlModelId && w.Type == type)
+                        .GetByConditionAsync(w => w.MLModelId == mlModelId && w.Type == type && w.Type != ExtractedDataType.SetupData)
                         .Include(c => c.CreatedByUser)
                         .OrderByDescending(o => o.CreatedOn).ToListAsync();
 
