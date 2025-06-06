@@ -38,6 +38,11 @@ public class QuestionAnswerSetupFileData
 public class QuestionAnswerSetupData
 {
     /// <summary>
+    /// Gets or sets unique identifier for the sentiment category.
+    /// </summary>
+    public string? Id { get; set; }
+
+    /// <summary>
     /// Gets or sets the text of the question.
     /// </summary>
     public required string Question { get; set; }

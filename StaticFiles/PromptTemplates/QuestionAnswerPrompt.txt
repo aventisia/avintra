@@ -14,6 +14,7 @@ Instructions:
 - Classify and extract each answer based on the question’s intent and content.
 - Do not include any text or commentary outside the specified JSON output.
 - Each result must include:
+    - "id": the string associated with the question
     - "question": the original question text
     - "answer": the corresponding answer based on the context
     - "confidenceScore": a string value representing the model’s confidence in the accuracy of the answer scaled from 1 to 100 (e.g., "94")
@@ -21,4 +22,4 @@ Instructions:
 Output Format:
 - Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
 
-"[{"question": "question_1", "answer": "answer_1", "confidenceScore": "confidence_score1"}, {"question": "another_question", "answer": "another_answer", "confidenceScore": "another_confidence_score"}]"
+"[{"id": "question_id", question": "question_1", "answer": "answer_1", "confidenceScore": "confidence_score1"}, {"id": "another_question_id", "question": "another_question", "answer": "another_answer", "confidenceScore": "another_confidence_score"}]"
