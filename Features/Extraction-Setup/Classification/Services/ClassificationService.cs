@@ -667,7 +667,7 @@ public class ClassificationService : IClassificationService
                 _logger.LogError("Failed to persist scheduled Fine tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
                 return serviceResponse;
             }
-            
+
             // Create fine-tuning logs for each associated document
             var fineTuningLogs = scheduledModel.FileIds.Select(s => new FineTuningLog()
             {
@@ -727,8 +727,7 @@ public class ClassificationService : IClassificationService
                 // Retrieve fine-tuning logs that match the scheduled model IDs and have a status of 'FineTuning'
                 fineTuningLogs = await _unitOfWork.FineTuningLogRepo
                     .GetByConditionAsync(w =>
-                        scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId) &&
-                        w.Status == ExtractedDataStatusesEnums.FineTuning
+                        scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId)
                     )
                     .Include(i => i.ScheduledModel)
                     .Include(i => i.UploadedDoc)

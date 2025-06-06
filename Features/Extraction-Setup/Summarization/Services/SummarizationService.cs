@@ -766,8 +766,7 @@ public class SummarizationService : ISummarizationService
                 // Retrieve fine-tuning logs that match the scheduled model IDs and have a status of 'FineTuning'
                 fineTuningLogs = await _unitOfWork.FineTuningLogRepo
                     .GetByConditionAsync(w =>
-                        scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId) &&
-                        w.Status == ExtractedDataStatusesEnums.FineTuning
+                        scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId)
                     )
                     .Include(i => i.ScheduledModel)
                     .Include(i => i.UploadedDoc)
