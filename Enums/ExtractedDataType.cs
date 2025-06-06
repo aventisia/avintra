@@ -10,5 +10,7 @@ public enum ExtractedDataType
 {
     LabelData, 
     TestData, 
-    ProdData
+    ProdData,
+    Viewer,
+    Setup
 }
