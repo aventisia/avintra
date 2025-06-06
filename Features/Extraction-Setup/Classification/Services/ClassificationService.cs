@@ -667,6 +667,24 @@ public class ClassificationService : IClassificationService
                 _logger.LogError("Failed to persist scheduled Fine tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
                 return serviceResponse;
             }
+            
+            // Create fine-tuning logs for each associated document
+            var fineTuningLogs = scheduledModel.FileIds.Select(s => new FineTuningLog()
+            {
+                ScheduledModelId = scheduledModel.Id,
+                DocId = s,
+                Status = ExtractedDataStatusesEnums.Pending,
+            });
+
+            // Insert all fine-tuning logs into the repository
+            await _unitOfWork.FineTuningLogRepo.InsertAsync(fineTuningLogs);
+
+            // Save the fine-tuning log entries and validate success
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist scheduled AI persona fine-tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+                return serviceResponse;
+            }
 
             // Log success and return the successful service response
             _logger.LogInformation("Fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
