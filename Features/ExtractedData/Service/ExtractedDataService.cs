@@ -175,6 +175,7 @@ public class ExtractedDataService : IExtractedDataService
             var data = await _unitOfWork.ExtractedDataRepo
             .GetByConditionAsync(w => w.Id == id)
             .Include(i => i.UploadedDoc)
+            .ThenInclude(i2 => i2.FineTuningLog)
             .SingleOrDefaultAsync();
 
             //Check if data not exists
@@ -187,6 +188,12 @@ public class ExtractedDataService : IExtractedDataService
 
             // Delete the extracted data
             _unitOfWork.ExtractedDataRepo.Delete(data);
+
+            // Delete the associated fine-tuning log if it exists
+            if (data.UploadedDoc.FineTuningLog != null)
+            {
+                _unitOfWork.FineTuningLogRepo.Delete(data.UploadedDoc.FineTuningLog);
+            }
 
             // Delete the associated uploaded document if it exists
             if (data.UploadedDoc != null)
@@ -329,6 +336,7 @@ public class ExtractedDataService : IExtractedDataService
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
                                                     .GetByConditionAsync(w => ids.Contains(w.Id))
                                                     .Include(i => i.UploadedDoc)
+                                                    .ThenInclude(i2 => i2.FineTuningLog)
                                                     .ToListAsync();
 
             // If no matching data found, return a message indicating no data was found
@@ -346,6 +354,12 @@ public class ExtractedDataService : IExtractedDataService
             {
                 // Delete the extracted data
                 _unitOfWork.ExtractedDataRepo.Delete(data);
+
+                // Delete the associated fine-tuning log if it exists
+                if (data.UploadedDoc.FineTuningLog != null)
+                {
+                    _unitOfWork.FineTuningLogRepo.Delete(data.UploadedDoc.FineTuningLog);
+                }
 
                 // Delete the associated uploaded document if it exists
                 if (data.UploadedDoc != null)
