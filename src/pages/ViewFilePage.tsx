@@ -1,9 +1,9 @@
 import { Suspense, lazy } from "react";
 
 // Lazy load the View file component.
-const PreviewFileContainer = lazy(() =>
-  import("@/features/preview-file/components").then((module) => ({
-    default: module.PreviewFile,
+const ViewFileContainer = lazy(() =>
+  import("@/features/view-file/components").then((module) => ({
+    default: module.ViewFile,
   })),
 );
 
@@ -11,10 +11,10 @@ const PreviewFileContainer = lazy(() =>
  * Renders the view file page.
  * @returns JSX element representing the View File Page component.
  */
-export const PreviewFilePage = () => {
+export const ViewFilePage = () => {
   return (
     <Suspense>
-      <PreviewFileContainer />
+      <ViewFileContainer />
     </Suspense>
   );
 };

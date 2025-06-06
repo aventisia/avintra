@@ -14,7 +14,7 @@ export const useOpenRunReviewRecord = () => {
       const currentUrl = new URL(window.location.href);
 
       // Force pathname to /run-review
-      currentUrl.pathname = "/preview";
+      currentUrl.pathname = "/view";
 
       currentUrl.searchParams.set("fid", fileId)
       currentUrl.searchParams.set("source", "run-reveiew");

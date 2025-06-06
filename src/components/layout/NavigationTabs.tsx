@@ -3,6 +3,7 @@ import { useNavigatePreserveQuery } from "@/hooks/useNavigatePreserveQuery";
 import { Button } from "@aventisia/ui/buttons";
 import { useDocumentTitle } from "@aventisia/ui/hooks";
 import { useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 const tabs = [
   { id: "setup-test", label: "Setup & Test" },
@@ -12,14 +13,25 @@ const tabs = [
 
 export const NavigationTabs = () => {
   const [activeTab, setActiveTab] = useState("setup-test");
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const currentPath = window.location.pathname.split("/")[1];
+    const pathSegment = location.pathname.split("/")[1]; // first segment after "/"
+    const source = searchParams.get("source");
 
-    // const normalizedPath =
-    //   currentPath === "run-review-view" ? "run-review" : currentPath;
-    setActiveTab(currentPath);
-  }, []);
+    let normalizedTab = pathSegment;
+
+    if (pathSegment === "view") {
+      if (source === "run-review" || source === "fine-tune") {
+        normalizedTab = source;
+      } else {
+        normalizedTab = "run-review"; // fallback for /view
+      }
+    }
+
+    setActiveTab(normalizedTab);
+  }, [location.pathname, searchParams]);
 
   const { navigateWithQueryParams, modelName } = useNavigatePreserveQuery();
 

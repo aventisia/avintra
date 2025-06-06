@@ -2,6 +2,8 @@ import { CrudActionType } from "@aventisia/ui/types";
 
 const FINE_TUNE_TABLE_QUERY_KEY =["fineTuneRecords"];
 
+const HISTORY_TABLE_QUERY_KEY = ["historyRecrords"];
+
 const TABLE_HEADING = "Fine Tune";
 
 /**
@@ -27,4 +29,5 @@ export {
   TABLE_HEADING,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
+  HISTORY_TABLE_QUERY_KEY
 };

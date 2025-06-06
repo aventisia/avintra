@@ -24,7 +24,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useValidateFidQueryParam } from "../hooks/useValidateFidQueryParams";
 
-export const PreviewFile = () => {
+export const ViewFile = () => {
   useLabelDataQueryKey();
   const { isValid, isLoading: isFileListLoading } = useValidateFidQueryParam();
   const { data: fileList, refetch, isLoading } = useFetchUploadedFiles();
