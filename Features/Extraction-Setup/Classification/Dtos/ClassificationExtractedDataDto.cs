@@ -45,6 +45,21 @@ public class ClassificationExtractedDataDto
     public bool SubmitForFineTuning { get; set; }
 
     /// <summary>
+    /// Gets or sets the token count related to this data record.
+    /// </summary>
+    public int TokenCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of times this data record has been executed.
+    /// </summary>
+    public int ExecutionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of failed executions for this data record.
+    /// </summary>
+    public int FailedCount { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of creation of extracted data.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

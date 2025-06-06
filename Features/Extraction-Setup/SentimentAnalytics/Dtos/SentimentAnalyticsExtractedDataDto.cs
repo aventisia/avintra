@@ -1,7 +1,7 @@
 namespace MLModelBuilderAPIs.DTOs;
 
 public class SentimentAnalyticsExtractedDataDto
-{ 
+{
     /// <summary>
     /// Gets or sets the primary key for the data model
     /// </summary>
@@ -43,6 +43,21 @@ public class SentimentAnalyticsExtractedDataDto
     /// Gets or sets a value indicating whether the model or data has been submitted for fine-tuning.
     /// </summary>
     public bool SubmitForFineTuning { get; set; }
+
+    /// <summary>
+    /// Gets or sets the token count related to this data record.
+    /// </summary>
+    public int TokenCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of times this data record has been executed.
+    /// </summary>
+    public int ExecutionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of failed executions for this data record.
+    /// </summary>
+    public int FailedCount { get; set; }
 
     /// <summary>
     /// Gets or sets the date of creation of extracted data.

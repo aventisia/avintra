@@ -60,6 +60,9 @@ public class QuestionAnswerMappingProfile : IRegister
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.MLModelId)
             .Ignore(dest => dest.DocId)
+            .Ignore(dest => dest.ExecutionCount)
+            .Ignore(dest => dest.TokenCount)
+            .Ignore(dest => dest.FailedCount)
             .IgnoreNullValues(true);
 
         // Mapping of DTO to get list of extracted review data.
