@@ -245,6 +245,16 @@ public class SummarizationService : ISummarizationService
                     _logger.LogWarning("LLM summarization failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
                     extractedData.Remarks = $"003: LLM summarization failed. {llmResponse.Message}";
                     extractedDataList.Add(extractedData);
+
+                    // Increment FailedCount if existing extracted data is found
+                    var existing = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
+                    if (existing != null)
+                    {
+                        existing.FailedCount += 1;
+                        existing.LastModifiedByUserId = _userId;
+                        extractedDataToBeUpdated.Add(existing);
+                    }
+
                     continue;
                 }
 
@@ -262,9 +272,28 @@ public class SummarizationService : ISummarizationService
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse.Data, options) ?? new SummarizationSetupData();
-                extractedData.Remarks = "";
+                try
+                {
+                    extractedData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse.Data, options) ?? new SummarizationSetupData();
+                    extractedData.Remarks = "";
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Deserialization failed for FileId: {FileId}", fileId);
+                    extractedData.Remarks = $"005: Deserialization failed for FileId: {fileId}";
 
+                    // Increment FailedCount if existing extracted data is found
+                    var existing = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
+                    if (existing != null)
+                    {
+                        existing.FailedCount += 1;
+                        existing.LastModifiedByUserId = _userId;
+                        extractedDataToBeUpdated.Add(existing);
+                    }
+
+                    extractedDataList.Add(extractedData);
+                    continue;
+                }
                 _logger.LogInformation("Successfully extracted and deserialized summarization data for FileId: {FileId}", fileId);
 
                 extractedDataList.Add(extractedData);
@@ -281,6 +310,9 @@ public class SummarizationService : ISummarizationService
                         DocId = file.Id,
                         Type = file.Type,
                         MLModelId = model.Id,
+                        TokenCount = 0,
+                        ExecutionCount = 1,
+                        FailedCount = 0,
                         DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true
@@ -299,6 +331,7 @@ public class SummarizationService : ISummarizationService
                         PropertyNameCaseInsensitive = true
                     });
                     existingExtractedData.LastModifiedByUserId = _userId;
+                    existingExtractedData.ExecutionCount += 1;
 
                     // Add to update list
                     extractedDataToBeUpdated.Add(existingExtractedData);
