@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+# Extraction.py
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import pdfplumber
 import pytesseract
@@ -8,9 +9,7 @@ import os
 import tempfile
 import platform
 from pathlib import Path
-from logger import logger
-
-app = FastAPI(root_path="/api")
+from app.core.logger import logger
 
 # Define request model for PDF extraction
 class PDFRequest(BaseModel):
@@ -64,7 +63,10 @@ def extract_text_from_image_pdf(pdf_path):
         text += pytesseract.image_to_string(image) + "\n"
     return text.strip()
 
-@app.post("/extract-pdf-text/")
+# Create FastAPI router for PDF extraction endpoint
+router = APIRouter()
+
+@router.post("/extract-pdf-text/")
 async def extract_pdf_text(payload: PDFRequest):
     pdf_path = payload.pdf_url
 
@@ -92,6 +94,3 @@ async def extract_pdf_text(payload: PDFRequest):
 
     return extracted_text
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, FastAPI!"}
