@@ -65,6 +65,11 @@ public class QuestionAnswerSetupDto
     /// Optional list of predefined question-answer labels for extended guidance or evaluation.
     /// </summary>
     public List<QuestionAnswerLabelDto>? QuestionAnswers { get; set; }
+
+    /// <summary>
+    /// Specifies the type or identifier of the large language model (LLM) being used.
+    /// </summary>
+    public string? LLM { get; set; }
 }
 
 /// <summary>

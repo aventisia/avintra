@@ -61,6 +61,11 @@ public class ExtractionSetupDto
     /// Setup configurations for fields to be extracted, if available.
     /// </summary>
     public List<FieldSetupDto>? FieldSetups { get; set; }
+
+    /// <summary>
+    /// Specifies the type or identifier of the large language model (LLM) being used.
+    /// </summary>
+    public string? LLM { get; set; }
 }
 
 

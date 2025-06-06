@@ -74,6 +74,11 @@ public class ClassificationSetupDto
     /// A list of classification categories with optional instructions.
     /// </summary>
     public List<ClassificationCategoryDto>? Categories { get; set; }
+
+    /// <summary>
+    /// Specifies the type or identifier of the large language model (LLM) being used.
+    /// </summary>
+    public string? LLM { get; set; }
 }
 
 /// <summary>

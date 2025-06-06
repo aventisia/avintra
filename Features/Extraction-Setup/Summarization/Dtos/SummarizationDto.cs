@@ -108,5 +108,10 @@ public class SummarizationSetupDto
     /// Single prompt used when all content is "stuffed" into one input for summarization.
     /// </summary>
     public string? StuffPrompt { get; set; }
+
+    /// <summary>
+    /// Specifies the type or identifier of the large language model (LLM) being used.
+    /// </summary>
+    public string? LLM { get; set; }
 }
 

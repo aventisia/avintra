@@ -97,6 +97,11 @@ public class AIPersonaSetupDto
     /// </summary>
     public required double Temperature { get; set; }
 
+    /// <summary>
+    /// Specifies the type or identifier of the large language model (LLM) being used.
+    /// </summary>
+    public string? LLM { get; set; }
+
     // Communication Capabilities
 
     /// <summary>
@@ -113,6 +118,7 @@ public class AIPersonaSetupDto
     /// Gets or sets a value indicating whether text-based chat communication is enabled for the persona.
     /// </summary>
     public bool EnableChat { get; set; }
+
 }
 
 /// <summary>

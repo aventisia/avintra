@@ -66,6 +66,11 @@ public class SentimentAnalyticSetupDto
     /// Optional list of sentiment categories to classify, each with optional guidance.
     /// </summary>
     public List<SentimentAnalyticsSetupCategoryDto>? Categories { get; set; }
+
+    /// <summary>
+    /// Specifies the type or identifier of the large language model (LLM) being used.
+    /// </summary>
+    public string? LLM { get; set; }
 }
 
 /// <summary>
