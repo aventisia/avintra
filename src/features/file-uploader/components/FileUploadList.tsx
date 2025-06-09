@@ -17,7 +17,7 @@ interface FileUploadListProps {
   modelId: string;
   filesToUpload: FileUploadDto[];
   removeFile: (name: string | undefined) => void;
-  side: "right" | "bottom";
+  side?: "right" | "bottom";
 }
 const FileUploadList = ({
   files,

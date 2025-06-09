@@ -11,7 +11,7 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { questionAnswerTestFormZodSchema } from "../constants/question-answer-test-form-zod-schema";
-import { QuestionAnswersSetupDTO } from "../dtos/ai-persona-setup-dto";
+import { AiPersonaSetupDTO } from "../dtos/ai-persona-setup-dto";
 import { useFetchTestFormData } from "./useFetchTestFormData";
 
 export const useQuestionAnswersTestForm = () => {
@@ -46,17 +46,18 @@ export const useQuestionAnswersTestForm = () => {
 
   // Function to initialize empty field names using setup form data
   const initializeFieldNames = useCallback(async () => {
-    const data = queryClient.getQueryData<{ data: QuestionAnswersSetupDTO }>([
+    const data = queryClient.getQueryData<{ data: AiPersonaSetupDTO }>([
       "QUESTION_ANSWER_SETUP_FORM_DATA",
     ]);
     const setupFormData = data?.data.setupObject;
+    console.log(setupFormData);
 
-    const questionAnswers = setupFormData?.questionAnswers?.map((quesAns) => ({
-      question: quesAns?.name ?? "",
-      answer: "",
-    })) ?? [{}];
+    // const questionAnswers = setupFormData?.instructions?.map((quesAns) => ({
+    //   question: quesAns?.name ?? "",
+    //   answer: "",
+    // })) ?? [{}];
 
-    form.reset({ questionAnswers });
+    // form.reset({ questionAnswers });
   }, [form, queryClient]);
 
   // Function to populate field values

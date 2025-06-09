@@ -15,7 +15,7 @@ interface FileDropzoneProps {
   addFile: (file: FileState) => void;
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
-  side: "right" | "bottom";
+  side?: "right" | "bottom";
 }
 
 const FileDropzone = ({
