@@ -51,7 +51,7 @@ builder.Services.CorsPolicyConfig(config);
 builder.Services.CookiePolicyConfig(config);
 builder.Services.HSTSPolicyConfig(config);
 builder.Services.AddAuthenticationConfig(config);
-builder.Services.AddSignalR();
+builder.Services.AddSignalRConfig();
 
 
 // Database
@@ -108,5 +108,6 @@ app.UseMiddleware<TenantResolver>();
 app.MapControllers();
 
 app.MapHub<ExtractHub>("/extract-hub");
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
