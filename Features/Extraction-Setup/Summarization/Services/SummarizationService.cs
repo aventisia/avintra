@@ -711,7 +711,6 @@ public class SummarizationService : ISummarizationService
             var fineTuningLogs = scheduledModels.Select(s => new FineTuningLog()
             {
                 ScheduledModelId = s.ExtractedDataId,
-                ExtractedDataId = s.Id,
                 Status = ScheduleTypesEnum.Scheduled,
             });
 
@@ -769,7 +768,7 @@ public class SummarizationService : ISummarizationService
                         scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId)
                     )
                     .Include(i => i.ScheduledModel)
-                    .Include(i => i.ExtractedData)
+                    .ThenInclude(i2 => i2.ExtractedData)
                     .ProjectToType<FineTuningHistoryDto>()
                     .ToListAsync();
             }

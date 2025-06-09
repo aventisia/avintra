@@ -82,7 +82,6 @@ public class MLModelBuilderDbContext : DbContext
 
 
         // Configure One-to-One relationship between Schedule Model and ModelBuilder User
-        modelBuilder.Entity<FineTuningLog>().HasOne(one => one.ExtractedData).WithMany().HasForeignKey(f => f.ExtractedDataId).IsRequired();
         modelBuilder.Entity<FineTuningLog>().HasOne(one => one.ScheduledModel).WithMany().HasForeignKey(f => f.ScheduledModelId).IsRequired();
 
         base.OnModelCreating(modelBuilder);

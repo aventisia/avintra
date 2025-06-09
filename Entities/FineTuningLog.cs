@@ -32,11 +32,6 @@ public class FineTuningLog : IMustHaveTenant
     public ScheduleTypesEnum Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the related extracted data.
-    /// </summary>
-    public Guid ExtractedDataId { get; set; }
-
-    /// <summary>
     /// Gets or sets the identifier of the associated scheduled model.
     /// </summary>
     public Guid ScheduledModelId { get; set; }
@@ -46,10 +41,4 @@ public class FineTuningLog : IMustHaveTenant
     /// </summary>
     [ForeignKey("ScheduledModelId")]
     public virtual ScheduledModel? ScheduledModel { get; set; }
-
-    /// <summary>
-    /// Gets or sets the extracted data associated with this log entry.
-    /// </summary>
-    [ForeignKey("ExtractedDataId")]
-    public virtual ExtractedData? ExtractedData { get; set; }
 }
