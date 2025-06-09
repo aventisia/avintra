@@ -83,6 +83,10 @@ public class QuestionAnswerMappingProfile : IRegister
         // Mapping of DTO to get list of fine tuning data.
         config.NewConfig<ExtractedData, QuestionAnswerFineTuningDataDto>()
             .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeQuestionAnswerSetupDto(src.DataObject) : null)
+            .Map(dest => dest.ScheduledOn,
+                    src => src.ScheduledModels != null && src.ScheduledModels.Any()
+                        ? (DateTimeOffset?)src.ScheduledModels.First().ScheduledAt
+                : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

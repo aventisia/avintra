@@ -83,6 +83,10 @@ public class ExtractionSetupMappingProfile : IRegister
         // Mapping of DTO to get list of fine tuning data.
         config.NewConfig<ExtractedData, ExtractionFineTuningDataDto>()
             .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeExtractionSetupDto(src.DataObject) : null)
+            .Map(dest => dest.ScheduledOn,
+                    src => src.ScheduledModels != null && src.ScheduledModels.Any()
+                        ? (DateTimeOffset?)src.ScheduledModels.First().ScheduledAt
+                : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

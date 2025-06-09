@@ -79,10 +79,14 @@ public class SentimentAnalyticsMappingProfile : IRegister
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
                 ? src.CreatedByUser.UserName
                 : null);
-        
+
         // Mapping of DTO to get list of fine tuning data.
         config.NewConfig<ExtractedData, SentimentAnalyticsFineTuningDataDto>()
             .Map(dest => dest.Columns, src => !string.IsNullOrEmpty(src.DataObject) ? DeserializeSentimentAnalyticsSetupDto(src.DataObject) : null)
+            .Map(dest => dest.ScheduledOn,
+                    src => src.ScheduledModels != null && src.ScheduledModels.Any()
+                        ? (DateTimeOffset?)src.ScheduledModels.First().ScheduledAt
+                : null)
             .Map(dest => dest.DocName,
                 src => src.UploadedDoc != null
                 ? src.UploadedDoc.Name

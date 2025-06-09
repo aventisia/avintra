@@ -53,6 +53,11 @@ public class ClassificationFineTuningDataDto
     public bool SubmitForFineTuning { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp when the fine-tuning task was scheduled to run.
+    /// </summary>
+    public DateTimeOffset? ScheduledOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp indicating when the fine-tuning process was completed.
     /// </summary>
     public DateTimeOffset? FineTunedOn { get; set; }
