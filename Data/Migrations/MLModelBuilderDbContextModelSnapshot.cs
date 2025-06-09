@@ -169,9 +169,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<Guid>("ScheduledModelId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ScheduledModelId1")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("StartedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -185,8 +182,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ScheduledModelId");
-
-                    b.HasIndex("ScheduledModelId1");
 
                     b.ToTable("FineTuningLogs");
                 });
@@ -537,14 +532,10 @@ namespace MLModelBuilderAPIs.Migrations
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.FineTuningLog", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ScheduledModel", "ScheduledModel")
-                        .WithMany()
+                        .WithMany("FineTuningLogs")
                         .HasForeignKey("ScheduledModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ScheduledModel", null)
-                        .WithMany("FineTuningLogs")
-                        .HasForeignKey("ScheduledModelId1");
 
                     b.Navigation("ScheduledModel");
                 });
