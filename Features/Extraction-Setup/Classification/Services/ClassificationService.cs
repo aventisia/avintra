@@ -546,16 +546,16 @@ public class ClassificationService : IClassificationService
             // If scheduling information is provided, add a scheduled model entry
             if (createModelReviewRequestDto.ScheduleInfo != null)
             {
-                await _unitOfWork.ScheduledModelRepo.InsertAsync(new ScheduledModel
+                await _unitOfWork.ScheduledModelRepo.InsertAsync(extractedDataToInsert.Select(s => new ScheduledModel
                 {
-                    MLModelId = createModelReviewRequestDto.MLModelId,
+                    MLModelId = s.MLModelId,
                     TimeZone = createModelReviewRequestDto.ScheduleInfo.TimeZone,
                     ScheduledAt = createModelReviewRequestDto.ScheduleInfo.ScheduledAt,
                     ScheduleType = ModelOperationTypesEnum.RunAndReview,
-                    FileIds = uploadedFiles.Select(file => file.Id).ToList(),
+                    ExtractedDataId = s.Id,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
-                });
+                }).ToList());
 
                 // Persist scheduled model entry
                 if (!await _unitOfWork.SaveAsync())
@@ -648,18 +648,18 @@ public class ClassificationService : IClassificationService
             }
 
             // Create and insert a new scheduled Fine tuning job
-            var scheduledModel = new ScheduledModel
+            var scheduledModels = extractedDataList.Select(s => new ScheduledModel
             {
                 MLModelId = fineTuningRequest.MLModelId,
                 TimeZone = fineTuningRequest.TimeZone,
                 ScheduledAt = fineTuningRequest.ScheduledAt,
                 ScheduleType = ModelOperationTypesEnum.FineTuning,
-                FileIds = extractedDataList.Select(file => file.DocId).ToList(),
+                ExtractedDataId = s.Id,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
-            };
+            }).ToList();
 
-            await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModel);
+            await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModels);
 
             // Attempt to save the scheduled Fine tuning job
             if (!await _unitOfWork.SaveAsync())
@@ -669,11 +669,11 @@ public class ClassificationService : IClassificationService
             }
 
             // Create fine-tuning logs for each associated document
-            var fineTuningLogs = scheduledModel.FileIds.Select(s => new FineTuningLog()
+            var fineTuningLogs = scheduledModels.Select(s => new FineTuningLog()
             {
-                ScheduledModelId = scheduledModel.Id,
-                DocId = s,
-                Status = ExtractedDataStatusesEnums.Pending,
+                ExtractedDataId = s.ExtractedDataId,
+                ScheduledModelId = s.Id,
+                Status = ScheduleTypesEnum.Scheduled,
             });
 
             // Insert all fine-tuning logs into the repository
@@ -730,7 +730,7 @@ public class ClassificationService : IClassificationService
                         scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId)
                     )
                     .Include(i => i.ScheduledModel)
-                    .Include(i => i.UploadedDoc)
+                    .Include(i => i.ExtractedData)
                     .ProjectToType<FineTuningHistoryDto>()
                     .ToListAsync();
             }

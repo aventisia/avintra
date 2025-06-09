@@ -527,16 +527,16 @@ public class AIPersonaService : IAIPersonaService
 
             if (createModelReviewRequestDto.ScheduleInfo != null)
             {
-                await _unitOfWork.ScheduledModelRepo.InsertAsync(new ScheduledModel
+                await _unitOfWork.ScheduledModelRepo.InsertAsync(extractedDataToInsert.Select(s => new ScheduledModel
                 {
-                    MLModelId = createModelReviewRequestDto.MLModelId,
+                    MLModelId = s.MLModelId,
                     TimeZone = createModelReviewRequestDto.ScheduleInfo.TimeZone,
                     ScheduledAt = createModelReviewRequestDto.ScheduleInfo.ScheduledAt,
                     ScheduleType = ModelOperationTypesEnum.RunAndReview,
-                    FileIds = uploadedFiles.Select(file => file.Id).ToList(),
+                    ExtractedDataId = s.Id,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
-                });
+                }).ToList());
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -624,18 +624,18 @@ public class AIPersonaService : IAIPersonaService
             }
 
             // Create and insert a new scheduled AI persona fine-tuning job
-            var scheduledModel = new ScheduledModel
+            var scheduledModels = extractedDataList.Select(s => new ScheduledModel
             {
-                MLModelId = fineTuningRequest.MLModelId,
+                MLModelId = s.MLModelId,
                 TimeZone = fineTuningRequest.TimeZone,
                 ScheduledAt = fineTuningRequest.ScheduledAt,
                 ScheduleType = ModelOperationTypesEnum.FineTuning,
-                FileIds = extractedDataList.Select(file => file.DocId).ToList(),
+                ExtractedDataId = s.Id,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
-            };
+            }).ToList();
 
-            await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModel);
+            await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModels);
 
             // Save the changes to the database and check if the operation was successful
             if (!await _unitOfWork.SaveAsync())
@@ -645,11 +645,11 @@ public class AIPersonaService : IAIPersonaService
             }
 
             // Create fine-tuning logs for each associated document
-            var fineTuningLogs = scheduledModel.FileIds.Select(s => new FineTuningLog()
+            var fineTuningLogs = scheduledModels.Select(s => new FineTuningLog()
             {
-                ScheduledModelId = scheduledModel.Id,
-                DocId = s,
-                Status = ExtractedDataStatusesEnums.Pending,
+                ScheduledModelId = s.Id,
+                ExtractedDataId = s.ExtractedDataId,
+                Status = ScheduleTypesEnum.Scheduled,
             });
 
             // Insert all fine-tuning logs into the repository
@@ -703,7 +703,7 @@ public class AIPersonaService : IAIPersonaService
                     .GetByConditionAsync(w =>
                         scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId))
                     .Include(i => i.ScheduledModel)
-                    .Include(i => i.UploadedDoc)
+                    .Include(i => i.ExtractedData)
                     .ProjectToType<FineTuningHistoryDto>()
                     .ToListAsync();
             }
