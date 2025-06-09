@@ -1,55 +1,55 @@
 namespace MLModelBuilderAPIs.Entities;
 
 /// <summary>
-/// Represents the execution details of a scheduled operation, including timing, document association, and execution status.
+/// Represents a log entry for a fine-tuning execution, including its timing, associated data, and status.
 /// </summary>
 public class FineTuningLog : IMustHaveTenant
 {
     /// <summary>
-    /// Gets or sets the unique identifier for this execution record.
+    /// Gets or sets the unique identifier for the fine-tuning log entry.
     /// </summary>
     [Key]
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
+    /// Gets or sets the tenant ID for multi-tenant filtering.
     /// </summary>
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the timestamp when the execution process started.
+    /// Gets or sets the timestamp when the fine-tuning process began.
     /// </summary>
     public DateTime StartedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the timestamp when the execution process ended.
+    /// Gets or sets the timestamp when the fine-tuning process ended, if completed.
     /// </summary>
     public DateTime? EndedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the current status of the execution (e.g., Pending, InProgress, Completed, Failed).
+    /// Gets or sets the current status of the fine-tuning process (e.g., Pending, Scheduled, Completed, Failed).
     /// </summary>
-    public ExtractedDataStatusesEnums Status { get; set; }
+    public ScheduleTypesEnum Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the related uploaded document.
+    /// Gets or sets the identifier of the related extracted data.
     /// </summary>
-    public Guid DocId { get; set; }
+    public Guid ExtractedDataId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the related scheduled model operation.
+    /// Gets or sets the identifier of the associated scheduled model.
     /// </summary>
     public Guid ScheduledModelId { get; set; }
 
     /// <summary>
-    /// Gets or sets the navigation property for the associated scheduled model.
+    /// Gets or sets the scheduled model associated with this log entry.
     /// </summary>
     [ForeignKey("ScheduledModelId")]
     public virtual ScheduledModel? ScheduledModel { get; set; }
 
     /// <summary>
-    /// Gets or sets the navigation property for the associated uploaded document.
+    /// Gets or sets the extracted data associated with this log entry.
     /// </summary>
-    [ForeignKey("DocId")]
-    public virtual UploadedDoc? UploadedDoc { get; set; }
+    [ForeignKey("ExtractedDataId")]
+    public virtual ExtractedData? ExtractedData { get; set; }
 }

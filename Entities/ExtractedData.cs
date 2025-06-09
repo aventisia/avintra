@@ -67,4 +67,9 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("DocId")]
     public virtual UploadedDoc? UploadedDoc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of scheduled models related to this schedule model.
+    /// </summary>
+    public virtual ICollection<ScheduledModel>? ScheduledModels { get; set; }
 }

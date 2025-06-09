@@ -41,7 +41,8 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ScheduledModel>().Property(e => e.ScheduleType).HasConversion(new EnumToStringConverter<ModelOperationTypesEnum>());
-        modelBuilder.Entity<FineTuningLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ExtractedDataStatusesEnums>());
+        modelBuilder.Entity<ScheduledModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
+        modelBuilder.Entity<FineTuningLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User
         modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -71,7 +72,6 @@ public class MLModelBuilderDbContext : DbContext
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.ExtractedData).WithOne(one => one.UploadedDoc).HasForeignKey<ExtractedData>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<UploadedDoc>().HasOne(one => one.FineTuningLog).WithOne(one => one.UploadedDoc).HasForeignKey<FineTuningLog>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Schedule Model and ModelBuilder User
         modelBuilder.Entity<ScheduledModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);

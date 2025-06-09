@@ -1,48 +1,59 @@
 namespace MLModelBuilderAPIs.Entities;
 
 /// <summary>
-/// Represents a scheduled operation (such as review or fine-tuning) that is planned for execution on a specific ML model at a defined time.
+/// Represents a scheduled task (e.g., review or fine-tuning) planned to be executed on a specific ML model at a designated time.
 /// </summary>
 public class ScheduledModel : BaseEntity, IMustHaveTenant
 {
     /// <summary>
-    /// Identifier for the tenant (used for multi-tenancy support).
+    /// Gets or sets the tenant identifier for multi-tenancy support.
     /// </summary>
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Time zone in which the schedule is configured.
+    /// Gets or sets the time zone in which the schedule is defined.
     /// </summary>
     public required string TimeZone { get; set; }
 
     /// <summary>
-    /// Date and time when the operation is scheduled to occur.
+    /// Gets or sets the date and time when the scheduled operation should occur.
     /// </summary>
     public required DateTime ScheduledAt { get; set; }
 
     /// <summary>
-    /// Collection of file identifiers associated with this scheduled operation.
-    /// </summary>
-    public required List<Guid> FileIds { get; set; }
-
-    /// <summary>
-    /// Type of operation to be performed at the scheduled time (e.g., Review, FineTuning).
+    /// Gets or sets the type of operation to perform (e.g., Review, FineTuning).
     /// </summary>
     public ModelOperationTypesEnum ScheduleType { get; set; }
 
     /// <summary>
-    /// Identifier of the associated ML model.
+    /// Gets or sets the current scheduling status of the ML model operation.
+    /// </summary>
+    public ScheduleTypesEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the related ML model.
     /// </summary>
     public Guid MLModelId { get; set; }
 
     /// <summary>
-    /// Navigation property for the associated ML model.
+    /// Gets or sets the navigation property to the related ML model.
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of fine-tuning logs associated with this schedule model, representing the history or status of machine learning model tuning processes.
+    /// Gets or sets the identifier of the related extracted data.
+    /// </summary>
+    public Guid ExtractedDataId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the navigation property to the related extracted data.
+    /// </summary>
+    [ForeignKey("ExtractedDataId")]
+    public virtual ExtractedData? ExtractedData { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of fine-tuning logs linked to this schedule, representing tuning history or status.
     /// </summary>
     public virtual ICollection<FineTuningLog>? FineTuningLogs { get; set; }
 }
