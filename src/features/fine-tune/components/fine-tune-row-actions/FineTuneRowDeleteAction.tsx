@@ -6,7 +6,7 @@ import {
 
 // import { useQueryClient } from "@tanstack/react-query";
 
-import { runReviewOptimisticMutationFn } from "../../apis/fine-tune-table-apis";
+import { fineTuneOptimisticMutationFn } from "../../apis/fine-tune-table-apis";
 import { FINE_TUNE_TABLE_QUERY_KEY } from "../../constants";
 import { FineTuneTableDTO } from "../../dtos/fine-tune-table-dto";
 
@@ -25,7 +25,7 @@ export const FineTuneRowDeleteAction = ({
     string,
     FineTuneTableDTO | boolean,
     FineTuneTableDTO
-  >([rowId], runReviewOptimisticMutationFn, FINE_TUNE_TABLE_QUERY_KEY);
+  >([rowId], fineTuneOptimisticMutationFn, FINE_TUNE_TABLE_QUERY_KEY);
   // const queryClient = useQueryClient();
 
   // Return Delete alert dialog trigger

@@ -15,6 +15,7 @@ interface FileDropzoneProps {
   addFile: (file: FileState) => void;
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
+  side: "right" | "bottom";
 }
 
 const FileDropzone = ({
@@ -23,6 +24,7 @@ const FileDropzone = ({
   addFileToUpload,
   updateProgress,
   modelId,
+  side = "right",
 }: FileDropzoneProps) => {
   const { mutate: uploadFile, currentController } = useFileUpload({
     addFileToUpload,
@@ -71,7 +73,7 @@ const FileDropzone = ({
         isDragActive
           ? "border-primary bg-primary-foreground"
           : "border-gray-300 bg-slate-50",
-        files.length > 0 ? "w-1/2" : "w-full",
+        files.length > 0 && side === "right" ? "w-1/2" : "w-full",
       )}
     >
       <input {...getInputProps()} />
@@ -85,7 +87,7 @@ const FileDropzone = ({
               <p className="font-medium"> Drag & drop files here.</p>
             </div>
             <OrSeparator />
-            <Button onClick={() => open()} size={"xs"}>
+            <Button onClick={() => open()} size={"xs"} type="button">
               Browse files
             </Button>
           </div>

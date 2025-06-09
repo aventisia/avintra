@@ -54,7 +54,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
    * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
    * @throws {Error} - If an invalid action type is provided.
    */
-  const runReviewOptimisticMutationFn = ({
+  const fineTuneOptimisticMutationFn = ({
     payload,
     crudAction,
   }: IOptimisticMutation<FineTuneTableDTO | string | string[]>) => {
@@ -74,7 +74,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
     
   export {
     getFineTuneRecords,
-    runReviewOptimisticMutationFn,
+    fineTuneOptimisticMutationFn,
     deleteRecord,
     deleteRecords,
     scheduleFineTune

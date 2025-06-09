@@ -7,7 +7,7 @@ import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Outlet } from "react-router-dom";
 
-import { LLMSelector } from "./LLMSelector";
+// import { LLMSelector } from "./LLMSelector";
 import ModelInfo from "./ModelInfo";
 import { NavigationTabs } from "./NavigationTabs";
 
@@ -24,7 +24,7 @@ export const MLModelBuilderLayout = () => {
         <div className="relative min-h-screen overflow-hidden bg-slate-100">
           <Header
             extraContentRight={<NavigationTabs />}
-            extraContentCenter={<LLMSelector />}
+            // extraContentCenter={<LLMSelector />}
             extraContentLeft={<ModelInfo />}
           />
           <ScrollArea className="mt-2.5 h-[calc(100vh-4.5rem)]">

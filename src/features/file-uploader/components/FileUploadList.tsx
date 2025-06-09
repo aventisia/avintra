@@ -1,6 +1,7 @@
 import { Progress } from "@/react-toolkit/ui/progress";
 
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { XCircleIcon } from "@heroicons/react/24/solid";
@@ -16,12 +17,14 @@ interface FileUploadListProps {
   modelId: string;
   filesToUpload: FileUploadDto[];
   removeFile: (name: string | undefined) => void;
+  side: "right" | "bottom";
 }
 const FileUploadList = ({
   files,
   filesToUpload,
   modelId,
   removeFile,
+  side = "right",
 }: FileUploadListProps) => {
   const { mutate: deleteFile } = useFileDelete({
     filesToUpload,
@@ -44,13 +47,23 @@ const FileUploadList = ({
   return (
     <>
       {!!files.length && (
-        <div className="h-full w-1/2 rounded-lg border">
+        <div
+          className={cn(
+            "rounded-lg border",
+            side === "right" && "h-full w-1/2",
+          )}
+        >
           {/* Title Section */}
           <div className="flex items-center justify-between border-b p-2">
             <h2 className="text-md font-medium">
               Uploaded Files ({files.length})
             </h2>
-            <Button variant="ghost" size="xs" onClick={() => removeFiles()}>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => removeFiles()}
+              type="button"
+            >
               {files.length === filesToUpload.length && files.length != 0
                 ? "Delete all"
                 : "Cancel"}
@@ -58,7 +71,12 @@ const FileUploadList = ({
           </div>
 
           {/* List of Files */}
-          <ScrollArea className="h-[calc(100vh-12rem)] py-0.5">
+          <ScrollArea
+            className={cn(
+              " py-0.5",
+              side === "right" ? "h-[calc(100vh-12rem)]" : "h-[calc(30vh)]",
+            )}
+          >
             {files.map((file) => {
               const progress = file.progress;
               return (
@@ -73,7 +91,7 @@ const FileUploadList = ({
                             : `Uploading... ${progress}%`}
                         </p>
                       </div>
-                      <Button variant={"ghost"} size={"icon8"}>
+                      <Button variant={"ghost"} size={"icon8"} type="button">
                         {(progress as number) < 100 ? (
                           <XCircleIcon
                             className="h-5 w-5 cursor-pointer text-muted-foreground opacity-40 hover:opacity-60"

@@ -1,3 +1,6 @@
+import { submitFiles } from "@/features/file-uploader/apis/file-upload-apis";
+import FileUploader from "@/features/file-uploader/components/FileUploader";
+import { useFileStore } from "@/features/file-uploader/stores/file-uploader-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
 
@@ -16,9 +19,6 @@ import { RUN_REIVEW_TABLE_QUERY_KEY } from "../../constants";
 import { addRecordsFormZodSchema } from "../../constants/add-records-zod-schema";
 import { RunReviewRecordsMutatedDTO } from "../../dtos/run-review-records-mutate";
 import { useAddRunReviewRecordsTestForm } from "../../hooks/useAddRunReviewRecordsForm";
-import { submitFiles } from "../file-uploader/apis/file-upload-apis";
-import RunReviewFileUploader from "../file-uploader/components/FileUploader";
-import { useFileStore } from "../file-uploader/stores/file-uploader-store";
 import ScheduleFineTuning from "./ScheduleFineTuning";
 
 const RunReviewCrudForm = () => {
@@ -84,7 +84,7 @@ const RunReviewCrudForm = () => {
       <ScrollArea className="h-[calc(100vh-9rem)] px-2.5 pb-0 pt-4">
         <FormProvider {...form}>
           <div className="space-y-4 px-4 pb-1">
-            <RunReviewFileUploader />
+            <FileUploader side="bottom" />
             <Separator />
             <p className="!mt-4 font-semibold">Schedule Execution</p>
             <ScheduleFineTuning />

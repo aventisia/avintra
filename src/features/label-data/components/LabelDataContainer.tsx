@@ -1,3 +1,4 @@
+import AIPersonaModel from "@/features/ai-persona-model/components";
 import ClassificationModel from "@/features/classification-model/components";
 import FileUploader from "@/features/file-uploader/components/FileUploader";
 import InformationExtractor from "@/features/information-extractor/components";
@@ -37,12 +38,15 @@ export const LabelDataContainer = () => {
   const { data: modelData } = useFetchModel();
 
   useEffect(() => {
+    const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
     if (pdfList?.data.length) {
       setStepState(1);
     } else {
       setStepState(0);
     }
-  }, [pdfList, setStepState]);
+
+    if (modelType === "aipersona") setStepState(1);
+  }, [pdfList, setStepState, modelData]);
 
   if (isLoading) {
     return (
@@ -67,6 +71,8 @@ export const LabelDataContainer = () => {
         return <ClassificationModel />;
       case "questionanswer":
         return <QuestionAnswerModel />;
+      case "aipersona":
+        return <AIPersonaModel />;
       default:
         // Optionally log an error or return a fallback component
         toast.error(

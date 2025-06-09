@@ -13,7 +13,7 @@ import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { Table } from "@tanstack/react-table";
 import { useShallow } from "zustand/react/shallow";
 
-import { runReviewOptimisticMutationFn } from "../apis/fine-tune-table-apis";
+import { fineTuneOptimisticMutationFn } from "../apis/fine-tune-table-apis";
 import { FINE_TUNE_TABLE_QUERY_KEY } from "../constants";
 import { FineTuneTableDTO } from "../dtos/fine-tune-table-dto";
 
@@ -42,7 +42,7 @@ export function FineTuneBulkActions({ table }: FineTuneBulkActionsProps) {
     string[],
     FineTuneTableDTO | boolean,
     FineTuneTableDTO
-  >(selectedRowIds, runReviewOptimisticMutationFn, FINE_TUNE_TABLE_QUERY_KEY);
+  >(selectedRowIds, fineTuneOptimisticMutationFn, FINE_TUNE_TABLE_QUERY_KEY);
 
   return (
     <>

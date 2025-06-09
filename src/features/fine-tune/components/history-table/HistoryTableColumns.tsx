@@ -5,6 +5,7 @@ import { format, isValid } from "date-fns";
 
 import { getColumnName } from "../../constants/history-table-column-display-names";
 import { HistoryTableDTO } from "../../dtos/history-table-dto";
+import { HistoryTableRowActions } from "../history-table-row-actions/HistoryTableRowActions";
 
 /**
  * Array of table columns for the model table.
@@ -77,5 +78,19 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
         </div>
       );
     },
+  },
+
+  // ✅ Actions column
+  {
+    id: "actions",
+    header: ({ column }) => (
+      <DTColumnHeader className="w-7" column={column} title={""} />
+    ),
+    cell: ({ row }) => (
+      <HistoryTableRowActions
+        rowId={row.original.id}
+        fileId={row.original.docId}
+      />
+    ),
   },
 ];

@@ -41,7 +41,7 @@ const FineTuneCrudForm = () => {
       setShowDialog(false);
     },
     onError: () => {
-      toast.error("Error adding record, please try again.");
+      toast.error("Error scheduling records, please try again.");
     },
   });
 
